@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+
+	<Description about="urn:mozilla:install-manifest">
+		<em:id>dkim_verifier@pl</em:id>
+		<em:type>2</em:type> <!-- Extensions -->
+		
+		<em:name>DKIM Verifier</em:name>
+		<em:description>Verifies the DKIM-Signature.</em:description>
+
+		<em:version>0.1</em:version>
+
+		<em:creator>Philippe Lieser</em:creator>
+		
+		<!-- DNS Library -->
+		<em:contributor>Joshua Tauberer</em:contributor>
+		<!-- RSA and BigInteger Library -->
+		<em:contributor>Tom Wu</em:contributor>
+		<!-- RSA signing and verification and asn1hex Library -->
+		<em:contributor>Kenji Urushima</em:contributor>
+		
+		<!--
+		<em:optionsURL>chrome://myext/content/options.xul</em:optionsURL>
+		<em:aboutURL>chrome://myext/content/about.xul</em:aboutURL>
+		<em:iconURL>chrome://myext/skin/icon.png</em:iconURL>
+		<em:homepageURL>http://www.foo.com/</em:homepageURL>
+		-->
+
+		<em:targetApplication>
+			<Description>
+				<em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id> <!-- Thunderbird -->
+				<em:minVersion>17.0</em:minVersion>
+				<em:maxVersion>17.*</em:maxVersion>
+			</Description>
+		</em:targetApplication>
+
+	</Description>     
+</RDF>
