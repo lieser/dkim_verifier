@@ -4,9 +4,9 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  *
- * version: 0.1 (13 May 2013)
+ * version: 0.1.1 (13 May 2013)
  *
- * Copyright (c) 2010-2013 Philippe Lieser
+ * Copyright (c) 2013 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -32,7 +32,6 @@
  *  - at the moment, only a subset of valid Local-part in the i-Tag is recognised
  *  - no test for multiple key records in an DNS RRset (Section 3.6.2.2)
  *  - key record flags are ignored (Section 3.6.1)
- *  - no check that from header is signed
  *  - Multiple Instances of a header Field are not supported (Section 5.4.2)
  *  - message with bad signature is treated differently from a message with no signature
  *    (result is shown) (Section 6.1)
@@ -62,7 +61,6 @@
 
 /*
  * DKIM Verifier module
- * public me
  */
 var DKIMVerifier = (function() {
 	// set hash funktions used by rsasign-1.2.js
@@ -160,7 +158,6 @@ var DKIMVerifier = (function() {
 		var msg = {};
 
 		// get inputStream for msg
-	//	var messenger = Components.classes["@mozilla.org/messenger;1"].createInstance(Components.interfaces.nsIMessenger);
 		var messageService = messenger.messageServiceFromURI(msgURI);
 		var nsIInputStream = Components.classes["@mozilla.org/network/sync-stream-listener;1"].
 			createInstance(Components.interfaces.nsIInputStream);
@@ -349,14 +346,6 @@ var DKIMVerifier = (function() {
 			throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_MISSING_H);
 		}
 		DKIMSignature.h = signedHeadersTag[1].replace(new RegExp(pattFWS,"g"), "");
-		/*
-		// get captured header field names and store them in lower case in an array
-		var i = 2;
-		while (signedHeadersTag[i] !== undefined) {
-			DKIMSignature.h_array.push(signedHeadersTag[i].toLowerCase());
-			i++;
-		}
-		*/
 		// get the header field names and store them in lower case in an array
 		var regExpHeaderName = new RegExp(pattFWS+"?("+hdr_name+")"+pattFWS+"?(?::|$)", "g");
 		while (true) {
@@ -366,6 +355,10 @@ var DKIMVerifier = (function() {
 			} else {
 				DKIMSignature.h_array.push(tmp[1].toLowerCase());
 			}
+		}
+		// check that the from header is included
+		if (DKIMSignature.h_array.indexOf("from") === -1) {
+			throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_MISSING_FROM);
 		}
 
 		// get AUID (dkim-quoted-printable; OPTIONAL, default is an empty local-part

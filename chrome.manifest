@@ -1,5 +1,3 @@
 content		dkim_verifier			chrome/content/
 locale		dkim_verifier en-US		chrome/locale/en-US/
 overlay		chrome://messenger/content/msgHdrViewOverlay.xul  chrome://dkim_verifier/content/msgHdrViewOverlay.xul
-# skin  mailhops  classic/1.0  jar:chrome/mailhops.jar!/skin/classic/
-# overlay		chrome://messenger/content/messenger.xul  chrome://dkim_verifier/content/myhelloworld.xul

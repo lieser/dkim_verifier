@@ -8,9 +8,9 @@
 		<em:type>2</em:type> <!-- Extensions -->
 		
 		<em:name>DKIM Verifier</em:name>
-		<em:description>Verifies the DKIM-Signature.</em:description>
+		<em:description>Verifies the DKIM-Signature of an e-mail.</em:description>
 
-		<em:version>0.1</em:version>
+		<em:version>0.1.1</em:version>
 
 		<em:creator>Philippe Lieser</em:creator>
 		
@@ -21,11 +21,12 @@
 		<!-- RSA signing and verification and asn1hex Library -->
 		<em:contributor>Kenji Urushima</em:contributor>
 		
+		<em:homepageURL>https://github.com/lieser/dkim_verifier</em:homepageURL>
+
 		<!--
 		<em:optionsURL>chrome://myext/content/options.xul</em:optionsURL>
 		<em:aboutURL>chrome://myext/content/about.xul</em:aboutURL>
 		<em:iconURL>chrome://myext/skin/icon.png</em:iconURL>
-		<em:homepageURL>http://www.foo.com/</em:homepageURL>
 		-->
 
 		<em:targetApplication>
