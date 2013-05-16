@@ -4,7 +4,7 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  *
- * version: 0.1.1 (13 May 2013)
+ * version: 0.1.1 (16 May 2013)
  *
  * Copyright (c) 2013 Philippe Lieser
  *
@@ -31,7 +31,6 @@
  *      if a tag name does occur more than once, the entire tag-list is invalid
  *  - at the moment, only a subset of valid Local-part in the i-Tag is recognised
  *  - no test for multiple key records in an DNS RRset (Section 3.6.2.2)
- *  - key record flags are ignored (Section 3.6.1)
  *  - Multiple Instances of a header Field are not supported (Section 5.4.2)
  *  - message with bad signature is treated differently from a message with no signature
  *    (result is shown) (Section 6.1)
@@ -426,7 +425,7 @@ var DKIMVerifier = (function() {
 			DKIMSignature.i = "@"+DKIMSignature.d;
 		} else {
 			if (!(new RegExp(DKIMSignature.d+"$")).test(AUIDTag[1])) {
-				throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_DOMAIN_I);
+				throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_SUBDOMAIN_I);
 			}
 			DKIMSignature.i = AUIDTag[1];
 		}
@@ -498,7 +497,8 @@ var DKIMVerifier = (function() {
 			n : null, // notes
 			p : null, // Public-key data
 			s : null, // Service Type
-			t : null // flags
+			t : null, // flags
+			t_array : [] // array of all flags
 		}
 		
 		// get version (plain-text; RECOMMENDED, default is "DKIM1")
@@ -568,6 +568,21 @@ var DKIMVerifier = (function() {
 		var flagsTag = DKIMKeyRecord.match(tag_spec("t",key_t_tag));
 		if (flagsTag !== null) {
 			DKIMKey.t = flagsTag[1];
+
+			// get the flags and store them in an array
+			var regFlagName = new RegExp(pattFWS+"?("+key_t_tag_flag+")"+pattFWS+"?(?::|$)", "g");
+			while (true) {
+				var tmp = regFlagName.exec(flagsTag[1]);
+				if (tmp === null) {
+					break;
+				} else {
+					DKIMKey.t_array.push(tmp[1]);
+				}
+			}
+			// check that the testing flag is not set
+			if (DKIMKey.t_array.indexOf("y") !== -1) {
+				throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_KEY_TESTMODE);
+			}
 		} else {
 			DKIMKey.t = "";
 		}
@@ -784,6 +799,13 @@ var DKIMVerifier = (function() {
 			msg.DKIMKey = parseDKIMKeyRecord(msg.keyQueryResult);
 			DKIM_Debug("Parsed DKIM-Key: "+msg.DKIMKey.toSource());
 			
+			// if s flag is set in DKIM key record
+			// AUID must be from the same domain as SDID (and not a subdomain)
+			if (msg.DKIMKey.t_array.indexOf("s") !== -1 &&
+				msg.DKIMSignature.i.indexOf("@"+msg.DKIMSignature.d)) {
+				throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_DOMAIN_I);
+			}
+			
 			// Compute the input for the header hash
 			var headerHashInput = computeHeaderHashInput(msg);
 			DKIM_Debug("Header hash inputP: " + headerHashInput);
@@ -847,7 +869,14 @@ var DKIMVerifier = (function() {
 			
 		} catch(e) {
 			var dkimMsgHdrRes = document.getElementById("dkim_verifier_msgHdrRes");
-			if (e instanceof DKIM_SigError) {				
+			
+			if (e instanceof DKIM_SigError) {
+				// if domain is testing DKIM, treat msg as not signed
+				if (e.message === DKIM_STRINGS.DKIM_SIGERROR_KEY_TESTMODE) {
+					var dkimVerifierBox = document.getElementById("dkim_verifier_msgHdrBox");
+					dkimVerifierBox.collapsed = true;
+				}
+				
 				dkimMsgHdrRes.value = DKIM_STRINGS.PERMFAIL + " (" + e.message + ")";
 			} else {
 				dkimMsgHdrRes.value = "Internal Error";

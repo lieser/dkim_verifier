@@ -28,7 +28,8 @@ DKIM_STRINGS.DKIM_SIGERROR_UNKNOWN_C_B		= "Unsupported canonicalization algorith
 DKIM_STRINGS.DKIM_SIGERROR_MISSING_D		= "Missing Signing Domain Identifier (SDID)";
 DKIM_STRINGS.DKIM_SIGERROR_MISSING_H		= "Missing signed header fields";
 DKIM_STRINGS.DKIM_SIGERROR_MISSING_FROM		= "From header is not signed";
-DKIM_STRINGS.DKIM_SIGERROR_DOMAIN_I			= "AUID is not in a subdomain of SDID";
+DKIM_STRINGS.DKIM_SIGERROR_SUBDOMAIN_I		= "AUID is not in a subdomain of SDID";
+DKIM_STRINGS.DKIM_SIGERROR_DOMAIN_I			= "AUID must be in the same domain as SDID (s-flag set in key record)";
 DKIM_STRINGS.DKIM_SIGERROR_TOOLARGE_L		= "Value of the body lenght tag exceeds body size";
 DKIM_STRINGS.DKIM_SIGERROR_UNKNOWN_Q		= "Unsupported query methods for public key retrievel";
 DKIM_STRINGS.DKIM_SIGERROR_MISSING_S		= "Missing selector tag";
@@ -41,6 +42,7 @@ DKIM_STRINGS.DKIM_SIGERROR_KEY_UNKNOWN_K	= "Unsupported key type";
 DKIM_STRINGS.DKIM_SIGERROR_KEY_MISSING_P	= "Missing key";
 DKIM_STRINGS.DKIM_SIGERROR_KEY_REVOKED		= "Key revoked";
 DKIM_STRINGS.DKIM_SIGERROR_KEY_NOTEMAILKEY	= "Key is not an e-mail key";
+DKIM_STRINGS.DKIM_SIGERROR_KEY_TESTMODE		= "The domain is only testing DKIM";
 // DKIM_SIGERROR - key decode
 DKIM_STRINGS.DKIM_SIGERROR_KEYDECODE		= "Key couldn't be decoded";
 
