@@ -808,7 +808,7 @@ var DKIMVerifier = (function() {
 			
 			// Compute the input for the header hash
 			var headerHashInput = computeHeaderHashInput(msg);
-			DKIM_Debug("Header hash inputP: " + headerHashInput);
+			DKIM_Debug("Header hash input:\n" + headerHashInput);
 
 			// get RSA-key
 			/*
