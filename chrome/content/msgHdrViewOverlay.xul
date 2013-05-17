@@ -15,10 +15,6 @@
 	        src="chrome://dkim_verifier/content/dns.js"/>
 	<!-- RSA -->
 	<script type="application/javascript"
-	        src="chrome://dkim_verifier/content/prng4.js"/>
-	<script type="application/javascript"
-	        src="chrome://dkim_verifier/content/rng.js"/>
-	<script type="application/javascript"
 	        src="chrome://dkim_verifier/content/jsbn.js"/>
 	<script type="application/javascript"
 	        src="chrome://dkim_verifier/content/jsbn2.js"/>
