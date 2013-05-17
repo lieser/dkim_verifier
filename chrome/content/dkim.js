@@ -4,7 +4,7 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  *
- * version: 0.1.1 (17 May 2013)
+ * version: 0.2 (17 May 2013)
  *
  * Copyright (c) 2013 Philippe Lieser
  *
