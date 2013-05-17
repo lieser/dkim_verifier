@@ -4,7 +4,7 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  *
- * version: 0.1.1 (16 May 2013)
+ * version: 0.1.1 (17 May 2013)
  *
  * Copyright (c) 2013 Philippe Lieser
  *
@@ -31,7 +31,6 @@
  *      if a tag name does occur more than once, the entire tag-list is invalid
  *  - at the moment, only a subset of valid Local-part in the i-Tag is recognised
  *  - no test for multiple key records in an DNS RRset (Section 3.6.2.2)
- *  - Multiple Instances of a header Field are not supported (Section 5.4.2)
  *  - message with bad signature is treated differently from a message with no signature
  *    (result is shown) (Section 6.1)
  *  - DNS Server not reachable is treated as a PERMFAIL, not as a TEMPFAIL (Section 6.1.2)
@@ -54,7 +53,6 @@
  *  - warning if the Signature is expired
  *  - warning if the Signature is in the future
  *  - warning if SDID and from are different
- *  - support multiple key records
  *
  */
 
@@ -212,10 +210,14 @@ var DKIMVerifier = (function() {
 		var headerArray = header.split(/\r\n(?=\S)/);
 		var hName;
 		for(var i = 0; i < headerArray.length; i++) {
-			// store fields under header field name (in lower case)
+			// store fields under header field name (in lower case) in an array
 			hName = headerArray[i].match(/\S+(?=\s*:)/);
 			if (hName !== null) {
-				headerFields[hName[0].toLowerCase()] = headerArray[i]+"\r\n";
+				hName = hName[0].toLowerCase();
+				if (headerFields[hName] === undefined) {
+					headerFields[hName] = [];
+				}
+				headerFields[hName].push(headerArray[i]+"\r\n");
 			}
 		}
 		
@@ -717,7 +719,9 @@ var DKIMVerifier = (function() {
 		// get header fields specified by the "h=" tag
 		// and join their canonicalized form
 		for(var i = 0; i <  msg.DKIMSignature.h_array.length; i++) {
-			temp = msg.headerFields[msg.DKIMSignature.h_array[i]];
+			// if multiple instances of the same header field are signed
+			// include them in reverse order (from bottom to top)
+			temp = msg.headerFields[msg.DKIMSignature.h_array[i]].pop();
 			if (temp) {
 				hashInput += headerCanonAlgo(temp);
 			}
@@ -725,10 +729,10 @@ var DKIMVerifier = (function() {
 		
 		// add DKIM-Signature header to the hash input
 		// with the value of the "b=" tag (including all surrounding whitespace) deleted
-		var pos = msg.headerFields["dkim-signature"].indexOf(msg.DKIMSignature.b_folded);
-		var tempBegin = msg.headerFields["dkim-signature"].substr(0, pos);
+		var pos = msg.headerFields["dkim-signature"][0].indexOf(msg.DKIMSignature.b_folded);
+		var tempBegin = msg.headerFields["dkim-signature"][0].substr(0, pos);
 		tempBegin = tempBegin.replace(new RegExp(pattFWS+"?$"), "");
-		var tempEnd = msg.headerFields["dkim-signature"].substr(pos+msg.DKIMSignature.b_folded.length);
+		var tempEnd = msg.headerFields["dkim-signature"][0].substr(pos+msg.DKIMSignature.b_folded.length);
 		tempEnd = tempEnd.replace(new RegExp("^"+pattFWS+"?"), "");
 		temp = tempBegin + tempEnd;
 		// canonicalized using the header canonicalization algorithm specified in the "c=" tag
@@ -746,7 +750,7 @@ var DKIMVerifier = (function() {
 	function verifySignaturePart1(msg) {
 		try {
 			// parse the DKIMSignatureHeader
-			msg.DKIMSignature = parseDKIMSignature(msg.headerFields["dkim-signature"]);
+			msg.DKIMSignature = parseDKIMSignature(msg.headerFields["dkim-signature"][0]);
 			DKIM_Debug("Parsed DKIM-Signature: "+msg.DKIMSignature.toSource());
 			
 			// check the value of the body lenght tag
