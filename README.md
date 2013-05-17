@@ -14,8 +14,6 @@ Included third-party Libraries
   - jsbn.js - basic BigInteger class
   - jsbn2.js - BigInteger class extension
   - rsa.js - RSAKey class for RSA public key encryption
-  - rng.js - Random number generator
-  - prng4.js - Random number generator
   - base64.js - String encoder for Base64 and Hex
  - Kenji Urushima's 'RSA-Sign JavaScript Library' (http://kjur.github.com/jsrsasign)
   - asn1hex.js - simple ASN.1 parser to read hexadecimal encoded ASN.1 DER

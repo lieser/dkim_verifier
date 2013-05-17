@@ -9,8 +9,6 @@ For Tom Wu's jsbn library - BigInteger and RSA
 jsbn.js - basic BigInteger class
 jsbn2.js - BigInteger class extension
 rsa.js - RSAKey class for RSA public key encryption
-rng.js - Random number generator
-prng4.js - Random number generator
 base64.js - String encoder for Base64 and Hex
 
 Site:
