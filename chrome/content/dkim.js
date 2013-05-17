@@ -108,16 +108,33 @@ var DKIMVerifier = (function() {
 	 * from https://developer.mozilla.org/en-US/docs/XPCOM_Interface_Reference/nsICryptoHash
 	 */
 	function dkim_hash(str, hashAlgorithm, outputFormat) {
+		/*
+		 * Converts a string to an array bytes
+		 * characters >255 have their hi-byte silently ignored.
+		 */
+		function rstr2byteArray(str) {
+			var res = new Array(str.length);
+			for (var i = 0; i < str.length; i++) {
+				res[i] = str.charCodeAt(i) & 0xFF;
+			}
+			
+			return res;
+		}
+		
 		var hasher = Components.classes["@mozilla.org/security/hash;1"].
 			createInstance(Components.interfaces.nsICryptoHash);
 		hasher.initWithString(hashAlgorithm);
-
+		
+/*
 		var converter = Components.classes["@mozilla.org/intl/scriptableunicodeconverter"].
 			createInstance(Components.interfaces.nsIScriptableUnicodeConverter);
 		converter.charset = "iso-8859-1";
 
 		// data is an array of bytes
 		var data = converter.convertToByteArray(str, {});
+*/
+		// convert input str
+		var data = rstr2byteArray(str);
 		
 		hasher.update(data, data.length);
 		

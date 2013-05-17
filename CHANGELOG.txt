@@ -3,6 +3,7 @@
  - check that from header is signed now included
  - key record flags are no longer ignored
  - Multiple Instances of a header Field are now supported
+ - encoding issue for body hash fixed
 
 0.1 [2013-05-13]
 ----------------
