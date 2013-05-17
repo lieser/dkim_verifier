@@ -1,4 +1,4 @@
-0.1.1 [2013-05-16]
+0.2 [2013-05-16]
 ------------------
  - check that from header is signed now included
  - key record flags are no longer ignored
