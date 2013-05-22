@@ -4,7 +4,7 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  *
- * version: 0.2.1 (22 May 2013)
+ * version: 0.2.2 (22 May 2013)
  *
  * Copyright (c) 2013 Philippe Lieser
  *
@@ -349,7 +349,7 @@ var DKIMVerifier = (function() {
 		// get SDID (plain-text; REQUIRED)	
 		// Pattern for sub-domain as specified in Section 4.1.2 of RFC 5321
 		var sub_domain = "(?:[A-z0-9](?:[A-z0-9-]*[A-z0-9])?)";
-		var domain_name = "(?:"+sub_domain+"(?:."+sub_domain+")+)";
+		var domain_name = "(?:"+sub_domain+"(?:\\."+sub_domain+")+)";
 		var SDIDTag = DKIMSignatureHeader.match(tag_spec("d",sub_domain+"(?:."+sub_domain+")*"));
 		if (SDIDTag === null) {
 			throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_MISSING_D);

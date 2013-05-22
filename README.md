@@ -6,7 +6,7 @@ This is an Add-on for Mozilla Thunderbird, that verifies DKIM Signatures accordi
 The source code is availabe at https://github.com/lieser/dkim_verifier.
 A packed version can be downloaded from https://addons.mozilla.org/addon/dkim-verifier/.
 
-Please report bugs to http://forums.mozillazine.org/viewtopic.php?f=48&t=2704121 or https://github.com/lieser/dkim_verifier.
+Please report bugs at http://forums.mozillazine.org/viewtopic.php?f=48&t=2704121 or https://github.com/lieser/dkim_verifier/issues.
 
 Included third-party Libraries
 ------------------------------
