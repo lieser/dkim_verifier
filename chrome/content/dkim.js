@@ -4,7 +4,7 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  *
- * version: 0.2.1pre1 (22 May 2013)
+ * version: 0.2.1 (22 May 2013)
  *
  * Copyright (c) 2013 Philippe Lieser
  *
@@ -998,14 +998,26 @@ var that = {
 	 * the message to be verified is passed as the 2. parameter
 	 */
 	dnsCallback : function (dnsResult, msg) {
-		DKIM_Debug("DNS result: " + dnsResult);
-		if (dnsResult === null) {
-			throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_KEYFAIL);
+		try {
+			DKIM_Debug("DNS result: " + dnsResult);
+			if (dnsResult === null) {
+				throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_KEYFAIL);
+			}
+			
+			msg.keyQueryResult = dnsResult[0];
+			
+			verifySignaturePart2(msg);
+		} catch(e) {
+			var dkimMsgHdrRes = document.getElementById("dkim_verifier_msgHdrRes");
+			if (e instanceof DKIM_SigError) {				
+				dkimMsgHdrRes.value = DKIM_STRINGS.PERMFAIL + " (" + e.message + ")";
+			} else {
+				dkimMsgHdrRes.value = "Internal Error";
+			}
+			if (prefDKIMDebug) {
+				Components.utils.reportError(e+"\n"+e.stack);
+			}
 		}
-		
-		msg.keyQueryResult = dnsResult[0];
-		
-		verifySignaturePart2(msg);
 	}
 };
 return that;

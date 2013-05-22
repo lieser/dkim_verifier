@@ -1,7 +1,8 @@
-0.2.1pre1 [2013-05-22]
+0.2.1 [2013-05-22]
 ------------------
  - query method was parsed wrong
  - last header field was parsed wrong
+ - DNS exception now caught
 
  0.2 [2013-05-16]
 ------------------
