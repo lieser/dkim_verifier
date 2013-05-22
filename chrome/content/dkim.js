@@ -187,13 +187,14 @@ var DKIMVerifier = (function() {
 			
 			// if end of line
 			if (c === "\n") {
+				header += "\n";
 				// check for following empty line (end of header)
 				c = inputStream.read(2);
-				header += "\n" + c;
 				if (c === "\r\n") {
 					// empty line found, stop
 					break;
 				}
+				header += c;
 			} else {
 				header += c;
 			}
@@ -222,7 +223,7 @@ var DKIMVerifier = (function() {
 		var headerFields = {};
 
 		// split header fields
-		var headerArray = header.split(/\r\n(?=\S)/);
+		var headerArray = header.split(/\r\n(?=\S|$)/);
 		var hName;
 		for(var i = 0; i < headerArray.length; i++) {
 			// store fields under header field name (in lower case) in an array
