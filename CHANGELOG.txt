@@ -1,6 +1,7 @@
 0.2.3pre1 [2013-05-22]
 ----------------------
  - body length tag was checked before canonicalization
+ - fixed simple body canonicalization for empty body or no trailing CRLF
 
 0.2.2 [2013-05-22]
 ------------------

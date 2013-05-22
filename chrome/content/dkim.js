@@ -646,7 +646,7 @@ var DKIMVerifier = (function() {
 	function CanonicalizationBodySimple(body) {
 		// Ignore all empty lines at the end of the message body
 		// If there is no body or no trailing CRLF on the message body, a CRLF is added
-		body = body.replace(/(\r\n)+$/,"\r\n");
+		body = body.replace(/(\r\n)*$/,"\r\n");
 		
 		return body;
 	}
@@ -656,11 +656,6 @@ var DKIMVerifier = (function() {
 	 * specified in Section 3.4.4 of RFC 6376
 	 */
 	function CanonicalizationBodyRelaxed(body) {
-		// noch change for empty body
-		if (body === "") {
-			return body;
-		}
-
 		// Ignore all whitespace at the end of lines
 		body = body.replace(/[ \t]+\r\n/g,"\r\n");
 		// Reduce all sequences of WSP within a line to a single SP character
