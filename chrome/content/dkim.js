@@ -64,6 +64,8 @@
  * DKIM Verifier module
  */
 var DKIMVerifier = (function() {
+	"use strict";
+	
 	// set hash funktions used by rsasign-1.2.js
 	_RSASIGN_HASHHEXFUNC['sha1'] = function(s){return dkim_hash(s, "sha1", "hex");};
 	_RSASIGN_HASHHEXFUNC['sha256'] = function(s){return dkim_hash(s, "sha256", "hex");};
@@ -130,6 +132,12 @@ var DKIMVerifier = (function() {
 			return res;
 		}
 		
+		// return the two-digit hexadecimal code for a byte
+		function toHexString(charCode)
+		{
+			return ("0" + charCode.toString(16)).slice(-2);
+		}
+
 		var hasher = Components.classes["@mozilla.org/security/hash;1"].
 			createInstance(Components.interfaces.nsICryptoHash);
 		hasher.initWithString(hashAlgorithm);
@@ -151,12 +159,6 @@ var DKIMVerifier = (function() {
 			case "hex":
 				// true for base-64, false for binary data output
 				var hash = hasher.finish(false);
-				
-				// return the two-digit hexadecimal code for a byte
-				function toHexString(charCode)
-				{
-					return ("0" + charCode.toString(16)).slice(-2);
-				}
 
 				// convert the binary hash data to a hex string.
 				return [toHexString(hash.charCodeAt(i)) for (i in hash)].join("");
@@ -211,7 +213,7 @@ var DKIMVerifier = (function() {
 		
 		// read body
 		var i;
-		while (i = inputStream.available()) {
+		while ((i = inputStream.available()) !== 0) {
 			body = body + inputStream.read(i);
 		}
 		
@@ -621,7 +623,7 @@ var DKIMVerifier = (function() {
 	 * canonicalize a single header field using the relaxed algorithm
 	 * specified in Section 3.4.2 of RFC 6376
 	 */
-	function CanonicalizationHeaderFieldRelaxed(headerField) {
+	function canonicalizationHeaderFieldRelaxed(headerField) {
 		// Convert header field name (not the header field values) to lowercase
 		headerField = headerField.replace(
 			/^\S[^:]*/,
@@ -652,7 +654,7 @@ var DKIMVerifier = (function() {
 	 * canonicalize the body using the simple algorithm
 	 * specified in Section 3.4.3 of RFC 6376
 	 */
-	function CanonicalizationBodySimple(body) {
+	function canonicalizationBodySimple(body) {
 		// Ignore all empty lines at the end of the message body
 		// If there is no body or no trailing CRLF on the message body, a CRLF is added
 		body = body.replace(/(\r\n)*$/,"\r\n");
@@ -664,7 +666,7 @@ var DKIMVerifier = (function() {
 	 * canonicalize the body using the relaxed algorithm
 	 * specified in Section 3.4.4 of RFC 6376
 	 */
-	function CanonicalizationBodyRelaxed(body) {
+	function canonicalizationBodyRelaxed(body) {
 		// Ignore all whitespace at the end of lines
 		body = body.replace(/[ \t]+\r\n/g,"\r\n");
 		// Reduce all sequences of WSP within a line to a single SP character
@@ -686,10 +688,10 @@ var DKIMVerifier = (function() {
 		var bodyCanon;
 		switch (msg.DKIMSignature.c_body) {
 			case "simple":
-				bodyCanon = CanonicalizationBodySimple(msg.bodyPlain);
+				bodyCanon = canonicalizationBodySimple(msg.bodyPlain);
 				break;
 			case "relaxed":
-				bodyCanon = CanonicalizationBodyRelaxed(msg.bodyPlain);
+				bodyCanon = canonicalizationBodyRelaxed(msg.bodyPlain);
 				break;
 			default:
 				throw new DKIM_InternalError("unsupported canonicalization algorithm got parsed");
@@ -704,7 +706,7 @@ var DKIMVerifier = (function() {
 			} else if (msg.DKIMSignature.l < bodyCanon.length){
 				// lenght tag smaller when body size
 				warnings.push(DKIM_STRINGS.DKIM_SIGWARNING_SMALL_L);
-				DKIM_Debug("Warning: "+DKIM_STRINGS.DKIM_SIGWARNING_SMALL_L);
+				dkimDebugMsg("Warning: "+DKIM_STRINGS.DKIM_SIGWARNING_SMALL_L);
 			}
 
 			// truncated body to the length specified in the "l=" tag
@@ -742,7 +744,7 @@ var DKIMVerifier = (function() {
 				headerCanonAlgo = function (headerField) {return headerField;};
 				break;
 			case "relaxed":
-				headerCanonAlgo = CanonicalizationHeaderFieldRelaxed;
+				headerCanonAlgo = canonicalizationHeaderFieldRelaxed;
 				break;
 			default:
 				throw new DKIM_InternalError("unsupported canonicalization algorithm (header) got parsed");
@@ -783,11 +785,11 @@ var DKIMVerifier = (function() {
 		try {
 			// parse the DKIMSignatureHeader
 			msg.DKIMSignature = parseDKIMSignature(msg.headerFields["dkim-signature"][0]);
-			DKIM_Debug("Parsed DKIM-Signature: "+msg.DKIMSignature.toSource());
+			dkimDebugMsg("Parsed DKIM-Signature: "+msg.DKIMSignature.toSource());
 			
 			// Compute the Message Hashe for the body 
 			var bodyHash = computeBodyHash(msg);
-			DKIM_Debug("computed body hash: "+bodyHash);
+			dkimDebugMsg("computed body hash: "+bodyHash);
 			
 			// compare body hash
 			if (bodyHash !== msg.DKIMSignature.bh) {
@@ -822,7 +824,7 @@ var DKIMVerifier = (function() {
 	function verifySignaturePart2(msg) {
 		try {
 			msg.DKIMKey = parseDKIMKeyRecord(msg.keyQueryResult);
-			DKIM_Debug("Parsed DKIM-Key: "+msg.DKIMKey.toSource());
+			dkimDebugMsg("Parsed DKIM-Key: "+msg.DKIMKey.toSource());
 			
 			// if s flag is set in DKIM key record
 			// AUID must be from the same domain as SDID (and not a subdomain)
@@ -833,7 +835,7 @@ var DKIMVerifier = (function() {
 			
 			// Compute the input for the header hash
 			var headerHashInput = computeHeaderHashInput(msg);
-			DKIM_Debug("Header hash input:\n" + headerHashInput);
+			dkimDebugMsg("Header hash input:\n" + headerHashInput);
 
 			// get RSA-key
 			/*
@@ -946,9 +948,9 @@ var DKIMVerifier = (function() {
 	DKIM_InternalError.prototype.constructor = DKIM_InternalError;
 
 	/*
-	 * DKIM_Debug
+	 * dkimDebugMsg
 	 */
-	function DKIM_Debug(message) {
+	function dkimDebugMsg(message) {
 		if (prefDKIMDebug) {
 			Application.console.log("DKIM: "+message);
 		}
@@ -1065,7 +1067,7 @@ var that = {
 	 */
 	dnsCallback : function (dnsResult, msg) {
 		try {
-			DKIM_Debug("DNS result: " + dnsResult);
+			dkimDebugMsg("DNS result: " + dnsResult);
 			if (dnsResult === null) {
 				throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_KEYFAIL);
 			}
