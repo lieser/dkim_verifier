@@ -4,7 +4,7 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  *
- * version: 0.2 (17 May 2013)
+ * version: 0.2.1pre1 (22 May 2013)
  *
  * Copyright (c) 2013 Philippe Lieser
  *
@@ -22,7 +22,7 @@
  *  - base64.js
  *  - asn1hex-1.1.js
  */
- 
+
 /*
  * Violations against RFC 6376:
  * ============================
@@ -146,7 +146,7 @@ var DKIMVerifier = (function() {
 				// return the two-digit hexadecimal code for a byte
 				function toHexString(charCode)
 				{
-				  return ("0" + charCode.toString(16)).slice(-2);
+					return ("0" + charCode.toString(16)).slice(-2);
 				}
 
 				// convert the binary hash data to a hex string.
@@ -220,8 +220,6 @@ var DKIMVerifier = (function() {
 	 */
 	function parseHeader(header) {
 		var headerFields = {};
-		
-		var temp;
 
 		// split header fields
 		var headerArray = header.split(/\r\n(?=\S)/);
@@ -244,8 +242,8 @@ var DKIMVerifier = (function() {
 	/*
 	 * construct RegExp for finding Tag=Value Pair in tag list as specified in Section 3.2 of RFC 6376
 	 */
-	function tag_spec(tag_name, tag_spec) {
-		return new RegExp("(?:^|;)"+pattFWS+"?"+tag_name+pattFWS+"?="+pattFWS+"?("+tag_spec+")"+pattFWS+"?(?:;|\r\n$|$)"); 
+	function tag_spec(tag_name, tag_value) {
+		return new RegExp("(?:^|;)"+pattFWS+"?"+tag_name+pattFWS+"?="+pattFWS+"?("+tag_value+")"+pattFWS+"?(?:;|\r\n$|$)"); 
 	}
 
 	/*
@@ -458,7 +456,7 @@ var DKIMVerifier = (function() {
 		// get query methods (plain-text; OPTIONAL, default is "dns/txt")
 		var sig_q_tag_method = "(?:dns/txt|"+hyphenated_word+"(?:/"+qp_hdr_value+")?)";
 		var sig_q_tag = sig_q_tag_method+"(?:"+pattFWS+"?:"+pattFWS+"?"+sig_q_tag_method+")*";
-		var QueryMetTag = DKIMSignatureHeader.match(tag_spec("q", "[0-9]{1,76}"));
+		var QueryMetTag = DKIMSignatureHeader.match(tag_spec("q", sig_q_tag));
 		if (QueryMetTag === null) {
 			DKIMSignature.q = "dns/txt";
 		} else {
@@ -518,7 +516,7 @@ var DKIMVerifier = (function() {
 			s : null, // Service Type
 			t : null, // flags
 			t_array : [] // array of all flags
-		}
+		};
 		
 		// get version (plain-text; RECOMMENDED, default is "DKIM1")
 		// If specified, this tag MUST be set to "DKIM1"
@@ -658,8 +656,9 @@ var DKIMVerifier = (function() {
 	 */
 	function CanonicalizationBodyRelaxed(body) {
 		// noch change for empty body
-		if (body == "")
+		if (body === "") {
 			return body;
+		}
 
 		// Ignore all whitespace at the end of lines
 		body = body.replace(/[ \t]+\r\n/g,"\r\n");
@@ -778,6 +777,7 @@ var DKIMVerifier = (function() {
 				} else if (msg.DKIMSignature.l < msg.body.length){
 					// lenght tag smaller when body size
 					warnings.push(DKIM_STRINGS.DKIM_SIGWARNING_SMALL_L);
+					DKIM_Debug("Warning: "+DKIM_STRINGS.DKIM_SIGWARNING_SMALL_L);
 				}
 			}
 			
@@ -849,7 +849,7 @@ var DKIMVerifier = (function() {
 			var posKeyArray = null;
 			
 			// check format by comparing the 1. child in the top element
-			posTopArray = ASN1HEX.getPosArrayOfChildren_AtObj(asnKey,0)
+			posTopArray = ASN1HEX.getPosArrayOfChildren_AtObj(asnKey,0);
 			if (posTopArray === null || posTopArray.length !== 2) {
 				throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_KEYDECODE);
 			}
@@ -964,7 +964,7 @@ var that = {
 		
 		// parse msg into msg.header and msg.body
 		var msg = parseMsg(msgURI);
-		msg.msgURI = msgURI
+		msg.msgURI = msgURI;
 		
 		// parse the header
 		msg.headerFields = parseHeader(msg.headerPlain);
@@ -1002,11 +1002,11 @@ var that = {
 			throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_KEYFAIL);
 		}
 		
-		msg.keyQueryResult = dnsResult[0]
+		msg.keyQueryResult = dnsResult[0];
 		
-		verifySignaturePart2(msg)
+		verifySignaturePart2(msg);
 	}
-}
+};
 return that;
 }()); // the parens here cause the anonymous function to execute and return
 
