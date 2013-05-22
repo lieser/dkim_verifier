@@ -4,7 +4,7 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  *
- * version: 0.2.2 (22 May 2013)
+ * version: 0.2.3pre1 (22 May 2013)
  *
  * Copyright (c) 2013 Philippe Lieser
  *
@@ -690,10 +690,21 @@ var DKIMVerifier = (function() {
 			default:
 				throw new DKIM_InternalError("unsupported canonicalization algorithm got parsed");
 		}
-
-		// truncated body to the length specified in the "l=" tag
+		
+		// if a body length count is given
 		if (msg.DKIMSignature.l !== null) {
-			bodyCanon = bodyCanon.subst(0, msg.DKIMSignature.l);
+			// check the value of the body lenght tag
+			if (msg.DKIMSignature.l > bodyCanon.length) {
+				// lenght tag exceeds body size
+				throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_TOOLARGE_L);
+			} else if (msg.DKIMSignature.l < bodyCanon.length){
+				// lenght tag smaller when body size
+				warnings.push(DKIM_STRINGS.DKIM_SIGWARNING_SMALL_L);
+				DKIM_Debug("Warning: "+DKIM_STRINGS.DKIM_SIGWARNING_SMALL_L);
+			}
+
+			// truncated body to the length specified in the "l=" tag
+			bodyCanon = bodyCanon.substr(0, msg.DKIMSignature.l);
 		}
 		
 		// compute body hash
@@ -769,18 +780,6 @@ var DKIMVerifier = (function() {
 			// parse the DKIMSignatureHeader
 			msg.DKIMSignature = parseDKIMSignature(msg.headerFields["dkim-signature"][0]);
 			DKIM_Debug("Parsed DKIM-Signature: "+msg.DKIMSignature.toSource());
-			
-			// check the value of the body lenght tag
-			if (msg.DKIMSignature.l !== null) {
-				if (msg.DKIMSignature.l > msg.body.length) {
-					// lenght tag exceeds body size
-					throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_TOOLARGE_L);
-				} else if (msg.DKIMSignature.l < msg.body.length){
-					// lenght tag smaller when body size
-					warnings.push(DKIM_STRINGS.DKIM_SIGWARNING_SMALL_L);
-					DKIM_Debug("Warning: "+DKIM_STRINGS.DKIM_SIGWARNING_SMALL_L);
-				}
-			}
 			
 			// Compute the Message Hashe for the body 
 			var bodyHash = computeBodyHash(msg);

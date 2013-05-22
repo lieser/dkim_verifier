@@ -1,3 +1,7 @@
+0.2.3pre1 [2013-05-22]
+----------------------
+ - body length tag was checked before canonicalization
+
 0.2.2 [2013-05-22]
 ------------------
  - fixed regex pattern for domain_name ("." was not escaped)
