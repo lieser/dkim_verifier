@@ -4,7 +4,7 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  *
- * version: 0.2.3pre1 (22 May 2013)
+ * version: 0.3.0pre1 (22 May 2013)
  *
  * Copyright (c) 2013 Philippe Lieser
  *
@@ -65,15 +65,20 @@ var DKIMVerifier = (function() {
 	_RSASIGN_HASHHEXFUNC['sha256'] = function(s){return dkim_hash(s, "sha256", "hex");};
 
 /*
- * private variables
+ * preferences
  */
-	// preferences
+	var prefs = null;
 
 	// DKIM debug on/off
-	var prefDKIMDebug = true;
+	var prefDKIMDebug;
 	
+ /*
+ * private variables
+ */
 	// all warnings about the signature will go in her
 	var warnings = [];
+	
+	var messageListener;
 
 	// WSP help pattern as specified in Section 2.8 of RFC 6376
 	var pattWSP = "[ \t]";
@@ -951,7 +956,72 @@ var that = {
  */
  
 	/*
-	 * get called if a new message ist viewed
+	 * gets called on startup
+	 */
+	startup : function () {
+		// Register to receive notifications of preference changes
+		prefs = Components.classes["@mozilla.org/preferences-service;1"].
+			getService(Components.interfaces.nsIPrefService).
+			getBranch("extensions.dkim_verifier.");
+		prefs.QueryInterface(Components.interfaces.nsIPrefBranch2);
+		prefs.addObserver("", that, false);
+		
+		// load preferences
+		prefDKIMDebug = prefs.getBoolPref("debug");
+		prefDNSDebug = prefs.getBoolPref("debug");
+		DNS_ROOT_NAME_SERVER = prefs.getCharPref("dns.nameserver");
+		
+		// add event listener for message display
+		messageListener = {
+			// onStartHeaders: function () {},
+			// onEndHeaders: function () {},
+			// onEndAttachments: function () {},
+			// onBeforeShowHeaderPane: function () {}
+			onStartHeaders: DKIMVerifier.clearHeader,
+			onEndHeaders: DKIMVerifier.messageLoaded
+		};
+		gMessageListeners.push(messageListener);
+	},
+
+	/*
+	 * gets called on shutdown
+	 * so far, this never happens
+	 */
+	shutdown : function() {
+		// remove preference observer
+		prefs.removeObserver("", this);
+		
+		// remove event listener for message display
+		var pos = gMessageListeners.indexOf(messageListener);
+		if (pos !== -1) {
+			gMessageListeners.splice(pos, 1);
+		}
+	},
+
+	/*
+	 * gets called called whenever an event occurs on the preference
+	 */
+	observe: function(subject, topic, data) {
+		// subject is the nsIPrefBranch we're observing (after appropriate QI)
+		// data is the name of the pref that's been changed (relative to aSubject)
+		
+		if (topic != "nsPref:changed") {
+			return;
+		}
+		
+		switch(data) {
+			case "debug":
+				prefDKIMDebug = prefs.getBoolPref("debug");
+				prefDNSDebug = prefs.getBoolPref("debug");
+				break;
+			case "dns.nameserver":
+				DNS_ROOT_NAME_SERVER = prefs.getCharPref("dns.nameserver");
+				break;
+		}
+	},
+	
+	/*
+	 * gets called if a new message ist viewed
 	 */
 	messageLoaded : function () {	
 		// get msg uri
@@ -1017,12 +1087,4 @@ var that = {
 return that;
 }()); // the parens here cause the anonymous function to execute and return
 
-// add event listener for message display
-gMessageListeners.push({
-//  onStartHeaders: function () {},
-//  onEndHeaders: function () {},
-//  onEndAttachments: function () {},
-//  onBeforeShowHeaderPane: function () {}
-	onStartHeaders: DKIMVerifier.clearHeader,
-	onEndHeaders: DKIMVerifier.messageLoaded
-});
+DKIMVerifier.startup();

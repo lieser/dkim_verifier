@@ -10,7 +10,7 @@
 		<em:name>DKIM Verifier</em:name>
 		<em:description>Verifies the DKIM-Signature of an e-mail.</em:description>
 
-		<em:version>0.2.3pre1</em:version>
+		<em:version>0.3.0pre1</em:version>
 
 		<em:creator>Philippe Lieser</em:creator>
 		
@@ -23,8 +23,8 @@
 		
 		<em:homepageURL>https://github.com/lieser/dkim_verifier</em:homepageURL>
 
+		<em:optionsURL>chrome://dkim_verifier/content/options.xul</em:optionsURL>
 		<!--
-		<em:optionsURL>chrome://myext/content/options.xul</em:optionsURL>
 		<em:aboutURL>chrome://myext/content/about.xul</em:aboutURL>
 		<em:iconURL>chrome://myext/skin/icon.png</em:iconURL>
 		-->
