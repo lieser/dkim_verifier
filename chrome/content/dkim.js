@@ -55,6 +55,10 @@
  *  - warning if SDID and from are different
  *
  */
+ 
+ // options for JSHint
+ /* global Components, messenger, msgWindow, Application, gMessageListeners, gDBView */ 
+ /* global DKIM_STRINGS, queryDNS, DNS_ROOT_NAME_SERVER: true, ASN1HEX, RSAKey, _RSASIGN_HASHHEXFUNC: true, b64tohex */ 
 
 /*
  * DKIM Verifier module
@@ -968,7 +972,6 @@ var that = {
 		
 		// load preferences
 		prefDKIMDebug = prefs.getBoolPref("debug");
-		prefDNSDebug = prefs.getBoolPref("debug");
 		DNS_ROOT_NAME_SERVER = prefs.getCharPref("dns.nameserver");
 		
 		// add event listener for message display
@@ -989,7 +992,7 @@ var that = {
 	 */
 	shutdown : function() {
 		// remove preference observer
-		prefs.removeObserver("", this);
+		prefs.removeObserver("", that);
 		
 		// remove event listener for message display
 		var pos = gMessageListeners.indexOf(messageListener);
@@ -1005,14 +1008,13 @@ var that = {
 		// subject is the nsIPrefBranch we're observing (after appropriate QI)
 		// data is the name of the pref that's been changed (relative to aSubject)
 		
-		if (topic != "nsPref:changed") {
+		if (topic !== "nsPref:changed") {
 			return;
 		}
 		
 		switch(data) {
 			case "debug":
 				prefDKIMDebug = prefs.getBoolPref("debug");
-				prefDNSDebug = prefs.getBoolPref("debug");
 				break;
 			case "dns.nameserver":
 				DNS_ROOT_NAME_SERVER = prefs.getCharPref("dns.nameserver");
