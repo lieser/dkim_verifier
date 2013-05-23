@@ -3,6 +3,7 @@
  - options dialog added
  - body length tag was checked before canonicalization
  - fixed simple body canonicalization for empty body or no trailing CRLF
+ - DNS, RSA, ... helper scripts now in DKIM_Verifier namespace
 
 0.2.2 [2013-05-22]
 ------------------

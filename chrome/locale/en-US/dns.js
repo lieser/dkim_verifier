@@ -1,3 +1,4 @@
+var EXPORTED_SYMBOLS = ["DNS_STRINGS"];
 var DNS_STRINGS = new Object();
 DNS_STRINGS.TOO_MANY_HOPS = "Too many hops.";
 DNS_STRINGS.CONNECTION_REFUSED = function(server) { return "DNS server " + server + " refused a TCP connection."; };

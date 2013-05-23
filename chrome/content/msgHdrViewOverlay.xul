@@ -4,30 +4,6 @@
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
          xmlns:html="http://www.w3.org/1999/xhtml">
 
-	<!-- localisation scripts -->
-	<script type="application/javascript"
-	        src="chrome://dkim_verifier/locale/dkim.js" />
-	<script type="application/javascript"
-            src="chrome://dkim_verifier/locale/dns.js" />
-
-	<!-- DNS -->
-	<script type="application/javascript"
-	        src="chrome://dkim_verifier/content/dns.js"/>
-	<!-- RSA -->
-	<script type="application/javascript"
-	        src="chrome://dkim_verifier/content/jsbn.js"/>
-	<script type="application/javascript"
-	        src="chrome://dkim_verifier/content/jsbn2.js"/>
-	<script type="application/javascript"
-	        src="chrome://dkim_verifier/content/base64.js"/>
-	<script type="application/javascript"
-	        src="chrome://dkim_verifier/content/rsa.js"/>
-	<script type="application/javascript"
-	        src="chrome://dkim_verifier/content/rsasign-1.2.js"/>
-	<!-- ASN.1 -->
-	<script type="application/javascript"
-	        src="chrome://dkim_verifier/content/asn1hex-1.1.js"/>
-
 	<!-- main script -->
 	<script type="application/javascript"
 	        src="chrome://dkim_verifier/content/dkim.js"/>

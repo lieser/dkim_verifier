@@ -33,11 +33,33 @@
  * can be scanned for a DNS server to use.
  */
 
+/*
+ * Original from "Sender Verification Extension" version 0.9.0.6
+ * Modified for "DKIM Verifier" version 0.3.0pre1
+ *
+ * Modifications:
+ *  - changed to a JavaScript code module
+ *  - DNS_LoadPrefs() not executed
+ *  - added debug on/off setting
+ */
+
+var EXPORTED_SYMBOLS = ["dnsChangeNameserver", "queryDNS", "dnsChangeDebug"];
+// load locale strings
+Components.utils.import("chrome://dkim_verifier/locale/dns.js");
+function dnsChangeNameserver(nameserver) {
+	DNS_ROOT_NAME_SERVER = nameserver;
+}
+var dnsDebug = false;
+function dnsChangeDebug(debug) {
+	dnsDebug = debug;
+}
+
+
 var DNS_ROOT_NAME_SERVER = "8.8.8.8"; // This is Google Public DNS. Could be "J.ROOT-SERVERS.NET", but public DNS may not respond to TCP. 
 var DNS_FOUND_NAME_SERVER_AUTOMATICALLY = 0;
 
 // Any settings changes aren't going to be picked up later.
-DNS_LoadPrefs();
+// DNS_LoadPrefs();
 
 function DNS_LoadPrefs() {
 	var prefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
@@ -528,7 +550,7 @@ function DNS_readAllFromSocket(host,port,outputData,listener)
 }
 
 function DNS_Debug(message) {
-	if (false) {
+	if (dnsDebug) {
 		DNS_Log(message);
 	}
 }

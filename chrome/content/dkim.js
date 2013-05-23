@@ -56,19 +56,44 @@
  *
  */
  
- // options for JSHint
- /* global Components, messenger, msgWindow, Application, gMessageListeners, gDBView */ 
- /* global DKIM_STRINGS, queryDNS, DNS_ROOT_NAME_SERVER: true, ASN1HEX, RSAKey, _RSASIGN_HASHHEXFUNC: true, b64tohex */ 
+// options for JSHint
+/* global Components, messenger, msgWindow, Application, gMessageListeners, gDBView, Services */ 
+/* global DKIM_STRINGS */ 
+
+// namespace
+var DKIM_Verifier = {};
+
+// load locale strings
+Components.utils.import("chrome://dkim_verifier/locale/dkim.js");
+
+// load modules
+// DNS
+Components.utils.import("chrome://dkim_verifier/content/dns.js", DKIM_Verifier);
+// ASN.1
+Services.scriptloader.loadSubScript("chrome://dkim_verifier/content/asn1hex-1.1.js",
+                                    DKIM_Verifier, "UTF-8" /* The script's encoding */);
+// base64 converter
+Services.scriptloader.loadSubScript("chrome://dkim_verifier/content/base64.js",
+                                    DKIM_Verifier, "UTF-8" /* The script's encoding */);
+// RSA
+Services.scriptloader.loadSubScript("chrome://dkim_verifier/content/jsbn.js",
+                                    DKIM_Verifier, "UTF-8" /* The script's encoding */);
+Services.scriptloader.loadSubScript("chrome://dkim_verifier/content/jsbn2.js",
+                                    DKIM_Verifier, "UTF-8" /* The script's encoding */);
+Services.scriptloader.loadSubScript("chrome://dkim_verifier/content/rsa.js",
+                                    DKIM_Verifier, "UTF-8" /* The script's encoding */);
+Services.scriptloader.loadSubScript("chrome://dkim_verifier/content/rsasign-1.2.js",
+                                    DKIM_Verifier, "UTF-8" /* The script's encoding */);
 
 /*
  * DKIM Verifier module
  */
-var DKIMVerifier = (function() {
+DKIM_Verifier.DKIMVerifier = (function() {
 	"use strict";
 	
 	// set hash funktions used by rsasign-1.2.js
-	_RSASIGN_HASHHEXFUNC['sha1'] = function(s){return dkim_hash(s, "sha1", "hex");};
-	_RSASIGN_HASHHEXFUNC['sha256'] = function(s){return dkim_hash(s, "sha256", "hex");};
+	DKIM_Verifier._RSASIGN_HASHHEXFUNC['sha1'] = function(s){return dkim_hash(s, "sha1", "hex");};
+	DKIM_Verifier._RSASIGN_HASHHEXFUNC['sha256'] = function(s){return dkim_hash(s, "sha256", "hex");};
 
 /*
  * preferences
@@ -798,7 +823,7 @@ var DKIMVerifier = (function() {
 
 			// get the DKIM key
 			// this function will continue the verification
-			queryDNS(
+			DKIM_Verifier.queryDNS(
 				msg.DKIMSignature.s+"._domainkey."+msg.DKIMSignature.d,
 				"TXT",
 				that.dnsCallback,
@@ -850,41 +875,41 @@ var DKIMVerifier = (function() {
 						INTEGER (modulus)
 						INTEGER (publicExponent)
 			*/
-			var asnKey = b64tohex(msg.DKIMKey.p);
+			var asnKey = DKIM_Verifier.b64tohex(msg.DKIMKey.p);
 			var posTopArray = null;
 			var posKeyArray = null;
 			
 			// check format by comparing the 1. child in the top element
-			posTopArray = ASN1HEX.getPosArrayOfChildren_AtObj(asnKey,0);
+			posTopArray = DKIM_Verifier.ASN1HEX.getPosArrayOfChildren_AtObj(asnKey,0);
 			if (posTopArray === null || posTopArray.length !== 2) {
 				throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_KEYDECODE);
 			}
-			if (ASN1HEX.getHexOfTLV_AtObj(asnKey, posTopArray[0]) !==
+			if (DKIM_Verifier.ASN1HEX.getHexOfTLV_AtObj(asnKey, posTopArray[0]) !==
 				"300d06092a864886f70d0101010500") {
 				throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_KEYDECODE);
 			}
 			
 			// get pos of SEQUENCE under BIT STRING
 			// asn1hex does not support BIT STRING, so we will compute the position
-			var pos = ASN1HEX.getStartPosOfV_AtObj(asnKey, posTopArray[1]) + 2;
+			var pos = DKIM_Verifier.ASN1HEX.getStartPosOfV_AtObj(asnKey, posTopArray[1]) + 2;
 			
 			// get pos of modulus and publicExponent
-			posKeyArray = ASN1HEX.getPosArrayOfChildren_AtObj(asnKey, pos);
+			posKeyArray = DKIM_Verifier.ASN1HEX.getPosArrayOfChildren_AtObj(asnKey, pos);
 			if (posKeyArray === null || posKeyArray.length !== 2) {
 				throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_KEYDECODE);
 			}
 			
 			// get modulus
-			var m_hex = ASN1HEX.getHexOfV_AtObj(asnKey,posKeyArray[0]);
+			var m_hex = DKIM_Verifier.ASN1HEX.getHexOfV_AtObj(asnKey,posKeyArray[0]);
 			// get public exponent
-			var e_hex = ASN1HEX.getHexOfV_AtObj(asnKey,posKeyArray[1]);
+			var e_hex = DKIM_Verifier.ASN1HEX.getHexOfV_AtObj(asnKey,posKeyArray[1]);
 
 			// set RSA-key
-			var rsa = new RSAKey();
+			var rsa = new DKIM_Verifier.RSAKey();
 			rsa.setPublic(m_hex, e_hex);
 			
 			// verify Signature
-			var isValid = rsa.verifyString(headerHashInput, b64tohex(msg.DKIMSignature.b));
+			var isValid = rsa.verifyString(headerHashInput, DKIM_Verifier.b64tohex(msg.DKIMSignature.b));
 			
 			if (!isValid) {
 				throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_CORRUPT_B);
@@ -974,7 +999,8 @@ var that = {
 		
 		// load preferences
 		prefDKIMDebug = prefs.getBoolPref("debug");
-		DNS_ROOT_NAME_SERVER = prefs.getCharPref("dns.nameserver");
+		DKIM_Verifier.dnsChangeDebug(prefs.getBoolPref("debug"));
+		DKIM_Verifier.dnsChangeNameserver(prefs.getCharPref("dns.nameserver"));
 		
 		// add event listener for message display
 		messageListener = {
@@ -982,8 +1008,8 @@ var that = {
 			// onEndHeaders: function () {},
 			// onEndAttachments: function () {},
 			// onBeforeShowHeaderPane: function () {}
-			onStartHeaders: DKIMVerifier.clearHeader,
-			onEndHeaders: DKIMVerifier.messageLoaded
+			onStartHeaders: that.clearHeader,
+			onEndHeaders: that.messageLoaded
 		};
 		gMessageListeners.push(messageListener);
 	},
@@ -1017,9 +1043,10 @@ var that = {
 		switch(data) {
 			case "debug":
 				prefDKIMDebug = prefs.getBoolPref("debug");
+				DKIM_Verifier.dnsChangeDebug(prefs.getBoolPref("debug"));
 				break;
 			case "dns.nameserver":
-				DNS_ROOT_NAME_SERVER = prefs.getCharPref("dns.nameserver");
+				DKIM_Verifier.dnsChangeNameserver(prefs.getCharPref("dns.nameserver"));
 				break;
 		}
 	},
@@ -1091,4 +1118,4 @@ var that = {
 return that;
 }()); // the parens here cause the anonymous function to execute and return
 
-DKIMVerifier.startup();
+DKIM_Verifier.DKIMVerifier.startup();
