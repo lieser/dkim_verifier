@@ -1,5 +1,5 @@
-0.3.0pre1 [2013-05-22]
-----------------------
+0.3.0 [2013-05-29]
+------------------
  - options dialog added
  - body length tag was checked before canonicalization
  - fixed simple body canonicalization for empty body or no trailing CRLF
