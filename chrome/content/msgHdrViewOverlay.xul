@@ -8,7 +8,7 @@
 	<script type="application/javascript"
 	        src="chrome://dkim_verifier/content/dkim.js"/>
 
-	<vbox id="expandedHeaderView">
+	<vbox id="expandedHeadersBox">
 		<hbox id="dkim_verifier_msgHdrBox" collapsed="true">
 			<label value="&dkim_verifier.header.title;"/>
 			<label id="dkim_verifier_msgHdrRes" value=""/>
