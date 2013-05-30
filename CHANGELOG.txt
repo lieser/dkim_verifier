@@ -1,3 +1,7 @@
+0.3.2 [2013-05-30]
+------------------
+ - fixed regex pattern for SDID, Selector and local_part
+
 0.3.1 [2013-05-30]
 ------------------
  - fixed problem with CompactHeader addon

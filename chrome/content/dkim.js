@@ -4,7 +4,7 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  *
- * version: 0.3.0 (29 May 2013)
+ * version: 0.3.2 (30 May 2013)
  *
  * Copyright (c) 2013 Philippe Lieser
  *
@@ -386,7 +386,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 		// Pattern for sub-domain as specified in Section 4.1.2 of RFC 5321
 		var sub_domain = "(?:[A-z0-9](?:[A-z0-9-]*[A-z0-9])?)";
 		var domain_name = "(?:"+sub_domain+"(?:\\."+sub_domain+")+)";
-		var SDIDTag = DKIMSignatureHeader.match(tag_spec("d",sub_domain+"(?:."+sub_domain+")*"));
+		var SDIDTag = DKIMSignatureHeader.match(tag_spec("d",domain_name));
 		if (SDIDTag === null) {
 			throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_MISSING_D);
 		}
@@ -472,7 +472,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 		*/
 		
 		var atext = "[A-z0-9!#$%&'*+/=?^_`{|}~-]";
-		var local_part = "(?:"+atext+"(?:."+atext+")*)";
+		var local_part = "(?:"+atext+"(?:\\."+atext+")*)";
 		var sig_i_tag = local_part+"?@"+domain_name;
 		var AUIDTag = DKIMSignatureHeader.match(tag_spec("i", sig_i_tag));
 		if (AUIDTag === null) {
@@ -504,7 +504,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 		}
 
 		// get selector subdividing the namespace for the "d=" (domain) tag (plain-text; REQUIRED)
-		var SelectorTag = DKIMSignatureHeader.match(tag_spec("s", sub_domain+"(?:."+sub_domain+")*"));
+		var SelectorTag = DKIMSignatureHeader.match(tag_spec("s", sub_domain+"(?:\\."+sub_domain+")*"));
 		if (SelectorTag === null) {
 			throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_MISSING_S);
 		}
