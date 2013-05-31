@@ -4,7 +4,7 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  *
- * version: 0.3.3pre (30 May 2013)
+ * version: 0.3.3 (31 May 2013)
  *
  * Copyright (c) 2013 Philippe Lieser
  *
@@ -233,6 +233,16 @@ DKIM_Verifier.DKIMVerifier = (function() {
 				header += c;
 			} else {
 				header += c;
+			}
+			
+			// if end of msg is reached before end of header,
+			// it is no in correct e-mail format
+			if (inputStream.available() === 0) {
+				// close inputStream
+				inputStream.close();
+				nsIInputStream.close();
+				
+				throw new DKIM_InternalError("Message is not in correct e-mail format");
 			}
 		}
 		
@@ -803,6 +813,29 @@ DKIM_Verifier.DKIMVerifier = (function() {
 	}
 	
 	/*
+	 * handeles Exeption
+	 */
+	function handleExeption(e) {
+		var dkimMsgHdrRes = document.getElementById("dkim_verifier_msgHdrRes");
+		
+		if (e instanceof DKIM_SigError) {
+			// if domain is testing DKIM, treat msg as not signed
+			if (e.message === DKIM_STRINGS.DKIM_SIGERROR_KEY_TESTMODE) {
+				var dkimVerifierBox = document.getElementById("dkim_verifier_msgHdrBox");
+				dkimVerifierBox.collapsed = true;
+			}
+			
+			dkimMsgHdrRes.value = DKIM_STRINGS.PERMFAIL + " (" + e.message + ")";
+		} else {
+			dkimMsgHdrRes.value = "Internal Error";
+		}
+		
+		if (prefDKIMDebug) {
+			Components.utils.reportError(e+"\n"+e.stack);
+		}
+	}
+	
+	/*
 	 * 1. part of verifying the signature
 	 * will verify until key query, the rest is in verifySignaturePart2
 	 */
@@ -830,15 +863,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 				msg
 			);
 		} catch(e) {
-			var dkimMsgHdrRes = document.getElementById("dkim_verifier_msgHdrRes");
-			if (e instanceof DKIM_SigError) {				
-				dkimMsgHdrRes.value = DKIM_STRINGS.PERMFAIL + " (" + e.message + ")";
-			} else {
-				dkimMsgHdrRes.value = "Internal Error";
-			}
-			if (prefDKIMDebug) {
-				Components.utils.reportError(e+"\n"+e.stack);
-			}
+			handleExeption(e);
 		}
 	}
 	
@@ -920,23 +945,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			dkimMsgHdrRes.value = DKIM_STRINGS.SUCCESS(msg.DKIMSignature.d);
 			
 		} catch(e) {
-			var dkimMsgHdrRes = document.getElementById("dkim_verifier_msgHdrRes");
-			
-			if (e instanceof DKIM_SigError) {
-				// if domain is testing DKIM, treat msg as not signed
-				if (e.message === DKIM_STRINGS.DKIM_SIGERROR_KEY_TESTMODE) {
-					var dkimVerifierBox = document.getElementById("dkim_verifier_msgHdrBox");
-					dkimVerifierBox.collapsed = true;
-				}
-				
-				dkimMsgHdrRes.value = DKIM_STRINGS.PERMFAIL + " (" + e.message + ")";
-			} else {
-				dkimMsgHdrRes.value = "Internal Error";
-			}
-			
-			if (prefDKIMDebug) {
-				Components.utils.reportError(e+"\n"+e.stack);
-			}
+			handleExeption(e);
 		}
 	}
 
@@ -1055,27 +1064,38 @@ var that = {
 	 * gets called if a new message ist viewed
 	 */
 	messageLoaded : function () {	
-		// get msg uri
-		var msgURI = gDBView.URIForFirstSelectedMessage ;
-		
-		// parse msg into msg.header and msg.body
-		var msg = parseMsg(msgURI);
-		msg.msgURI = msgURI;
-		
-		// parse the header
-		msg.headerFields = parseHeader(msg.headerPlain);
+		try {
+			// get msg uri
+			var msgURI = gDBView.URIForFirstSelectedMessage ;
+			
+			// return if msg is in RSS folder
+			var messageService = messenger.messageServiceFromURI(msgURI);
+			if (messageService.messageURIToMsgHdr(msgURI).folder.server.type === "rss") {
+				return;
+			}
+			
+			// parse msg into msg.header and msg.body
+			var msg = parseMsg(msgURI);
+			msg.msgURI = msgURI;
+			
+			// parse the header
+			msg.headerFields = parseHeader(msg.headerPlain);
 
-		// check if DKIMSignatureHeader exist
-		if (msg.headerFields["dkim-signature"] === undefined) {
-			// no signature to check, return
-			return;
+			// check if DKIMSignatureHeader exist
+			if (msg.headerFields["dkim-signature"] === undefined) {
+				// no signature to check, return
+				return;
+			}
+			
+			// show the dkim verifier header box
+			var dkimVerifierBox = document.getElementById("dkim_verifier_msgHdrBox");
+			dkimVerifierBox.collapsed = false;
+			
+			verifySignaturePart1(msg);
+			
+		} catch(e) {
+			handleExeption(e);
 		}
-		
-		// show the dkim verifier header box
-		var dkimVerifierBox = document.getElementById("dkim_verifier_msgHdrBox");
-		dkimVerifierBox.collapsed = false;
-		
-		verifySignaturePart1(msg);
 	},
 
 	/*
