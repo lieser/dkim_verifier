@@ -4,7 +4,7 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  *
- * version: 0.3.2 (30 May 2013)
+ * version: 0.3.3pre (30 May 2013)
  *
  * Copyright (c) 2013 Philippe Lieser
  *
@@ -912,7 +912,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			var isValid = rsa.verifyString(headerHashInput, DKIM_Verifier.b64tohex(msg.DKIMSignature.b));
 			
 			if (!isValid) {
-				throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_CORRUPT_B);
+				throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_BADSIG);
 			}
 			
 			// show result
@@ -1113,7 +1113,12 @@ var that = {
 				Components.utils.reportError(e+"\n"+e.stack);
 			}
 		}
-	}
+	},
+	
+	/*
+	 * make function dkimDebugMsg(message) public
+	 */
+	dkimDebugMsg : dkimDebugMsg
 };
 return that;
 }()); // the parens here cause the anonymous function to execute and return

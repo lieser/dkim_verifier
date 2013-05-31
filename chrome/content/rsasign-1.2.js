@@ -1,3 +1,11 @@
+/*
+ * Original version 1.2.1 (08 May 2013)
+ * Modified by Philippe Lieser for "DKIM Verifier" version 0.3.3
+ *
+ * Modifications:
+ *  - added debug info to _rsasign_verifyString
+ */
+
 /*! rsasign-1.2.js (c) 2012 Kenji Urushima | kjur.github.com/jsrsasign/license
  */
 //
@@ -267,14 +275,26 @@ function _rsasign_verifyHexSignatureForMessage(hSig, sMsg) {
  */
 function _rsasign_verifyString(sMsg, hSig) {
     hSig = hSig.replace(_RE_HEXDECONLY, '');
-    if (hSig.length != this.n.bitLength() / 4) return 0;
+    // if (hSig.length != this.n.bitLength() / 4) return 0;
+    if (hSig.length != this.n.bitLength() / 4) {
+        DKIMVerifier.dkimDebugMsg("rsasign: hSig has wrong length");
+        return 0;
+        // throw new Error("rsasign Error: hSig has wrong length");
+    }
     hSig = hSig.replace(/[ \n]+/g, "");
     var biSig = parseBigInt(hSig, 16);
     var biDecryptedSig = this.doPublic(biSig);
     var hDigestInfo = biDecryptedSig.toString(16).replace(/^1f+00/, '');
     var digestInfoAry = _rsasign_getAlgNameAndHashFromHexDisgestInfo(hDigestInfo);
   
-    if (digestInfoAry.length == 0) return false;
+    // if (digestInfoAry.length == 0) return false;
+    if (digestInfoAry.length == 0) {
+        DKIMVerifier.dkimDebugMsg("rsasign: biDecryptedSig (hex): " + biDecryptedSig.toString(16));
+        DKIMVerifier.dkimDebugMsg("rsasign: n (hex): " + this.n.toString(16));
+        DKIMVerifier.dkimDebugMsg("rsasign: e: " + this.e);
+        DKIMVerifier.dkimDebugMsg("rsasign: digestInfoAry.length == 0");
+        return false;
+    }
     var algName = digestInfoAry[0];
     var diHashValue = digestInfoAry[1];
     var ff = _RSASIGN_HASHHEXFUNC[algName];
