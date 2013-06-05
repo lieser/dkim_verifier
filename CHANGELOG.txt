@@ -2,7 +2,7 @@
 ----------------------
  - fixed relaxed body canonicalization for non trailing CRLF
  - fixed parsing of Message canonicalization if only one algorithm is named
- - added partial support of CNMAE record type in DNS Library
+ - added partial support of CNAME record type in DNS Library
  - fix bug if nonexisting header field is signed
 
 0.3.3 [2013-05-31]

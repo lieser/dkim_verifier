@@ -702,7 +702,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 	 * specified in Section 3.4.4 of RFC 6376
 	 */
 	function canonicalizationBodyRelaxed(body) {
-		// noch change for empty body
+		// no change for empty body
 		if (body === "") {
 		  return body;
 		} 

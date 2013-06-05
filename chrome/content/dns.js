@@ -43,7 +43,7 @@
  *   - DNS_LoadPrefs() not executed
  *   - added debug on/off setting
  *  since version 0.3.4
- *   - CNMAE record type partial supported
+ *   - CNAME record type partial supported
  *    - doesn't throw a exception anymore
  *    - data not read, and not included in the returned result
  */
