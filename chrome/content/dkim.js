@@ -776,7 +776,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 	 */
 	function computeHeaderHashInput(msg) {
 		var hashInput = "";
-		var temp;
+		var headerFieldArray, headerField;
 
 		// set header canonicalization algorithm
 		var headerCanonAlgo;
@@ -796,20 +796,24 @@ DKIM_Verifier.DKIMVerifier = (function() {
 		for(var i = 0; i <  msg.DKIMSignature.h_array.length; i++) {
 			// if multiple instances of the same header field are signed
 			// include them in reverse order (from bottom to top)
-			temp = msg.headerFields[msg.DKIMSignature.h_array[i]].pop();
-			if (temp) {
-				hashInput += headerCanonAlgo(temp);
+			headerFieldArray = msg.headerFields[msg.DKIMSignature.h_array[i]]
+			// nonexisting header field MUST be treated as the null string
+			if (headerFieldArray !== undefined) {
+				headerField = headerFieldArray.pop();
+				if (headerField) {
+					hashInput += headerCanonAlgo(headerField);
+				}
 			}
 		}
 		
 		// add DKIM-Signature header to the hash input
 		// with the value of the "b=" tag (including all surrounding whitespace) deleted
-		var pos = msg.headerFields["dkim-signature"][0].indexOf(msg.DKIMSignature.b_folded);
-		var tempBegin = msg.headerFields["dkim-signature"][0].substr(0, pos);
+		var pos_bTag = msg.headerFields["dkim-signature"][0].indexOf(msg.DKIMSignature.b_folded);
+		var tempBegin = msg.headerFields["dkim-signature"][0].substr(0, pos_bTag);
 		tempBegin = tempBegin.replace(new RegExp(pattFWS+"?$"), "");
-		var tempEnd = msg.headerFields["dkim-signature"][0].substr(pos+msg.DKIMSignature.b_folded.length);
+		var tempEnd = msg.headerFields["dkim-signature"][0].substr(pos_bTag+msg.DKIMSignature.b_folded.length);
 		tempEnd = tempEnd.replace(new RegExp("^"+pattFWS+"?"), "");
-		temp = tempBegin + tempEnd;
+		var temp = tempBegin + tempEnd;
 		// canonicalized using the header canonicalization algorithm specified in the "c=" tag
 		temp = headerCanonAlgo(temp);
 		// without a trailing CRLF
