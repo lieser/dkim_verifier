@@ -1,6 +1,7 @@
 0.3.4pre1 [2013-05-31]
 ----------------------
  - fixed relaxed body canonicalization for non trailing CRLF
+ - fixed parsing of Message canonicalization if only one algorithm is named
 
 0.3.3 [2013-05-31]
 ------------------

@@ -381,7 +381,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			}
 				
 			// canonicalization for body
-			if (msCanonTag[3] === null) {
+			if (msCanonTag[3] === undefined) {
 				DKIMSignature.c_body = "simple";
 			} else {
 				if (msCanonTag[3] === "simple" || msCanonTag[3] === "relaxed") {
