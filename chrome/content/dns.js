@@ -35,12 +35,17 @@
 
 /*
  * Original from "Sender Verification Extension" version 0.9.0.6
- * Modified by Philippe Lieser for "DKIM Verifier" version 0.3.0
+ * Modified by Philippe Lieser for "DKIM Verifier" version 0.3.4
  *
  * Modifications:
- *  - changed to a JavaScript code module
- *  - DNS_LoadPrefs() not executed
- *  - added debug on/off setting
+ *  since version 0.3.0
+ *   - changed to a JavaScript code module
+ *   - DNS_LoadPrefs() not executed
+ *   - added debug on/off setting
+ *  since version 0.3.4
+ *   - CNMAE record type partial supported
+ *    - doesn't throw a exception anymore
+ *    - data not read, and not included in the returned result
  */
 
 var EXPORTED_SYMBOLS = ["dnsChangeNameserver", "queryDNS", "dnsChangeDebug"];
@@ -385,6 +390,10 @@ function DNS_readRec(ctx) {
 	} else if (rec.type == 12) {
 		rec.type = "PTR";
 		rec.rddata = DNS_readDomain(ctx);
+	} else if (rec.type === 5) {
+		rec.type = "CNAME";
+		// no complete support of CNAME (data is not read)
+		rec.rddata = "";
 	} else {
 		rec.recognized = 0;
 	}
@@ -423,11 +432,16 @@ function DNS_getRDData(str, server, host, recordtype, callback, callbackdata, ho
 	
 	var debugstr = "DNS: " + host + "/" + recordtype + ": ";
 	
-	var results = Array(ancount);
+	var results = [];
 	for (i = 0; i < ancount; i++) {
 		rec = DNS_readRec(ctx);
 		if (!rec.recognized) throw "Record type is not one that this library can understand.";
-		results[i] = rec.rddata;		
+		// ignore CNAME records
+		if (rec.type !== "CNAME") {
+			results.push(rec.rddata);
+		} else {
+			DNS_Debug(debugstr + "CNAME ignored :" + rec.rddata);
+		}
 		DNS_Debug(debugstr + "Answer: " + rec.rddata);
 	}
 
