@@ -714,7 +714,8 @@ DKIM_Verifier.DKIMVerifier = (function() {
 		
 		// Ignore all empty lines at the end of the message body
 		// If the body is non-empty but does not end with a CRLF, a CRLF is added
-		body = body.replace(/(\r\n)*$/,"\r\n");
+		// for some reason /(\r\n)*$/ doesn't work all the time (matching only last "\r\n")
+		body = body.replace(/((\r\n)+)?$/,"\r\n");
 		
 		return body;
 	}
