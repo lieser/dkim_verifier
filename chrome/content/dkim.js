@@ -4,7 +4,7 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  *
- * version: 0.3.3 (31 May 2013)
+ * version: 0.3.4pre1 (31 May 2013)
  *
  * Copyright (c) 2013 Philippe Lieser
  *
@@ -702,6 +702,11 @@ DKIM_Verifier.DKIMVerifier = (function() {
 	 * specified in Section 3.4.4 of RFC 6376
 	 */
 	function canonicalizationBodyRelaxed(body) {
+		// noch change for empty body
+		if (body === "") {
+		  return body;
+		} 
+		
 		// Ignore all whitespace at the end of lines
 		body = body.replace(/[ \t]+\r\n/g,"\r\n");
 		// Reduce all sequences of WSP within a line to a single SP character
@@ -709,7 +714,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 		
 		// Ignore all empty lines at the end of the message body
 		// If the body is non-empty but does not end with a CRLF, a CRLF is added
-		body = body.replace(/(\r\n)+$/,"\r\n");
+		body = body.replace(/(\r\n)*$/,"\r\n");
 		
 		return body;
 	}

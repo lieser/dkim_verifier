@@ -1,3 +1,7 @@
+0.3.4pre1 [2013-05-31]
+----------------------
+ - fixed relaxed body canonicalization for non trailing CRLF
+
 0.3.3 [2013-05-31]
 ------------------
  - fixed issue with RSS feeds
