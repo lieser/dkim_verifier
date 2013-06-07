@@ -475,13 +475,13 @@ DKIM_Verifier.DKIMVerifier = (function() {
 		*/
 		
 		var atext = "[A-z0-9!#$%&'*+/=?^_`{|}~-]";
-		var local_part = "(?:"+atext+"(?:\\."+atext+")*)";
+		var local_part = "(?:"+atext+"+(?:\\."+atext+"+)*)";
 		var sig_i_tag = local_part+"?@"+domain_name;
 		var AUIDTag = DKIMSignatureHeader.match(tag_spec("i", sig_i_tag));
 		if (AUIDTag === null) {
 			DKIMSignature.i = "@"+DKIMSignature.d;
 		} else {
-			if (!(new RegExp(DKIMSignature.d+"$")).test(AUIDTag[1])) {
+			if (!(new RegExp(DKIMSignature.d+"$").test(AUIDTag[1]))) {
 				throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_SUBDOMAIN_I);
 			}
 			DKIMSignature.i = AUIDTag[1];

@@ -11,6 +11,7 @@
  - fixed parsing of Message canonicalization if only one algorithm is named
  - added partial support of CNAME record type in DNS Library
  - fix bug if nonexisting header field is signed
+ - fixed parsing of AUID
 
 0.3.3 [2013-05-31]
 ------------------
