@@ -49,9 +49,6 @@
  *  - differentiation between DNS errors
  *  - make verifying non blocking
  *  - and support concurrent verifications
- *  - warning if the Signature is expired
- *  - warning if the Signature is in the future
- *  - warning if SDID and from are different
  *
  */
  
@@ -854,6 +851,34 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			msg.DKIMSignature = parseDKIMSignature(msg.headerFields["dkim-signature"][0]);
 			dkimDebugMsg("Parsed DKIM-Signature: "+msg.DKIMSignature.toSource());
 			
+			// warning if from is not in SDID or AUID
+			var messageService = messenger.messageServiceFromURI(msg.msgURI);
+			var mime2DecodedAuthor = messageService.messageURIToMsgHdr(msg.msgURI).
+				mime2DecodedAuthor;
+			var msgHeaderParser = Components.classes["@mozilla.org/messenger/headerparser;1"].
+				createInstance(Components.interfaces.nsIMsgHeaderParser);
+			var from = msgHeaderParser.extractHeaderAddressMailboxes(mime2DecodedAuthor);
+			if (!(new RegExp(msg.DKIMSignature.d+"$").test(from))) {
+				msg.warnings.push("DKIM_SIGWARNING_FROM_NOT_IN_SDID");
+				dkimDebugMsg("Warning: "+DKIM_STRINGS.DKIM_SIGWARNING_FROM_NOT_IN_SDID);
+			} else if (!(new RegExp(msg.DKIMSignature.i+"$").test(from))) {
+				msg.warnings.push("DKIM_SIGWARNING_FROM_NOT_IN_AUID");
+				dkimDebugMsg("Warning: "+DKIM_STRINGS.DKIM_SIGWARNING_FROM_NOT_IN_AUID);
+			}
+
+
+			var time = Math.round(Date.now() / 1000);
+			// warning if signature expired
+			if (msg.DKIMSignature.x !== null && msg.DKIMSignature.x < time) {
+				msg.warnings.push("DKIM_SIGWARNING_EXPIRED");
+				dkimDebugMsg("Warning: "+DKIM_STRINGS.DKIM_SIGWARNING_EXPIRED);
+			}
+			// warning if signature in future
+			if (msg.DKIMSignature.t !== null && msg.DKIMSignature.t > time) {
+				msg.warnings.push("DKIM_SIGWARNING_FUTURE");
+				dkimDebugMsg("Warning: "+DKIM_STRINGS.DKIM_SIGWARNING_FUTURE);
+			}
+			
 			// Compute the Message Hashe for the body 
 			var bodyHash = computeBodyHash(msg);
 			dkimDebugMsg("computed body hash: "+bodyHash);
@@ -937,6 +962,12 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			var m_hex = DKIM_Verifier.ASN1HEX.getHexOfV_AtObj(asnKey,posKeyArray[0]);
 			// get public exponent
 			var e_hex = DKIM_Verifier.ASN1HEX.getHexOfV_AtObj(asnKey,posKeyArray[1]);
+
+			// warning if key is short
+			if (m_hex.length * 4 < 1024) {
+				msg.warnings.push("DKIM_SIGWARNING_KEYSMALL");
+				dkimDebugMsg("Warning: "+DKIM_STRINGS.DKIM_SIGWARNING_KEYSMALL);
+			}
 
 			// set RSA-key
 			var rsa = new DKIM_Verifier.RSAKey();
@@ -1149,7 +1180,7 @@ var that = {
 	 */
 	dnsCallback : function (dnsResult, msg) {
 		try {
-			dkimDebugMsg("DNS result: " + dnsResult);
+			// dkimDebugMsg("DNS result: " + dnsResult);
 			if (dnsResult === null) {
 				throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_KEYFAIL);
 			}

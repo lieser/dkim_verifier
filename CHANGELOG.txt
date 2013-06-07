@@ -1,6 +1,12 @@
 0.4.0pre1 [2013-06-07]
 ----------------------
  - warnings are displayed
+ - added warning for
+  - Signature is expired
+  - Signature is in the future
+  - From is not in SDID
+  - From is not in AUID
+  - Signature key is small
  - fixed relaxed body canonicalization for non trailing CRLF
  - fixed parsing of Message canonicalization if only one algorithm is named
  - added partial support of CNAME record type in DNS Library

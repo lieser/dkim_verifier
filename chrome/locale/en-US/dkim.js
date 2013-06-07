@@ -50,3 +50,8 @@ DKIM_STRINGS.DKIM_SIGERROR_KEYDECODE		= "Key couldn't be decoded";
 
 // DKIM_SIGWARNING
 DKIM_STRINGS.DKIM_SIGWARNING_SMALL_L		= "Not the entire body is singned";
+DKIM_STRINGS.DKIM_SIGWARNING_EXPIRED		= "Signature is expired";
+DKIM_STRINGS.DKIM_SIGWARNING_FUTURE			= "Signature is in the future";
+DKIM_STRINGS.DKIM_SIGWARNING_KEYSMALL		= "Signature key is small";
+DKIM_STRINGS.DKIM_SIGWARNING_FROM_NOT_IN_SDID	= "From is not in Signing Domain";
+DKIM_STRINGS.DKIM_SIGWARNING_FROM_NOT_IN_AUID	= "From does not match User Identifier";
