@@ -7,6 +7,7 @@
   - From is not in SDID
   - From is not in AUID
   - Signature key is small
+ - added option to show result if domain is in testmode
  - fixed relaxed body canonicalization for non trailing CRLF
  - fixed parsing of Message canonicalization if only one algorithm is named
  - added partial support of CNAME record type in DNS Library

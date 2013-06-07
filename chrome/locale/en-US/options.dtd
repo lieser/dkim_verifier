@@ -1,3 +1,4 @@
 <!ENTITY prefwindow.title "DKIM Verifier Options">
 <!ENTITY debug.label "Enable debug mode">
 <!ENTITY dns.nameserver.label "DNS Nameserver">
+<!ENTITY pref_error.key_testmode.ignore.label "Show result if domain is in testmode">

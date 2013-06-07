@@ -636,10 +636,6 @@ DKIM_Verifier.DKIMVerifier = (function() {
 					DKIMKey.t_array.push(tmp[1]);
 				}
 			}
-			// check that the testing flag is not set
-			if (DKIMKey.t_array.indexOf("y") !== -1) {
-				throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_KEY_TESTMODE);
-			}
 		} else {
 			DKIMKey.t = "";
 		}
@@ -910,6 +906,19 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			msg.DKIMKey = parseDKIMKeyRecord(msg.keyQueryResult);
 			dkimDebugMsg("Parsed DKIM-Key: "+msg.DKIMKey.toSource());
 			
+			// check that the testing flag is not set
+			if (msg.DKIMKey.t_array.indexOf("y") !== -1) {
+				prefs = Components.classes["@mozilla.org/preferences-service;1"].
+					getService(Components.interfaces.nsIPrefService).
+					getBranch("extensions.dkim_verifier.");
+				if (prefs.getBoolPref("error.key_testmode.ignore")) {
+					msg.warnings.push("DKIM_SIGERROR_KEY_TESTMODE");
+					dkimDebugMsg("Warning: "+DKIM_STRINGS.DKIM_SIGERROR_KEY_TESTMODE);
+				} else {
+					throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_KEY_TESTMODE);
+				}
+			}
+
 			// if s flag is set in DKIM key record
 			// AUID must be from the same domain as SDID (and not a subdomain)
 			if (msg.DKIMKey.t_array.indexOf("s") !== -1 &&
