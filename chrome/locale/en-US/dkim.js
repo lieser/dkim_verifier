@@ -6,7 +6,9 @@ DKIM_STRINGS.loading = "Validating...";
 DKIM_STRINGS.SUCCESS = function(domain) {return "Valid (Signed by "+domain+")";};
 DKIM_STRINGS.PERMFAIL = "Invalid";
 DKIM_STRINGS.TEMPFAIL = function(domain) {
-	return "Temporary validating error (For Signature by "+domain+")";};
+	return "Temporary validating error (For Signature by "+domain+")";
+};
+DKIM_STRINGS.NOSIG = "No Signature";
 
 // DKIM_INTERNALERROR
 DKIM_STRINGS.DKIM_INTERNALERROR					= "DKIM verifier internal error";

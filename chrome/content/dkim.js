@@ -693,7 +693,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 	function canonicalizationBodyRelaxed(body) {
 		// no change for empty body
 		if (body === "") {
-		  return body;
+			return body;
 		} 
 		
 		// Ignore all whitespace at the end of lines
@@ -785,7 +785,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 		for(var i = 0; i <  msg.DKIMSignature.h_array.length; i++) {
 			// if multiple instances of the same header field are signed
 			// include them in reverse order (from bottom to top)
-			headerFieldArray = msg.headerFields[msg.DKIMSignature.h_array[i]]
+			headerFieldArray = msg.headerFields[msg.DKIMSignature.h_array[i]];
 			// nonexisting header field MUST be treated as the null string
 			if (headerFieldArray !== undefined) {
 				headerField = headerFieldArray.pop();
@@ -820,11 +820,21 @@ DKIM_Verifier.DKIMVerifier = (function() {
 		if (e instanceof DKIM_SigError) {
 			// if domain is testing DKIM, treat msg as not signed
 			if (e.message === DKIM_STRINGS.DKIM_SIGERROR_KEY_TESTMODE) {
-				var dkimVerifierBox = document.getElementById("dkim_verifier_msgHdrBox");
-				dkimVerifierBox.collapsed = true;
+				var dkimMsgHdrBox = document.getElementById("dkim_verifier_msgHdrBox");
+				dkimMsgHdrBox.collapsed = !prefs.getBoolPref("alwaysShowDKIMHeader");
 			}
 			
 			dkimMsgHdrRes.value = DKIM_STRINGS.PERMFAIL + " (" + e.message + ")";
+			
+			// highlight from header
+			if (prefs.getBoolPref("colorFrom")) {
+				var expandedfromBox = document.getElementById("expandedfromBox");
+				expandedfromBox.emailAddresses.style.borderRadius = "3px";
+				expandedfromBox.emailAddresses.style.color = prefs.
+					getCharPref("color.permfail.text");
+				expandedfromBox.emailAddresses.style.backgroundColor = prefs.
+					getCharPref("color.permfail.background");
+			}
 		} else {
 			dkimMsgHdrRes.value = "Internal Error";
 		}
@@ -908,9 +918,6 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			
 			// check that the testing flag is not set
 			if (msg.DKIMKey.t_array.indexOf("y") !== -1) {
-				prefs = Components.classes["@mozilla.org/preferences-service;1"].
-					getService(Components.interfaces.nsIPrefService).
-					getBranch("extensions.dkim_verifier.");
 				if (prefs.getBoolPref("error.key_testmode.ignore")) {
 					msg.warnings.push("DKIM_SIGERROR_KEY_TESTMODE");
 					dkimDebugMsg("Warning: "+DKIM_STRINGS.DKIM_SIGERROR_KEY_TESTMODE);
@@ -1006,9 +1013,24 @@ DKIM_Verifier.DKIMVerifier = (function() {
 					description.setAttribute("value", DKIM_STRINGS[element]);
 					dkimWarningTooltip.appendChild(description);
 				});
-
 			}
 			
+			// highlight from header
+			if (prefs.getBoolPref("colorFrom")) {
+				var expandedfromBox = document.getElementById("expandedfromBox");
+				expandedfromBox.emailAddresses.style.borderRadius = "3px";
+				if (msg.warnings.length === 0) {
+					expandedfromBox.emailAddresses.style.color = prefs.
+						getCharPref("color.success.text");
+					expandedfromBox.emailAddresses.style.backgroundColor = prefs.
+						getCharPref("color.success.background");
+				} else {
+					expandedfromBox.emailAddresses.style.color = prefs.
+						getCharPref("color.warning.text");
+					expandedfromBox.emailAddresses.style.backgroundColor = prefs.
+						getCharPref("color.warning.background");
+				}
+			}
 		} catch(e) {
 			handleExeption(e);
 		}
@@ -1148,6 +1170,19 @@ var that = {
 
 			// check if DKIMSignatureHeader exist
 			if (msg.headerFields["dkim-signature"] === undefined) {
+				var dkimMsgHdrRes = document.getElementById("dkim_verifier_msgHdrRes");
+				dkimMsgHdrRes.value = DKIM_STRINGS.NOSIG;
+
+				// highlight from header
+				if (prefs.getBoolPref("colorFrom")) {
+					var expandedfromBox = document.getElementById("expandedfromBox");
+					expandedfromBox.emailAddresses.style.borderRadius = "3px";
+					expandedfromBox.emailAddresses.style.color = prefs.
+						getCharPref("color.nosig.text");
+					expandedfromBox.emailAddresses.style.backgroundColor = prefs.
+						getCharPref("color.nosig.background");
+				}
+				
 				// no signature to check, return
 				return;
 			}
@@ -1168,7 +1203,7 @@ var that = {
 	 */
 	clearHeader : function () {
 		var dkimMsgHdrBox = document.getElementById("dkim_verifier_msgHdrBox");
-		dkimMsgHdrBox.collapsed = true;
+		dkimMsgHdrBox.collapsed = !prefs.getBoolPref("alwaysShowDKIMHeader");
 		var dkimMsgHdrRes = document.getElementById("dkim_verifier_msgHdrRes");
 		dkimMsgHdrRes.value = DKIM_STRINGS.loading;
 				
@@ -1181,6 +1216,11 @@ var that = {
 		while (dkimWarningTooltip.firstChild) {
 			dkimWarningTooltip.removeChild(dkimWarningTooltip.firstChild);
 		}
+
+		// reset highlight from header
+		var expandedfromBox = document.getElementById("expandedfromBox");
+		expandedfromBox.emailAddresses.style.color = "windowtext";
+		expandedfromBox.emailAddresses.style.backgroundColor = "transparent";
 	},
 	
 	/*

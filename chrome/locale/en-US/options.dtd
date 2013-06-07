@@ -1,4 +1,22 @@
 <!ENTITY prefwindow.title "DKIM Verifier Options">
+
+
+<!ENTITY general.label "General">
+
 <!ENTITY debug.label "Enable debug mode">
 <!ENTITY dns.nameserver.label "DNS Nameserver">
-<!ENTITY pref_error.key_testmode.ignore.label "Show result if domain is in testmode">
+<!ENTITY error.key_testmode.ignore.label "Treat testmode as warning, not as error">
+
+
+<!ENTITY display.label "Display">
+
+<!ENTITY alwaysShowDKIMHeader.label "Always show DKIM-Signature header field">
+<!ENTITY colorFrom.label "Enable highlighting of From header">
+<!ENTITY color.label "Color">
+<!ENTITY color.text.label "Text Color:">
+<!ENTITY color.background.label "Background Color:">
+<!ENTITY color.success.label "Valid Siganture">
+<!ENTITY color.warning.label "Valid Siganture with warnings">
+<!ENTITY color.permfail.label "Invalid Siganture">
+<!ENTITY color.nosig.label "Unsigned e-mail">
+

@@ -8,6 +8,8 @@
   - From is not in AUID
   - Signature key is small
  - added option to show result if domain is in testmode
+ - added options for highlighting of From header
+ - added option for always show DKIM-Signature header field
  - fixed relaxed body canonicalization for non trailing CRLF
  - fixed parsing of Message canonicalization if only one algorithm is named
  - added partial support of CNAME record type in DNS Library
