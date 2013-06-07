@@ -4,7 +4,7 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  *
- * version: 0.3.4pre1 (31 May 2013)
+ * version: 0.4.0pre1 (07 June 2013)
  *
  * Copyright (c) 2013 Philippe Lieser
  *
@@ -49,7 +49,6 @@
  *  - differentiation between DNS errors
  *  - make verifying non blocking
  *  - and support concurrent verifications
- *  - display warnings
  *  - warning if the Signature is expired
  *  - warning if the Signature is in the future
  *  - warning if SDID and from are different
@@ -106,9 +105,6 @@ DKIM_Verifier.DKIMVerifier = (function() {
  /*
  * private variables
  */
-	// all warnings about the signature will go in her
-	var warnings = [];
-	
 	var messageListener;
 
 	// WSP help pattern as specified in Section 2.8 of RFC 6376
@@ -746,7 +742,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 				throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_TOOLARGE_L);
 			} else if (msg.DKIMSignature.l < bodyCanon.length){
 				// lenght tag smaller when body size
-				warnings.push(DKIM_STRINGS.DKIM_SIGWARNING_SMALL_L);
+				msg.warnings.push("DKIM_SIGWARNING_SMALL_L");
 				dkimDebugMsg("Warning: "+DKIM_STRINGS.DKIM_SIGWARNING_SMALL_L);
 			}
 
@@ -851,6 +847,9 @@ DKIM_Verifier.DKIMVerifier = (function() {
 	 */
 	function verifySignaturePart1(msg) {
 		try {
+			// all warnings about the signature will go in her
+			msg.warnings = [];
+
 			// parse the DKIMSignatureHeader
 			msg.DKIMSignature = parseDKIMSignature(msg.headerFields["dkim-signature"][0]);
 			dkimDebugMsg("Parsed DKIM-Signature: "+msg.DKIMSignature.toSource());
@@ -953,6 +952,22 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			// show result
 			var dkimMsgHdrRes = document.getElementById("dkim_verifier_msgHdrRes");
 			dkimMsgHdrRes.value = DKIM_STRINGS.SUCCESS(msg.DKIMSignature.d);
+			
+			// show warnings
+			if (msg.warnings.length > 0) {
+				// uncollapse warning icon
+				var dkimWarningIcon = document.getElementById("dkim_verifier_warning_icon");
+				dkimWarningIcon.collapsed = false;
+				
+				// set warning tooltip
+				var dkimWarningTooltip = document.getElementById("dkim_verifier_tooltip_warnings");
+				msg.warnings.forEach(function(element, index, array) {
+					var description  = document.createElement("description");
+					description.setAttribute("value", DKIM_STRINGS[element]);
+					dkimWarningTooltip.appendChild(description);
+				});
+
+			}
 			
 		} catch(e) {
 			handleExeption(e);
@@ -1113,9 +1128,19 @@ var that = {
 	 */
 	clearHeader : function () {
 		var dkimMsgHdrBox = document.getElementById("dkim_verifier_msgHdrBox");
-		dkimMsgHdrBox.collapsed = "true";
+		dkimMsgHdrBox.collapsed = true;
 		var dkimMsgHdrRes = document.getElementById("dkim_verifier_msgHdrRes");
 		dkimMsgHdrRes.value = DKIM_STRINGS.loading;
+				
+		// collapse warning icon
+		var dkimWarningIcon = document.getElementById("dkim_verifier_warning_icon");
+		dkimWarningIcon.collapsed = true;
+		
+		// reset warning tooltip
+		var dkimWarningTooltip = document.getElementById("dkim_verifier_tooltip_warnings");
+		while (dkimWarningTooltip.firstChild) {
+			dkimWarningTooltip.removeChild(dkimWarningTooltip.firstChild);
+		}
 	},
 	
 	/*

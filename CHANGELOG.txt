@@ -1,5 +1,6 @@
-0.3.4pre1 [2013-05-31]
+0.4.0pre1 [2013-06-07]
 ----------------------
+ - warnings are displayed
  - fixed relaxed body canonicalization for non trailing CRLF
  - fixed parsing of Message canonicalization if only one algorithm is named
  - added partial support of CNAME record type in DNS Library

@@ -12,6 +12,12 @@
 		<hbox id="dkim_verifier_msgHdrBox" collapsed="true">
 			<label value="&dkim_verifier.header.title;"/>
 			<label id="dkim_verifier_msgHdrRes" value=""/>
+			<tooltip id="dkim_verifier_tooltip_warnings"/>
+			<image id="dkim_verifier_warning_icon"
+			       class="alert-icon"
+			       collapsed="false"
+			       tooltip="dkim_verifier_tooltip_warnings"
+			       width="16" height="16"/>
 		</hbox>
 	</vbox>
 
