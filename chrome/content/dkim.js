@@ -54,13 +54,12 @@
  
 // options for JSHint
 /* global Components, messenger, msgWindow, Application, gMessageListeners, gDBView, Services */ 
-/* global DKIM_STRINGS */ 
 
 // namespace
 var DKIM_Verifier = {};
 
 // load locale strings
-Components.utils.import("chrome://dkim_verifier/locale/dkim.js");
+Components.utils.import("chrome://dkim_verifier/locale/dkim.js", DKIM_Verifier);
 
 // load modules
 // DNS
@@ -319,12 +318,12 @@ DKIM_Verifier.DKIMVerifier = (function() {
 		// must be "1"
 		var versionTag = DKIMSignatureHeader.match(tag_spec("v","[0-9]+"));
 		if (versionTag === null) {
-			throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_MISSING_V);
+			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_V");
 		}
 		if (versionTag[1] === "1") {
 			DKIMSignature.v = "1";
 		} else {
-			throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_VERSION);
+			throw new DKIM_SigError("DKIM_SIGERROR_VERSION");
 		}
 
 		// get signature algorithm (plain-text;REQUIRED)
@@ -334,19 +333,19 @@ DKIM_Verifier.DKIMVerifier = (function() {
 		var sig_a_tag_alg = sig_a_tag_k+"-"+sig_a_tag_h;
 		var algorithmTag = DKIMSignatureHeader.match(tag_spec("a",sig_a_tag_alg));
 		if (algorithmTag === null) {
-			throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_MISSING_A);
+			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_A");
 		}
 		if (algorithmTag[1] === "rsa-sha1" || algorithmTag[1] === "rsa-sha256") {
 			DKIMSignature.a_sig = algorithmTag[2];
 			DKIMSignature.a_hash = algorithmTag[3];
 		} else {
-			throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_UNKNOWN_A);
+			throw new DKIM_SigError("DKIM_SIGERROR_UNKNOWN_A");
 		}
 
 		// get signature data (base64;REQUIRED)
 		var signatureDataTag = DKIMSignatureHeader.match(tag_spec("b",base64string));
 		if (signatureDataTag === null) {
-			throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_MISSING_B);
+			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_B");
 		}
 		DKIMSignature.b = signatureDataTag[1].replace(new RegExp(pattFWS,"g"), "");
 		DKIMSignature.b_folded = signatureDataTag[1];
@@ -354,7 +353,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 		// get body hash (base64;REQUIRED)
 		var bodyHashTag = DKIMSignatureHeader.match(tag_spec("bh",base64string));
 		if (bodyHashTag === null) {
-			throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_MISSING_BH);
+			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_BH");
 		}
 		DKIMSignature.bh = bodyHashTag[1].replace(new RegExp(pattFWS,"g"), "");
 
@@ -370,7 +369,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			if (msCanonTag[2] === "simple" || msCanonTag[2] === "relaxed") {
 				DKIMSignature.c_header = msCanonTag[2];
 			} else {
-				throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_UNKNOWN_C_H);
+				throw new DKIM_SigError("DKIM_SIGERROR_UNKNOWN_C_H");
 			}
 				
 			// canonicalization for body
@@ -380,7 +379,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 				if (msCanonTag[3] === "simple" || msCanonTag[3] === "relaxed") {
 					DKIMSignature.c_body = msCanonTag[3];
 				} else {
-					throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_UNKNOWN_C_B);
+					throw new DKIM_SigError("DKIM_SIGERROR_UNKNOWN_C_B");
 				}
 			}
 		}
@@ -391,7 +390,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 		var domain_name = "(?:"+sub_domain+"(?:\\."+sub_domain+")+)";
 		var SDIDTag = DKIMSignatureHeader.match(tag_spec("d",domain_name));
 		if (SDIDTag === null) {
-			throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_MISSING_D);
+			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_D");
 		}
 		DKIMSignature.d = SDIDTag[1];
 
@@ -399,7 +398,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 		var sig_h_tag = "("+hdr_name+")"+"(?:"+pattFWS+"?:"+pattFWS+"?"+hdr_name+")*";
 		var signedHeadersTag = DKIMSignatureHeader.match(tag_spec("h",sig_h_tag));
 		if (signedHeadersTag === null) {
-			throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_MISSING_H);
+			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_H");
 		}
 		DKIMSignature.h = signedHeadersTag[1].replace(new RegExp(pattFWS,"g"), "");
 		// get the header field names and store them in lower case in an array
@@ -414,7 +413,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 		}
 		// check that the from header is included
 		if (DKIMSignature.h_array.indexOf("from") === -1) {
-			throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_MISSING_FROM);
+			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_FROM");
 		}
 
 		// get AUID (dkim-quoted-printable; OPTIONAL, default is an empty local-part
@@ -482,7 +481,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			DKIMSignature.i = "@"+DKIMSignature.d;
 		} else {
 			if (!(new RegExp(DKIMSignature.d+"$").test(AUIDTag[1]))) {
-				throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_SUBDOMAIN_I);
+				throw new DKIM_SigError("DKIM_SIGERROR_SUBDOMAIN_I");
 			}
 			DKIMSignature.i = AUIDTag[1];
 		}
@@ -501,7 +500,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			DKIMSignature.q = "dns/txt";
 		} else {
 			if (!(new RegExp("dns/txt")).test(QueryMetTag[1])) {
-				throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_UNKNOWN_Q);
+				throw new DKIM_SigError("DKIM_SIGERROR_UNKNOWN_Q");
 			}
 			DKIMSignature.q = "dns/txt";
 		}
@@ -509,7 +508,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 		// get selector subdividing the namespace for the "d=" (domain) tag (plain-text; REQUIRED)
 		var SelectorTag = DKIMSignatureHeader.match(tag_spec("s", sub_domain+"(?:\\."+sub_domain+")*"));
 		if (SelectorTag === null) {
-			throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_MISSING_S);
+			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_S");
 		}
 		DKIMSignature.s = SelectorTag[1];
 		
@@ -527,7 +526,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 		if (ExpTimeTag !== null) {
 			DKIMSignature.x = parseInt(ExpTimeTag[1], 10);
 			if (DKIMSignature.t !== null && DKIMSignature.x < DKIMSignature.t) {
-				throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_TIMESTAMPS);
+				throw new DKIM_SigError("DKIM_SIGERROR_TIMESTAMPS");
 			}
 		}
 		
@@ -566,7 +565,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 		if (versionTag === null || versionTag[1] === "DKIM1") {
 			DKIMKey.v = "DKIM1";
 		} else {
-			throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_KEY_INVALID_V);
+			throw new DKIM_SigError("DKIM_SIGERROR_KEY_INVALID_V");
 		}
 		
 		// get Acceptable hash algorithms (plain-text; OPTIONAL, defaults toallowing all algorithms)
@@ -583,7 +582,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 		if (keyTypeTag === null || keyTypeTag[1] === "rsa") {
 			DKIMKey.k = "rsa";
 		} else {
-			throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_KEY_UNKNOWN_K);
+			throw new DKIM_SigError("DKIM_SIGERROR_KEY_UNKNOWN_K");
 		}
 
 		// get Notes (qp-section; OPTIONAL, default is empty)
@@ -596,10 +595,10 @@ DKIM_Verifier.DKIMVerifier = (function() {
 		// empty value means that this public key has been revoked
 		var keyTag = DKIMKeyRecord.match(tag_spec("p",base64string+"?"));
 		if (keyTag === null) {
-			throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_KEY_MISSING_P);
+			throw new DKIM_SigError("DKIM_SIGERROR_KEY_MISSING_P");
 		} else {
 			if (keyTag[1] === "") {
-				throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_KEY_REVOKED);
+				throw new DKIM_SigError("DKIM_SIGERROR_KEY_REVOKED");
 			} else {
 				DKIMKey.p = keyTag[1];
 			}
@@ -615,7 +614,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			if (/email/.test(serviceTypeTag[1])) {
 				DKIMKey.s = serviceTypeTag[1];
 			} else {
-				throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_KEY_NOTEMAILKEY);
+				throw new DKIM_SigError("DKIM_SIGERROR_KEY_NOTEMAILKEY");
 			}
 		}
 
@@ -732,11 +731,12 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			// check the value of the body lenght tag
 			if (msg.DKIMSignature.l > bodyCanon.length) {
 				// lenght tag exceeds body size
-				throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_TOOLARGE_L);
+				throw new DKIM_SigError("DKIM_SIGERROR_TOOLARGE_L");
 			} else if (msg.DKIMSignature.l < bodyCanon.length){
 				// lenght tag smaller when body size
 				msg.warnings.push("DKIM_SIGWARNING_SMALL_L");
-				dkimDebugMsg("Warning: "+DKIM_STRINGS.DKIM_SIGWARNING_SMALL_L);
+				dkimDebugMsg("Warning: DKIM_SIGWARNING_SMALL_L ("+
+					DKIM_Verifier.DKIM_STRINGS.DKIM_SIGWARNING_SMALL_L+")");
 			}
 
 			// truncated body to the length specified in the "l=" tag
@@ -819,12 +819,12 @@ DKIM_Verifier.DKIMVerifier = (function() {
 		
 		if (e instanceof DKIM_SigError) {
 			// if domain is testing DKIM, treat msg as not signed
-			if (e.message === DKIM_STRINGS.DKIM_SIGERROR_KEY_TESTMODE) {
+			if (e.errorType === "DKIM_SIGERROR_KEY_TESTMODE") {
 				var dkimMsgHdrBox = document.getElementById("dkim_verifier_msgHdrBox");
 				dkimMsgHdrBox.collapsed = !prefs.getBoolPref("alwaysShowDKIMHeader");
 			}
 			
-			dkimMsgHdrRes.value = DKIM_STRINGS.PERMFAIL + " (" + e.message + ")";
+			dkimMsgHdrRes.value = DKIM_Verifier.DKIM_STRINGS.PERMFAIL + " (" + e.message + ")";
 			
 			// highlight from header
 			if (prefs.getBoolPref("colorFrom")) {
@@ -866,10 +866,12 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			var from = msgHeaderParser.extractHeaderAddressMailboxes(mime2DecodedAuthor);
 			if (!(new RegExp(msg.DKIMSignature.d+"$").test(from))) {
 				msg.warnings.push("DKIM_SIGWARNING_FROM_NOT_IN_SDID");
-				dkimDebugMsg("Warning: "+DKIM_STRINGS.DKIM_SIGWARNING_FROM_NOT_IN_SDID);
+				dkimDebugMsg("Warning: DKIM_SIGWARNING_FROM_NOT_IN_SDID ("+
+					DKIM_Verifier.DKIM_STRINGS.DKIM_SIGWARNING_FROM_NOT_IN_SDID+")");
 			} else if (!(new RegExp(msg.DKIMSignature.i+"$").test(from))) {
 				msg.warnings.push("DKIM_SIGWARNING_FROM_NOT_IN_AUID");
-				dkimDebugMsg("Warning: "+DKIM_STRINGS.DKIM_SIGWARNING_FROM_NOT_IN_AUID);
+				dkimDebugMsg("Warning: DKIM_SIGWARNING_FROM_NOT_IN_AUID ("+
+					DKIM_Verifier.DKIM_STRINGS.DKIM_SIGWARNING_FROM_NOT_IN_AUID+")");
 			}
 
 
@@ -877,12 +879,14 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			// warning if signature expired
 			if (msg.DKIMSignature.x !== null && msg.DKIMSignature.x < time) {
 				msg.warnings.push("DKIM_SIGWARNING_EXPIRED");
-				dkimDebugMsg("Warning: "+DKIM_STRINGS.DKIM_SIGWARNING_EXPIRED);
+				dkimDebugMsg("Warning: DKIM_SIGWARNING_EXPIRED ("+
+					DKIM_Verifier.DKIM_STRINGS.DKIM_SIGWARNING_EXPIRED+")");
 			}
 			// warning if signature in future
 			if (msg.DKIMSignature.t !== null && msg.DKIMSignature.t > time) {
 				msg.warnings.push("DKIM_SIGWARNING_FUTURE");
-				dkimDebugMsg("Warning: "+DKIM_STRINGS.DKIM_SIGWARNING_FUTURE);
+				dkimDebugMsg("Warning: DKIM_SIGWARNING_FUTURE ("+
+					DKIM_Verifier.DKIM_STRINGS.DKIM_SIGWARNING_FUTURE+")");
 			}
 			
 			// Compute the Message Hashe for the body 
@@ -891,7 +895,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			
 			// compare body hash
 			if (bodyHash !== msg.DKIMSignature.bh) {
-				throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_CORRUPT_BH);
+				throw new DKIM_SigError("DKIM_SIGERROR_CORRUPT_BH");
 			}
 
 			// get the DKIM key
@@ -920,9 +924,10 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			if (msg.DKIMKey.t_array.indexOf("y") !== -1) {
 				if (prefs.getBoolPref("error.key_testmode.ignore")) {
 					msg.warnings.push("DKIM_SIGERROR_KEY_TESTMODE");
-					dkimDebugMsg("Warning: "+DKIM_STRINGS.DKIM_SIGERROR_KEY_TESTMODE);
+					dkimDebugMsg("Warning: DKIM_SIGERROR_KEY_TESTMODE ("+
+						DKIM_Verifier.DKIM_STRINGS.DKIM_SIGERROR_KEY_TESTMODE+")");
 				} else {
-					throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_KEY_TESTMODE);
+					throw new DKIM_SigError("DKIM_SIGERROR_KEY_TESTMODE");
 				}
 			}
 
@@ -930,7 +935,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			// AUID must be from the same domain as SDID (and not a subdomain)
 			if (msg.DKIMKey.t_array.indexOf("s") !== -1 &&
 				msg.DKIMSignature.i.indexOf("@"+msg.DKIMSignature.d)) {
-				throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_DOMAIN_I);
+				throw new DKIM_SigError("DKIM_SIGERROR_DOMAIN_I");
 			}
 			
 			// Compute the input for the header hash
@@ -957,11 +962,11 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			// check format by comparing the 1. child in the top element
 			posTopArray = DKIM_Verifier.ASN1HEX.getPosArrayOfChildren_AtObj(asnKey,0);
 			if (posTopArray === null || posTopArray.length !== 2) {
-				throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_KEYDECODE);
+				throw new DKIM_SigError("DKIM_SIGERROR_KEYDECODE");
 			}
 			if (DKIM_Verifier.ASN1HEX.getHexOfTLV_AtObj(asnKey, posTopArray[0]) !==
 				"300d06092a864886f70d0101010500") {
-				throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_KEYDECODE);
+				throw new DKIM_SigError("DKIM_SIGERROR_KEYDECODE");
 			}
 			
 			// get pos of SEQUENCE under BIT STRING
@@ -971,7 +976,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			// get pos of modulus and publicExponent
 			posKeyArray = DKIM_Verifier.ASN1HEX.getPosArrayOfChildren_AtObj(asnKey, pos);
 			if (posKeyArray === null || posKeyArray.length !== 2) {
-				throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_KEYDECODE);
+				throw new DKIM_SigError("DKIM_SIGERROR_KEYDECODE");
 			}
 			
 			// get modulus
@@ -982,7 +987,8 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			// warning if key is short
 			if (m_hex.length * 4 < 1024) {
 				msg.warnings.push("DKIM_SIGWARNING_KEYSMALL");
-				dkimDebugMsg("Warning: "+DKIM_STRINGS.DKIM_SIGWARNING_KEYSMALL);
+				dkimDebugMsg("Warning: DKIM_SIGWARNING_KEYSMALL ("+
+					DKIM_Verifier.DKIM_STRINGS.DKIM_SIGWARNING_KEYSMALL+")");
 			}
 
 			// set RSA-key
@@ -993,12 +999,12 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			var isValid = rsa.verifyString(headerHashInput, DKIM_Verifier.b64tohex(msg.DKIMSignature.b));
 			
 			if (!isValid) {
-				throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_BADSIG);
+				throw new DKIM_SigError("DKIM_SIGERROR_BADSIG");
 			}
 			
 			// show result
 			var dkimMsgHdrRes = document.getElementById("dkim_verifier_msgHdrRes");
-			dkimMsgHdrRes.value = DKIM_STRINGS.SUCCESS(msg.DKIMSignature.d);
+			dkimMsgHdrRes.value = DKIM_Verifier.DKIM_STRINGS.SUCCESS(msg.DKIMSignature.d);
 			
 			// show warnings
 			if (msg.warnings.length > 0) {
@@ -1010,7 +1016,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 				var dkimWarningTooltip = document.getElementById("dkim_verifier_tooltip_warnings");
 				msg.warnings.forEach(function(element, index, array) {
 					var description  = document.createElement("description");
-					description.setAttribute("value", DKIM_STRINGS[element]);
+					description.setAttribute("value", DKIM_Verifier.DKIM_STRINGS[element]);
 					dkimWarningTooltip.appendChild(description);
 				});
 			}
@@ -1039,9 +1045,11 @@ DKIM_Verifier.DKIMVerifier = (function() {
 	/*
 	 * DKIM_SIGERROR
 	 */
-	function DKIM_SigError(message) {
-		this.name = DKIM_STRINGS.DKIM_SIGERROR;
-		this.message = message || DKIM_STRINGS.DKIM_SIGERROR_DEFAULT;
+	function DKIM_SigError(errorType) {
+		this.name = DKIM_Verifier.DKIM_STRINGS.DKIM_SIGERROR;
+		this.errorType = errorType;
+		this.message = DKIM_Verifier.DKIM_STRINGS[errorType] ||
+			DKIM_Verifier.DKIM_STRINGS.DKIM_SIGERROR_DEFAULT;
 
 		// modify stack and lineNumber, to show where this object was created,
 		// not where Error() was
@@ -1056,8 +1064,8 @@ DKIM_Verifier.DKIMVerifier = (function() {
 	 * DKIM internal error
 	 */
 	function DKIM_InternalError(message) {
-		this.name = DKIM_STRINGS.DKIM_INTERNALERROR;
-		this.message = message || DKIM_STRINGS.DKIM_INTERNALERROR_DEFAULT;
+		this.name = DKIM_Verifier.DKIM_STRINGS.DKIM_INTERNALERROR;
+		this.message = message || DKIM_Verifier.DKIM_STRINGS.DKIM_INTERNALERROR_DEFAULT;
 		
 		// modify stack and lineNumber, to show where this object was created,
 		// not where Error() was
@@ -1171,7 +1179,7 @@ var that = {
 			// check if DKIMSignatureHeader exist
 			if (msg.headerFields["dkim-signature"] === undefined) {
 				var dkimMsgHdrRes = document.getElementById("dkim_verifier_msgHdrRes");
-				dkimMsgHdrRes.value = DKIM_STRINGS.NOSIG;
+				dkimMsgHdrRes.value = DKIM_Verifier.DKIM_STRINGS.NOSIG;
 
 				// highlight from header
 				if (prefs.getBoolPref("colorFrom")) {
@@ -1205,7 +1213,7 @@ var that = {
 		var dkimMsgHdrBox = document.getElementById("dkim_verifier_msgHdrBox");
 		dkimMsgHdrBox.collapsed = !prefs.getBoolPref("alwaysShowDKIMHeader");
 		var dkimMsgHdrRes = document.getElementById("dkim_verifier_msgHdrRes");
-		dkimMsgHdrRes.value = DKIM_STRINGS.loading;
+		dkimMsgHdrRes.value = DKIM_Verifier.DKIM_STRINGS.loading;
 				
 		// collapse warning icon
 		var dkimWarningIcon = document.getElementById("dkim_verifier_warning_icon");
@@ -1231,22 +1239,14 @@ var that = {
 		try {
 			// dkimDebugMsg("DNS result: " + dnsResult);
 			if (dnsResult === null) {
-				throw new DKIM_SigError(DKIM_STRINGS.DKIM_SIGERROR_KEYFAIL);
+				throw new DKIM_SigError("DKIM_SIGERROR_KEYFAIL");
 			}
 			
 			msg.keyQueryResult = dnsResult[0];
 			
 			verifySignaturePart2(msg);
 		} catch(e) {
-			var dkimMsgHdrRes = document.getElementById("dkim_verifier_msgHdrRes");
-			if (e instanceof DKIM_SigError) {				
-				dkimMsgHdrRes.value = DKIM_STRINGS.PERMFAIL + " (" + e.message + ")";
-			} else {
-				dkimMsgHdrRes.value = "Internal Error";
-			}
-			if (prefDKIMDebug) {
-				Components.utils.reportError(e+"\n"+e.stack);
-			}
+			handleExeption(e);
 		}
 	},
 	
