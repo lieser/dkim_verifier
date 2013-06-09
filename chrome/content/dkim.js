@@ -4,7 +4,7 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  *
- * version: 0.4.0 (09 June 2013)
+ * version: 0.4.1pre1 (09 June 2013)
  *
  * Copyright (c) 2013 Philippe Lieser
  *
@@ -1240,8 +1240,8 @@ var that = {
 
 		// reset highlight from header
 		var expandedfromBox = document.getElementById("expandedfromBox");
-		expandedfromBox.emailAddresses.style.color = "windowtext";
-		expandedfromBox.emailAddresses.style.backgroundColor = "transparent";
+		expandedfromBox.emailAddresses.style.color = "";
+		expandedfromBox.emailAddresses.style.backgroundColor = "";
 	},
 	
 	/*
