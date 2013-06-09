@@ -236,7 +236,8 @@ DKIM_Verifier.DKIMVerifier = (function() {
 				inputStream.close();
 				nsIInputStream.close();
 				
-				throw new DKIM_InternalError("Message is not in correct e-mail format");
+				throw new DKIM_InternalError("Message is not in correct e-mail format",
+					"INCORRECT_EMAIL_FORMAT");
 			}
 		}
 		
@@ -837,6 +838,12 @@ DKIM_Verifier.DKIMVerifier = (function() {
 				expandedfromBox.emailAddresses.style.backgroundColor = prefs.
 					getCharPref("color.permfail.background");
 			}
+		} else if (e instanceof DKIM_InternalError) {
+			if (e.errorType === "INCORRECT_EMAIL_FORMAT") {
+				dkimMsgHdrRes.value = DKIM_Verifier.DKIM_STRINGS.NOT_EMAIL;
+			} else {
+				dkimMsgHdrRes.value = "Internal Error";
+			}
 		} else {
 			dkimMsgHdrRes.value = "Internal Error";
 		}
@@ -1065,8 +1072,9 @@ DKIM_Verifier.DKIMVerifier = (function() {
 	/*
 	 * DKIM internal error
 	 */
-	function DKIM_InternalError(message) {
+	function DKIM_InternalError(message, errorType) {
 		this.name = DKIM_Verifier.DKIM_STRINGS.DKIM_INTERNALERROR;
+		this.errorType = errorType;
 		this.message = message || DKIM_Verifier.DKIM_STRINGS.DKIM_INTERNALERROR_DEFAULT;
 		
 		// modify stack and lineNumber, to show where this object was created,
@@ -1168,6 +1176,9 @@ var that = {
 			// return if msg is in RSS folder
 			var messageService = messenger.messageServiceFromURI(msgURI);
 			if (messageService.messageURIToMsgHdr(msgURI).folder.server.type === "rss") {
+				var dkimMsgHdrRes = document.getElementById("dkim_verifier_msgHdrRes");
+				dkimMsgHdrRes.value = DKIM_Verifier.DKIM_STRINGS.NOT_EMAIL;
+
 				return;
 			}
 			

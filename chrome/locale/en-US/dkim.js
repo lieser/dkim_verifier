@@ -9,6 +9,7 @@ DKIM_STRINGS.TEMPFAIL = function(domain) {
 	return "Temporary validating error (For Signature by "+domain+")";
 };
 DKIM_STRINGS.NOSIG = "No Signature";
+DKIM_STRINGS.NOT_EMAIL = "Message is not an e-mail";
 
 // DKIM_INTERNALERROR
 DKIM_STRINGS.DKIM_INTERNALERROR					= "DKIM verifier internal error";
