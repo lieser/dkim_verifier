@@ -87,8 +87,8 @@ DKIM_Verifier.DKIMVerifier = (function() {
 	"use strict";
 	
 	// set hash funktions used by rsasign-1.2.js
-	DKIM_Verifier._RSASIGN_HASHHEXFUNC['sha1'] = function(s){return dkim_hash(s, "sha1", "hex");};
-	DKIM_Verifier._RSASIGN_HASHHEXFUNC['sha256'] = function(s){return dkim_hash(s, "sha256", "hex");};
+	DKIM_Verifier._RSASIGN_HASHHEXFUNC.sha1 = function(s){return dkim_hash(s, "sha1", "hex");};
+	DKIM_Verifier._RSASIGN_HASHHEXFUNC.sha256 = function(s){return dkim_hash(s, "sha256", "hex");};
 
 /*
  * preferences
@@ -143,7 +143,9 @@ DKIM_Verifier.DKIMVerifier = (function() {
 		function rstr2byteArray(str) {
 			var res = new Array(str.length);
 			for (var i = 0; i < str.length; i++) {
+				/* jshint -W016 */
 				res[i] = str.charCodeAt(i) & 0xFF;
+				/* jshint +W016 */
 			}
 			
 			return res;
@@ -1014,7 +1016,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 				
 				// set warning tooltip
 				var dkimWarningTooltip = document.getElementById("dkim_verifier_tooltip_warnings");
-				msg.warnings.forEach(function(element, index, array) {
+				msg.warnings.forEach(function(element /*, index, array*/) {
 					var description  = document.createElement("description");
 					description.setAttribute("value", DKIM_Verifier.DKIM_STRINGS[element]);
 					dkimWarningTooltip.appendChild(description);
