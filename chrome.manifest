@@ -1,4 +1,4 @@
 content		dkim_verifier			chrome/content/
 locale		dkim_verifier en-US		chrome/locale/en-US/
-locale  	dkim_verifier de-DE		chrome/locale/de-DE/
+locale		dkim_verifier de-DE		chrome/locale/de-DE/
 overlay		chrome://messenger/content/msgHdrViewOverlay.xul  chrome://dkim_verifier/content/msgHdrViewOverlay.xul
