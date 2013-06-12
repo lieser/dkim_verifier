@@ -1,0 +1,22 @@
+<!ENTITY prefwindow.title "DKIM Verifier Optionen">
+
+
+<!ENTITY general.label "General">
+
+<!ENTITY debug.label "Aktiviere Debug Modus">
+<!ENTITY dns.nameserver.label "DNS Nameserver">
+<!ENTITY error.key_testmode.ignore.label "Zeige Testmodus als Warnung nicht als Fehler an">
+
+
+<!ENTITY display.label "Anzeige">
+
+<!ENTITY alwaysShowDKIMHeader.label "Zeige immer DKIM Signatur in der Kopfzeile">
+<!ENTITY colorFrom.label "Aktiviere Markierung der Absenderadresse">
+<!ENTITY color.label "Farbe">
+<!ENTITY color.text.label "Text Farbe:">
+<!ENTITY color.background.label "Hintergrund Farbe:">
+<!ENTITY color.success.label "Gültige Signatur">
+<!ENTITY color.warning.label "Gültige Signatur mit Warnung">
+<!ENTITY color.permfail.label "Ungültige Signatur">
+<!ENTITY color.nosig.label "Unsignierte E-Mail">
+
