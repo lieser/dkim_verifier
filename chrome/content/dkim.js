@@ -4,7 +4,7 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  *
- * version: 0.4.0 (09 June 2013)
+ * version: 0.4.1pre1 (11 June 2013)
  *
  * Copyright (c) 2013 Philippe Lieser
  *
@@ -195,66 +195,76 @@ DKIM_Verifier.DKIMVerifier = (function() {
 	 * returns msg.headerPlain and msg.bodyPlain
 	 */
 	function parseMsg(msgURI) {
-		var header = "";
-		var c;
-		var body = "";
-		// return value
-		var msg = {};
+		var StreamListener =
+		{
+			msg: {
+				msgURI: msgURI,
+				headerPlain: "",
+				bodyPlain: ""
+			},
+			headerFinished: false,
+			
+			QueryInterface : function(iid)  {
+						if (iid.equals(Components.interfaces.nsIStreamListener) ||
+							iid.equals(Components.interfaces.nsISupports)) {
+							return this;
+						}
+						
+						throw Components.results.NS_NOINTERFACE;
+			},
 
-		// get inputStream for msg
-		var messageService = messenger.messageServiceFromURI(msgURI);
-		var nsIInputStream = Components.classes["@mozilla.org/network/sync-stream-listener;1"].
-			createInstance(Components.interfaces.nsIInputStream);
-		var inputStream = Components.classes["@mozilla.org/scriptableinputstream;1"].
-			createInstance(Components.interfaces.nsIScriptableInputStream);
-		inputStream.init(nsIInputStream);
-		messageService.streamMessage(msgURI, nsIInputStream, msgWindow, null, false, null);
-		
-		// read header
-		while(true) {
-			// read one character
-			c = inputStream.read(1);
-			
-			// if end of line
-			if (c === "\n") {
-				header += "\n";
-				// check for following empty line (end of header)
-				c = inputStream.read(2);
-				if (c === "\r\n") {
-					// empty line found, stop
-					break;
-				}
-				header += c;
-			} else {
-				header += c;
-			}
-			
-			// if end of msg is reached before end of header,
-			// it is no in correct e-mail format
-			if (inputStream.available() === 0) {
-				// close inputStream
-				inputStream.close();
-				nsIInputStream.close();
+			onDataAvailable: function ( request , context , inputStream , offset , count ) {
+				var str;
 				
-				throw new DKIM_InternalError("Message is not in correct e-mail format",
-					"INCORRECT_EMAIL_FORMAT");
+				// dkimDebugMsg("onDataAvailable");
+				
+				try {
+					var scriptableInputStream = Components.classes["@mozilla.org/scriptableinputstream;1"].
+						createInstance(Components.interfaces.nsIScriptableInputStream);
+					scriptableInputStream.init(inputStream);
+
+					if (!this.headerFinished) {
+						// read header
+						str = scriptableInputStream.read(count);
+						var posEndHeader = str.indexOf("\r\n\r\n");
+						if (posEndHeader === -1) {
+							// end of header not yet reached
+							this.msg.headerPlain += str;
+						} else {
+							// end of header reached
+							this.msg.headerPlain += str.substr(0, posEndHeader+2);
+							this.msg.bodyPlain = str.substr(posEndHeader+4);
+							this.headerFinished = true;
+						}
+					} else {
+						// read body
+						this.msg.bodyPlain += scriptableInputStream.read(count);
+					}
+				} catch (e) {
+					handleExeption(e);
+				}
+			},
+			
+			onStartRequest: function (/* request , context */) {
+				// dkimDebugMsg("onStartRequest");
+			},
+			
+			onStopRequest: function (/* aRequest , aContext , aStatusCode */) {
+				// dkimDebugMsg("onStopRequest");
+				
+				// if end of msg is reached before end of header,
+				// it is no in correct e-mail format
+				if (!this.headerFinished) {
+					throw new DKIM_InternalError("Message is not in correct e-mail format",
+						"INCORRECT_EMAIL_FORMAT");
+				}
+
+				verifyBegin(this.msg);
 			}
-		}
-		
-		// read body
-		var i;
-		while ((i = inputStream.available()) !== 0) {
-			body = body + inputStream.read(i);
-		}
-		
-		// close inputStream
-		inputStream.close();
-		nsIInputStream.close();
-		
-		msg.headerPlain = header;
-		msg.bodyPlain = body;
-		
-		return msg;
+		};
+
+		var messageService = messenger.messageServiceFromURI(msgURI);
+		messageService.CopyMessage(msgURI, StreamListener, false, null, msgWindow, {});
 	}
 
 	/*
@@ -854,6 +864,44 @@ DKIM_Verifier.DKIMVerifier = (function() {
 	}
 	
 	/*
+	 * checks if msg is signed, and begins verification if it is
+	 */
+	function verifyBegin(msg) {
+		try {
+			// parse the header
+			msg.headerFields = parseHeader(msg.headerPlain);
+
+			// check if DKIMSignatureHeader exist
+			if (msg.headerFields["dkim-signature"] === undefined) {
+				var dkimMsgHdrRes = document.getElementById("dkim_verifier_msgHdrRes");
+				dkimMsgHdrRes.value = DKIM_Verifier.DKIM_STRINGS.NOSIG;
+
+				// highlight from header
+				if (prefs.getBoolPref("colorFrom")) {
+					var expandedfromBox = document.getElementById("expandedfromBox");
+					expandedfromBox.emailAddresses.style.borderRadius = "3px";
+					expandedfromBox.emailAddresses.style.color = prefs.
+						getCharPref("color.nosig.text");
+					expandedfromBox.emailAddresses.style.backgroundColor = prefs.
+						getCharPref("color.nosig.background");
+				}
+				
+				// no signature to check, return
+				return;
+			}
+			
+			// show the dkim verifier header box
+			var dkimVerifierBox = document.getElementById("dkim_verifier_msgHdrBox");
+			dkimVerifierBox.collapsed = false;
+			
+			verifySignaturePart1(msg);
+			
+		} catch(e) {
+			handleExeption(e);
+		}
+	}
+
+	/*
 	 * 1. part of verifying the signature
 	 * will verify until key query, the rest is in verifySignaturePart2
 	 */
@@ -1183,37 +1231,8 @@ var that = {
 			}
 			
 			// parse msg into msg.header and msg.body
-			var msg = parseMsg(msgURI);
-			msg.msgURI = msgURI;
-			
-			// parse the header
-			msg.headerFields = parseHeader(msg.headerPlain);
-
-			// check if DKIMSignatureHeader exist
-			if (msg.headerFields["dkim-signature"] === undefined) {
-				var dkimMsgHdrRes = document.getElementById("dkim_verifier_msgHdrRes");
-				dkimMsgHdrRes.value = DKIM_Verifier.DKIM_STRINGS.NOSIG;
-
-				// highlight from header
-				if (prefs.getBoolPref("colorFrom")) {
-					var expandedfromBox = document.getElementById("expandedfromBox");
-					expandedfromBox.emailAddresses.style.borderRadius = "3px";
-					expandedfromBox.emailAddresses.style.color = prefs.
-						getCharPref("color.nosig.text");
-					expandedfromBox.emailAddresses.style.backgroundColor = prefs.
-						getCharPref("color.nosig.background");
-				}
-				
-				// no signature to check, return
-				return;
-			}
-			
-			// show the dkim verifier header box
-			var dkimVerifierBox = document.getElementById("dkim_verifier_msgHdrBox");
-			dkimVerifierBox.collapsed = false;
-			
-			verifySignaturePart1(msg);
-			
+			// this function will continue the verification
+			parseMsg(msgURI);
 		} catch(e) {
 			handleExeption(e);
 		}
@@ -1240,8 +1259,8 @@ var that = {
 
 		// reset highlight from header
 		var expandedfromBox = document.getElementById("expandedfromBox");
-		expandedfromBox.emailAddresses.style.color = "windowtext";
-		expandedfromBox.emailAddresses.style.backgroundColor = "transparent";
+		expandedfromBox.emailAddresses.style.color = "";
+		expandedfromBox.emailAddresses.style.backgroundColor = "";
 	},
 	
 	/*

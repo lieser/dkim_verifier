@@ -10,7 +10,7 @@
 		<em:name>DKIM Verifier</em:name>
 		<em:description>Verifies the DKIM-Signature of an e-mail.</em:description>
 
-		<em:version>0.4.0</em:version>
+		<em:version>0.4.1pre1</em:version>
 
 		<em:creator>Philippe Lieser</em:creator>
 		

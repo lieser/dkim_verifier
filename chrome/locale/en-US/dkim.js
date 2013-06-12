@@ -6,7 +6,7 @@ DKIM_STRINGS.loading = "Validating...";
 DKIM_STRINGS.SUCCESS = function(domain) {return "Valid (Signed by "+domain+")";};
 DKIM_STRINGS.PERMFAIL = "Invalid";
 DKIM_STRINGS.TEMPFAIL = function(domain) {
-	return "Temporary validating error (For Signature by "+domain+")";
+	return "Temporary validation error (For Signature by "+domain+")";
 };
 DKIM_STRINGS.NOSIG = "No Signature";
 DKIM_STRINGS.NOT_EMAIL = "Message is not an e-mail";
@@ -36,7 +36,7 @@ DKIM_STRINGS.DKIM_SIGERROR_MISSING_FROM		= "From header is not signed";
 DKIM_STRINGS.DKIM_SIGERROR_SUBDOMAIN_I		= "AUID is not in a subdomain of SDID";
 DKIM_STRINGS.DKIM_SIGERROR_DOMAIN_I			= "AUID must be in the same domain as SDID (s-flag set in key record)";
 DKIM_STRINGS.DKIM_SIGERROR_TOOLARGE_L		= "Value of the body lenght tag exceeds body size";
-DKIM_STRINGS.DKIM_SIGERROR_UNKNOWN_Q		= "Unsupported query methods for public key retrievel";
+DKIM_STRINGS.DKIM_SIGERROR_UNKNOWN_Q		= "Unsupported query methods for public key retrieval";
 DKIM_STRINGS.DKIM_SIGERROR_MISSING_S		= "Missing selector tag";
 DKIM_STRINGS.DKIM_SIGERROR_TIMESTAMPS		= "Signature Expiration before Signature Timestamp";
 // DKIM_SIGERROR - key query
@@ -55,6 +55,6 @@ DKIM_STRINGS.DKIM_SIGERROR_KEYDECODE		= "Key couldn't be decoded";
 DKIM_STRINGS.DKIM_SIGWARNING_SMALL_L		= "Not the entire body is singned";
 DKIM_STRINGS.DKIM_SIGWARNING_EXPIRED		= "Signature is expired";
 DKIM_STRINGS.DKIM_SIGWARNING_FUTURE			= "Signature is in the future";
-DKIM_STRINGS.DKIM_SIGWARNING_KEYSMALL		= "Signature key is small";
+DKIM_STRINGS.DKIM_SIGWARNING_KEYSMALL		= "Signature key size is small";
 DKIM_STRINGS.DKIM_SIGWARNING_FROM_NOT_IN_SDID	= "From is not in Signing Domain";
 DKIM_STRINGS.DKIM_SIGWARNING_FROM_NOT_IN_AUID	= "From does not match User Identifier";

@@ -10,8 +10,8 @@
 
 	<vbox id="expandedHeadersBox">
 		<hbox id="dkim_verifier_msgHdrBox" collapsed="true">
-			<label value="&dkim_verifier.header.title;"/>
-			<label id="dkim_verifier_msgHdrRes" value=""/>
+			<label value="&dkim_verifier.header.title;" class="headerName"/>
+			<label id="dkim_verifier_msgHdrRes" value="" class="headerValue"/>
 			<tooltip id="dkim_verifier_tooltip_warnings"/>
 			<image id="dkim_verifier_warning_icon"
 			       class="alert-icon"

@@ -1,3 +1,8 @@
+0.4.1pre1 [2013-06-11]
+----------------------
+ - DKIM-Signature header field name now in same style as the others
+ - fixed bug if message needs to be downloaded from IMAP server
+
 0.4.0 [2013-06-09]
 ------------------
  - warnings are displayed
