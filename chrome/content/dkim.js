@@ -250,16 +250,20 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			},
 			
 			onStopRequest: function (/* aRequest , aContext , aStatusCode */) {
-				// dkimDebugMsg("onStopRequest");
-				
-				// if end of msg is reached before end of header,
-				// it is no in correct e-mail format
-				if (!this.headerFinished) {
-					throw new DKIM_InternalError("Message is not in correct e-mail format",
-						"INCORRECT_EMAIL_FORMAT");
-				}
+				try {
+					// dkimDebugMsg("onStopRequest");
+					
+					// if end of msg is reached before end of header,
+					// it is no in correct e-mail format
+					if (!this.headerFinished) {
+						throw new DKIM_InternalError("Message is not in correct e-mail format",
+							"INCORRECT_EMAIL_FORMAT");
+					}
 
-				verifyBegin(this.msg);
+					verifyBegin(this.msg);
+				} catch (e) {
+					handleExeption(e);
+				}
 			}
 		};
 
@@ -895,7 +899,6 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			dkimVerifierBox.collapsed = false;
 			
 			verifySignaturePart1(msg);
-			
 		} catch(e) {
 			handleExeption(e);
 		}
@@ -1216,14 +1219,13 @@ var that = {
 	/*
 	 * gets called if a new message ist viewed
 	 */
-	messageLoaded : function () {	
+	messageLoaded : function () {
 		try {
 			// get msg uri
 			var msgURI = gDBView.URIForFirstSelectedMessage ;
 			
-			// return if msg is in RSS folder
-			var messageService = messenger.messageServiceFromURI(msgURI);
-			if (messageService.messageURIToMsgHdr(msgURI).folder.server.type === "rss") {
+			// return if msg is RSS feed or news
+			if (gFolderDisplay.selectedMessageIsFeed || gFolderDisplay.selectedMessageIsNews) {
 				var dkimMsgHdrRes = document.getElementById("dkim_verifier_msgHdrRes");
 				dkimMsgHdrRes.value = DKIM_Verifier.DKIM_STRINGS.NOT_EMAIL;
 
