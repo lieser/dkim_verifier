@@ -1,8 +1,9 @@
-0.4.1pre1 [2013-06-11]
+0.4.1pre1 [2013-06-13]
 ----------------------
  - DKIM-Signature header field name now in same style as the others
  - fixed bug if message needs to be downloaded from IMAP server
  - added German translation (by ionum)
+ - fixed relaxed canonicalization from a body with only empty lines (by ionum)
 
 0.4.0 [2013-06-09]
 ------------------

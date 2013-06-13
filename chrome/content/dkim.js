@@ -4,7 +4,7 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  *
- * version: 0.4.1pre1 (11 June 2013)
+ * version: 0.4.1pre1 (13 June 2013)
  *
  * Copyright (c) 2013 Philippe Lieser
  *
@@ -53,7 +53,7 @@
  */
  
 // options for JSHint
-/* global Components, messenger, msgWindow, Application, gMessageListeners, gDBView, Services */ 
+/* global Components, messenger, msgWindow, Application, gMessageListeners, gDBView, Services, gFolderDisplay */ 
 
 // namespace
 var DKIM_Verifier = {};
@@ -707,11 +707,6 @@ DKIM_Verifier.DKIMVerifier = (function() {
 	 * specified in Section 3.4.4 of RFC 6376
 	 */
 	function canonicalizationBodyRelaxed(body) {
-		// no change for empty body
-		if (body === "") {
-			return body;
-		} 
-		
 		// Ignore all whitespace at the end of lines
 		body = body.replace(/[ \t]+\r\n/g,"\r\n");
 		// Reduce all sequences of WSP within a line to a single SP character
@@ -722,7 +717,12 @@ DKIM_Verifier.DKIMVerifier = (function() {
 		// for some reason /(\r\n)*$/ doesn't work all the time (matching only last "\r\n")
 		body = body.replace(/((\r\n)+)?$/,"\r\n");
 		
-		return body;
+		// If only one \r\n rests, there were only emtpy lines or body was empty.
+		if (body == "\r\n") {
+			return "";
+		} else {
+			return body;
+		}
 	}
 
 	/*
