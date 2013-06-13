@@ -718,7 +718,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 		body = body.replace(/((\r\n)+)?$/,"\r\n");
 		
 		// If only one \r\n rests, there were only emtpy lines or body was empty.
-		if (body == "\r\n") {
+		if (body === "\r\n") {
 			return "";
 		} else {
 			return body;
@@ -829,6 +829,40 @@ DKIM_Verifier.DKIMVerifier = (function() {
 	}
 	
 	/*
+	 * highlight header
+	 */
+	function highlightHeader(status) {
+		function highlightEmailAddresses(headerBox) {
+			if (status !== "clearHeader") {
+			headerBox.emailAddresses.style.borderRadius = "3px";
+			headerBox.emailAddresses.style.color = prefs.
+				getCharPref("color."+status+".text");
+			headerBox.emailAddresses.style.backgroundColor = prefs.
+				getCharPref("color."+status+".background");
+			} else {
+				headerBox.emailAddresses.style.color = "";
+				headerBox.emailAddresses.style.backgroundColor = "";
+			}
+		}
+		
+		// highlight or reset header
+		if (prefs.getBoolPref("colorFrom") || status === "clearHeader") {
+			var expandedfromBox = document.getElementById("expandedfromBox");
+			highlightEmailAddresses(expandedfromBox);
+
+			// for CompactHeader addon
+			var collapsed1LfromBox = document.getElementById("CompactHeader_collapsed1LfromBox");
+			if (collapsed1LfromBox) {
+				highlightEmailAddresses(collapsed1LfromBox);
+			}
+			var collapsed2LfromBox = document.getElementById("CompactHeader_collapsed2LfromBox");
+			if (collapsed1LfromBox) {
+				highlightEmailAddresses(collapsed2LfromBox);
+			}
+		}
+	}
+
+	/*
 	 * handeles Exeption
 	 */
 	function handleExeption(e) {
@@ -844,14 +878,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			dkimMsgHdrRes.value = DKIM_Verifier.DKIM_STRINGS.PERMFAIL + " (" + e.message + ")";
 			
 			// highlight from header
-			if (prefs.getBoolPref("colorFrom")) {
-				var expandedfromBox = document.getElementById("expandedfromBox");
-				expandedfromBox.emailAddresses.style.borderRadius = "3px";
-				expandedfromBox.emailAddresses.style.color = prefs.
-					getCharPref("color.permfail.text");
-				expandedfromBox.emailAddresses.style.backgroundColor = prefs.
-					getCharPref("color.permfail.background");
-			}
+			highlightHeader("permfail");
 		} else if (e instanceof DKIM_InternalError) {
 			if (e.errorType === "INCORRECT_EMAIL_FORMAT") {
 				dkimMsgHdrRes.value = DKIM_Verifier.DKIM_STRINGS.NOT_EMAIL;
@@ -881,14 +908,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 				dkimMsgHdrRes.value = DKIM_Verifier.DKIM_STRINGS.NOSIG;
 
 				// highlight from header
-				if (prefs.getBoolPref("colorFrom")) {
-					var expandedfromBox = document.getElementById("expandedfromBox");
-					expandedfromBox.emailAddresses.style.borderRadius = "3px";
-					expandedfromBox.emailAddresses.style.color = prefs.
-						getCharPref("color.nosig.text");
-					expandedfromBox.emailAddresses.style.backgroundColor = prefs.
-						getCharPref("color.nosig.background");
-				}
+				highlightHeader("nosig");
 				
 				// no signature to check, return
 				return;
@@ -1082,20 +1102,10 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			}
 			
 			// highlight from header
-			if (prefs.getBoolPref("colorFrom")) {
-				var expandedfromBox = document.getElementById("expandedfromBox");
-				expandedfromBox.emailAddresses.style.borderRadius = "3px";
-				if (msg.warnings.length === 0) {
-					expandedfromBox.emailAddresses.style.color = prefs.
-						getCharPref("color.success.text");
-					expandedfromBox.emailAddresses.style.backgroundColor = prefs.
-						getCharPref("color.success.background");
-				} else {
-					expandedfromBox.emailAddresses.style.color = prefs.
-						getCharPref("color.warning.text");
-					expandedfromBox.emailAddresses.style.backgroundColor = prefs.
-						getCharPref("color.warning.background");
-				}
+			if (msg.warnings.length === 0) {
+				highlightHeader("success");
+			} else {
+				highlightHeader("warning");
 			}
 		} catch(e) {
 			handleExeption(e);
@@ -1260,9 +1270,7 @@ var that = {
 		}
 
 		// reset highlight from header
-		var expandedfromBox = document.getElementById("expandedfromBox");
-		expandedfromBox.emailAddresses.style.color = "";
-		expandedfromBox.emailAddresses.style.backgroundColor = "";
+		highlightHeader("clearHeader");
 	},
 	
 	/*

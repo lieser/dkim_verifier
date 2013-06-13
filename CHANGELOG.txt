@@ -3,7 +3,8 @@
  - DKIM-Signature header field name now in same style as the others
  - fixed bug if message needs to be downloaded from IMAP server
  - added German translation (by ionum)
- - fixed relaxed canonicalization from a body with only empty lines (by ionum)
+ - fixed relaxed canonicalization of a body with only empty lines (by ionum)
+ - header highlighting now works with collapsed header from CompactHeader addon
 
 0.4.0 [2013-06-09]
 ------------------
