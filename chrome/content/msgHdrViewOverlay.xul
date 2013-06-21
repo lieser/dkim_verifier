@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE overlay SYSTEM "chrome://dkim_verifier/locale/xulstrings.dtd">
-<overlay id="sample" 
-         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+<overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
          xmlns:html="http://www.w3.org/1999/xhtml">
 
 	<!-- main script -->

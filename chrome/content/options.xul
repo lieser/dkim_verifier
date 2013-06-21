@@ -7,7 +7,10 @@
             xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
             title="&prefwindow.title;">
 
-<prefpane id="paneGeneral" label="&general.label;" image="chrome://messenger/skin/preferences/general.png">
+<prefpane id="paneGeneral"
+          label="&general.label;"
+          flex = "1"
+          image="chrome://messenger/skin/preferences/general.png">
 	<preferences>
 		<preference id="pref_dns.nameserver"
 		            name="extensions.dkim_verifier.dns.nameserver"
@@ -18,7 +21,10 @@
 	<textbox id="dns.nameserver" preference="pref_dns.nameserver"/>
 </prefpane>
 
-<prefpane id="paneDisplay" label="&display.label;" image="chrome://messenger/skin/preferences/display.png">
+<prefpane id="paneDisplay"
+          label="&display.label;"
+          flex = "1"
+          image="chrome://messenger/skin/preferences/display.png">
 	<preferences>
 		<preference id="pref_colorFrom"
 		            name="extensions.dkim_verifier.colorFrom"
@@ -109,7 +115,10 @@
 	<checkbox preference="pref_alwaysShowDKIMHeader" label="&alwaysShowDKIMHeader.label;"/>
 </prefpane>
 
-<prefpane id="paneAdvanced" label="&advanced.label;" image="chrome://messenger/skin/preferences/advanced.png">
+<prefpane id="paneAdvanced"
+          label="&advanced.label;"
+          flex = "1"
+          image="chrome://messenger/skin/preferences/advanced.png">
 	<preferences>
 		<preference id="pref_debug"
 		            name="extensions.dkim_verifier.debug"
@@ -120,7 +129,6 @@
 	</preferences>
 	
 	<checkbox preference="pref_debug" label="&debug.label;"/>
-	<label control="dns.nameserver">&dns.nameserver.label;</label>
 	<checkbox preference="pref_error.key_testmode.ignore"
 	          label="&error.key_testmode.ignore.label;"/>
 </prefpane>

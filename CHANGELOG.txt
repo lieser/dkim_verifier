@@ -5,6 +5,7 @@
  - added German translation (by ionum)
  - fixed relaxed canonicalization of a body with only empty lines (by ionum)
  - header highlighting now works with collapsed header from CompactHeader addon
+ - small displaying changes in options
 
 0.4.0 [2013-06-09]
 ------------------
