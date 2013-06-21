@@ -3,14 +3,12 @@
 
 <!ENTITY general.label "General">
 
-<!ENTITY debug.label "Enable debug mode">
 <!ENTITY dns.nameserver.label "DNS Nameserver">
-<!ENTITY error.key_testmode.ignore.label "Treat testmode as warning, not as error">
 
 
 <!ENTITY display.label "Display">
 
-<!ENTITY alwaysShowDKIMHeader.label "Always show DKIM-Signature header field">
+<!ENTITY alwaysShowDKIMHeader.label "Always show the DKIM-Signature header field">
 <!ENTITY colorFrom.label "Enable highlighting of From header">
 <!ENTITY color.label "Color">
 <!ENTITY color.text.label "Text Color:">
@@ -20,3 +18,8 @@
 <!ENTITY color.permfail.label "Invalid Siganture">
 <!ENTITY color.nosig.label "Unsigned e-mail">
 
+
+<!ENTITY advanced.label "Advanced">
+
+<!ENTITY debug.label "Enable debugging (Outputs errors and debug info to the Error Console)">
+<!ENTITY error.key_testmode.ignore.label "Still verify the signature, if a domain is only testing DKIM">

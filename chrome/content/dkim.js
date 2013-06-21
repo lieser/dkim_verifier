@@ -834,11 +834,11 @@ DKIM_Verifier.DKIMVerifier = (function() {
 	function highlightHeader(status) {
 		function highlightEmailAddresses(headerBox) {
 			if (status !== "clearHeader") {
-			headerBox.emailAddresses.style.borderRadius = "3px";
-			headerBox.emailAddresses.style.color = prefs.
-				getCharPref("color."+status+".text");
-			headerBox.emailAddresses.style.backgroundColor = prefs.
-				getCharPref("color."+status+".background");
+				headerBox.emailAddresses.style.borderRadius = "3px";
+				headerBox.emailAddresses.style.color = prefs.
+					getCharPref("color."+status+".text");
+				headerBox.emailAddresses.style.backgroundColor = prefs.
+					getCharPref("color."+status+".background");
 			} else {
 				headerBox.emailAddresses.style.color = "";
 				headerBox.emailAddresses.style.backgroundColor = "";

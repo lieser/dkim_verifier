@@ -9,22 +9,13 @@
 
 <prefpane id="paneGeneral" label="&general.label;" image="chrome://messenger/skin/preferences/general.png">
 	<preferences>
-		<preference id="pref_debug"
-		            name="extensions.dkim_verifier.debug"
-		            type="bool"/>
 		<preference id="pref_dns.nameserver"
 		            name="extensions.dkim_verifier.dns.nameserver"
 		            type="string"/>
-		<preference id="pref_error.key_testmode.ignore"
-		            name="extensions.dkim_verifier.error.key_testmode.ignore"
-		            type="bool"/>
 	</preferences>
 	
-	<checkbox preference="pref_debug" label="&debug.label;"/>
 	<label control="dns.nameserver">&dns.nameserver.label;</label>
 	<textbox id="dns.nameserver" preference="pref_dns.nameserver"/>
-	<checkbox preference="pref_error.key_testmode.ignore"
-	          label="&error.key_testmode.ignore.label;"/>
 </prefpane>
 
 <prefpane id="paneDisplay" label="&display.label;" image="chrome://messenger/skin/preferences/display.png">
@@ -117,4 +108,21 @@
 	</groupbox>
 	<checkbox preference="pref_alwaysShowDKIMHeader" label="&alwaysShowDKIMHeader.label;"/>
 </prefpane>
+
+<prefpane id="paneAdvanced" label="&advanced.label;" image="chrome://messenger/skin/preferences/advanced.png">
+	<preferences>
+		<preference id="pref_debug"
+		            name="extensions.dkim_verifier.debug"
+		            type="bool"/>
+		<preference id="pref_error.key_testmode.ignore"
+		            name="extensions.dkim_verifier.error.key_testmode.ignore"
+		            type="bool"/>
+	</preferences>
+	
+	<checkbox preference="pref_debug" label="&debug.label;"/>
+	<label control="dns.nameserver">&dns.nameserver.label;</label>
+	<checkbox preference="pref_error.key_testmode.ignore"
+	          label="&error.key_testmode.ignore.label;"/>
+</prefpane>
+
 </prefwindow>

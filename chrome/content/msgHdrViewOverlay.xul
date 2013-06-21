@@ -19,7 +19,7 @@
 				       collapsed="false"
 				       tooltip="dkim_verifier_tooltip_warnings"
 				       width="16" height="16"/>
-				</hbox>
+			</hbox>
 		</hbox>
 	</vbox>
 
