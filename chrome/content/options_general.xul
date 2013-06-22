@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://dkim_verifier/locale/options.dtd">
+
+<overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+<prefpane id="paneGeneral" onpaneload="onLoad('paneGeneral');">
+	<preferences>
+		<preference id="pref_dns.nameserver"
+		            name="extensions.dkim_verifier.dns.nameserver"
+		            type="string"/>
+	</preferences>
+	
+	<label control="dns.nameserver">&dns.nameserver.label;</label>
+	<textbox id="dns.nameserver" preference="pref_dns.nameserver"/>
+</prefpane>
+
+</overlay>

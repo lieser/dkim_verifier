@@ -21,5 +21,5 @@
 
 <!ENTITY advanced.label "Advanced">
 
-<!ENTITY debug.label "Enable debugging (Outputs errors and debug info to the Error Console)">
+<!ENTITY debug.label "Enable debugging (Outputs errors and debug info in the Error Console)">
 <!ENTITY error.key_testmode.ignore.label "Still verify the signature, if a domain is only testing DKIM">

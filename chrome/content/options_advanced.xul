@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://dkim_verifier/locale/options.dtd">
+
+<overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+<prefpane id="paneAdvanced" onpaneload="onLoad('paneAdvanced');">
+	<preferences>
+		<preference id="pref_debug"
+		            name="extensions.dkim_verifier.debug"
+		            type="bool"/>
+		<preference id="pref_error.key_testmode.ignore"
+		            name="extensions.dkim_verifier.error.key_testmode.ignore"
+		            type="bool"/>
+	</preferences>
+	
+	<checkbox preference="pref_debug" label="&debug.label;"/>
+	<checkbox preference="pref_error.key_testmode.ignore"
+	          label="&error.key_testmode.ignore.label;"/>
+</prefpane>
+
+</overlay>

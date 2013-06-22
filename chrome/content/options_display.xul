@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://dkim_verifier/locale/options.dtd">
+
+<overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+<prefpane id="paneDisplay" onpaneload="onLoad('paneDisplay');">
+	<preferences>
+		<preference id="pref_colorFrom"
+		            name="extensions.dkim_verifier.colorFrom"
+		            type="bool"/>
+
+		<preference id="pref_color.success.text"
+		            name="extensions.dkim_verifier.color.success.text"
+		            type="string"/>
+		<preference id="pref_color.success.background"
+		            name="extensions.dkim_verifier.color.success.background"
+		            type="string"/>
+		
+		<preference id="pref_color.warning.text"
+		            name="extensions.dkim_verifier.color.warning.text"
+		            type="string"/>
+		<preference id="pref_color.warning.background"
+		            name="extensions.dkim_verifier.color.warning.background"
+		            type="string"/>
+		
+		<preference id="pref_color.permfail.text"
+		            name="extensions.dkim_verifier.color.permfail.text"
+		            type="string"/>
+		<preference id="pref_color.permfail.background"
+		            name="extensions.dkim_verifier.color.permfail.background"
+		            type="string"/>
+		
+		<preference id="pref_color.nosig.text"
+		            name="extensions.dkim_verifier.color.nosig.text"
+		            type="string"/>
+		<preference id="pref_color.nosig.background"
+		            name="extensions.dkim_verifier.color.nosig.background"
+		            type="string"/>
+
+		<preference id="pref_alwaysShowDKIMHeader"
+		            name="extensions.dkim_verifier.alwaysShowDKIMHeader"
+		            type="bool"/>
+	</preferences>
+	
+	<groupbox>
+		<caption label="&color.label;"/>
+		<checkbox preference="pref_colorFrom" label="&colorFrom.label;"/>
+
+		<groupbox>
+			<caption label="&color.success.label;"/>
+			<hbox align="center">
+				<label control="color.success.text">&color.text.label;</label>
+				<textbox id="color.success.text" preference="pref_color.success.text" width="100"/>
+				<colorpicker type="button" preference="pref_color.success.text"/>
+				<label control="color.success.background">&color.background.label;</label>
+				<textbox id="color.success.background" preference="pref_color.success.background" width="100"/>
+				<colorpicker type="button" preference="pref_color.success.background"/>
+			</hbox>
+		</groupbox>
+		<groupbox>
+			<caption label="&color.warning.label;"/>
+			<hbox align="center">
+				<label control="color.warning.text">&color.text.label;</label>
+				<textbox id="color.warning.text" preference="pref_color.warning.text" width="100"/>
+				<colorpicker type="button" preference="pref_color.warning.text"/>
+				<label control="color.warning.background">&color.background.label;</label>
+				<textbox id="color.warning.background" preference="pref_color.warning.background" width="100"/>
+				<colorpicker type="button" preference="pref_color.warning.background"/>
+			</hbox>
+		</groupbox>
+		<groupbox>
+			<caption label="&color.permfail.label;"/>
+			<hbox align="center">
+				<label control="color.permfail.text">&color.text.label;</label>
+				<textbox id="color.permfail.text" preference="pref_color.permfail.text" width="100"/>
+				<colorpicker type="button" preference="pref_color.permfail.text"/>
+				<label control="color.permfail.background">&color.background.label;</label>
+				<textbox id="color.permfail.background" preference="pref_color.permfail.background" width="100"/>
+				<colorpicker type="button" preference="pref_color.permfail.background"/>
+			</hbox>
+		</groupbox>
+		<groupbox>
+			<caption label="&color.nosig.label;"/>
+			<hbox align="center">
+				<label control="color.nosig.text">&color.text.label;</label>
+				<textbox id="color.nosig.text" preference="pref_color.nosig.text" width="100"/>
+				<colorpicker type="button" preference="pref_color.nosig.text"/>
+				<label control="color.nosig.background">&color.background.label;</label>
+				<textbox id="color.nosig.background" preference="pref_color.nosig.background" width="100"/>
+				<colorpicker type="button" preference="pref_color.nosig.background"/>
+			</hbox>
+		</groupbox>
+	</groupbox>
+	<checkbox preference="pref_alwaysShowDKIMHeader" label="&alwaysShowDKIMHeader.label;"/>
+</prefpane>
+
+</overlay>
