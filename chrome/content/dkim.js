@@ -1258,7 +1258,7 @@ var that = {
 	/*
 	 * Initializes the header and starts verification
 	 */
-	onOutput: function (header, headerValue) {
+	onOutput: function (headerEntry, headerValue) {
 		try {
 			// get msg uri
 			var msgURI = gDBView.URIForFirstSelectedMessage ;
