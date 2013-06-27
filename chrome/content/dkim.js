@@ -869,10 +869,11 @@ DKIM_Verifier.DKIMVerifier = (function() {
 	 * handeles Exeption
 	 */
 	function handleExeption(e) {
+		that.setCollapsed(false);
 		if (e instanceof DKIM_SigError) {
 			// if domain is testing DKIM, treat msg as not signed
 			if (e.errorType === "DKIM_SIGERROR_KEY_TESTMODE") {
-				row.collapsed = !prefs.getBoolPref("alwaysShowDKIMHeader");
+				that.setCollapsed(true);
 			}
 			
 			header.value = DKIM_Verifier.DKIM_STRINGS.PERMFAIL + " (" + e.message + ")";
@@ -905,6 +906,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			// check if DKIMSignatureHeader exist
 			if (msg.headerFields["dkim-signature"] === undefined) {
 				header.value = DKIM_Verifier.DKIM_STRINGS.NOSIG;
+				that.setCollapsed(true);
 
 				// highlight from header
 				highlightHeader("nosig");
@@ -914,7 +916,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			}
 			
 			// show the dkim verifier header box
-			row.collapsed = false;
+			that.setCollapsed(false);
 			
 			verifySignaturePart1(msg);
 		} catch(e) {
@@ -1162,6 +1164,17 @@ var that = {
 		header = view.enclosingBox;
 		row = view.enclosingRow;
 	},
+	setCollapsed: function(collapsed) {
+		if (collapsed) {
+			collapsed = !prefs.getBoolPref("alwaysShowDKIMHeader");
+		}
+		if (row.collapsed == collapsed) {
+			return;
+		}
+		row.collapsed = collapsed;
+		syncGridColumnWidths();
+	},
+
 	/*
 	 * gets called on startup
 	 */
@@ -1253,7 +1266,7 @@ var that = {
 			// return if msg is RSS feed or news
 			if (gFolderDisplay.selectedMessageIsFeed || gFolderDisplay.selectedMessageIsNews) {
 				header.value = DKIM_Verifier.DKIM_STRINGS.NOT_EMAIL;
-				row.collapsed = false;
+				that.setCollapsed(true);
 				return;
 			}
 			
