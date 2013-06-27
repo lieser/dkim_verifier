@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<!DOCTYPE bindings>
+<bindings id="dkim-verifier-bindings"
+          xmlns="http://www.mozilla.org/xbl"
+          xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+          xmlns:xbl="http://www.mozilla.org/xbl">
+  <binding id="dkim-verifier-box">
+    <content>
+      <xul:description anonid="headerValue"
+                       class="headerValue"
+                       readonly="true"
+                       context="copyPopup"
+                       role="textbox"
+                       aria-readonly="true" />
+      <xul:image class="alert-icon" tooltip="dkim-verifier-tooltip"/>
+      <xul:tooltip anonid="tooltip" id="dkim-verifier-tooltip"/>
+      <xul:separator flex="1"/>
+    </content>
+    <implementation>
+      <field name="headerValue">document.getAnonymousElementByAttribute(this, "anonid", "headerValue");</field>
+      <field name="tooltip">document.getAnonymousElementByAttribute(this, "anonid", "tooltip");</field>
+
+      <property name="value">
+        <setter><![CDATA[
+          this.headerValue.textContent = val;
+        ]]></setter>
+      </property>
+      <property name="warnings">
+        <setter><![CDATA[
+          while (this.tooltip.firstChild) {
+            this.tooltip.removeChild(this.tooltip.firstChild);
+          }
+          for (let w of val) {
+            var d = document.createElement("description");
+            d.textContent = w;
+            this.tooltip.appendChild(d);
+          }
+          this.setAttribute("warnings", (!!this.tooltip.firstChild).toString());
+        ]]></setter>
+      </property>
+    </implementation>
+  </binding>
+</bindings>
+<!-- vim: set et ts=2 sw=2 : -->
