@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
-<?xml-stylesheet href="chrome://dkim_verifier/content/options.css"?>
+<?xml-stylesheet href="chrome://dkim_verifier/skin/options.css"?>
 
 <!DOCTYPE prefwindow SYSTEM "chrome://dkim_verifier/locale/options.dtd">
 
