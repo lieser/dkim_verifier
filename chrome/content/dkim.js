@@ -53,7 +53,7 @@
  */
  
 // options for JSHint
-/* global Components, messenger, msgWindow, Application, gMessageListeners, gDBView, Services, gFolderDisplay */ 
+/* global Components, messenger, msgWindow, Application, gMessageListeners, gDBView, Services, gFolderDisplay, gExpandedHeaderView, createHeaderEntry, syncGridColumnWidths, currentHeaderData */ 
 
 // namespace
 var DKIM_Verifier = {};
@@ -101,7 +101,6 @@ DKIM_Verifier.DKIMVerifier = (function() {
  /*
  * private variables
  */
-	var messageListener;
 	const entry = "dkim-verifier";
 	var header;
 	var row;
@@ -1153,14 +1152,16 @@ var that = {
  */
  
 	initHeaderEntry: function() {
-		if (header && document.getElementById(header.id) != header) {
+		if (header && document.getElementById(header.id) !== header) {
 			return;
 		}
 		var e = {
 			name: entry,
 			outputFunction: that.onOutput.bind(that)
 		};
+		/* jshint -W055 */
 		var view = gExpandedHeaderView[entry] = new createHeaderEntry("expanded", e);
+		/* jshint -W055 */
 		header = view.enclosingBox;
 		row = view.enclosingRow;
 	},
@@ -1168,7 +1169,7 @@ var that = {
 		if (collapsed) {
 			collapsed = !prefs.getBoolPref("alwaysShowDKIMHeader");
 		}
-		if (row.collapsed == collapsed) {
+		if (row.collapsed === collapsed) {
 			return;
 		}
 		row.collapsed = collapsed;
@@ -1258,7 +1259,7 @@ var that = {
 	/*
 	 * Initializes the header and starts verification
 	 */
-	onOutput: function (headerEntry, headerValue) {
+	onOutput: function (/* headerEntry, headerValue */) {
 		try {
 			// get msg uri
 			var msgURI = gDBView.URIForFirstSelectedMessage ;
@@ -1306,6 +1307,8 @@ return that;
 }()); // the parens here cause the anonymous function to execute and return
 
 addEventListener("load", function dkim_load() {
+	"use strict";
+	
 	removeEventListener("load", dkim_load, false);
 	DKIM_Verifier.DKIMVerifier.startup();
 }, false);
