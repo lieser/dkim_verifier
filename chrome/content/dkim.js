@@ -1239,10 +1239,22 @@ var that = {
 	 */
 	onBeforeShowHeaderPane : function () {
 		that.initHeaderEntry();
-		currentHeaderData[entry] = {
-			headerName: entry,
-			headerValue: DKIM_Verifier.DKIM_STRINGS.loading
-		};
+
+		// if msg is RSS feed or news
+		if (gFolderDisplay.selectedMessageIsFeed || gFolderDisplay.selectedMessageIsNews) {
+			if (prefs.getBoolPref("alwaysShowDKIMHeader")) {
+				currentHeaderData[entry] = {
+					headerName: entry,
+					headerValue: DKIM_Verifier.DKIM_STRINGS.NOT_EMAIL
+				};
+				header.value = DKIM_Verifier.DKIM_STRINGS.NOT_EMAIL;
+			} 
+		} else {
+			currentHeaderData[entry] = {
+				headerName: entry,
+				headerValue: DKIM_Verifier.DKIM_STRINGS.loading
+			};
+		}
 	},
 
 	onStartHeaders: function() {
@@ -1266,8 +1278,6 @@ var that = {
 
 			// return if msg is RSS feed or news
 			if (gFolderDisplay.selectedMessageIsFeed || gFolderDisplay.selectedMessageIsNews) {
-				header.value = DKIM_Verifier.DKIM_STRINGS.NOT_EMAIL;
-				that.setCollapsed(true);
 				return;
 			}
 			
