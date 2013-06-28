@@ -2,14 +2,12 @@
 
 #expandeddkim-verifierBox {
   -moz-binding: url(chrome://dkim_verifier/content/bindings.xml#dkim-verifier-box) !important;
-  
-  -moz-box-align: center;
 }
 
 #expandeddkim-verifierBox > image {
   /* compare: .emailStar */
-  max-width: 14px;
-  max-height: 14px;
+  max-width: 1.1em;
+  max-height: 1.1em;
   -moz-appearance: none;
   padding: 0px;
   margin: 0;
