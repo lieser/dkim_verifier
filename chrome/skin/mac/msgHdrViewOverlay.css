@@ -2,7 +2,7 @@
 
 #expandeddkim-verifierBox {
   -moz-binding: url(chrome://dkim_verifier/content/bindings.xml#dkim-verifier-box) !important;
-  -moz-box-align: center;
+  -moz-box-align: center; 
 }
 
 #expandeddkim-verifierBox > image {
@@ -11,10 +11,10 @@
   max-height: 1.1em;
   -moz-appearance: none;
   padding: 0px;
-  margin-top: 0px;
-  margin-bottom: 3px;
+  margin-top: 0px; 
+  margin-bottom: 3px; 
   margin-left: 1ex;
-  margin-right: 0;
+  margin-right: 0; 
   visibility: hidden;
 }
 #expandeddkim-verifierBox[warnings="true"] > image {

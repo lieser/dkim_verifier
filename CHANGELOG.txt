@@ -1,5 +1,9 @@
+0.4.2 [2013-06-28]
+------------------
+ - fixed alignment of warning-icon in mac (by Nils Maier)
+
 0.4.1 [2013-06-28]
-----------------------
+------------------
  - DKIM-Signature header field name now in same style as the others (by Nils Maier)
  - fixed bug if message needs to be downloaded from IMAP server
  - added German translation (by ionum)
