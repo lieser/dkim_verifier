@@ -10,7 +10,7 @@
 		<em:name>DKIM Verifier</em:name>
 		<em:description>Verifies the DKIM-Signature of an e-mail.</em:description>
 
-		<em:version>0.4.1pre1</em:version>
+		<em:version>0.4.1</em:version>
 
 		<em:creator>Philippe Lieser</em:creator>
 		
@@ -21,6 +21,8 @@
 		<!-- RSA signing and verification and asn1hex Library -->
 		<em:contributor>Kenji Urushima (RSA verification and ASN1 Library)</em:contributor>
 		
+		<em:contributor>Nils Maier</em:contributor>
+
 		<em:homepageURL>https://github.com/lieser/dkim_verifier</em:homepageURL>
 
 		<em:optionsURL>chrome://dkim_verifier/content/options.xul</em:optionsURL>
@@ -39,6 +41,8 @@
 				<em:contributor>Tom Wu (RSA Bibliothek)</em:contributor>
 				<!-- RSA signing and verification and asn1hex Library -->
 				<em:contributor>Kenji Urushima (RSA Verifizierung und ASN1 Bibliothek)</em:contributor>
+				
+				<em:contributor>Nils Maier</em:contributor>
 
 				<em:translator>ionum</em:translator>
 
