@@ -102,6 +102,9 @@ DKIM_Verifier.DKIMVerifier = (function() {
  * private variables
  */
 	var messageListener;
+	const entry = "dkim-verifier";
+	var header;
+	var row;
 
 	// WSP help pattern as specified in Section 2.8 of RFC 6376
 	var pattWSP = "[ \t]";
@@ -866,27 +869,25 @@ DKIM_Verifier.DKIMVerifier = (function() {
 	 * handeles Exeption
 	 */
 	function handleExeption(e) {
-		var dkimMsgHdrRes = document.getElementById("dkim_verifier_msgHdrRes");
-		
+		that.setCollapsed(false);
 		if (e instanceof DKIM_SigError) {
 			// if domain is testing DKIM, treat msg as not signed
 			if (e.errorType === "DKIM_SIGERROR_KEY_TESTMODE") {
-				var dkimMsgHdrBox = document.getElementById("dkim_verifier_msgHdrBox");
-				dkimMsgHdrBox.collapsed = !prefs.getBoolPref("alwaysShowDKIMHeader");
+				that.setCollapsed(true);
 			}
 			
-			dkimMsgHdrRes.value = DKIM_Verifier.DKIM_STRINGS.PERMFAIL + " (" + e.message + ")";
+			header.value = DKIM_Verifier.DKIM_STRINGS.PERMFAIL + " (" + e.message + ")";
 			
 			// highlight from header
 			highlightHeader("permfail");
 		} else if (e instanceof DKIM_InternalError) {
 			if (e.errorType === "INCORRECT_EMAIL_FORMAT") {
-				dkimMsgHdrRes.value = DKIM_Verifier.DKIM_STRINGS.NOT_EMAIL;
+				header.value = DKIM_Verifier.DKIM_STRINGS.NOT_EMAIL;
 			} else {
-				dkimMsgHdrRes.value = "Internal Error";
+				header.value = "Internal Error";
 			}
 		} else {
-			dkimMsgHdrRes.value = "Internal Error";
+			header.value = "Internal Error";
 		}
 		
 		if (prefDKIMDebug) {
@@ -904,8 +905,8 @@ DKIM_Verifier.DKIMVerifier = (function() {
 
 			// check if DKIMSignatureHeader exist
 			if (msg.headerFields["dkim-signature"] === undefined) {
-				var dkimMsgHdrRes = document.getElementById("dkim_verifier_msgHdrRes");
-				dkimMsgHdrRes.value = DKIM_Verifier.DKIM_STRINGS.NOSIG;
+				header.value = DKIM_Verifier.DKIM_STRINGS.NOSIG;
+				that.setCollapsed(true);
 
 				// highlight from header
 				highlightHeader("nosig");
@@ -915,8 +916,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			}
 			
 			// show the dkim verifier header box
-			var dkimVerifierBox = document.getElementById("dkim_verifier_msgHdrBox");
-			dkimVerifierBox.collapsed = false;
+			that.setCollapsed(false);
 			
 			verifySignaturePart1(msg);
 		} catch(e) {
@@ -1083,21 +1083,12 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			}
 			
 			// show result
-			var dkimMsgHdrRes = document.getElementById("dkim_verifier_msgHdrRes");
-			dkimMsgHdrRes.value = DKIM_Verifier.DKIM_STRINGS.SUCCESS(msg.DKIMSignature.d);
+			header.value = DKIM_Verifier.DKIM_STRINGS.SUCCESS(msg.DKIMSignature.d);
 			
 			// show warnings
 			if (msg.warnings.length > 0) {
-				// uncollapse warning icon
-				var dkimWarningIcon = document.getElementById("dkim_verifier_warning_icon");
-				dkimWarningIcon.collapsed = false;
-				
-				// set warning tooltip
-				var dkimWarningTooltip = document.getElementById("dkim_verifier_tooltip_warnings");
-				msg.warnings.forEach(function(element /*, index, array*/) {
-					var description  = document.createElement("description");
-					description.setAttribute("value", DKIM_Verifier.DKIM_STRINGS[element]);
-					dkimWarningTooltip.appendChild(description);
+				header.warnings = msg.warnings.map(function(e) {
+					return DKIM_Verifier.DKIM_STRINGS[e];
 				});
 			}
 			
@@ -1161,6 +1152,29 @@ var that = {
  * public methods/variables
  */
  
+	initHeaderEntry: function() {
+		if (header && document.getElementById(header.id) != header) {
+			return;
+		}
+		var e = {
+			name: entry,
+			outputFunction: that.onOutput.bind(that)
+		};
+		var view = gExpandedHeaderView[entry] = new createHeaderEntry("expanded", e);
+		header = view.enclosingBox;
+		row = view.enclosingRow;
+	},
+	setCollapsed: function(collapsed) {
+		if (collapsed) {
+			collapsed = !prefs.getBoolPref("alwaysShowDKIMHeader");
+		}
+		if (row.collapsed == collapsed) {
+			return;
+		}
+		row.collapsed = collapsed;
+		syncGridColumnWidths();
+	},
+
 	/*
 	 * gets called on startup
 	 */
@@ -1176,17 +1190,10 @@ var that = {
 		prefDKIMDebug = prefs.getBoolPref("debug");
 		DKIM_Verifier.dnsChangeDebug(prefs.getBoolPref("debug"));
 		DKIM_Verifier.dnsChangeNameserver(prefs.getCharPref("dns.nameserver"));
-		
-		// add event listener for message display
-		messageListener = {
-			// onStartHeaders: function () {},
-			// onEndHeaders: function () {},
-			// onEndAttachments: function () {},
-			// onBeforeShowHeaderPane: function () {}
-			onStartHeaders: that.clearHeader,
-			onEndHeaders: that.messageLoaded
-		};
-		gMessageListeners.push(messageListener);
+
+		that.initHeaderEntry();
+
+		gMessageListeners.push(that);
 	},
 
 	/*
@@ -1198,7 +1205,7 @@ var that = {
 		prefs.removeObserver("", that);
 		
 		// remove event listener for message display
-		var pos = gMessageListeners.indexOf(messageListener);
+		var pos = gMessageListeners.indexOf(that);
 		if (pos !== -1) {
 			gMessageListeners.splice(pos, 1);
 		}
@@ -1229,16 +1236,37 @@ var that = {
 	/*
 	 * gets called if a new message ist viewed
 	 */
-	messageLoaded : function () {
+	onBeforeShowHeaderPane : function () {
+		that.initHeaderEntry();
+		currentHeaderData[entry] = {
+			headerName: entry,
+			headerValue: DKIM_Verifier.DKIM_STRINGS.loading
+		};
+	},
+
+	onStartHeaders: function() {
+		row.collapsed = !prefs.getBoolPref("alwaysShowDKIMHeader");
+		header.value = DKIM_Verifier.DKIM_STRINGS.loading;
+		header.warnings = [];
+
+		// reset highlight from header
+		highlightHeader("clearHeader");
+	},
+	onEndHeaders: function() {},
+	onEndAttachments: function() {},
+
+	/*
+	 * Initializes the header and starts verification
+	 */
+	onOutput: function (header, headerValue) {
 		try {
 			// get msg uri
 			var msgURI = gDBView.URIForFirstSelectedMessage ;
-			
+
 			// return if msg is RSS feed or news
 			if (gFolderDisplay.selectedMessageIsFeed || gFolderDisplay.selectedMessageIsNews) {
-				var dkimMsgHdrRes = document.getElementById("dkim_verifier_msgHdrRes");
-				dkimMsgHdrRes.value = DKIM_Verifier.DKIM_STRINGS.NOT_EMAIL;
-
+				header.value = DKIM_Verifier.DKIM_STRINGS.NOT_EMAIL;
+				that.setCollapsed(true);
 				return;
 			}
 			
@@ -1250,29 +1278,6 @@ var that = {
 		}
 	},
 
-	/*
-	 * collapse the dkim verifier header box
-	 */
-	clearHeader : function () {
-		var dkimMsgHdrBox = document.getElementById("dkim_verifier_msgHdrBox");
-		dkimMsgHdrBox.collapsed = !prefs.getBoolPref("alwaysShowDKIMHeader");
-		var dkimMsgHdrRes = document.getElementById("dkim_verifier_msgHdrRes");
-		dkimMsgHdrRes.value = DKIM_Verifier.DKIM_STRINGS.loading;
-				
-		// collapse warning icon
-		var dkimWarningIcon = document.getElementById("dkim_verifier_warning_icon");
-		dkimWarningIcon.collapsed = true;
-		
-		// reset warning tooltip
-		var dkimWarningTooltip = document.getElementById("dkim_verifier_tooltip_warnings");
-		while (dkimWarningTooltip.firstChild) {
-			dkimWarningTooltip.removeChild(dkimWarningTooltip.firstChild);
-		}
-
-		// reset highlight from header
-		highlightHeader("clearHeader");
-	},
-	
 	/*
 	 * callback for the dns result
 	 * the message to be verified is passed as the 2. parameter
@@ -1300,4 +1305,7 @@ var that = {
 return that;
 }()); // the parens here cause the anonymous function to execute and return
 
-DKIM_Verifier.DKIMVerifier.startup();
+addEventListener("load", function dkim_load() {
+	removeEventListener("load", dkim_load, false);
+	DKIM_Verifier.DKIMVerifier.startup();
+}, false);
