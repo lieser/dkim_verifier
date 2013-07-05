@@ -4,7 +4,7 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  *
- * version: 0.4.1 (28 June 2013)
+ * version: 0.4.3pre1.0 (05 July 2013)
  *
  * Copyright (c) 2013 Philippe Lieser
  *
@@ -1242,13 +1242,10 @@ var that = {
 
 		// if msg is RSS feed or news
 		if (gFolderDisplay.selectedMessageIsFeed || gFolderDisplay.selectedMessageIsNews) {
-			if (prefs.getBoolPref("alwaysShowDKIMHeader")) {
-				currentHeaderData[entry] = {
-					headerName: entry,
-					headerValue: DKIM_Verifier.DKIM_STRINGS.NOT_EMAIL
-				};
-				header.value = DKIM_Verifier.DKIM_STRINGS.NOT_EMAIL;
-			} 
+			currentHeaderData[entry] = {
+				headerName: entry,
+				headerValue: DKIM_Verifier.DKIM_STRINGS.NOT_EMAIL
+			};
 		} else {
 			currentHeaderData[entry] = {
 				headerName: entry,
@@ -1257,36 +1254,44 @@ var that = {
 		}
 	},
 
+	/*
+	 * Resets the header
+	 */
 	onStartHeaders: function() {
-		row.collapsed = !prefs.getBoolPref("alwaysShowDKIMHeader");
-		header.value = DKIM_Verifier.DKIM_STRINGS.loading;
 		header.warnings = [];
 
 		// reset highlight from header
 		highlightHeader("clearHeader");
 	},
-	onEndHeaders: function() {},
-	onEndAttachments: function() {},
 
 	/*
-	 * Initializes the header and starts verification
+	 * starts verification
 	 */
-	onOutput: function (/* headerEntry, headerValue */) {
+	onEndHeaders: function() {
 		try {
-			// get msg uri
-			var msgURI = gDBView.URIForFirstSelectedMessage ;
-
 			// return if msg is RSS feed or news
 			if (gFolderDisplay.selectedMessageIsFeed || gFolderDisplay.selectedMessageIsNews) {
+				that.setCollapsed(true);
 				return;
 			}
 			
+			// get msg uri
+			var msgURI = gDBView.URIForFirstSelectedMessage ;
+
 			// parse msg into msg.header and msg.body
 			// this function will continue the verification
 			parseMsg(msgURI);
 		} catch(e) {
 			handleExeption(e);
 		}
+	},
+	onEndAttachments: function() {},
+
+	/*
+	 * Initializes the DKIM header
+	 */
+	onOutput: function (headerEntry, headerValue) {
+		header.value = headerValue;
 	},
 
 	/*
