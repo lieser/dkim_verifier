@@ -894,12 +894,12 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			highlightHeader("permfail");
 		} else if (e instanceof DKIM_InternalError) {
 			if (e.errorType === "INCORRECT_EMAIL_FORMAT") {
-				header.value = DKIM_Verifier.DKIM_STRINGS.NOT_EMAIL;
+				header.value = DKIM_Verifier.DKIM_STRINGS.DKIM_INTERNALERROR_INCORRECT_EMAIL_FORMAT;
 			} else {
-				header.value = "Internal Error";
+				header.value = DKIM_Verifier.DKIM_STRINGS.DKIM_INTERNALERROR_NAME;
 			}
 		} else {
-			header.value = "Internal Error";
+			header.value = DKIM_Verifier.DKIM_STRINGS.DKIM_INTERNALERROR_NAME;
 		}
 		
 		if (prefDKIMDebug) {
