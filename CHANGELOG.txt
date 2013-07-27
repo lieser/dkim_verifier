@@ -1,6 +1,7 @@
-0.4.3pre1.0 [2013-07-05]
-----------------------
+0.4.3pre2.0 [2013-07-27]
+-----------------------
  - header highlighting now works with collapsed header from CompactHeader addon
+ - works now also if e-mail has LF line ending
 
 0.4.2 [2013-06-28]
 ------------------

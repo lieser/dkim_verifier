@@ -4,7 +4,7 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  *
- * version: 0.4.3pre1.0 (05 July 2013)
+ * version: 0.4.3pre2.0 (27 July 2013)
  *
  * Copyright (c) 2013 Philippe Lieser
  *
@@ -41,8 +41,6 @@
  * possible feature  additions
  * ===========================
  *  - read and write Authentication-Results header (http://tools.ietf.org/html/rfc5451)
- *  - at the moment, the message must be in "network normal" format (more in Section 5.3 of RFC 6376);
- *    there is no check that this applies
  *  - option to show all signed header fields
  *  - at the moment, no differentiation between missing or ill-formed tags
  *  - support multiple signatures (more in Section 4 of RFC 6376)
@@ -205,6 +203,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 				bodyPlain: ""
 			},
 			headerFinished: false,
+			LFNewline: false,
 			
 			QueryInterface : function(iid)  {
 						if (iid.equals(Components.interfaces.nsIStreamListener) ||
@@ -217,8 +216,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 
 			onDataAvailable: function ( request , context , inputStream , offset , count ) {
 				var str;
-				
-				// dkimDebugMsg("onDataAvailable");
+				var NewlineLength = 2;
 				
 				try {
 					var scriptableInputStream = Components.classes["@mozilla.org/scriptableinputstream;1"].
@@ -229,13 +227,25 @@ DKIM_Verifier.DKIMVerifier = (function() {
 						// read header
 						str = scriptableInputStream.read(count);
 						var posEndHeader = str.indexOf("\r\n\r\n");
+						
+						// check for LF line ending
+						if (posEndHeader === -1) {
+							posEndHeader = str.indexOf("\n\n");
+							if (posEndHeader !== -1) {
+								this.LFNewline = true;
+								NewlineLength = 1;
+								dkimDebugMsg("LF line ending detected");
+							}
+						}
+						
+						// check for end of header
 						if (posEndHeader === -1) {
 							// end of header not yet reached
 							this.msg.headerPlain += str;
 						} else {
 							// end of header reached
-							this.msg.headerPlain += str.substr(0, posEndHeader+2);
-							this.msg.bodyPlain = str.substr(posEndHeader+4);
+							this.msg.headerPlain += str.substr(0, posEndHeader + NewlineLength);
+							this.msg.bodyPlain = str.substr(posEndHeader + 2*NewlineLength);
 							this.headerFinished = true;
 						}
 					} else {
@@ -248,13 +258,10 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			},
 			
 			onStartRequest: function (/* request , context */) {
-				// dkimDebugMsg("onStartRequest");
 			},
 			
 			onStopRequest: function (/* aRequest , aContext , aStatusCode */) {
 				try {
-					// dkimDebugMsg("onStopRequest");
-					
 					// if end of msg is reached before end of header,
 					// it is no in correct e-mail format
 					if (!this.headerFinished) {
@@ -262,6 +269,12 @@ DKIM_Verifier.DKIMVerifier = (function() {
 							"INCORRECT_EMAIL_FORMAT");
 					}
 
+					// if LF line ending, convert it to CR+LF
+					if (this.LFNewline) {
+						this.msg.headerPlain = this.msg.headerPlain.replace(/\n/g, "\r\n");
+						this.msg.bodyPlain = this.msg.bodyPlain.replace(/\n/g, "\r\n");
+					}
+					
 					verifyBegin(this.msg);
 				} catch (e) {
 					handleExeption(e);
