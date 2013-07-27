@@ -858,7 +858,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 				highlightEmailAddresses(collapsed1LfromBox);
 			}
 			var collapsed2LfromBox = document.getElementById("CompactHeader_collapsed2LfromBox");
-			if (collapsed1LfromBox) {
+			if (collapsed2LfromBox) {
 				highlightEmailAddresses(collapsed2LfromBox);
 			}
 		}
