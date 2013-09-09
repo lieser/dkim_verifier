@@ -341,6 +341,11 @@ function queryDNSRecursive(server, host, recordtype, callback, callbackdata, hop
 					if (servers === undefined) {
 						callback(null, callbackdata, DNS_STRINGS.TIMED_OUT(server));
 					}
+				} else if (status === Components.results.NS_ERROR_NET_TIMEOUT) {
+					DNS_Debug("DNS: Resolving " + host + "/" + recordtype + ": DNS server " + server + " timed out on a TCP connection (NS_ERROR_NET_TIMEOUT).");
+					if (servers === undefined) {
+						callback(null, callbackdata, DNS_STRINGS.TIMED_OUT(server));
+					}
 				} else {
 					DNS_Debug("DNS: Resolving " + host + "/" + recordtype + ": Failed to connect to DNS server " + server + " with error code " + status + ".");
 					if (servers === undefined) {
