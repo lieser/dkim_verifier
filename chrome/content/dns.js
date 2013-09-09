@@ -35,7 +35,7 @@
 
 /*
  * Original from "Sender Verification Extension" version 0.9.0.6
- * Modified by Philippe Lieser for "DKIM Verifier" version 0.3.4
+ * Modified by Philippe Lieser for "DKIM Verifier" version 0.5.0pre1
  *
  * Modifications:
  *  since version 0.3.0
@@ -46,21 +46,56 @@
  *   - CNAME record type partial supported
  *    - doesn't throw a exception anymore
  *    - data not read, and not included in the returned result
+ *  since version 0.5.0
+ *   - added support of multiple DNS servers
  */
 
-var EXPORTED_SYMBOLS = ["dnsChangeNameserver", "queryDNS", "dnsChangeDebug"];
+var EXPORTED_SYMBOLS = [
+	"queryDNS",
+	"dnsChangeNameserver",
+	"dnsChangeDebug",
+	"dnsChangeTimeoutConnect"
+];
 // load locale strings
 Components.utils.import("chrome://dkim_verifier/locale/dns.js");
 function dnsChangeNameserver(nameserver) {
-	DNS_ROOT_NAME_SERVER = nameserver;
+	var nameservers = nameserver.split(";");
+	if (nameservers.length === 1) {
+		DNS_ROOT_NAME_SERVER = nameserver;
+		DNS_ROOT_NAME_SERVERS = null;
+	} else {
+		DNS_ROOT_NAME_SERVER = null;
+		DNS_ROOT_NAME_SERVERS = [];
+		nameservers.forEach(function(element /* index, array*/) {
+			DNS_ROOT_NAME_SERVERS.push({
+				server : element.trim(),
+				alive : true
+			})
+		});
+		DNS_Debug("DNS: changed DNS Servers to : " + DNS_ROOT_NAME_SERVERS.toSource());
+		
+	}
 }
 var dnsDebug = false;
 function dnsChangeDebug(debug) {
 	dnsDebug = debug;
 }
+var timeout_connect;
+function dnsChangeTimeoutConnect(timeout) {
+	timeout_connect = timeout;
+}
 
 
 var DNS_ROOT_NAME_SERVER = "8.8.8.8"; // This is Google Public DNS. Could be "J.ROOT-SERVERS.NET", but public DNS may not respond to TCP. 
+/* structur of DNS_ROOT_NAME_SERVERS:
+	DNS_ROOT_NAME_SERVERS = [
+		{
+			server : "8.8.8.8",
+			alive : "true"
+		}
+	];
+*/
+var DNS_ROOT_NAME_SERVERS = null;
 var DNS_FOUND_NAME_SERVER_AUTOMATICALLY = 0;
 
 // Any settings changes aren't going to be picked up later.
@@ -164,7 +199,12 @@ function DNS_Test() {
 
 // queryDNS: This is the main entry point for external callers.
 function queryDNS(host, recordtype, callback, callbackdata) {
-	queryDNSRecursive(DNS_ROOT_NAME_SERVER, host, recordtype, callback, callbackdata, 0);
+	if (DNS_ROOT_NAME_SERVERS === null) {
+		queryDNSRecursive(DNS_ROOT_NAME_SERVER, host, recordtype, callback, callbackdata, 0);
+	} else {
+		queryDNSRecursive(null, host, recordtype, callback, callbackdata, 0, DNS_ROOT_NAME_SERVERS);
+	}
+	
 }
 
 function reverseDNS(ip, callback, callbackdata) {
@@ -219,7 +259,28 @@ function DNS_ReverseIPHostname(ip) {
 	return q[3] + "." + q[2] + "." + q[1] + "." + q[0] + ".in-addr.arpa";
 }
 
-function queryDNSRecursive(server, host, recordtype, callback, callbackdata, hops) {
+function queryDNSRecursive(server, host, recordtype, callback, callbackdata, hops, servers) {
+	// if more when one server is given
+	if (servers !== undefined) {
+		// set server to next alive DNS server
+		var i;
+		var serverObj = null;
+		server = null;
+		for (i = 0; i < servers.length; i++) {
+			if (servers[i].alive) {
+				server = servers[i].server;
+				serverObj = servers[i];
+				break;
+			}
+		}
+		
+		if (server === null) {
+			DNS_Debug("DNS: no DNS Server alive");
+			callback(null, callbackdata, "");
+			return;
+		}
+	}
+
 	if (hops == 10) {
 		DNS_Debug("DNS: Maximum number of recursive steps taken in resolving " + host);
 		callback(null, callbackdata, DNS_STRINGS.TOO_MANY_HOPS);
@@ -272,13 +333,28 @@ function queryDNSRecursive(server, host, recordtype, callback, callbackdata, hop
 			if (status != 0) {
 				if (status == 2152398861) {
 					DNS_Debug("DNS: Resolving " + host + "/" + recordtype + ": DNS server " + server + " refused a TCP connection.");
-					callback(null, callbackdata, DNS_STRINGS.CONNECTION_REFUSED(server));
+					if (servers === undefined) {
+						callback(null, callbackdata, DNS_STRINGS.CONNECTION_REFUSED(server));
+					}
 				} else if (status == 2152398868) {
 					DNS_Debug("DNS: Resolving " + host + "/" + recordtype + ": DNS server " + server + " timed out on a TCP connection.");
-					callback(null, callbackdata, DNS_STRINGS.TIMED_OUT(server));
+					if (servers === undefined) {
+						callback(null, callbackdata, DNS_STRINGS.TIMED_OUT(server));
+					}
 				} else {
 					DNS_Debug("DNS: Resolving " + host + "/" + recordtype + ": Failed to connect to DNS server " + server + " with error code " + status + ".");
-					callback(null, callbackdata, DNS_STRINGS.SERVER_ERROR(server));
+					if (servers === undefined) {
+						callback(null, callbackdata, DNS_STRINGS.SERVER_ERROR(server));
+					}
+				}
+				
+				// if more when one server is given
+				if (servers !== undefined) {
+					// set current server to not alive
+					serverObj.alive = false;
+					
+					// start query again for next server
+					queryDNSRecursive(null, host, recordtype, callback, callbackdata, hops, servers);
 				}
 				return;
 			}
@@ -518,6 +594,9 @@ function DNS_readAllFromSocket(host,port,outputData,listener)
 		
     var transport = transportService.createTransport(null,0,host,port,null);
 
+	// change timeout for connection
+	transport.setTimeout(transport.TIMEOUT_CONNECT, timeout_connect);
+	
     var outstream = transport.openOutputStream(0,0,0);
     outstream.write(outputData,outputData.length);
 

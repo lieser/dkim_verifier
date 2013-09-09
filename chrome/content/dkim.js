@@ -4,7 +4,7 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  *
- * version: 0.4.3 (27 July 2013)
+ * version: 0.5.0pre1 (09 September 2013)
  *
  * Copyright (c) 2013 Philippe Lieser
  *
@@ -192,7 +192,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 
 	/*
 	 * reads the message and parse it into header and body
-	 * returns msg.headerPlain and msg.bodyPlain
+	 * calls verifyBegin at the end
 	 */
 	function parseMsg(msgURI) {
 		var StreamListener =
@@ -1204,6 +1204,7 @@ var that = {
 		prefDKIMDebug = prefs.getBoolPref("debug");
 		DKIM_Verifier.dnsChangeDebug(prefs.getBoolPref("debug"));
 		DKIM_Verifier.dnsChangeNameserver(prefs.getCharPref("dns.nameserver"));
+		DKIM_Verifier.dnsChangeTimeoutConnect(prefs.getIntPref("dns.timeout_connect"));
 
 		that.initHeaderEntry();
 
@@ -1243,6 +1244,9 @@ var that = {
 				break;
 			case "dns.nameserver":
 				DKIM_Verifier.dnsChangeNameserver(prefs.getCharPref("dns.nameserver"));
+				break;
+			case "dns.timeout_connect":
+				DKIM_Verifier.dnsChangeTimeoutConnect(prefs.getIntPref("dns.timeout_connect"));
 				break;
 		}
 	},
@@ -1289,7 +1293,7 @@ var that = {
 			}
 			
 			// get msg uri
-			var msgURI = gDBView.URIForFirstSelectedMessage ;
+			var msgURI = gDBView.URIForFirstSelectedMessage;
 
 			// parse msg into msg.header and msg.body
 			// this function will continue the verification
