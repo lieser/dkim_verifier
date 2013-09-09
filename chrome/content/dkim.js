@@ -883,15 +883,14 @@ DKIM_Verifier.DKIMVerifier = (function() {
 	function handleExeption(e) {
 		that.setCollapsed(false);
 		if (e instanceof DKIM_SigError) {
-			// if domain is testing DKIM, treat msg as not signed
-			if (e.errorType === "DKIM_SIGERROR_KEY_TESTMODE") {
-				that.setCollapsed(true);
+			// save and show result
+			var result = {
+				version : "1.0",
+				result : "PERMFAIL",
+				DKIM_SIGERROR : e
 			}
-			
-			header.value = DKIM_Verifier.DKIM_STRINGS.PERMFAIL + " (" + e.message + ")";
-			
-			// highlight from header
-			highlightHeader("permfail");
+			saveResult(msg.msgURI, result);
+			displayResult(result);
 		} else if (e instanceof DKIM_InternalError) {
 			if (e.errorType === "INCORRECT_EMAIL_FORMAT") {
 				header.value = DKIM_Verifier.DKIM_STRINGS.DKIM_INTERNALERROR_INCORRECT_EMAIL_FORMAT;
@@ -917,11 +916,13 @@ DKIM_Verifier.DKIMVerifier = (function() {
 
 			// check if DKIMSignatureHeader exist
 			if (msg.headerFields["dkim-signature"] === undefined) {
-				header.value = DKIM_Verifier.DKIM_STRINGS.NOSIG;
-				that.setCollapsed(true);
-
-				// highlight from header
-				highlightHeader("nosig");
+				// save and show result
+				var result = {
+					version : "1.0",
+					result : "none"
+				}
+				saveResult(msg.msgURI, result);
+				displayResult(result);
 				
 				// no signature to check, return
 				return;
@@ -1094,27 +1095,97 @@ DKIM_Verifier.DKIMVerifier = (function() {
 				throw new DKIM_SigError("DKIM_SIGERROR_BADSIG");
 			}
 			
-			// show result
-			header.value = DKIM_Verifier.DKIM_STRINGS.SUCCESS(msg.DKIMSignature.d);
-			
-			// show warnings
-			if (msg.warnings.length > 0) {
-				header.warnings = msg.warnings.map(function(e) {
-					return DKIM_Verifier.DKIM_STRINGS[e];
-				});
+			// save and show result
+			var result = {
+				version : "1.0",
+				result : "SUCCESS",
+				SDID : msg.DKIMSignature.d,
+				warnings : msg.warnings
 			}
-			
-			// highlight from header
-			if (msg.warnings.length === 0) {
-				highlightHeader("success");
-			} else {
-				highlightHeader("warning");
-			}
+			saveResult(msg.msgURI, result);
+			displayResult(result);
 		} catch(e) {
 			handleExeption(e);
 		}
 	}
+	
+	/*
+	  result format:
+		{
+			resultVersion : "1.0",
+			result : "none" / "SUCCESS" / "PERMFAIL",
+			SDID : string (only if result="SUCCESS"),
+			warnings : array (only if result="SUCCESS"),
+			DKIM_SIGERROR : DKIM_SigError (only if result="PERMFAIL")
+		}
+	*/
 
+	/*
+	 * save result
+	 */
+	function saveResult(msgURI, result) {
+	}
+	
+	/*
+	 * get result
+	 */
+	function getResult(msgURI) {
+		return null;
+	}
+	
+	/*
+	 * display result
+	 */
+	function displayResult(result) {
+		switch(result.result) {
+			case "none":
+				header.value = DKIM_Verifier.DKIM_STRINGS.NOSIG;
+				that.setCollapsed(true);
+
+				// highlight from header
+				highlightHeader("nosig");
+				
+				break;
+			case "SUCCESS":
+				that.setCollapsed(false);
+				header.value = DKIM_Verifier.DKIM_STRINGS.SUCCESS(result.SDID);
+				
+				// show warnings
+				if (result.warnings.length > 0) {
+					header.warnings = result.warnings.map(function(e) {
+						return DKIM_Verifier.DKIM_STRINGS[e];
+					});
+				}
+				
+				// highlight from header
+				if (result.warnings.length === 0) {
+					highlightHeader("success");
+				} else {
+					highlightHeader("warning");
+				}
+				
+				break;
+			case "PERMFAIL":
+				that.setCollapsed(false);
+				header.value = DKIM_Verifier.DKIM_STRINGS.PERMFAIL + " (" + result.DKIM_SIGERROR.message + ")";
+
+				// if domain is testing DKIM, treat msg as not signed
+				if (result.DKIM_SIGERROR.errorType === "DKIM_SIGERROR_KEY_TESTMODE") {
+					that.setCollapsed(true);
+					// highlight from header
+					highlightHeader("nosig");
+					break;
+				}
+				
+				// highlight from header
+				highlightHeader("permfail");
+				
+				break;
+			default:
+				throw new DKIM_InternalError("unkown result");
+		}
+	}
+	
 	/*
 	 * DKIM_SIGERROR
 	 */
@@ -1315,9 +1386,12 @@ var that = {
 	 * callback for the dns result
 	 * the message to be verified is passed as the 2. parameter
 	 */
-	dnsCallback : function (dnsResult, msg) {
+	dnsCallback : function (dnsResult, msg, queryError) {
 		try {
 			// dkimDebugMsg("DNS result: " + dnsResult);
+			if (queryError !== undefined) {
+				throw new DKIM_SigError("DKIM_SIGERROR_KEYFAIL");
+			}
 			if (dnsResult === null) {
 				throw new DKIM_SigError("DKIM_SIGERROR_KEYFAIL");
 			}
