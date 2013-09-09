@@ -4,7 +4,7 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  *
- * version: 0.5.0pre1 (09 September 2013)
+ * version: 0.5.0pre2 (09 September 2013)
  *
  * Copyright (c) 2013 Philippe Lieser
  *
@@ -253,7 +253,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 						this.msg.bodyPlain += scriptableInputStream.read(count);
 					}
 				} catch (e) {
-					handleExeption(e);
+					handleExeption(e, msg.msgURI);
 				}
 			},
 			
@@ -277,7 +277,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 					
 					verifyBegin(this.msg);
 				} catch (e) {
-					handleExeption(e);
+					handleExeption(e, msg.msgURI);
 				}
 			}
 		};
@@ -880,7 +880,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 	/*
 	 * handeles Exeption
 	 */
-	function handleExeption(e) {
+	function handleExeption(e, msgURI) {
 		that.setCollapsed(false);
 		if (e instanceof DKIM_SigError) {
 			// save and show result
@@ -889,7 +889,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 				result : "PERMFAIL",
 				DKIM_SIGERROR : e
 			}
-			saveResult(msg.msgURI, result);
+			saveResult(msgURI, result);
 			displayResult(result);
 		} else if (e instanceof DKIM_InternalError) {
 			if (e.errorType === "INCORRECT_EMAIL_FORMAT") {
@@ -933,7 +933,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			
 			verifySignaturePart1(msg);
 		} catch(e) {
-			handleExeption(e);
+			handleExeption(e, msg.msgURI);
 		}
 	}
 
@@ -1000,7 +1000,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 				msg
 			);
 		} catch(e) {
-			handleExeption(e);
+			handleExeption(e, msg.msgURI);
 		}
 	}
 	
@@ -1105,7 +1105,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			saveResult(msg.msgURI, result);
 			displayResult(result);
 		} catch(e) {
-			handleExeption(e);
+			handleExeption(e, msg.msgURI);
 		}
 	}
 	
@@ -1124,12 +1124,47 @@ DKIM_Verifier.DKIMVerifier = (function() {
 	 * save result
 	 */
 	function saveResult(msgURI, result) {
+		if (prefs.getBoolPref("saveResult")) {
+			var messenger = Components.classes["@mozilla.org/messenger;1"].
+				createInstance().QueryInterface(Components.interfaces.nsIMessenger);
+			var msgHdr = messenger.messageServiceFromURI(msgURI).
+				messageURIToMsgHdr(msgURI);
+			
+			if (result === "") {
+				dkimDebugMsg("reset result");
+				msgHdr.setStringProperty("dkim_verifier@pl-result", "");
+			} else {
+				dkimDebugMsg("save result");
+				msgHdr.setStringProperty("dkim_verifier@pl-result", JSON.stringify(result));
+			}
+		}
 	}
 	
 	/*
 	 * get result
 	 */
 	function getResult(msgURI) {
+		if (prefs.getBoolPref("saveResult")) {
+			var messenger = Components.classes["@mozilla.org/messenger;1"].
+				createInstance().QueryInterface(Components.interfaces.nsIMessenger);
+			var msgHdr = messenger.messageServiceFromURI(msgURI).
+				messageURIToMsgHdr(msgURI);
+			
+			var result = msgHdr.getStringProperty("dkim_verifier@pl-result");
+			
+			if (result !== "") {
+				dkimDebugMsg("result found");
+			
+				result = JSON.parse(result);
+
+				if (result.version.match(/^[0-9]+/)[0] !== "1") {
+					throw new DKIM_InternalError("Result has wrong Version ("+result.version+")");
+				}
+			
+				return result;
+			}
+		}
+		
 		return null;
 	}
 	
@@ -1327,6 +1362,8 @@ var that = {
 	 */
 	onBeforeShowHeaderPane : function () {
 		that.initHeaderEntry();
+		var reverifyDKIMSignature = document.
+			getElementById("dkim_verifier.reverifyDKIMSignature");
 
 		// if msg is RSS feed or news
 		if (gFolderDisplay.selectedMessageIsFeed || gFolderDisplay.selectedMessageIsNews) {
@@ -1334,11 +1371,13 @@ var that = {
 				headerName: entry,
 				headerValue: DKIM_Verifier.DKIM_STRINGS.NOT_EMAIL
 			};
+			reverifyDKIMSignature.disabled = true;
 		} else {
 			currentHeaderData[entry] = {
 				headerName: entry,
 				headerValue: DKIM_Verifier.DKIM_STRINGS.loading
 			};
+			reverifyDKIMSignature.disabled = false;
 		}
 	},
 
@@ -1366,11 +1405,18 @@ var that = {
 			// get msg uri
 			var msgURI = gDBView.URIForFirstSelectedMessage;
 
+			// check for saved result
+			var result = getResult(msgURI);
+			if (result !== null) {
+				displayResult(result);
+				return;
+			}
+			
 			// parse msg into msg.header and msg.body
 			// this function will continue the verification
 			parseMsg(msgURI);
 		} catch(e) {
-			handleExeption(e);
+			handleExeption(e, msgURI);
 		}
 	},
 	onEndAttachments: function() {},
@@ -1400,8 +1446,21 @@ var that = {
 			
 			verifySignaturePart2(msg);
 		} catch(e) {
-			handleExeption(e);
+			handleExeption(e, msg.msgURI);
 		}
+	},
+	
+	/*
+	 * Reverify DKIM Signature
+	 */
+	reverify : function() {
+		// get msg uri
+		var msgURI = gDBView.URIForFirstSelectedMessage;
+
+		header.value = DKIM_Verifier.DKIM_STRINGS.loading;
+		that.onStartHeaders();
+		saveResult(msgURI, "");
+		that.onEndHeaders();
 	},
 	
 	/*

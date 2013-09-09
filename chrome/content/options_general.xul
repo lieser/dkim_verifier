@@ -12,12 +12,22 @@
 		<preference id="pref_dns.timeout_connect"
 		            name="extensions.dkim_verifier.dns.timeout_connect"
 		            type="int"/>
+
+		<preference id="pref_saveResult"
+		            name="extensions.dkim_verifier.saveResult"
+		            type="bool"/>
 	</preferences>
 	
-	<label control="dns.nameserver">&dns.nameserver.label;</label>
-	<textbox id="dns.nameserver" preference="pref_dns.nameserver"/>
-	<label control="dns.timeout_connect">&dns.timeout_connect.label;</label>
-	<textbox id="dns.timeout_connect" preference="pref_dns.timeout_connect"/>
+	<groupbox>
+		<caption label="&dns.label;"/>
+
+		<label control="dns.nameserver">&dns.nameserver.label;</label>
+		<textbox id="dns.nameserver" preference="pref_dns.nameserver"/>
+		<label control="dns.timeout_connect">&dns.timeout_connect.label;</label>
+		<textbox id="dns.timeout_connect" preference="pref_dns.timeout_connect"/>
+	</groupbox>
+	
+	<checkbox preference="pref_saveResult" label="&saveResult.label;"/>
 </prefpane>
 
 </overlay>

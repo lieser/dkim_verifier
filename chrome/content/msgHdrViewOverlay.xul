@@ -10,4 +10,11 @@
 			<mail-headerfield id="expandeddkim-verifierBox" flex="1"/>
 		</row>
 	</rows>
+	
+	<menupopup id="otherActionsPopup">
+		<menuseparator/>
+		<menuitem id="dkim_verifier.reverifyDKIMSignature"
+		          label="&dkim_verifier.reverifyDKIMSignature.label;"
+		          oncommand="DKIM_Verifier.DKIMVerifier.reverify();"/>
+	</menupopup>
 </overlay>

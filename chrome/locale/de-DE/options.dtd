@@ -3,8 +3,11 @@
 
 <!ENTITY general.label "General">
 
+<!ENTITY dns.label "DNS">
 <!ENTITY dns.nameserver.label "DNS Nameserver (Syntax (EBNF): host[&quot;:&quot;port]{&quot;;&quot;host[&quot;:&quot;port]} )">
 <!ENTITY dns.timeout_connect.label "DNS Verbindungsaufbau-Timeout (in Sekunden)">
+
+<!ENTITY saveResult.label "Speichere das Ergebnis der Überprüfung ">
 
 
 <!ENTITY display.label "Anzeige">
