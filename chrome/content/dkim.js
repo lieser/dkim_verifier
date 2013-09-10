@@ -1456,7 +1456,7 @@ var that = {
 				throw new DKIM_InternalError(queryError, "DKIM_DNSERROR_SERVER_ERROR");
 			}
 			if (dnsResult === null) {
-				throw new DKIM_SigError("DKIM_SIGERROR_KEYFAIL");
+				throw new DKIM_SigError("DKIM_SIGERROR_NOKEY");
 			}
 			
 			msg.keyQueryResult = dnsResult[0];

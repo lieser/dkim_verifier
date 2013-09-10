@@ -44,6 +44,7 @@ DKIM_STRINGS.DKIM_SIGERROR_UNKNOWN_Q		= "Nicht unterstützte Abfragemethode für E
 DKIM_STRINGS.DKIM_SIGERROR_MISSING_S		= "Fehlender Selector-Tag";
 DKIM_STRINGS.DKIM_SIGERROR_TIMESTAMPS		= "Signatur abgelaufen";
 // DKIM_SIGERROR - key query
+DKIM_STRINGS.DKIM_SIGERROR_NOKEY			= "Kein Schlüssel im DNS Server gefunden";
 DKIM_STRINGS.DKIM_SIGERROR_KEYFAIL			= "DNS Abfrage für Schlüssel fehlgeschlagen";
 // DKIM_SIGERROR - Key record
 DKIM_STRINGS.DKIM_SIGERROR_KEY_INVALID_V	= "Ungültige DKIM Schlüssel Record Version";

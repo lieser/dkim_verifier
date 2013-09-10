@@ -44,6 +44,7 @@ DKIM_STRINGS.DKIM_SIGERROR_UNKNOWN_Q		= "Unsupported query methods for public ke
 DKIM_STRINGS.DKIM_SIGERROR_MISSING_S		= "Missing selector tag";
 DKIM_STRINGS.DKIM_SIGERROR_TIMESTAMPS		= "Signature Expiration before Signature Timestamp";
 // DKIM_SIGERROR - key query
+DKIM_STRINGS.DKIM_SIGERROR_NOKEY			= "No key found in DNS Server";
 DKIM_STRINGS.DKIM_SIGERROR_KEYFAIL			= "DNS query for key failed";
 // DKIM_SIGERROR - Key record
 DKIM_STRINGS.DKIM_SIGERROR_KEY_INVALID_V	= "Invalid Version of the DKIM key record";
