@@ -251,7 +251,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 						this.msg.bodyPlain += scriptableInputStream.read(count);
 					}
 				} catch (e) {
-					handleExeption(e, msg.msgURI);
+					handleExeption(e, this.msg.msgURI);
 				}
 			},
 			
@@ -275,7 +275,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 					
 					verifyBegin(this.msg);
 				} catch (e) {
-					handleExeption(e, msg.msgURI);
+					handleExeption(e, this.msg.msgURI);
 				}
 			}
 		};
@@ -886,7 +886,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 				version : "1.0",
 				result : "PERMFAIL",
 				DKIM_SIGERROR : e.errorType
-			}
+			};
 			saveResult(msgURI, result);
 			displayResult(result);
 		} else if (e instanceof DKIM_InternalError) {
@@ -918,7 +918,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 				var result = {
 					version : "1.0",
 					result : "none"
-				}
+				};
 				saveResult(msg.msgURI, result);
 				displayResult(result);
 				
@@ -1099,7 +1099,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 				result : "SUCCESS",
 				SDID : msg.DKIMSignature.d,
 				warnings : msg.warnings
-			}
+			};
 			saveResult(msg.msgURI, result);
 			displayResult(result);
 		} catch(e) {
@@ -1108,7 +1108,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 	}
 	
 	/*
-	  result format:
+		result format:
 		{
 			resultVersion : "1.0",
 			result : "none" / "SUCCESS" / "PERMFAIL",
