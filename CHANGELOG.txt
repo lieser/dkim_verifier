@@ -1,7 +1,7 @@
 0.5.0 [2013-09-10]
 ------------------
  - added support of multiple DNS servers
- - added optional storage of result
+ - added optional saving of the result
  - DNS Server not reachable no longer treated as a PERMFAIL
  - added TEMPFAIL
 
