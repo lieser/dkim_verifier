@@ -4,7 +4,7 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  *
- * version: 0.5.0pre3 (10 September 2013)
+ * version: 0.5.0pre4 (10 September 2013)
  *
  * Copyright (c) 2013 Philippe Lieser
  *
@@ -885,18 +885,18 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			var result = {
 				version : "1.0",
 				result : "PERMFAIL",
-				DKIM_SIGERROR : e.errorType
+				errorType : e.errorType
 			};
 			saveResult(msgURI, result);
 			displayResult(result);
-		} else if (e instanceof DKIM_InternalError) {
-			if (e.errorType) {
-				header.value = DKIM_Verifier.DKIM_STRINGS[e.errorType] || e.errorType;
-			} else {
-				header.value = DKIM_Verifier.DKIM_STRINGS.DKIM_INTERNALERROR_NAME;
-			}
 		} else {
-			header.value = DKIM_Verifier.DKIM_STRINGS.DKIM_INTERNALERROR_NAME;
+			// show result
+			var result = {
+				version : "1.0",
+				result : "TEMPFAIL",
+				errorType : e.errorType
+			};
+			displayResult(result);
 		}
 		
 		if (prefDKIMDebug) {
@@ -1111,10 +1111,12 @@ DKIM_Verifier.DKIMVerifier = (function() {
 		result format:
 		{
 			resultVersion : "1.0",
-			result : "none" / "SUCCESS" / "PERMFAIL",
+			result : "none" / "SUCCESS" / "PERMFAIL" / "TEMPFAIL",
 			SDID : string (only if result="SUCCESS"),
 			warnings : array (only if result="SUCCESS"),
-			DKIM_SIGERROR : DKIM_SigError.errorType (only if result="PERMFAIL")
+			errorType :
+				DKIM_SigError.errorType (only if result="PERMFAIL")
+				DKIM_InternalError.errorType (only if result="TEMPFAIL"; optional)
 		}
 	*/
 
@@ -1151,7 +1153,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			var result = msgHdr.getStringProperty("dkim_verifier@pl-result");
 			
 			if (result !== "") {
-				dkimDebugMsg("result found");
+				dkimDebugMsg("result found: "+result);
 			
 				result = JSON.parse(result);
 
@@ -1200,12 +1202,12 @@ DKIM_Verifier.DKIMVerifier = (function() {
 				break;
 			case "PERMFAIL":
 				that.setCollapsed(false);
-				var errorMsg = DKIM_Verifier.DKIM_STRINGS[result.DKIM_SIGERROR] ||
-					result.DKIM_SIGERROR;
+				var errorMsg = DKIM_Verifier.DKIM_STRINGS[result.errorType] ||
+					result.errorType;
 				header.value = DKIM_Verifier.DKIM_STRINGS.PERMFAIL + " (" + errorMsg + ")";
 
 				// if domain is testing DKIM, treat msg as not signed
-				if (result.DKIM_SIGERROR === "DKIM_SIGERROR_KEY_TESTMODE") {
+				if (result.errorType === "DKIM_SIGERROR_KEY_TESTMODE") {
 					that.setCollapsed(true);
 					// highlight from header
 					highlightHeader("nosig");
@@ -1214,6 +1216,17 @@ DKIM_Verifier.DKIMVerifier = (function() {
 				
 				// highlight from header
 				highlightHeader("permfail");
+				
+				break;
+			case "TEMPFAIL":
+				that.setCollapsed(false);
+				
+				header.value = DKIM_Verifier.DKIM_STRINGS[result.errorType] ||
+					result.errorType ||
+					DKIM_Verifier.DKIM_STRINGS.DKIM_INTERNALERROR_NAME;
+				
+				// highlight from header
+				highlightHeader("tempfail");
 				
 				break;
 			default:

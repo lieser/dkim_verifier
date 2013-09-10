@@ -20,6 +20,7 @@
 <!ENTITY color.success.label "Valid Siganture">
 <!ENTITY color.warning.label "Valid Siganture with warnings">
 <!ENTITY color.permfail.label "Invalid Siganture">
+<!ENTITY color.tempfail.label "Temporary error">
 <!ENTITY color.nosig.label "Unsigned e-mail">
 
 

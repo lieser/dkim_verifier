@@ -20,6 +20,7 @@
 <!ENTITY color.success.label "Gültige Signatur">
 <!ENTITY color.warning.label "Gültige Signatur mit Warnung">
 <!ENTITY color.permfail.label "Ungültige Signatur">
+<!ENTITY color.tempfail.label "Temporärer Fehler">
 <!ENTITY color.nosig.label "Unsignierte E-Mail">
 
 

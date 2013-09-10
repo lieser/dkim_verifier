@@ -31,6 +31,13 @@
 		            name="extensions.dkim_verifier.color.permfail.background"
 		            type="string"/>
 		
+		<preference id="pref_color.tempfail.text"
+		            name="extensions.dkim_verifier.color.tempfail.text"
+		            type="string"/>
+		<preference id="pref_color.tempfail.background"
+		            name="extensions.dkim_verifier.color.tempfail.background"
+		            type="string"/>
+		
 		<preference id="pref_color.nosig.text"
 		            name="extensions.dkim_verifier.color.nosig.text"
 		            type="string"/>
@@ -78,6 +85,17 @@
 				<label control="color.permfail.background">&color.background.label;</label>
 				<textbox id="color.permfail.background" preference="pref_color.permfail.background" width="100"/>
 				<colorpicker type="button" preference="pref_color.permfail.background"/>
+			</hbox>
+		</groupbox>
+		<groupbox>
+			<caption label="&color.tempfail.label;"/>
+			<hbox align="center">
+				<label control="color.tempfail.text">&color.text.label;</label>
+				<textbox id="color.tempfail.text" preference="pref_color.tempfail.text" width="100"/>
+				<colorpicker type="button" preference="pref_color.tempfail.text"/>
+				<label control="color.tempfail.background">&color.background.label;</label>
+				<textbox id="color.tempfail.background" preference="pref_color.tempfail.background" width="100"/>
+				<colorpicker type="button" preference="pref_color.tempfail.background"/>
 			</hbox>
 		</groupbox>
 		<groupbox>
