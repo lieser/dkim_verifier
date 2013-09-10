@@ -1188,7 +1188,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 				// show warnings
 				if (result.warnings.length > 0) {
 					header.warnings = result.warnings.map(function(e) {
-						return DKIM_Verifier.DKIM_STRINGS[e];
+						return DKIM_Verifier.DKIM_STRINGS[e] || e;
 					});
 				}
 				
