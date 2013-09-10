@@ -35,7 +35,7 @@
 
 /*
  * Original from "Sender Verification Extension" version 0.9.0.6
- * Modified by Philippe Lieser for "DKIM Verifier" version 0.5.0pre1
+ * Modified by Philippe Lieser for "DKIM Verifier" version 0.5.0
  *
  * Modifications:
  *  since version 0.3.0

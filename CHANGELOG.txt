@@ -1,5 +1,5 @@
-0.5.0pre4 [2013-09-10]
-----------------------
+0.5.0 [2013-09-10]
+------------------
  - added support of multiple DNS servers
  - added optional storage of result
  - DNS Server not reachable no longer treated as a PERMFAIL
