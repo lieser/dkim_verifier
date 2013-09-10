@@ -879,10 +879,12 @@ DKIM_Verifier.DKIMVerifier = (function() {
 	 * handeles Exeption
 	 */
 	function handleExeption(e, msgURI) {
+		var result;
+		
 		that.setCollapsed(false);
 		if (e instanceof DKIM_SigError) {
 			// save and show result
-			var result = {
+			result = {
 				version : "1.0",
 				result : "PERMFAIL",
 				errorType : e.errorType
@@ -891,7 +893,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			displayResult(result);
 		} else {
 			// show result
-			var result = {
+			result = {
 				version : "1.0",
 				result : "TEMPFAIL",
 				errorType : e.errorType
