@@ -276,7 +276,7 @@ function queryDNSRecursive(server, host, recordtype, callback, callbackdata, hop
 		
 		if (server === null) {
 			DNS_Debug("DNS: no DNS Server alive");
-			callback(null, callbackdata, "");
+			callback(null, callbackdata, "no DNS Server alive");
 			return;
 		}
 	}

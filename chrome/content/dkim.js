@@ -4,7 +4,7 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  *
- * version: 0.5.0pre2 (09 September 2013)
+ * version: 0.5.0pre3 (10 September 2013)
  *
  * Copyright (c) 2013 Philippe Lieser
  *
@@ -33,7 +33,6 @@
  *  - no test for multiple key records in an DNS RRset (Section 3.6.2.2)
  *  - message with bad signature is treated differently from a message with no signature
  *    (result is shown) (Section 6.1)
- *  - DNS Server not reachable is treated as a PERMFAIL, not as a TEMPFAIL (Section 6.1.2)
  *  - no check that hash declared in DKIM-Signature is included in the hashs 
  *    declared in the key record (Section 6.1.2)
  *  - check that the hash function in the public key is the same as in the header (Section 6.1.2)
@@ -44,7 +43,6 @@
  *  - option to show all signed header fields
  *  - at the moment, no differentiation between missing or ill-formed tags
  *  - support multiple signatures (more in Section 4 of RFC 6376)
- *  - differentiation between DNS errors
  *  - make verifying non blocking
  *  - and support concurrent verifications
  *
@@ -266,7 +264,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 					// it is no in correct e-mail format
 					if (!this.headerFinished) {
 						throw new DKIM_InternalError("Message is not in correct e-mail format",
-							"INCORRECT_EMAIL_FORMAT");
+							"DKIM_INTERNALERROR_INCORRECT_EMAIL_FORMAT");
 					}
 
 					// if LF line ending, convert it to CR+LF
@@ -887,13 +885,13 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			var result = {
 				version : "1.0",
 				result : "PERMFAIL",
-				DKIM_SIGERROR : e
+				DKIM_SIGERROR : e.errorType
 			}
 			saveResult(msgURI, result);
 			displayResult(result);
 		} else if (e instanceof DKIM_InternalError) {
-			if (e.errorType === "INCORRECT_EMAIL_FORMAT") {
-				header.value = DKIM_Verifier.DKIM_STRINGS.DKIM_INTERNALERROR_INCORRECT_EMAIL_FORMAT;
+			if (e.errorType) {
+				header.value = DKIM_Verifier.DKIM_STRINGS[e.errorType] || e.errorType;
 			} else {
 				header.value = DKIM_Verifier.DKIM_STRINGS.DKIM_INTERNALERROR_NAME;
 			}
@@ -1116,7 +1114,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			result : "none" / "SUCCESS" / "PERMFAIL",
 			SDID : string (only if result="SUCCESS"),
 			warnings : array (only if result="SUCCESS"),
-			DKIM_SIGERROR : DKIM_SigError (only if result="PERMFAIL")
+			DKIM_SIGERROR : DKIM_SigError.errorType (only if result="PERMFAIL")
 		}
 	*/
 
@@ -1202,10 +1200,12 @@ DKIM_Verifier.DKIMVerifier = (function() {
 				break;
 			case "PERMFAIL":
 				that.setCollapsed(false);
-				header.value = DKIM_Verifier.DKIM_STRINGS.PERMFAIL + " (" + result.DKIM_SIGERROR.message + ")";
+				var errorMsg = DKIM_Verifier.DKIM_STRINGS[result.DKIM_SIGERROR] ||
+					result.DKIM_SIGERROR;
+				header.value = DKIM_Verifier.DKIM_STRINGS.PERMFAIL + " (" + errorMsg + ")";
 
 				// if domain is testing DKIM, treat msg as not signed
-				if (result.DKIM_SIGERROR.errorType === "DKIM_SIGERROR_KEY_TESTMODE") {
+				if (result.DKIM_SIGERROR === "DKIM_SIGERROR_KEY_TESTMODE") {
 					that.setCollapsed(true);
 					// highlight from header
 					highlightHeader("nosig");
@@ -1228,6 +1228,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 		this.name = DKIM_Verifier.DKIM_STRINGS.DKIM_SIGERROR;
 		this.errorType = errorType;
 		this.message = DKIM_Verifier.DKIM_STRINGS[errorType] ||
+			errorType ||
 			DKIM_Verifier.DKIM_STRINGS.DKIM_SIGERROR_DEFAULT;
 
 		// modify stack and lineNumber, to show where this object was created,
@@ -1245,7 +1246,10 @@ DKIM_Verifier.DKIMVerifier = (function() {
 	function DKIM_InternalError(message, errorType) {
 		this.name = DKIM_Verifier.DKIM_STRINGS.DKIM_INTERNALERROR;
 		this.errorType = errorType;
-		this.message = message || DKIM_Verifier.DKIM_STRINGS.DKIM_INTERNALERROR_DEFAULT;
+		this.message = message ||
+			DKIM_Verifier.DKIM_STRINGS[errorType] ||
+			errorType ||
+			DKIM_Verifier.DKIM_STRINGS.DKIM_INTERNALERROR_DEFAULT;
 		
 		// modify stack and lineNumber, to show where this object was created,
 		// not where Error() was
@@ -1436,7 +1440,7 @@ var that = {
 		try {
 			// dkimDebugMsg("DNS result: " + dnsResult);
 			if (queryError !== undefined) {
-				throw new DKIM_SigError("DKIM_SIGERROR_KEYFAIL");
+				throw new DKIM_InternalError(queryError, "DKIM_DNSERROR_SERVER_ERROR");
 			}
 			if (dnsResult === null) {
 				throw new DKIM_SigError("DKIM_SIGERROR_KEYFAIL");
