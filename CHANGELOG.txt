@@ -1,4 +1,4 @@
-0.5.1 [2013-09-19]
+0.5.1 [2013-09-20]
 ------------------
  - added option to get DNS Servers from OS
 
