@@ -35,7 +35,7 @@
 
 /*
  * Original from "Sender Verification Extension" version 0.9.0.6
- * Modified by Philippe Lieser for "DKIM Verifier" version 0.5.0
+ * Modified by Philippe Lieser for "DKIM Verifier" version 0.5.1
  *
  * Modifications:
  *  since version 0.3.0
@@ -48,33 +48,68 @@
  *    - data not read, and not included in the returned result
  *  since version 0.5.0
  *   - added support of multiple DNS servers
+ *  since version 0.5.1
+ *   - reenabled support to get DNS Servers from OS
+ *    - modified and renamed DNS_LoadPrefs() to DNS_get_OS_DNSServers()
  */
 
 var EXPORTED_SYMBOLS = [
 	"queryDNS",
+	"dnsChangeGetNameserversFromOS",
 	"dnsChangeNameserver",
 	"dnsChangeDebug",
 	"dnsChangeTimeoutConnect"
 ];
 // load locale strings
 Components.utils.import("chrome://dkim_verifier/locale/dns.js");
+
+/* structur of DNS_ROOT_NAME_SERVERS, PREF_DNS_ROOT_NAME_SERVERS, OS_DNS_ROOT_NAME_SERVERS:
+	DNS_ROOT_NAME_SERVERS = [
+		{
+			server : "8.8.8.8",
+			alive : "true"
+		}
+	];
+*/
+var DNS_ROOT_NAME_SERVERS = null;
+var PREF_DNS_ROOT_NAME_SERVERS = [];
+var OS_DNS_ROOT_NAME_SERVERS = [];
+
+// calls to change preferences
+var getNameserversFromOS = null;
+function dnsChangeGetNameserversFromOS(bool) {
+	getNameserversFromOS = bool;
+	
+	if (getNameserversFromOS) {
+		DNS_get_OS_DNSServers();
+		DNS_ROOT_NAME_SERVERS = OS_DNS_ROOT_NAME_SERVERS.concat(PREF_DNS_ROOT_NAME_SERVERS);
+	} else {
+		DNS_ROOT_NAME_SERVERS = PREF_DNS_ROOT_NAME_SERVERS;
+	}
+
+	DNS_Debug("DNS: changed DNS Servers to : " + DNS_ROOT_NAME_SERVERS.toSource());
+}
 function dnsChangeNameserver(nameserver) {
 	var nameservers = nameserver.split(";");
-	if (nameservers.length === 1) {
-		DNS_ROOT_NAME_SERVER = nameserver;
-		DNS_ROOT_NAME_SERVERS = null;
-	} else {
-		DNS_ROOT_NAME_SERVER = null;
-		DNS_ROOT_NAME_SERVERS = [];
-		nameservers.forEach(function(element /* index, array*/) {
-			DNS_ROOT_NAME_SERVERS.push({
+	PREF_DNS_ROOT_NAME_SERVERS = [];
+	nameservers.forEach(function(element /*, index, array*/) {
+		if (element.trim() !== "") {
+			PREF_DNS_ROOT_NAME_SERVERS.push({
 				server : element.trim(),
 				alive : true
-			})
-		});
-		DNS_Debug("DNS: changed DNS Servers to : " + DNS_ROOT_NAME_SERVERS.toSource());
-		
+			});
+		}
+	});
+	//DNS_Debug("DNS: Got servers from user preference: " + PREF_DNS_ROOT_NAME_SERVERS.toSource());
+
+	if (getNameserversFromOS) {
+		DNS_get_OS_DNSServers();
+		DNS_ROOT_NAME_SERVERS = OS_DNS_ROOT_NAME_SERVERS.concat(PREF_DNS_ROOT_NAME_SERVERS);
+	} else {
+		DNS_ROOT_NAME_SERVERS = PREF_DNS_ROOT_NAME_SERVERS;
 	}
+
+	DNS_Debug("DNS: changed DNS Servers to : " + DNS_ROOT_NAME_SERVERS.toSource());
 }
 var dnsDebug = false;
 function dnsChangeDebug(debug) {
@@ -86,33 +121,48 @@ function dnsChangeTimeoutConnect(timeout) {
 }
 
 
-var DNS_ROOT_NAME_SERVER = "8.8.8.8"; // This is Google Public DNS. Could be "J.ROOT-SERVERS.NET", but public DNS may not respond to TCP. 
-/* structur of DNS_ROOT_NAME_SERVERS:
-	DNS_ROOT_NAME_SERVERS = [
-		{
-			server : "8.8.8.8",
-			alive : "true"
+// function DNS_get_OS_DNSServers() {
+function DNS_get_OS_DNSServers() {
+	OS_DNS_ROOT_NAME_SERVERS = [];
+
+	if ("@mozilla.org/windows-registry-key;1" in Components.classes) {
+		// Firefox 1.5 or newer on Windows
+		// Try getting a nameserver from the windows registry
+		try {
+			var registry_class = Components.classes["@mozilla.org/windows-registry-key;1"];
+			var registry_object = registry_class.createInstance();
+			var registry = registry_object.QueryInterface(Components.interfaces.nsIWindowsRegKey);
+			
+			registry.open(registry.ROOT_KEY_LOCAL_MACHINE,
+				"SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters",
+				registry.ACCESS_QUERY_VALUE);
+			var ns = "";
+			if (registry.hasValue("DhcpNameServer")) {
+				ns = registry.readStringValue("DhcpNameServer");
+			}
+			if (ns === "" && registry.hasValue("NameServer")) {
+				ns = registry.readStringValue("NameServer");
+			}
+			registry.close();
+			
+			if (ns !== "") {
+				var servers = ns.split(' ');
+				servers.forEach(function(element /*, index, array*/) {
+					if (element !== "") {
+						OS_DNS_ROOT_NAME_SERVERS.push({
+							server : element.trim(),
+							alive : true
+						});
+					}
+				});
+				DNS_Debug("DNS: Got servers from Windows registry: " +
+					OS_DNS_ROOT_NAME_SERVERS.toSource());
+			}
+		} catch (e) {
+			DNS_Debug("DNS: Reading Registry: " + e + "\n" + e.stack);
 		}
-	];
-*/
-var DNS_ROOT_NAME_SERVERS = null;
-var DNS_FOUND_NAME_SERVER_AUTOMATICALLY = 0;
-
-// Any settings changes aren't going to be picked up later.
-// DNS_LoadPrefs();
-
-function DNS_LoadPrefs() {
-	var prefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
-
-	if (prefs.getPrefType("dns.nameserver") == prefs.PREF_STRING
-		&& prefs.getCharPref("dns.nameserver") != null && prefs.getCharPref("dns.nameserver") != "" && prefs.getCharPref("dns.nameserver") != "occams.info:9053") {
-		DNS_ROOT_NAME_SERVER = prefs.getCharPref("dns.nameserver");
-		//DNS_Log("DNS: Got server from user preference: " + DNS_ROOT_NAME_SERVER);
-	} else if (false) {
+	} else {
 		// Try getting a nameserver from /etc/resolv.conf.
-		
-		// No need to do this while Google Public DNS is running.
-		
 		try {
 			var resolvconf = Components.classes["@mozilla.org/file/local;1"].createInstance(Components.interfaces.nsILocalFile);
 			resolvconf.initWithPath("/etc/resolv.conf");
@@ -126,47 +176,22 @@ function DNS_LoadPrefs() {
 			var out_line = Object();
 			while (stream_reader.readLine(out_line)) {
 				if (DNS_StartsWith(out_line.value, "nameserver ")) {
-					DNS_ROOT_NAME_SERVER = out_line.value.substring("nameserver ".length);
-					DNS_FOUND_NAME_SERVER_AUTOMATICALLY = 1;
-					break;
+					OS_DNS_ROOT_NAME_SERVERS.push({
+						server : out_line.value.substring("nameserver ".length).trim(),
+						alive : true
+					});
 				}
 			}
 			
 			stream_filestream.close();
 			
-			//DNS_Log("DNS: Got server from resolv.conf: " + DNS_ROOT_NAME_SERVER);
+			DNS_Debug("DNS: Got servers from resolv.conf: " + OS_DNS_ROOT_NAME_SERVERS.toSource());
 		} catch (e) {
-			//DNS_Log("DNS: Reading resolv.conf: " + e);
+			DNS_Debug("DNS: Reading resolv.conf: " + e + "\n" + e.stack);
 		}
-		
-		// Try getting a nameserver from the windows registry
-		try {
-			var registry_class = Components.classes["@mozilla.org/windows-registry-key;1"];
-			if (registry_class != null) {
-			var registry_object = registry_class.createInstance();
-			var registry = registry_object.QueryInterface(Components.interfaces.nsIWindowsRegKey);
-			
-			registry.open(registry.ROOT_KEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters", registry.ACCESS_QUERY_VALUE);
-			var ns = "";
-			if (registry.hasValue("DhcpNameServer")) ns = registry.readStringValue("DhcpNameServer");
-			if (ns == "" && registry.hasValue("NameServer")) ns = registry.readStringValue("NameServer");
-			registry.close();
-			
-			if (ns != "") {
-				var servers = ns.split(' ');
-				if (servers.length > 0 && servers[0] != "") {
-					DNS_ROOT_NAME_SERVER = servers[0];
-					DNS_FOUND_NAME_SERVER_AUTOMATICALLY = 1;
-					//DNS_Log("DNS: Got server from Windows registry: " + DNS_ROOT_NAME_SERVER);
-				}
-			}
-			}
-		} catch (e) {
-			//DNS_Log("DNS: Reading Registry: " + e);
-		}
-		
-		//DNS_Log("DNS: Autoconfigured server: " + DNS_ROOT_NAME_SERVER);
 	}
+	
+	//DNS_Debug("DNS: Autoconfigured servers: " + OS_DNS_ROOT_NAME_SERVERS);
 }
 
 var dns_test_domains = Array("for.net", "www.for.net", "yy.for.net", "www.gmail.net");
@@ -199,12 +224,7 @@ function DNS_Test() {
 
 // queryDNS: This is the main entry point for external callers.
 function queryDNS(host, recordtype, callback, callbackdata) {
-	if (DNS_ROOT_NAME_SERVERS === null) {
-		queryDNSRecursive(DNS_ROOT_NAME_SERVER, host, recordtype, callback, callbackdata, 0);
-	} else {
-		queryDNSRecursive(null, host, recordtype, callback, callbackdata, 0, DNS_ROOT_NAME_SERVERS);
-	}
-	
+	queryDNSRecursive(null, host, recordtype, callback, callbackdata, 0, DNS_ROOT_NAME_SERVERS);
 }
 
 function reverseDNS(ip, callback, callbackdata) {

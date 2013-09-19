@@ -4,7 +4,7 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  *
- * version: 0.5.1pre1 (10 September 2013)
+ * version: 0.5.1pre1 (19 September 2013)
  *
  * Copyright (c) 2013 Philippe Lieser
  *
@@ -1328,6 +1328,9 @@ var that = {
 		prefDKIMDebug = prefs.getBoolPref("debug");
 		DKIM_Verifier.dnsChangeDebug(prefs.getBoolPref("debug"));
 		DKIM_Verifier.dnsChangeNameserver(prefs.getCharPref("dns.nameserver"));
+		DKIM_Verifier.dnsChangeGetNameserversFromOS(
+			prefs.getBoolPref("dns.getNameserversFromOS")
+		);
 		DKIM_Verifier.dnsChangeTimeoutConnect(prefs.getIntPref("dns.timeout_connect"));
 
 		that.initHeaderEntry();
@@ -1365,6 +1368,11 @@ var that = {
 			case "debug":
 				prefDKIMDebug = prefs.getBoolPref("debug");
 				DKIM_Verifier.dnsChangeDebug(prefs.getBoolPref("debug"));
+				break;
+			case "dns.getNameserversFromOS":
+				DKIM_Verifier.dnsChangeGetNameserversFromOS(
+					prefs.getBoolPref("dns.getNameserversFromOS")
+				);
 				break;
 			case "dns.nameserver":
 				DKIM_Verifier.dnsChangeNameserver(prefs.getCharPref("dns.nameserver"));

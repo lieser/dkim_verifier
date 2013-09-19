@@ -2,6 +2,7 @@
 // or via the optional chrome/content/options.xul preferences dialog.
 
 // general preferences
+pref("extensions.dkim_verifier.dns.getNameserversFromOS", true);
 pref("extensions.dkim_verifier.dns.nameserver", "8.8.8.8");
 pref("extensions.dkim_verifier.dns.timeout_connect", 10);
 

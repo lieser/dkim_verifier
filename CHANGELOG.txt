@@ -1,3 +1,7 @@
+0.5.1 [2013-09-19]
+------------------
+ - added option to get DNS Servers from OS
+
 0.5.0 [2013-09-10]
 ------------------
  - added support of multiple DNS servers
