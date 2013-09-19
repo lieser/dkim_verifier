@@ -51,7 +51,14 @@
  *  since version 0.5.1
  *   - reenabled support to get DNS Servers from OS
  *    - modified and renamed DNS_LoadPrefs() to DNS_get_OS_DNSServers()
+ *   - fixed jshint errors/warnings
  */
+
+// options for JSHint
+/* jshint -W064 */ //"Missing 'new' prefix when invoking a constructor."
+/* global Components, DNS_STRINGS */
+/* exported EXPORTED_SYMBOLS, dnsChangeGetNameserversFromOS, dnsChangeNameserver, dnsChangeDebug, dnsChangeTimeoutConnect, reverseDNS, DNS_Test */
+
 
 var EXPORTED_SYMBOLS = [
 	"queryDNS",
@@ -71,13 +78,15 @@ Components.utils.import("chrome://dkim_verifier/locale/dns.js");
 		}
 	];
 */
-var DNS_ROOT_NAME_SERVERS = null;
+var DNS_ROOT_NAME_SERVERS = [];
 var PREF_DNS_ROOT_NAME_SERVERS = [];
 var OS_DNS_ROOT_NAME_SERVERS = [];
 
 // calls to change preferences
 var getNameserversFromOS = null;
 function dnsChangeGetNameserversFromOS(bool) {
+	"use strict";
+	
 	getNameserversFromOS = bool;
 	
 	if (getNameserversFromOS) {
@@ -90,6 +99,8 @@ function dnsChangeGetNameserversFromOS(bool) {
 	DNS_Debug("DNS: changed DNS Servers to : " + DNS_ROOT_NAME_SERVERS.toSource());
 }
 function dnsChangeNameserver(nameserver) {
+	"use strict";
+	
 	var nameservers = nameserver.split(";");
 	PREF_DNS_ROOT_NAME_SERVERS = [];
 	nameservers.forEach(function(element /*, index, array*/) {
@@ -113,16 +124,22 @@ function dnsChangeNameserver(nameserver) {
 }
 var dnsDebug = false;
 function dnsChangeDebug(debug) {
+	"use strict";
+	
 	dnsDebug = debug;
 }
 var timeout_connect;
 function dnsChangeTimeoutConnect(timeout) {
+	"use strict";
+	
 	timeout_connect = timeout;
 }
 
 
 // function DNS_get_OS_DNSServers() {
 function DNS_get_OS_DNSServers() {
+	"use strict";
+	
 	OS_DNS_ROOT_NAME_SERVERS = [];
 
 	if ("@mozilla.org/windows-registry-key;1" in Components.classes) {
@@ -173,7 +190,7 @@ function DNS_get_OS_DNSServers() {
 			
 			var stream_reader = stream.QueryInterface(Components.interfaces.nsILineInputStream);
 			
-			var out_line = Object();
+			var out_line = {};
 			while (stream_reader.readLine(out_line)) {
 				if (DNS_StartsWith(out_line.value, "nameserver ")) {
 					OS_DNS_ROOT_NAME_SERVERS.push({
@@ -198,22 +215,29 @@ var dns_test_domains = Array("for.net", "www.for.net", "yy.for.net", "www.gmail.
 var dns_test_domidx = 0;
 //DNS_Test();
 function DNS_Test() {
+	"use strict";
+	
 	queryDNS(dns_test_domains[dns_test_domidx], "MX",
 		function(data) {
 			var str;
 			var i;
-			if (data == null) { str = "no data"; }
+			if (data === null) { str = "no data"; }
 			else {
 				for (i = 0; i < data.length; i++) {
-					if (data[i].host != null)
+					if (data[i].host !== null) {
 						data[i] = "host=" + data[i].host + ";address=" + data[i].address;
+					}
 					
-					if (str != null) str += ", "; else str = "";
+					if (str !== null) {
+						str += ", ";
+					} else {
+						str = "";
+					}
 					str += data[i];
 				}
 			}
 			
-			alert(dns_test_domains[dns_test_domidx] + " => " + str);
+			DNS_Debug("DNS_Test: " + dns_test_domains[dns_test_domidx] + " => " + str);
 			dns_test_domidx++;
 			DNS_Test();
 		} );
@@ -224,10 +248,14 @@ function DNS_Test() {
 
 // queryDNS: This is the main entry point for external callers.
 function queryDNS(host, recordtype, callback, callbackdata) {
+	"use strict";
+	
 	queryDNSRecursive(null, host, recordtype, callback, callbackdata, 0, DNS_ROOT_NAME_SERVERS);
 }
 
 function reverseDNS(ip, callback, callbackdata) {
+	"use strict";
+	
 	// Get a list of reverse-DNS hostnames,
 	// and then make sure that each hostname
 	// resolves to the original IP.
@@ -235,9 +263,9 @@ function reverseDNS(ip, callback, callbackdata) {
 	queryDNS(DNS_ReverseIPHostname(ip), "PTR",
 		function(hostnames, mydata, queryError) {
 			// No reverse DNS info available.
-			if (hostnames == null) { callback(null, callbackdata, queryError); return; }
+			if (hostnames === null) { callback(null, callbackdata, queryError); return; }
 			
-			var obj = new Object();
+			var obj = {};
 			obj.ret = Array(0);
 			obj.retctr = 0;
 			obj.resolvectr = 0;
@@ -246,28 +274,31 @@ function reverseDNS(ip, callback, callbackdata) {
 			
 			// Check that each one resolves forward.
 			for (i = 0; i < hostnames.length; i++) {
-				var o2 = new Object();
+				var o2 = {};
 				o2.retobj = obj;
 				o2.curhostname = hostnames[i];
 				
 				queryDNS(hostnames[i], "A",
 				function(arecs, cb) {
-					if (arecs != null) {
+					var matched;
+					if (arecs !== null) {
 						var j;
-						var matched = false;
+						matched = false;
 						for (j = 0; j < arecs.length; j++) {
-							if (arecs[j] == ip) { matched = true; break; }
+							if (arecs[j] === ip) { matched = true; break; }
 						}
 					}
 					
-					if (matched)
+					if (matched) {
 						cb.retobj.ret[cb.retobj.retctr++] = cb.curhostname;
+					}
 					
-					if (++cb.retobj.resolvectr == hostnames.length) {
-						if (cb.retobj.retctr == 0)
+					if (++cb.retobj.resolvectr === hostnames.length) {
+						if (cb.retobj.retctr === 0) {
 							callback(null, callbackdata);
-						else
+						} else {
 							callback(cb.retobj.ret, callbackdata);
+						}
 					}
 				}, o2);
 			}
@@ -275,11 +306,15 @@ function reverseDNS(ip, callback, callbackdata) {
 }
 
 function DNS_ReverseIPHostname(ip) {
+	"use strict";
+	
 	var q = ip.split(".");
 	return q[3] + "." + q[2] + "." + q[1] + "." + q[0] + ".in-addr.arpa";
 }
 
 function queryDNSRecursive(server, host, recordtype, callback, callbackdata, hops, servers) {
+	"use strict";
+	
 	// if more when one server is given
 	if (servers !== undefined) {
 		// set server to next alive DNS server
@@ -301,7 +336,7 @@ function queryDNSRecursive(server, host, recordtype, callback, callbackdata, hop
 		}
 	}
 
-	if (hops == 10) {
+	if (hops === 10) {
 		DNS_Debug("DNS: Maximum number of recursive steps taken in resolving " + host);
 		callback(null, callbackdata, DNS_STRINGS.TOO_MANY_HOPS);
 		return;
@@ -311,33 +346,35 @@ function queryDNSRecursive(server, host, recordtype, callback, callbackdata, hop
 		
 	var query =
 		// HEADER
-		  "00" // ID
-		+ String.fromCharCode(1) // QR=0, OPCODE=0, AA=0, TC=0, RD=1 (Recursion desired)
-		+ String.fromCharCode(0) // all zeroes
-		+ DNS_wordToStr(1) // 1 query
-		+ DNS_wordToStr(0) // ASCOUNT=0
-		+ DNS_wordToStr(0) // NSCOUNT=0
-		+ DNS_wordToStr(0) // ARCOUNT=0
+		"00" + // ID
+		String.fromCharCode(1) + // QR=0, OPCODE=0, AA=0, TC=0, RD=1 (Recursion desired)
+		String.fromCharCode(0) + // all zeroes
+		DNS_wordToStr(1) + // 1 query
+		DNS_wordToStr(0) + // ASCOUNT=0
+		DNS_wordToStr(0) + // NSCOUNT=0
+		DNS_wordToStr(0) // ARCOUNT=0
 		;
 		
 	var hostparts = host.split(".");
-	for (var hostpartidx = 0; hostpartidx < hostparts.length; hostpartidx++)
+	for (var hostpartidx = 0; hostpartidx < hostparts.length; hostpartidx++) {
 		query += DNS_octetToStr(hostparts[hostpartidx].length) + hostparts[hostpartidx];
+	}
 	query += DNS_octetToStr(0);
-	if (recordtype == "A")
+	if (recordtype === "A") {
 		query += DNS_wordToStr(1);
-	else if (recordtype == "NS")
+	} else if (recordtype === "NS") {
 		query += DNS_wordToStr(2); 
-	else if (recordtype == "CNAME")
+	} else if (recordtype === "CNAME") {
 		query += DNS_wordToStr(5); 
-	else if (recordtype == "PTR")
+	} else if (recordtype === "PTR") {
 		query += DNS_wordToStr(12); 
-	else if (recordtype == "MX")
+	} else if (recordtype === "MX") {
 		query += DNS_wordToStr(15); 
-	else if (recordtype == "TXT")
+	} else if (recordtype === "TXT") {
 		query += DNS_wordToStr(16); 
-	else
+	} else {
 		throw "Invalid record type.";
+	}
 	query += DNS_wordToStr(1); // IN
 		
 	// Prepend query message length
@@ -350,13 +387,13 @@ function queryDNSRecursive(server, host, recordtype, callback, callbackdata, hop
 		responseBody : "",
 		done : false,
 		finished : function(data, status) {
-			if (status != 0) {
-				if (status == 2152398861) {
+			if (status !== 0) {
+				if (status === 2152398861) {
 					DNS_Debug("DNS: Resolving " + host + "/" + recordtype + ": DNS server " + server + " refused a TCP connection.");
 					if (servers === undefined) {
 						callback(null, callbackdata, DNS_STRINGS.CONNECTION_REFUSED(server));
 					}
-				} else if (status == 2152398868) {
+				} else if (status === 2152398868) {
 					DNS_Debug("DNS: Resolving " + host + "/" + recordtype + ": DNS server " + server + " timed out on a TCP connection.");
 					if (servers === undefined) {
 						callback(null, callbackdata, DNS_STRINGS.TIMED_OUT(server));
@@ -391,7 +428,9 @@ function queryDNSRecursive(server, host, recordtype, callback, callbackdata, hop
 			}
 		},
 		process : function(data){
-			if (this.done) return false;
+			if (this.done) {
+				return false;
+			}
 			
 			this.readcount += data.length;
 			
@@ -399,7 +438,7 @@ function queryDNSRecursive(server, host, recordtype, callback, callbackdata, hop
 				this.responseHeader += data.charAt(0);
 				data = data.substr(1);
 			}
-			if (this.responseHeader.length == 14) {
+			if (this.responseHeader.length === 14) {
 				this.msgsize = DNS_strToWord(this.responseHeader.substr(0, 2));
 				this.responseBody += data;
 
@@ -414,32 +453,39 @@ function queryDNSRecursive(server, host, recordtype, callback, callbackdata, hop
 			}
 			return true;
 		}
-	}
+	};
 	
 	// allow server to be either a hostname or hostname:port
 	var server_hostname = server;
 	var port = 53;
-	if (server.indexOf(':') != -1) {
+	if (server.indexOf(':') !== -1) {
 		server_hostname = server.substring(0, server.indexOf(':'));
 		port = server.substring(server.indexOf(':')+1);
 	}
 
 	var ex = DNS_readAllFromSocket(server_hostname, port, query, listener);
-	if (ex != null) {
-	  alert(ex);
+	if (ex !== null) {
+		DNS_Debug("DNS: " + ex + "\n" + ex.stack);
 	}
 }
 
 function DNS_readDomain(ctx) {
+	"use strict";
+	
 	var domainname = "";
 	var ctr = 20;
 	while (ctr-- > 0) {
 		var l = ctx.str.charCodeAt(ctx.idx++);
-		if (l == 0) break;
+		if (l === 0) {
+			break;
+		}
 		
-		if (domainname != "") domainname += ".";
+		if (domainname !== "") {
+			domainname += ".";
+		}
 		
-		if ((l >> 6) == 3) {
+		/* jshint -W016 */ // "Unexpected use of '{a}'."
+		if ((l >> 6) === 3) {
 			// Pointer
 			var ptr = ((l & 63) << 8) + ctx.str.charCodeAt(ctx.idx++);
 			var ctx2 = { str : ctx.str, idx : ptr };
@@ -449,12 +495,15 @@ function DNS_readDomain(ctx) {
 			domainname += ctx.str.substr(ctx.idx, l);
 			ctx.idx += l;
 		}
+		/* jshint +W016 */
 	}
 	return domainname;
 }
 
 function DNS_readRec(ctx) {
-	var rec = new Object();
+	"use strict";
+	
+	var rec = {};
 	var ctr;
 	var txtlen;
 	
@@ -467,7 +516,7 @@ function DNS_readRec(ctx) {
 	
 	var ctxnextidx = ctx.idx + rec.rdlen;
 	
-	if (rec.type == 16) {
+	if (rec.type === 16) {
 		rec.type = "TXT";
 		rec.rddata = "";
 		ctr = 10;
@@ -475,20 +524,20 @@ function DNS_readRec(ctx) {
 			txtlen = DNS_strToOctet(ctx.str.substr(ctx.idx,1)); ctx.idx++; rec.rdlen--;
 			rec.rddata += ctx.str.substr(ctx.idx, txtlen); ctx.idx += txtlen; rec.rdlen -= txtlen;
 		}
-	} else if (rec.type == 1) {
+	} else if (rec.type === 1) {
 		// Return as a dotted-quad
 		rec.type = "A";
 		rec.rddata = ctx.str.substr(ctx.idx, rec.rdlen);
 		rec.rddata = rec.rddata.charCodeAt(0) + "." + rec.rddata.charCodeAt(1) + "." + rec.rddata.charCodeAt(2) + "." + rec.rddata.charCodeAt(3);
-	} else if (rec.type == 15) {
+	} else if (rec.type === 15) {
 		rec.type = "MX";
-		rec.rddata = new Object();
+		rec.rddata = {};
 		rec.rddata.preference = DNS_strToWord(ctx.str.substr(ctx.idx,2)); ctx.idx += 2;
 		rec.rddata.host = DNS_readDomain(ctx);
-	} else if (rec.type == 2) {
+	} else if (rec.type === 2) {
 		rec.type = "NS";
 		rec.rddata = DNS_readDomain(ctx);
-	} else if (rec.type == 12) {
+	} else if (rec.type === 12) {
 		rec.type = "PTR";
 		rec.rddata = DNS_readDomain(ctx);
 	} else if (rec.type === 5) {
@@ -505,6 +554,8 @@ function DNS_readRec(ctx) {
 }
 
 function DNS_getRDData(str, server, host, recordtype, callback, callbackdata, hops) {
+	"use strict";
+	
 	var qcount = DNS_strToWord(str.substr(4, 2));
 	var ancount = DNS_strToWord(str.substr(6, 2));
 	var aucount = DNS_strToWord(str.substr(8, 2));
@@ -517,13 +568,21 @@ function DNS_getRDData(str, server, host, recordtype, callback, callbackdata, ho
 	var dom;
 	var type;
 	var cls;
-	var ttl;
+	// var ttl;
 	var rec;
 	
-	if (qcount != 1) throw "Invalid response: Question section didn't have exactly one record.";
-	if (ancount > 128) throw "Invalid response: Answer section had more than 128 records.";
-	if (aucount > 128) throw "Invalid response: Authority section had more than 128 records.";
-	if (adcount > 128) throw "Invalid response: Additional section had more than 128 records.";
+	if (qcount !== 1) {
+		throw "Invalid response: Question section didn't have exactly one record.";
+	}
+	if (ancount > 128) {
+		throw "Invalid response: Answer section had more than 128 records.";
+	}
+	if (aucount > 128) {
+		throw "Invalid response: Authority section had more than 128 records.";
+	}
+	if (adcount > 128) {
+		throw "Invalid response: Additional section had more than 128 records.";
+	}
 	
 	for (i = 0; i < qcount; i++) {
 		dom = DNS_readDomain(ctx);
@@ -536,7 +595,9 @@ function DNS_getRDData(str, server, host, recordtype, callback, callbackdata, ho
 	var results = [];
 	for (i = 0; i < ancount; i++) {
 		rec = DNS_readRec(ctx);
-		if (!rec.recognized) throw "Record type is not one that this library can understand.";
+		if (!rec.recognized) {
+			throw "Record type is not one that this library can understand.";
+		}
 		// ignore CNAME records
 		if (rec.type !== "CNAME") {
 			results.push(rec.rddata);
@@ -550,19 +611,23 @@ function DNS_getRDData(str, server, host, recordtype, callback, callbackdata, ho
 	for (i = 0; i < aucount; i++) {
 		rec = DNS_readRec(ctx);
 		authorities[i] = rec;
-		if (rec.recognized)
+		if (rec.recognized) {
 			DNS_Debug(debugstr + "Authority: " + rec.type + " " + rec.rddata);
+		}
 		// Assuming the domain for this record is the domain we are asking about.
 	}
 	
 	for (i = 0; i < adcount; i++) {
 		rec = DNS_readRec(ctx);
-		if (rec.recognized)
+		if (rec.recognized) {
 			DNS_Debug(debugstr + "Additional: " + rec.dom + " " + rec.type + " " + rec.rddata);
-		if (rec.type == "A") {
+		}
+		if (rec.type === "A") {
 			for (j = 0; j < results.length; j++) {
-				if (results[j].host && results[j].host == rec.dom) {
-					if (results[j].address == null) results[j].address = Array(0);
+				if (results[j].host && results[j].host === rec.dom) {
+					if (results[j].address === null) {
+						results[j].address = Array(0);
+					}
 					results[j].address[results[j].address.length] = rec.rddata;
 				}
 			}
@@ -578,8 +643,8 @@ function DNS_getRDData(str, server, host, recordtype, callback, callbackdata, ho
 		// Note that we can do without the IP address of the NS authority (given in the additional
 		// section) because we're able to do DNS lookups without knowing the IP address
 		// of the DNS server -- Thunderbird and the OS take care of that.
-		for (var i = 0; i < aucount; i++) {
-			if (authorities[i].type == "NS" && authorities[i].rddata != server) {
+		for (i = 0; i < aucount; i++) {
+			if (authorities[i].type === "NS" && authorities[i].rddata !== server) {
 				DNS_Debug(debugstr + "Recursing on Authority: " + authorities[i].rddata);
 				queryDNSRecursive(authorities[i].rddata, host, recordtype, callback, callbackdata, hops+1);
 				return;
@@ -593,18 +658,32 @@ function DNS_getRDData(str, server, host, recordtype, callback, callbackdata, ho
 }
 
 function DNS_strToWord(str) {
-	return str.charCodeAt(1) + (str.charCodeAt(0) << 8);
+	"use strict";
+	
+	/* jshint -W016 */ // "Unexpected use of '{a}'."
+	var res = str.charCodeAt(1) + (str.charCodeAt(0) << 8);
+	/* jshint +W016 */
+	return res;
 }
 
 function DNS_strToOctet(str) {
+	"use strict";
+	
 	return str.charCodeAt(0);
 }
 
 function DNS_wordToStr(word) {
-	return DNS_octetToStr((word >> 8) % 256) + DNS_octetToStr(word % 256);
+	"use strict";
+	
+	/* jshint -W016 */ // "Unexpected use of '{a}'."
+	var res = DNS_octetToStr((word >> 8) % 256) + DNS_octetToStr(word % 256);
+	/* jshint +W016 */
+	return res;
 }
 
 function DNS_octetToStr(octet) {
+	"use strict";
+	
 	return String.fromCharCode(octet);
 }
 
@@ -612,82 +691,98 @@ function DNS_octetToStr(octet) {
 
 function DNS_readAllFromSocket(host,port,outputData,listener)
 {
-  try {
-    var transportService =
-      Components.classes["@mozilla.org/network/socket-transport-service;1"]
-        .getService(Components.interfaces.nsISocketTransportService);
+	"use strict";
+	
+	try {
+		var transportService =
+			Components.classes["@mozilla.org/network/socket-transport-service;1"]
+			.getService(Components.interfaces.nsISocketTransportService);
 		
-    var transport = transportService.createTransport(null,0,host,port,null);
+		var transport = transportService.createTransport(null,0,host,port,null);
 
-	// change timeout for connection
-	transport.setTimeout(transport.TIMEOUT_CONNECT, timeout_connect);
-	
-    var outstream = transport.openOutputStream(0,0,0);
-    outstream.write(outputData,outputData.length);
+		// change timeout for connection
+		transport.setTimeout(transport.TIMEOUT_CONNECT, timeout_connect);
+		
+		var outstream = transport.openOutputStream(0,0,0);
+		outstream.write(outputData,outputData.length);
 
-    var stream = transport.openInputStream(0,0,0);
-    var instream = Components.classes["@mozilla.org/binaryinputstream;1"]
-      .createInstance(Components.interfaces.nsIBinaryInputStream);
-    instream.setInputStream(stream);
+		var stream = transport.openInputStream(0,0,0);
+		var instream = Components.classes["@mozilla.org/binaryinputstream;1"]
+			.createInstance(Components.interfaces.nsIBinaryInputStream);
+		instream.setInputStream(stream);
 
-    var dataListener = {
-		data : "",
-		onStartRequest: function(request, context){},
-		onStopRequest: function(request, context, status){
-			if (listener.finished != null) {
-				listener.finished(this.data, status);
-			}
-			outstream.close();
-			stream.close();
-			//DNS_Debug("DNS: Connection closed (" + host + ")");
-		},
-		onDataAvailable: function(request, context, inputStream, offset, count){
-			//DNS_Debug("DNS: Got data (" + host + ")");
-			for (var i = 0; i < count; i++) {
-			  this.data += String.fromCharCode(instream.read8());
-			}
-			if (listener.process != null) {
-				if (!listener.process(this.data)) {
-					outstream.close();
-					stream.close();
+		var dataListener = {
+			data : "",
+			onStartRequest: function(/* request, context */){},
+			onStopRequest: function(request, context, status){
+				if (listener.finished !== null) {
+					listener.finished(this.data, status);
 				}
-				this.data = "";
+				outstream.close();
+				stream.close();
+				//DNS_Debug("DNS: Connection closed (" + host + ")");
+			},
+			onDataAvailable: function(request, context, inputStream, offset, count){
+				//DNS_Debug("DNS: Got data (" + host + ")");
+				for (var i = 0; i < count; i++) {
+					this.data += String.fromCharCode(instream.read8());
+				}
+				if (listener.process !== null) {
+					if (!listener.process(this.data)) {
+						outstream.close();
+						stream.close();
+					}
+					this.data = "";
+				}
 			}
-      }
-    };
-	
-    var pump = Components.
-      classes["@mozilla.org/network/input-stream-pump;1"].
-        createInstance(Components.interfaces.nsIInputStreamPump);
-    pump.init(stream, -1, -1, 0, 0, false);
-    pump.asyncRead(dataListener,null);
-  } catch (ex) {
-    return ex;
-  }
-  return null;
+		};
+		
+		var pump = Components.
+			classes["@mozilla.org/network/input-stream-pump;1"].
+			createInstance(Components.interfaces.nsIInputStreamPump);
+		pump.init(stream, -1, -1, 0, 0, false);
+		pump.asyncRead(dataListener,null);
+	} catch (ex) {
+		return ex;
+	}
+	return null;
 }
 
 function DNS_Debug(message) {
+	"use strict";
+	
 	if (dnsDebug) {
 		DNS_Log(message);
 	}
 }
 
 function DNS_Log(message) {
+	"use strict";
+	
 	var consoleService = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
 	consoleService.logStringMessage(message);
 }
 
 function DNS_StartsWith(a, b) {
-	if (b.length > a.length) return false;
-	return a.substring(0, b.length) == b;
+	"use strict";
+	
+	if (b.length > a.length) {
+		return false;
+	}
+	return a.substring(0, b.length) === b;
 }
 
 function DNS_IsDottedQuad(ip) {
+	"use strict";
+	
 	var q = ip.split(".");
-	if (q.length != 4)
+	if (q.length !== 4) {
 		return false;
-	if (isNaN(parseInt(q[0])) || isNaN(parseInt(q[1])) || isNaN(parseInt(q[2])) || isNaN(parseInt(q[3])))
+	}
+	if (isNaN(parseInt(q[0], 10)) || isNaN(parseInt(q[1], 10)) ||
+		isNaN(parseInt(q[2], 10)) || isNaN(parseInt(q[3], 10)))
+	{
 		return false;
+	}
 	return true;
 }
