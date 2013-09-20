@@ -1,3 +1,4 @@
 ﻿<!ENTITY dkim_verifier.header.title "DKIM ">
+<!ENTITY dkim_verifier.statusbar.title "DKIM:">
 
 <!ENTITY dkim_verifier.reverifyDKIMSignature.label "Überprüfe DKIM Signatur neu">

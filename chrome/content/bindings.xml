@@ -1,5 +1,9 @@
 <?xml version="1.0"?>
-<!DOCTYPE bindings>
+<!DOCTYPE bindings [
+	<!ENTITY % xulstringsDTD SYSTEM "chrome://dkim_verifier/locale/xulstrings.dtd">
+	%xulstringsDTD;
+]>
+
 <bindings id="dkim-verifier-bindings"
           xmlns="http://www.mozilla.org/xbl"
           xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
@@ -23,6 +27,43 @@
       <property name="value">
         <setter><![CDATA[
           this.headerValue.textContent = val;
+        ]]></setter>
+      </property>
+      <property name="warnings">
+        <setter><![CDATA[
+          while (this.tooltip.firstChild) {
+            this.tooltip.removeChild(this.tooltip.firstChild);
+          }
+          for (let w of val) {
+            var d = document.createElement("description");
+            d.textContent = w;
+            this.tooltip.appendChild(d);
+          }
+          this.setAttribute("warnings", (!!this.tooltip.firstChild).toString());
+        ]]></setter>
+      </property>
+    </implementation>
+  </binding>
+  
+  <binding id="dkim-verifier-statusbarpanel-box">
+    <content>
+      <xul:label class="statusbarpanel-text" value="&dkim_verifier.statusbar.title;" />
+      <xul:label anonid="statusValue"
+                       class="statusbarpanel-text"
+                       readonly="true"
+                       context="copyPopup"
+                       role="textbox"
+                       aria-readonly="true" />
+      <xul:image class="statusbarpanel-icon" tooltip="dkim-verifier-statusbarpanel-tooltip"/>
+      <xul:tooltip anonid="tooltip" id="dkim-verifier-statusbarpanel-tooltip"/>
+    </content>
+    <implementation>
+      <field name="statusValue">document.getAnonymousElementByAttribute(this, "anonid", "statusValue");</field>
+      <field name="tooltip">document.getAnonymousElementByAttribute(this, "anonid", "tooltip");</field>
+
+      <property name="value">
+        <setter><![CDATA[
+          this.statusValue.textContent = val;
         ]]></setter>
       </property>
       <property name="warnings">
