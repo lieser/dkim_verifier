@@ -4,7 +4,7 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  *
- * version: 0.5.1 (20 September 2013)
+ * version: 0.5.2pre1 (21 September 2013)
  *
  * Copyright (c) 2013 Philippe Lieser
  *
@@ -100,6 +100,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 	const entry = "dkim-verifier";
 	var header;
 	var row;
+	var statusbarpanel;
 
 	// WSP help pattern as specified in Section 2.8 of RFC 6376
 	var pattWSP = "[ \t]";
@@ -1173,10 +1174,13 @@ DKIM_Verifier.DKIMVerifier = (function() {
 	 * display result
 	 */
 	function displayResult(result) {
+		var str;
+	
 		switch(result.result) {
 			case "none":
 				header.value = DKIM_Verifier.DKIM_STRINGS.NOSIG;
 				that.setCollapsed(true);
+				statusbarpanel.value = DKIM_Verifier.DKIM_STRINGS.NOSIG;
 
 				// highlight from header
 				highlightHeader("nosig");
@@ -1184,13 +1188,17 @@ DKIM_Verifier.DKIMVerifier = (function() {
 				break;
 			case "SUCCESS":
 				that.setCollapsed(false);
-				header.value = DKIM_Verifier.DKIM_STRINGS.SUCCESS(result.SDID);
+				str = DKIM_Verifier.DKIM_STRINGS.SUCCESS(result.SDID);
+				header.value = str;
+				statusbarpanel.value = str;
 				
 				// show warnings
 				if (result.warnings.length > 0) {
-					header.warnings = result.warnings.map(function(e) {
+					var warnings = result.warnings.map(function(e) {
 						return DKIM_Verifier.DKIM_STRINGS[e] || e;
 					});
+					header.warnings = warnings;
+					statusbarpanel.warnings = warnings;
 				}
 				
 				// highlight from header
@@ -1205,7 +1213,9 @@ DKIM_Verifier.DKIMVerifier = (function() {
 				that.setCollapsed(false);
 				var errorMsg = DKIM_Verifier.DKIM_STRINGS[result.errorType] ||
 					result.errorType;
-				header.value = DKIM_Verifier.DKIM_STRINGS.PERMFAIL + " (" + errorMsg + ")";
+				str = DKIM_Verifier.DKIM_STRINGS.PERMFAIL + " (" + errorMsg + ")";
+				header.value = str;
+				statusbarpanel.value = str;
 
 				// if domain is testing DKIM, treat msg as not signed
 				if (result.errorType === "DKIM_SIGERROR_KEY_TESTMODE") {
@@ -1222,9 +1232,11 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			case "TEMPFAIL":
 				that.setCollapsed(false);
 				
-				header.value = DKIM_Verifier.DKIM_STRINGS[result.errorType] ||
+				str = DKIM_Verifier.DKIM_STRINGS[result.errorType] ||
 					result.errorType ||
 					DKIM_Verifier.DKIM_STRINGS.DKIM_INTERNALERROR_NAME;
+				header.value = str;
+				statusbarpanel.value = str;
 				
 				// highlight from header
 				highlightHeader("tempfail");
@@ -1335,7 +1347,25 @@ var that = {
 
 		that.initHeaderEntry();
 
+		// register monitors for message displaying
 		gMessageListeners.push(that);
+		
+		// get statusbarpanel
+		statusbarpanel = document.getElementById("dkim-verifier-statusbarpanel");
+		
+		// register monitors for tabswitch
+		var tabmail = document.getElementById("tabmail");
+		that.tabMonitor = {
+			onTabTitleChanged: function(/* aTab */) {
+				statusbarpanel.hidden = true;
+			},
+			onTabSwitched: function(/* aTab, aOldTab */) {
+				if (statusbarpanel) {
+					statusbarpanel.hidden = true;
+				}
+			}
+		};
+		tabmail.registerTabMonitor(that.tabMonitor);
 	},
 
 	/*
@@ -1351,6 +1381,10 @@ var that = {
 		if (pos !== -1) {
 			gMessageListeners.splice(pos, 1);
 		}
+
+		// unregister monitors for tabswitch
+		var tabmail = document.getElementById("tabmail");
+		tabmail.unregisterTabMonitor(that.tabMonitor);
 	},
 
 	/*
@@ -1388,6 +1422,7 @@ var that = {
 	 */
 	onBeforeShowHeaderPane : function () {
 		that.initHeaderEntry();
+		statusbarpanel.hidden = false;
 		var reverifyDKIMSignature = document.
 			getElementById("dkim_verifier.reverifyDKIMSignature");
 
@@ -1397,12 +1432,14 @@ var that = {
 				headerName: entry,
 				headerValue: DKIM_Verifier.DKIM_STRINGS.NOT_EMAIL
 			};
+			statusbarpanel.value = DKIM_Verifier.DKIM_STRINGS.NOT_EMAIL;
 			reverifyDKIMSignature.disabled = true;
 		} else {
 			currentHeaderData[entry] = {
 				headerName: entry,
 				headerValue: DKIM_Verifier.DKIM_STRINGS.loading
 			};
+			statusbarpanel.value = DKIM_Verifier.DKIM_STRINGS.loading;
 			reverifyDKIMSignature.disabled = false;
 		}
 	},
@@ -1412,6 +1449,7 @@ var that = {
 	 */
 	onStartHeaders: function() {
 		header.warnings = [];
+		statusbarpanel.warnings = [];
 
 		// reset highlight from header
 		highlightHeader("clearHeader");

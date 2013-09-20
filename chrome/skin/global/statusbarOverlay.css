@@ -4,6 +4,10 @@
   -moz-binding: url(chrome://dkim_verifier/content/bindings.xml#dkim-verifier-statusbarpanel-box) !important;
 }
 
+#dkim-verifier-statusbarpanel > [anonid="title"] {
+  -moz-margin-end: -3px;
+}
+
 #dkim-verifier-statusbarpanel > image {
   list-style-image: url("chrome://global/skin/icons/Warning.png");
   height: 16px;

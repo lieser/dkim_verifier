@@ -47,7 +47,9 @@
   
   <binding id="dkim-verifier-statusbarpanel-box">
     <content>
-      <xul:label class="statusbarpanel-text" value="&dkim_verifier.statusbar.title;" />
+      <xul:label anonid="title"
+                 class="statusbarpanel-text"
+                 value="&dkim_verifier.statusbar.title;" />
       <xul:label anonid="statusValue"
                        class="statusbarpanel-text"
                        readonly="true"
