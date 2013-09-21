@@ -13,7 +13,14 @@
 
 <!ENTITY display.label "Anzeige">
 
-<!ENTITY alwaysShowDKIMHeader.label "Zeige die DKIM Signatur Kopfzeile immer an">
+<!ENTITY showDKIMHeader.label  "Zeige DKIM Kopfzeile">
+<!ENTITY showDKIMStatusbarpanel.label  "Zeige DKIM Statusbar">
+<!ENTITY showDKIM.value.0.label  "nie">
+<!ENTITY showDKIM.value.10.label "wenn eine E-Mail mit gültiger DKIM Signatur angezeigt wird">
+<!ENTITY showDKIM.value.30.label "wenn eine E-Mail mit DKIM Signatur angezeigt wird">
+<!ENTITY showDKIM.value.40.label "wenn eine E-Mail angezeigt wird">
+<!ENTITY showDKIM.value.50.label "wenn eine Nachricht angezeigt wird">
+
 <!ENTITY colorFrom.label "Aktiviere Markierung der Absenderadresse">
 <!ENTITY color.label "Farbe">
 <!ENTITY color.text.label "Text Farbe:">

@@ -929,7 +929,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			}
 			
 			// show the dkim verifier header box
-			that.setCollapsed(false);
+			that.setCollapsed(30);
 			
 			verifySignaturePart1(msg);
 		} catch(e) {
@@ -1179,7 +1179,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 		switch(result.result) {
 			case "none":
 				header.value = DKIM_Verifier.DKIM_STRINGS.NOSIG;
-				that.setCollapsed(true);
+				that.setCollapsed(40);
 				statusbarpanel.value = DKIM_Verifier.DKIM_STRINGS.NOSIG;
 
 				// highlight from header
@@ -1187,7 +1187,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 				
 				break;
 			case "SUCCESS":
-				that.setCollapsed(false);
+				that.setCollapsed(10);
 				str = DKIM_Verifier.DKIM_STRINGS.SUCCESS(result.SDID);
 				header.value = str;
 				statusbarpanel.value = str;
@@ -1210,7 +1210,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 				
 				break;
 			case "PERMFAIL":
-				that.setCollapsed(false);
+				that.setCollapsed(30);
 				var errorMsg = DKIM_Verifier.DKIM_STRINGS[result.errorType] ||
 					result.errorType;
 				str = DKIM_Verifier.DKIM_STRINGS.PERMFAIL + " (" + errorMsg + ")";
@@ -1219,7 +1219,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 
 				// if domain is testing DKIM, treat msg as not signed
 				if (result.errorType === "DKIM_SIGERROR_KEY_TESTMODE") {
-					that.setCollapsed(true);
+					that.setCollapsed(40);
 					// highlight from header
 					highlightHeader("nosig");
 					break;
@@ -1230,7 +1230,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 				
 				break;
 			case "TEMPFAIL":
-				that.setCollapsed(false);
+				that.setCollapsed(20);
 				
 				str = DKIM_Verifier.DKIM_STRINGS[result.errorType] ||
 					result.errorType ||
@@ -1314,15 +1314,34 @@ var that = {
 		header = view.enclosingBox;
 		row = view.enclosingRow;
 	},
-	setCollapsed: function(collapsed) {
-		if (collapsed) {
-			collapsed = !prefs.getBoolPref("alwaysShowDKIMHeader");
+	setCollapsed: function(state) {
+		// DKIM header
+		if (prefs.getIntPref("showDKIMHeader") >= state ) {
+			// show DKIM header
+			
+			if (row.collapsed === true) {
+				row.collapsed = false;
+				syncGridColumnWidths();
+			}
+		} else {
+			// don't show DKIM header
+			
+			if (row.collapsed === false) {
+				row.collapsed = true;
+				syncGridColumnWidths();
+			}
 		}
-		if (row.collapsed === collapsed) {
-			return;
+		
+		// DKIM statusbarpanel
+		if (prefs.getIntPref("showDKIMStatusbarpanel") >= state ) {
+			// show DKIM statusbarpanel
+			
+			statusbarpanel.hidden = false;
+		} else {
+			// don't show DKIM statusbarpanel
+			
+			statusbarpanel.hidden = true;
 		}
-		row.collapsed = collapsed;
-		syncGridColumnWidths();
 	},
 
 	/*
@@ -1357,7 +1376,9 @@ var that = {
 		var tabmail = document.getElementById("tabmail");
 		that.tabMonitor = {
 			onTabTitleChanged: function(/* aTab */) {
-				statusbarpanel.hidden = true;
+				if (statusbarpanel) {
+					statusbarpanel.hidden = true;
+				}
 			},
 			onTabSwitched: function(/* aTab, aOldTab */) {
 				if (statusbarpanel) {
@@ -1422,7 +1443,6 @@ var that = {
 	 */
 	onBeforeShowHeaderPane : function () {
 		that.initHeaderEntry();
-		statusbarpanel.hidden = false;
 		var reverifyDKIMSignature = document.
 			getElementById("dkim_verifier.reverifyDKIMSignature");
 
@@ -1445,7 +1465,7 @@ var that = {
 	},
 
 	/*
-	 * Resets the header
+	 * Resets the header and statusbarpanel
 	 */
 	onStartHeaders: function() {
 		header.warnings = [];
@@ -1462,9 +1482,10 @@ var that = {
 		try {
 			// return if msg is RSS feed or news
 			if (gFolderDisplay.selectedMessageIsFeed || gFolderDisplay.selectedMessageIsNews) {
-				that.setCollapsed(true);
+				that.setCollapsed(50);
 				return;
 			}
+			that.setCollapsed(40);
 			
 			// get msg uri
 			var msgURI = gDBView.URIForFirstSelectedMessage;

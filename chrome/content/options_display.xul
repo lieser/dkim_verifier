@@ -45,9 +45,12 @@
 		            name="extensions.dkim_verifier.color.nosig.background"
 		            type="string"/>
 
-		<preference id="pref_alwaysShowDKIMHeader"
-		            name="extensions.dkim_verifier.alwaysShowDKIMHeader"
-		            type="bool"/>
+		<preference id="pref_showDKIMHeader"
+		            name="extensions.dkim_verifier.showDKIMHeader"
+		            type="int"/>
+		<preference id="pref_showDKIMStatusbarpanel"
+		            name="extensions.dkim_verifier.showDKIMStatusbarpanel"
+		            type="int"/>
 	</preferences>
 	
 	<groupbox>
@@ -110,7 +113,28 @@
 			</hbox>
 		</groupbox>
 	</groupbox>
-	<checkbox preference="pref_alwaysShowDKIMHeader" label="&alwaysShowDKIMHeader.label;"/>
+	<groupbox>
+		<label>&showDKIMHeader.label;</label>
+		<menulist preference="pref_showDKIMHeader">
+			<menupopup>
+				<menuitem label="&showDKIM.value.0.label;" value="0"/>
+				<menuitem label="&showDKIM.value.10.label;" value="10"/>
+				<menuitem label="&showDKIM.value.30.label;" value="30"/>
+				<menuitem label="&showDKIM.value.40.label;" value="40"/>
+				<menuitem label="&showDKIM.value.50.label;" value="50"/>
+			</menupopup>
+		</menulist>
+		<label>&showDKIMStatusbarpanel.label;</label>
+		<menulist preference="pref_showDKIMStatusbarpanel">
+			<menupopup>
+				<menuitem label="&showDKIM.value.0.label;" value="0"/>
+				<menuitem label="&showDKIM.value.10.label;" value="10"/>
+				<menuitem label="&showDKIM.value.30.label;" value="30"/>
+				<menuitem label="&showDKIM.value.40.label;" value="40"/>
+				<menuitem label="&showDKIM.value.50.label;" value="50"/>
+			</menupopup>
+		</menulist>
+	</groupbox>
 </prefpane>
 
 </overlay>
