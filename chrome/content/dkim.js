@@ -4,7 +4,7 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  *
- * version: 0.5.2pre1 (21 September 2013)
+ * version: 0.5.2pre3 (22 September 2013)
  *
  * Copyright (c) 2013 Philippe Lieser
  *
@@ -334,6 +334,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			h : null, // Signed header fields
 			h_array : [], // array of Signed header fields
 			i : null, // Agent or User Identifier (AUID) on behalf of which the SDID is taking responsibility
+			i_domain : null, // domain part of AUID
 			l : null, // Body length count
 			q : null, // query methods for public key retrievel
 			s : null, // selector
@@ -506,15 +507,17 @@ DKIM_Verifier.DKIMVerifier = (function() {
 		
 		var atext = "[A-z0-9!#$%&'*+/=?^_`{|}~-]";
 		var local_part = "(?:"+atext+"+(?:\\."+atext+"+)*)";
-		var sig_i_tag = local_part+"?@"+domain_name;
+		var sig_i_tag = local_part+"?@("+domain_name+")";
 		var AUIDTag = DKIMSignatureHeader.match(tag_spec("i", sig_i_tag));
 		if (AUIDTag === null) {
 			DKIMSignature.i = "@"+DKIMSignature.d;
+			DKIMSignature.i_domain = DKIMSignature.d;
 		} else {
 			if (!(new RegExp(DKIMSignature.d+"$").test(AUIDTag[1]))) {
 				throw new DKIM_SigError("DKIM_SIGERROR_SUBDOMAIN_I");
 			}
 			DKIMSignature.i = AUIDTag[1];
+			DKIMSignature.i_domain = AUIDTag[2];
 		}
 
 		// get Body length count (plain-text unsigned decimal integer; OPTIONAL, default is entire body)
@@ -1027,7 +1030,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			// if s flag is set in DKIM key record
 			// AUID must be from the same domain as SDID (and not a subdomain)
 			if (msg.DKIMKey.t_array.indexOf("s") !== -1 &&
-				msg.DKIMSignature.i.indexOf("@"+msg.DKIMSignature.d)) {
+				msg.DKIMSignature.i_domain !== msg.DKIMSignature.d) {
 				throw new DKIM_SigError("DKIM_SIGERROR_DOMAIN_I");
 			}
 			

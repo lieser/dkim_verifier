@@ -1,6 +1,7 @@
-0.5.2pre2 [2013-09-21]
+0.5.2pre3 [2013-09-22]
 ------------------
  - added option for displaying of status bar and header
+ - fixed false detection of DKIM_SIGERROR_DOMAIN_I
 
 0.5.1 [2013-09-20]
 ------------------
