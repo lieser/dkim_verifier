@@ -1355,6 +1355,15 @@ var that = {
 		prefs.QueryInterface(Components.interfaces.nsIPrefBranch2);
 		prefs.addObserver("", that, false);
 		
+		// convert old preferences
+		// 0.5.2
+		if (prefs.prefHasUserValue("alwaysShowDKIMHeader")) {
+			prefs.clearUserPref("alwaysShowDKIMHeader");
+			if (!prefs.prefHasUserValue("showDKIMHeader")) {
+				prefs.setIntPref("showDKIMHeader", 50);
+			}
+		}
+		
 		// load preferences
 		prefDKIMDebug = prefs.getBoolPref("debug");
 		DKIM_Verifier.dnsChangeDebug(prefs.getBoolPref("debug"));

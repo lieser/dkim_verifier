@@ -1,6 +1,6 @@
-0.5.2pre1 [2013-09-21]
+0.5.2pre2 [2013-09-21]
 ------------------
- - 
+ - added option for displaying of status bar and header
 
 0.5.1 [2013-09-20]
 ------------------
