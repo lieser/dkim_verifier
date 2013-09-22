@@ -4,8 +4,8 @@
 <!ENTITY general.label "General">
 
 <!ENTITY dns.label "DNS">
-<!ENTITY dns.getNameserversFromOS.label "Get DNS Nameservers form OS configuration">
-<!ENTITY dns.nameserver.label "DNS Nameserver (Syntax (EBNF): host[&quot;:&quot;port]{&quot;;&quot;host[&quot;:&quot;port]} )">
+<!ENTITY dns.getNameserversFromOS.label "Get DNS name servers form OS configuration">
+<!ENTITY dns.nameserver.label "DNS name servers (Syntax (EBNF): host[&quot;:&quot;port]{&quot;;&quot;host[&quot;:&quot;port]} )">
 <!ENTITY dns.timeout_connect.label "DNS connect timeout (in seconds)">
 
 <!ENTITY saveResult.label "Save result of the verification">
@@ -25,9 +25,9 @@
 <!ENTITY color.label "Color">
 <!ENTITY color.text.label "Text:">
 <!ENTITY color.background.label "Background:">
-<!ENTITY color.success.label "Valid Signature">
-<!ENTITY color.warning.label "Valid Signature with warnings">
-<!ENTITY color.permfail.label "Invalid Signature">
+<!ENTITY color.success.label "Valid signature">
+<!ENTITY color.warning.label "Valid signature with warnings">
+<!ENTITY color.permfail.label "Invalid signature">
 <!ENTITY color.tempfail.label "Temporary error">
 <!ENTITY color.nosig.label "Unsigned e-mail">
 

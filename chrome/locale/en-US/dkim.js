@@ -39,15 +39,15 @@ DKIM_STRINGS.DKIM_SIGERROR_MISSING_H		= "Missing signed header fields";
 DKIM_STRINGS.DKIM_SIGERROR_MISSING_FROM		= "From header is not signed";
 DKIM_STRINGS.DKIM_SIGERROR_SUBDOMAIN_I		= "AUID is not in a subdomain of SDID";
 DKIM_STRINGS.DKIM_SIGERROR_DOMAIN_I			= "AUID must be in the same domain as SDID (s-flag set in key record)";
-DKIM_STRINGS.DKIM_SIGERROR_TOOLARGE_L		= "Value of the body lenght tag exceeds body size";
+DKIM_STRINGS.DKIM_SIGERROR_TOOLARGE_L		= "Value of the body length tag exceeds body size";
 DKIM_STRINGS.DKIM_SIGERROR_UNKNOWN_Q		= "Unsupported query methods for public key retrieval";
 DKIM_STRINGS.DKIM_SIGERROR_MISSING_S		= "Missing selector tag";
-DKIM_STRINGS.DKIM_SIGERROR_TIMESTAMPS		= "Signature Expiration before Signature Timestamp";
+DKIM_STRINGS.DKIM_SIGERROR_TIMESTAMPS		= "Signature expiration before signature timestamp";
 // DKIM_SIGERROR - key query
-DKIM_STRINGS.DKIM_SIGERROR_NOKEY			= "No key found in DNS Server";
+DKIM_STRINGS.DKIM_SIGERROR_NOKEY			= "No key found in DNS server";
 DKIM_STRINGS.DKIM_SIGERROR_KEYFAIL			= "DNS query for key failed";
 // DKIM_SIGERROR - Key record
-DKIM_STRINGS.DKIM_SIGERROR_KEY_INVALID_V	= "Invalid Version of the DKIM key record";
+DKIM_STRINGS.DKIM_SIGERROR_KEY_INVALID_V	= "Invalid version of the DKIM key record";
 DKIM_STRINGS.DKIM_SIGERROR_KEY_UNKNOWN_K	= "Unsupported key type";
 DKIM_STRINGS.DKIM_SIGERROR_KEY_MISSING_P	= "Missing key";
 DKIM_STRINGS.DKIM_SIGERROR_KEY_REVOKED		= "Key revoked";
@@ -57,7 +57,7 @@ DKIM_STRINGS.DKIM_SIGERROR_KEY_TESTMODE		= "The domain is only testing DKIM";
 DKIM_STRINGS.DKIM_SIGERROR_KEYDECODE		= "Key couldn't be decoded";
 
 // DKIM_SIGWARNING
-DKIM_STRINGS.DKIM_SIGWARNING_SMALL_L		= "Not the entire body is singned";
+DKIM_STRINGS.DKIM_SIGWARNING_SMALL_L		= "Not the entire body is singed";
 DKIM_STRINGS.DKIM_SIGWARNING_EXPIRED		= "Signature is expired";
 DKIM_STRINGS.DKIM_SIGWARNING_FUTURE			= "Signature is in the future";
 DKIM_STRINGS.DKIM_SIGWARNING_KEYSMALL		= "Signature key size is small";
