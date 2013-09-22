@@ -1,1 +1,4 @@
 checkbox {white-space: pre;}
+#paneDisplay [anonid="gridHeader"] {
+	text-align: end;
+}

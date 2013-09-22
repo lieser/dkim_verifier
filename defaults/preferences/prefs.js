@@ -12,20 +12,20 @@ pref("extensions.dkim_verifier.saveResult", false);
 // display preferences
 /*
  * 0   never
- * 10  if an e-mail with a valid DKIM signature is viewed  (SUCCESS)
- * 20  if an e-mail with a valid DKIM signature is viewed (including TEMPFAIL) (SUCCESS, TEMPFAIL)
- * 30  if an e-mail with a DKIM signature is viewed (SUCCESS, TEMPFAIL, PERMFAIL, loading)
- * 40  if an e-mail is viewed
- * 50  if a message is viewed
+ * 10  when an e-mail with a valid DKIM signature is viewed  (SUCCESS)
+ * 20  when an e-mail with a valid DKIM signature is viewed (including TEMPFAIL) (SUCCESS, TEMPFAIL)
+ * 30  when an e-mail with a DKIM signature is viewed (SUCCESS, TEMPFAIL, PERMFAIL, loading)
+ * 40  when an e-mail is viewed
+ * 50  when a message is viewed
  */
 pref("extensions.dkim_verifier.showDKIMHeader", 30);
 /*
  * 0   never
- * 10  if an e-mail with a valid DKIM signature is viewed  (SUCCESS)
- * 20  if an e-mail with a valid DKIM signature is viewed (including TEMPFAIL) (SUCCESS, TEMPFAIL)
- * 30  if an e-mail with a DKIM signature is viewed (SUCCESS, TEMPFAIL, PERMFAIL, loading)
- * 40  if an e-mail is viewed
- * 50  if a message is viewed
+ * 10  when an e-mail with a valid DKIM signature is viewed  (SUCCESS)
+ * 20  when an e-mail with a valid DKIM signature is viewed (including TEMPFAIL) (SUCCESS, TEMPFAIL)
+ * 30  when an e-mail with a DKIM signature is viewed (SUCCESS, TEMPFAIL, PERMFAIL, loading)
+ * 40  when an e-mail is viewed
+ * 50  when a message is viewed
  */
 pref("extensions.dkim_verifier.showDKIMStatusbarpanel", 0);
 

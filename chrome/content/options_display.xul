@@ -57,83 +57,105 @@
 		<caption label="&color.label;"/>
 		<checkbox preference="pref_colorFrom" label="&colorFrom.label;"/>
 
-		<groupbox>
-			<caption label="&color.success.label;"/>
-			<hbox align="center">
-				<label control="color.success.text">&color.text.label;</label>
-				<textbox id="color.success.text" preference="pref_color.success.text" width="100"/>
-				<colorpicker type="button" preference="pref_color.success.text"/>
-				<label control="color.success.background">&color.background.label;</label>
-				<textbox id="color.success.background" preference="pref_color.success.background" width="100"/>
-				<colorpicker type="button" preference="pref_color.success.background"/>
-			</hbox>
-		</groupbox>
-		<groupbox>
-			<caption label="&color.warning.label;"/>
-			<hbox align="center">
-				<label control="color.warning.text">&color.text.label;</label>
-				<textbox id="color.warning.text" preference="pref_color.warning.text" width="100"/>
-				<colorpicker type="button" preference="pref_color.warning.text"/>
-				<label control="color.warning.background">&color.background.label;</label>
-				<textbox id="color.warning.background" preference="pref_color.warning.background" width="100"/>
-				<colorpicker type="button" preference="pref_color.warning.background"/>
-			</hbox>
-		</groupbox>
-		<groupbox>
-			<caption label="&color.permfail.label;"/>
-			<hbox align="center">
-				<label control="color.permfail.text">&color.text.label;</label>
-				<textbox id="color.permfail.text" preference="pref_color.permfail.text" width="100"/>
-				<colorpicker type="button" preference="pref_color.permfail.text"/>
-				<label control="color.permfail.background">&color.background.label;</label>
-				<textbox id="color.permfail.background" preference="pref_color.permfail.background" width="100"/>
-				<colorpicker type="button" preference="pref_color.permfail.background"/>
-			</hbox>
-		</groupbox>
-		<groupbox>
-			<caption label="&color.tempfail.label;"/>
-			<hbox align="center">
-				<label control="color.tempfail.text">&color.text.label;</label>
-				<textbox id="color.tempfail.text" preference="pref_color.tempfail.text" width="100"/>
-				<colorpicker type="button" preference="pref_color.tempfail.text"/>
-				<label control="color.tempfail.background">&color.background.label;</label>
-				<textbox id="color.tempfail.background" preference="pref_color.tempfail.background" width="100"/>
-				<colorpicker type="button" preference="pref_color.tempfail.background"/>
-			</hbox>
-		</groupbox>
-		<groupbox>
-			<caption label="&color.nosig.label;"/>
-			<hbox align="center">
-				<label control="color.nosig.text">&color.text.label;</label>
-				<textbox id="color.nosig.text" preference="pref_color.nosig.text" width="100"/>
-				<colorpicker type="button" preference="pref_color.nosig.text"/>
-				<label control="color.nosig.background">&color.background.label;</label>
-				<textbox id="color.nosig.background" preference="pref_color.nosig.background" width="100"/>
-				<colorpicker type="button" preference="pref_color.nosig.background"/>
-			</hbox>
-		</groupbox>
+		<grid>
+			<columns>
+				<column/>
+				<column/>
+			</columns>
+			<rows>
+				<row align="center">
+					<label class="header" anonid="gridHeader">&color.success.label;</label>
+					<hbox align="center">
+						<label control="color.success.text">&color.text.label;</label>
+						<textbox id="color.success.text" preference="pref_color.success.text" width="100"/>
+						<colorpicker type="button" preference="pref_color.success.text"/>
+						<label control="color.success.background">&color.background.label;</label>
+						<textbox id="color.success.background" preference="pref_color.success.background" width="100"/>
+						<colorpicker type="button" preference="pref_color.success.background"/>
+					</hbox>
+				</row>
+				<row align="center">
+					<label class="header" anonid="gridHeader">&color.warning.label;</label>
+					<hbox align="center">
+						<label control="color.warning.text">&color.text.label;</label>
+						<textbox id="color.warning.text" preference="pref_color.warning.text" width="100"/>
+						<colorpicker type="button" preference="pref_color.warning.text"/>
+						<label control="color.warning.background">&color.background.label;</label>
+						<textbox id="color.warning.background" preference="pref_color.warning.background" width="100"/>
+						<colorpicker type="button" preference="pref_color.warning.background"/>
+					</hbox>
+				</row>
+				<row align="center">
+					<label class="header" anonid="gridHeader">&color.permfail.label;</label>
+					<hbox align="center">
+						<label control="color.permfail.text">&color.text.label;</label>
+						<textbox id="color.permfail.text" preference="pref_color.permfail.text" width="100"/>
+						<colorpicker type="button" preference="pref_color.permfail.text"/>
+						<label control="color.permfail.background">&color.background.label;</label>
+						<textbox id="color.permfail.background" preference="pref_color.permfail.background" width="100"/>
+						<colorpicker type="button" preference="pref_color.permfail.background"/>
+					</hbox>
+				</row>
+				<row align="center">
+					<label class="header" anonid="gridHeader">&color.tempfail.label;</label>
+					<hbox align="center">
+						<label control="color.tempfail.text">&color.text.label;</label>
+						<textbox id="color.tempfail.text" preference="pref_color.tempfail.text" width="100"/>
+						<colorpicker type="button" preference="pref_color.tempfail.text"/>
+						<label control="color.tempfail.background">&color.background.label;</label>
+						<textbox id="color.tempfail.background" preference="pref_color.tempfail.background" width="100"/>
+						<colorpicker type="button" preference="pref_color.tempfail.background"/>
+					</hbox>
+				</row>
+				<row align="center">
+					<label class="header" anonid="gridHeader">&color.nosig.label;</label>
+					<hbox align="center">
+						<label control="color.nosig.text">&color.text.label;</label>
+						<textbox id="color.nosig.text" preference="pref_color.nosig.text" width="100"/>
+						<colorpicker type="button" preference="pref_color.nosig.text"/>
+						<label control="color.nosig.background">&color.background.label;</label>
+						<textbox id="color.nosig.background" preference="pref_color.nosig.background" width="100"/>
+						<colorpicker type="button" preference="pref_color.nosig.background"/>
+					</hbox>
+				</row>
+			</rows>
+		</grid>
 	</groupbox>
 	<groupbox>
-		<label>&showDKIMHeader.label;</label>
-		<menulist preference="pref_showDKIMHeader">
-			<menupopup>
-				<menuitem label="&showDKIM.value.0.label;" value="0"/>
-				<menuitem label="&showDKIM.value.10.label;" value="10"/>
-				<menuitem label="&showDKIM.value.30.label;" value="30"/>
-				<menuitem label="&showDKIM.value.40.label;" value="40"/>
-				<menuitem label="&showDKIM.value.50.label;" value="50"/>
-			</menupopup>
-		</menulist>
-		<label>&showDKIMStatusbarpanel.label;</label>
-		<menulist preference="pref_showDKIMStatusbarpanel">
-			<menupopup>
-				<menuitem label="&showDKIM.value.0.label;" value="0"/>
-				<menuitem label="&showDKIM.value.10.label;" value="10"/>
-				<menuitem label="&showDKIM.value.30.label;" value="30"/>
-				<menuitem label="&showDKIM.value.40.label;" value="40"/>
-				<menuitem label="&showDKIM.value.50.label;" value="50"/>
-			</menupopup>
-		</menulist>
+		<grid>
+			<columns>
+				<column/>
+				<column/>
+			</columns>
+			<rows>
+				<row align="center">
+					<label anonid="gridHeader">&showDKIMHeader.label;</label>
+					<menulist preference="pref_showDKIMHeader">
+						<menupopup>
+							<menuitem label="&showDKIM.value.0.label;" value="0"/>
+							<menuitem label="&showDKIM.value.10.label;" value="10"/>
+							<menuitem label="&showDKIM.value.30.label;" value="30"/>
+							<menuitem label="&showDKIM.value.40.label;" value="40"/>
+							<menuitem label="&showDKIM.value.50.label;" value="50"/>
+						</menupopup>
+					</menulist>
+					<spacer/>
+				</row>
+				<row align="center">
+					<label anonid="gridHeader">&showDKIMStatusbarpanel.label;</label>
+					<menulist preference="pref_showDKIMStatusbarpanel">
+						<menupopup>
+							<menuitem label="&showDKIM.value.0.label;" value="0"/>
+							<menuitem label="&showDKIM.value.10.label;" value="10"/>
+							<menuitem label="&showDKIM.value.30.label;" value="30"/>
+							<menuitem label="&showDKIM.value.40.label;" value="40"/>
+							<menuitem label="&showDKIM.value.50.label;" value="50"/>
+						</menupopup>
+					</menulist>
+					<spacer/>
+				</row>
+			</rows>
+		</grid>
 	</groupbox>
 </prefpane>
 

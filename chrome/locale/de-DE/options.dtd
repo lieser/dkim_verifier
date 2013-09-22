@@ -23,8 +23,8 @@
 
 <!ENTITY colorFrom.label "Aktiviere Markierung der Absenderadresse">
 <!ENTITY color.label "Farbe">
-<!ENTITY color.text.label "Text Farbe:">
-<!ENTITY color.background.label "Hintergrund Farbe:">
+<!ENTITY color.text.label "Text:">
+<!ENTITY color.background.label "Hintergrund:">
 <!ENTITY color.success.label "Gültige Signatur">
 <!ENTITY color.warning.label "Gültige Signatur mit Warnung">
 <!ENTITY color.permfail.label "Ungültige Signatur">

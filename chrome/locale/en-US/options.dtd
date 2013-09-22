@@ -16,15 +16,15 @@
 <!ENTITY showDKIMHeader.label  "Show DKIM header">
 <!ENTITY showDKIMStatusbarpanel.label  "Show DKIM status bar">
 <!ENTITY showDKIM.value.0.label  "never">
-<!ENTITY showDKIM.value.10.label "if an e-mail with a valid DKIM signature is viewed">
-<!ENTITY showDKIM.value.30.label "if an e-mail with a DKIM signature is viewed">
-<!ENTITY showDKIM.value.40.label "if an e-mail is viewed">
-<!ENTITY showDKIM.value.50.label "if a message is viewed">
+<!ENTITY showDKIM.value.10.label "when an e-mail with a valid DKIM signature is viewed">
+<!ENTITY showDKIM.value.30.label "when an e-mail with a DKIM signature is viewed">
+<!ENTITY showDKIM.value.40.label "when an e-mail is viewed">
+<!ENTITY showDKIM.value.50.label "when a message is viewed">
 
 <!ENTITY colorFrom.label "Enable highlighting of From header">
 <!ENTITY color.label "Color">
-<!ENTITY color.text.label "Text Color:">
-<!ENTITY color.background.label "Background Color:">
+<!ENTITY color.text.label "Text:">
+<!ENTITY color.background.label "Background:">
 <!ENTITY color.success.label "Valid Signature">
 <!ENTITY color.warning.label "Valid Signature with warnings">
 <!ENTITY color.permfail.label "Invalid Signature">
