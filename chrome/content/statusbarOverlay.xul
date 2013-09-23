@@ -3,8 +3,6 @@
 <!DOCTYPE overlay SYSTEM "chrome://dkim_verifier/locale/xulstrings.dtd">
 <overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 	<statusbar id="status-bar">
-		<statusbarpanel insertbefore="unreadMessageCount"
-		                id="dkim-verifier-statusbarpanel"
-		                hidden="true"/>
+		<hbox insertbefore="unreadMessageCount" id="dkim-verifier-statusbarpanel"/>
 	</statusbar>
 </overlay>

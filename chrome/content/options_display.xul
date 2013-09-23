@@ -54,6 +54,9 @@
 		<preference id="pref_statusbarpanel.result.style"
 		            name="extensions.dkim_verifier.statusbarpanel.result.style"
 		            type="int"/>
+		<preference id="pref_showDKIMFromTooltip"
+		            name="extensions.dkim_verifier.showDKIMFromTooltip"
+		            type="int"/>
 	</preferences>
 	
 	<groupbox>
@@ -125,46 +128,51 @@
 		</grid>
 	</groupbox>
 	<groupbox>
-		<grid>
-			<columns>
-				<column/>
-				<column/>
-			</columns>
-			<rows>
-				<row align="center">
-					<label anonid="gridHeader">&showDKIMHeader.label;</label>
-					<menulist preference="pref_showDKIMHeader">
-						<menupopup>
-							<menuitem label="&showDKIM.value.0.label;" value="0"/>
-							<menuitem label="&showDKIM.value.10.label;" value="10"/>
-							<menuitem label="&showDKIM.value.30.label;" value="30"/>
-							<menuitem label="&showDKIM.value.40.label;" value="40"/>
-							<menuitem label="&showDKIM.value.50.label;" value="50"/>
-						</menupopup>
-					</menulist>
-					<spacer/>
-				</row>
-				<row align="center">
-					<label anonid="gridHeader">&showDKIMStatusbarpanel.label;</label>
-					<menulist preference="pref_showDKIMStatusbarpanel">
-						<menupopup>
-							<menuitem label="&showDKIM.value.0.label;" value="0"/>
-							<menuitem label="&showDKIM.value.10.label;" value="10"/>
-							<menuitem label="&showDKIM.value.30.label;" value="30"/>
-							<menuitem label="&showDKIM.value.40.label;" value="40"/>
-							<menuitem label="&showDKIM.value.50.label;" value="50"/>
-						</menupopup>
-					</menulist>
-					<menulist preference="pref_statusbarpanel.result.style">
-						<menupopup>
-							<menuitem label="&statusbarpanel.result.style.value.1.label;" value="1"/>
-							<menuitem label="&statusbarpanel.result.style.value.2.label;" value="2"/>
-						</menupopup>
-					</menulist>
-					<spacer/>
-				</row>
-			</rows>
-		</grid>
+		<hbox align="center">
+			<label>&showDKIMHeader.label;</label>
+			<menulist preference="pref_showDKIMHeader">
+				<menupopup>
+					<menuitem label="&showDKIM.value.0.label;" value="0"/>
+					<menuitem label="&showDKIM.value.10.label;" value="10"/>
+					<menuitem label="&showDKIM.value.30.label;" value="30"/>
+					<menuitem label="&showDKIM.value.40.label;" value="40"/>
+					<menuitem label="&showDKIM.value.50.label;" value="50"/>
+				</menupopup>
+			</menulist>
+			<spacer/>
+		</hbox>
+		<hbox align="center">
+			<label>&showDKIMStatusbarpanel.label;</label>
+			<menulist preference="pref_showDKIMStatusbarpanel">
+				<menupopup>
+					<menuitem label="&showDKIM.value.0.label;" value="0"/>
+					<menuitem label="&showDKIM.value.10.label;" value="10"/>
+					<menuitem label="&showDKIM.value.30.label;" value="30"/>
+					<menuitem label="&showDKIM.value.40.label;" value="40"/>
+					<menuitem label="&showDKIM.value.50.label;" value="50"/>
+				</menupopup>
+			</menulist>
+			<menulist preference="pref_statusbarpanel.result.style">
+				<menupopup>
+					<menuitem label="&statusbarpanel.result.style.value.1.label;" value="1"/>
+					<menuitem label="&statusbarpanel.result.style.value.2.label;" value="2"/>
+				</menupopup>
+			</menulist>
+			<spacer/>
+		</hbox>
+		<hbox align="center">
+			<label>&showDKIMFromTooltip.label;</label>
+			<menulist preference="pref_showDKIMFromTooltip">
+				<menupopup>
+					<menuitem label="&showDKIM.value.0.label;" value="0"/>
+					<menuitem label="&showDKIM.value.10.label;" value="10"/>
+					<menuitem label="&showDKIM.value.30.label;" value="30"/>
+					<menuitem label="&showDKIM.value.40.label;" value="40"/>
+					<menuitem label="&showDKIM.value.50.label;" value="50"/>
+				</menupopup>
+			</menulist>
+			<spacer/>
+		</hbox>
 	</groupbox>
 </prefpane>
 

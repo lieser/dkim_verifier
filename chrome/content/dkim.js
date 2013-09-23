@@ -4,7 +4,7 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  *
- * version: 0.5.2pre7 (23 September 2013)
+ * version: 0.5.2pre8 (23 September 2013)
  *
  * Copyright (c) 2013 Philippe Lieser
  *
@@ -943,9 +943,6 @@ DKIM_Verifier.DKIMVerifier = (function() {
 				return;
 			}
 			
-			// show the dkim verifier header box
-			that.setCollapsed(30);
-			
 			verifySignaturePart1(msg);
 		} catch(e) {
 			handleExeption(e, msg.msgURI);
@@ -1358,6 +1355,17 @@ var that = {
 			
 			statusbarpanel.hidden = true;
 		}
+
+		// DKIM tooltip for From header
+		var expandedfromBox = document.getElementById("expandedfromBox");
+		if (prefs.getIntPref("showDKIMFromTooltip") >= state ) {
+			// show tooltip for From header
+			expandedfromBox.emailAddresses.firstChild.tooltip = "dkim-verifier-tooltip-from";
+			expandedfromBox.emailAddresses.firstChild.setAttribute("tooltiptext", "");
+		} else {
+			// don't show tooltip for From header
+			expandedfromBox.emailAddresses.firstChild.tooltip = "";
+		}
 	},
 
 	/*
@@ -1524,7 +1532,7 @@ var that = {
 				that.setCollapsed(50);
 				return;
 			}
-			that.setCollapsed(40);
+			that.setCollapsed(10);
 			
 			// get msg uri
 			var msgURI = gDBView.URIForFirstSelectedMessage;

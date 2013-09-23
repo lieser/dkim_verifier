@@ -15,6 +15,7 @@
 
 <!ENTITY showDKIMHeader.label  "Zeige DKIM Kopfzeile">
 <!ENTITY showDKIMStatusbarpanel.label  "Zeige DKIM Statusbar">
+<!ENTITY showDKIMFromTooltip.label  "Zeige DKIM Tooltip für Absenderadresse">
 <!ENTITY showDKIM.value.0.label  "nie">
 <!ENTITY showDKIM.value.10.label "wenn eine E-Mail mit gültiger DKIM Signatur angezeigt wird">
 <!ENTITY showDKIM.value.30.label "wenn eine E-Mail mit DKIM Signatur angezeigt wird">

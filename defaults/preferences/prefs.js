@@ -33,6 +33,15 @@ pref("extensions.dkim_verifier.showDKIMStatusbarpanel", 0);
  * 2 icon
  */
 pref("extensions.dkim_verifier.statusbarpanel.result.style", 1);
+/*
+ * 0   never
+ * 10  when an e-mail with a valid DKIM signature is viewed  (SUCCESS)
+ * 20  when an e-mail with a valid DKIM signature is viewed (including TEMPFAIL) (SUCCESS, TEMPFAIL)
+ * 30  when an e-mail with a DKIM signature is viewed (SUCCESS, TEMPFAIL, PERMFAIL, loading)
+ * 40  when an e-mail is viewed
+ * 50  when a message is viewed
+ */
+pref("extensions.dkim_verifier.showDKIMFromTooltip", 0);
 
 pref("extensions.dkim_verifier.colorFrom", false);
 pref("extensions.dkim_verifier.color.success.text", "windowtext");
