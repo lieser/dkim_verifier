@@ -1,8 +1,9 @@
-0.5.2pre4 [2013-09-22]
+0.5.2pre5 [2013-09-23]
 ------------------
  - added option for displaying of status bar and header
  - fixed false detection of DKIM_SIGERROR_DOMAIN_I
  - made options height smaller
+ - fixed error in "simple" body canonicalization algorithm resulting in "Wrong body hash"
 
 0.5.1 [2013-09-20]
 ------------------

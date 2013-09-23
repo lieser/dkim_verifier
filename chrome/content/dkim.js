@@ -4,7 +4,7 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  *
- * version: 0.5.2pre3 (22 September 2013)
+ * version: 0.5.2pre5 (23 September 2013)
  *
  * Copyright (c) 2013 Philippe Lieser
  *
@@ -58,6 +58,7 @@ var DKIM_Verifier = {};
 Components.utils.import("chrome://dkim_verifier/locale/dkim.js", DKIM_Verifier);
 
 // load modules
+Components.utils.import("chrome://dkim_verifier/content/helper.js", DKIM_Verifier);
 // DNS
 Components.utils.import("chrome://dkim_verifier/content/dns.js", DKIM_Verifier);
 // ASN.1
@@ -714,7 +715,9 @@ DKIM_Verifier.DKIMVerifier = (function() {
 	function canonicalizationBodySimple(body) {
 		// Ignore all empty lines at the end of the message body
 		// If there is no body or no trailing CRLF on the message body, a CRLF is added
-		body = body.replace(/(\r\n)*$/,"\r\n");
+		// for some reason /(\r\n)*$/ doesn't work all the time
+		// (especially in large strings; matching only last "\r\n")
+		body = body.replace(/((\r\n)+)?$/,"\r\n");
 		
 		return body;
 	}
@@ -731,7 +734,8 @@ DKIM_Verifier.DKIMVerifier = (function() {
 		
 		// Ignore all empty lines at the end of the message body
 		// If the body is non-empty but does not end with a CRLF, a CRLF is added
-		// for some reason /(\r\n)*$/ doesn't work all the time (matching only last "\r\n")
+		// for some reason /(\r\n)*$/ doesn't work all the time
+		// (especially in large strings; matching only last "\r\n")
 		body = body.replace(/((\r\n)+)?$/,"\r\n");
 		
 		// If only one \r\n rests, there were only emtpy lines or body was empty.
@@ -758,6 +762,10 @@ DKIM_Verifier.DKIMVerifier = (function() {
 				break;
 			default:
 				throw new DKIM_InternalError("unsupported canonicalization algorithm got parsed");
+		}
+		
+		if (prefs.getIntPref("debugLevel") >= 2) {
+			DKIM_Verifier.writeStringToTmpFile(bodyCanon, "bodyCanon.txt");
 		}
 		
 		// if a body length count is given

@@ -44,4 +44,5 @@ pref("extensions.dkim_verifier.color.nosig.background", "transparent");
 
 // advanced preferences
 pref("extensions.dkim_verifier.debug", false);
+pref("extensions.dkim_verifier.debugLevel", 0);
 pref("extensions.dkim_verifier.error.key_testmode.ignore", false);
