@@ -4,7 +4,7 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  *
- * version: 0.5.2pre6 (23 September 2013)
+ * version: 0.5.2pre7 (23 September 2013)
  *
  * Copyright (c) 2013 Philippe Lieser
  *
@@ -203,7 +203,6 @@ DKIM_Verifier.DKIMVerifier = (function() {
 				bodyPlain: ""
 			},
 			headerFinished: false,
-			LFNewline: false,
 			
 			QueryInterface : function(iid)  {
 						if (iid.equals(Components.interfaces.nsIStreamListener) ||
@@ -232,9 +231,16 @@ DKIM_Verifier.DKIMVerifier = (function() {
 						if (posEndHeader === -1) {
 							posEndHeader = str.indexOf("\n\n");
 							if (posEndHeader !== -1) {
-								this.LFNewline = true;
 								NewlineLength = 1;
 								dkimDebugMsg("LF line ending detected");
+							}
+						}
+						// check for CR line ending
+						if (posEndHeader === -1) {
+							posEndHeader = str.indexOf("\r\r");
+							if (posEndHeader !== -1) {
+								NewlineLength = 1;
+								dkimDebugMsg("CR line ending detected");
 							}
 						}
 						
@@ -269,11 +275,9 @@ DKIM_Verifier.DKIMVerifier = (function() {
 							"DKIM_INTERNALERROR_INCORRECT_EMAIL_FORMAT");
 					}
 
-					// if LF line ending, convert it to CR+LF
-					if (this.LFNewline) {
-						this.msg.headerPlain = this.msg.headerPlain.replace(/\n/g, "\r\n");
-						this.msg.bodyPlain = this.msg.bodyPlain.replace(/\n/g, "\r\n");
-					}
+					// convert all EOLs to CRLF
+					this.msg.headerPlain = this.msg.headerPlain.replace(/(\r\n|\n|\r)/g, "\r\n");
+					this.msg.bodyPlain = this.msg.bodyPlain.replace(/(\r\n|\n|\r)/g, "\r\n");
 					
 					verifyBegin(this.msg);
 				} catch (e) {
