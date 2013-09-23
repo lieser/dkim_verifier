@@ -4,16 +4,46 @@
   -moz-binding: url(chrome://dkim_verifier/content/bindings.xml#dkim-verifier-statusbarpanel-box) !important;
 }
 
-#dkim-verifier-statusbarpanel > [anonid="title"] {
-  -moz-margin-end: -3px;
+#dkim-verifier-statusbarpanel > [anonid="statusValue"] {
+  -moz-margin-start: -2px;
 }
 
-#dkim-verifier-statusbarpanel > image {
+
+#dkim-verifier-statusbarpanel > image[anonid="warning-icon"] {
   list-style-image: url("chrome://global/skin/icons/Warning.png");
   height: 16px;
   width: 16px;
   display: none;
 }
-#dkim-verifier-statusbarpanel[warnings="true"] > image {
+#dkim-verifier-statusbarpanel > image[anonid="warning-icon"][hidden="true"] {
+  display: none !important;
+}
+#dkim-verifier-statusbarpanel[warnings="true"] > image[anonid="warning-icon"] {
   display: -moz-box;
+}
+
+#dkim-verifier-statusbarpanel > image[anonid="status-icon"] {
+  height: 16px;
+  width: 16px;
+}
+#dkim-verifier-statusbarpanel[dkimStatus="loading"] > image[anonid="status-icon"] {
+  list-style-image: url("chrome://messenger/skin/newmailaccount/spinner.gif");
+}
+#dkim-verifier-statusbarpanel[dkimStatus="SUCCESS"][warnings="false"] > image[anonid="status-icon"] {
+  list-style-image: url("chrome://messenger/skin/icons/secure.png");
+}
+#dkim-verifier-statusbarpanel[dkimStatus="SUCCESS"][warnings="true"] > image[anonid="status-icon"] {
+  list-style-image: url("chrome://messenger/skin/icons/insecure.png");
+}
+#dkim-verifier-statusbarpanel[dkimStatus="PERMFAIL"] > image[anonid="status-icon"] {
+  list-style-image: url("chrome://messenger/skin/icons/status.png");
+  -moz-image-region: rect(0px 64px 16px 48px);
+}
+#dkim-verifier-statusbarpanel[dkimStatus="TEMPFAIL"] > image[anonid="status-icon"] {
+  list-style-image: url("chrome://messenger/skin/icons/status.png");
+  -moz-image-region: rect(0px 48px 16px 32px);
+}
+#dkim-verifier-statusbarpanel[dkimStatus="none"] > image[anonid="status-icon"] {
+  list-style-image: url("chrome://messenger/skin/icons/status.png");
+  -moz-image-region: rect(0px 48px 16px 32px);
 }

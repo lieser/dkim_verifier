@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE bindings [
-	<!ENTITY % xulstringsDTD SYSTEM "chrome://dkim_verifier/locale/xulstrings.dtd">
-	%xulstringsDTD;
+    <!ENTITY % xulstringsDTD SYSTEM "chrome://dkim_verifier/locale/xulstrings.dtd">
+    %xulstringsDTD;
 ]>
 
 <bindings id="dkim-verifier-bindings"
@@ -46,7 +46,7 @@
   </binding>
   
   <binding id="dkim-verifier-statusbarpanel-box">
-    <content>
+    <content dkimStatus="loading">
       <xul:label anonid="title"
                  class="statusbarpanel-text"
                  value="&dkim_verifier.statusbar.title;" />
@@ -56,29 +56,71 @@
                        context="copyPopup"
                        role="textbox"
                        aria-readonly="true" />
-      <xul:image class="statusbarpanel-icon" tooltip="dkim-verifier-statusbarpanel-tooltip"/>
-      <xul:tooltip anonid="tooltip" id="dkim-verifier-statusbarpanel-tooltip"/>
+      <xul:image anonid="warning-icon"
+                 class="statusbarpanel-icon"
+                 tooltip="dkim-verifier-tooltip-warnings"/>
+      <xul:tooltip anonid="tooltip-warnings" id="dkim-verifier-tooltip-warnings"/>
+      <xul:image anonid="status-icon"
+                 class="statusbarpanel-icon"
+                 tooltip="dkim-verifier-tooltip-status"
+                 hidden="true"/>
+      <xul:tooltip anonid="tooltip-status" id="dkim-verifier-tooltip-status">
+          <xul:label anonid="tooltip-status-value"/>
+          <xul:vbox anonid="tooltip-status-warnings"/>
+      </xul:tooltip>
     </content>
     <implementation>
       <field name="statusValue">document.getAnonymousElementByAttribute(this, "anonid", "statusValue");</field>
-      <field name="tooltip">document.getAnonymousElementByAttribute(this, "anonid", "tooltip");</field>
+      <field name="warningIcon">document.getAnonymousElementByAttribute(this, "anonid", "warning-icon");</field>
+      <field name="tooltip">document.getAnonymousElementByAttribute(this, "anonid", "tooltip-warnings");</field>
+      <field name="statusIcon">document.getAnonymousElementByAttribute(this, "anonid", "status-icon");</field>
+      <field name="tooltipStatusValue">document.getAnonymousElementByAttribute(this, "anonid", "tooltip-status-value");</field>
+      <field name="tooltipStatusWarnings">document.getAnonymousElementByAttribute(this, "anonid", "tooltip-status-warnings");</field>
 
       <property name="value">
         <setter><![CDATA[
           this.statusValue.textContent = val;
+          this.tooltipStatusValue.textContent = val;
         ]]></setter>
       </property>
       <property name="warnings">
         <setter><![CDATA[
+          // delete old warnings from tooltips
           while (this.tooltip.firstChild) {
             this.tooltip.removeChild(this.tooltip.firstChild);
           }
+          while (this.tooltipStatusWarnings.firstChild) {
+            this.tooltipStatusWarnings.removeChild(this.tooltipStatusWarnings.firstChild);
+          }
+          
+          var d;
+          // add separator between status value and warnings
+          if (val.length > 0) {
+            d = document.createElement("separator");
+            d.setAttribute("class", "thin");
+            this.tooltipStatusWarnings.appendChild(d);
+          }
+          
+          // add warnings to tooltips
           for (let w of val) {
-            var d = document.createElement("description");
+            d = document.createElement("description");
             d.textContent = w;
             this.tooltip.appendChild(d);
+            this.tooltipStatusWarnings.appendChild(d.cloneNode(true));
           }
           this.setAttribute("warnings", (!!this.tooltip.firstChild).toString());
+        ]]></setter>
+      </property>
+      <property name="dkimStatus">
+        <setter><![CDATA[
+          this.setAttribute('dkimStatus', val);
+        ]]></setter>
+      </property>
+      <property name="useIcons">
+        <setter><![CDATA[
+          this.statusValue.setAttribute('hidden', val);
+          this.warningIcon.setAttribute('hidden', val);
+          this.statusIcon.setAttribute('hidden', !val);
         ]]></setter>
       </property>
     </implementation>

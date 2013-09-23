@@ -1179,6 +1179,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 	function displayResult(result) {
 		var str;
 	
+		statusbarpanel.dkimStatus = result.result;
 		switch(result.result) {
 			case "none":
 				header.value = DKIM_Verifier.DKIM_STRINGS.NOSIG;
@@ -1465,6 +1466,7 @@ var that = {
 				headerValue: DKIM_Verifier.DKIM_STRINGS.NOT_EMAIL
 			};
 			statusbarpanel.value = DKIM_Verifier.DKIM_STRINGS.NOT_EMAIL;
+			statusbarpanel.dkimStatus = "none";
 			reverifyDKIMSignature.disabled = true;
 		} else {
 			currentHeaderData[entry] = {
@@ -1472,6 +1474,7 @@ var that = {
 				headerValue: DKIM_Verifier.DKIM_STRINGS.loading
 			};
 			statusbarpanel.value = DKIM_Verifier.DKIM_STRINGS.loading;
+			statusbarpanel.dkimStatus = "loading";
 			reverifyDKIMSignature.disabled = false;
 		}
 	},
