@@ -23,27 +23,29 @@
 }
 
 #dkim-verifier-statusbarpanel > image[anonid="status-icon"] {
-  height: 16px;
-  width: 16px;
+  height: 14px;
+  width: 14px;
 }
 #dkim-verifier-statusbarpanel[dkimStatus="loading"] > image[anonid="status-icon"] {
   list-style-image: url("chrome://messenger/skin/newmailaccount/spinner.gif");
 }
 #dkim-verifier-statusbarpanel[dkimStatus="SUCCESS"][warnings="false"] > image[anonid="status-icon"] {
-  list-style-image: url("chrome://messenger/skin/icons/secure.png");
+  list-style-image: url("chrome://dkim_verifier/skin/icons/status.png");
+  -moz-image-region: rect(0px 16px 16px 0px);
 }
 #dkim-verifier-statusbarpanel[dkimStatus="SUCCESS"][warnings="true"] > image[anonid="status-icon"] {
-  list-style-image: url("chrome://messenger/skin/icons/insecure.png");
+  list-style-image: url("chrome://dkim_verifier/skin/icons/status.png");
+  -moz-image-region: rect(0px 32px 16px 16px);
 }
 #dkim-verifier-statusbarpanel[dkimStatus="PERMFAIL"] > image[anonid="status-icon"] {
-  list-style-image: url("chrome://messenger/skin/icons/status.png");
+  list-style-image: url("chrome://dkim_verifier/skin/icons/status.png");
   -moz-image-region: rect(0px 64px 16px 48px);
 }
 #dkim-verifier-statusbarpanel[dkimStatus="TEMPFAIL"] > image[anonid="status-icon"] {
-  list-style-image: url("chrome://messenger/skin/icons/status.png");
+  list-style-image: url("chrome://dkim_verifier/skin/icons/status.png");
   -moz-image-region: rect(0px 48px 16px 32px);
 }
 #dkim-verifier-statusbarpanel[dkimStatus="none"] > image[anonid="status-icon"] {
-  list-style-image: url("chrome://messenger/skin/icons/status.png");
+  list-style-image: url("chrome://dkim_verifier/skin/icons/status.png");
   -moz-image-region: rect(0px 48px 16px 32px);
 }
