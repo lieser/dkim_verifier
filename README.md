@@ -21,5 +21,5 @@ Included third-party Libraries
  - Kenji Urushima's 'RSA-Sign JavaScript Library' (http://kjur.github.com/jsrsasign)
   - asn1hex.js - simple ASN.1 parser to read hexadecimal encoded ASN.1 DER
   - rsasign-1.2.js - RSAKey class extension for RSA signing and verification
- - Joshua Tauberer's DNS Libary (part of Thunderbird Sender Verification Extension) (http://razor.occams.info/code/spf/)
+ - Joshua Tauberer's DNS Libary (part of Thunderbird Sender Verification Extension) (https://github.com/tauberer/thunderbird-spf)
   - dns.js - DNS Library

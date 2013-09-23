@@ -105,7 +105,8 @@ For Joshua Tauberer's DNS Libary
 dns.js - DNS Library
 
 Site:
-http://razor.occams.info/code/spf/
+https://github.com/tauberer/thunderbird-spf
+https://addons.mozilla.org/addon/sender-verification-anti-phish/
 
 *******************************************************************************
 
