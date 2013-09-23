@@ -28,6 +28,11 @@ pref("extensions.dkim_verifier.showDKIMHeader", 30);
  * 50  when a message is viewed
  */
 pref("extensions.dkim_verifier.showDKIMStatusbarpanel", 0);
+/*
+ * 1 text
+ * 2 icon
+ */
+pref("extensions.dkim_verifier.statusbarpanel.result.style", 1);
 
 pref("extensions.dkim_verifier.colorFrom", false);
 pref("extensions.dkim_verifier.color.success.text", "windowtext");

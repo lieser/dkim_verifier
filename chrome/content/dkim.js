@@ -4,7 +4,7 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  *
- * version: 0.5.2pre5 (23 September 2013)
+ * version: 0.5.2pre6 (23 September 2013)
  *
  * Copyright (c) 2013 Philippe Lieser
  *
@@ -1360,6 +1360,9 @@ var that = {
 	 * gets called on startup
 	 */
 	startup : function () {
+		// get statusbarpanel
+		statusbarpanel = document.getElementById("dkim-verifier-statusbarpanel");
+		
 		// Register to receive notifications of preference changes
 		prefs = Components.classes["@mozilla.org/preferences-service;1"].
 			getService(Components.interfaces.nsIPrefService).
@@ -1384,14 +1387,16 @@ var that = {
 			prefs.getBoolPref("dns.getNameserversFromOS")
 		);
 		DKIM_Verifier.dnsChangeTimeoutConnect(prefs.getIntPref("dns.timeout_connect"));
+		if (prefs.getIntPref("statusbarpanel.result.style") === 1) {
+			statusbarpanel.useIcons = false;
+		} else {
+			statusbarpanel.useIcons = true;
+		}
 
 		that.initHeaderEntry();
 
 		// register monitors for message displaying
 		gMessageListeners.push(that);
-		
-		// get statusbarpanel
-		statusbarpanel = document.getElementById("dkim-verifier-statusbarpanel");
 		
 		// register monitors for tabswitch
 		var tabmail = document.getElementById("tabmail");
@@ -1455,6 +1460,13 @@ var that = {
 				break;
 			case "dns.timeout_connect":
 				DKIM_Verifier.dnsChangeTimeoutConnect(prefs.getIntPref("dns.timeout_connect"));
+				break;
+			case "statusbarpanel.result.style":
+				if (prefs.getIntPref("statusbarpanel.result.style") === 1) {
+					statusbarpanel.useIcons = false;
+				} else {
+					statusbarpanel.useIcons = true;
+				}
 				break;
 		}
 	},

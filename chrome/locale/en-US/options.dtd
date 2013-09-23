@@ -20,6 +20,8 @@
 <!ENTITY showDKIM.value.30.label "when an e-mail with a DKIM signature is viewed">
 <!ENTITY showDKIM.value.40.label "when an e-mail is viewed">
 <!ENTITY showDKIM.value.50.label "when a message is viewed">
+<!ENTITY statusbarpanel.result.style.value.1.label "Show text">
+<!ENTITY statusbarpanel.result.style.value.2.label "Show icon">
 
 <!ENTITY colorFrom.label "Enable highlighting of From header">
 <!ENTITY color.label "Color">

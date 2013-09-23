@@ -20,6 +20,8 @@
 <!ENTITY showDKIM.value.30.label "wenn eine E-Mail mit DKIM Signatur angezeigt wird">
 <!ENTITY showDKIM.value.40.label "wenn eine E-Mail angezeigt wird">
 <!ENTITY showDKIM.value.50.label "wenn eine Nachricht angezeigt wird">
+<!ENTITY statusbarpanel.result.style.value.1.label "Zeige Text">
+<!ENTITY statusbarpanel.result.style.value.2.label "Zeige Symbol">
 
 <!ENTITY colorFrom.label "Aktiviere Markierung der Absenderadresse">
 <!ENTITY color.label "Farbe">
