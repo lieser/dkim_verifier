@@ -1655,3 +1655,9 @@ addEventListener("load", function dkim_load() {
 	removeEventListener("load", dkim_load, false);
 	DKIM_Verifier.DKIMVerifier.startup();
 }, false);
+addEventListener("unload", function dkim_unload() {
+	"use strict";
+	
+	removeEventListener("load", dkim_unload, false);
+	DKIM_Verifier.DKIMVerifier.shutdown();
+}, false);
