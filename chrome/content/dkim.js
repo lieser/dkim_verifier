@@ -1328,6 +1328,26 @@ var that = {
 		row = view.enclosingRow;
 	},
 	setCollapsed: function(state) {
+		function setDKIMFromTooltip(headerBox) {
+			var emailDisplayButton = headerBox.emailAddresses.boxObject.firstChild;
+			if (emailDisplayButton) {
+				emailDisplayButton.tooltip = "dkim-verifier-tooltip-from";
+				emailDisplayButton.setAttribute("tooltiptextSaved", 
+					emailDisplayButton.getAttribute("tooltiptext")
+				);
+				emailDisplayButton.removeAttribute("tooltiptext");
+			}
+		}
+		function removeDKIMFromTooltip(headerBox) {
+			var emailDisplayButton = headerBox.emailAddresses.boxObject.firstChild;
+			if (emailDisplayButton) {
+				emailDisplayButton.tooltip = "";
+				emailDisplayButton.setAttribute("tooltiptext", 
+					emailDisplayButton.getAttribute("tooltiptextSaved")
+				);
+			}
+		}
+
 		// DKIM header
 		if (prefs.getIntPref("showDKIMHeader") >= state ) {
 			// show DKIM header
@@ -1358,19 +1378,29 @@ var that = {
 
 		// DKIM tooltip for From header
 		var expandedfromBox = document.getElementById("expandedfromBox");
+		// for CompactHeader addon
+		var collapsed1LfromBox = document.getElementById("CompactHeader_collapsed1LfromBox");
+		var collapsed2LfromBox = document.getElementById("CompactHeader_collapsed2LfromBox");
 		if (prefs.getIntPref("showDKIMFromTooltip") >= state ) {
 			// show tooltip for From header
-			expandedfromBox.emailAddresses.firstChild.tooltip = "dkim-verifier-tooltip-from";
-			expandedfromBox.emailAddresses.firstChild.setAttribute("tooltiptextSaved", 
-				expandedfromBox.emailAddresses.firstChild.getAttribute("tooltiptext")
-			);
-			expandedfromBox.emailAddresses.firstChild.removeAttribute("tooltiptext");
+			setDKIMFromTooltip(expandedfromBox);
+			// for CompactHeader addon
+			if (collapsed1LfromBox) {
+				setDKIMFromTooltip(collapsed1LfromBox);
+			}
+			if (collapsed2LfromBox) {
+				setDKIMFromTooltip(collapsed2LfromBox);
+			}
 		} else {
 			// don't show tooltip for From header
-			expandedfromBox.emailAddresses.firstChild.tooltip = "";
-			expandedfromBox.emailAddresses.firstChild.setAttribute("tooltiptext", 
-				expandedfromBox.emailAddresses.firstChild.getAttribute("tooltiptextSaved")
-			);
+			removeDKIMFromTooltip(expandedfromBox);
+			// for CompactHeader addon
+			if (collapsed1LfromBox) {
+				removeDKIMFromTooltip(collapsed1LfromBox);
+			}
+			if (collapsed2LfromBox) {
+				removeDKIMFromTooltip(collapsed2LfromBox);
+			}
 		}
 	},
 
