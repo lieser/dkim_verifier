@@ -49,7 +49,7 @@
  */
  
 // options for JSHint
-/* global Components, messenger, msgWindow, Application, gMessageListeners, gDBView, Services, gFolderDisplay, gExpandedHeaderView, createHeaderEntry, syncGridColumnWidths, currentHeaderData */ 
+/* global Components, messenger, msgWindow, Application, gMessageListeners, gDBView, Services, gFolderDisplay, gExpandedHeaderView, createHeaderEntry, syncGridColumnWidths, currentHeaderData, gMessageDisplay */ 
 
 // namespace
 var DKIM_Verifier = {};
@@ -1137,6 +1137,11 @@ DKIM_Verifier.DKIMVerifier = (function() {
 	 */
 	function saveResult(msgURI, result) {
 		if (prefs.getBoolPref("saveResult")) {
+			// don't save result if message is external
+			if (gFolderDisplay.selectedMessageIsExternal) {
+				return;
+			}
+		
 			var messenger = Components.classes["@mozilla.org/messenger;1"].
 				createInstance().QueryInterface(Components.interfaces.nsIMessenger);
 			var msgHdr = messenger.messageServiceFromURI(msgURI).
@@ -1157,6 +1162,11 @@ DKIM_Verifier.DKIMVerifier = (function() {
 	 */
 	function getResult(msgURI) {
 		if (prefs.getBoolPref("saveResult")) {
+			// don't read result if message is external
+			if (gFolderDisplay.selectedMessageIsExternal) {
+				return null;
+			}
+
 			var messenger = Components.classes["@mozilla.org/messenger;1"].
 				createInstance().QueryInterface(Components.interfaces.nsIMessenger);
 			var msgHdr = messenger.messageServiceFromURI(msgURI).
