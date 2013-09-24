@@ -1491,7 +1491,9 @@ var that = {
 
 		// unregister monitors for tabswitch
 		var tabmail = document.getElementById("tabmail");
-		tabmail.unregisterTabMonitor(that.tabMonitor);
+		if (tabmail) {
+			tabmail.unregisterTabMonitor(that.tabMonitor);
+		}
 	},
 
 	/*
@@ -1660,6 +1662,6 @@ addEventListener("load", function dkim_load() {
 addEventListener("unload", function dkim_unload() {
 	"use strict";
 	
-	removeEventListener("load", dkim_unload, false);
+	removeEventListener("unload", dkim_unload, false);
 	DKIM_Verifier.DKIMVerifier.shutdown();
 }, false);
