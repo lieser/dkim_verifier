@@ -15,7 +15,7 @@
 
 <!ENTITY showDKIMHeader.label  "Show DKIM header">
 <!ENTITY showDKIMStatusbarpanel.label  "Show DKIM status bar">
-<!ENTITY showDKIMFromTooltip.label  "Show DKIM tooltip for from header">
+<!ENTITY showDKIMFromTooltip.label  "Show DKIM tooltip for From header">
 <!ENTITY showDKIM.value.0.label  "never">
 <!ENTITY showDKIM.value.10.label "when an e-mail with a valid DKIM signature is viewed">
 <!ENTITY showDKIM.value.30.label "when an e-mail with a DKIM signature is viewed">

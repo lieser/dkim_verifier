@@ -4,7 +4,7 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  *
- * version: 0.5.2pre8 (23 September 2013)
+ * version: 0.5.2pre9 (23 September 2013)
  *
  * Copyright (c) 2013 Philippe Lieser
  *
@@ -1361,10 +1361,16 @@ var that = {
 		if (prefs.getIntPref("showDKIMFromTooltip") >= state ) {
 			// show tooltip for From header
 			expandedfromBox.emailAddresses.firstChild.tooltip = "dkim-verifier-tooltip-from";
-			expandedfromBox.emailAddresses.firstChild.setAttribute("tooltiptext", "");
+			expandedfromBox.emailAddresses.firstChild.setAttribute("tooltiptextSaved", 
+				expandedfromBox.emailAddresses.firstChild.getAttribute("tooltiptext")
+			);
+			expandedfromBox.emailAddresses.firstChild.removeAttribute("tooltiptext");
 		} else {
 			// don't show tooltip for From header
 			expandedfromBox.emailAddresses.firstChild.tooltip = "";
+			expandedfromBox.emailAddresses.firstChild.setAttribute("tooltiptext", 
+				expandedfromBox.emailAddresses.firstChild.getAttribute("tooltiptextSaved")
+			);
 		}
 	},
 
