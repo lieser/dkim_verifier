@@ -4,7 +4,7 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  *
- * version: 0.5.2pre9 (23 September 2013)
+ * version: 0.5.2pre10 (23 September 2013)
  *
  * Copyright (c) 2013 Philippe Lieser
  *
@@ -963,9 +963,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			dkimDebugMsg("Parsed DKIM-Signature: "+msg.DKIMSignature.toSource());
 			
 			// warning if from is not in SDID or AUID
-			var messageService = messenger.messageServiceFromURI(msg.msgURI);
-			var mime2DecodedAuthor = messageService.messageURIToMsgHdr(msg.msgURI).
-				mime2DecodedAuthor;
+			var mime2DecodedAuthor = gMessageDisplay.displayedMessage.author;
 			var msgHeaderParser = Components.classes["@mozilla.org/messenger/headerparser;1"].
 				createInstance(Components.interfaces.nsIMsgHeaderParser);
 			var from = msgHeaderParser.extractHeaderAddressMailboxes(mime2DecodedAuthor);
@@ -1448,19 +1446,21 @@ var that = {
 		
 		// register monitors for tabswitch
 		var tabmail = document.getElementById("tabmail");
-		that.tabMonitor = {
-			onTabTitleChanged: function(/* aTab */) {
-				if (statusbarpanel) {
-					statusbarpanel.hidden = true;
+		if (tabmail) {
+			that.tabMonitor = {
+				onTabTitleChanged: function(/* aTab */) {
+					if (statusbarpanel) {
+						statusbarpanel.hidden = true;
+					}
+				},
+				onTabSwitched: function(/* aTab, aOldTab */) {
+					if (statusbarpanel) {
+						statusbarpanel.hidden = true;
+					}
 				}
-			},
-			onTabSwitched: function(/* aTab, aOldTab */) {
-				if (statusbarpanel) {
-					statusbarpanel.hidden = true;
-				}
-			}
-		};
-		tabmail.registerTabMonitor(that.tabMonitor);
+			};
+			tabmail.registerTabMonitor(that.tabMonitor);
+		}
 	},
 
 	/*
@@ -1571,7 +1571,7 @@ var that = {
 			that.setCollapsed(10);
 			
 			// get msg uri
-			var msgURI = gDBView.URIForFirstSelectedMessage;
+			var msgURI = gFolderDisplay.selectedMessageUris[0];
 
 			// check for saved result
 			var result = getResult(msgURI);
