@@ -1349,10 +1349,12 @@ var that = {
 		function removeDKIMFromTooltip(headerBox) {
 			var emailDisplayButton = headerBox.emailAddresses.boxObject.firstChild;
 			if (emailDisplayButton) {
-				emailDisplayButton.tooltip = "";
-				emailDisplayButton.setAttribute("tooltiptext", 
-					emailDisplayButton.getAttribute("tooltiptextSaved")
-				);
+				if (emailDisplayButton.tooltip === "dkim-verifier-tooltip-from") {
+					emailDisplayButton.tooltip = "";
+					emailDisplayButton.setAttribute("tooltiptext", 
+						emailDisplayButton.getAttribute("tooltiptextSaved")
+					);
+				}
 			}
 		}
 
