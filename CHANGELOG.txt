@@ -1,11 +1,11 @@
-0.5.2pre11 [2013-09-26]
+0.6.0 [2013-09-26]
 ------------------
  - added option for displaying of header, status bar and tooltip for From header
  - fixed false detection of DKIM_SIGERROR_DOMAIN_I
  - made options height smaller
  - fixed error in "simple" body canonicalization algorithm resulting in "Wrong body hash"
  - fixed bug for mixed CRLF and LF EOLs in body (resulting in "Wrong body hash")
- - fixed error if external message was viewed
+ - fixed error if external message was viewed (but there is still a problem with IMAP attachments)
  - fixed bug ("DKIM-Signature" header name was case sensitive)
 
 0.5.1 [2013-09-20]
