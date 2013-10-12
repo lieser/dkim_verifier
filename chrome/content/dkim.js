@@ -4,7 +4,7 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  *
- * version: 0.6.0 (26 September 2013)
+ * version: 0.6.2 (13 October 2013)
  *
  * Copyright (c) 2013 Philippe Lieser
  *
@@ -1549,7 +1549,9 @@ var that = {
 			};
 			statusbarpanel.value = DKIM_Verifier.DKIM_STRINGS.NOT_EMAIL;
 			statusbarpanel.dkimStatus = "none";
-			reverifyDKIMSignature.disabled = true;
+			if (reverifyDKIMSignature) {
+				reverifyDKIMSignature.disabled = true;
+			}
 		} else {
 			currentHeaderData[entry] = {
 				headerName: entry,
@@ -1557,7 +1559,9 @@ var that = {
 			};
 			statusbarpanel.value = DKIM_Verifier.DKIM_STRINGS.loading;
 			statusbarpanel.dkimStatus = "loading";
-			reverifyDKIMSignature.disabled = false;
+			if (reverifyDKIMSignature) {
+				reverifyDKIMSignature.disabled = false;
+			}
 		}
 	},
 

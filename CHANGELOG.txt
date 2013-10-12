@@ -1,3 +1,7 @@
+0.6.2 [2013-10-13]
+------------------
+ - fixed bug if "other actions" button of CompactHeader add-on toolbar is not included
+
 0.6.1 [2013-10-12]
 ------------------
  - better detection of configured DNS Servers in Windows
