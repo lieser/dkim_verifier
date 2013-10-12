@@ -52,6 +52,8 @@
  *   - reenabled support to get DNS Servers from OS
  *    - modified and renamed DNS_LoadPrefs() to DNS_get_OS_DNSServers()
  *   - fixed jshint errors/warnings
+ *  since version 0.6.1
+ *   - better detection of configured DNS Servers in Windows
  */
 
 // options for JSHint
@@ -82,22 +84,42 @@ var DNS_ROOT_NAME_SERVERS = [];
 var PREF_DNS_ROOT_NAME_SERVERS = [];
 var OS_DNS_ROOT_NAME_SERVERS = [];
 
-// calls to change preferences
+// Preferences
 var getNameserversFromOS = null;
+var dnsDebug = false;
+var timeout_connect = 0xFFFF;
+
+/*
+ * Changes preference getNameserversFromOS and updates DNS Servers
+ *
+ * @param {Boolean} bool
+ * @return {Undefined}
+ */
 function dnsChangeGetNameserversFromOS(bool) {
 	"use strict";
-	
+
 	getNameserversFromOS = bool;
 	
 	if (getNameserversFromOS) {
 		DNS_get_OS_DNSServers();
-		DNS_ROOT_NAME_SERVERS = OS_DNS_ROOT_NAME_SERVERS.concat(PREF_DNS_ROOT_NAME_SERVERS);
+		DNS_ROOT_NAME_SERVERS = arrayUniqBy(
+			OS_DNS_ROOT_NAME_SERVERS.concat(PREF_DNS_ROOT_NAME_SERVERS),
+			function(e) {return e.server}
+		);
 	} else {
 		DNS_ROOT_NAME_SERVERS = PREF_DNS_ROOT_NAME_SERVERS;
 	}
 
 	DNS_Debug("DNS: changed DNS Servers to : " + DNS_ROOT_NAME_SERVERS.toSource());
 }
+
+/*
+ * Changes preference DNS Servers and updates DNS Servers
+ *
+ * @param {String} nameserver
+ *        ";" separated list of DNS Nameservers
+ * @return {Undefined}
+ */
 function dnsChangeNameserver(nameserver) {
 	"use strict";
 	
@@ -115,28 +137,64 @@ function dnsChangeNameserver(nameserver) {
 
 	if (getNameserversFromOS) {
 		DNS_get_OS_DNSServers();
-		DNS_ROOT_NAME_SERVERS = OS_DNS_ROOT_NAME_SERVERS.concat(PREF_DNS_ROOT_NAME_SERVERS);
+		DNS_ROOT_NAME_SERVERS = arrayUniqBy(
+			OS_DNS_ROOT_NAME_SERVERS.concat(PREF_DNS_ROOT_NAME_SERVERS),
+			function(e) {return e.server}
+		);
 	} else {
 		DNS_ROOT_NAME_SERVERS = PREF_DNS_ROOT_NAME_SERVERS;
 	}
 
 	DNS_Debug("DNS: changed DNS Servers to : " + DNS_ROOT_NAME_SERVERS.toSource());
 }
-var dnsDebug = false;
+
+/*
+ * Changes preference dnsDebug
+ *
+ * @param {Boolean} debug
+ * @return {Undefined}
+ */
 function dnsChangeDebug(debug) {
 	"use strict";
 	
 	dnsDebug = debug;
 }
-var timeout_connect;
+
+/*
+ * Changes preference timeout_connect
+ *
+ * @param {Number} timeout
+ *        Timeout in seconds
+ * @return {Undefined}
+ */
 function dnsChangeTimeoutConnect(timeout) {
 	"use strict";
 	
 	timeout_connect = timeout;
 }
 
+/*
+ * Remove Duplicates from Array
+ *
+ * from http://stackoverflow.com/questions/9229645/remove-duplicates-from-javascript-array/9229821#9229821
+ *
+ * @param {Array} ary
+ * @param {Function} key
+ *        Function to generate key from element
+ */
+arrayUniqBy = function(ary, key) {
+    var seen = {};
+    return ary.filter(function(elem) {
+        var k = key(elem);
+        return (seen[k] === 1) ? 0 : seen[k] = 1;
+    })
+}
 
-// function DNS_get_OS_DNSServers() {
+/*
+ * get DNS Servers from OS configuration
+ *
+ * @return {Undefined}
+ */
 function DNS_get_OS_DNSServers() {
 	"use strict";
 	
@@ -151,15 +209,40 @@ function DNS_get_OS_DNSServers() {
 			var registry = registry_object.QueryInterface(Components.interfaces.nsIWindowsRegKey);
 			
 			registry.open(registry.ROOT_KEY_LOCAL_MACHINE,
-				"SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters",
+				"SYSTEM\\CurrentControlSet\\Services\\Tcpip",
 				registry.ACCESS_QUERY_VALUE);
+			
+			// get interfaces in routing order
+			var registryLinkage = registry.openChild("Linkage", registry.ACCESS_READ);
+			// nsIWindowsRegKey doesn't support REG_MULTI_SZ type out of the box
+			// from http://mxr.mozilla.org/comm-central/source/mozilla/browser/components/migration/src/IEProfileMigrator.js#129
+			// slice(1,-1) to remove the " at the beginning and end
+			var str = registryLinkage.readStringValue("Route");
+			var interfaces = [v.slice(1,-1) for each (v in str.split("\0")) if (v)];
+			registryLinkage.close();
+			
+			// get NameServer and DhcpNameServer of all interfaces
+			var registryInterfaces = registry.openChild(
+				"Parameters\\Interfaces",
+				registry.ACCESS_READ
+			);
+			var reg;
 			var ns = "";
-			if (registry.hasValue("DhcpNameServer")) {
-				ns = registry.readStringValue("DhcpNameServer");
+			for (var i=0; i < interfaces.length; i++) {
+				reg = registryInterfaces.openChild(
+					interfaces[i],
+					registry.ACCESS_READ
+				);
+				if (reg.hasValue("NameServer")) {
+					ns += " " + reg.readStringValue("NameServer");
+				}
+				if (reg.hasValue("DhcpNameServer")) {
+					ns += " " + reg.readStringValue("DhcpNameServer");
+				}
+				reg.close();
 			}
-			if (ns === "" && registry.hasValue("NameServer")) {
-				ns = registry.readStringValue("NameServer");
-			}
+			registryInterfaces.close();
+			
 			registry.close();
 			
 			if (ns !== "") {
