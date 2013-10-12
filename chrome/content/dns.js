@@ -58,6 +58,7 @@
 
 // options for JSHint
 /* jshint -W064 */ //"Missing 'new' prefix when invoking a constructor."
+/* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
 /* global Components, DNS_STRINGS */
 /* exported EXPORTED_SYMBOLS, dnsChangeGetNameserversFromOS, dnsChangeNameserver, dnsChangeDebug, dnsChangeTimeoutConnect, reverseDNS, DNS_Test */
 
@@ -104,7 +105,7 @@ function dnsChangeGetNameserversFromOS(bool) {
 		DNS_get_OS_DNSServers();
 		DNS_ROOT_NAME_SERVERS = arrayUniqBy(
 			OS_DNS_ROOT_NAME_SERVERS.concat(PREF_DNS_ROOT_NAME_SERVERS),
-			function(e) {return e.server}
+			function(e) {return e.server;}
 		);
 	} else {
 		DNS_ROOT_NAME_SERVERS = PREF_DNS_ROOT_NAME_SERVERS;
@@ -139,7 +140,7 @@ function dnsChangeNameserver(nameserver) {
 		DNS_get_OS_DNSServers();
 		DNS_ROOT_NAME_SERVERS = arrayUniqBy(
 			OS_DNS_ROOT_NAME_SERVERS.concat(PREF_DNS_ROOT_NAME_SERVERS),
-			function(e) {return e.server}
+			function(e) {return e.server;}
 		);
 	} else {
 		DNS_ROOT_NAME_SERVERS = PREF_DNS_ROOT_NAME_SERVERS;
@@ -182,12 +183,14 @@ function dnsChangeTimeoutConnect(timeout) {
  * @param {Function} key
  *        Function to generate key from element
  */
-arrayUniqBy = function(ary, key) {
+function arrayUniqBy(ary, key) {
+	"use strict";
+	
     var seen = {};
     return ary.filter(function(elem) {
         var k = key(elem);
         return (seen[k] === 1) ? 0 : seen[k] = 1;
-    })
+    });
 }
 
 /*
@@ -218,7 +221,7 @@ function DNS_get_OS_DNSServers() {
 			// from http://mxr.mozilla.org/comm-central/source/mozilla/browser/components/migration/src/IEProfileMigrator.js#129
 			// slice(1,-1) to remove the " at the beginning and end
 			var str = registryLinkage.readStringValue("Route");
-			var interfaces = [v.slice(1,-1) for each (v in str.split("\0")) if (v)];
+			var interfaces = [v.slice(1,-1) for (v of str.split("\0")) if (v)];
 			registryLinkage.close();
 			
 			// get NameServer and DhcpNameServer of all interfaces
