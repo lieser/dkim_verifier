@@ -54,6 +54,8 @@
  *   - fixed jshint errors/warnings
  *  since version 0.6.1
  *   - better detection of configured DNS Servers in Windows
+ *  since version 0.7.0
+ *   - added close() calls in catch blocks
  */
 
 // options for JSHint
@@ -263,6 +265,16 @@ function DNS_get_OS_DNSServers() {
 			}
 		} catch (e) {
 			DNS_Debug("DNS: Reading Registry: " + e + "\n" + e.stack);
+			
+			if (registry) {
+				registry.close();
+			}
+			if (registryInterfaces) {
+				registryInterfaces.close();
+			}
+			if (reg) {
+				reg.close();
+			}
 		}
 	} else {
 		// Try getting a nameserver from /etc/resolv.conf.
@@ -291,6 +303,10 @@ function DNS_get_OS_DNSServers() {
 			DNS_Debug("DNS: Got servers from resolv.conf: " + OS_DNS_ROOT_NAME_SERVERS.toSource());
 		} catch (e) {
 			DNS_Debug("DNS: Reading resolv.conf: " + e + "\n" + e.stack);
+			
+			if (stream_filestream) {
+				stream_filestream.close();
+			}
 		}
 	}
 	
