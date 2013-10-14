@@ -54,6 +54,9 @@
  *   - fixed jshint errors/warnings
  *  since version 0.6.1
  *   - better detection of configured DNS Servers in Windows
+ *  since version 0.6.3
+ *   - fixed bug for detection of configured DNS Servers in Windows
+ *     (if more then one DNS server was configured for an adapter)
  */
 
 // options for JSHint
@@ -249,7 +252,7 @@ function DNS_get_OS_DNSServers() {
 			registry.close();
 			
 			if (ns !== "") {
-				var servers = ns.split(' ');
+				var servers = ns.split(/ |,/);
 				servers.forEach(function(element /*, index, array*/) {
 					if (element !== "") {
 						OS_DNS_ROOT_NAME_SERVERS.push({
