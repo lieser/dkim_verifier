@@ -10,7 +10,7 @@
  *
  * This software is licensed under the terms of the MIT License.
  *
- * The above copyright and license notice shall be 
+ * The above copyright and license notice shall be
  * included in all copies or substantial portions of the Software.
  */
 
@@ -58,7 +58,9 @@ var DKIM_Verifier = {};
 Components.utils.import("chrome://dkim_verifier/locale/dkim.js", DKIM_Verifier);
 
 // load modules
+try {
 Components.utils.import("chrome://dkim_verifier/content/helper.js", DKIM_Verifier);
+Components.utils.import("resource://dkim_verifier/dkimPolicy.jsm", DKIM_Verifier);
 // DNS
 Components.utils.import("chrome://dkim_verifier/content/dns.js", DKIM_Verifier);
 // ASN.1
@@ -76,6 +78,9 @@ Services.scriptloader.loadSubScript("chrome://dkim_verifier/content/rsa.js",
                                     DKIM_Verifier, "UTF-8" /* The script's encoding */);
 Services.scriptloader.loadSubScript("chrome://dkim_verifier/content/rsasign-1.2.js",
                                     DKIM_Verifier, "UTF-8" /* The script's encoding */);
+} catch (e) {
+	Application.console.log(e+"\n"+e.stack+"\n"+e.lineNumber);
+}
 
 /*
  * DKIM Verifier module

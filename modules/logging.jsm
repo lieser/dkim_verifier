@@ -10,7 +10,7 @@
  *
  * This software is licensed under the terms of the MIT License.
  *
- * The above copyright and license notice shall be 
+ * The above copyright and license notice shall be
  * included in all copies or substantial portions of the Software.
  */
  
