@@ -58,7 +58,6 @@ var DKIM_Verifier = {};
 Components.utils.import("chrome://dkim_verifier/locale/dkim.js", DKIM_Verifier);
 
 // load modules
-try {
 Components.utils.import("chrome://dkim_verifier/content/helper.js", DKIM_Verifier);
 Components.utils.import("resource://dkim_verifier/dkimPolicy.jsm", DKIM_Verifier);
 // DNS
@@ -78,9 +77,6 @@ Services.scriptloader.loadSubScript("chrome://dkim_verifier/content/rsa.js",
                                     DKIM_Verifier, "UTF-8" /* The script's encoding */);
 Services.scriptloader.loadSubScript("chrome://dkim_verifier/content/rsasign-1.2.js",
                                     DKIM_Verifier, "UTF-8" /* The script's encoding */);
-} catch (e) {
-	Application.console.log(e+"\n"+e.stack+"\n"+e.lineNumber);
-}
 
 /*
  * DKIM Verifier module
@@ -981,7 +977,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 				dkimDebugMsg("Warning: DKIM_SIGWARNING_FROM_NOT_IN_AUID ("+
 					DKIM_Verifier.DKIM_STRINGS.DKIM_SIGWARNING_FROM_NOT_IN_AUID+")");
 			}
-
+DKIM_Verifier.dkimPolicy.shouldBeSigned(from);
 
 			var time = Math.round(Date.now() / 1000);
 			// warning if signature expired

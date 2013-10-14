@@ -35,67 +35,101 @@ Cu.import("resource://services-common/utils.js");
 Cu.import("resource://dkim_verifier/logging.jsm");
 
 
-var dkimPolicyDBConn;
-var log = Logging.getLogger("dkimPolicy");
+const RULE_SIGNED = 1;
+const RULE_NEUTRAL = 2;
+
+// Promise<boolean>
+var initialized;
+var log = Logging.getLogger("Policy");
 
 var dkimPolicy = {
 	/**
+	 * Determinates if e-mail by fromAddress should be signed
 	 * 
 	 * @param {String} fromAddress
+	 * @param {Function} callback
 	 * 
-	 * @return 
+	 * @return {Promise<Object Boolean>}
+	 *         true if fromAddress should be signed
+	 *         .sdid {String} Signing Domain Identifier
 	 */
-	shouldBeSigned: function (fromAddress) {
-		// let file = FileUtils.getFile("ProfD", ["my_db_file_name.sqlite"]);
-		// let mDBConn = Services.storage.openDatabase(file); // Will also create the file if it does not exist
-		// mDBConn.close();
-		}
+	shouldBeSigned: function (fromAddress, callback) {
+		var promise = Task.spawn(function () {
+			log.trace("shouldBeSigned begin");
+			
+			yield initialized;
+			var conn = yield Sqlite.openConnection({path: "dkimPolicy.sqlite"});
+			
+			var sqlRes = yield conn.executeCached(
+				"SELECT * FROM signers WHERE" +
+				"  lower(:from) GLOB addr AND" +
+				"  enabled" +
+				"  ORDER BY priority DESC" +
+				"  LIMIT 1" +
+				";",
+				{"from": fromAddress});
+			
+			var result;
+			if (sqlRes.length > 0 &&
+					sqlRes[0].getResultByName("ruletype") === RULE_SIGNED) {
+				result = new Boolean(true);
+				result.sdid = sqlRes[0].getResultByName("sdid");
+			} else {
+				result = new Boolean(false);
+			}
+			
+			log.debug("result: "+result+"; result.sdid: "+result.sdid);
+			throw new Task.Result(result);
+		});
+		promise.then(function onFulfill(result) {
+			// result == "Resolution result for the task: Value!!!"
+			// The result is undefined if no special Task.Result exception was thrown.
+			log.trace("shouldBeSigned end");
+			if (callback) {
+				callback(result);
+			}
+		}).then(null, function onReject(exception) {
+			// Failure!  We can inspect or report the exception.
+			log.fatal(CommonUtils.exceptionStr(exception));
+		});
+		return promise;
+	}
 };
 
 
-
+/**
+ * init DB
+ * 
+ * @return {Promise<boolean>} initialized
+ */
 function init() {
-	log.fatal("fatal");
-	log.error("error");
-	log.warn("warn");
-	log.info("info");
-	log.config("config");
-	log.debug("debug");
-	log.trace("trace");
-	log.trace("init");
+	var promise = Task.spawn(function () {
+		log.trace("init begin");
+		
+		var dkimPolicyDBConn = yield Sqlite.openConnection({path: "dkimPolicy.sqlite"});
 
-	Task.spawn(function () {
-		dkimPolicyDBConn = yield Sqlite.openConnection({path: "dkimPolicy.sqlite"});
-		log.trace("connectet");
-
-		var tableExists = yield dkimPolicyDBConn.tableExists("test");
-		if (!tableExists) {
-			log.trace("tableExists == false");
-			dkimPolicyDBConn.execute("CREATE TABLE test (foo INTEGER, bar STRING)");
-			log.trace("createtable");
+		try {
+			yield dkimPolicyDBConn.execute(
+				"CREATE TABLE IF NOT EXISTS signers (" +
+				"  addr TEXT NOT NULL," +
+				"  sdid TEXT," +
+				"  ruletype INTEGER NOT NULL," + // 1 (signed); 2 (neutral)
+				"  priority INTEGER NOT NULL," +
+				"  enabled INTEGER NOT NULL" + // 0 (false) and 1 (true)
+				");");
+		} finally {
+			yield dkimPolicyDBConn.close();
 		}
-		log.trace("tableExists == true");
-
-	}).then(function (result) {
-		// result == "Resolution result for the task: Value!!!"
-		// The result is undefined if no special Task.Result exception was thrown.
-
-		log.debug("result: "+result);
-		log.trace("end");
-	}, function (exception) {
+		
+		log.debug("initialized");
+		log.trace("init end");
+		throw new Task.Result(true);
+	});
+	promise.then(null, function onReject(exception) {
 		// Failure!  We can inspect or report the exception.
 		log.fatal(CommonUtils.exceptionStr(exception));
-
 	});
+	return promise;
 }
 
-function shutdown() {
-	log.trace("shutdown");
-
-	// close connection
-	if (dkimPolicyDBConn) {
-		dkimPolicyDBConn.close();
-	}
-}
-
-init();
+initialized = init();
