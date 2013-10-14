@@ -1,4 +1,5 @@
 content		dkim_verifier			chrome/content/
+resource	dkim_verifier			modules/
 
 skin		dkim_verifier		classic/1.0	chrome/skin/global/
 skin		dkim_verifier-os	classic/1.0	chrome/skin/common/
