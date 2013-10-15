@@ -1,21 +1,25 @@
 // options for JSHint
-/* global Components, FileUtils, NetUtil */
-/* exported EXPORTED_SYMBOLS, writeStringToTmpFile */
+/* jshint strict:true, moz:true */
+/* global Components, FileUtils, NetUtil, CommonUtils, Logging */
+/* exported EXPORTED_SYMBOLS, writeStringToTmpFile, exceptionToStr */
 
 var EXPORTED_SYMBOLS = [
-	"writeStringToTmpFile"
+	"writeStringToTmpFile",
+	"exceptionToStr"
 ];
 
-Components.utils.import("resource://gre/modules/FileUtils.jsm");
-Components.utils.import("resource://gre/modules/NetUtil.jsm");
+const Cc = Components.classes;
+const Ci = Components.interfaces;
+const Cu = Components.utils;
+
+Cu.import("resource://gre/modules/FileUtils.jsm");
+Cu.import("resource://gre/modules/NetUtil.jsm");
+Cu.import("resource://services-common/utils.js");
+
+Cu.import("resource://dkim_verifier/logging.jsm");
 
 
-function logMsg(message){
-	"use strict";
-	
-	var consoleService = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
-	consoleService.logStringMessage(message);
-}
+var log = Logging.getLogger("Helper");
 
 /*
  * 
@@ -47,6 +51,30 @@ function writeStringToTmpFile(string, fileName) {
 		}
 
 		// Data has been written to the file.
-		logMsg("DKIM: wrote file to "+file.path);
+		log.debug("DKIM: wrote file to "+file.path);
 	});
+}
+
+/**
+ * @param {Error} exception
+ * 
+ *  @return {String} formatted error message
+ */
+function exceptionToStr(exception) {
+	"use strict";
+
+	log.trace("exceptionToStr begin");
+	
+	var str = CommonUtils.exceptionStr(exception);
+	
+	// Sqlite.jsm errors
+	if (exception.errors) {
+		// exception.errors is an array of mozIStorageError
+		str += "\n"+[(e.message) for (e of exception.errors)].join("\n");
+		str += "\nreported at: ";
+		str += new Error().stack.split("\n")[1];
+	}
+	
+	log.trace("exceptionToStr end");
+	return str;
 }

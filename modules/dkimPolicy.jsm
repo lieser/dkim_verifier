@@ -4,7 +4,7 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  *
- * version: 1.0.0pre2 (15 October 2013)
+ * version: 1.0.0pre3 (16 October 2013)
  *
  * Copyright (c) 2013 Philippe Lieser
  *
@@ -15,8 +15,9 @@
  */
 
 // options for JSHint
-/* jshint esnext:true */
-/* global Components, Sqlite, Task, CommonUtils, Logging */
+/* jshint moz:true */
+/* jshint -W069 */ // "['{a}'] is better written in dot notation."
+/* global Components, Sqlite, Task, OS, TextDecoder, Logging, exceptionToStr */
 /* exported EXPORTED_SYMBOLS, dkimPolicy */
 
 var EXPORTED_SYMBOLS = [
@@ -28,23 +29,27 @@ const Ci = Components.interfaces;
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
-// Cu.import("resource://gre/modules/FileUtils.jsm");
 Cu.import("resource://gre/modules/Sqlite.jsm");
 Cu.import("resource://gre/modules/Task.jsm");
-Cu.import("resource://services-common/utils.js");
+Cu.import("resource://gre/modules/osfile.jsm");
 
 Cu.import("resource://dkim_verifier/logging.jsm");
+Cu.import("chrome://dkim_verifier/content/helper.js");
 
 
 // rule types
-const RULE_SIGNED = 1;
-const RULE_NEUTRAL = 2;
+const RULE_TYPE = {
+	SIGNED : 1,
+	NEUTRAL: 2,
+};
 // default rule priorities
-const PRIORITY_AUTOINSERT_RULE_SIGNED = 110;
-const PRIORITY_DEFAULT_RULE_SIGNED = 210;
-const PRIORITY_DEFAULT_RULE_NEUTRAL = 220;
-const PRIORITY_USERINSERT_RULE_SIGNED = 310;
-const PRIORITY_USERINSERT_RULE_NEUTRAL = 320;
+const PRIORITY = {
+	AUTOINSERT_RULE_SIGNED:  110,
+	DEFAULT_RULE_SIGNED:     210,
+	DEFAULT_RULE_NEUTRAL:    220,
+	USERINSERT_RULE_SIGNED:  310,
+	USERINSERT_RULE_NEUTRAL: 320,
+};
 
 // Promise<boolean>
 var initialized;
@@ -64,6 +69,8 @@ var dkimPolicy = {
 	 *         .foundRule {Boolean} true if enabled rule for fromAddress was found
 	 */
 	shouldBeSigned: function (fromAddress, callback, callbackData) {
+		"use strict";
+
 		var promise = Task.spawn(function () {
 			log.trace("shouldBeSigned Task begin");
 			
@@ -71,18 +78,21 @@ var dkimPolicy = {
 			var conn = yield Sqlite.openConnection({path: "dkimPolicy.sqlite"});
 			
 			var sqlRes = yield conn.executeCached(
-				"SELECT * FROM signers WHERE" +
-				"  lower(:from) GLOB addr AND" +
-				"  enabled" +
-				"  ORDER BY priority DESC" +
-				"  LIMIT 1" +
-				";",
+				"SELECT addr, sdid, ruletype, priority, enabled\n" +
+				"FROM signers WHERE\n" +
+				"  lower(:from) GLOB addr AND\n" +
+				"  enabled\n" +
+				"UNION SELECT addr, sdid, ruletype, priority, 1\n" +
+				"FROM signersDefault WHERE\n" +
+				"  lower(:from) GLOB addr\n" +
+				"ORDER BY priority DESC\n" +
+				"LIMIT 1;",
 				{"from": fromAddress}
 			);
 			
 			var result = {};
 			if (sqlRes.length > 0) {
-				if (sqlRes[0].getResultByName("ruletype") === RULE_SIGNED) {
+				if (sqlRes[0].getResultByName("ruletype") === RULE_TYPE["SIGNED"]) {
 					result.shouldBeSigned = true;
 					result.sdid = sqlRes[0].getResultByName("sdid");
 				} else {
@@ -109,7 +119,7 @@ var dkimPolicy = {
 				}
 			}).then(null, function onReject(exception) {
 				// Failure!  We can inspect or report the exception.
-				log.fatal(CommonUtils.exceptionStr(exception));
+				log.fatal(exceptionToStr(exception));
 			});
 		}
 		return promise;
@@ -124,19 +134,21 @@ var dkimPolicy = {
 	 * @return {Promise<Undefined>}
 	 */
 	signedBy: function (fromAddress, sdid) {
+		"use strict";
+
 		var promise = Task.spawn(function () {
 			log.trace("signedBy Task begin");
 			
 			var shouldBeSignedRes = yield dkimPolicy.shouldBeSigned(fromAddress);
 			if (!shouldBeSignedRes.foundRule) {
-				yield addRule(fromAddress, sdid, RULE_SIGNED, PRIORITY_AUTOINSERT_RULE_SIGNED);
+				yield addRule(fromAddress, sdid, "SIGNED", "AUTOINSERT_RULE_SIGNED");
 			}
 			
 			log.trace("signedBy Task end");
 		});
 		promise.then(null, function onReject(exception) {
 			// Failure!  We can inspect or report the exception.
-			log.fatal(CommonUtils.exceptionStr(exception));
+			log.fatal(exceptionToStr(exception));
 		});
 		return promise;
 	},
@@ -147,38 +159,35 @@ var dkimPolicy = {
  * 
  * @param {String} addr
  * @param {String} sdid
- * @param {Number} ruletype
- * @param {Number} priority
+ * @param {String} ruletype
+ * @param {String} priority
  * 
  * @return {Promise<Undefined>}
  */
 function addRule(addr, sdid, ruletype, priority) {
-		log.trace("addRule begin");
-		
-		yield initialized;
-		var conn = yield Sqlite.openConnection({path: "dkimPolicy.sqlite"});
-		
-		log.debug("add rule (addr: "+addr+", sdid: "+sdid+
-			", ruletype: "+ruletype+", priority: "+priority+
-			", enabled: 1)"
-		);
-		yield conn.executeCached(
-			"INSERT INTO signers VALUES (" +
-			"  :addr," +
-			"  :sdid," +
-			"  :ruletype," +
-			"  :priority," +
-			"  1" + // enabled
-			");",
-			{
-				"addr": addr,
-				"sdid": sdid,
-				"ruletype": RULE_SIGNED,
-				"priority": PRIORITY_AUTOINSERT_RULE_SIGNED,
-			}
-		);
+	"use strict";
+
+	log.trace("addRule begin");
 	
-		log.trace("addRule end");
+	// yield initialized;
+	var conn = yield Sqlite.openConnection({path: "dkimPolicy.sqlite"});
+	
+	log.debug("add rule (addr: "+addr+", sdid: "+sdid+
+		", ruletype: "+ruletype+", priority: "+priority+
+		", enabled: 1)"
+	);
+	yield conn.executeCached(
+		"INSERT INTO signers (addr, sdid, ruletype, priority, enabled)\n" +
+		"VALUES (:addr, :sdid, :ruletype, :priority, 1);",
+		{
+			"addr": addr,
+			"sdid": sdid,
+			"ruletype": RULE_TYPE[ruletype],
+			"priority": PRIORITY[priority],
+		}
+	);
+
+	log.trace("addRule end");
 }
 
 /**
@@ -187,23 +196,134 @@ function addRule(addr, sdid, ruletype, priority) {
  * @return {Promise<boolean>} initialized
  */
 function init() {
+	"use strict";
+
 	var promise = Task.spawn(function () {
 		log.trace("init Task begin");
 		
-		var dkimPolicyDBConn = yield Sqlite.openConnection({path: "dkimPolicy.sqlite"});
+		Logging.addAppenderTo("Sqlite.Connection.dkimPolicy.sqlite", "sql.");
+		
+		var conn = yield Sqlite.openConnection({path: "dkimPolicy.sqlite"});
 
 		try {
-			yield dkimPolicyDBConn.execute(
-				"CREATE TABLE IF NOT EXISTS signers (" +
-				"  addr TEXT NOT NULL," +
-				"  sdid TEXT," +
-				"  ruletype INTEGER NOT NULL," + // 1 (signed); 2 (neutral)
-				"  priority INTEGER NOT NULL," +
-				"  enabled INTEGER NOT NULL" + // 0 (false) and 1 (true)
+			// get version numbers
+			yield conn.execute(
+				"CREATE TABLE IF NOT EXISTS version (\n" +
+				"  name TEXT PRIMARY KEY NOT NULL,\n" +
+				"  version INTEGER NOT NULL\n" +
 				");"
 			);
+			var sqlRes = yield conn.execute(
+				"SELECT * FROM version;"
+			);
+			var versionTableSigners = 0;
+			var versionTableSignersDefault = 0;
+			var versionDataSignersDefault = 0;
+			sqlRes.forEach(function(element/*, index, array*/){
+				switch(element.getResultByName("name")) {
+					case "TableSigners":
+						versionTableSigners = element.getResultByName("version");
+						break;
+					case "TableSignersDefault":
+						versionTableSignersDefault = element.getResultByName("version");
+						break;
+					case "DataSignersDefault":
+						versionDataSignersDefault = element.getResultByName("version");
+						break;
+				}
+			});
+			log.trace("versionTableSigners: "+versionTableSigners+
+				", versionTableSignersDefault: "+versionTableSignersDefault+
+				", versionDataSignersDefault: "+versionDataSignersDefault
+			);
+
+			// table signers
+			if (versionTableSigners < 1) {
+				log.trace("create table signers");
+				// create table
+				yield conn.execute(
+					"CREATE TABLE IF NOT EXISTS signers (\n" +
+					"  addr TEXT NOT NULL,\n" +
+					"  sdid TEXT,\n" +
+					"  ruletype INTEGER NOT NULL,\n" +
+					"  priority INTEGER NOT NULL,\n" +
+					"  enabled INTEGER NOT NULL\n" + // 0 (false) and 1 (true)
+					");"
+				);
+				// add version number
+				yield conn.execute(
+					"INSERT INTO version (name, version)" +
+					"VALUES ('TableSigners', 1);"
+				);
+				versionTableSigners = 1;
+			} else if (versionTableSigners !== 1) {
+					throw new Error("unsupported versionTableSigners");
+			}
+			
+			// table signersDefault
+			if (versionTableSignersDefault < 1) {
+				log.trace("create table signersDefault");
+				// create table
+				yield conn.execute(
+					"CREATE TABLE IF NOT EXISTS signersDefault (\n" +
+					"  addr TEXT NOT NULL,\n" +
+					"  sdid TEXT,\n" +
+					"  ruletype INTEGER NOT NULL,\n" +
+					"  priority INTEGER NOT NULL\n" +
+					");"
+				);
+				// add version number
+				yield conn.execute(
+					"INSERT INTO version (name, version)\n" +
+					"VALUES ('TableSignersDefault', 1);"
+				);
+				versionTableSignersDefault = 1;
+			} else if (versionTableSignersDefault !== 1) {
+					throw new Error("unsupported versionTableSignersDefault");
+			}
+			
+			// data signersDefault
+			// read rules from file
+			var decoder = new TextDecoder();
+			var profileDir = OS.Constants.Path.profileDir;
+			var path = OS.Path.join(profileDir, "extensions", "dkim_verifier@pl",
+				"data", "signersDefault.json"
+			);
+			var promiseRead = yield OS.File.read(path);
+			var signersDefault = JSON.parse(decoder.decode(promiseRead));
+			// check data version
+			if (versionDataSignersDefault < signersDefault.versionData) {
+				log.trace("update default rules");
+				if (signersDefault.versionTable !== versionTableSignersDefault) {
+					throw new Error("different versionTableSignersDefault in .json file");
+				}
+				// delete old rules
+				yield conn.execute(
+					"DELETE FROM signersDefault;"
+				);
+				// insert new default rules
+				for (var v of signersDefault.rules) {
+					yield conn.executeCached(
+						"INSERT INTO signersDefault (addr, sdid, ruletype, priority)\n" +
+						"VALUES (:addr, :sdid, :ruletype, :priority);",
+						{
+							"addr": v.addr,
+							"sdid": v.sdid,
+							"ruletype": RULE_TYPE[v.ruletype],
+							"priority": PRIORITY[v.priority],
+						}
+					);
+				}
+				// update version number
+				yield conn.execute(
+					"INSERT OR REPLACE INTO version (name, version)\n" +
+					"VALUES ('DataSignersDefault', :version);",
+					{"version": signersDefault.versionData}
+				);
+				versionTableSignersDefault = 1;
+			}
 		} finally {
-			yield dkimPolicyDBConn.close();
+			yield conn.close();
 		}
 		
 		log.debug("initialized");
@@ -212,7 +332,7 @@ function init() {
 	});
 	promise.then(null, function onReject(exception) {
 		// Failure!  We can inspect or report the exception.
-		log.fatal(CommonUtils.exceptionStr(exception));
+		log.fatal(exceptionToStr(exception));
 	});
 	return promise;
 }
