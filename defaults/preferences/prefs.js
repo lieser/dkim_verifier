@@ -58,5 +58,9 @@ pref("extensions.dkim_verifier.color.nosig.background", "transparent");
 
 // advanced preferences
 pref("extensions.dkim_verifier.debug", false);
+// "Fatal", "Error", "Warn", "Info", "Config", "Debug", "Trace", "All"
+pref("extensions.dkim_verifier.logging.console", "Debug");
+// "Fatal", "Error", "Warn", "Info", "Config", "Debug", "Trace", "All"
+pref("extensions.dkim_verifier.logging.dump", "Debug");
 pref("extensions.dkim_verifier.debugLevel", 0);
 pref("extensions.dkim_verifier.error.key_testmode.ignore", false);

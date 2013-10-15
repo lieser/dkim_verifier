@@ -4,7 +4,7 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  *
- * version: 1.0.0pre1 (13 October 2013)
+ * version: 1.0.0pre2 (15 October 2013)
  *
  * Copyright (c) 2013 Philippe Lieser
  *
@@ -24,13 +24,19 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
+Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://services-common/log4moz.js");
 
 
-// "FATAL", "ERROR", "WARN", "INFO", "CONFIG", "DEBUG", "TRACE", "ALL"
-const LOG_LEVEL = "All";
+// "Fatal", "Error", "Warn", "Info", "Config", "Debug", "Trace", "All"
+const LOG_LEVEL = "Error";
 const LOG_NAME = "DKIM_Verifier";
+const PREF_BRANCH = "extensions.dkim_verifier.";
 
+var prefs = Services.prefs.getBranch(PREF_BRANCH);
+var logger;
+var capp;
+var dapp;
 
 var Logging = {
 	getLogger: function(loggerName){
@@ -86,18 +92,54 @@ function setupLogging(loggerName) {
 		var formatter = new SimpleFormatter();
 
 		// Loggers are hierarchical, lowering this log level will affect all output
-		let logger = Log4Moz.repository.getLogger(loggerName);
-		logger.level = Log4Moz.Level[LOG_LEVEL];
+		logger = Log4Moz.repository.getLogger(loggerName);
+		if (prefs.getBoolPref("debug")) {
+			logger.level = Log4Moz.Level["All"];
+		} else {
+			logger.level = Log4Moz.Level[LOG_LEVEL];
+		}
 
 		// A console appender outputs to the JS Error Console
-		var capp = new Log4Moz.ConsoleAppender(formatter);
-		// capp.level = Log4Moz.Level["Warn"];
+		capp = new Log4Moz.ConsoleAppender(formatter);
+		capp.level = Log4Moz.Level[prefs.getCharPref("logging.console")];
 		logger.addAppender(capp);
 
 		// A dump appender outputs to standard out
-		// var dapp = new Log4Moz.DumpAppender(formatter);
-		// dapp.level = Log4Moz.Level["Debug"];
-		// logger.addAppender(dapp);
+		dapp = new Log4Moz.DumpAppender(formatter);
+		dapp.level = Log4Moz.Level[prefs.getCharPref("logging.dump")];
+		logger.addAppender(dapp);
+		
+		prefs.addObserver("", prefObserver, false);
+}
+
+var prefObserver = {
+	/*
+	 * gets called called whenever an event occurs on the preference
+	 */
+	observe: function(subject, topic, data) {
+		// subject is the nsIPrefBranch we're observing (after appropriate QI)
+		// data is the name of the pref that's been changed (relative to aSubject)
+		
+		if (topic !== "nsPref:changed") {
+			return;
+		}
+		
+		switch(data) {
+			case "debug":
+					if (prefs.getBoolPref("debug")) {
+						logger.level = Log4Moz.Level["All"];
+					} else {
+						logger.level = Log4Moz.Level[LOG_LEVEL];
+					}
+				break;
+			case "logging.console":
+				capp.level = Log4Moz.Level[prefs.getCharPref("logging.console")];
+				break;
+			case "logging.dump":
+				dapp.level = Log4Moz.Level[prefs.getCharPref("logging.dump")];
+				break;
+		}
+	},
 }
 
 init();

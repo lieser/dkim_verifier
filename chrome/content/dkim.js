@@ -4,7 +4,7 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  *
- * version: 0.6.2 (13 October 2013)
+ * version: 0.7.0pre2 (15 October 2013)
  *
  * Copyright (c) 2013 Philippe Lieser
  *
@@ -280,7 +280,21 @@ DKIM_Verifier.DKIMVerifier = (function() {
 					this.msg.headerPlain = this.msg.headerPlain.replace(/(\r\n|\n|\r)/g, "\r\n");
 					this.msg.bodyPlain = this.msg.bodyPlain.replace(/(\r\n|\n|\r)/g, "\r\n");
 					
-					verifyBegin(this.msg);
+					// get from address
+					var mime2DecodedAuthor = gMessageDisplay.displayedMessage.author;
+					var msgHeaderParser = Components.classes["@mozilla.org/messenger/headerparser;1"].
+						createInstance(Components.interfaces.nsIMsgHeaderParser);
+					this.msg.from = msgHeaderParser.extractHeaderAddressMailboxes(mime2DecodedAuthor);
+
+					DKIM_Verifier.dkimPolicy.shouldBeSigned(this.msg.from, 
+						function (result, msg) {
+							msg.shouldBeSigned = result;
+							
+							verifyBegin(msg);
+						},
+						this.msg
+					);
+			
 				} catch (e) {
 					handleExeption(e, this.msg.msgURI);
 				}
@@ -932,14 +946,19 @@ DKIM_Verifier.DKIMVerifier = (function() {
 
 			// check if DKIMSignatureHeader exist
 			if (msg.headerFields["dkim-signature"] === undefined) {
-				// save and show result
-				var result = {
-					version : "1.0",
-					result : "none"
-				};
-				saveResult(msg.msgURI, result);
-				displayResult(result);
+				if (!msg.shouldBeSigned.shouldBeSigned) {
+					// save and show result
+					var result = {
+						version : "1.0",
+						result : "none"
+					};
+					saveResult(msg.msgURI, result);
+					displayResult(result);
 				
+				} else {
+					throw new DKIM_SigError("should be signed by: "+msg.shouldBeSigned.sdid);
+				}
+
 				// no signature to check, return
 				return;
 			}
@@ -963,21 +982,27 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			msg.DKIMSignature = parseDKIMSignature(msg.headerFields["dkim-signature"][0]);
 			dkimDebugMsg("Parsed DKIM-Signature: "+msg.DKIMSignature.toSource());
 			
+			// add should be signed rule
+			if (!msg.shouldBeSigned.foundRule) {
+				DKIM_Verifier.dkimPolicy.signedBy(msg.from, msg.DKIMSignature.d);
+			}
+			
+			// warning if wrong signer
+			if (msg.shouldBeSigned.shouldBeSigned &&
+					msg.shouldBeSigned.sdid !== msg.DKIMSignature.d) {
+				msg.warnings.push("should be signed by: "+msg.shouldBeSigned.sdid);
+			}
+			
 			// warning if from is not in SDID or AUID
-			var mime2DecodedAuthor = gMessageDisplay.displayedMessage.author;
-			var msgHeaderParser = Components.classes["@mozilla.org/messenger/headerparser;1"].
-				createInstance(Components.interfaces.nsIMsgHeaderParser);
-			var from = msgHeaderParser.extractHeaderAddressMailboxes(mime2DecodedAuthor);
-			if (!(new RegExp(msg.DKIMSignature.d+"$").test(from))) {
+			if (!(new RegExp(msg.DKIMSignature.d+"$").test(msg.from))) {
 				msg.warnings.push("DKIM_SIGWARNING_FROM_NOT_IN_SDID");
 				dkimDebugMsg("Warning: DKIM_SIGWARNING_FROM_NOT_IN_SDID ("+
 					DKIM_Verifier.DKIM_STRINGS.DKIM_SIGWARNING_FROM_NOT_IN_SDID+")");
-			} else if (!(new RegExp(msg.DKIMSignature.i+"$").test(from))) {
+			} else if (!(new RegExp(msg.DKIMSignature.i+"$").test(msg.from))) {
 				msg.warnings.push("DKIM_SIGWARNING_FROM_NOT_IN_AUID");
 				dkimDebugMsg("Warning: DKIM_SIGWARNING_FROM_NOT_IN_AUID ("+
 					DKIM_Verifier.DKIM_STRINGS.DKIM_SIGWARNING_FROM_NOT_IN_AUID+")");
 			}
-DKIM_Verifier.dkimPolicy.shouldBeSigned(from);
 
 			var time = Math.round(Date.now() / 1000);
 			// warning if signature expired
