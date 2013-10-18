@@ -16,5 +16,8 @@
 		<menuitem id="dkim_verifier.reverifyDKIMSignature"
 		          label="&dkim_verifier.reverifyDKIMSignature.label;"
 		          oncommand="DKIM_Verifier.DKIMVerifier.reverify();"/>
+		<menuitem id="dkim_verifier.policyAddUserException"
+		          label="&dkim_verifier.policyAddUserException.label;"
+		          oncommand="DKIM_Verifier.DKIMVerifier.policyAddUserException();"/>
 	</menupopup>
 </overlay>

@@ -153,6 +153,52 @@ var dkimPolicy = {
 		});
 		return promise;
 	},
+
+	/**
+	 * Adds neutral rule for fromAddress with priority USERINSERT_RULE_NEUTRAL
+	 * 
+	 * @param {String} fromAddress
+	 * 
+	 * @return {Promise<Undefined>}
+	 */
+	addUserException: function (fromAddress) {
+		"use strict";
+
+		var promise = Task.spawn(function () {
+			log.trace("addUserException Task begin");
+			
+			// yield initialized;
+			var conn = yield Sqlite.openConnection({path: "dkimPolicy.sqlite"});
+
+			try {
+				var sqlRes = yield conn.executeCached(
+					"SELECT addr, sdid, ruletype, priority, enabled\n" +
+					"FROM signers WHERE\n" +
+					"  addr = :addr AND\n" +
+					"  ruletype = :ruletype AND\n" +
+					"  priority = :priority AND\n" +
+					"  enabled\n" +
+					"LIMIT 1;",
+					{
+						"addr": fromAddress,
+						"ruletype": RULE_TYPE["NEUTRAL"],
+						"priority": PRIORITY["USERINSERT_RULE_NEUTRAL"],
+					}
+				);
+				if (sqlRes.length === 0) {
+					yield addRule(fromAddress, "", "NEUTRAL", "USERINSERT_RULE_NEUTRAL");
+				}
+			} finally {
+				yield conn.close();
+			}
+			log.trace("addUserException Task end");
+		});
+		promise.then(null, function onReject(exception) {
+			// Failure!  We can inspect or report the exception.
+			log.fatal(exceptionToStr(exception));
+		});
+		return promise;
+	},
 };
 
 /**
@@ -170,7 +216,7 @@ function addRule(addr, sdid, ruletype, priority) {
 
 	log.trace("addRule begin");
 	
-	// yield initialized;
+	yield initialized;
 	var conn = yield Sqlite.openConnection({path: "dkimPolicy.sqlite"});
 	
 	log.debug("add rule (addr: "+addr+", sdid: "+sdid+

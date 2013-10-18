@@ -105,6 +105,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 	var header;
 	var row;
 	var statusbarpanel;
+	var policyAddUserExceptionButton;
 
 	// WSP help pattern as specified in Section 2.8 of RFC 6376
 	var pattWSP = "[ \t]";
@@ -962,6 +963,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 					displayResult(result);
 				
 				} else {
+					policyAddUserExceptionButton.disabled = false;
 					throw new DKIM_SigError("should be signed by: "+msg.shouldBeSigned.sdid);
 				}
 
@@ -1450,6 +1452,9 @@ var that = {
 	startup : function () {
 		// get statusbarpanel
 		statusbarpanel = document.getElementById("dkim-verifier-statusbarpanel");
+		policyAddUserExceptionButton = document.
+			getElementById("dkim_verifier.policyAddUserException");
+
 		
 		// Register to receive notifications of preference changes
 		prefs = Components.classes["@mozilla.org/preferences-service;1"].
@@ -1604,6 +1609,8 @@ var that = {
 
 		// reset highlight from header
 		highlightHeader("clearHeader");
+		
+		policyAddUserExceptionButton.disabled = true;
 	},
 
 	/*
@@ -1677,6 +1684,19 @@ var that = {
 		that.onStartHeaders();
 		saveResult(msgURI, "");
 		that.onEndHeaders();
+	},
+
+	/*
+	 * policyAddUserException
+	 */
+	policyAddUserException : function() {
+		// get from address
+		var mime2DecodedAuthor = gMessageDisplay.displayedMessage.author;
+		var msgHeaderParser = Components.classes["@mozilla.org/messenger/headerparser;1"].
+			createInstance(Components.interfaces.nsIMsgHeaderParser);
+		var from = msgHeaderParser.extractHeaderAddressMailboxes(mime2DecodedAuthor);
+
+		DKIM_Verifier.dkimPolicy.addUserException(from)
 	},
 	
 	/*

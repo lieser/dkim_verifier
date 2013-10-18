@@ -2,3 +2,4 @@
 <!ENTITY dkim_verifier.statusbar.title "DKIM:">
 
 <!ENTITY dkim_verifier.reverifyDKIMSignature.label "Überprüfe DKIM Signatur neu">
+<!ENTITY dkim_verifier.policyAddUserException.label "Add must be signed exception">
