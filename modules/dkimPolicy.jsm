@@ -17,7 +17,7 @@
 // options for JSHint
 /* jshint moz:true */
 /* jshint -W069 */ // "['{a}'] is better written in dot notation."
-/* global Components, Sqlite, Task, OS, TextDecoder, Logging, exceptionToStr */
+/* global Components, Sqlite, Task, OS, CommonUtils, Logging, exceptionToStr */
 /* exported EXPORTED_SYMBOLS, dkimPolicy */
 
 var EXPORTED_SYMBOLS = [
@@ -32,6 +32,7 @@ Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/Sqlite.jsm");
 Cu.import("resource://gre/modules/Task.jsm");
 Cu.import("resource://gre/modules/osfile.jsm");
+Cu.import("resource://services-common/utils.js");
 
 Cu.import("resource://dkim_verifier/logging.jsm");
 Cu.import("chrome://dkim_verifier/content/helper.js");
@@ -284,13 +285,10 @@ function init() {
 			
 			// data signersDefault
 			// read rules from file
-			var decoder = new TextDecoder();
-			var profileDir = OS.Constants.Path.profileDir;
-			var path = OS.Path.join(profileDir, "extensions", "dkim_verifier@pl",
-				"data", "signersDefault.json"
+			var path = OS.Path.join(OS.Constants.Path.profileDir, "extensions",
+				"dkim_verifier@pl",	"data", "signersDefault.json"
 			);
-			var promiseRead = yield OS.File.read(path);
-			var signersDefault = JSON.parse(decoder.decode(promiseRead));
+			var signersDefault = yield CommonUtils.readJSON(path)
 			// check data version
 			if (versionDataSignersDefault < signersDefault.versionData) {
 				log.trace("update default rules");
@@ -302,18 +300,11 @@ function init() {
 					"DELETE FROM signersDefault;"
 				);
 				// insert new default rules
-				for (var v of signersDefault.rules) {
-					yield conn.executeCached(
-						"INSERT INTO signersDefault (addr, sdid, ruletype, priority)\n" +
-						"VALUES (:addr, :sdid, :ruletype, :priority);",
-						{
-							"addr": v.addr,
-							"sdid": v.sdid,
-							"ruletype": RULE_TYPE[v.ruletype],
-							"priority": PRIORITY[v.priority],
-						}
-					);
-				}
+				yield conn.executeCached(
+					"INSERT INTO signersDefault (addr, sdid, ruletype, priority)\n" +
+					"VALUES (:addr, :sdid, :ruletype, :priority);",
+					signersDefault.rules
+				);
 				// update version number
 				yield conn.execute(
 					"INSERT OR REPLACE INTO version (name, version)\n" +
