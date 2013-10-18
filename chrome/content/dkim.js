@@ -59,6 +59,7 @@ Components.utils.import("chrome://dkim_verifier/locale/dkim.js", DKIM_Verifier);
 
 // load modules
 Components.utils.import("chrome://dkim_verifier/content/helper.js", DKIM_Verifier);
+Components.utils.import("resource://dkim_verifier/logging.jsm", DKIM_Verifier);
 Components.utils.import("resource://dkim_verifier/dkimPolicy.jsm", DKIM_Verifier);
 // DNS
 Components.utils.import("chrome://dkim_verifier/content/dns.js", DKIM_Verifier);
@@ -100,6 +101,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
  * private variables
  */
 	const entry = "dkim-verifier";
+	var log = DKIM_Verifier.Logging.getLogger("Verifier");
 	var header;
 	var row;
 	var statusbarpanel;
@@ -921,6 +923,8 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			};
 			saveResult(msgURI, result);
 			displayResult(result);
+		
+			log.warn(DKIM_Verifier.exceptionToStr(e));
 		} else {
 			// show result
 			result = {
@@ -929,10 +933,12 @@ DKIM_Verifier.DKIMVerifier = (function() {
 				errorType : e.errorType
 			};
 			displayResult(result);
-		}
 		
-		if (prefDKIMDebug) {
-			Components.utils.reportError(e+"\n"+e.stack);
+			if (e instanceof DKIM_InternalError) {
+				log.error(DKIM_Verifier.exceptionToStr(e));
+			} else {
+				log.fatal(DKIM_Verifier.exceptionToStr(e));
+			}
 		}
 	}
 	
@@ -1337,9 +1343,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 	 * dkimDebugMsg
 	 */
 	function dkimDebugMsg(message) {
-		if (prefDKIMDebug) {
-			Application.console.log("DKIM: "+message);
-		}
+		log.debug(message);
 	}
 	
 var that = {

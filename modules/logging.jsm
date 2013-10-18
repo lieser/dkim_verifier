@@ -143,10 +143,26 @@ function setupLogging(loggerName) {
 
 		[capp, dapp] = Logging.addAppenderTo(loggerName, "");
 
-		prefs.addObserver("", prefObserver, false);
+		prefs.addObserver("", new PrefObserver(logger, capp, dapp), false);
+		
+		return logger;
 }
 
-var prefObserver = {
+/**
+ * PrefObserver
+ * 
+ * @param {Logger} logger
+ * @param {ConsoleAppender} capp
+ * @param {ConsoleAppender} dapp
+ */
+function PrefObserver(logger, capp, dapp) {
+	"use strict";
+	
+	this.logger = logger;
+	this.capp = capp;
+	this.dapp = dapp;
+}
+PrefObserver.prototype = {
 	/*
 	 * gets called called whenever an event occurs on the preference
 	 */
@@ -163,16 +179,16 @@ var prefObserver = {
 		switch(data) {
 			case "debug":
 				if (prefs.getBoolPref("debug")) {
-					log.level = Log4Moz.Level["All"];
+					this.logger.level = Log4Moz.Level["All"];
 				} else {
-					log.level = Log4Moz.Level[LOG_LEVEL];
+					this.logger.level = Log4Moz.Level[LOG_LEVEL];
 				}
 				break;
 			case "logging.console":
-				capp.level = Log4Moz.Level[prefs.getCharPref("logging.console")];
+				this.capp.level = Log4Moz.Level[prefs.getCharPref("logging.console")];
 				break;
 			case "logging.dump":
-				dapp.level = Log4Moz.Level[prefs.getCharPref("logging.dump")];
+				this.dapp.level = Log4Moz.Level[prefs.getCharPref("logging.dump")];
 				break;
 		}
 	},

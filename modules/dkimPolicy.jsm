@@ -288,7 +288,7 @@ function init() {
 			var path = OS.Path.join(OS.Constants.Path.profileDir, "extensions",
 				"dkim_verifier@pl",	"data", "signersDefault.json"
 			);
-			var signersDefault = yield CommonUtils.readJSON(path)
+			var signersDefault = yield CommonUtils.readJSON(path);
 			// check data version
 			if (versionDataSignersDefault < signersDefault.versionData) {
 				log.trace("update default rules");
@@ -303,7 +303,14 @@ function init() {
 				yield conn.executeCached(
 					"INSERT INTO signersDefault (addr, sdid, ruletype, priority)\n" +
 					"VALUES (:addr, :sdid, :ruletype, :priority);",
-					signersDefault.rules
+					signersDefault.rules.map(function (v) {
+						return {
+							"addr": v.addr,
+							"sdid": v.sdid,
+							"ruletype": RULE_TYPE[v.ruletype],
+							"priority": PRIORITY[v.priority],
+						};
+					})
 				);
 				// update version number
 				yield conn.execute(
