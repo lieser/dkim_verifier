@@ -2,6 +2,7 @@
 
 
 <!ENTITY general.label "General">
+<!ENTITY general.general.label "General">
 
 <!ENTITY dns.label "DNS">
 <!ENTITY dns.getNameserversFromOS.label "Lade DNS Nameserver aus den Betriebssystemeinstellungen">
@@ -9,6 +10,11 @@
 <!ENTITY dns.timeout_connect.label "DNS Verbindungsaufbau-Timeout (in Sekunden)">
 
 <!ENTITY saveResult.label "Speichere das Ergebnis der Überprüfung ">
+
+<!ENTITY general.policy.label "Policy">
+<!ENTITY policy.signRules.enable.label "Überprüfe ob e-mail signiert seien sollte">
+<!ENTITY policy.signRules.checkDefaultRules.label "Benutze Standardregeln">
+<!ENTITY policy.signRules.autoAddRule.label "Füge automatisch Regeln basierend auf denn angesehenen DKIM signierten E-Mails hinzu">
 
 
 <!ENTITY display.label "Anzeige">

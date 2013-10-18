@@ -17,7 +17,7 @@
 // options for JSHint
 /* jshint moz:true */
 /* jshint -W069 */ // "['{a}'] is better written in dot notation."
-/* global Components, Sqlite, Task, OS, CommonUtils, Logging, exceptionToStr */
+/* global Components, Services, Sqlite, Task, Promise, OS, CommonUtils, Logging, exceptionToStr */
 /* exported EXPORTED_SYMBOLS, dkimPolicy */
 
 var EXPORTED_SYMBOLS = [
@@ -29,14 +29,18 @@ const Ci = Components.interfaces;
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
-Cu.import("resource://gre/modules/Sqlite.jsm");
-Cu.import("resource://gre/modules/Task.jsm");
-Cu.import("resource://gre/modules/osfile.jsm");
+Cu.import("resource://gre/modules/Sqlite.jsm"); // Requires Gecko 20.0
+Cu.import("resource://gre/modules/Task.jsm"); // Requires Gecko 17.0
+Cu.import("resource://gre/modules/Promise.jsm");
+Cu.import("resource://gre/modules/osfile.jsm"); // Requires Gecko 16.0
 Cu.import("resource://services-common/utils.js");
 
 Cu.import("resource://dkim_verifier/logging.jsm");
 Cu.import("chrome://dkim_verifier/content/helper.js");
 
+
+const DB_POLICY_NAME = "dkimPolicy.sqlite";
+const PREF_BRANCH = "extensions.dkim_verifier.policy.";
 
 // rule types
 const RULE_TYPE = {
@@ -52,9 +56,12 @@ const PRIORITY = {
 	USERINSERT_RULE_NEUTRAL: 320,
 };
 
-// Promise<boolean>
-var initialized;
+
+var prefs = Services.prefs.getBranch(PREF_BRANCH);
 var log = Logging.getLogger("Policy");
+var dbInitialized = false;
+// Deferred<boolean>
+var initializedDefer = Promise.defer();
 
 var dkimPolicy = {
 	/**
@@ -75,23 +82,46 @@ var dkimPolicy = {
 		var promise = Task.spawn(function () {
 			log.trace("shouldBeSigned Task begin");
 			
-			yield initialized;
-			var conn = yield Sqlite.openConnection({path: "dkimPolicy.sqlite"});
-			
-			var sqlRes = yield conn.executeCached(
-				"SELECT addr, sdid, ruletype, priority, enabled\n" +
-				"FROM signers WHERE\n" +
-				"  lower(:from) GLOB addr AND\n" +
-				"  enabled\n" +
-				"UNION SELECT addr, sdid, ruletype, priority, 1\n" +
-				"FROM signersDefault WHERE\n" +
-				"  lower(:from) GLOB addr\n" +
-				"ORDER BY priority DESC\n" +
-				"LIMIT 1;",
-				{"from": fromAddress}
-			);
-			
 			var result = {};
+
+			// return false if signRules is disabled
+			if (!prefs.getBoolPref("signRules.enable")) {
+				result.shouldBeSigned = false;
+				throw new Task.Result(result);
+			}
+
+			// wait for DB init
+			yield init();
+			var conn = yield Sqlite.openConnection({path: DB_POLICY_NAME});
+			
+			var sqlRes;
+			if (prefs.getBoolPref("signRules.checkDefaultRules")) {
+				// include default rules
+				sqlRes = yield conn.executeCached(
+					"SELECT addr, sdid, ruletype, priority, enabled\n" +
+					"FROM signers WHERE\n" +
+					"  lower(:from) GLOB addr AND\n" +
+					"  enabled\n" +
+					"UNION SELECT addr, sdid, ruletype, priority, 1\n" +
+					"FROM signersDefault WHERE\n" +
+					"  lower(:from) GLOB addr\n" +
+					"ORDER BY priority DESC\n" +
+					"LIMIT 1;",
+					{"from": fromAddress}
+				);
+			} else {
+				// don't include default rules
+				sqlRes = yield conn.executeCached(
+					"SELECT addr, sdid, ruletype, priority, enabled\n" +
+					"FROM signers WHERE\n" +
+					"  lower(:from) GLOB addr AND\n" +
+					"  enabled\n" +
+					"ORDER BY priority DESC\n" +
+					"LIMIT 1;",
+					{"from": fromAddress}
+				);
+			}
+			
 			if (sqlRes.length > 0) {
 				if (sqlRes[0].getResultByName("ruletype") === RULE_TYPE["SIGNED"]) {
 					result.shouldBeSigned = true;
@@ -140,6 +170,11 @@ var dkimPolicy = {
 		var promise = Task.spawn(function () {
 			log.trace("signedBy Task begin");
 			
+			// return if autoAddRule is disabled
+			if (!prefs.getBoolPref("signRules.autoAddRule")) {
+				return;
+			}
+
 			var shouldBeSignedRes = yield dkimPolicy.shouldBeSigned(fromAddress);
 			if (!shouldBeSignedRes.foundRule) {
 				yield addRule(fromAddress, sdid, "SIGNED", "AUTOINSERT_RULE_SIGNED");
@@ -167,8 +202,9 @@ var dkimPolicy = {
 		var promise = Task.spawn(function () {
 			log.trace("addUserException Task begin");
 			
-			// yield initialized;
-			var conn = yield Sqlite.openConnection({path: "dkimPolicy.sqlite"});
+			// wait for DB init
+			yield init();
+			var conn = yield Sqlite.openConnection({path: DB_POLICY_NAME});
 
 			try {
 				var sqlRes = yield conn.executeCached(
@@ -216,8 +252,9 @@ function addRule(addr, sdid, ruletype, priority) {
 
 	log.trace("addRule begin");
 	
-	yield initialized;
-	var conn = yield Sqlite.openConnection({path: "dkimPolicy.sqlite"});
+	// wait for DB init
+	yield init();
+	var conn = yield Sqlite.openConnection({path: DB_POLICY_NAME});
 	
 	log.debug("add rule (addr: "+addr+", sdid: "+sdid+
 		", ruletype: "+ruletype+", priority: "+priority+
@@ -239,18 +276,24 @@ function addRule(addr, sdid, ruletype, priority) {
 
 /**
  * init DB
+ * May be called more then once
  * 
  * @return {Promise<boolean>} initialized
  */
 function init() {
 	"use strict";
 
+	if (dbInitialized || !prefs.getBoolPref("signRules.enable")) {
+		return initializedDefer.promise;
+	}
+	dbInitialized = true;
+
 	var promise = Task.spawn(function () {
 		log.trace("init Task begin");
 		
-		Logging.addAppenderTo("Sqlite.Connection.dkimPolicy.sqlite", "sql.");
+		Logging.addAppenderTo("Sqlite.Connection."+DB_POLICY_NAME, "sql.");
 		
-		var conn = yield Sqlite.openConnection({path: "dkimPolicy.sqlite"});
+		var conn = yield Sqlite.openConnection({path: DB_POLICY_NAME});
 
 		try {
 			// get version numbers
@@ -370,6 +413,7 @@ function init() {
 			yield conn.close();
 		}
 		
+		initializedDefer.resolve(true);
 		log.debug("initialized");
 		log.trace("init Task end");
 		throw new Task.Result(true);
@@ -377,8 +421,9 @@ function init() {
 	promise.then(null, function onReject(exception) {
 		// Failure!  We can inspect or report the exception.
 		log.fatal(exceptionToStr(exception));
+		initializedDefer.reject(exception);
 	});
-	return promise;
+	return initializedDefer.promise;
 }
 
-initialized = init();
+init();

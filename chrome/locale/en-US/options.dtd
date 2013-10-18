@@ -2,6 +2,7 @@
 
 
 <!ENTITY general.label "General">
+<!ENTITY general.general.label "General">
 
 <!ENTITY dns.label "DNS">
 <!ENTITY dns.getNameserversFromOS.label "Get DNS name servers form OS configuration">
@@ -9,6 +10,11 @@
 <!ENTITY dns.timeout_connect.label "DNS connect timeout (in seconds)">
 
 <!ENTITY saveResult.label "Save result of the verification">
+
+<!ENTITY general.policy.label "Policy">
+<!ENTITY policy.signRules.enable.label "Check if e-mail should be signed">
+<!ENTITY policy.signRules.checkDefaultRules.label "Use default rules">
+<!ENTITY policy.signRules.autoAddRule.label "Automatically add rules based on viewed DKIM signed e-mails">
 
 
 <!ENTITY display.label "Display">

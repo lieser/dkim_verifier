@@ -36,12 +36,18 @@ const LOG_LEVEL = "Error";
 const LOG_NAME = "DKIM_Verifier";
 const PREF_BRANCH = "extensions.dkim_verifier.";
 
+
 var prefs = Services.prefs.getBranch(PREF_BRANCH);
 var log;
-var capp;
-var dapp;
 
 var Logging = {
+	/**
+	 * getLogger
+	 * 
+	 * @param {String} loggerName
+	 * 
+	 * @return {Logger} Logger
+	 */
 	getLogger: function (loggerName){
 		"use strict";
 
@@ -53,6 +59,8 @@ var Logging = {
 	},
 	
 	/**
+	 * addAppenderTo
+	 * 
 	 * @param {String} loggerName
 	 * @param {String} subPrefBranch
 	 * 
@@ -82,6 +90,11 @@ var Logging = {
 	},
 };
 
+/**
+ * init
+ * 
+ * @return {Undefined}
+ */
 function init() {
 	"use strict";
 	
@@ -91,6 +104,11 @@ function init() {
 	log.debug("initialized");
 }
 
+/**
+ * SimpleFormatter
+ * 
+ * @extends Formatter
+ */
 function SimpleFormatter(dateFormat) {
 		"use strict";
 	
@@ -130,6 +148,13 @@ SimpleFormatter.prototype = {
 };
 
 // https://wiki.mozilla.org/Labs/JS_Modules#Logging
+/**
+ * setupLogging
+ * 
+ * @param {String} loggerName
+ * 
+ * @return {Logger}
+ */
 function setupLogging(loggerName) {
 		"use strict";
 	
@@ -141,6 +166,8 @@ function setupLogging(loggerName) {
 			logger.level = Log4Moz.Level[LOG_LEVEL];
 		}
 
+		var capp;
+		var dapp;
 		[capp, dapp] = Logging.addAppenderTo(loggerName, "");
 
 		prefs.addObserver("", new PrefObserver(logger, capp, dapp), false);
@@ -149,11 +176,11 @@ function setupLogging(loggerName) {
 }
 
 /**
- * PrefObserver
+ * Preference observer for a Logger, ConsoleAppender and DumpAppender
  * 
  * @param {Logger} logger
  * @param {ConsoleAppender} capp
- * @param {ConsoleAppender} dapp
+ * @param {DumpAppender} dapp
  */
 function PrefObserver(logger, capp, dapp) {
 	"use strict";
@@ -178,17 +205,23 @@ PrefObserver.prototype = {
 		
 		switch(data) {
 			case "debug":
-				if (prefs.getBoolPref("debug")) {
-					this.logger.level = Log4Moz.Level["All"];
-				} else {
-					this.logger.level = Log4Moz.Level[LOG_LEVEL];
+				if (this.logger) {
+					if (prefs.getBoolPref("debug")) {
+						this.logger.level = Log4Moz.Level["All"];
+					} else {
+						this.logger.level = Log4Moz.Level[LOG_LEVEL];
+					}
 				}
 				break;
 			case "logging.console":
-				this.capp.level = Log4Moz.Level[prefs.getCharPref("logging.console")];
+				if (this.capp) {
+					this.capp.level = Log4Moz.Level[prefs.getCharPref("logging.console")];
+				}
 				break;
 			case "logging.dump":
-				this.dapp.level = Log4Moz.Level[prefs.getCharPref("logging.dump")];
+				if (this.dapp) {
+					this.dapp.level = Log4Moz.Level[prefs.getCharPref("logging.dump")];
+				}
 				break;
 		}
 	},

@@ -9,6 +9,10 @@ pref("extensions.dkim_verifier.dns.timeout_connect", 10);
 pref("extensions.dkim_verifier.saveResult", false);
 
 
+pref("extensions.dkim_verifier.policy.signRules.enable", false);
+pref("extensions.dkim_verifier.policy.signRules.checkDefaultRules", true);
+pref("extensions.dkim_verifier.policy.signRules.autoAddRule", false);
+
 // display preferences
 /*
  * 0   never
