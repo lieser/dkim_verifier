@@ -1,6 +1,6 @@
 {
 	"versionTable": 1,
-	"versionData": 1,
+	"versionData": 2,
 	"rules": [
 		{
 			"addr": "*@amazon.co.uk",
@@ -33,8 +33,23 @@
 			"ruletype": "SIGNED",
 			"priority": "DEFAULT_RULE_SIGNED"
 		}, {
+			"addr": "*@couchsurfing.com",
+			"sdid": "couchsurfing.com",
+			"ruletype": "SIGNED",
+			"priority": "DEFAULT_RULE_SIGNED"
+		}, {
+			"addr": "*@ebay.de",
+			"sdid": "ebay.de",
+			"ruletype": "SIGNED",
+			"priority": "DEFAULT_RULE_SIGNED"
+		}, {
 			"addr": "*@email.blizzard.com",
 			"sdid": "email.blizzard.com",
+			"ruletype": "SIGNED",
+			"priority": "DEFAULT_RULE_SIGNED"
+		}, {
+			"addr": "*@facebookmail.com",
+			"sdid": "facebookmail.com",
 			"ruletype": "SIGNED",
 			"priority": "DEFAULT_RULE_SIGNED"
 		}, {
@@ -48,6 +63,16 @@
 			"ruletype": "SIGNED",
 			"priority": "DEFAULT_RULE_SIGNED"
 		}, {
+			"addr": "*@gmxnet.de",
+			"sdid": "gmxnet.de",
+			"ruletype": "SIGNED",
+			"priority": "DEFAULT_RULE_SIGNED"
+		}, {
+			"addr": "mailings@gmxnet.de",
+			"sdid": "gmxnet.de",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_NEUTRAL"
+		}, {
 			"addr": "*@google.com",
 			"sdid": "google.com",
 			"ruletype": "SIGNED",
@@ -58,8 +83,18 @@
 			"ruletype": "SIGNED",
 			"priority": "DEFAULT_RULE_SIGNED"
 		}, {
+			"addr": "*@googlemail.com",
+			"sdid": "googlemail.comm",
+			"ruletype": "SIGNED",
+			"priority": "DEFAULT_RULE_SIGNED"
+		}, {
 			"addr": "*@guildwars2.com",
 			"sdid": "guildwars2.com",
+			"ruletype": "SIGNED",
+			"priority": "DEFAULT_RULE_SIGNED"
+		}, {
+			"addr": "*@gumtree.com.au",
+			"sdid": "gumtree.com.au",
 			"ruletype": "SIGNED",
 			"priority": "DEFAULT_RULE_SIGNED"
 		}, {
@@ -83,6 +118,16 @@
 			"ruletype": "SIGNED",
 			"priority": "DEFAULT_RULE_SIGNED"
 		}, {
+			"addr": "*@info.paypal.de",
+			"sdid": "info.paypal.de",
+			"ruletype": "SIGNED",
+			"priority": "DEFAULT_RULE_SIGNED"
+		}, {
+			"addr": "*@yourbooking.qantas.com.au",
+			"sdid": "yourbooking.qantas.com.au",
+			"ruletype": "SIGNED",
+			"priority": "DEFAULT_RULE_SIGNED"
+		}, {
 			"addr": "*@xmail.square-enix.com",
 			"sdid": "xmail.square-enix.com",
 			"ruletype": "SIGNED",
@@ -93,8 +138,33 @@
 			"ruletype": "SIGNED",
 			"priority": "DEFAULT_RULE_SIGNED"
 		}, {
+			"addr": "*@united-domains.de",
+			"sdid": "united-domains.de",
+			"ruletype": "SIGNED",
+			"priority": "DEFAULT_RULE_SIGNED"
+		}, {
+			"addr": "*@yahoo.com",
+			"sdid": "yahoo.com",
+			"ruletype": "SIGNED",
+			"priority": "DEFAULT_RULE_SIGNED"
+		}, {
+			"addr": "*@yahoo.de",
+			"sdid": "yahoo.de",
+			"ruletype": "SIGNED",
+			"priority": "DEFAULT_RULE_SIGNED"
+		}, {
+			"addr": "*@yahoo.fr",
+			"sdid": "yahoo.fr",
+			"ruletype": "SIGNED",
+			"priority": "DEFAULT_RULE_SIGNED"
+		}, {
 			"addr": "*@yandex.ru",
 			"sdid": "yandex.ru",
+			"ruletype": "SIGNED",
+			"priority": "DEFAULT_RULE_SIGNED"
+		}, {
+			"addr": "*@ymail.com",
+			"sdid": "ymail.com",
 			"ruletype": "SIGNED",
 			"priority": "DEFAULT_RULE_SIGNED"
 		}
