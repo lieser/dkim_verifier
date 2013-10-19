@@ -1,15 +1,12 @@
 /*
  * dkimPolicy.jsm
- *
- * Verifies the DKIM-Signatures as specified in RFC 6376
- * http://tools.ietf.org/html/rfc6376
- *
- * version: 1.0.0pre3 (16 October 2013)
- *
+ * 
+ * Version: 1.0.0pre3 (16 October 2013)
+ * 
  * Copyright (c) 2013 Philippe Lieser
- *
+ * 
  * This software is licensed under the terms of the MIT License.
- *
+ * 
  * The above copyright and license notice shall be
  * included in all copies or substantial portions of the Software.
  */
@@ -76,7 +73,7 @@ var Policy = {
 	 *         .sdid {String} Signing Domain Identifier
 	 *         .foundRule {Boolean} true if enabled rule for fromAddress was found
 	 */
-	shouldBeSigned: function (fromAddress, callback, callbackData) {
+	shouldBeSigned: function Policy_shouldBeSigned(fromAddress, callback, callbackData) {
 		"use strict";
 
 		var promise = Task.spawn(function () {
@@ -164,7 +161,7 @@ var Policy = {
 	 * 
 	 * @return {Promise<Undefined>}
 	 */
-	signedBy: function (fromAddress, sdid) {
+	signedBy: function Policy_signedBy(fromAddress, sdid) {
 		"use strict";
 
 		var promise = Task.spawn(function () {
@@ -196,7 +193,7 @@ var Policy = {
 	 * 
 	 * @return {Promise<Undefined>}
 	 */
-	addUserException: function (fromAddress) {
+	addUserException: function Policy_addUserException(fromAddress) {
 		"use strict";
 
 		var promise = Task.spawn(function () {

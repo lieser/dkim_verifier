@@ -1,10 +1,7 @@
 /*
  * logging.jsm
  *
- * Verifies the DKIM-Signatures as specified in RFC 6376
- * http://tools.ietf.org/html/rfc6376
- *
- * version: 1.0.0pre3 (16 October 2013)
+ * Version: 1.0.0pre3 (16 October 2013)
  *
  * Copyright (c) 2013 Philippe Lieser
  *
@@ -48,7 +45,7 @@ var Logging = {
 	 * 
 	 * @return {Logger} Logger
 	 */
-	getLogger: function (loggerName){
+	getLogger: function Logging_getLogger(loggerName){
 		"use strict";
 
 		if (loggerName) {
@@ -66,7 +63,7 @@ var Logging = {
 	 * 
 	 * @return {Array} [capp, dapp]
 	 */
-	addAppenderTo: function (loggerName, subPrefBranch){
+	addAppenderTo: function Logging_addAppenderTo(loggerName, subPrefBranch){
 		"use strict";
 
 		var logger = Log4Moz.repository.getLogger(loggerName);
@@ -134,7 +131,7 @@ SimpleFormatter.prototype = {
 		this._dateFormat = format;
 	},
 
-	format: function(message) {
+	format: function SimpleFormatter_format(message) {
 		"use strict";
 	
 		var date = new Date(message.time);
@@ -193,7 +190,7 @@ PrefObserver.prototype = {
 	/*
 	 * gets called called whenever an event occurs on the preference
 	 */
-	observe: function(subject, topic, data) {
+	observe: function PrefObserver_observe(subject, topic, data) {
 		"use strict";
 	
 		// subject is the nsIPrefBranch we're observing (after appropriate QI)
