@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+
+<window title="Signers rules" id="tree-window"
+   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+   onload="setView();">
+
+<script>
+Components.utils.import("resource://dkim_verifier/SQLiteTreeView.jsm");
+
+function setView(){
+    document.getElementById('my-tree').view = new SQLiteTreeView("dkimPolicy.sqlite","signers",["addr","sdid","ruletype","priority","enabled"]);
+}
+</script>
+
+<tree id="my-tree" editable="true" enableColumnDrag="true" flex="1">
+  <treecols>
+    <treecol id="addr" editable="true" label="addr" flex="15"/>
+	<splitter class="tree-splitter" />
+    <treecol id="sdid" editable="true" label="sdid" flex="15"/>
+	<splitter class="tree-splitter" />
+    <treecol id="ruletype" editable="true" label="ruletype" width="50" flex="1"/>
+	<splitter class="tree-splitter" />
+    <treecol id="priority" editable="true" label="priority" width="50" flex="1"/>
+	<splitter class="tree-splitter" />
+    <treecol id="enable" editable="true" label="enabled" width="50" flex="1"/>
+  </treecols>
+  <treechildren/>
+</tree>
+
+</window>

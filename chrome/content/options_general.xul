@@ -65,6 +65,15 @@
 					          label="&policy.signRules.checkDefaultRules.label;"/>
 					<checkbox preference="pref_policy.signRules.autoAddRule"
 					          label="&policy.signRules.autoAddRule.label;"/>
+					<hbox>
+						<button 
+						        label="View signers rules"
+						        oncommand="window.open('chrome://dkim_verifier/content/treeviewSigners.xul', 'SignersRules', 'chrome,resizable,centerscreen,width=600,height=300');"/>
+						<button 
+						        label="View signers default rules"
+						        oncommand="window.open('chrome://dkim_verifier/content/treeviewSignersDefault.xul', 'SignersDefaultRules', 'chrome,resizable,centerscreen,width=600,height=300');"/>
+						<spacer/>
+					</hbox>
 				</vbox>
 			</tabpanel>
 		</tabpanels>

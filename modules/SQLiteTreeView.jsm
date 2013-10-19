@@ -35,7 +35,7 @@ Cu.import("resource://gre/modules/Services.jsm");
  * 
  * based on http://www.simon-cozens.org/content/xul-mozstorage-and-sqlite
  * 
- * @param {String} dbPath The database file to open. This can be an absolute or relative path. If a relative path is given, it is interpreted as relative to the current profile's directory
+ * @param {String} dbPath The database file to open. This can be an absolute or relative path. If a relative path is given, it is interpreted as relative to the current profile's directory.
  * @param {String} tableName
  * @param {String[]} columns
  */
@@ -44,7 +44,18 @@ function SQLiteTreeView(dbPath, tableName, columns) {
 	var path = OS.Path.join(OS.Constants.Path.profileDir, dbPath);
 	var file = FileUtils.File(path);
 	
+	// test that db exists
+	if (!file.exists()) {
+		throw new Error("SQLite File "+path+" must exist")
+	}
+
+	// open connection
 	this.conn = Services.storage.openDatabase(file);// TODO: close()
+	
+	// test that table exists
+	if (!this.conn.tableExists(tableName)) {
+		throw new Error("Table "+tableName+" must exist")
+	}
 	
 	this.tableName = tableName;
 	this.columns = columns;
