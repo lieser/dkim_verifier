@@ -18,10 +18,10 @@
 /* jshint moz:true */
 /* jshint -W069 */ // "['{a}'] is better written in dot notation."
 /* global Components, Services, Sqlite, Task, Promise, OS, CommonUtils, Logging, exceptionToStr */
-/* exported EXPORTED_SYMBOLS, dkimPolicy */
+/* exported EXPORTED_SYMBOLS, Policy */
 
 var EXPORTED_SYMBOLS = [
-	"dkimPolicy"
+	"Policy"
 ];
 
 const Cc = Components.classes;
@@ -63,7 +63,7 @@ var dbInitialized = false;
 // Deferred<boolean>
 var initializedDefer = Promise.defer();
 
-var dkimPolicy = {
+var Policy = {
 	/**
 	 * Determinates if e-mail by fromAddress should be signed
 	 * 
@@ -175,7 +175,7 @@ var dkimPolicy = {
 				return;
 			}
 
-			var shouldBeSignedRes = yield dkimPolicy.shouldBeSigned(fromAddress);
+			var shouldBeSignedRes = yield Policy.shouldBeSigned(fromAddress);
 			if (!shouldBeSignedRes.foundRule) {
 				yield addRule(fromAddress, sdid, "SIGNED", "AUTOINSERT_RULE_SIGNED");
 			}

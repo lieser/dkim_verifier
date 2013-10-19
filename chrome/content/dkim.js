@@ -49,13 +49,12 @@
  */
  
 // options for JSHint
-/* global Components, messenger, msgWindow, Application, gMessageListeners, gDBView, Services, gFolderDisplay, gExpandedHeaderView, createHeaderEntry, syncGridColumnWidths, currentHeaderData, gMessageDisplay */ 
+/* jshint moz:true */
+/* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
+/* global Components, messenger, msgWindow, gMessageListeners, gDBView, Services, gFolderDisplay, gExpandedHeaderView, createHeaderEntry, syncGridColumnWidths, currentHeaderData, gMessageDisplay */ 
 
 // namespace
 var DKIM_Verifier = {};
-
-// load locale strings
-Components.utils.import("chrome://dkim_verifier/locale/dkim.js", DKIM_Verifier);
 
 // load modules
 Components.utils.import("chrome://dkim_verifier/content/helper.js", DKIM_Verifier);
@@ -106,6 +105,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 	var row;
 	var statusbarpanel;
 	var policyAddUserExceptionButton;
+	var dkimStrings;
 
 	// WSP help pattern as specified in Section 2.8 of RFC 6376
 	var pattWSP = "[ \t]";
@@ -263,7 +263,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 						this.msg.bodyPlain += scriptableInputStream.read(count);
 					}
 				} catch (e) {
-					handleExeption(e, this.msg.msgURI);
+					handleExeption(e, this.msg);
 				}
 			},
 			
@@ -289,7 +289,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 						createInstance(Components.interfaces.nsIMsgHeaderParser);
 					this.msg.from = msgHeaderParser.extractHeaderAddressMailboxes(mime2DecodedAuthor);
 
-					DKIM_Verifier.dkimPolicy.shouldBeSigned(this.msg.from, 
+					DKIM_Verifier.Policy.shouldBeSigned(this.msg.from,
 						function (result, msg) {
 							msg.shouldBeSigned = result;
 							
@@ -299,7 +299,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 					);
 			
 				} catch (e) {
-					handleExeption(e, this.msg.msgURI);
+					handleExeption(e, this.msg);
 				}
 			}
 		};
@@ -800,7 +800,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 				// lenght tag smaller when body size
 				msg.warnings.push("DKIM_SIGWARNING_SMALL_L");
 				dkimDebugMsg("Warning: DKIM_SIGWARNING_SMALL_L ("+
-					DKIM_Verifier.DKIM_STRINGS.DKIM_SIGWARNING_SMALL_L+")");
+					dkimStrings.getString("DKIM_SIGWARNING_SMALL_L")+")");
 			}
 
 			// truncated body to the length specified in the "l=" tag
@@ -912,17 +912,19 @@ DKIM_Verifier.DKIMVerifier = (function() {
 	/*
 	 * handeles Exeption
 	 */
-	function handleExeption(e, msgURI) {
+	function handleExeption(e, msg) {
 		var result;
 		
 		if (e instanceof DKIM_SigError) {
 			// save and show result
 			result = {
-				version : "1.0",
+				version : "1.1",
 				result : "PERMFAIL",
-				errorType : e.errorType
+				errorType : e.errorType,
+				shouldBeSignedBy : msg.shouldBeSigned.sdid,
 			};
-			saveResult(msgURI, result);
+			
+			saveResult(msg.msgURI, result);
 			displayResult(result);
 		
 			log.warn(DKIM_Verifier.exceptionToStr(e));
@@ -964,7 +966,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 				
 				} else {
 					policyAddUserExceptionButton.disabled = false;
-					throw new DKIM_SigError("should be signed by: "+msg.shouldBeSigned.sdid);
+					throw new DKIM_SigError("DKIM_POLICYERROR_MISSING_SIG");
 				}
 
 				// no signature to check, return
@@ -973,7 +975,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			
 			verifySignaturePart1(msg);
 		} catch(e) {
-			handleExeption(e, msg.msgURI);
+			handleExeption(e, msg);
 		}
 	}
 
@@ -992,24 +994,24 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			
 			// add should be signed rule
 			if (!msg.shouldBeSigned.foundRule) {
-				DKIM_Verifier.dkimPolicy.signedBy(msg.from, msg.DKIMSignature.d);
+				DKIM_Verifier.Policy.signedBy(msg.from, msg.DKIMSignature.d);
 			}
 			
 			// warning if wrong signer
 			if (msg.shouldBeSigned.shouldBeSigned &&
 					msg.shouldBeSigned.sdid !== msg.DKIMSignature.d) {
-				msg.warnings.push("should be signed by: "+msg.shouldBeSigned.sdid);
+				msg.warnings.push("DKIM_POLICYWARNING_WRONG_SDID");
 			}
 			
 			// warning if from is not in SDID or AUID
 			if (!(new RegExp(msg.DKIMSignature.d+"$").test(msg.from))) {
 				msg.warnings.push("DKIM_SIGWARNING_FROM_NOT_IN_SDID");
 				dkimDebugMsg("Warning: DKIM_SIGWARNING_FROM_NOT_IN_SDID ("+
-					DKIM_Verifier.DKIM_STRINGS.DKIM_SIGWARNING_FROM_NOT_IN_SDID+")");
+					dkimStrings.getString("DKIM_SIGWARNING_FROM_NOT_IN_SDID")+")");
 			} else if (!(new RegExp(msg.DKIMSignature.i+"$").test(msg.from))) {
 				msg.warnings.push("DKIM_SIGWARNING_FROM_NOT_IN_AUID");
 				dkimDebugMsg("Warning: DKIM_SIGWARNING_FROM_NOT_IN_AUID ("+
-					DKIM_Verifier.DKIM_STRINGS.DKIM_SIGWARNING_FROM_NOT_IN_AUID+")");
+					dkimStrings.getString("DKIM_SIGWARNING_FROM_NOT_IN_AUID")+")");
 			}
 
 			var time = Math.round(Date.now() / 1000);
@@ -1017,13 +1019,13 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			if (msg.DKIMSignature.x !== null && msg.DKIMSignature.x < time) {
 				msg.warnings.push("DKIM_SIGWARNING_EXPIRED");
 				dkimDebugMsg("Warning: DKIM_SIGWARNING_EXPIRED ("+
-					DKIM_Verifier.DKIM_STRINGS.DKIM_SIGWARNING_EXPIRED+")");
+					dkimStrings.getString("DKIM_SIGWARNING_EXPIRED")+")");
 			}
 			// warning if signature in future
 			if (msg.DKIMSignature.t !== null && msg.DKIMSignature.t > time) {
 				msg.warnings.push("DKIM_SIGWARNING_FUTURE");
 				dkimDebugMsg("Warning: DKIM_SIGWARNING_FUTURE ("+
-					DKIM_Verifier.DKIM_STRINGS.DKIM_SIGWARNING_FUTURE+")");
+					dkimStrings.getString("DKIM_SIGWARNING_FUTURE")+")");
 			}
 			
 			// Compute the Message Hashe for the body 
@@ -1044,7 +1046,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 				msg
 			);
 		} catch(e) {
-			handleExeption(e, msg.msgURI);
+			handleExeption(e, msg);
 		}
 	}
 	
@@ -1062,7 +1064,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 				if (prefs.getBoolPref("error.key_testmode.ignore")) {
 					msg.warnings.push("DKIM_SIGERROR_KEY_TESTMODE");
 					dkimDebugMsg("Warning: DKIM_SIGERROR_KEY_TESTMODE ("+
-						DKIM_Verifier.DKIM_STRINGS.DKIM_SIGERROR_KEY_TESTMODE+")");
+						dkimStrings.getString("DKIM_SIGERROR_KEY_TESTMODE")+")");
 				} else {
 					throw new DKIM_SigError("DKIM_SIGERROR_KEY_TESTMODE");
 				}
@@ -1125,7 +1127,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			if (m_hex.length * 4 < 1024) {
 				msg.warnings.push("DKIM_SIGWARNING_KEYSMALL");
 				dkimDebugMsg("Warning: DKIM_SIGWARNING_KEYSMALL ("+
-					DKIM_Verifier.DKIM_STRINGS.DKIM_SIGWARNING_KEYSMALL+")");
+					dkimStrings.getString("DKIM_SIGWARNING_KEYSMALL")+")");
 			}
 
 			// set RSA-key
@@ -1141,28 +1143,30 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			
 			// save and show result
 			var result = {
-				version : "1.0",
+				version : "1.1",
 				result : "SUCCESS",
 				SDID : msg.DKIMSignature.d,
-				warnings : msg.warnings
+				warnings : msg.warnings,
+				shouldBeSignedBy : msg.shouldBeSigned.sdid,
 			};
 			saveResult(msg.msgURI, result);
 			displayResult(result);
 		} catch(e) {
-			handleExeption(e, msg.msgURI);
+			handleExeption(e, msg);
 		}
 	}
 	
 	/*
 		result format:
 		{
-			resultVersion : "1.0",
+			resultVersion : "1.1",
 			result : "none" / "SUCCESS" / "PERMFAIL" / "TEMPFAIL",
 			SDID : string (only if result="SUCCESS"),
 			warnings : array (only if result="SUCCESS"),
 			errorType :
 				DKIM_SigError.errorType (only if result="PERMFAIL")
 				DKIM_InternalError.errorType (only if result="TEMPFAIL"; optional)
+			shouldBeSignedBy : string (SDID; since 1.1)
 		}
 	*/
 
@@ -1233,9 +1237,9 @@ DKIM_Verifier.DKIMVerifier = (function() {
 		statusbarpanel.dkimStatus = result.result;
 		switch(result.result) {
 			case "none":
-				header.value = DKIM_Verifier.DKIM_STRINGS.NOSIG;
+				header.value = dkimStrings.getString("NOSIG");
 				that.setCollapsed(40);
-				statusbarpanel.value = DKIM_Verifier.DKIM_STRINGS.NOSIG;
+				statusbarpanel.value = dkimStrings.getString("NOSIG");
 
 				// highlight from header
 				highlightHeader("nosig");
@@ -1243,14 +1247,19 @@ DKIM_Verifier.DKIMVerifier = (function() {
 				break;
 			case "SUCCESS":
 				that.setCollapsed(10);
-				str = DKIM_Verifier.DKIM_STRINGS.SUCCESS(result.SDID);
+				str = dkimStrings.getFormattedString("SUCCESS", [result.SDID]);
 				header.value = str;
 				statusbarpanel.value = str;
 				
 				// show warnings
 				if (result.warnings.length > 0) {
 					var warnings = result.warnings.map(function(e) {
-						return DKIM_Verifier.DKIM_STRINGS[e] || e;
+						if (e === "DKIM_POLICYWARNING_WRONG_SDID") {
+							return DKIM_Verifier.
+								tryGetFormattedString(dkimStrings, e, [result.shouldBeSignedBy]) || e;
+						} else {
+							return DKIM_Verifier.tryGetString(dkimStrings, e) || e;
+						}
 					});
 					header.warnings = warnings;
 					statusbarpanel.warnings = warnings;
@@ -1266,9 +1275,16 @@ DKIM_Verifier.DKIMVerifier = (function() {
 				break;
 			case "PERMFAIL":
 				that.setCollapsed(30);
-				var errorMsg = DKIM_Verifier.DKIM_STRINGS[result.errorType] ||
-					result.errorType;
-				str = DKIM_Verifier.DKIM_STRINGS.PERMFAIL + " (" + errorMsg + ")";
+				var errorMsg;
+				if (result.errorType === "DKIM_POLICYERROR_MISSING_SIG") {
+					errorMsg = DKIM_Verifier.
+						tryGetFormattedString(dkimStrings, result.errorType, [result.shouldBeSignedBy]) ||
+						result.errorType;
+				} else {
+					errorMsg = DKIM_Verifier.tryGetString(dkimStrings, result.errorType) ||
+						result.errorType;
+				}
+				str = dkimStrings.getFormattedString("PERMFAIL", [errorMsg]);
 				header.value = str;
 				statusbarpanel.value = str;
 
@@ -1287,9 +1303,9 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			case "TEMPFAIL":
 				that.setCollapsed(20);
 				
-				str = DKIM_Verifier.DKIM_STRINGS[result.errorType] ||
+				str = DKIM_Verifier.tryGetString(dkimStrings, result.errorType) ||
 					result.errorType ||
-					DKIM_Verifier.DKIM_STRINGS.DKIM_INTERNALERROR_NAME;
+					dkimStrings.getString("DKIM_INTERNALERROR_NAME");
 				header.value = str;
 				statusbarpanel.value = str;
 				
@@ -1306,11 +1322,11 @@ DKIM_Verifier.DKIMVerifier = (function() {
 	 * DKIM_SIGERROR
 	 */
 	function DKIM_SigError(errorType) {
-		this.name = DKIM_Verifier.DKIM_STRINGS.DKIM_SIGERROR;
+		this.name = dkimStrings.getString("DKIM_SIGERROR");
 		this.errorType = errorType;
-		this.message = DKIM_Verifier.DKIM_STRINGS[errorType] ||
+		this.message = DKIM_Verifier.tryGetString(dkimStrings, errorType) ||
 			errorType ||
-			DKIM_Verifier.DKIM_STRINGS.DKIM_SIGERROR_DEFAULT;
+			dkimStrings.getString("DKIM_SIGERROR_DEFAULT");
 
 		// modify stack and lineNumber, to show where this object was created,
 		// not where Error() was
@@ -1325,12 +1341,12 @@ DKIM_Verifier.DKIMVerifier = (function() {
 	 * DKIM internal error
 	 */
 	function DKIM_InternalError(message, errorType) {
-		this.name = DKIM_Verifier.DKIM_STRINGS.DKIM_INTERNALERROR;
+		this.name = dkimStrings.getString("DKIM_INTERNALERROR");
 		this.errorType = errorType;
 		this.message = message ||
-			DKIM_Verifier.DKIM_STRINGS[errorType] ||
+			DKIM_Verifier.tryGetString(dkimStrings, errorType) ||
 			errorType ||
-			DKIM_Verifier.DKIM_STRINGS.DKIM_INTERNALERROR_DEFAULT;
+			dkimStrings.getString("DKIM_INTERNALERROR_DEFAULT");
 		
 		// modify stack and lineNumber, to show where this object was created,
 		// not where Error() was
@@ -1450,10 +1466,11 @@ var that = {
 	 * gets called on startup
 	 */
 	startup : function () {
-		// get statusbarpanel
+		// get xul elements
 		statusbarpanel = document.getElementById("dkim-verifier-statusbarpanel");
 		policyAddUserExceptionButton = document.
 			getElementById("dkim_verifier.policyAddUserException");
+		dkimStrings = document.getElementById("dkimStrings");
 
 		
 		// Register to receive notifications of preference changes
@@ -1580,9 +1597,9 @@ var that = {
 		if (gFolderDisplay.selectedMessageIsFeed || gFolderDisplay.selectedMessageIsNews) {
 			currentHeaderData[entry] = {
 				headerName: entry,
-				headerValue: DKIM_Verifier.DKIM_STRINGS.NOT_EMAIL
+				headerValue: dkimStrings.getString("NOT_EMAIL")
 			};
-			statusbarpanel.value = DKIM_Verifier.DKIM_STRINGS.NOT_EMAIL;
+			statusbarpanel.value = dkimStrings.getString("NOT_EMAIL");
 			statusbarpanel.dkimStatus = "none";
 			if (reverifyDKIMSignature) {
 				reverifyDKIMSignature.disabled = true;
@@ -1590,9 +1607,9 @@ var that = {
 		} else {
 			currentHeaderData[entry] = {
 				headerName: entry,
-				headerValue: DKIM_Verifier.DKIM_STRINGS.loading
+				headerValue: dkimStrings.getString("loading")
 			};
-			statusbarpanel.value = DKIM_Verifier.DKIM_STRINGS.loading;
+			statusbarpanel.value = dkimStrings.getString("loading");
 			statusbarpanel.dkimStatus = "loading";
 			if (reverifyDKIMSignature) {
 				reverifyDKIMSignature.disabled = false;
@@ -1639,7 +1656,7 @@ var that = {
 			// this function will continue the verification
 			parseMsg(msgURI);
 		} catch(e) {
-			handleExeption(e, msgURI);
+			handleExeption(e, {"msgURI": msgURI});
 		}
 	},
 	onEndAttachments: function() {},
@@ -1669,7 +1686,7 @@ var that = {
 			
 			verifySignaturePart2(msg);
 		} catch(e) {
-			handleExeption(e, msg.msgURI);
+			handleExeption(e, msg);
 		}
 	},
 	
@@ -1680,7 +1697,7 @@ var that = {
 		// get msg uri
 		var msgURI = gDBView.URIForFirstSelectedMessage;
 
-		header.value = DKIM_Verifier.DKIM_STRINGS.loading;
+		header.value = dkimStrings.getString("loading");
 		that.onStartHeaders();
 		saveResult(msgURI, "");
 		that.onEndHeaders();
@@ -1696,7 +1713,7 @@ var that = {
 			createInstance(Components.interfaces.nsIMsgHeaderParser);
 		var from = msgHeaderParser.extractHeaderAddressMailboxes(mime2DecodedAuthor);
 
-		DKIM_Verifier.dkimPolicy.addUserException(from)
+		DKIM_Verifier.Policy.addUserException(from);
 	},
 	
 	/*

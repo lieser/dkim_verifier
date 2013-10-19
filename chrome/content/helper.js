@@ -1,11 +1,13 @@
 // options for JSHint
 /* jshint strict:true, moz:true */
 /* global Components, FileUtils, NetUtil, CommonUtils, Logging */
-/* exported EXPORTED_SYMBOLS, writeStringToTmpFile, exceptionToStr */
+/* exported EXPORTED_SYMBOLS, writeStringToTmpFile, exceptionToStr, tryGetString, tryGetFormattedString */
 
 var EXPORTED_SYMBOLS = [
 	"writeStringToTmpFile",
-	"exceptionToStr"
+	"exceptionToStr",
+	"tryGetString",
+	"tryGetFormattedString"
 ];
 
 const Cc = Components.classes;
@@ -85,4 +87,46 @@ function exceptionToStr(exception) {
 	
 	log.trace("exceptionToStr end");
 	return str;
+}
+
+/**
+ * try to get string from stringbundle
+ * 
+ * @param stringbundle
+ * @param {String} name
+ * 
+ * @return {String|null}
+ */
+function tryGetString(stringbundle, name) {
+	if (!name) {
+		return null;
+	}
+
+	try {
+		return stringbundle.getString(name);
+	} catch (ex) {
+		log.error(exceptionToStr(ex));
+		return null;
+	}
+}
+/**
+ * try to get formatted string from stringbundle
+ * 
+ * @param stringbundle
+ * @param {String} name
+ * @param {String[]} params
+ * 
+ * @return {String|null}
+ */
+function tryGetFormattedString(stringbundle, name, params) {
+	if (!name) {
+		return null;
+	}
+
+	try {
+		return stringbundle.getFormattedString(name, params);
+	} catch (ex) {
+		log.error(exceptionToStr(ex));
+		return null;
+	}
 }

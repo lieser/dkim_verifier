@@ -2,6 +2,10 @@
 <?xml-stylesheet href="chrome://dkim_verifier-os/skin/msgHdrViewOverlay.css" type="text/css"?>
 <!DOCTYPE overlay SYSTEM "chrome://dkim_verifier/locale/xulstrings.dtd">
 <overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+	<stringbundleset>
+		<stringbundle id="dkimStrings" src="chrome://dkim_verifier/locale/dkim.properties"/>
+	</stringbundleset>
+
 	<!-- main script -->
 	<script type="application/javascript" src="chrome://dkim_verifier/content/dkim.js"/>
 	<rows id="expandedHeader2Rows">
