@@ -33,9 +33,11 @@ Cu.import("resource://gre/modules/Services.jsm");
  * SQLiteTreeView
  * implements nsITreeView
  * 
+ * based on http://www.simon-cozens.org/content/xul-mozstorage-and-sqlite
+ * 
  * @param {String} dbPath The database file to open. This can be an absolute or relative path. If a relative path is given, it is interpreted as relative to the current profile's directory
  * @param {String} tableName
- * @param {String[]} [columns]
+ * @param {String[]} columns
  */
 function SQLiteTreeView(dbPath, tableName, columns) {
 	// Retains absolute paths and normalizes relative as relative to profile.
@@ -45,29 +47,55 @@ function SQLiteTreeView(dbPath, tableName, columns) {
 	this.conn = Services.storage.openDatabase(file);// TODO: close()
 	
 	this.tableName = tableName;
-	if (columns) {
-		this.columnClause = columns.join(", ");
-	} else {
-		this.columnClause = "*";
-	}
+	this.columns = columns;
+	this.columnClause = columns.join(", ");
 }
 SQLiteTreeView.prototype = {
 	_updateOrderClause: function SQLiteTreeView__updateOrderClause() {
+		var that = this;
 		this.orderClause = this.sortOrder.map(function (elem) {
-			return (elem.index+1) + (elem.orderDirection  ? "": " DESC");
+			return that.columns[elem.index] + (elem.orderDirection  ? " DESC": "");
 		}).join(", ");
+		// dump(this.orderClause+"\n");
 	},
-
-	get rowCount() {
-		var res;
-		var statement = this.conn.createStatement("SELECT count(*) FROM "+this.tableName);
+	
+	/**
+	 * @param {String} sql
+	 * @param {Object} params named params
+	 */
+	_doSQL: function SQLiteTreeView__doSQL(sql, params) {
+		var rv = [];
 		try {
-			statement.executeStep();
-			res = statement.getString(0);
+		var statement = this.conn.createStatement(sql);
+			// Named params.
+			if (params && typeof(params) == "object") {
+				for (var k in params) {
+					statement.bindByName(k, params[k]);
+				}
+			}
+
+			while (statement.executeStep()) {
+				var c;
+				var thisArray = [];
+				for (c=0; c < statement.numEntries; c++) {
+					thisArray.push(statement.getString(c));
+				}
+				rv.push(thisArray);
+			}
+		// } catch (error) {
+			// dump(error);
+			// dump(sql+"\n");
+			// dump("Error when executing SQL (" + error.result + "): " + error.message);
+			// statement.finalize();
+			// throw error;
 		} finally {
 			statement.finalize();
 		}
-		return res;
+		return rv;
+	},
+
+	get rowCount() {
+		return this._doSQL("SELECT count(*) FROM "+this.tableName)[0][0];
 	},
 	
 	// cycleCell
@@ -102,22 +130,13 @@ SQLiteTreeView.prototype = {
 	
 	getCellProperties: function SQLiteTreeView_getCellProperties(/*row,col,props*/) {},
 	
-	getCellText : function SQLiteTreeView_getCellText(row,column) {
-		var res;
-		var statement = this.conn.createStatement(
+	getCellText : function SQLiteTreeView_getCellText(row, column) {
+		var res = this._doSQL(
 			"SELECT "+this.columnClause+" FROM "+this.tableName+"\n" +
 			"ORDER BY "+this.orderClause+"\n" +
 			"LIMIT 1 OFFSET "+row+";"
 		);
-		try {
-			statement.executeStep();
-			res = statement.getString(column.index);
-		// } catch (e) {
-			// dump(e);
-		} finally {
-			statement.finalize();
-		}
-		return res;
+		return res[0][column.index];
 	},
 	
 	// getCellValue
@@ -127,12 +146,28 @@ SQLiteTreeView.prototype = {
 	getLevel: function SQLiteTreeView_getLevel(/*row*/){ return 0; },
 	getRowProperties: function SQLiteTreeView_getRowProperties(/*row,props*/){},
 	isContainer: function SQLiteTreeView_isContainer(/*row*/){ return false; },
-	// isEditable
+	
+	isEditable: function SQLiteTreeView_isEditable(row, col) {
+		return col.editable;
+	},
+	
 	isSeparator: function SQLiteTreeView_isSeparator(/*row*/){ return false; },
 	// isSorted: function SQLiteTreeView_isSorted(){ return false; },
 	isSorted: function SQLiteTreeView_isSorted(){ return true; },
 	
-	// setCellText
+	setCellText: function SQLiteTreeView_setCellText(row, col, value) {
+		var rowid = this._doSQL(
+			"SELECT rowid, "+this.columnClause+" FROM "+this.tableName+"\n" +
+			"ORDER BY "+this.orderClause+"\n" +
+			"LIMIT 1 OFFSET "+row+";"
+		)[0][0];
+		this._doSQL(
+			"UPDATE "+this.tableName+"\n" +
+			"SET "+this.columns[col.index]+" = :value\n" +
+			"WHERE rowid = :rowid;",
+			{"value":value, "rowid":rowid}
+		);
+	},
 	// setCellValue
 	
 	setTree: function SQLiteTreeView_setTree(treebox) {
