@@ -9,21 +9,21 @@
 Components.utils.import("resource://dkim_verifier/SQLiteTreeView.jsm");
 
 function setView(){
-    document.getElementById('my-tree').view = new SQLiteTreeView("dkimPolicy.sqlite","signersDefault",["addr","sdid","ruletype","priority"]);
+	document.getElementById('my-tree').view = new SQLiteTreeView("dkimPolicy.sqlite","signersDefault",["addr","sdid","ruletype","priority"]);
 }
 </script>
 
 <tree id="my-tree" editable="false" enableColumnDrag="true" flex="1">
-  <treecols>
-    <treecol id="addr" editable="true" label="addr" flex="15"/>
-	<splitter class="tree-splitter" />
-    <treecol id="sdid" editable="true" label="sdid" flex="15"/>
-	<splitter class="tree-splitter" />
-    <treecol id="ruletype" editable="true" label="ruletype" flex="1"/>
-	<splitter class="tree-splitter" />
-    <treecol id="priority" editable="true" label="priority" flex="1"/>
-  </treecols>
-  <treechildren/>
+	<treecols>
+		<treecol id="addr" editable="true" label="addr" flex="15"/>
+		<splitter class="tree-splitter" />
+		<treecol id="sdid" editable="true" label="sdid" flex="15"/>
+		<splitter class="tree-splitter" />
+		<treecol id="ruletype" editable="true" label="ruletype" flex="1"/>
+		<splitter class="tree-splitter" />
+		<treecol id="priority" editable="true" label="priority" flex="1"/>
+	</treecols>
+	<treechildren/>
 </tree>
 
 </window>

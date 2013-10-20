@@ -14,6 +14,7 @@
  */
 // options for JSHint
 /* jshint moz:true */
+/* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
 /* global Components, OS, FileUtils, Services */
 /* exported EXPORTED_SYMBOLS, SQLiteTreeView */
 
@@ -31,37 +32,39 @@ Cu.import("resource://gre/modules/Services.jsm");
 
 /**
  * SQLiteTreeView
- * implements nsITreeView
+ * Implements nsITreeView and some additional methods.
  * 
  * based on http://www.simon-cozens.org/content/xul-mozstorage-and-sqlite
  * 
  * @param {String} dbPath The database file to open. This can be an absolute or relative path. If a relative path is given, it is interpreted as relative to the current profile's directory.
- * @param {String} tableName
- * @param {String[]} columns
+ * @param {String} tableName Table to be displayed
+ * @param {String[]} columns Columns to be displayed in the same order as in the tree
  */
 function SQLiteTreeView(dbPath, tableName, columns) {
 	// Retains absolute paths and normalizes relative as relative to profile.
 	var path = OS.Path.join(OS.Constants.Path.profileDir, dbPath);
-	var file = FileUtils.File(path);
+	this.file = FileUtils.File(path);
 	
 	// test that db exists
-	if (!file.exists()) {
-		throw new Error("SQLite File "+path+" must exist")
-	}
-
-	// open connection
-	this.conn = Services.storage.openDatabase(file);// TODO: close()
-	
-	// test that table exists
-	if (!this.conn.tableExists(tableName)) {
-		throw new Error("Table "+tableName+" must exist")
+	if (!this.file.exists()) {
+		throw new Error("SQLite File "+path+" must exist");
 	}
 	
-	this.tableName = tableName;
-	this.columns = columns;
-	this.columnClause = columns.join(", ");
+	this.tableName = tableName.replace(/\W/g, "");
+	this.columns = columns.map(function (elem) {
+		return elem.replace(/\W/g, "");
+	});
+	this.columnClause = this.columns.join(", ");
+	this.insertParamsClause = ":"+this.columns.join(", :");
 }
 SQLiteTreeView.prototype = {
+	/*
+	 * internal methods
+	 */
+	
+	/**
+	 * Updates orderClause. Should be called if the sort order is changed
+	 */
 	_updateOrderClause: function SQLiteTreeView__updateOrderClause() {
 		var that = this;
 		this.orderClause = this.sortOrder.map(function (elem) {
@@ -69,18 +72,23 @@ SQLiteTreeView.prototype = {
 		}).join(", ");
 		// dump(this.orderClause+"\n");
 	},
-	
+		
 	/**
+	 * Executes sql an returns the result
+	 * 
 	 * @param {String} sql
 	 * @param {Object} params named params
+	 * 
+	 * @return {String[][]}
 	 */
 	_doSQL: function SQLiteTreeView__doSQL(sql, params) {
 		var rv = [];
+		var statement;
 		try {
-		var statement = this.conn.createStatement(sql);
+			statement = this.conn.createStatement(sql);
 			// Named params.
 			if (params && typeof(params) == "object") {
-				for (var k in params) {
+				for (let k in params) {
 					statement.bindByName(k, params[k]);
 				}
 			}
@@ -100,11 +108,91 @@ SQLiteTreeView.prototype = {
 			// statement.finalize();
 			// throw error;
 		} finally {
-			statement.finalize();
+			if (statement) {
+				statement.finalize();
+			}
 		}
 		return rv;
 	},
 
+	/**
+	 * Get the rowid of the rows
+	 * 
+	 * @param {Number[]} rows
+	 * 
+	 * @return {Number[]} rowids
+	 */
+	_getRowids: function SQLiteTreeView__getRowids(rows) {
+		var rowids = [];
+		for (var i = 0; i < rows.length; i++) {
+			rowids.push(this._doSQL(
+				"SELECT rowid, "+this.columnClause+" FROM "+this.tableName+"\n" +
+				"ORDER BY "+this.orderClause+"\n" +
+				"LIMIT 1 OFFSET "+rows[i]+";"
+			)[0][0]);
+		}
+		return rowids;
+	},
+	
+	/*
+	 * SQLiteTreeView methods
+	 */
+
+	/**
+	 * Adds a new row to the database
+	 * 
+	 * @param {Object} params Named params to insert
+	 */
+	addRow: function SQLiteTreeView_addRow(params) {
+		// add row
+		this._doSQL(
+			"INSERT INTO "+this.tableName+" ("+this.columnClause+")\n" +
+			"VALUES ("+this.insertParamsClause+");",
+			params
+		);
+		
+		// update tree
+		this.treebox.rowCountChanged(0, 1);
+		this.treebox.invalidate();
+	},
+	
+	/**
+	 * Delete selected rows
+	 */
+	deleteSelectedRows: function SQLiteTreeView_deleteSelectedRows() {
+		// get selected rows
+		var selectedRows = [];
+		var start = {};
+		var end ={};
+		var numRanges = this.selection.getRangeCount();
+
+		for (var t = 0; t < numRanges; t++) {
+			this.selection.getRangeAt(t,start,end);
+			for (var v = start.value; v <= end.value; v++) {
+				selectedRows.push(v);
+			}
+			// this.treebox.rowCountChanged(start, start-end);
+		}
+
+		// get rowids
+		var rowids = this._getRowids(selectedRows);
+		// delete rows
+		for (var i = 0; i < selectedRows.length; i++) {
+			this._doSQL(
+				"DELETE FROM "+this.tableName+"\n" +
+				"WHERE rowid = :rowid;",
+				{rowid: rowids[i]}
+			);
+		}
+		// update tree
+		this.treebox.rowCountChanged(0, -rowids.length);
+		this.treebox.invalidate();
+	},
+	
+	/*
+	 * nsITreeView attributes/methods
+	 */
+	
 	get rowCount() {
 		return this._doSQL("SELECT count(*) FROM "+this.tableName)[0][0];
 	},
@@ -163,15 +251,10 @@ SQLiteTreeView.prototype = {
 	},
 	
 	isSeparator: function SQLiteTreeView_isSeparator(/*row*/){ return false; },
-	// isSorted: function SQLiteTreeView_isSorted(){ return false; },
 	isSorted: function SQLiteTreeView_isSorted(){ return true; },
 	
 	setCellText: function SQLiteTreeView_setCellText(row, col, value) {
-		var rowid = this._doSQL(
-			"SELECT rowid, "+this.columnClause+" FROM "+this.tableName+"\n" +
-			"ORDER BY "+this.orderClause+"\n" +
-			"LIMIT 1 OFFSET "+row+";"
-		)[0][0];
+		var rowid = this._getRowids([row])[0];
 		this._doSQL(
 			"UPDATE "+this.tableName+"\n" +
 			"SET "+this.columns[col.index]+" = :value\n" +
@@ -179,18 +262,33 @@ SQLiteTreeView.prototype = {
 			{"value":value, "rowid":rowid}
 		);
 	},
+	
 	// setCellValue
 	
 	setTree: function SQLiteTreeView_setTree(treebox) {
 		this.treebox = treebox;
 		
 		if (treebox) {
+			// open connection
+			this.conn = Services.storage.openDatabase(this.file);
+			
+			// test that table exists
+			if (!this.conn.tableExists(this.tableName)) {
+				throw new Error("Table "+this.tableName+" must exist");
+			}
+	
 			// init sort order
 			this.sortOrder = [];
 			for (var i=0; i<treebox.columns.count; i++) {
 				this.sortOrder.push({"index":i, "orderDirection ": 0});
 			}
 			this._updateOrderClause();
+		} else {
+			if (this.conn && this.connectionReady) {
+				// close connection
+				this.conn.close();
+				// this.conn = null;
+			}
 		}
 	},
 };

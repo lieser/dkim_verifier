@@ -8,24 +8,36 @@
 <script>
 Components.utils.import("resource://dkim_verifier/SQLiteTreeView.jsm");
 
+var treeView = new SQLiteTreeView("dkimPolicy.sqlite","signers",["addr","sdid","ruletype","priority","enabled"]);
+
 function setView(){
-    document.getElementById('my-tree').view = new SQLiteTreeView("dkimPolicy.sqlite","signers",["addr","sdid","ruletype","priority","enabled"]);
+	document.getElementById('my-tree').view = treeView;
 }
 </script>
 
 <tree id="my-tree" editable="true" enableColumnDrag="true" flex="1">
-  <treecols>
-    <treecol id="addr" editable="true" label="addr" flex="15"/>
-	<splitter class="tree-splitter" />
-    <treecol id="sdid" editable="true" label="sdid" flex="15"/>
-	<splitter class="tree-splitter" />
-    <treecol id="ruletype" editable="true" label="ruletype" width="50" flex="1"/>
-	<splitter class="tree-splitter" />
-    <treecol id="priority" editable="true" label="priority" width="50" flex="1"/>
-	<splitter class="tree-splitter" />
-    <treecol id="enable" editable="true" label="enabled" width="50" flex="1"/>
-  </treecols>
-  <treechildren/>
+	<treecols>
+		<treecol id="addr" editable="true" label="addr" flex="15"/>
+		<splitter class="tree-splitter" />
+		<treecol id="sdid" editable="true" label="sdid" flex="15"/>
+		<splitter class="tree-splitter" />
+		<treecol id="ruletype" editable="true" label="ruletype" width="50" flex="1"/>
+		<splitter class="tree-splitter" />
+		<treecol id="priority" editable="true" label="priority" width="50" flex="1"/>
+		<splitter class="tree-splitter" />
+		<treecol id="enable" editable="true" label="enabled" width="50" flex="1"/>
+	</treecols>
+	<treechildren/>
 </tree>
+
+<hbox>
+	<button 
+	        label="Add signer rule"
+	        oncommand="window.openDialog('chrome://dkim_verifier/content/addSignersRule.xul', 'addSignersRules', 'chrome,modal,resizable,centerscreen', treeView);"/>
+	<button 
+	        label="Delete selected rules"
+	        oncommand="treeView.deleteSelectedRows();"/>
+	<spacer/>
+</hbox>
 
 </window>
