@@ -1,10 +1,11 @@
 // options for JSHint
 /* jshint strict:true, moz:true */
-/* global Components, FileUtils, NetUtil, CommonUtils, Logging */
-/* exported EXPORTED_SYMBOLS, exceptionToStr, stringEndsWith, tryGetString, tryGetFormattedString, writeStringToTmpFile */
+/* global Components, FileUtils, NetUtil, Promise, CommonUtils, Logging */
+/* exported EXPORTED_SYMBOLS, exceptionToStr, readStringFrom, stringEndsWith, tryGetString, tryGetFormattedString, writeStringToTmpFile */
 
 var EXPORTED_SYMBOLS = [
 	"exceptionToStr",
+	"readStringFrom",
 	"stringEndsWith",
 	"tryGetString",
 	"tryGetFormattedString",
@@ -17,6 +18,7 @@ const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/FileUtils.jsm");
 Cu.import("resource://gre/modules/NetUtil.jsm");
+Cu.import("resource://gre/modules/Promise.jsm");
 Cu.import("resource://services-common/utils.js");
 
 Cu.import("resource://dkim_verifier/logging.jsm");
@@ -65,6 +67,39 @@ function exceptionToStr(exception) {
 }
 
 /**
+ * Reads from a source asynchronously into a String.
+ * 
+ * @param {String|nsIURI|nsIFile|nsIChannel|nsIInputStream} aSource The source to read from.
+ * 
+ * @return {Promise<String>}
+ */
+function readStringFrom(aSource) {
+	"use strict";
+
+	log.trace("readStringFrom begin");
+
+	var defer = Promise.defer();
+
+	NetUtil.asyncFetch(aSource, function(inputStream, status) {
+		if (!Components.isSuccessCode(status)) {
+			// Handle error!
+			defer.reject("readStringFrom: nsresult: "+status);
+			// defer.reject(Object.keys(Components.results).find(o=>o[status] === value));
+			log.trace("readStringFrom nsresult: "+status);
+			return;
+		}
+
+		// The source data is contained within inputStream.
+		// You can read it into a string with
+		var data = NetUtil.readInputStreamToString(inputStream, inputStream.available());
+		defer.resolve(data);
+		log.trace("readStringFrom begin");
+	});
+	
+	return defer.promise;
+}
+
+/**
  * Returns true if str ends with x.
  * 
  * @param {String} str
@@ -73,6 +108,8 @@ function exceptionToStr(exception) {
  * @return {Boolean}
  */
 function stringEndsWith(str, x) {
+	"use strict";
+
 	var index = str.lastIndexOf(x);
 	return index >= 0 && index === str.length - x.length;
 }
@@ -85,6 +122,8 @@ function stringEndsWith(str, x) {
  * @return {String|null}
  */
 function tryGetString(stringbundle, name) {
+	"use strict";
+
 	if (!name) {
 		return null;
 	}
@@ -106,6 +145,8 @@ function tryGetString(stringbundle, name) {
  * @return {String|null}
  */
 function tryGetFormattedString(stringbundle, name, params) {
+	"use strict";
+
 	if (!name) {
 		return null;
 	}

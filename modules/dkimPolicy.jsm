@@ -377,10 +377,8 @@ function init() {
 			
 			// data signersDefault
 			// read rules from file
-			var path = OS.Path.join(OS.Constants.Path.profileDir, "extensions",
-				"dkim_verifier@pl",	"data", "signersDefault.json"
-			);
-			var signersDefault = yield CommonUtils.readJSON(path);
+			var jsonStr = yield readStringFrom("resource://dkim_verifier_data/signersDefault.json");
+			var signersDefault = JSON.parse(jsonStr);
 			// check data version
 			if (versionDataSignersDefault < signersDefault.versionData) {
 				log.trace("update default rules");
