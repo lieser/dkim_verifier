@@ -52,6 +52,14 @@ function exceptionToStr(exception) {
 		str += new Error().stack.split("\n")[1];
 	}
 	
+	// DKIM_SigError or DKIM_InternalError errors
+	// if (exception instanceof DKIM_SigError ||
+	    // exception instanceof DKIM_InternalError) {
+		if (exception.errorType) {
+			str = exception.errorType+": "+str;
+		}
+	// }
+
 	log.trace("exceptionToStr end");
 	return str;
 }

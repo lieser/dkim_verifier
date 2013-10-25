@@ -29,12 +29,8 @@
  *  - validate tag list as specified in Section 3.2 of RFC 6376
  *    - Tags with duplicate names MUST NOT occur within a single tag-list;
  *      if a tag name does occur more than once, the entire tag-list is invalid
- *  - at the moment, only a subset of valid Local-part in the i-Tag is recognised
+ *  - at the moment, only a subset of valid Local-part in the i-Tag is recognized
  *  - no test for multiple key records in an DNS RRset (Section 3.6.2.2)
- *  - message with bad signature is treated differently from a message with no signature
- *    (result is shown) (Section 6.1)
- *  - no check that hash declared in DKIM-Signature is included in the hashs 
- *    declared in the key record (Section 6.1.2)
  *  - check that the hash function in the public key is the same as in the header (Section 6.1.2)
  *
  * possible feature  additions
@@ -458,14 +454,9 @@ DKIM_Verifier.DKIMVerifier = (function() {
 		DKIMSignature.h = signedHeadersTag[1].replace(new RegExp(pattFWS,"g"), "");
 		// get the header field names and store them in lower case in an array
 		var regExpHeaderName = new RegExp(pattFWS+"?("+hdr_name+")"+pattFWS+"?(?::|$)", "g");
-		while (true) {
-			var tmp = regExpHeaderName.exec(signedHeadersTag[1]);
-			if (tmp === null) {
-				break;
-			} else {
-				DKIMSignature.h_array.push(tmp[1].toLowerCase());
-			}
-		}
+		DKIMSignature.h_array = DKIMSignature.h.split(":").
+			map(x => x.trim().toLowerCase()).
+			filter(x => x);
 		// check that the from header is included
 		if (DKIMSignature.h_array.indexOf("from") === -1) {
 			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_FROM");
@@ -606,6 +597,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 		var DKIMKey = {
 			v : null, // Version
 			h : null, // hash algorithms
+			h_array : null, // array hash algorithms
 			k : null, // key type
 			n : null, // notes
 			p : null, // Public-key data
@@ -631,6 +623,7 @@ DKIM_Verifier.DKIMVerifier = (function() {
 		var algorithmTag = DKIMKeyRecord.match(tag_spec("h",key_h_tag));
 		if (algorithmTag !== null) {
 			DKIMKey.h = algorithmTag[1];
+			DKIMKey.h_array = DKIMKey.h.split(":").map(String.trim).filter(x => x);
 		} 
 		
 		// get Key type (plain-text; OPTIONAL, default is "rsa")
@@ -681,17 +674,8 @@ DKIM_Verifier.DKIMVerifier = (function() {
 		var flagsTag = DKIMKeyRecord.match(tag_spec("t",key_t_tag));
 		if (flagsTag !== null) {
 			DKIMKey.t = flagsTag[1];
-
 			// get the flags and store them in an array
-			var regFlagName = new RegExp(pattFWS+"?("+key_t_tag_flag+")"+pattFWS+"?(?::|$)", "g");
-			while (true) {
-				var tmp = regFlagName.exec(flagsTag[1]);
-				if (tmp === null) {
-					break;
-				} else {
-					DKIMKey.t_array.push(tmp[1]);
-				}
-			}
+			DKIMKey.t_array = DKIMKey.t.split(":").map(String.trim).filter(x => x);
 		} else {
 			DKIMKey.t = "";
 		}
@@ -1004,11 +988,13 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			}
 			
 			// warning if from is not in SDID or AUID
-			if (!(new RegExp(msg.DKIMSignature.d+"$").test(msg.from))) {
+			if (!(DKIM_Verifier.stringEndsWith(msg.from, "@"+msg.DKIMSignature.d) ||
+			      DKIM_Verifier.stringEndsWith(msg.from, "."+msg.DKIMSignature.d))) {
 				msg.warnings.push("DKIM_SIGWARNING_FROM_NOT_IN_SDID");
 				dkimDebugMsg("Warning: DKIM_SIGWARNING_FROM_NOT_IN_SDID ("+
 					dkimStrings.getString("DKIM_SIGWARNING_FROM_NOT_IN_SDID")+")");
-			} else if (!(new RegExp(msg.DKIMSignature.i+"$").test(msg.from))) {
+			} else if (!(DKIM_Verifier.stringEndsWith(msg.from, "@"+msg.DKIMSignature.i) ||
+			             DKIM_Verifier.stringEndsWith(msg.from, "."+msg.DKIMSignature.i))) {
 				msg.warnings.push("DKIM_SIGWARNING_FROM_NOT_IN_AUID");
 				dkimDebugMsg("Warning: DKIM_SIGWARNING_FROM_NOT_IN_AUID ("+
 					dkimStrings.getString("DKIM_SIGWARNING_FROM_NOT_IN_AUID")+")");
@@ -1073,8 +1059,16 @@ DKIM_Verifier.DKIMVerifier = (function() {
 			// if s flag is set in DKIM key record
 			// AUID must be from the same domain as SDID (and not a subdomain)
 			if (msg.DKIMKey.t_array.indexOf("s") !== -1 &&
-				msg.DKIMSignature.i_domain !== msg.DKIMSignature.d) {
+			    msg.DKIMSignature.i_domain !== msg.DKIMSignature.d) {
 				throw new DKIM_SigError("DKIM_SIGERROR_DOMAIN_I");
+			}
+
+			// If the "h=" tag exists in the DKIM key record
+			// the hash algorithm implied by the "a=" tag in the DKIM-Signature header field
+			// must be included in the contents of the "h=" tag
+			if (msg.DKIMKey.h_array &&
+			    msg.DKIMKey.h_array.indexOf(msg.DKIMSignature.a_hash) === -1) {
+				throw new DKIM_SigError("DKIM_SIGERROR_KEY_HASHNOTINCLUDED");
 			}
 			
 			// Compute the input for the header hash
