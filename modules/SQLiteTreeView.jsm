@@ -12,8 +12,9 @@
  * The above copyright and license notice shall be
  * included in all copies or substantial portions of the Software.
  */
+
 // options for JSHint
-/* jshint moz:true */
+/* jshint strict:true, moz:true */
 /* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
 /* global Components, OS, FileUtils, Services */
 /* exported EXPORTED_SYMBOLS, SQLiteTreeView */
@@ -26,9 +27,10 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://gre/modules/osfile.jsm");
+Cu.import("resource://gre/modules/osfile.jsm"); // Requires Gecko 16.0
 Cu.import("resource://gre/modules/FileUtils.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
+
 
 /**
  * SQLiteTreeView
@@ -41,6 +43,8 @@ Cu.import("resource://gre/modules/Services.jsm");
  * @param {String[]} columns Columns to be displayed in the same order as in the tree
  */
 function SQLiteTreeView(dbPath, tableName, columns) {
+	"use strict";
+
 	// Retains absolute paths and normalizes relative as relative to profile.
 	var path = OS.Path.join(OS.Constants.Path.profileDir, dbPath);
 	this.file = FileUtils.File(path);
@@ -66,9 +70,10 @@ SQLiteTreeView.prototype = {
 	 * Updates orderClause. Should be called if the sort order is changed
 	 */
 	_updateOrderClause: function SQLiteTreeView__updateOrderClause() {
-		var that = this;
-		this.orderClause = this.sortOrder.map(function (elem) {
-			return that.columns[elem.index] + (elem.orderDirection  ? " DESC": "");
+		"use strict";
+
+		this.orderClause = this.sortOrder.map( elem => {
+			return this.columns[elem.index] + (elem.orderDirection  ? " DESC": "");
 		}).join(", ");
 		// dump(this.orderClause+"\n");
 	},
@@ -82,6 +87,8 @@ SQLiteTreeView.prototype = {
 	 * @return {String[][]}
 	 */
 	_doSQL: function SQLiteTreeView__doSQL(sql, params) {
+		"use strict";
+
 		var rv = [];
 		var statement;
 		try {
@@ -123,6 +130,8 @@ SQLiteTreeView.prototype = {
 	 * @return {Number[]} rowids
 	 */
 	_getRowids: function SQLiteTreeView__getRowids(rows) {
+		"use strict";
+
 		var rowids = [];
 		for (var i = 0; i < rows.length; i++) {
 			rowids.push(this._doSQL(
@@ -144,6 +153,8 @@ SQLiteTreeView.prototype = {
 	 * @param {Object} params Named params to insert
 	 */
 	addRow: function SQLiteTreeView_addRow(params) {
+		"use strict";
+
 		// add row
 		this._doSQL(
 			"INSERT INTO "+this.tableName+" ("+this.columnClause+")\n" +
@@ -160,6 +171,8 @@ SQLiteTreeView.prototype = {
 	 * Delete selected rows
 	 */
 	deleteSelectedRows: function SQLiteTreeView_deleteSelectedRows() {
+		"use strict";
+
 		// get selected rows
 		var selectedRows = [];
 		var start = {};
@@ -194,12 +207,16 @@ SQLiteTreeView.prototype = {
 	 */
 	
 	get rowCount() {
+		"use strict";
+
 		return this._doSQL("SELECT count(*) FROM "+this.tableName)[0][0];
 	},
 	
 	// cycleCell
 	
 	cycleHeader: function SQLiteTreeView_cycleHeader(col) {
+		"use strict";
+
 		if (col.index === this.sortOrder[0].index) {
 			// change sort order direction
 			this.sortOrder[0].orderDirection  = !this.sortOrder[0].orderDirection ;
@@ -230,6 +247,8 @@ SQLiteTreeView.prototype = {
 	getCellProperties: function SQLiteTreeView_getCellProperties(/*row,col,props*/) {},
 	
 	getCellText : function SQLiteTreeView_getCellText(row, column) {
+		"use strict";
+
 		var res = this._doSQL(
 			"SELECT "+this.columnClause+" FROM "+this.tableName+"\n" +
 			"ORDER BY "+this.orderClause+"\n" +
@@ -241,19 +260,43 @@ SQLiteTreeView.prototype = {
 	// getCellValue
 	
 	getColumnProperties: function SQLiteTreeView_getColumnProperties(/*colid,col,props*/) {},
-	getImageSrc: function SQLiteTreeView_getImageSrc(/*row,col*/){ return null; },
-	getLevel: function SQLiteTreeView_getLevel(/*row*/){ return 0; },
+	getImageSrc: function SQLiteTreeView_getImageSrc(/*row,col*/){
+		"use strict";
+
+		return null;
+	},
+	getLevel: function SQLiteTreeView_getLevel(/*row*/){
+		"use strict";
+
+		return 0;
+	},
 	getRowProperties: function SQLiteTreeView_getRowProperties(/*row,props*/){},
-	isContainer: function SQLiteTreeView_isContainer(/*row*/){ return false; },
+	isContainer: function SQLiteTreeView_isContainer(/*row*/){
+		"use strict";
+
+		return false;
+	},
 	
 	isEditable: function SQLiteTreeView_isEditable(row, col) {
+		"use strict";
+
 		return col.editable;
 	},
 	
-	isSeparator: function SQLiteTreeView_isSeparator(/*row*/){ return false; },
-	isSorted: function SQLiteTreeView_isSorted(){ return true; },
+	isSeparator: function SQLiteTreeView_isSeparator(/*row*/){
+		"use strict";
+
+		return false;
+	},
+	isSorted: function SQLiteTreeView_isSorted(){
+		"use strict";
+
+		return true;
+	},
 	
 	setCellText: function SQLiteTreeView_setCellText(row, col, value) {
+		"use strict";
+
 		var rowid = this._getRowids([row])[0];
 		this._doSQL(
 			"UPDATE "+this.tableName+"\n" +
@@ -266,6 +309,8 @@ SQLiteTreeView.prototype = {
 	// setCellValue
 	
 	setTree: function SQLiteTreeView_setTree(treebox) {
+		"use strict";
+
 		this.treebox = treebox;
 		
 		if (treebox) {

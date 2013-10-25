@@ -49,7 +49,7 @@
  */
  
 // options for JSHint
-/* jshint moz:true */
+/* jshint strict:true, moz:true */
 /* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
 /* global Components, messenger, msgWindow, gMessageListeners, gDBView, Services, gFolderDisplay, gExpandedHeaderView, createHeaderEntry, syncGridColumnWidths, currentHeaderData, gMessageDisplay */ 
 

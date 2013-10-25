@@ -12,7 +12,7 @@
  */
 
 // options for JSHint
-/* jshint moz:true */
+/* jshint strict:true, moz:true */
 /* jshint -W069 */ // "['{a}'] is better written in dot notation."
 /* global Components, Services, Sqlite, Task, Promise, OS, CommonUtils, Logging, exceptionToStr */
 /* exported EXPORTED_SYMBOLS, Policy */
@@ -169,6 +169,12 @@ var Policy = {
 			
 			// return if autoAddRule is disabled
 			if (!prefs.getBoolPref("signRules.autoAddRule")) {
+				return;
+			}
+
+			// return if fromAddress is not in SDID
+			if (!(stringEndsWith(fromAddress, "@"+sdid) ||
+			      stringEndsWith(fromAddress, "."+sdid))) {
 				return;
 			}
 

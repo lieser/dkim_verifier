@@ -1,13 +1,14 @@
 // options for JSHint
 /* jshint strict:true, moz:true */
 /* global Components, FileUtils, NetUtil, CommonUtils, Logging */
-/* exported EXPORTED_SYMBOLS, writeStringToTmpFile, exceptionToStr, tryGetString, tryGetFormattedString */
+/* exported EXPORTED_SYMBOLS, exceptionToStr, stringEndsWith, tryGetString, tryGetFormattedString, writeStringToTmpFile */
 
 var EXPORTED_SYMBOLS = [
-	"writeStringToTmpFile",
 	"exceptionToStr",
+	"stringEndsWith",
 	"tryGetString",
-	"tryGetFormattedString"
+	"tryGetFormattedString",
+	"writeStringToTmpFile"
 ];
 
 const Cc = Components.classes;
@@ -23,44 +24,10 @@ Cu.import("resource://dkim_verifier/logging.jsm");
 
 var log = Logging.getLogger("Helper");
 
-/*
- * 
- */
-function writeStringToTmpFile(string, fileName) {
-	"use strict";
-	
-	var file = Components.classes["@mozilla.org/file/directory_service;1"]
-					.getService(Components.interfaces.nsIProperties)
-					.get("TmpD", Components.interfaces.nsIFile);
-	file.append(fileName);
-		
-	// file is nsIFile, data is a string
-
-	// You can also optionally pass a flags parameter here. It defaults to
-	// FileUtils.MODE_WRONLY | FileUtils.MODE_CREATE | FileUtils.MODE_TRUNCATE;
-	var ostream = FileUtils.openSafeFileOutputStream(file);
-
-	var converter = Components.classes["@mozilla.org/intl/scriptableunicodeconverter"].
-					createInstance(Components.interfaces.nsIScriptableUnicodeConverter);
-	converter.charset = "UTF-8";
-	var istream = converter.convertToInputStream(string);
-
-	// The last argument (the callback) is optional.
-	NetUtil.asyncCopy(istream, ostream, function(status) {
-		if (!Components.isSuccessCode(status)) {
-			// Handle error!
-			return;
-		}
-
-		// Data has been written to the file.
-		log.debug("DKIM: wrote file to "+file.path);
-	});
-}
-
 /**
  * @param {Error} exception
  * 
- *  @return {String} formatted error message
+ * @return {String} formatted error message
  */
 function exceptionToStr(exception) {
 	"use strict";
@@ -89,6 +56,18 @@ function exceptionToStr(exception) {
 	return str;
 }
 
+/**
+ * Returns true if str ends with x.
+ * 
+ * @param {String} str
+ * @param {String} strEnd
+ * 
+ * @return {Boolean}
+ */
+function stringEndsWith(str, x) {
+	var index = str.lastIndexOf(x);
+	return index >= 0 && index === str.length - x.length;
+}
 /**
  * try to get string from stringbundle
  * 
@@ -129,4 +108,41 @@ function tryGetFormattedString(stringbundle, name, params) {
 		log.error(exceptionToStr(ex));
 		return null;
 	}
+}
+
+/**
+ * Writes a String to a file in the operating system's temporary files directory.
+ * 
+ * @param {String} string
+ * @param {String} fileName
+ */
+function writeStringToTmpFile(string, fileName) {
+	"use strict";
+	
+	var file = Components.classes["@mozilla.org/file/directory_service;1"]
+					.getService(Components.interfaces.nsIProperties)
+					.get("TmpD", Components.interfaces.nsIFile);
+	file.append(fileName);
+	
+	// file is nsIFile, data is a string
+
+	// You can also optionally pass a flags parameter here. It defaults to
+	// FileUtils.MODE_WRONLY | FileUtils.MODE_CREATE | FileUtils.MODE_TRUNCATE;
+	var ostream = FileUtils.openSafeFileOutputStream(file);
+
+	var converter = Components.classes["@mozilla.org/intl/scriptableunicodeconverter"].
+					createInstance(Components.interfaces.nsIScriptableUnicodeConverter);
+	converter.charset = "UTF-8";
+	var istream = converter.convertToInputStream(string);
+
+	// The last argument (the callback) is optional.
+	NetUtil.asyncCopy(istream, ostream, function(status) {
+		if (!Components.isSuccessCode(status)) {
+			// Handle error!
+			return;
+		}
+
+		// Data has been written to the file.
+		log.debug("DKIM: wrote file to "+file.path);
+	});
 }
