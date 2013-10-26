@@ -1,7 +1,21 @@
+/*
+ * helper.js
+ *
+ * Version: 1.0.0pre1 (26 October 2013)
+ * 
+ * Copyright (c) 2013 Philippe Lieser
+ * 
+ * This software is licensed under the terms of the MIT License.
+ * 
+ * The above copyright and license notice shall be
+ * included in all copies or substantial portions of the Software.
+ */
+
 // options for JSHint
 /* jshint strict:true, moz:true */
-/* global Components, FileUtils, NetUtil, Promise, CommonUtils, Logging */
-/* exported EXPORTED_SYMBOLS, exceptionToStr, readStringFrom, stringEndsWith, tryGetString, tryGetFormattedString, writeStringToTmpFile */
+/* global Components, FileUtils, NetUtil, Promise, CommonUtils */
+/* Logging */
+/* exported EXPORTED_SYMBOLS, exceptionToStr, readStringFrom, stringEndsWith, tryGetString, tryGetFormattedString, writeStringToTmpFile, DKIM_InternalError */
 
 var EXPORTED_SYMBOLS = [
 	"exceptionToStr",
@@ -9,7 +23,8 @@ var EXPORTED_SYMBOLS = [
 	"stringEndsWith",
 	"tryGetString",
 	"tryGetFormattedString",
-	"writeStringToTmpFile"
+	"writeStringToTmpFile",
+	"DKIM_InternalError"
 ];
 
 const Cc = Components.classes;
@@ -68,6 +83,8 @@ function exceptionToStr(exception) {
 
 /**
  * Reads from a source asynchronously into a String.
+ * 
+ * Based on https://developer.mozilla.org/en-US/docs/Code_snippets/File_I_O#Asynchronously
  * 
  * @param {String|nsIURI|nsIFile|nsIChannel|nsIInputStream} aSource The source to read from.
  * 
@@ -162,6 +179,8 @@ function tryGetFormattedString(stringbundle, name, params) {
 /**
  * Writes a String to a file in the operating system's temporary files directory.
  * 
+ * Based on https://developer.mozilla.org/en-US/docs/Code_snippets/File_I_O#Write_a_string
+ * 
  * @param {String} string
  * @param {String} fileName
  */
@@ -188,6 +207,7 @@ function writeStringToTmpFile(string, fileName) {
 	NetUtil.asyncCopy(istream, ostream, function(status) {
 		if (!Components.isSuccessCode(status)) {
 			// Handle error!
+			log.debug("writeStringToTmpFile nsresult: "+status);
 			return;
 		}
 
@@ -195,3 +215,30 @@ function writeStringToTmpFile(string, fileName) {
 		log.debug("DKIM: wrote file to "+file.path);
 	});
 }
+
+/**
+ * DKIM internal error
+ * 
+ * @constructor
+ * 
+ * @param {String} message
+ * @param {String} [errorType]
+ * 
+ * @return {DKIM_InternalError}
+ */
+function DKIM_InternalError(message, errorType) {
+	this.name = dkimStrings.getString("DKIM_INTERNALERROR");
+	this.errorType = errorType;
+	this.message = message ||
+		tryGetString(dkimStrings, errorType) ||
+		errorType ||
+		dkimStrings.getString("DKIM_INTERNALERROR_DEFAULT");
+	
+	// modify stack and lineNumber, to show where this object was created,
+	// not where Error() was
+	var err = new Error();
+	this.stack = err.stack.substring(err.stack.indexOf('\n')+1);
+	this.lineNumber = parseInt(this.stack.match(/[^:]*$/m), 10);
+}
+DKIM_InternalError.prototype = new Error();
+DKIM_InternalError.prototype.constructor = DKIM_InternalError;

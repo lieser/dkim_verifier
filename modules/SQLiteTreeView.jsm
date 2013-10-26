@@ -38,6 +38,8 @@ Cu.import("resource://gre/modules/Services.jsm");
  * 
  * based on http://www.simon-cozens.org/content/xul-mozstorage-and-sqlite
  * 
+ * @constructor
+ * 
  * @param {String} dbPath The database file to open. This can be an absolute or relative path. If a relative path is given, it is interpreted as relative to the current profile's directory.
  * @param {String} tableName Table to be displayed
  * @param {String[]} columns Columns to be displayed in the same order as in the tree

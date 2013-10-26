@@ -14,7 +14,8 @@
 // options for JSHint
 /* jshint strict:true, moz:true */
 /* jshint -W069 */ // "['{a}'] is better written in dot notation."
-/* global Components, Services, Sqlite, Task, Promise, OS, CommonUtils, Logging, exceptionToStr */
+/* global Components, Services, Sqlite, Task, Promise, OS, CommonUtils */
+/* global Logging, exceptionToStr */
 /* exported EXPORTED_SYMBOLS, Policy */
 
 var EXPORTED_SYMBOLS = [
