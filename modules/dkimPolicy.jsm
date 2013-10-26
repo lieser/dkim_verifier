@@ -34,7 +34,7 @@ Cu.import("resource://gre/modules/osfile.jsm"); // Requires Gecko 16.0
 Cu.import("resource://services-common/utils.js");
 
 Cu.import("resource://dkim_verifier/logging.jsm");
-Cu.import("chrome://dkim_verifier/content/helper.js");
+Cu.import("resource://dkim_verifier/helper.jsm");
 
 
 const DB_POLICY_NAME = "dkimPolicy.sqlite";

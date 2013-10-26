@@ -1,5 +1,5 @@
 /*
- * helper.js
+ * helper.jsm
  *
  * Version: 1.0.0pre1 (26 October 2013)
  * 

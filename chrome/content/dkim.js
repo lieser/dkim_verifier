@@ -21,9 +21,9 @@
 var DKIM_Verifier = {};
 
 Cu.import("resource://dkim_verifier/logging.jsm", DKIM_Verifier);
+Cu.import("resource://dkim_verifier/helper.jsm", DKIM_Verifier);
 Cu.import("resource://dkim_verifier/dkimVerifier.jsm", DKIM_Verifier);
 Cu.import("resource://dkim_verifier/dkimPolicy.jsm", DKIM_Verifier);
-Cu.import("chrome://dkim_verifier/content/helper.js", DKIM_Verifier);
 
 /*
  * DKIM Verifier display module
