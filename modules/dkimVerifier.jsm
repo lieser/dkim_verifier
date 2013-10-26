@@ -44,9 +44,9 @@ Cu.import("resource://gre/modules/Dict.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
 
 Cu.import("resource://dkim_verifier/logging.jsm");
+Cu.import("resource://dkim_verifier/helper.jsm");
 Cu.import("resource://dkim_verifier/dkimPolicy.jsm");
-Cu.import("chrome://dkim_verifier/content/dns.js");
-Cu.import("chrome://dkim_verifier/content/helper.js");
+Cu.import("resource://dkim_verifier/dns.js");
 
 // namespaces
 var RSA = {};
@@ -55,19 +55,19 @@ RSA.navigator = {};
 RSA.navigator.appName = "Netscape";
 
 // ASN.1
-Services.scriptloader.loadSubScript("chrome://dkim_verifier/content/asn1hex-1.1.js",
+Services.scriptloader.loadSubScript("resource://dkim_verifier/asn1hex-1.1.js",
                                     RSA, "UTF-8" /* The script's encoding */);
 // base64 converter
-Services.scriptloader.loadSubScript("chrome://dkim_verifier/content/base64.js",
+Services.scriptloader.loadSubScript("resource://dkim_verifier/base64.js",
                                     RSA, "UTF-8" /* The script's encoding */);
 // RSA
-Services.scriptloader.loadSubScript("chrome://dkim_verifier/content/jsbn.js",
+Services.scriptloader.loadSubScript("resource://dkim_verifier/jsbn.js",
                                     RSA, "UTF-8" /* The script's encoding */);
-Services.scriptloader.loadSubScript("chrome://dkim_verifier/content/jsbn2.js",
+Services.scriptloader.loadSubScript("resource://dkim_verifier/jsbn2.js",
                                     RSA, "UTF-8" /* The script's encoding */);
-Services.scriptloader.loadSubScript("chrome://dkim_verifier/content/rsa.js",
+Services.scriptloader.loadSubScript("resource://dkim_verifier/rsa.js",
                                     RSA, "UTF-8" /* The script's encoding */);
-Services.scriptloader.loadSubScript("chrome://dkim_verifier/content/rsasign-1.2.js",
+Services.scriptloader.loadSubScript("resource://dkim_verifier/rsasign-1.2.js",
                                     RSA, "UTF-8" /* The script's encoding */);
 
 var messenger;
