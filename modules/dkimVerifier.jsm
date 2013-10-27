@@ -70,6 +70,9 @@ Services.scriptloader.loadSubScript("resource://dkim_verifier/rsa.js",
 Services.scriptloader.loadSubScript("resource://dkim_verifier/rsasign-1.2.js",
                                     RSA, "UTF-8" /* The script's encoding */);
 
+
+const PREF_BRANCH = "extensions.dkim_verifier.";
+
 var messenger;
 var msgHeaderParser;
 
@@ -86,7 +89,7 @@ var Verifier = (function() {
 /*
  * preferences
  */
-	var prefs = null;
+	var prefs = Services.prefs.getBranch(PREF_BRANCH);
 	
  /*
  * private variables
@@ -1260,19 +1263,15 @@ var that = {
  */
  
 	/*
-	 * gets called on startup
+	 * init
 	 */
-	startup : function () {
+	init : function Verifier_init() {
 		messenger = Components.classes["@mozilla.org/messenger;1"]
 			.createInstance(Components.interfaces.nsIMessenger);
 		msgHeaderParser = Components.classes["@mozilla.org/messenger/headerparser;1"].
 			createInstance(Components.interfaces.nsIMsgHeaderParser);
 
 		// Register to receive notifications of preference changes
-		prefs = Components.classes["@mozilla.org/preferences-service;1"].
-			getService(Components.interfaces.nsIPrefService).
-			getBranch("extensions.dkim_verifier.");
-		prefs.QueryInterface(Components.interfaces.nsIPrefBranch2);
 		prefs.addObserver("", that, false);
 		
 		// load preferences
@@ -1286,18 +1285,9 @@ var that = {
 	},
 
 	/*
-	 * gets called on shutdown
-	 * so far, this never happens
-	 */
-	shutdown : function() {
-		// remove preference observer
-		prefs.removeObserver("", that);
-	},
-
-	/*
 	 * gets called called whenever an event occurs on the preference
 	 */
-	observe: function(subject, topic, data) {
+	observe: function Verifier_observe(subject, topic, data) {
 		// subject is the nsIPrefBranch we're observing (after appropriate QI)
 		// data is the name of the pref that's been changed (relative to aSubject)
 		
@@ -1348,7 +1338,7 @@ var that = {
 	 * callback for the dns result
 	 * the message to be verified is passed as the 2. parameter
 	 */
-	dnsCallback : function (dnsResult, msg, queryError) {
+	dnsCallback : function Verifier_dnsCallback(dnsResult, msg, queryError) {
 		try {
 			// dkimDebugMsg("DNS result: " + dnsResult);
 			if (queryError !== undefined) {
@@ -1378,5 +1368,4 @@ return that;
 var DKIMVerifier = {};
 DKIMVerifier.dkimDebugMsg = Verifier.dkimDebugMsg;
 
-Verifier.startup();
-// TODO: shutdown
+Verifier.init();

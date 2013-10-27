@@ -25,6 +25,9 @@ Cu.import("resource://dkim_verifier/helper.jsm", DKIM_Verifier);
 Cu.import("resource://dkim_verifier/dkimVerifier.jsm", DKIM_Verifier);
 Cu.import("resource://dkim_verifier/dkimPolicy.jsm", DKIM_Verifier);
 
+
+const PREF_BRANCH = "extensions.dkim_verifier.";
+
 /*
  * DKIM Verifier display module
  */
@@ -34,7 +37,7 @@ DKIM_Verifier.Display = (function() {
 /*
  * preferences
  */
-	var prefs = null;
+	var prefs = Services.prefs.getBranch(PREF_BRANCH);
 	
  /*
  * private variables
@@ -116,8 +119,6 @@ DKIM_Verifier.Display = (function() {
 				return;
 			}
 		
-			var messenger = Components.classes["@mozilla.org/messenger;1"].
-				createInstance().QueryInterface(Components.interfaces.nsIMessenger);
 			var msgHdr = messenger.messageServiceFromURI(msgURI).
 				messageURIToMsgHdr(msgURI);
 			
@@ -141,8 +142,6 @@ DKIM_Verifier.Display = (function() {
 				return null;
 			}
 
-			var messenger = Components.classes["@mozilla.org/messenger;1"].
-				createInstance().QueryInterface(Components.interfaces.nsIMessenger);
 			var msgHdr = messenger.messageServiceFromURI(msgURI).
 				messageURIToMsgHdr(msgURI);
 			
@@ -260,7 +259,7 @@ var that = {
  * public methods/variables
  */
  
-	initHeaderEntry: function() {
+	initHeaderEntry: function Display_initHeaderEntry() {
 		if (header && document.getElementById(header.id) !== header) {
 			return;
 		}
@@ -274,7 +273,7 @@ var that = {
 		header = view.enclosingBox;
 		row = view.enclosingRow;
 	},
-	setCollapsed: function(state) {
+	setCollapsed: function Display_setCollapsed(state) {
 		function setDKIMFromTooltip(headerBox) {
 			var emailDisplayButton = headerBox.emailAddresses.boxObject.firstChild;
 			if (emailDisplayButton) {
@@ -356,7 +355,7 @@ var that = {
 	/*
 	 * gets called on startup
 	 */
-	startup : function () {
+	startup : function Display_startup() {
 		// get xul elements
 		statusbarpanel = document.getElementById("dkim-verifier-statusbarpanel");
 		policyAddUserExceptionButton = document.
@@ -365,10 +364,6 @@ var that = {
 
 		
 		// Register to receive notifications of preference changes
-		prefs = Components.classes["@mozilla.org/preferences-service;1"].
-			getService(Components.interfaces.nsIPrefService).
-			getBranch("extensions.dkim_verifier.");
-		prefs.QueryInterface(Components.interfaces.nsIPrefBranch2);
 		prefs.addObserver("", that, false);
 		
 		// convert old preferences
@@ -414,7 +409,7 @@ var that = {
 	/*
 	 * gets called on shutdown
 	 */
-	shutdown : function() {
+	shutdown : function Display_shutdown() {
 		// remove preference observer
 		prefs.removeObserver("", that);
 		
@@ -434,7 +429,7 @@ var that = {
 	/*
 	 * gets called called whenever an event occurs on the preference
 	 */
-	observe: function(subject, topic, data) {
+	observe: function Display_observe(subject, topic, data) {
 		// subject is the nsIPrefBranch we're observing (after appropriate QI)
 		// data is the name of the pref that's been changed (relative to aSubject)
 		
@@ -456,7 +451,7 @@ var that = {
 	/*
 	 * gets called if a new message ist viewed
 	 */
-	onBeforeShowHeaderPane : function () {
+	onBeforeShowHeaderPane : function Display_onBeforeShowHeaderPane() {
 		that.initHeaderEntry();
 		var reverifyDKIMSignature = document.
 			getElementById("dkim_verifier.reverifyDKIMSignature");
@@ -488,7 +483,7 @@ var that = {
 	/*
 	 * Resets the header and statusbarpanel
 	 */
-	onStartHeaders: function() {
+	onStartHeaders: function Display_onStartHeaders() {
 		header.warnings = [];
 		statusbarpanel.warnings = [];
 
@@ -501,7 +496,7 @@ var that = {
 	/*
 	 * starts verification
 	 */
-	onEndHeaders: function() {
+	onEndHeaders: function Display_onEndHeaders() {
 		try {
 			// return if msg is RSS feed or news
 			if (gFolderDisplay.selectedMessageIsFeed || gFolderDisplay.selectedMessageIsNews) {
@@ -527,12 +522,12 @@ var that = {
 			handleExeption(e, {"msgURI": msgURI});
 		}
 	},
-	onEndAttachments: function() {},
+	onEndAttachments: function Display_onEndAttachments() {},
 
 	/*
 	 * Initializes the DKIM header
 	 */
-	onOutput: function (headerEntry, headerValue) {
+	onOutput: function Display_onOutput(headerEntry, headerValue) {
 		header.value = headerValue;
 	},
 
@@ -542,7 +537,7 @@ var that = {
 	 * @param {String} msgURI
 	 * @param {dkimResult} result
 	 */
-	dkimResultCallback: function(msgURI, result) {
+	dkimResultCallback: function Display_dkimResultCallback(msgURI, result) {
 		try {
 			if (result.result !== "TEMPFAIL") {
 				saveResult(msgURI, result);
@@ -556,7 +551,7 @@ var that = {
 	/*
 	 * Reverify DKIM Signature
 	 */
-	reverify : function() {
+	reverify : function Display_reverify() {
 		// get msg uri
 		var msgURI = gDBView.URIForFirstSelectedMessage;
 
@@ -569,7 +564,7 @@ var that = {
 	/*
 	 * policyAddUserException
 	 */
-	policyAddUserException : function() {
+	policyAddUserException : function Display_policyAddUserException() {
 		// get from address
 		var mime2DecodedAuthor = gMessageDisplay.displayedMessage.author;
 		var msgHeaderParser = Components.classes["@mozilla.org/messenger/headerparser;1"].

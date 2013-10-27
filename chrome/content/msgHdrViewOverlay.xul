@@ -19,9 +19,9 @@
 		<menuseparator/>
 		<menuitem id="dkim_verifier.reverifyDKIMSignature"
 		          label="&dkim_verifier.reverifyDKIMSignature.label;"
-		          oncommand="DKIM_Verifier.DKIMVerifier.reverify();"/>
+		          oncommand="DKIM_Verifier.Display.reverify();"/>
 		<menuitem id="dkim_verifier.policyAddUserException"
 		          label="&dkim_verifier.policyAddUserException.label;"
-		          oncommand="DKIM_Verifier.DKIMVerifier.policyAddUserException();"/>
+		          oncommand="DKIM_Verifier.Display.policyAddUserException();"/>
 	</menupopup>
 </overlay>
