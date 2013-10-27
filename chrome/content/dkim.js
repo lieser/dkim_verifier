@@ -17,9 +17,10 @@
 /* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
 /* global Components, Cu, Services, messenger, gMessageListeners, gDBView, gFolderDisplay, gExpandedHeaderView, createHeaderEntry, syncGridColumnWidths, currentHeaderData, gMessageDisplay */
 
+Cu.import("resource://gre/modules/Task.jsm"); // Requires Gecko 17.0
+
 // namespace
 var DKIM_Verifier = {};
-
 Cu.import("resource://dkim_verifier/logging.jsm", DKIM_Verifier);
 Cu.import("resource://dkim_verifier/helper.jsm", DKIM_Verifier);
 Cu.import("resource://dkim_verifier/dkimVerifier.jsm", DKIM_Verifier);
@@ -558,7 +559,7 @@ var that = {
 	 */
 	reverify : function Display_reverify() {
 		// get msg uri
-		var msgURI = gDBView.URIForFirstSelectedMessage;
+		var msgURI = gFolderDisplay.selectedMessageUris[0];
 
 		header.value = dkimStrings.getString("loading");
 		that.onStartHeaders();
@@ -570,13 +571,17 @@ var that = {
 	 * policyAddUserException
 	 */
 	policyAddUserException : function Display_policyAddUserException() {
-		// get from address
-		var mime2DecodedAuthor = gMessageDisplay.displayedMessage.author;
-		var msgHeaderParser = Components.classes["@mozilla.org/messenger/headerparser;1"].
-			createInstance(Components.interfaces.nsIMsgHeaderParser);
-		var from = msgHeaderParser.extractHeaderAddressMailboxes(mime2DecodedAuthor);
+		Task.spawn(function () {
+			// get from address
+			var mime2DecodedAuthor = gMessageDisplay.displayedMessage.author;
+			var msgHeaderParser = Components.classes["@mozilla.org/messenger/headerparser;1"].
+				createInstance(Components.interfaces.nsIMsgHeaderParser);
+			var from = msgHeaderParser.extractHeaderAddressMailboxes(mime2DecodedAuthor);
 
-		DKIM_Verifier.Policy.addUserException(from);
+			yield DKIM_Verifier.Policy.addUserException(from);
+			
+			that.reverify();
+		});
 	},
 };
 return that;
