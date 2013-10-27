@@ -539,10 +539,15 @@ var that = {
 	 */
 	dkimResultCallback: function Display_dkimResultCallback(msgURI, result) {
 		try {
+			// don't save result if it's a TEMPFAIL
 			if (result.result !== "TEMPFAIL") {
 				saveResult(msgURI, result);
 			}
-			displayResult(result);
+			// only show result if it's for the currently viewed message
+			var currentMsgURI = gFolderDisplay.selectedMessageUris[0];
+			if (currentMsgURI === msgURI) {
+				displayResult(result);
+			}
 		} catch(e) {
 			handleExeption(e, {"msgURI": msgURI});
 		}
