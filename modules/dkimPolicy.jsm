@@ -14,8 +14,9 @@
 // options for JSHint
 /* jshint strict:true, moz:true */
 /* jshint -W069 */ // "['{a}'] is better written in dot notation."
-/* global Components, Services, Sqlite, Task, Promise, OS, CommonUtils */
-/* global Logging, exceptionToStr */
+/* global Components, Services, Sqlite, Task, Promise */
+/* global Logging */
+/* global exceptionToStr, readStringFrom, stringEndsWith */
 /* exported EXPORTED_SYMBOLS, Policy */
 
 var EXPORTED_SYMBOLS = [
@@ -26,12 +27,11 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
+Cu.import("resource://gre/modules/osfile.jsm"); // Requires Gecko 16.0
+Cu.import("resource://gre/modules/Promise.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/Sqlite.jsm"); // Requires Gecko 20.0
 Cu.import("resource://gre/modules/Task.jsm"); // Requires Gecko 17.0
-Cu.import("resource://gre/modules/Promise.jsm");
-Cu.import("resource://gre/modules/osfile.jsm"); // Requires Gecko 16.0
-Cu.import("resource://services-common/utils.js");
 
 Cu.import("resource://dkim_verifier/logging.jsm");
 Cu.import("resource://dkim_verifier/helper.jsm");
@@ -242,7 +242,8 @@ var Policy = {
 };
 
 /**
- * Adds rule
+ * Adds rule.
+ * Generator function.
  * 
  * @param {String} addr
  * @param {String} sdid

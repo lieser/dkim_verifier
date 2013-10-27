@@ -15,7 +15,7 @@
 // options for JSHint
 /* jshint strict:true, moz:true */
 /* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
-/* global Components, Cu, gMessageListeners, gDBView, gFolderDisplay, gExpandedHeaderView, createHeaderEntry, syncGridColumnWidths, currentHeaderData, gMessageDisplay */ 
+/* global Components, Cu, Services, messenger, gMessageListeners, gDBView, gFolderDisplay, gExpandedHeaderView, createHeaderEntry, syncGridColumnWidths, currentHeaderData, gMessageDisplay */
 
 // namespace
 var DKIM_Verifier = {};

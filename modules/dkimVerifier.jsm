@@ -26,10 +26,9 @@
 // options for JSHint
 /* jshint strict:true, moz:true */
 /* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
-/* global Components, Dict, Services */
-/* global Logging, Policy */
-/* global queryDNS, dnsChangeDebug, dnsChangeNameserver, dnsChangeGetNameserversFromOS, dnsChangeTimeoutConnect */
-/* global exceptionToStr, stringEndsWith, tryGetString, writeStringToTmpFile, DKIM_InternalError */
+/* global Components, Dict, Services, Task */
+/* global Logging, Key, Policy */
+/* global dkimStrings, exceptionToStr, stringEndsWith, writeStringToTmpFile, DKIM_SigError, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, Verifier */
 
 var EXPORTED_SYMBOLS = [
@@ -42,11 +41,12 @@ const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Dict.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
+Cu.import("resource://gre/modules/Task.jsm"); // Requires Gecko 17.0
 
 Cu.import("resource://dkim_verifier/logging.jsm");
 Cu.import("resource://dkim_verifier/helper.jsm");
+Cu.import("resource://dkim_verifier/dkimKey.jsm");
 Cu.import("resource://dkim_verifier/dkimPolicy.jsm");
-Cu.import("resource://dkim_verifier/dns.js");
 
 // namespaces
 var RSA = {};
@@ -95,13 +95,6 @@ var Verifier = (function() {
  * private variables
  */
 	var log = Logging.getLogger("Verifier");
-	var dkimStrings = {};
-	dkimStrings.stringbundle = Services.strings.createBundle(
-		"chrome://dkim_verifier/locale/dkim.properties"
-	);
-	dkimStrings.getString = dkimStrings.stringbundle.GetStringFromName;
-	dkimStrings.getFormattedString = (key, strArray) =>
-		dkimStrings.stringbundle.GetStringFromName(key, strArray, strArray.length);
 
 	// WSP help pattern as specified in Section 2.8 of RFC 6376
 	var pattWSP = "[ \t]";
@@ -1016,72 +1009,69 @@ var Verifier = (function() {
 	 * will verify until key query, the rest is in verifySignaturePart2
 	 */
 	function verifySignaturePart1(msg) {
-		try {
-			// all warnings about the signature will go in her
-			msg.warnings = [];
+		Task.spawn(function () {
+			try {
+				// all warnings about the signature will go in her
+				msg.warnings = [];
 
-			// parse the DKIMSignatureHeader
-			msg.DKIMSignature = parseDKIMSignature(msg.headerFields["dkim-signature"][0]);
-			dkimDebugMsg("Parsed DKIM-Signature: "+msg.DKIMSignature.toSource());
-			
-			// add should be signed rule
-			if (!msg.shouldBeSigned.foundRule) {
-				Policy.signedBy(msg.from, msg.DKIMSignature.d);
-			}
-			
-			// warning if wrong signer
-			if (msg.shouldBeSigned.shouldBeSigned &&
-					msg.shouldBeSigned.sdid !== msg.DKIMSignature.d) {
-				msg.warnings.push("DKIM_POLICYWARNING_WRONG_SDID");
-			}
-			
-			// warning if from is not in SDID or AUID
-			if (!(stringEndsWith(msg.from, "@"+msg.DKIMSignature.d) ||
-			      stringEndsWith(msg.from, "."+msg.DKIMSignature.d))) {
-				msg.warnings.push("DKIM_SIGWARNING_FROM_NOT_IN_SDID");
-				dkimDebugMsg("Warning: DKIM_SIGWARNING_FROM_NOT_IN_SDID ("+
-					dkimStrings.getString("DKIM_SIGWARNING_FROM_NOT_IN_SDID")+")");
-			} else if (!(stringEndsWith(msg.from, "@"+msg.DKIMSignature.i) ||
-			             stringEndsWith(msg.from, "."+msg.DKIMSignature.i))) {
-				msg.warnings.push("DKIM_SIGWARNING_FROM_NOT_IN_AUID");
-				dkimDebugMsg("Warning: DKIM_SIGWARNING_FROM_NOT_IN_AUID ("+
-					dkimStrings.getString("DKIM_SIGWARNING_FROM_NOT_IN_AUID")+")");
-			}
+				// parse the DKIMSignatureHeader
+				msg.DKIMSignature = parseDKIMSignature(msg.headerFields["dkim-signature"][0]);
+				dkimDebugMsg("Parsed DKIM-Signature: "+msg.DKIMSignature.toSource());
+				
+				// add should be signed rule
+				if (!msg.shouldBeSigned.foundRule) {
+					Policy.signedBy(msg.from, msg.DKIMSignature.d);
+				}
+				
+				// warning if wrong signer
+				if (msg.shouldBeSigned.shouldBeSigned &&
+						msg.shouldBeSigned.sdid !== msg.DKIMSignature.d) {
+					msg.warnings.push("DKIM_POLICYWARNING_WRONG_SDID");
+				}
+				
+				// warning if from is not in SDID or AUID
+				if (!(stringEndsWith(msg.from, "@"+msg.DKIMSignature.d) ||
+							stringEndsWith(msg.from, "."+msg.DKIMSignature.d))) {
+					msg.warnings.push("DKIM_SIGWARNING_FROM_NOT_IN_SDID");
+					dkimDebugMsg("Warning: DKIM_SIGWARNING_FROM_NOT_IN_SDID ("+
+						dkimStrings.getString("DKIM_SIGWARNING_FROM_NOT_IN_SDID")+")");
+				} else if (!(stringEndsWith(msg.from, "@"+msg.DKIMSignature.i) ||
+										 stringEndsWith(msg.from, "."+msg.DKIMSignature.i))) {
+					msg.warnings.push("DKIM_SIGWARNING_FROM_NOT_IN_AUID");
+					dkimDebugMsg("Warning: DKIM_SIGWARNING_FROM_NOT_IN_AUID ("+
+						dkimStrings.getString("DKIM_SIGWARNING_FROM_NOT_IN_AUID")+")");
+				}
 
-			var time = Math.round(Date.now() / 1000);
-			// warning if signature expired
-			if (msg.DKIMSignature.x !== null && msg.DKIMSignature.x < time) {
-				msg.warnings.push("DKIM_SIGWARNING_EXPIRED");
-				dkimDebugMsg("Warning: DKIM_SIGWARNING_EXPIRED ("+
-					dkimStrings.getString("DKIM_SIGWARNING_EXPIRED")+")");
-			}
-			// warning if signature in future
-			if (msg.DKIMSignature.t !== null && msg.DKIMSignature.t > time) {
-				msg.warnings.push("DKIM_SIGWARNING_FUTURE");
-				dkimDebugMsg("Warning: DKIM_SIGWARNING_FUTURE ("+
-					dkimStrings.getString("DKIM_SIGWARNING_FUTURE")+")");
-			}
-			
-			// Compute the Message Hashe for the body 
-			var bodyHash = computeBodyHash(msg);
-			dkimDebugMsg("computed body hash: "+bodyHash);
-			
-			// compare body hash
-			if (bodyHash !== msg.DKIMSignature.bh) {
-				throw new DKIM_SigError("DKIM_SIGERROR_CORRUPT_BH");
-			}
+				var time = Math.round(Date.now() / 1000);
+				// warning if signature expired
+				if (msg.DKIMSignature.x !== null && msg.DKIMSignature.x < time) {
+					msg.warnings.push("DKIM_SIGWARNING_EXPIRED");
+					dkimDebugMsg("Warning: DKIM_SIGWARNING_EXPIRED ("+
+						dkimStrings.getString("DKIM_SIGWARNING_EXPIRED")+")");
+				}
+				// warning if signature in future
+				if (msg.DKIMSignature.t !== null && msg.DKIMSignature.t > time) {
+					msg.warnings.push("DKIM_SIGWARNING_FUTURE");
+					dkimDebugMsg("Warning: DKIM_SIGWARNING_FUTURE ("+
+						dkimStrings.getString("DKIM_SIGWARNING_FUTURE")+")");
+				}
+				
+				// Compute the Message Hashe for the body 
+				var bodyHash = computeBodyHash(msg);
+				dkimDebugMsg("computed body hash: "+bodyHash);
+				
+				// compare body hash
+				if (bodyHash !== msg.DKIMSignature.bh) {
+					throw new DKIM_SigError("DKIM_SIGERROR_CORRUPT_BH");
+				}
 
-			// get the DKIM key
-			// this function will continue the verification
-			queryDNS(
-				msg.DKIMSignature.s+"._domainkey."+msg.DKIMSignature.d,
-				"TXT",
-				that.dnsCallback,
-				msg
-			);
-		} catch(e) {
-			handleExeption(e, msg);
-		}
+				// get the DKIM key
+				msg.keyQueryResult = yield Key.getKey(msg.DKIMSignature.d, msg.DKIMSignature.s);
+				verifySignaturePart2(msg);
+			} catch(e) {
+				handleExeption(e, msg);
+			}
+		});
 	}
 	
 	/*
@@ -1232,25 +1222,6 @@ var Verifier = (function() {
 	}
 
 	/*
-	 * DKIM_SIGERROR
-	 */
-	function DKIM_SigError(errorType) {
-		this.name = dkimStrings.getString("DKIM_SIGERROR");
-		this.errorType = errorType;
-		this.message = tryGetString(dkimStrings, errorType) ||
-			errorType ||
-			dkimStrings.getString("DKIM_SIGERROR_DEFAULT");
-
-		// modify stack and lineNumber, to show where this object was created,
-		// not where Error() was
-		var err = new Error();
-		this.stack = err.stack.substring(err.stack.indexOf('\n')+1);
-		this.lineNumber = parseInt(this.stack.match(/[^:]*$/m), 10);
-	}
-	DKIM_SigError.prototype = new Error();
-	DKIM_SigError.prototype.constructor = DKIM_SigError;
-
-	/*
 	 * dkimDebugMsg
 	 */
 	function dkimDebugMsg(message) {
@@ -1270,49 +1241,8 @@ var that = {
 			.createInstance(Components.interfaces.nsIMessenger);
 		msgHeaderParser = Components.classes["@mozilla.org/messenger/headerparser;1"].
 			createInstance(Components.interfaces.nsIMsgHeaderParser);
-
-		// Register to receive notifications of preference changes
-		prefs.addObserver("", that, false);
-		
-		// load preferences
-		dnsChangeDebug(prefs.getBoolPref("debug"));
-		dnsChangeNameserver(prefs.getCharPref("dns.nameserver"));
-		dnsChangeGetNameserversFromOS(
-			prefs.getBoolPref("dns.getNameserversFromOS")
-		);
-		dnsChangeTimeoutConnect(prefs.getIntPref("dns.timeout_connect"));
-
 	},
 
-	/*
-	 * gets called called whenever an event occurs on the preference
-	 */
-	observe: function Verifier_observe(subject, topic, data) {
-		// subject is the nsIPrefBranch we're observing (after appropriate QI)
-		// data is the name of the pref that's been changed (relative to aSubject)
-		
-		if (topic !== "nsPref:changed") {
-			return;
-		}
-		
-		switch(data) {
-			case "debug":
-				dnsChangeDebug(prefs.getBoolPref("debug"));
-				break;
-			case "dns.getNameserversFromOS":
-				dnsChangeGetNameserversFromOS(
-					prefs.getBoolPref("dns.getNameserversFromOS")
-				);
-				break;
-			case "dns.nameserver":
-				dnsChangeNameserver(prefs.getCharPref("dns.nameserver"));
-				break;
-			case "dns.timeout_connect":
-				dnsChangeTimeoutConnect(prefs.getIntPref("dns.timeout_connect"));
-				break;
-		}
-	},
-	
 	/**
 	 * Callback for the result of the verification.
 	 * 
@@ -1332,28 +1262,6 @@ var that = {
 		msg.msgURI = msgURI;
 		msg.dkimResultCallback = dkimResultCallback;
 		parseMsg(msg);
-	},
-	
-	/*
-	 * callback for the dns result
-	 * the message to be verified is passed as the 2. parameter
-	 */
-	dnsCallback : function Verifier_dnsCallback(dnsResult, msg, queryError) {
-		try {
-			// dkimDebugMsg("DNS result: " + dnsResult);
-			if (queryError !== undefined) {
-				throw new DKIM_InternalError(queryError, "DKIM_DNSERROR_SERVER_ERROR");
-			}
-			if (dnsResult === null) {
-				throw new DKIM_SigError("DKIM_SIGERROR_NOKEY");
-			}
-			
-			msg.keyQueryResult = dnsResult[0];
-			
-			verifySignaturePart2(msg);
-		} catch(e) {
-			handleExeption(e, msg);
-		}
 	},
 	
 	/*

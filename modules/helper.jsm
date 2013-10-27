@@ -13,17 +13,19 @@
 
 // options for JSHint
 /* jshint strict:true, moz:true */
-/* global Components, FileUtils, NetUtil, Promise, CommonUtils */
-/* Logging */
-/* exported EXPORTED_SYMBOLS, exceptionToStr, readStringFrom, stringEndsWith, tryGetString, tryGetFormattedString, writeStringToTmpFile, DKIM_InternalError */
+/* global Components, FileUtils, NetUtil, Promise, Services, CommonUtils */
+/* global Logging */
+/* exported EXPORTED_SYMBOLS, exceptionToStr, readStringFrom, stringEndsWith, tryGetString, tryGetFormattedString, writeStringToTmpFile, DKIM_SigError, DKIM_InternalError */
 
 var EXPORTED_SYMBOLS = [
+	"dkimStrings",
 	"exceptionToStr",
 	"readStringFrom",
 	"stringEndsWith",
 	"tryGetString",
 	"tryGetFormattedString",
 	"writeStringToTmpFile",
+	"DKIM_SigError",
 	"DKIM_InternalError"
 ];
 
@@ -34,12 +36,25 @@ const Cu = Components.utils;
 Cu.import("resource://gre/modules/FileUtils.jsm");
 Cu.import("resource://gre/modules/NetUtil.jsm");
 Cu.import("resource://gre/modules/Promise.jsm");
+Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://services-common/utils.js");
 
 Cu.import("resource://dkim_verifier/logging.jsm");
 
 
 var log = Logging.getLogger("Helper");
+
+/**
+ * DKIM stringbundle with the same access methods as XUL:stringbundle
+ */
+var dkimStrings = {};
+dkimStrings.stringbundle = Services.strings.createBundle(
+	"chrome://dkim_verifier/locale/dkim.properties"
+);
+dkimStrings.getString = dkimStrings.stringbundle.GetStringFromName;
+dkimStrings.getFormattedString = (key, strArray) =>
+	dkimStrings.stringbundle.GetStringFromName(key, strArray, strArray.length);
+
 
 /**
  * @param {Error} exception
@@ -70,12 +85,12 @@ function exceptionToStr(exception) {
 	}
 	
 	// DKIM_SigError or DKIM_InternalError errors
-	// if (exception instanceof DKIM_SigError ||
-	    // exception instanceof DKIM_InternalError) {
+	if (exception instanceof DKIM_SigError ||
+	    exception instanceof DKIM_InternalError) {
 		if (exception.errorType) {
 			str = exception.errorType+": "+str;
 		}
-	// }
+	}
 
 	log.trace("exceptionToStr end");
 	return str;
@@ -217,6 +232,33 @@ function writeStringToTmpFile(string, fileName) {
 }
 
 /**
+ * DKIM signature error.
+ * 
+ * @constructor
+ * 
+ * @param {String} errorType
+ * 
+ * @return {DKIM_SigError}
+ */
+function DKIM_SigError(errorType) {
+	"use strict";
+
+	this.name = dkimStrings.getString("DKIM_SIGERROR");
+	this.errorType = errorType;
+	this.message = tryGetString(dkimStrings, errorType) ||
+		errorType ||
+		dkimStrings.getString("DKIM_SIGERROR_DEFAULT");
+
+	// modify stack and lineNumber, to show where this object was created,
+	// not where Error() was
+	var err = new Error();
+	this.stack = err.stack.substring(err.stack.indexOf('\n')+1);
+	this.lineNumber = parseInt(this.stack.match(/[^:]*$/m), 10);
+}
+DKIM_SigError.prototype = new Error();
+DKIM_SigError.prototype.constructor = DKIM_SigError;
+
+/**
  * DKIM internal error
  * 
  * @constructor
@@ -227,6 +269,8 @@ function writeStringToTmpFile(string, fileName) {
  * @return {DKIM_InternalError}
  */
 function DKIM_InternalError(message, errorType) {
+	"use strict";
+
 	this.name = dkimStrings.getString("DKIM_INTERNALERROR");
 	this.errorType = errorType;
 	this.message = message ||
