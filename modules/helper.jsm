@@ -66,15 +66,19 @@ function exceptionToStr(exception) {
 
 	log.trace("exceptionToStr begin");
 	
-	// cut stack from Sqlite.jsm, promise.js, Promise.jsm, Task.jsm calls
-	if (exception.stack) {
-		var posStackEnd = exception.stack.match(
-			/(?:\n[^\n]*(?:Sqlite\.jsm|promise\.js|Promise\.jsm|Task.jsm)[^\n]*)*\n$/
-		).index;
-		exception.stack = exception.stack.substr(0, posStackEnd+1);
-	}
-	
 	var str = CommonUtils.exceptionStr(exception);
+	log.trace(str);
+	
+	// cut stack trace from Sqlite.jsm, promise.js, Promise.jsm, Task.jsm calls
+	var posStackTrace = str.lastIndexOf("Stack trace: ");
+	if (posStackTrace !== -1) {
+		var tmp = str.substr(posStackTrace+13);
+		tmp = tmp.replace(
+			/ < (?:[^ ]| (?!< ))*(?:Sqlite\.jsm|promise\.js|Promise\.jsm|Task\.jsm)(?:[^ ]| (?!< ))*/g,
+			""
+		);
+		str = str.substr(0, posStackTrace+13) + tmp;
+	}
 	
 	// Sqlite.jsm errors
 	if (exception.errors) {

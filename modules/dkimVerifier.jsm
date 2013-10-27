@@ -717,7 +717,9 @@ var Verifier = (function() {
 		}
 
 		// get Notes (qp-section; OPTIONAL, default is empty)
-		var notesTag = parseTagValue(dict, "n", dkim_safe_char+"*", 2);
+		var ptext = "(?:"+hex_octet+"|[!-<>-~])";
+		var qp_section = "(?:(?:"+ptext+"| |\t)*"+ptext+")?";
+		var notesTag = parseTagValue(dict, "n", qp_section, 2);
 		if (notesTag !== null) {
 			DKIMKey.n = notesTag[0];
 		}
