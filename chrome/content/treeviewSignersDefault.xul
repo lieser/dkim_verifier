@@ -15,7 +15,7 @@ function setView(){
 
 <tree id="my-tree" editable="false" enableColumnDrag="true" flex="1">
 	<treecols>
-		<treecol id="domain" editable="true" label="domain" flex="15"/>
+		<treecol id="domain" editable="true" label="domain" flex="10"/>
 		<splitter class="tree-splitter" />
 		<treecol id="addr" editable="true" label="addr" flex="15"/>
 		<splitter class="tree-splitter" />
