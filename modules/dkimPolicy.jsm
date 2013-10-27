@@ -49,6 +49,7 @@ const RULE_TYPE = {
 const PRIORITY = {
 	AUTOINSERT_RULE_SIGNED:  110,
 	DEFAULT_RULE_SIGNED:     210,
+	DEFAULT_RULE_SIGNED2:     211,
 	DEFAULT_RULE_NEUTRAL:    220,
 	USERINSERT_RULE_SIGNED:  310,
 	USERINSERT_RULE_NEUTRAL: 320,
@@ -57,6 +58,8 @@ const PRIORITY = {
 
 var prefs = Services.prefs.getBranch(PREF_BRANCH);
 var log = Logging.getLogger("Policy");
+var eTLDService = Components.classes["@mozilla.org/network/effective-tld-service;1"]
+	.getService(Components.interfaces.nsIEffectiveTLDService);
 var dbInitialized = false;
 // Deferred<boolean>
 var initializedDefer = Promise.defer();
@@ -88,6 +91,8 @@ var Policy = {
 				throw new Task.Result(result);
 			}
 
+			var domain = getBaseDomainFromAddr(fromAddress);
+			
 			// wait for DB init
 			yield init();
 			var conn = yield Sqlite.openConnection({path: DB_POLICY_NAME});
@@ -98,14 +103,16 @@ var Policy = {
 				sqlRes = yield conn.executeCached(
 					"SELECT addr, sdid, ruletype, priority, enabled\n" +
 					"FROM signers WHERE\n" +
-					"  lower(:from) GLOB addr AND\n" +
-					"  enabled\n" +
+					"  domain = :domain AND\n" +
+					"  enabled AND\n" +
+					"  lower(:from) GLOB addr\n" +
 					"UNION SELECT addr, sdid, ruletype, priority, 1\n" +
 					"FROM signersDefault WHERE\n" +
+					"  domain = :domain AND\n" +
 					"  lower(:from) GLOB addr\n" +
 					"ORDER BY priority DESC\n" +
 					"LIMIT 1;",
-					{"from": fromAddress}
+					{domain:domain, "from": fromAddress}
 				);
 			} else {
 				// don't include default rules
@@ -133,8 +140,8 @@ var Policy = {
 				result.foundRule = false;
 			}
 			
-			log.debug("result.shouldBeSigned: "+result.shouldBeSigned+"; result.sdid: "+result.sdid+
-				"; result.foundRule: "+result.foundRule
+			log.debug("shouldBeSigned: "+result.shouldBeSigned+"; sdid: "+result.sdid+
+				"; foundRule: "+result.foundRule
 			);
 			log.trace("shouldBeSigned Task end");
 			throw new Task.Result(result);
@@ -206,6 +213,8 @@ var Policy = {
 		var promise = Task.spawn(function () {
 			log.trace("addUserException Task begin");
 			
+			var domain = getBaseDomainFromAddr(fromAddress);
+			
 			// wait for DB init
 			yield init();
 			var conn = yield Sqlite.openConnection({path: DB_POLICY_NAME});
@@ -214,12 +223,14 @@ var Policy = {
 				var sqlRes = yield conn.executeCached(
 					"SELECT addr, sdid, ruletype, priority, enabled\n" +
 					"FROM signers WHERE\n" +
+					"  domain = :domain AND\n" +
 					"  addr = :addr AND\n" +
 					"  ruletype = :ruletype AND\n" +
 					"  priority = :priority AND\n" +
 					"  enabled\n" +
 					"LIMIT 1;",
 					{
+						"domain": domain,
 						"addr": fromAddress,
 						"ruletype": RULE_TYPE["NEUTRAL"],
 						"priority": PRIORITY["USERINSERT_RULE_NEUTRAL"],
@@ -242,6 +253,20 @@ var Policy = {
 };
 
 /**
+ * Returns the base domain for an e-mail address; that is, the public suffix with a given number of additional domain name parts.
+ * 
+ * @param {String} addr
+ * @param {Number} [aAdditionalParts=0]
+ * 
+ * @return {String}
+ */
+function getBaseDomainFromAddr(addr, aAdditionalParts=0) {
+	// var fullDomain = addr.substr(addr.lastIndexOf("@")+1);
+	var nsiURI = Services.io.newURI("http://"+addr, null, null);
+	return eTLDService.getBaseDomain(nsiURI, aAdditionalParts);
+}
+
+/**
  * Adds rule.
  * Generator function.
  * 
@@ -257,24 +282,30 @@ function addRule(addr, sdid, ruletype, priority) {
 
 	log.trace("addRule begin");
 	
+	var domain = getBaseDomainFromAddr(addr);
+
 	// wait for DB init
 	yield init();
 	var conn = yield Sqlite.openConnection({path: DB_POLICY_NAME});
 	
-	log.debug("add rule (addr: "+addr+", sdid: "+sdid+
-		", ruletype: "+ruletype+", priority: "+priority+
-		", enabled: 1)"
-	);
-	yield conn.executeCached(
-		"INSERT INTO signers (addr, sdid, ruletype, priority, enabled)\n" +
-		"VALUES (:addr, :sdid, :ruletype, :priority, 1);",
-		{
-			"addr": addr,
-			"sdid": sdid,
-			"ruletype": RULE_TYPE[ruletype],
-			"priority": PRIORITY[priority],
-		}
-	);
+	try {
+		log.debug("add rule (domain: "+domain+", addr: "+addr+", sdid: "+sdid+
+			", ruletype: "+ruletype+", priority: "+priority+", enabled: 1)"
+		);
+		yield conn.executeCached(
+			"INSERT INTO signers (domain, addr, sdid, ruletype, priority, enabled)\n" +
+			"VALUES (:domain, :addr, :sdid, :ruletype, :priority, 1);",
+			{
+				"domain": domain,
+				"addr": addr,
+				"sdid": sdid,
+				"ruletype": RULE_TYPE[ruletype],
+				"priority": PRIORITY[priority],
+			}
+		);
+	} finally {
+		yield conn.close();
+	}
 
 	log.trace("addRule end");
 }
@@ -338,6 +369,7 @@ function init() {
 				// create table
 				yield conn.execute(
 					"CREATE TABLE IF NOT EXISTS signers (\n" +
+					"  domain TEXT NOT NULL,\n" +
 					"  addr TEXT NOT NULL,\n" +
 					"  sdid TEXT,\n" +
 					"  ruletype INTEGER NOT NULL,\n" +
@@ -361,6 +393,7 @@ function init() {
 				// create table
 				yield conn.execute(
 					"CREATE TABLE IF NOT EXISTS signersDefault (\n" +
+					"  domain TEXT NOT NULL,\n" +
 					"  addr TEXT NOT NULL,\n" +
 					"  sdid TEXT,\n" +
 					"  ruletype INTEGER NOT NULL,\n" +
@@ -393,14 +426,15 @@ function init() {
 				);
 				// insert new default rules
 				yield conn.executeCached(
-					"INSERT INTO signersDefault (addr, sdid, ruletype, priority)\n" +
-					"VALUES (:addr, :sdid, :ruletype, :priority);",
+					"INSERT INTO signersDefault (domain, addr, sdid, ruletype, priority)\n" +
+					"VALUES (:domain, :addr, :sdid, :ruletype, :priority);",
 					signersDefault.rules.map(function (v) {
 						return {
+							"domain": v.domain,
 							"addr": v.addr,
 							"sdid": v.sdid,
-							"ruletype": RULE_TYPE[v.ruletype],
-							"priority": PRIORITY[v.priority],
+							"ruletype": RULE_TYPE[v.ruletype] || v.ruletype,
+							"priority": PRIORITY[v.priority] || v.priority,
 						};
 					})
 				);

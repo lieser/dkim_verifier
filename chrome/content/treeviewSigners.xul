@@ -8,7 +8,7 @@
 <script>
 Components.utils.import("resource://dkim_verifier/SQLiteTreeView.jsm");
 
-var treeView = new SQLiteTreeView("dkimPolicy.sqlite","signers",["addr","sdid","ruletype","priority","enabled"]);
+var treeView = new SQLiteTreeView("dkimPolicy.sqlite","signers",["domain","addr","sdid","ruletype","priority","enabled"]);
 
 function setView(){
 	document.getElementById('my-tree').view = treeView;
@@ -17,6 +17,8 @@ function setView(){
 
 <tree id="my-tree" editable="true" enableColumnDrag="true" flex="1">
 	<treecols>
+		<treecol id="domain" editable="true" label="domain" flex="15"/>
+		<splitter class="tree-splitter" />
 		<treecol id="addr" editable="true" label="addr" flex="15"/>
 		<splitter class="tree-splitter" />
 		<treecol id="sdid" editable="true" label="sdid" flex="15"/>

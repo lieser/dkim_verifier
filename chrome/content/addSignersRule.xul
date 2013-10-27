@@ -15,6 +15,7 @@
 <script>
 function onAccept(){
 	var input = {
+		domain:     document.getElementById("domain").value,
 		addr:     document.getElementById("addr").value,
 		sdid:     document.getElementById("sdid").value,    
 		ruletype: document.getElementById("ruletype").value,
@@ -30,6 +31,8 @@ function onCancel(){
 }
 </script>
     
+<label value="domain"/>
+<textbox id="domain"/>
 <label value="addr"/>
 <textbox id="addr"/>
 <label value="sdid"/>

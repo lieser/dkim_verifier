@@ -1,169 +1,196 @@
 {
 	"versionTable": 1,
-	"versionData": 2,
+	"versionData": 1,
 	"rules": [
 		{
-			"addr": "*@amazon.co.uk",
+			"domain": "amazon.co.uk",
+			"addr": "*amazon.co.uk",
 			"sdid": "amazon.co.uk",
 			"ruletype": "SIGNED",
 			"priority": "DEFAULT_RULE_SIGNED"
 		}, {
-			"addr": "*@amazon.de",
+			"domain": "amazon.de",
+			"addr": "*amazon.de",
 			"sdid": "amazon.de",
 			"ruletype": "SIGNED",
 			"priority": "DEFAULT_RULE_SIGNED"
 		}, {
-			"addr": "*@marketplace.amazon.de",
-			"sdid": "amazon.de",
-			"ruletype": "SIGNED",
-			"priority": "DEFAULT_RULE_SIGNED"
-		}, {
+			"domain": "apple.com",
 			"addr": "*@id.apple.com",
 			"sdid": "id.apple.com",
 			"ruletype": "SIGNED",
 			"priority": "DEFAULT_RULE_SIGNED"
 		}, {
-			"addr": "*@battle.net",
+			"domain": "battle.net",
+			"addr": "*battle.net",
 			"sdid": "battle.net",
 			"ruletype": "SIGNED",
 			"priority": "DEFAULT_RULE_SIGNED"
 		}, {
-			"addr": "*@blizzard.com",
+			"domain": "blizzard.com",
+			"addr": "*blizzard.com",
 			"sdid": "blizzard.com",
 			"ruletype": "SIGNED",
 			"priority": "DEFAULT_RULE_SIGNED"
 		}, {
-			"addr": "*@couchsurfing.com",
+			"domain": "blizzard.com",
+			"addr": "*@email.blizzard.com",
+			"sdid": "email.blizzard.com",
+			"ruletype": "SIGNED",
+			"priority": "DEFAULT_RULE_SIGNED2"
+		}, {
+			"domain": "couchsurfing.com",
+			"addr": "*couchsurfing.com",
 			"sdid": "couchsurfing.com",
 			"ruletype": "SIGNED",
 			"priority": "DEFAULT_RULE_SIGNED"
 		}, {
-			"addr": "*@ebay.de",
+			"domain": "ebay.de",
+			"addr": "*ebay.de",
 			"sdid": "ebay.de",
 			"ruletype": "SIGNED",
 			"priority": "DEFAULT_RULE_SIGNED"
 		}, {
-			"addr": "*@email.blizzard.com",
-			"sdid": "email.blizzard.com",
-			"ruletype": "SIGNED",
-			"priority": "DEFAULT_RULE_SIGNED"
-		}, {
-			"addr": "*@facebookmail.com",
+			"domain": "facebookmail.com",
+			"addr": "*facebookmail.com",
 			"sdid": "facebookmail.com",
 			"ruletype": "SIGNED",
 			"priority": "DEFAULT_RULE_SIGNED"
 		}, {
-			"addr": "*@github.com",
+			"domain": "github.com",
+			"addr": "*github.com",
 			"sdid": "github.com",
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_NEUTRAL"
 		}, {
-			"addr": "*@gmail.com",
+			"domain": "gmail.com",
+			"addr": "*gmail.com",
 			"sdid": "gmail.com",
 			"ruletype": "SIGNED",
 			"priority": "DEFAULT_RULE_SIGNED"
 		}, {
-			"addr": "*@gmxnet.de",
+			"domain": "gmxnet.de",
+			"addr": "*gmxnet.de",
 			"sdid": "gmxnet.de",
 			"ruletype": "SIGNED",
 			"priority": "DEFAULT_RULE_SIGNED"
 		}, {
+			"domain": "gmxnet.de",
 			"addr": "mailings@gmxnet.de",
 			"sdid": "gmxnet.de",
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_NEUTRAL"
 		}, {
-			"addr": "*@google.com",
+			"domain": "google.com",
+			"addr": "*google.com",
 			"sdid": "google.com",
 			"ruletype": "SIGNED",
 			"priority": "DEFAULT_RULE_SIGNED"
 		}, {
+			"domain": "google.com",
 			"addr": "*@accounts.google.com",
 			"sdid": "accounts.google.com",
 			"ruletype": "SIGNED",
-			"priority": "DEFAULT_RULE_SIGNED"
+			"priority": "DEFAULT_RULE_SIGNED2"
 		}, {
-			"addr": "*@googlemail.com",
+			"domain": "googlemail.com",
+			"addr": "*googlemail.com",
 			"sdid": "googlemail.comm",
 			"ruletype": "SIGNED",
 			"priority": "DEFAULT_RULE_SIGNED"
 		}, {
-			"addr": "*@guildwars2.com",
+			"domain": "guildwars2.com",
+			"addr": "*guildwars2.com",
 			"sdid": "guildwars2.com",
 			"ruletype": "SIGNED",
 			"priority": "DEFAULT_RULE_SIGNED"
 		}, {
-			"addr": "*@gumtree.com.au",
+			"domain": "gumtree.com.au",
+			"addr": "*gumtree.com.au",
 			"sdid": "gumtree.com.au",
 			"ruletype": "SIGNED",
 			"priority": "DEFAULT_RULE_SIGNED"
 		}, {
+			"domain": "leagueoflegends.com",
 			"addr": "*@email.leagueoflegends.com",
 			"sdid": "email.leagueoflegends.com",
 			"ruletype": "SIGNED",
 			"priority": "DEFAULT_RULE_SIGNED"
 		}, {
+			"domain": "o2.de",
 			"addr": "*@news.o2.de",
 			"sdid": "news.o2.de",
 			"ruletype": "SIGNED",
 			"priority": "DEFAULT_RULE_SIGNED"
 		}, {
-			"addr": "*@paypal.de",
+			"domain": "paypal.de",
+			"addr": "*paypal.de",
 			"sdid": "paypal.de",
 			"ruletype": "SIGNED",
 			"priority": "DEFAULT_RULE_SIGNED"
 		}, {
+			"domain": "paypal.de",
 			"addr": "*@e.paypal.de",
 			"sdid": "e.paypal.de",
 			"ruletype": "SIGNED",
-			"priority": "DEFAULT_RULE_SIGNED"
+			"priority": "DEFAULT_RULE_SIGNED2"
 		}, {
+			"domain": "paypal.de",
 			"addr": "*@info.paypal.de",
 			"sdid": "info.paypal.de",
 			"ruletype": "SIGNED",
-			"priority": "DEFAULT_RULE_SIGNED"
+			"priority": "DEFAULT_RULE_SIGNED2"
 		}, {
+			"domain": "qantas.com.au",
 			"addr": "*@yourbooking.qantas.com.au",
 			"sdid": "yourbooking.qantas.com.au",
 			"ruletype": "SIGNED",
 			"priority": "DEFAULT_RULE_SIGNED"
 		}, {
+			"domain": "square-enix.com",
 			"addr": "*@xmail.square-enix.com",
 			"sdid": "xmail.square-enix.com",
 			"ruletype": "SIGNED",
 			"priority": "DEFAULT_RULE_SIGNED"
 		}, {
-			"addr": "*@steampowered.com",
+			"domain": "steampowered.com",
+			"addr": "*steampowered.com",
 			"sdid": "steampowered.com",
 			"ruletype": "SIGNED",
 			"priority": "DEFAULT_RULE_SIGNED"
 		}, {
-			"addr": "*@united-domains.de",
+			"domain": "united-domains.de",
+			"addr": "*united-domains.de",
 			"sdid": "united-domains.de",
 			"ruletype": "SIGNED",
 			"priority": "DEFAULT_RULE_SIGNED"
 		}, {
-			"addr": "*@yahoo.com",
+			"domain": "yahoo.com",
+			"addr": "*yahoo.com",
 			"sdid": "yahoo.com",
 			"ruletype": "SIGNED",
 			"priority": "DEFAULT_RULE_SIGNED"
 		}, {
-			"addr": "*@yahoo.de",
+			"domain": "yahoo.de",
+			"addr": "*yahoo.de",
 			"sdid": "yahoo.de",
 			"ruletype": "SIGNED",
 			"priority": "DEFAULT_RULE_SIGNED"
 		}, {
-			"addr": "*@yahoo.fr",
+			"domain": "yahoo.fr",
+			"addr": "*yahoo.fr",
 			"sdid": "yahoo.fr",
 			"ruletype": "SIGNED",
 			"priority": "DEFAULT_RULE_SIGNED"
 		}, {
-			"addr": "*@yandex.ru",
+			"domain": "yandex.ru",
+			"addr": "*yandex.ru",
 			"sdid": "yandex.ru",
 			"ruletype": "SIGNED",
 			"priority": "DEFAULT_RULE_SIGNED"
 		}, {
-			"addr": "*@ymail.com",
+			"domain": "ymail.com",
+			"addr": "*ymail.com",
 			"sdid": "ymail.com",
 			"ruletype": "SIGNED",
 			"priority": "DEFAULT_RULE_SIGNED"
