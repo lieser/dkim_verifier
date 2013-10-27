@@ -130,10 +130,10 @@ var Policy = {
 			if (sqlRes.length > 0) {
 				if (sqlRes[0].getResultByName("ruletype") === RULE_TYPE["SIGNED"]) {
 					result.shouldBeSigned = true;
-					result.sdid = sqlRes[0].getResultByName("sdid");
 				} else {
 					result.shouldBeSigned = false;
 				}
+				result.sdid = sqlRes[0].getResultByName("sdid");
 				result.foundRule = true;
 			} else {
 				result.shouldBeSigned = false;
@@ -261,6 +261,8 @@ var Policy = {
  * @return {String}
  */
 function getBaseDomainFromAddr(addr, aAdditionalParts=0) {
+	"use strict";
+
 	// var fullDomain = addr.substr(addr.lastIndexOf("@")+1);
 	var nsiURI = Services.io.newURI("http://"+addr, null, null);
 	return eTLDService.getBaseDomain(nsiURI, aAdditionalParts);

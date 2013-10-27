@@ -1023,23 +1023,27 @@ var Verifier = (function() {
 					Policy.signedBy(msg.from, msg.DKIMSignature.d);
 				}
 				
-				// warning if wrong signer
-				if (msg.shouldBeSigned.shouldBeSigned &&
-						msg.shouldBeSigned.sdid !== msg.DKIMSignature.d) {
+				// warning if there is a SDID in the sign rule 
+				// that is different from the SDID in the signature
+				if (msg.shouldBeSigned.sdid &&
+				    msg.shouldBeSigned.sdid !== msg.DKIMSignature.d) {
 					msg.warnings.push("DKIM_POLICYWARNING_WRONG_SDID");
 				}
 				
-				// warning if from is not in SDID or AUID
-				if (!(stringEndsWith(msg.from, "@"+msg.DKIMSignature.d) ||
-							stringEndsWith(msg.from, "."+msg.DKIMSignature.d))) {
-					msg.warnings.push("DKIM_SIGWARNING_FROM_NOT_IN_SDID");
-					dkimDebugMsg("Warning: DKIM_SIGWARNING_FROM_NOT_IN_SDID ("+
-						dkimStrings.getString("DKIM_SIGWARNING_FROM_NOT_IN_SDID")+")");
-				} else if (!(stringEndsWith(msg.from, "@"+msg.DKIMSignature.i) ||
-										 stringEndsWith(msg.from, "."+msg.DKIMSignature.i))) {
-					msg.warnings.push("DKIM_SIGWARNING_FROM_NOT_IN_AUID");
-					dkimDebugMsg("Warning: DKIM_SIGWARNING_FROM_NOT_IN_AUID ("+
-						dkimStrings.getString("DKIM_SIGWARNING_FROM_NOT_IN_AUID")+")");
+				// if SDID from sign rule is different from SDID in the signature
+				if (msg.shouldBeSigned.sdid !== msg.DKIMSignature.d) {
+					// warning if from is not in SDID or AUID
+					if (!(stringEndsWith(msg.from, "@"+msg.DKIMSignature.d) ||
+					      stringEndsWith(msg.from, "."+msg.DKIMSignature.d))) {
+						msg.warnings.push("DKIM_SIGWARNING_FROM_NOT_IN_SDID");
+						dkimDebugMsg("Warning: DKIM_SIGWARNING_FROM_NOT_IN_SDID ("+
+							dkimStrings.getString("DKIM_SIGWARNING_FROM_NOT_IN_SDID")+")");
+					} else if (!(stringEndsWith(msg.from, msg.DKIMSignature.i) ||
+					             stringEndsWith(msg.from, msg.DKIMSignature.i))) {
+						msg.warnings.push("DKIM_SIGWARNING_FROM_NOT_IN_AUID");
+						dkimDebugMsg("Warning: DKIM_SIGWARNING_FROM_NOT_IN_AUID ("+
+							dkimStrings.getString("DKIM_SIGWARNING_FROM_NOT_IN_AUID")+")");
+					}
 				}
 
 				var time = Math.round(Date.now() / 1000);

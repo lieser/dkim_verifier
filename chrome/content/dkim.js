@@ -15,7 +15,8 @@
 // options for JSHint
 /* jshint strict:true, moz:true */
 /* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
-/* global Components, Cu, Services, messenger, gMessageListeners, gDBView, gFolderDisplay, gExpandedHeaderView, createHeaderEntry, syncGridColumnWidths, currentHeaderData, gMessageDisplay */
+/* global Components, Cu, Services, messenger, gMessageListeners, gFolderDisplay, gExpandedHeaderView, createHeaderEntry, syncGridColumnWidths, currentHeaderData, gMessageDisplay */
+/* global Task */
 
 Cu.import("resource://gre/modules/Task.jsm"); // Requires Gecko 17.0
 
