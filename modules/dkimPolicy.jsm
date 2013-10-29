@@ -62,9 +62,162 @@ var eTLDService = Components.classes["@mozilla.org/network/effective-tld-service
 	.getService(Components.interfaces.nsIEffectiveTLDService);
 var dbInitialized = false;
 // Deferred<boolean>
-var initializedDefer = Promise.defer();
+var dbInitializedDefer = Promise.defer();
 
 var Policy = {
+	/**
+	 * init DB
+	 * May be called more then once
+	 * 
+	 * @return {Promise<boolean>} initialized
+	 */
+	initDB: function Policy_initDB() {
+		"use strict";
+
+		if (dbInitialized) {
+			return dbInitializedDefer.promise;
+		}
+		dbInitialized = true;
+
+		var promise = Task.spawn(function () {
+			log.trace("init Task begin");
+			
+			Logging.addAppenderTo("Sqlite.Connection."+DB_POLICY_NAME, "sql.");
+			
+			var conn = yield Sqlite.openConnection({path: DB_POLICY_NAME});
+
+			try {
+				// get version numbers
+				yield conn.execute(
+					"CREATE TABLE IF NOT EXISTS version (\n" +
+					"  name TEXT PRIMARY KEY NOT NULL,\n" +
+					"  version INTEGER NOT NULL\n" +
+					");"
+				);
+				var sqlRes = yield conn.execute(
+					"SELECT * FROM version;"
+				);
+				var versionTableSigners = 0;
+				var versionTableSignersDefault = 0;
+				var versionDataSignersDefault = 0;
+				sqlRes.forEach(function(element/*, index, array*/){
+					switch(element.getResultByName("name")) {
+						case "TableSigners":
+							versionTableSigners = element.getResultByName("version");
+							break;
+						case "TableSignersDefault":
+							versionTableSignersDefault = element.getResultByName("version");
+							break;
+						case "DataSignersDefault":
+							versionDataSignersDefault = element.getResultByName("version");
+							break;
+					}
+				});
+				log.trace("versionTableSigners: "+versionTableSigners+
+					", versionTableSignersDefault: "+versionTableSignersDefault+
+					", versionDataSignersDefault: "+versionDataSignersDefault
+				);
+
+				// table signers
+				if (versionTableSigners < 1) {
+					log.trace("create table signers");
+					// create table
+					yield conn.execute(
+						"CREATE TABLE IF NOT EXISTS signers (\n" +
+						"  domain TEXT NOT NULL,\n" +
+						"  addr TEXT NOT NULL,\n" +
+						"  sdid TEXT,\n" +
+						"  ruletype INTEGER NOT NULL,\n" +
+						"  priority INTEGER NOT NULL,\n" +
+						"  enabled INTEGER NOT NULL\n" + // 0 (false) and 1 (true)
+						");"
+					);
+					// add version number
+					yield conn.execute(
+						"INSERT INTO version (name, version)" +
+						"VALUES ('TableSigners', 1);"
+					);
+					versionTableSigners = 1;
+				} else if (versionTableSigners !== 1) {
+						throw new Error("unsupported versionTableSigners");
+				}
+				
+				// table signersDefault
+				if (versionTableSignersDefault < 1) {
+					log.trace("create table signersDefault");
+					// create table
+					yield conn.execute(
+						"CREATE TABLE IF NOT EXISTS signersDefault (\n" +
+						"  domain TEXT NOT NULL,\n" +
+						"  addr TEXT NOT NULL,\n" +
+						"  sdid TEXT,\n" +
+						"  ruletype INTEGER NOT NULL,\n" +
+						"  priority INTEGER NOT NULL\n" +
+						");"
+					);
+					// add version number
+					yield conn.execute(
+						"INSERT INTO version (name, version)\n" +
+						"VALUES ('TableSignersDefault', 1);"
+					);
+					versionTableSignersDefault = 1;
+				} else if (versionTableSignersDefault !== 1) {
+						throw new Error("unsupported versionTableSignersDefault");
+				}
+				
+				// data signersDefault
+				// read rules from file
+				var jsonStr = yield readStringFrom("resource://dkim_verifier_data/signersDefault.json");
+				var signersDefault = JSON.parse(jsonStr);
+				// check data version
+				if (versionDataSignersDefault < signersDefault.versionData) {
+					log.trace("update default rules");
+					if (signersDefault.versionTable !== versionTableSignersDefault) {
+						throw new Error("different versionTableSignersDefault in .json file");
+					}
+					// delete old rules
+					yield conn.execute(
+						"DELETE FROM signersDefault;"
+					);
+					// insert new default rules
+					yield conn.executeCached(
+						"INSERT INTO signersDefault (domain, addr, sdid, ruletype, priority)\n" +
+						"VALUES (:domain, :addr, :sdid, :ruletype, :priority);",
+						signersDefault.rules.map(function (v) {
+							return {
+								"domain": v.domain,
+								"addr": v.addr,
+								"sdid": v.sdid,
+								"ruletype": RULE_TYPE[v.ruletype] || v.ruletype,
+								"priority": PRIORITY[v.priority] || v.priority,
+							};
+						})
+					);
+					// update version number
+					yield conn.execute(
+						"INSERT OR REPLACE INTO version (name, version)\n" +
+						"VALUES ('DataSignersDefault', :version);",
+						{"version": signersDefault.versionData}
+					);
+					versionTableSignersDefault = 1;
+				}
+			} finally {
+				yield conn.close();
+			}
+			
+			dbInitializedDefer.resolve(true);
+			log.debug("initialized");
+			log.trace("init Task end");
+			throw new Task.Result(true);
+		});
+		promise.then(null, function onReject(exception) {
+			// Failure!  We can inspect or report the exception.
+			log.fatal(exceptionToStr(exception));
+			dbInitializedDefer.reject(exception);
+		});
+		return dbInitializedDefer.promise;
+	},
+
 	/**
 	 * Determinates if e-mail by fromAddress should be signed
 	 * 
@@ -94,7 +247,7 @@ var Policy = {
 			var domain = getBaseDomainFromAddr(fromAddress);
 			
 			// wait for DB init
-			yield init();
+			yield Policy.initDB();
 			var conn = yield Sqlite.openConnection({path: DB_POLICY_NAME});
 			
 			var sqlRes;
@@ -216,7 +369,7 @@ var Policy = {
 			var domain = getBaseDomainFromAddr(fromAddress);
 			
 			// wait for DB init
-			yield init();
+			yield Policy.initDB();
 			var conn = yield Sqlite.openConnection({path: DB_POLICY_NAME});
 
 			try {
@@ -287,7 +440,7 @@ function addRule(addr, sdid, ruletype, priority) {
 	var domain = getBaseDomainFromAddr(addr);
 
 	// wait for DB init
-	yield init();
+	yield Policy.initDB();
 	var conn = yield Sqlite.openConnection({path: DB_POLICY_NAME});
 	
 	try {
@@ -313,156 +466,14 @@ function addRule(addr, sdid, ruletype, priority) {
 }
 
 /**
- * init DB
- * May be called more then once
- * 
- * @return {Promise<boolean>} initialized
+ * init module
  */
 function init() {
 	"use strict";
 
-	if (dbInitialized || !prefs.getBoolPref("signRules.enable")) {
-		return initializedDefer.promise;
+	if (prefs.getBoolPref("signRules.enable")) {
+		Policy.initDB();
 	}
-	dbInitialized = true;
-
-	var promise = Task.spawn(function () {
-		log.trace("init Task begin");
-		
-		Logging.addAppenderTo("Sqlite.Connection."+DB_POLICY_NAME, "sql.");
-		
-		var conn = yield Sqlite.openConnection({path: DB_POLICY_NAME});
-
-		try {
-			// get version numbers
-			yield conn.execute(
-				"CREATE TABLE IF NOT EXISTS version (\n" +
-				"  name TEXT PRIMARY KEY NOT NULL,\n" +
-				"  version INTEGER NOT NULL\n" +
-				");"
-			);
-			var sqlRes = yield conn.execute(
-				"SELECT * FROM version;"
-			);
-			var versionTableSigners = 0;
-			var versionTableSignersDefault = 0;
-			var versionDataSignersDefault = 0;
-			sqlRes.forEach(function(element/*, index, array*/){
-				switch(element.getResultByName("name")) {
-					case "TableSigners":
-						versionTableSigners = element.getResultByName("version");
-						break;
-					case "TableSignersDefault":
-						versionTableSignersDefault = element.getResultByName("version");
-						break;
-					case "DataSignersDefault":
-						versionDataSignersDefault = element.getResultByName("version");
-						break;
-				}
-			});
-			log.trace("versionTableSigners: "+versionTableSigners+
-				", versionTableSignersDefault: "+versionTableSignersDefault+
-				", versionDataSignersDefault: "+versionDataSignersDefault
-			);
-
-			// table signers
-			if (versionTableSigners < 1) {
-				log.trace("create table signers");
-				// create table
-				yield conn.execute(
-					"CREATE TABLE IF NOT EXISTS signers (\n" +
-					"  domain TEXT NOT NULL,\n" +
-					"  addr TEXT NOT NULL,\n" +
-					"  sdid TEXT,\n" +
-					"  ruletype INTEGER NOT NULL,\n" +
-					"  priority INTEGER NOT NULL,\n" +
-					"  enabled INTEGER NOT NULL\n" + // 0 (false) and 1 (true)
-					");"
-				);
-				// add version number
-				yield conn.execute(
-					"INSERT INTO version (name, version)" +
-					"VALUES ('TableSigners', 1);"
-				);
-				versionTableSigners = 1;
-			} else if (versionTableSigners !== 1) {
-					throw new Error("unsupported versionTableSigners");
-			}
-			
-			// table signersDefault
-			if (versionTableSignersDefault < 1) {
-				log.trace("create table signersDefault");
-				// create table
-				yield conn.execute(
-					"CREATE TABLE IF NOT EXISTS signersDefault (\n" +
-					"  domain TEXT NOT NULL,\n" +
-					"  addr TEXT NOT NULL,\n" +
-					"  sdid TEXT,\n" +
-					"  ruletype INTEGER NOT NULL,\n" +
-					"  priority INTEGER NOT NULL\n" +
-					");"
-				);
-				// add version number
-				yield conn.execute(
-					"INSERT INTO version (name, version)\n" +
-					"VALUES ('TableSignersDefault', 1);"
-				);
-				versionTableSignersDefault = 1;
-			} else if (versionTableSignersDefault !== 1) {
-					throw new Error("unsupported versionTableSignersDefault");
-			}
-			
-			// data signersDefault
-			// read rules from file
-			var jsonStr = yield readStringFrom("resource://dkim_verifier_data/signersDefault.json");
-			var signersDefault = JSON.parse(jsonStr);
-			// check data version
-			if (versionDataSignersDefault < signersDefault.versionData) {
-				log.trace("update default rules");
-				if (signersDefault.versionTable !== versionTableSignersDefault) {
-					throw new Error("different versionTableSignersDefault in .json file");
-				}
-				// delete old rules
-				yield conn.execute(
-					"DELETE FROM signersDefault;"
-				);
-				// insert new default rules
-				yield conn.executeCached(
-					"INSERT INTO signersDefault (domain, addr, sdid, ruletype, priority)\n" +
-					"VALUES (:domain, :addr, :sdid, :ruletype, :priority);",
-					signersDefault.rules.map(function (v) {
-						return {
-							"domain": v.domain,
-							"addr": v.addr,
-							"sdid": v.sdid,
-							"ruletype": RULE_TYPE[v.ruletype] || v.ruletype,
-							"priority": PRIORITY[v.priority] || v.priority,
-						};
-					})
-				);
-				// update version number
-				yield conn.execute(
-					"INSERT OR REPLACE INTO version (name, version)\n" +
-					"VALUES ('DataSignersDefault', :version);",
-					{"version": signersDefault.versionData}
-				);
-				versionTableSignersDefault = 1;
-			}
-		} finally {
-			yield conn.close();
-		}
-		
-		initializedDefer.resolve(true);
-		log.debug("initialized");
-		log.trace("init Task end");
-		throw new Task.Result(true);
-	});
-	promise.then(null, function onReject(exception) {
-		// Failure!  We can inspect or report the exception.
-		log.fatal(exceptionToStr(exception));
-		initializedDefer.reject(exception);
-	});
-	return initializedDefer.promise;
 }
 
 init();

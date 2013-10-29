@@ -6,12 +6,19 @@
    onload="setView();">
 
 <script>
-Components.utils.import("resource://dkim_verifier/SQLiteTreeView.jsm");
+Components.utils.import("resource://gre/modules/Task.jsm");
 
-var treeView = new SQLiteTreeView("dkimPolicy.sqlite","signers",["domain","addr","sdid","ruletype","priority","enabled"]);
+Components.utils.import("resource://dkim_verifier/SQLiteTreeView.jsm");
+Components.utils.import("resource://dkim_verifier/dkimPolicy.jsm");
+
+var treeView;
 
 function setView(){
-	document.getElementById('my-tree').view = treeView;
+	Task.spawn(function () {
+		yield Policy.initDB();
+		treeView = new SQLiteTreeView("dkimPolicy.sqlite","signers",["domain","addr","sdid","ruletype","priority","enabled"]);
+		document.getElementById('my-tree').view = treeView;
+	});
 }
 </script>
 

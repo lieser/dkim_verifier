@@ -6,10 +6,16 @@
    onload="setView();">
 
 <script>
+Components.utils.import("resource://gre/modules/Task.jsm");
+
 Components.utils.import("resource://dkim_verifier/SQLiteTreeView.jsm");
+Components.utils.import("resource://dkim_verifier/dkimPolicy.jsm");
 
 function setView(){
-	document.getElementById('my-tree').view = new SQLiteTreeView("dkimPolicy.sqlite","signersDefault",["domain","addr","sdid","ruletype","priority"]);
+	Task.spawn(function () {
+		yield Policy.initDB();
+		document.getElementById('my-tree').view = new SQLiteTreeView("dkimPolicy.sqlite","signersDefault",["domain","addr","sdid","ruletype","priority"]);
+	});
 }
 </script>
 
