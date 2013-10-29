@@ -4,7 +4,9 @@
 
 <overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
-<prefpane id="paneGeneral" onpaneload="onLoad('paneGeneral');">
+<prefpane id="paneGeneral" onpaneload="gDKIMOptionsGeneralPane.init();">
+	<script type="application/javascript" src="chrome://dkim_verifier/content/options_general.js"/>
+	
 	<preferences>
 		<preference id="pref_dns.getNameserversFromOS"
 		            name="extensions.dkim_verifier.dns.getNameserversFromOS"
@@ -44,7 +46,7 @@
 					<caption label="&dns.label;"/>
 
 					<checkbox preference="pref_dns.getNameserversFromOS"
-							  label="&dns.getNameserversFromOS.label;"/>
+					          label="&dns.getNameserversFromOS.label;"/>
 					<label control="dns.nameserver">&dns.nameserver.label;</label>
 					<textbox id="dns.nameserver" preference="pref_dns.nameserver"/>
 					<label control="dns.timeout_connect">&dns.timeout_connect.label;</label>
@@ -58,18 +60,22 @@
 			</tabpanel>
 			
 			<tabpanel orient="vertical">
-				<checkbox preference="pref_policy.signRules.enable"
-				          label="&policy.signRules.enable.label;"/>
+				<checkbox id="policy.signRules.enable"
+				          preference="pref_policy.signRules.enable"
+				          label="&policy.signRules.enable.label;"
+				          oncommand="gDKIMOptionsGeneralPane.update_Policy_signRules_enable();"/>
 				<vbox class="indent">
-					<checkbox preference="pref_policy.signRules.checkDefaultRules"
+					<checkbox id="policy.signRules.checkDefaultRules"
+					          preference="pref_policy.signRules.checkDefaultRules"
 					          label="&policy.signRules.checkDefaultRules.label;"/>
-					<checkbox preference="pref_policy.signRules.autoAddRule"
+					<checkbox id="policy.signRules.autoAddRule"
+					          preference="pref_policy.signRules.autoAddRule"
 					          label="&policy.signRules.autoAddRule.label;"/>
 					<hbox>
-						<button 
+						<button id="viewSigners"
 						        label="View signers rules"
 						        oncommand="window.open('chrome://dkim_verifier/content/treeviewSigners.xul', 'SignersRules', 'chrome,resizable,centerscreen,width=600,height=300');"/>
-						<button 
+						<button id="viewSignerDefaults"
 						        label="View signers default rules"
 						        oncommand="window.open('chrome://dkim_verifier/content/treeviewSignersDefault.xul', 'SignersDefaultRules', 'chrome,resizable,centerscreen,width=600,height=300');"/>
 						<spacer/>
