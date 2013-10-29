@@ -16,7 +16,7 @@
 /* jshint -W069 */ // "['{a}'] is better written in dot notation."
 /* global Components, Services, Sqlite, Task, Promise */
 /* global Logging */
-/* global exceptionToStr, readStringFrom, stringEndsWith */
+/* global exceptionToStr, readStringFrom, stringEndsWith, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, Policy */
 
 var EXPORTED_SYMBOLS = [
@@ -80,7 +80,7 @@ var Policy = {
 		dbInitialized = true;
 
 		var promise = Task.spawn(function () {
-			log.trace("init Task begin");
+			log.trace("initDB Task begin");
 			
 			Logging.addAppenderTo("Sqlite.Connection."+DB_POLICY_NAME, "sql.");
 			
@@ -139,7 +139,7 @@ var Policy = {
 					);
 					versionTableSigners = 1;
 				} else if (versionTableSigners !== 1) {
-						throw new Error("unsupported versionTableSigners");
+						throw new DKIM_InternalError("unsupported versionTableSigners");
 				}
 				
 				// table signersDefault
@@ -162,7 +162,7 @@ var Policy = {
 					);
 					versionTableSignersDefault = 1;
 				} else if (versionTableSignersDefault !== 1) {
-						throw new Error("unsupported versionTableSignersDefault");
+						throw new DKIM_InternalError("unsupported versionTableSignersDefault");
 				}
 				
 				// data signersDefault
@@ -173,7 +173,7 @@ var Policy = {
 				if (versionDataSignersDefault < signersDefault.versionData) {
 					log.trace("update default rules");
 					if (signersDefault.versionTable !== versionTableSignersDefault) {
-						throw new Error("different versionTableSignersDefault in .json file");
+						throw new DKIM_InternalError("different versionTableSignersDefault in .json file");
 					}
 					// delete old rules
 					yield conn.execute(
@@ -206,8 +206,8 @@ var Policy = {
 			}
 			
 			dbInitializedDefer.resolve(true);
-			log.debug("initialized");
-			log.trace("init Task end");
+			log.debug("DB initialized");
+			log.trace("initDB Task end");
 			throw new Task.Result(true);
 		});
 		promise.then(null, function onReject(exception) {
@@ -251,33 +251,37 @@ var Policy = {
 			var conn = yield Sqlite.openConnection({path: DB_POLICY_NAME});
 			
 			var sqlRes;
-			if (prefs.getBoolPref("signRules.checkDefaultRules")) {
-				// include default rules
-				sqlRes = yield conn.executeCached(
-					"SELECT addr, sdid, ruletype, priority, enabled\n" +
-					"FROM signers WHERE\n" +
-					"  domain = :domain AND\n" +
-					"  enabled AND\n" +
-					"  lower(:from) GLOB addr\n" +
-					"UNION SELECT addr, sdid, ruletype, priority, 1\n" +
-					"FROM signersDefault WHERE\n" +
-					"  domain = :domain AND\n" +
-					"  lower(:from) GLOB addr\n" +
-					"ORDER BY priority DESC\n" +
-					"LIMIT 1;",
-					{domain:domain, "from": fromAddress}
-				);
-			} else {
-				// don't include default rules
-				sqlRes = yield conn.executeCached(
-					"SELECT addr, sdid, ruletype, priority, enabled\n" +
-					"FROM signers WHERE\n" +
-					"  lower(:from) GLOB addr AND\n" +
-					"  enabled\n" +
-					"ORDER BY priority DESC\n" +
-					"LIMIT 1;",
-					{"from": fromAddress}
-				);
+			try {
+				if (prefs.getBoolPref("signRules.checkDefaultRules")) {
+					// include default rules
+					sqlRes = yield conn.executeCached(
+						"SELECT addr, sdid, ruletype, priority, enabled\n" +
+						"FROM signers WHERE\n" +
+						"  domain = :domain AND\n" +
+						"  enabled AND\n" +
+						"  lower(:from) GLOB addr\n" +
+						"UNION SELECT addr, sdid, ruletype, priority, 1\n" +
+						"FROM signersDefault WHERE\n" +
+						"  domain = :domain AND\n" +
+						"  lower(:from) GLOB addr\n" +
+						"ORDER BY priority DESC\n" +
+						"LIMIT 1;",
+						{domain:domain, "from": fromAddress}
+					);
+				} else {
+					// don't include default rules
+					sqlRes = yield conn.executeCached(
+						"SELECT addr, sdid, ruletype, priority, enabled\n" +
+						"FROM signers WHERE\n" +
+						"  lower(:from) GLOB addr AND\n" +
+						"  enabled\n" +
+						"ORDER BY priority DESC\n" +
+						"LIMIT 1;",
+						{"from": fromAddress}
+					);
+				}
+			} finally {
+				yield conn.close();
 			}
 			
 			if (sqlRes.length > 0) {

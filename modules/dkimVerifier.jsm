@@ -1086,7 +1086,7 @@ var Verifier = (function() {
 	 */
 	function verifySignaturePart2(msg) {
 		try {
-			msg.DKIMKey = parseDKIMKeyRecord(msg.keyQueryResult);
+			msg.DKIMKey = parseDKIMKeyRecord(msg.keyQueryResult.key);
 			dkimDebugMsg("Parsed DKIM-Key: "+msg.DKIMKey.toSource());
 			
 			// check that the testing flag is not set
