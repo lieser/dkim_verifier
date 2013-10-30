@@ -270,21 +270,7 @@ var Verifier = (function() {
 					msg.headerPlain = msg.headerPlain.replace(/(\r\n|\n|\r)/g, "\r\n");
 					msg.bodyPlain = msg.bodyPlain.replace(/(\r\n|\n|\r)/g, "\r\n");
 					
-					// get from address
-					var messageService = messenger.messageServiceFromURI(msg.msgURI);
-					var msgHdr = messageService.messageURIToMsgHdr(msg.msgURI);
-					var mime2DecodedAuthor = msgHdr.mime2DecodedAuthor;
-					msg.from = msgHeaderParser.extractHeaderAddressMailboxes(mime2DecodedAuthor);
-
-					Policy.shouldBeSigned(msg.from,
-						function (result, msg) {
-							msg.shouldBeSigned = result;
-							
-							verifyBegin(msg);
-						},
-						msg
-					);
-			
+					verifyBegin(msg);
 				} catch (e) {
 					handleExeption(e, msg);
 				}
@@ -978,10 +964,17 @@ var Verifier = (function() {
 	 * checks if msg is signed, and begins verification if it is
 	 */
 	function verifyBegin(msg) {
-		try {
+		var promise = Task.spawn(function () {
 			// parse the header
 			msg.headerFields = parseHeader(msg.headerPlain);
 
+			// get from address
+			var author = msg.headerFields.from[msg.headerFields.from.length-1];
+			msg.from = msgHeaderParser.extractHeaderAddressMailboxes(author);
+
+			// check if msg should be signed
+			msg.shouldBeSigned = yield Policy.shouldBeSigned(msg.from);
+			
 			// check if DKIMSignatureHeader exist
 			if (msg.headerFields["dkim-signature"] === undefined) {
 				if (!msg.shouldBeSigned.shouldBeSigned) {
@@ -1001,9 +994,11 @@ var Verifier = (function() {
 			}
 			
 			verifySignaturePart1(msg);
-		} catch(e) {
-			handleExeption(e, msg);
-		}
+		});
+		promise.then(null, function onReject(exception) {
+			// Failure!  We can inspect or report the exception.
+			handleExeption(exception, msg);
+		});
 	}
 
 	/*
@@ -1011,72 +1006,72 @@ var Verifier = (function() {
 	 * will verify until key query, the rest is in verifySignaturePart2
 	 */
 	function verifySignaturePart1(msg) {
-		Task.spawn(function () {
-			try {
-				// all warnings about the signature will go in her
-				msg.warnings = [];
+		var promise = Task.spawn(function () {
+			// all warnings about the signature will go in her
+			msg.warnings = [];
 
-				// parse the DKIMSignatureHeader
-				msg.DKIMSignature = parseDKIMSignature(msg.headerFields["dkim-signature"][0]);
-				dkimDebugMsg("Parsed DKIM-Signature: "+msg.DKIMSignature.toSource());
-				
-				// add should be signed rule
-				if (!msg.shouldBeSigned.foundRule) {
-					Policy.signedBy(msg.from, msg.DKIMSignature.d);
-				}
-				
-				// warning if there is a SDID in the sign rule 
-				// that is different from the SDID in the signature
-				if (msg.shouldBeSigned.sdid &&
-				    msg.shouldBeSigned.sdid !== msg.DKIMSignature.d) {
-					msg.warnings.push("DKIM_POLICYWARNING_WRONG_SDID");
-				}
-				
-				// if SDID from sign rule is different from SDID in the signature
-				if (msg.shouldBeSigned.sdid !== msg.DKIMSignature.d) {
-					// warning if from is not in SDID or AUID
-					if (!(stringEndsWith(msg.from, "@"+msg.DKIMSignature.d) ||
-					      stringEndsWith(msg.from, "."+msg.DKIMSignature.d))) {
-						msg.warnings.push("DKIM_SIGWARNING_FROM_NOT_IN_SDID");
-						dkimDebugMsg("Warning: DKIM_SIGWARNING_FROM_NOT_IN_SDID ("+
-							dkimStrings.getString("DKIM_SIGWARNING_FROM_NOT_IN_SDID")+")");
-					} else if (!(stringEndsWith(msg.from, msg.DKIMSignature.i) ||
-					             stringEndsWith(msg.from, msg.DKIMSignature.i))) {
-						msg.warnings.push("DKIM_SIGWARNING_FROM_NOT_IN_AUID");
-						dkimDebugMsg("Warning: DKIM_SIGWARNING_FROM_NOT_IN_AUID ("+
-							dkimStrings.getString("DKIM_SIGWARNING_FROM_NOT_IN_AUID")+")");
-					}
-				}
-
-				var time = Math.round(Date.now() / 1000);
-				// warning if signature expired
-				if (msg.DKIMSignature.x !== null && msg.DKIMSignature.x < time) {
-					msg.warnings.push("DKIM_SIGWARNING_EXPIRED");
-					dkimDebugMsg("Warning: DKIM_SIGWARNING_EXPIRED ("+
-						dkimStrings.getString("DKIM_SIGWARNING_EXPIRED")+")");
-				}
-				// warning if signature in future
-				if (msg.DKIMSignature.t !== null && msg.DKIMSignature.t > time) {
-					msg.warnings.push("DKIM_SIGWARNING_FUTURE");
-					dkimDebugMsg("Warning: DKIM_SIGWARNING_FUTURE ("+
-						dkimStrings.getString("DKIM_SIGWARNING_FUTURE")+")");
-				}
-				
-				// Compute the Message Hashe for the body 
-				var bodyHash = computeBodyHash(msg);
-				dkimDebugMsg("computed body hash: "+bodyHash);
-				
-				// compare body hash
-				if (bodyHash !== msg.DKIMSignature.bh) {
-					throw new DKIM_SigError("DKIM_SIGERROR_CORRUPT_BH");
-				}
-
-				// get the DKIM key
-				msg.keyQueryResult = yield Key.getKey(msg.DKIMSignature.d, msg.DKIMSignature.s);
-				verifySignaturePart2(msg);
-			} catch(e) {
-				handleExeption(e, msg);
+			// parse the DKIMSignatureHeader
+			msg.DKIMSignature = parseDKIMSignature(msg.headerFields["dkim-signature"][0]);
+			dkimDebugMsg("Parsed DKIM-Signature: "+msg.DKIMSignature.toSource());
+			
+			// add should be signed rule
+			if (!msg.shouldBeSigned.foundRule) {
+				Policy.signedBy(msg.from, msg.DKIMSignature.d);
 			}
+			
+			// warning if there is a SDID in the sign rule
+			// that is different from the SDID in the signature
+			if (msg.shouldBeSigned.sdid &&
+					msg.shouldBeSigned.sdid !== msg.DKIMSignature.d) {
+				msg.warnings.push("DKIM_POLICYWARNING_WRONG_SDID");
+			}
+			
+			// if SDID from sign rule is different from SDID in the signature
+			if (msg.shouldBeSigned.sdid !== msg.DKIMSignature.d) {
+				// warning if from is not in SDID or AUID
+				if (!(stringEndsWith(msg.from, "@"+msg.DKIMSignature.d) ||
+							stringEndsWith(msg.from, "."+msg.DKIMSignature.d))) {
+					msg.warnings.push("DKIM_SIGWARNING_FROM_NOT_IN_SDID");
+					dkimDebugMsg("Warning: DKIM_SIGWARNING_FROM_NOT_IN_SDID ("+
+						dkimStrings.getString("DKIM_SIGWARNING_FROM_NOT_IN_SDID")+")");
+				} else if (!(stringEndsWith(msg.from, msg.DKIMSignature.i) ||
+										 stringEndsWith(msg.from, msg.DKIMSignature.i))) {
+					msg.warnings.push("DKIM_SIGWARNING_FROM_NOT_IN_AUID");
+					dkimDebugMsg("Warning: DKIM_SIGWARNING_FROM_NOT_IN_AUID ("+
+						dkimStrings.getString("DKIM_SIGWARNING_FROM_NOT_IN_AUID")+")");
+				}
+			}
+
+			var time = Math.round(Date.now() / 1000);
+			// warning if signature expired
+			if (msg.DKIMSignature.x !== null && msg.DKIMSignature.x < time) {
+				msg.warnings.push("DKIM_SIGWARNING_EXPIRED");
+				dkimDebugMsg("Warning: DKIM_SIGWARNING_EXPIRED ("+
+					dkimStrings.getString("DKIM_SIGWARNING_EXPIRED")+")");
+			}
+			// warning if signature in future
+			if (msg.DKIMSignature.t !== null && msg.DKIMSignature.t > time) {
+				msg.warnings.push("DKIM_SIGWARNING_FUTURE");
+				dkimDebugMsg("Warning: DKIM_SIGWARNING_FUTURE ("+
+					dkimStrings.getString("DKIM_SIGWARNING_FUTURE")+")");
+			}
+			
+			// Compute the Message Hashe for the body
+			var bodyHash = computeBodyHash(msg);
+			dkimDebugMsg("computed body hash: "+bodyHash);
+			
+			// compare body hash
+			if (bodyHash !== msg.DKIMSignature.bh) {
+				throw new DKIM_SigError("DKIM_SIGERROR_CORRUPT_BH");
+			}
+
+			// get the DKIM key
+			msg.keyQueryResult = yield Key.getKey(msg.DKIMSignature.d, msg.DKIMSignature.s);
+			verifySignaturePart2(msg);
+		});
+		promise.then(null, function onReject(exception) {
+			// Failure!  We can inspect or report the exception.
+			handleExeption(exception, msg);
 		});
 	}
 	
