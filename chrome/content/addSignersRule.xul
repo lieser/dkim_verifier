@@ -1,7 +1,9 @@
 <?xml version="1.0"?>
 <?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
 
-<dialog id="donothing" title="Add signer rule"
+<!DOCTYPE overlay SYSTEM "chrome://dkim_verifier/locale/xulstrings.dtd">
+
+<dialog title="&addSignersRule.title;"
   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
   buttons="accept,cancel"
   ondialogaccept="return onAccept();"
@@ -14,14 +16,18 @@
 
 <script>
 function onAccept(){
-	var input = {
-		domain:     document.getElementById("domain").value,
-		addr:     document.getElementById("addr").value,
-		sdid:     document.getElementById("sdid").value,    
-		ruletype: document.getElementById("ruletype").value,
-		priority: document.getElementById("priority").value,
-		enabled:  document.getElementById("enabled").checked,
-	};
+	var input = {};
+	input.domain = document.getElementById("domain").value;
+	input.addr = document.getElementById("addr").value;
+	input.sdid = document.getElementById("sdid").value;
+	input.ruletype = document.getElementById("ruletype").value;
+	if (input.ruletype == 1) {
+		input.priority = 310;
+	} else {
+		input.priority = 320;
+	}
+	input.enabled = document.getElementById("enabled").checked;
+	
 	window.arguments[0].addRow(input);
   return true;
 }
@@ -31,29 +37,19 @@ function onCancel(){
 }
 </script>
     
-<label value="domain"/>
+<label value="&treeviewSigners.treecol.domain.label;"/>
 <textbox id="domain"/>
-<label value="addr"/>
+<label value="&treeviewSigners.treecol.addr.label;"/>
 <textbox id="addr"/>
-<label value="sdid"/>
+<label value="&treeviewSigners.treecol.sdid.label;"/>
 <textbox id="sdid"/>
-<label value="ruletype"/>
+<label value="&treeviewSigners.treecol.ruletype.label;"/>
 <menulist id="ruletype">
 	<menupopup>
-		<menuitem label="SIGNED" value="1"/>
-		<menuitem label="NEUTRAL" value="2"/>
+		<menuitem label="&signRules.ruletype.SIGNED.label;" value="1"/>
+		<menuitem label="&signRules.ruletype.NEUTRAL.label;" value="2"/>
 	</menupopup>
 </menulist>
-<label value="priority"/>
-<menulist id="priority">
-	<menupopup>
-		<menuitem label="AUTOINSERT_RULE_SIGNED" value="110"/>
-		<menuitem label="DEFAULT_RULE_SIGNED" value="210"/>
-		<menuitem label="DEFAULT_RULE_NEUTRAL" value="220"/>
-		<menuitem label="USERINSERT_RULE_SIGNED" value="310" selected="true"/>
-		<menuitem label="USERINSERT_RULE_NEUTRAL" value="320"/>
-	</menupopup>
-</menulist>
-<checkbox id="enabled" label="enabled" checked="true"/>
+<checkbox id="enabled" label="&treeviewSigners.treecol.enabled.label;" checked="true"/>
 
 </dialog>

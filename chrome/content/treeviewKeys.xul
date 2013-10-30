@@ -1,7 +1,9 @@
 <?xml version="1.0"?>
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
 
-<window title="DKIM keys" id="tree-window"
+<!DOCTYPE overlay SYSTEM "chrome://dkim_verifier/locale/xulstrings.dtd">
+
+<window title="&treeviewKeys.title;" id="tree-window"
    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
    onload="setView();">
 
@@ -24,22 +26,22 @@ function setView(){
 
 <tree id="my-tree" editable="true" enableColumnDrag="true" flex="1">
 	<treecols>
-		<treecol editable="true" label="SDID" flex="10"/>
+		<treecol editable="true" label="&treeviewKeys.treecol.SDID.label;" flex="10"/>
 		<splitter class="tree-splitter" />
-		<treecol editable="true" label="selector" flex="1"/>
+		<treecol editable="true" label="&treeviewKeys.treecol.selector.label;" flex="1"/>
 		<splitter class="tree-splitter" />
-		<treecol editable="true" label="key" flex="20"/>
+		<treecol editable="true" label="&treeviewKeys.treecol.key.label;" flex="20"/>
 		<splitter class="tree-splitter" />
-		<treecol editable="true" label="insertedAt" flex="1"/>
+		<treecol editable="true" label="&treeviewKeys.treecol.insertedAt.label;" flex="1"/>
 		<splitter class="tree-splitter" />
-		<treecol editable="true" label="lastUsedAt" flex="1"/>
+		<treecol editable="true" label="&treeviewKeys.treecol.lastUsedAt.label;" flex="1"/>
 	</treecols>
 	<treechildren/>
 </tree>
 
 <hbox>
 	<button 
-	        label="Delete selected keys"
+	        label="&treeviewKeys.deleteSelectedRows.label;"
 	        oncommand="treeView.deleteSelectedRows();"/>
 	<spacer/>
 </hbox>

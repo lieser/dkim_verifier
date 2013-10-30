@@ -3,3 +3,28 @@
 
 <!ENTITY dkim_verifier.reverifyDKIMSignature.label "Reverify DKIM Signature">
 <!ENTITY dkim_verifier.policyAddUserException.label "Add must be signed exception">
+
+
+<!ENTITY treeviewKeys.title "DKIM keys">
+<!ENTITY treeviewKeys.treecol.SDID.label "SDID">
+<!ENTITY treeviewKeys.treecol.selector.label "Selector">
+<!ENTITY treeviewKeys.treecol.key.label "DKIM key">
+<!ENTITY treeviewKeys.treecol.insertedAt.label "Inserted">
+<!ENTITY treeviewKeys.treecol.lastUsedAt.label "Last used">
+<!ENTITY treeviewKeys.deleteSelectedRows.label "Delete selected keys">
+
+<!ENTITY treeviewSigners.title "Signers rules">
+<!ENTITY treeviewSigners.treecol.domain.label "Domain">
+<!ENTITY treeviewSigners.treecol.addr.label "From">
+<!ENTITY treeviewSigners.treecol.sdid.label "SDID">
+<!ENTITY treeviewSigners.treecol.ruletype.label "Rule type">
+<!ENTITY treeviewSigners.treecol.priority.label "Priority">
+<!ENTITY treeviewSigners.treecol.enabled.label "Enabled">
+<!ENTITY treeviewSigners.addSignersRule.label "Add rule">
+<!ENTITY treeviewSigners.deleteSelectedRows.label "Delete selected rules">
+
+<!ENTITY treeviewSignersDefault.title "Default signers rules">
+
+<!ENTITY addSignersRule.title "Add signers rule">
+<!ENTITY signRules.ruletype.SIGNED.label "Must be signed">
+<!ENTITY signRules.ruletype.NEUTRAL.label "Can be signed">

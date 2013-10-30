@@ -2,4 +2,29 @@
 <!ENTITY dkim_verifier.statusbar.title "DKIM:">
 
 <!ENTITY dkim_verifier.reverifyDKIMSignature.label "Überprüfe DKIM Signatur neu">
-<!ENTITY dkim_verifier.policyAddUserException.label "Add must be signed exception">
+<!ENTITY dkim_verifier.policyAddUserException.label "Füge Ausnahme für Signierregel hinzu">
+
+
+<!ENTITY treeviewKeys.title "DKIM Schlüssel">
+<!ENTITY treeviewKeys.treecol.SDID.label "SDID">
+<!ENTITY treeviewKeys.treecol.selector.label "Selector">
+<!ENTITY treeviewKeys.treecol.key.label "DKIM Schlüssel">
+<!ENTITY treeviewKeys.treecol.insertedAt.label "Hinzugefügt">
+<!ENTITY treeviewKeys.treecol.lastUsedAt.label "Zuletzt benutzt">
+<!ENTITY treeviewKeys.deleteSelectedRows.label "Entferne markierte Schlüssel">
+
+<!ENTITY treeviewSigners.title "Signierregeln">
+<!ENTITY treeviewSigners.treecol.domain.label "Domain">
+<!ENTITY treeviewSigners.treecol.addr.label "Von">
+<!ENTITY treeviewSigners.treecol.sdid.label "SDID">
+<!ENTITY treeviewSigners.treecol.ruletype.label "Regeltype">
+<!ENTITY treeviewSigners.treecol.priority.label "Priorität">
+<!ENTITY treeviewSigners.treecol.enabled.label "Aktiviert">
+<!ENTITY treeviewSigners.addSignersRule.label "Füge Regel hinzu">
+<!ENTITY treeviewSigners.deleteSelectedRows.label "Entferne markierte Regeln">
+
+<!ENTITY treeviewSignersDefault.title "Standard Signierregeln">
+
+<!ENTITY addSignersRule.title "Füge Signierregeln hinzu">
+<!ENTITY signRules.ruletype.SIGNED.label "Muss signiert sein">
+<!ENTITY signRules.ruletype.NEUTRAL.label "Kann signiert sein">
