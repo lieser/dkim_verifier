@@ -18,6 +18,9 @@
 		            name="extensions.dkim_verifier.dns.timeout_connect"
 		            type="int"/>
 
+		<preference id="pref_key.storing"
+		            name="extensions.dkim_verifier.key.storing"
+		            type="int"/>
 		<preference id="pref_saveResult"
 		            name="extensions.dkim_verifier.saveResult"
 		            type="bool"/>
@@ -56,6 +59,21 @@
 					</hbox>
 				</groupbox>
 				
+				<hbox align="center">
+					<menulist id="key.storing"
+					          preference="pref_key.storing"
+					          oncommand="gDKIMOptionsGeneralPane.update_key_storing();">
+						<menupopup>
+							<menuitem label="&key.storing.value.0.label;" value="0"/>
+							<menuitem label="&key.storing.value.1.label;" value="1"/>
+							<menuitem label="&key.storing.value.2.label;" value="2"/>
+						</menupopup>
+					</menulist>
+					<button id="key.viewKeys"
+					        label="&key.viewKeys.label;"
+					        oncommand="window.open('chrome://dkim_verifier/content/treeviewKeys.xul', 'SignersRules', 'chrome,resizable,centerscreen,width=600,height=300');"/>
+					<spacer/>
+				</hbox>
 				<checkbox preference="pref_saveResult" label="&saveResult.label;"/>
 			</tabpanel>
 			
@@ -73,10 +91,10 @@
 					          label="&policy.signRules.autoAddRule.label;"/>
 					<hbox>
 						<button id="viewSigners"
-						        label="View signers rules"
+						        label="&viewSigners.label;"
 						        oncommand="window.open('chrome://dkim_verifier/content/treeviewSigners.xul', 'SignersRules', 'chrome,resizable,centerscreen,width=600,height=300');"/>
 						<button id="viewSignerDefaults"
-						        label="View signers default rules"
+						        label="&viewSignerDefaults.label;"
 						        oncommand="window.open('chrome://dkim_verifier/content/treeviewSignersDefault.xul', 'SignersDefaultRules', 'chrome,resizable,centerscreen,width=600,height=300');"/>
 						<spacer/>
 					</hbox>

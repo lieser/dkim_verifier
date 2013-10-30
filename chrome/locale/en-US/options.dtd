@@ -9,12 +9,19 @@
 <!ENTITY dns.nameserver.label "DNS name servers (Syntax (EBNF): host[&quot;:&quot;port]{&quot;;&quot;host[&quot;:&quot;port]} )">
 <!ENTITY dns.timeout_connect.label "DNS connect timeout (in seconds)">
 
+<!ENTITY key.storing.value.0.label "Don't store DKIM keys">
+<!ENTITY key.storing.value.1.label "Store DKIM keys">
+<!ENTITY key.storing.value.2.label "Store DKIM keys and compare them with the current key">
+<!ENTITY key.viewKeys.label "DKIM keys">
+
 <!ENTITY saveResult.label "Save result of the verification">
 
 <!ENTITY general.policy.label "Policy">
 <!ENTITY policy.signRules.enable.label "Check if e-mail should be signed">
 <!ENTITY policy.signRules.checkDefaultRules.label "Use default rules">
 <!ENTITY policy.signRules.autoAddRule.label "Automatically add rules based on viewed DKIM signed e-mails">
+<!ENTITY viewSigners.label "Signers rules">
+<!ENTITY viewSignerDefaults.label "Default signers rules">
 
 
 <!ENTITY display.label "Display">

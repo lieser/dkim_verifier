@@ -37,7 +37,9 @@ Cu.import("resource://dkim_verifier/logging.jsm");
 Cu.import("resource://dkim_verifier/helper.jsm");
 Cu.import("resource://dkim_verifier/dns.js");
 
-
+/**
+ * @public
+ */
 const KEY_DB_NAME = "dkimKey.sqlite";
 const PREF_BRANCH = "extensions.dkim_verifier.key.";
 const PREF_BRANCH2 = "extensions.dkim_verifier.";
@@ -406,5 +408,7 @@ function init() {
 	);
 	dnsChangeTimeoutConnect(prefs2.getIntPref("dns.timeout_connect"));
 }
+
+Key.KEY_DB_NAME = KEY_DB_NAME;
 
 init();

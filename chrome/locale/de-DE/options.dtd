@@ -9,12 +9,19 @@
 <!ENTITY dns.nameserver.label "DNS Nameserver (Syntax (EBNF): host[&quot;:&quot;port]{&quot;;&quot;host[&quot;:&quot;port]} )">
 <!ENTITY dns.timeout_connect.label "DNS Verbindungsaufbau-Timeout (in Sekunden)">
 
+<!ENTITY key.storing.value.0.label "Speichere DKIM Schlüssel nicht">
+<!ENTITY key.storing.value.1.label "Speichere DKIM Schlüssel">
+<!ENTITY key.storing.value.2.label "Speichere DKIM Schlüssel und vergleiche Sie mit dem aktuellem">
+<!ENTITY key.viewKeys.label "DKIM Schlüssel">
+
 <!ENTITY saveResult.label "Speichere das Ergebnis der Überprüfung ">
 
 <!ENTITY general.policy.label "Policy">
-<!ENTITY policy.signRules.enable.label "Überprüfe ob e-mail signiert seien sollte">
+<!ENTITY policy.signRules.enable.label "Überprüfe ob E-Mail signiert seien sollte">
 <!ENTITY policy.signRules.checkDefaultRules.label "Benutze Standardregeln">
 <!ENTITY policy.signRules.autoAddRule.label "Füge automatisch Regeln basierend auf denn angesehenen DKIM signierten E-Mails hinzu">
+<!ENTITY viewSigners.label "Signierregeln">
+<!ENTITY viewSignerDefaults.label "Standard Signierregeln">
 
 
 <!ENTITY display.label "Anzeige">
