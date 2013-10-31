@@ -111,8 +111,8 @@ var Verifier = (function() {
 	// Pattern for hex-octet as specified in Section 6.7 of RFC 2045
 	var hex_octet = "(?:=[0-9ABCDEF]{2})";
 	// Pattern for qp-hdr-value as specified in Section 2.10 of RFC 6376
-	// same as dkim-quoted-printable as specified in Section 2.11 of RFC 6376
-	var qp_hdr_value = "(?:"+pattFWS+"|"+hex_octet+"|"+dkim_safe_char+")";
+	// same as dkim-quoted-printable with "|" encoded as specified in Section 2.11 of RFC 6376
+	var qp_hdr_value = "(?:(?:"+pattFWS+"|"+hex_octet+"|[!-:<>-{}-~])*)";
 	// Pattern for field-name as specified in Section 3.6.8 of RFC 5322 without ";"
 	// used as hdr-name in RFC 6376
 	var hdr_name = "(?:[!-9<-~]+)";
@@ -1014,11 +1014,6 @@ var Verifier = (function() {
 			msg.DKIMSignature = parseDKIMSignature(msg.headerFields["dkim-signature"][0]);
 			dkimDebugMsg("Parsed DKIM-Signature: "+msg.DKIMSignature.toSource());
 			
-			// add should be signed rule
-			if (!msg.shouldBeSigned.foundRule) {
-				Policy.signedBy(msg.from, msg.DKIMSignature.d);
-			}
-			
 			// warning if there is a SDID in the sign rule
 			// that is different from the SDID in the signature
 			if (msg.shouldBeSigned.sdid &&
@@ -1172,6 +1167,11 @@ var Verifier = (function() {
 			
 			if (!isValid) {
 				throw new DKIM_SigError("DKIM_SIGERROR_BADSIG");
+			}
+			
+			// add should be signed rule
+			if (!msg.shouldBeSigned.foundRule) {
+				Policy.signedBy(msg.from, msg.DKIMSignature.d);
 			}
 			
 			// return result
