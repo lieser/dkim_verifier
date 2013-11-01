@@ -390,7 +390,7 @@ var Verifier = (function() {
 	 * parse the DKIM-Signature header field
 	 * header field is specified in Section 3.5 of RFC 6376
 	 */
-	function parseDKIMSignature(DKIMSignatureHeader) {
+	function parseDKIMSignature(DKIMSignatureHeader, warnings) {
 		var DKIMSignature = {
 			v : null, // Version
 			a_sig : null, // signature algorithm (signing part)
@@ -581,7 +581,23 @@ var Verifier = (function() {
 		var atext = "[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]";
 		var local_part = "(?:"+atext+"+(?:\\."+atext+"+)*)";
 		var sig_i_tag = local_part+"?@("+domain_name+")";
-		var AUIDTag = parseTagValue(dict, "i", sig_i_tag);
+		var AUIDTag = null;
+		try {
+			AUIDTag = parseTagValue(dict, "i", sig_i_tag);
+		} catch (exception if exception instanceof DKIM_SigError &&
+		         exception.errorType === "DKIM_SIGERROR_ILLFORMED_I") {
+			switch (prefs.getIntPref("error.illformed_i.treatAs")) {
+				case 0: // error
+					throw exception;
+				case 1: // warning
+					warnings.push("DKIM_SIGERROR_ILLFORMED_I");
+					break;
+				case 2: // ignore
+					break;
+				default:
+					throw new DKIM_InternalError("invalid error.illformed_i.treatAs");
+			}
+		}
 		if (AUIDTag === null) {
 			DKIMSignature.i = "@"+DKIMSignature.d;
 			DKIMSignature.i_domain = DKIMSignature.d;
@@ -1019,7 +1035,7 @@ var Verifier = (function() {
 			msg.warnings = [];
 
 			// parse the DKIMSignatureHeader
-			msg.DKIMSignature = parseDKIMSignature(msg.headerFields["dkim-signature"][0]);
+			msg.DKIMSignature = parseDKIMSignature(msg.headerFields["dkim-signature"][0], msg.warnings);
 			dkimDebugMsg("Parsed DKIM-Signature: "+msg.DKIMSignature.toSource());
 			
 			// error/warning if there is a SDID in the sign rule

@@ -12,11 +12,25 @@
 		<preference id="pref_error.key_testmode.ignore"
 		            name="extensions.dkim_verifier.error.key_testmode.ignore"
 		            type="bool"/>
+		<preference id="pref_error.illformed_i.treatAs"
+		            name="extensions.dkim_verifier.error.illformed_i.treatAs"
+		            type="int"/>
 	</preferences>
 	
 	<checkbox preference="pref_debug" label="&debug.label;"/>
 	<checkbox preference="pref_error.key_testmode.ignore"
 	          label="&error.key_testmode.ignore.label;"/>
+	<hbox align="center">
+		<label>&error.illformed_i.treatAs.label;</label>
+		<menulist preference="pref_error.illformed_i.treatAs">
+			<menupopup>
+				<menuitem label="&error.treatAs.value.0.label;" value="0"/>
+				<menuitem label="&error.treatAs.value.1.label;" value="1"/>
+				<menuitem label="&error.treatAs.value.2.label;" value="2"/>
+			</menupopup>
+		</menulist>
+		<spacer/>
+	</hbox>
 </prefpane>
 
 </overlay>
