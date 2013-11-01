@@ -191,7 +191,7 @@ DKIM_Verifier.Display = (function() {
 				// show warnings
 				if (result.warnings.length > 0) {
 					var warnings = result.warnings.map(function(e) {
-						if (e === "DKIM_POLICYWARNING_WRONG_SDID") {
+						if (e === "DKIM_POLICYERROR_WRONG_SDID") {
 							return DKIM_Verifier.
 								tryGetFormattedString(dkimStrings, e, [result.shouldBeSignedBy]) || e;
 						} else {
@@ -213,14 +213,17 @@ DKIM_Verifier.Display = (function() {
 			case "PERMFAIL":
 				that.setCollapsed(30);
 				var errorMsg;
-				if (result.errorType === "DKIM_POLICYERROR_MISSING_SIG") {
-					errorMsg = DKIM_Verifier.
-						tryGetFormattedString(dkimStrings, result.errorType, [result.shouldBeSignedBy]) ||
-						result.errorType;
-					policyAddUserExceptionButton.disabled = false;
-				} else {
-					errorMsg = DKIM_Verifier.tryGetString(dkimStrings, result.errorType) ||
-						result.errorType;
+				switch (result.errorType) {
+					case "DKIM_POLICYERROR_MISSING_SIG":
+					case "DKIM_POLICYERROR_WRONG_SDID":
+						errorMsg = DKIM_Verifier.
+							tryGetFormattedString(dkimStrings, result.errorType, [result.shouldBeSignedBy]) ||
+							result.errorType;
+						policyAddUserExceptionButton.disabled = false;
+						break;
+					default :
+						errorMsg = DKIM_Verifier.tryGetString(dkimStrings, result.errorType) ||
+							result.errorType;
 				}
 				str = dkimStrings.getFormattedString("PERMFAIL", [errorMsg]);
 				header.value = str;

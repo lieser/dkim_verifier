@@ -20,6 +20,7 @@
 <!ENTITY policy.signRules.enable.label "Check if e-mail should be signed">
 <!ENTITY policy.signRules.checkDefaultRules.label "Use default rules">
 <!ENTITY policy.signRules.autoAddRule.label "Automatically add rules based on viewed DKIM signed e-mails">
+<!ENTITY policy.error.wrong_sdid.asWarning.label "Treat wrong SDID as warning instead of error">
 <!ENTITY viewSigners.label "Signers rules">
 <!ENTITY viewSignerDefaults.label "Default signers rules">
 

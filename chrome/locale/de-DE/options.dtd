@@ -20,6 +20,7 @@
 <!ENTITY policy.signRules.enable.label "Überprüfe ob E-Mail signiert seien sollte">
 <!ENTITY policy.signRules.checkDefaultRules.label "Benutze Standardregeln">
 <!ENTITY policy.signRules.autoAddRule.label "Füge automatisch Regeln basierend auf denn angesehenen DKIM signierten E-Mails hinzu">
+<!ENTITY policy.error.wrong_sdid.asWarning.label "Behandel falsche SDID als Warnung anstatt als Fehler">
 <!ENTITY viewSigners.label "Signierregeln">
 <!ENTITY viewSignerDefaults.label "Standard Signierregeln">
 

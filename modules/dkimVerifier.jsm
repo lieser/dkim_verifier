@@ -1022,11 +1022,15 @@ var Verifier = (function() {
 			msg.DKIMSignature = parseDKIMSignature(msg.headerFields["dkim-signature"][0]);
 			dkimDebugMsg("Parsed DKIM-Signature: "+msg.DKIMSignature.toSource());
 			
-			// warning if there is a SDID in the sign rule
+			// error/warning if there is a SDID in the sign rule
 			// that is different from the SDID in the signature
 			if (msg.shouldBeSigned.sdid &&
 					msg.shouldBeSigned.sdid !== msg.DKIMSignature.d) {
-				msg.warnings.push("DKIM_POLICYWARNING_WRONG_SDID");
+				if (prefs.getBoolPref("policy.error.wrong_sdid.asWarning")) {
+					msg.warnings.push("DKIM_POLICYERROR_WRONG_SDID");
+				} else {
+					throw new DKIM_SigError("DKIM_POLICYERROR_WRONG_SDID");
+				}
 			}
 			
 			// if SDID from sign rule is different from SDID in the signature

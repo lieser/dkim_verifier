@@ -12,6 +12,7 @@ pref("extensions.dkim_verifier.saveResult", false);
 pref("extensions.dkim_verifier.policy.signRules.enable", false);
 pref("extensions.dkim_verifier.policy.signRules.checkDefaultRules", true);
 pref("extensions.dkim_verifier.policy.signRules.autoAddRule", false);
+pref("extensions.dkim_verifier.policy.error.wrong_sdid.asWarning", false);
 
 // 0: don't store DKIM keys
 // 1: store DKIM keys
