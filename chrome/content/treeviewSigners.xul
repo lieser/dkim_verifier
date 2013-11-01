@@ -44,12 +44,12 @@ function setView(){
 </tree>
 
 <hbox>
-	<button 
-	        label="&treeviewSigners.addSignersRule.label;"
+	<button label="&treeviewSigners.addSignersRule.label;"
 	        oncommand="window.openDialog('chrome://dkim_verifier/content/addSignersRule.xul', 'addSignersRules', 'chrome,modal,resizable,centerscreen', treeView);"/>
-	<button 
-	        label="&treeviewSigners.deleteSelectedRows.label;"
+	<button label="&treeviewSigners.deleteSelectedRows.label;"
 	        oncommand="treeView.deleteSelectedRows();"/>
+	<button label="&button.help.label;"
+	        oncommand="window.open('chrome://dkim_verifier/content/signersRuleHelp.xul', 'signersRuleHelp', 'chrome,dependent,resizable,centerscreen');"/>
 	<spacer/>
 </hbox>
 

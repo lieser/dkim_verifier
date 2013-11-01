@@ -1,4 +1,4 @@
-﻿<!ENTITY dkim_verifier.header.title "DKIM ">
+<!ENTITY dkim_verifier.header.title "DKIM ">
 <!ENTITY dkim_verifier.statusbar.title "DKIM:">
 
 <!ENTITY dkim_verifier.reverifyDKIMSignature.label "Überprüfe DKIM Signatur neu">
@@ -30,3 +30,5 @@
 <!ENTITY signRules.ruletype.SIGNED.label "Muss signiert sein (1)">
 <!ENTITY signRules.ruletype.NEUTRAL.label "Kann signiert sein (2)">
 <!ENTITY signRules.ruletype.HIDEFAIL.label "Inoriere ungültige Signture (3)">
+
+<!ENTITY button.help.label "Hilfe">

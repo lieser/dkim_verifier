@@ -36,4 +36,10 @@ function setView(){
 	<treechildren/>
 </tree>
 
+<hbox>
+	<button label="&button.help.label;"
+	        oncommand="window.open('chrome://dkim_verifier/content/signersRuleHelp.xul', 'signersRuleHelp', 'chrome,dependent,resizable,centerscreen');"/>
+	<spacer/>
+</hbox>
+
 </window>

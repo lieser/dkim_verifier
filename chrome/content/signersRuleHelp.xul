@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
+
+<!DOCTYPE window [
+    <!ENTITY % xulstringsDTD SYSTEM "chrome://dkim_verifier/locale/xulstrings.dtd">
+    %xulstringsDTD;
+    <!ENTITY % signersRuleHelpDTD SYSTEM "chrome://dkim_verifier/locale/signersRuleHelp.dtd">
+    %signersRuleHelpDTD;
+]>
+
+<window title="&signersRuleHelp.title;"
+   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+<grid flex="1">
+	<columns>
+		<column flex="1"/>
+		<column flex="1" width="400"/>
+	</columns>
+	
+	<rows>
+		<row>
+			<label value="&treeviewSigners.treecol.domain.label;"/>
+			<description>&domain.description;</description>
+		</row>
+
+		<row>
+			<label value="&treeviewSigners.treecol.listID.label;"/>
+			<description>&listID.description;</description>
+		</row>
+
+		<row>
+			<label value="&treeviewSigners.treecol.addr.label;"/>
+			<description>&addr.description;</description>
+		</row>
+
+		<row>
+			<label value="&treeviewSigners.treecol.sdid.label;"/>
+			<description>&sdid.description;</description>
+		</row>
+
+		<row>
+			<label value="&treeviewSigners.treecol.ruletype.label;"/>
+			<vbox>
+				<description>&ruletype.description;</description>
+				<grid flex="1">
+					<columns>
+						<column flex="1"/>
+						<column flex="1"/>
+					</columns>
+					
+					<rows>
+						<row>
+							<label value="1"/>
+							<description>&ruletype.1.description;</description>
+						</row>
+						<row>
+							<label value="2"/>
+							<description>&ruletype.2.description;</description>
+						</row>
+						<row>
+							<label value="3"/>
+							<description>&ruletype.3.description;</description>
+						</row>
+					</rows>
+				</grid>
+			</vbox>
+		</row>
+
+		<row>
+			<label value="&treeviewSigners.treecol.priority.label;"/>
+			<description>&priority.description;</description>
+		</row>
+
+		<row>
+			<label value="&treeviewSigners.treecol.enabled.label;"/>
+			<description>&enabled.description;</description>
+		</row>
+	</rows>
+</grid>
+
+</window>

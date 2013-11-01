@@ -30,3 +30,5 @@
 <!ENTITY signRules.ruletype.SIGNED.label "Must be signed (1)">
 <!ENTITY signRules.ruletype.NEUTRAL.label "Can be signed (2)">
 <!ENTITY signRules.ruletype.HIDEFAIL.label "Ignore invalid signature (3)">
+
+<!ENTITY button.help.label "Help">
