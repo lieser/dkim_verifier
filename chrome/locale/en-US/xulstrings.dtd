@@ -15,6 +15,7 @@
 
 <!ENTITY treeviewSigners.title "Signers rules">
 <!ENTITY treeviewSigners.treecol.domain.label "Domain">
+<!ENTITY treeviewSigners.treecol.listID.label "List-Id">
 <!ENTITY treeviewSigners.treecol.addr.label "From">
 <!ENTITY treeviewSigners.treecol.sdid.label "SDID">
 <!ENTITY treeviewSigners.treecol.ruletype.label "Rule type">
@@ -26,5 +27,6 @@
 <!ENTITY treeviewSignersDefault.title "Default signers rules">
 
 <!ENTITY addSignersRule.title "Add signers rule">
-<!ENTITY signRules.ruletype.SIGNED.label "Must be signed">
-<!ENTITY signRules.ruletype.NEUTRAL.label "Can be signed">
+<!ENTITY signRules.ruletype.SIGNED.label "Must be signed (1)">
+<!ENTITY signRules.ruletype.NEUTRAL.label "Can be signed (2)">
+<!ENTITY signRules.ruletype.HIDEFAIL.label "Ignore invalid signature (3)">

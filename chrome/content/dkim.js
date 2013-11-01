@@ -226,8 +226,11 @@ DKIM_Verifier.Display = (function() {
 				header.value = str;
 				statusbarpanel.value = str;
 
-				// if domain is testing DKIM, treat msg as not signed
-				if (result.errorType === "DKIM_SIGERROR_KEY_TESTMODE") {
+				// if domain is testing DKIM
+				// or hideFail is set to true,
+				// treat msg as not signed
+				if (result.errorType === "DKIM_SIGERROR_KEY_TESTMODE" ||
+				    result.hideFail) {
 					that.setCollapsed(40);
 					// highlight from header
 					highlightHeader("nosig");

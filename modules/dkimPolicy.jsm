@@ -40,19 +40,30 @@ Cu.import("resource://dkim_verifier/helper.jsm");
 const DB_POLICY_NAME = "dkimPolicy.sqlite";
 const PREF_BRANCH = "extensions.dkim_verifier.policy.";
 
-// rule types
+/**
+ * rule types
+ * 
+ * @public
+ */
 const RULE_TYPE = {
-	SIGNED : 1,
+	ALL : 1, // all e-mails must be signed
 	NEUTRAL: 2,
+	HIDEFAIL: 3, // treat invalid signatures as nosig
 };
-// default rule priorities
+/**
+ * default rule priorities
+ * 
+ * @public
+ */
 const PRIORITY = {
-	AUTOINSERT_RULE_SIGNED:  110,
-	DEFAULT_RULE_SIGNED:     210,
-	DEFAULT_RULE_SIGNED2:     211,
-	DEFAULT_RULE_NEUTRAL:    220,
-	USERINSERT_RULE_SIGNED:  310,
-	USERINSERT_RULE_NEUTRAL: 320,
+	AUTOINSERT_RULE_ALL:  1100,
+	DEFAULT_RULE_ALL0:     2000, // used for e-mail providers
+	USERINSERT_RULE_HIDEFAIL: 2050,
+	DEFAULT_RULE_ALL:     2100,
+	DEFAULT_RULE_ALL_2:     2110, // used for different SDID for subdomains
+	DEFAULT_RULE_NEUTRAL:    2200,
+	USERINSERT_RULE_ALL:  3100,
+	USERINSERT_RULE_NEUTRAL: 3200,
 };
 
 
@@ -124,7 +135,8 @@ var Policy = {
 					// create table
 					yield conn.execute(
 						"CREATE TABLE IF NOT EXISTS signers (\n" +
-						"  domain TEXT NOT NULL,\n" +
+						"  domain TEXT,\n" +
+						"  listID TEXT,\n" +
 						"  addr TEXT NOT NULL,\n" +
 						"  sdid TEXT,\n" +
 						"  ruletype INTEGER NOT NULL,\n" +
@@ -222,15 +234,14 @@ var Policy = {
 	 * Determinates if e-mail by fromAddress should be signed
 	 * 
 	 * @param {String} fromAddress
-	 * @param {Function} [callback] function callback(result, callbackData)
-	 * @param [callbackData]
+	 * @param {String} [listID]
 	 * 
 	 * @return {Promise<Object>}
 	 *         .shouldBeSigned true if fromAddress should be signed
 	 *         .sdid {String} Signing Domain Identifier
 	 *         .foundRule {Boolean} true if enabled rule for fromAddress was found
 	 */
-	shouldBeSigned: function Policy_shouldBeSigned(fromAddress, callback, callbackData) {
+	shouldBeSigned: function Policy_shouldBeSigned(fromAddress, listID) {
 		"use strict";
 
 		var promise = Task.spawn(function () {
@@ -245,6 +256,9 @@ var Policy = {
 			}
 
 			var domain = getBaseDomainFromAddr(fromAddress);
+			if (listID === "") {
+				listID = null;
+			}
 			
 			// wait for DB init
 			yield Policy.initDB();
@@ -252,69 +266,66 @@ var Policy = {
 			
 			var sqlRes;
 			try {
+				var sql =
+						"SELECT addr, sdid, ruletype, priority\n" +
+						"FROM signers WHERE\n" +
+						"  (domain = :domain OR listID = :listID) AND\n" +
+						"  enabled AND\n" +
+						"  lower(:from) GLOB addr\n";
 				if (prefs.getBoolPref("signRules.checkDefaultRules")) {
 					// include default rules
-					sqlRes = yield conn.executeCached(
-						"SELECT addr, sdid, ruletype, priority, enabled\n" +
-						"FROM signers WHERE\n" +
-						"  domain = :domain AND\n" +
-						"  enabled AND\n" +
-						"  lower(:from) GLOB addr\n" +
-						"UNION SELECT addr, sdid, ruletype, priority, 1\n" +
+					sql +=
+						"UNION SELECT addr, sdid, ruletype, priority\n" +
 						"FROM signersDefault WHERE\n" +
 						"  domain = :domain AND\n" +
-						"  lower(:from) GLOB addr\n" +
-						"ORDER BY priority DESC\n" +
-						"LIMIT 1;",
-						{domain:domain, "from": fromAddress}
-					);
-				} else {
-					// don't include default rules
-					sqlRes = yield conn.executeCached(
-						"SELECT addr, sdid, ruletype, priority, enabled\n" +
-						"FROM signers WHERE\n" +
-						"  lower(:from) GLOB addr AND\n" +
-						"  enabled\n" +
-						"ORDER BY priority DESC\n" +
-						"LIMIT 1;",
-						{"from": fromAddress}
-					);
+						"  lower(:from) GLOB addr\n";
 				}
+				sql +=
+						"ORDER BY priority DESC\n" +
+						"LIMIT 1;";
+				sqlRes = yield conn.executeCached(
+					sql,
+					{domain:domain, listID: listID, from: fromAddress}
+				);
 			} finally {
 				yield conn.close();
 			}
 			
 			if (sqlRes.length > 0) {
-				if (sqlRes[0].getResultByName("ruletype") === RULE_TYPE["SIGNED"]) {
-					result.shouldBeSigned = true;
-				} else {
-					result.shouldBeSigned = false;
-				}
 				result.sdid = sqlRes[0].getResultByName("sdid");
 				result.foundRule = true;
+				
+				switch (sqlRes[0].getResultByName("ruletype")) {
+					case RULE_TYPE["ALL"]:
+						result.shouldBeSigned = true;
+						result.hideFail = false;
+						break;
+					case RULE_TYPE["NEUTRAL"]:
+						result.shouldBeSigned = false;
+						result.hideFail = false;
+						break;
+					case RULE_TYPE["HIDEFAIL"]:
+						result.shouldBeSigned = false;
+						result.hideFail = true;
+						break;
+					default:
+						throw new DKIM_InternalError("unknown rule type");
+				}
 			} else {
 				result.shouldBeSigned = false;
 				result.foundRule = false;
 			}
 			
 			log.debug("shouldBeSigned: "+result.shouldBeSigned+"; sdid: "+result.sdid+
-				"; foundRule: "+result.foundRule
+				"; hideFail: "+result.hideFail+"; foundRule: "+result.foundRule
 			);
 			log.trace("shouldBeSigned Task end");
 			throw new Task.Result(result);
 		});
-		if (callback !== undefined) {
-			promise.then(function onFulfill(result) {
-				// result == "Resolution result for the task: Value!!!"
-				// The result is undefined if no special Task.Result exception was thrown.
-				if (callback) {
-					callback(result, callbackData);
-				}
-			}).then(null, function onReject(exception) {
-				// Failure!  We can inspect or report the exception.
-				log.fatal(exceptionToStr(exception));
-			});
-		}
+		promise.then(null, function onReject(exception) {
+			// Failure!  We can inspect or report the exception.
+			log.fatal(exceptionToStr(exception));
+		});
 		return promise;
 	},
 	
@@ -345,7 +356,7 @@ var Policy = {
 
 			var shouldBeSignedRes = yield Policy.shouldBeSigned(fromAddress);
 			if (!shouldBeSignedRes.foundRule) {
-				yield addRule(fromAddress, sdid, "SIGNED", "AUTOINSERT_RULE_SIGNED");
+				yield addRule(fromAddress, sdid, "ALL", "AUTOINSERT_RULE_ALL");
 			}
 			
 			log.trace("signedBy Task end");
@@ -479,5 +490,9 @@ function init() {
 		Policy.initDB();
 	}
 }
+
+Policy.RULE_TYPE = RULE_TYPE;
+Policy.PRIORITY = PRIORITY;
+
 
 init();

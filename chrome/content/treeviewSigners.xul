@@ -18,7 +18,7 @@ var treeView;
 function setView(){
 	Task.spawn(function () {
 		yield Policy.initDB();
-		treeView = new SQLiteTreeView("dkimPolicy.sqlite","signers",["domain","addr","sdid","ruletype","priority","enabled"]);
+		treeView = new SQLiteTreeView("dkimPolicy.sqlite","signers",["domain","listID","addr","sdid","ruletype","priority","enabled"]);
 		document.getElementById('my-tree').view = treeView;
 	});
 }
@@ -27,6 +27,8 @@ function setView(){
 <tree id="my-tree" editable="true" enableColumnDrag="true" flex="1">
 	<treecols>
 		<treecol id="domain" editable="true" label="&treeviewSigners.treecol.domain.label;" flex="10"/>
+		<splitter class="tree-splitter" />
+		<treecol id="listID" editable="true" label="&treeviewSigners.treecol.listID.label;" flex="15"/>
 		<splitter class="tree-splitter" />
 		<treecol id="addr" editable="true" label="&treeviewSigners.treecol.addr.label;" flex="15"/>
 		<splitter class="tree-splitter" />

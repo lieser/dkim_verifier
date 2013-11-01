@@ -15,20 +15,39 @@
 -->
 
 <script>
+Components.utils.import("resource://dkim_verifier/logging.jsm");
+Components.utils.import("resource://dkim_verifier/dkimPolicy.jsm");
+
+var log = Logging.getLogger("addSignersRule");
+
 function onAccept(){
-	var input = {};
-	input.domain = document.getElementById("domain").value;
-	input.addr = document.getElementById("addr").value;
-	input.sdid = document.getElementById("sdid").value;
-	input.ruletype = document.getElementById("ruletype").value;
-	if (input.ruletype == 1) {
-		input.priority = 310;
-	} else {
-		input.priority = 320;
+	try {
+		var input = {};
+		input.domain = document.getElementById("domain").value;
+		input.listID = document.getElementById("listID").value;
+		input.addr = document.getElementById("addr").value;
+		input.sdid = document.getElementById("sdid").value;
+		input.ruletype = document.getElementById("ruletype").value;
+		switch (parseInt(input.ruletype, 10)) {
+			case Policy.RULE_TYPE["ALL"]:
+				input.priority = Policy.PRIORITY.USERINSERT_RULE_ALL;
+				break;
+			case Policy.RULE_TYPE["NEUTRAL"]:
+				input.priority = Policy.PRIORITY.USERINSERT_RULE_NEUTRAL;
+				break;
+			case Policy.RULE_TYPE["HIDEFAIL"]:
+				input.priority = Policy.PRIORITY.USERINSERT_RULE_HIDEFAIL;
+				break;
+			default:
+				input.priority = 0;
+		}
+		input.enabled = document.getElementById("enabled").checked;
+		
+		window.arguments[0].addRow(input);
+	} catch (exception) {
+		log.fatal(exception);
+		return false;
 	}
-	input.enabled = document.getElementById("enabled").checked;
-	
-	window.arguments[0].addRow(input);
   return true;
 }
 
@@ -39,6 +58,8 @@ function onCancel(){
     
 <label value="&treeviewSigners.treecol.domain.label;"/>
 <textbox id="domain"/>
+<label value="&treeviewSigners.treecol.listID.label;"/>
+<textbox id="listID"/>
 <label value="&treeviewSigners.treecol.addr.label;"/>
 <textbox id="addr"/>
 <label value="&treeviewSigners.treecol.sdid.label;"/>
@@ -48,6 +69,7 @@ function onCancel(){
 	<menupopup>
 		<menuitem label="&signRules.ruletype.SIGNED.label;" value="1"/>
 		<menuitem label="&signRules.ruletype.NEUTRAL.label;" value="2"/>
+		<menuitem label="&signRules.ruletype.HIDEFAIL.label;" value="3"/>
 	</menupopup>
 </menulist>
 <checkbox id="enabled" label="&treeviewSigners.treecol.enabled.label;" checked="true"/>

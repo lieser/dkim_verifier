@@ -548,7 +548,7 @@ var Verifier = (function() {
 		atext = ALPHA / DIGIT / ; Printable US-ASCII
 				"!" / "#" / ; characters not including
 				"$" / "%" / ; specials. Used for atoms.
-				"&" / "´" /
+				"&" / "'" /
 				"*" / "+" /
 				"-" / "/" /
 				"=" / "?" /
@@ -939,6 +939,7 @@ var Verifier = (function() {
 				result : "PERMFAIL",
 				errorType : e.errorType,
 				shouldBeSignedBy : msg.shouldBeSigned.sdid,
+				hideFail : msg.shouldBeSigned.hideFail,
 			};
 			returnResult(msg);
 		
@@ -972,8 +973,15 @@ var Verifier = (function() {
 			var author = msg.headerFields.from[msg.headerFields.from.length-1];
 			msg.from = msgHeaderParser.extractHeaderAddressMailboxes(author);
 
+			// get list-id
+			var listId = null;
+			if (msg.headerFields["list-id"]) {
+				listId = msg.headerFields["list-id"][0];
+				listId = msgHeaderParser.extractHeaderAddressMailboxes(listId);
+			}
+			
 			// check if msg should be signed
-			msg.shouldBeSigned = yield Policy.shouldBeSigned(msg.from);
+			msg.shouldBeSigned = yield Policy.shouldBeSigned(msg.from, listId);
 			
 			// check if DKIMSignatureHeader exist
 			if (msg.headerFields["dkim-signature"] === undefined) {
@@ -1192,12 +1200,13 @@ var Verifier = (function() {
 	 * The result of the verification.
 	 * 
 	 * @typedef {Object} dkimResult
-	 * @property {String} resultVersion
+	 * @property {String} resultVersion "1.1"
 	 * @property {String} result "none" / "SUCCESS" / "PERMFAIL" / "TEMPFAIL"
 	 * @property {String} SDID (only if result="SUCCESS")
 	 * @property {String[]} warnings (only if result="SUCCESS")
 	 * @property {String} errorType
 	 * @property {String} shouldBeSignedBy
+	 * @property {Boolean} hideFail
 	 */
 	/*
 		result format:
@@ -1210,6 +1219,7 @@ var Verifier = (function() {
 				DKIM_SigError.errorType (only if result="PERMFAIL")
 				DKIM_InternalError.errorType (only if result="TEMPFAIL"; optional)
 			shouldBeSignedBy : string (SDID; since 1.1)
+			hideFail : Boolean
 		}
 	*/
 	
