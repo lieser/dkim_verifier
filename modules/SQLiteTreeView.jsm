@@ -27,9 +27,11 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://gre/modules/osfile.jsm"); // Requires Gecko 16.0
 Cu.import("resource://gre/modules/FileUtils.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
+
+Cu.import("resource://dkim_verifier/ModuleGetter.jsm");
+ModuleGetter.getosfile(this);
 
 
 /**
@@ -74,9 +76,9 @@ SQLiteTreeView.prototype = {
 	_updateOrderClause: function SQLiteTreeView__updateOrderClause() {
 		"use strict";
 
-		this.orderClause = this.sortOrder.map( elem => {
+		this.orderClause = this.sortOrder.map(function (elem) {
 			return this.columns[elem.index] + (elem.orderDirection  ? " DESC": "");
-		}).join(", ");
+		}, this).join(", ");
 		// dump(this.orderClause+"\n");
 	},
 		

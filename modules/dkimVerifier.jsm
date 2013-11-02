@@ -514,8 +514,8 @@ var Verifier = (function() {
 		DKIMSignature.h = signedHeadersTag[0].replace(new RegExp(pattFWS,"g"), "");
 		// get the header field names and store them in lower case in an array
 		DKIMSignature.h_array = DKIMSignature.h.split(":").
-			map(x => x.trim().toLowerCase()).
-			filter(x => x);
+			map(function (x) {return x.trim().toLowerCase();}).
+			filter(function (x) {return x;});
 		// check that the from header is included
 		if (DKIMSignature.h_array.indexOf("from") === -1) {
 			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_FROM");
@@ -706,7 +706,7 @@ var Verifier = (function() {
 		var algorithmTag = parseTagValue(dict, "h", key_h_tag, 2);
 		if (algorithmTag !== null) {
 			DKIMKey.h = algorithmTag[0];
-			DKIMKey.h_array = DKIMKey.h.split(":").map(String.trim).filter(x => x);
+			DKIMKey.h_array = DKIMKey.h.split(":").map(String.trim).filter(function (x) {return x;});
 		} 
 		
 		// get Key type (plain-text; OPTIONAL, default is "rsa")
@@ -760,7 +760,7 @@ var Verifier = (function() {
 		if (flagsTag !== null) {
 			DKIMKey.t = flagsTag[0];
 			// get the flags and store them in an array
-			DKIMKey.t_array = DKIMKey.t.split(":").map(String.trim).filter(x => x);
+			DKIMKey.t_array = DKIMKey.t.split(":").map(String.trim).filter(function (x) {return x;});
 		} else {
 			DKIMKey.t = "";
 		}

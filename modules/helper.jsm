@@ -35,9 +35,11 @@ const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/FileUtils.jsm");
 Cu.import("resource://gre/modules/NetUtil.jsm");
-Cu.import("resource://gre/modules/Promise.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
-Cu.import("resource://services-common/utils.js");
+
+Cu.import("resource://dkim_verifier/ModuleGetter.jsm");
+ModuleGetter.getCommonUtils(this);
+ModuleGetter.getPromise(this);
 
 Cu.import("resource://dkim_verifier/logging.jsm");
 
@@ -52,8 +54,9 @@ dkimStrings.stringbundle = Services.strings.createBundle(
 	"chrome://dkim_verifier/locale/dkim.properties"
 );
 dkimStrings.getString = dkimStrings.stringbundle.GetStringFromName;
-dkimStrings.getFormattedString = (key, strArray) =>
-	dkimStrings.stringbundle.GetStringFromName(key, strArray, strArray.length);
+dkimStrings.getFormattedString = function (key, strArray) {
+	return dkimStrings.stringbundle.GetStringFromName(key, strArray, strArray.length);
+}
 
 
 /**

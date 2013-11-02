@@ -28,10 +28,12 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://gre/modules/Promise.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
-Cu.import("resource://gre/modules/Sqlite.jsm"); // Requires Gecko 20.0
 Cu.import("resource://gre/modules/Task.jsm"); // Requires Gecko 17.0
+
+Cu.import("resource://dkim_verifier/ModuleGetter.jsm");
+ModuleGetter.getPromise(this);
+ModuleGetter.getSqlite(this);
 
 Cu.import("resource://dkim_verifier/logging.jsm");
 Cu.import("resource://dkim_verifier/helper.jsm");

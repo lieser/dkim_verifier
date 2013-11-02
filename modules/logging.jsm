@@ -25,7 +25,9 @@ const Ci = Components.interfaces;
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
-Cu.import("resource://services-common/log4moz.js");
+
+Cu.import("resource://dkim_verifier/ModuleGetter.jsm");
+ModuleGetter.getLog(this, "Log4Moz");
 
 
 // "Fatal", "Error", "Warn", "Info", "Config", "Debug", "Trace", "All"
