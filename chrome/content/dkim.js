@@ -48,6 +48,7 @@ DKIM_Verifier.Display = (function() {
 	var log = DKIM_Verifier.Logging.getLogger("Display");
 	var header;
 	var row;
+	var headerTooltips;
 	var statusbarpanel;
 	var policyAddUserExceptionButton;
 	var dkimStrings;
@@ -56,6 +57,27 @@ DKIM_Verifier.Display = (function() {
  * private methods
  */
 
+	/**
+	 * Sets the result value for headerTooltips and statusbarpanel.
+	 * 
+	 * @param {String} value
+	 */
+	function setValue(value) {
+		headerTooltips.value = value;
+		statusbarpanel.value = value;
+	}
+	
+	/**
+	 * Sets the warnings for header, headerTooltips and statusbarpanel.
+	 * 
+	 * @param {String[]} warnings
+	 */
+	function setWarnings(warnings) {
+		header.warnings = warnings;
+		headerTooltips.warnings = warnings;
+		statusbarpanel.warnings = warnings;
+	}
+	
 	/*
 	 * highlight header
 	 */
@@ -176,7 +198,7 @@ DKIM_Verifier.Display = (function() {
 			case "none":
 				header.value = dkimStrings.getString("NOSIG");
 				that.setCollapsed(40);
-				statusbarpanel.value = dkimStrings.getString("NOSIG");
+				setValue(dkimStrings.getString("NOSIG"));
 
 				// highlight from header
 				highlightHeader("nosig");
@@ -186,7 +208,7 @@ DKIM_Verifier.Display = (function() {
 				that.setCollapsed(10);
 				str = dkimStrings.getFormattedString("SUCCESS", [result.SDID]);
 				header.value = str;
-				statusbarpanel.value = str;
+				setValue(str);
 				
 				// show warnings
 				if (result.warnings.length > 0) {
@@ -198,8 +220,7 @@ DKIM_Verifier.Display = (function() {
 							return DKIM_Verifier.tryGetString(dkimStrings, e) || e;
 						}
 					});
-					header.warnings = warnings;
-					statusbarpanel.warnings = warnings;
+					setWarnings(warnings)
 				}
 				
 				// highlight from header
@@ -227,7 +248,7 @@ DKIM_Verifier.Display = (function() {
 				}
 				str = dkimStrings.getFormattedString("PERMFAIL", [errorMsg]);
 				header.value = str;
-				statusbarpanel.value = str;
+				setValue(str);
 
 				// if domain is testing DKIM
 				// or hideFail is set to true,
@@ -251,7 +272,7 @@ DKIM_Verifier.Display = (function() {
 					result.errorType ||
 					dkimStrings.getString("DKIM_INTERNALERROR_NAME");
 				header.value = str;
-				statusbarpanel.value = str;
+				setValue(str);
 				
 				// highlight from header
 				highlightHeader("tempfail");
@@ -285,7 +306,7 @@ var that = {
 		function setDKIMFromTooltip(headerBox) {
 			var emailDisplayButton = headerBox.emailAddresses.boxObject.firstChild;
 			if (emailDisplayButton) {
-				emailDisplayButton.tooltip = "dkim-verifier-tooltip-from";
+				emailDisplayButton.tooltip = "dkim-verifier-header-tooltip-from";
 				emailDisplayButton.setAttribute("tooltiptextSaved", 
 					emailDisplayButton.getAttribute("tooltiptext")
 				);
@@ -295,7 +316,7 @@ var that = {
 		function removeDKIMFromTooltip(headerBox) {
 			var emailDisplayButton = headerBox.emailAddresses.boxObject.firstChild;
 			if (emailDisplayButton) {
-				if (emailDisplayButton.tooltip === "dkim-verifier-tooltip-from") {
+				if (emailDisplayButton.tooltip === "dkim-verifier-header-tooltip-from") {
 					emailDisplayButton.tooltip = "";
 					emailDisplayButton.setAttribute("tooltiptext", 
 						emailDisplayButton.getAttribute("tooltiptextSaved")
@@ -365,6 +386,7 @@ var that = {
 	 */
 	startup : function Display_startup() {
 		// get xul elements
+		headerTooltips = document.getElementById("dkim-verifier-header-tooltips");
 		statusbarpanel = document.getElementById("dkim-verifier-statusbarpanel");
 		policyAddUserExceptionButton = document.
 			getElementById("dkim_verifier.policyAddUserException");
@@ -470,7 +492,7 @@ var that = {
 				headerName: entry,
 				headerValue: dkimStrings.getString("NOT_EMAIL")
 			};
-			statusbarpanel.value = dkimStrings.getString("NOT_EMAIL");
+			setValue(dkimStrings.getString("NOT_EMAIL"));
 			statusbarpanel.dkimStatus = "none";
 			if (reverifyDKIMSignature) {
 				reverifyDKIMSignature.disabled = true;
@@ -480,7 +502,7 @@ var that = {
 				headerName: entry,
 				headerValue: dkimStrings.getString("loading")
 			};
-			statusbarpanel.value = dkimStrings.getString("loading");
+			setValue(dkimStrings.getString("loading"));
 			statusbarpanel.dkimStatus = "loading";
 			if (reverifyDKIMSignature) {
 				reverifyDKIMSignature.disabled = false;
@@ -492,8 +514,7 @@ var that = {
 	 * Resets the header and statusbarpanel
 	 */
 	onStartHeaders: function Display_onStartHeaders() {
-		header.warnings = [];
-		statusbarpanel.warnings = [];
+		setWarnings([]);
 
 		// reset highlight from header
 		highlightHeader("clearHeader");

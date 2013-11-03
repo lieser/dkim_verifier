@@ -1,4 +1,5 @@
 <?xml version="1.0"?>
+<?xml-stylesheet href="chrome://dkim_verifier/skin/msgHdrViewOverlay.css" type="text/css"?>
 <?xml-stylesheet href="chrome://dkim_verifier-os/skin/msgHdrViewOverlay.css" type="text/css"?>
 <!DOCTYPE overlay SYSTEM "chrome://dkim_verifier/locale/xulstrings.dtd">
 <overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
@@ -24,4 +25,8 @@
 		          label="&dkim_verifier.policyAddUserException.label;"
 		          oncommand="DKIM_Verifier.Display.policyAddUserException();"/>
 	</menupopup>
+	
+	<hbox id="msgHeaderView">
+		<box id="dkim-verifier-header-tooltips"/>
+	</hbox>
 </overlay>

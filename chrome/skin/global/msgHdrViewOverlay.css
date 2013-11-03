@@ -1,0 +1,11 @@
+@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+
+#expandeddkim-verifierBox {
+  -moz-binding: url(chrome://dkim_verifier/content/bindings.xml#dkim-verifier-box) !important;
+  -moz-box-align: center;
+}
+
+#dkim-verifier-header-tooltips {
+  -moz-binding: url(chrome://dkim_verifier/content/bindings.xml#dkim-verifier-header-tooltips-box) !important;
+  -moz-box-align: center;
+}

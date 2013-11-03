@@ -16,8 +16,7 @@
                        context="copyPopup"
                        role="textbox"
                        aria-readonly="true" />
-      <xul:image class="alert-icon" tooltip="dkim-verifier-tooltip"/>
-      <xul:tooltip anonid="tooltip" id="dkim-verifier-tooltip"/>
+      <xul:image class="alert-icon" tooltip="dkim-verifier-header-tooltip-warnings"/>
       <xul:separator flex="1"/>
     </content>
     <implementation>
@@ -31,15 +30,7 @@
       </property>
       <property name="warnings">
         <setter><![CDATA[
-          while (this.tooltip.firstChild) {
-            this.tooltip.removeChild(this.tooltip.firstChild);
-          }
-          for (let w of val) {
-            var d = document.createElement("description");
-            d.textContent = w;
-            this.tooltip.appendChild(d);
-          }
-          this.setAttribute("warnings", (!!this.tooltip.firstChild).toString());
+          this.setAttribute("warnings", val.length > 0);
         ]]></setter>
       </property>
     </implementation>
@@ -72,15 +63,6 @@
           <xul:vbox anonid="tooltip-status-warnings"/>
         </xul:tooltip>
       </xul:statusbarpanel>
-      <xul:tooltip anonid="tooltip-from" id="dkim-verifier-tooltip-from">
-        <xul:hbox>
-          <xul:label value="&dkim_verifier.statusbar.title;"/>
-          <xul:vbox flex="1">
-            <xul:label anonid="tooltip-from-value"/>
-            <xul:vbox anonid="tooltip-from-warnings"/>
-          </xul:vbox>
-        </xul:hbox>
-      </xul:tooltip>
     </content>
     <implementation>
       <field name="statusbarpanelBox">document.getAnonymousElementByAttribute(this, "anonid", "statusbarpanel-box");</field>
@@ -90,8 +72,6 @@
       <field name="statusIcon">document.getAnonymousElementByAttribute(this, "anonid", "status-icon");</field>
       <field name="tooltipStatusValue">document.getAnonymousElementByAttribute(this, "anonid", "tooltip-status-value");</field>
       <field name="tooltipStatusWarnings">document.getAnonymousElementByAttribute(this, "anonid", "tooltip-status-warnings");</field>
-      <field name="tooltipFromValue">document.getAnonymousElementByAttribute(this, "anonid", "tooltip-from-value");</field>
-      <field name="tooltipFromWarnings">document.getAnonymousElementByAttribute(this, "anonid", "tooltip-from-warnings");</field>
 
       <property name="hidden">
         <setter><![CDATA[
@@ -102,7 +82,6 @@
         <setter><![CDATA[
           this.statusValue.textContent = val;
           this.tooltipStatusValue.textContent = val;
-          this.tooltipFromValue.textContent = val;
         ]]></setter>
       </property>
       <property name="warnings">
@@ -115,9 +94,6 @@
           }
           while (this.tooltipStatusWarnings.firstChild) {
             this.tooltipStatusWarnings.removeChild(this.tooltipStatusWarnings.firstChild);
-          }
-          while (this.tooltipFromWarnings.firstChild) {
-            this.tooltipFromWarnings.removeChild(this.tooltipFromWarnings.firstChild);
           }
           
           // add warnings to warning tooltip
@@ -135,8 +111,6 @@
           }
           // add warnings tooltip to status tooltip
           this.tooltipStatusWarnings.appendChild(this.tooltipWarnings.cloneNode(true));
-          // add status warnings tooltip to from warnings tooltip
-          this.tooltipFromWarnings.appendChild(this.tooltipStatusWarnings.cloneNode(true));
           
           // set warnings attribute
           this.setAttribute("warnings", (!!this.tooltipWarnings.firstChild).toString());
@@ -152,6 +126,69 @@
           this.statusValue.setAttribute('hidden', val);
           this.warningIcon.setAttribute('hidden', val);
           this.statusIcon.setAttribute('hidden', !val);
+        ]]></setter>
+      </property>
+    </implementation>
+  </binding>
+  
+  <binding id="dkim-verifier-header-tooltips-box">
+    <content>
+			<xul:tooltip id="dkim-verifier-header-tooltip-warnings">
+				<xul:vbox anonid="tooltip-warnings"/>
+			</xul:tooltip>
+      <xul:tooltip anonid="tooltip-from" id="dkim-verifier-header-tooltip-from">
+        <xul:hbox>
+          <xul:label value="&dkim_verifier.statusbar.title;"/>
+          <xul:vbox flex="1">
+            <xul:label anonid="tooltip-from-value"/>
+            <xul:vbox anonid="tooltip-from-warnings"/>
+          </xul:vbox>
+        </xul:hbox>
+      </xul:tooltip>
+    </content>
+    <implementation>
+      <field name="tooltipWarnings">
+				document.getAnonymousElementByAttribute(this, "anonid", "tooltip-warnings");
+			</field>
+      <field name="tooltipFromValue">
+				document.getAnonymousElementByAttribute(this, "anonid", "tooltip-from-value");
+			</field>
+      <field name="tooltipFromWarnings">
+				document.getAnonymousElementByAttribute(this, "anonid", "tooltip-from-warnings");
+			</field>
+
+      <property name="value">
+        <setter><![CDATA[
+          this.tooltipFromValue.textContent = val;
+        ]]></setter>
+      </property>
+      <property name="warnings">
+        <setter><![CDATA[
+          var d;
+
+          // delete old warnings from tooltips
+          while (this.tooltipWarnings.firstChild) {
+            this.tooltipWarnings.removeChild(this.tooltipWarnings.firstChild);
+          }
+          while (this.tooltipFromWarnings.firstChild) {
+            this.tooltipFromWarnings.removeChild(this.tooltipFromWarnings.firstChild);
+          }
+          
+          // add warnings to warning tooltip
+          for (let w of val) {
+            d = document.createElement("description");
+            d.textContent = w;
+            this.tooltipWarnings.appendChild(d);
+          }
+          
+          // add separator between status value and warnings
+          if (val.length > 0) {
+            d = document.createElement("separator");
+            d.setAttribute("class", "thin");
+            this.tooltipFromWarnings.appendChild(d);
+          }
+          // add warnings tooltip to from tooltip
+          this.tooltipFromWarnings.appendChild(this.tooltipWarnings.cloneNode(true));
         ]]></setter>
       </property>
     </implementation>

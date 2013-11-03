@@ -1,11 +1,5 @@
 @namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
 
-#expandeddkim-verifierBox {
-  -moz-binding: url(chrome://dkim_verifier/content/bindings.xml#dkim-verifier-box) !important;
-  
-  -moz-box-align: center;
-}
-
 #expandeddkim-verifierBox > image {
   /* compare: .emailStar */
   max-width: 1.2em;
