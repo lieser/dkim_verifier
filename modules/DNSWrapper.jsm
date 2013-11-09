@@ -29,13 +29,15 @@ const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/Task.jsm"); // Requires Gecko 17.0
+Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 
 Cu.import("resource://dkim_verifier/ModuleGetter.jsm");
 ModuleGetter.getPromise(this);
 
 Cu.import("resource://dkim_verifier/logging.jsm");
 Cu.import("resource://dkim_verifier/dns.js");
-Cu.import("resource://dkim_verifier/libunbound.jsm");
+XPCOMUtils.defineLazyModuleGetter(this, "libunbound",
+	"resource://dkim_verifier/libunbound.jsm");
 
 
 const PREF_BRANCH = "extensions.dkim_verifier.dns.";
@@ -51,7 +53,7 @@ var DNS = {
 	 * The result of the query.
 	 * 
 	 * @typedef {Object} DNSResult
-	 * @property {Object[]|Null} rdata Array of rdata items, or null if no entry in DNS
+	 * @property {Object[]|Null} data Array of rdata items, or null if no entry in DNS
 	 * @property {String|Undefined} error undefined if no error; otherwise an error description
 	 * @property {Boolean} secure true if result is secure.
 	 * @property {Boolean} bogus true if a security failure happened.
@@ -82,9 +84,9 @@ var DNS = {
 					let result = {};
 					if (res !== null) {
 						if (res.havedata) {
-							result.rdata = res.rdata;
+							result.data = res.data;
 						} else {
-							result.rdata = null;
+							result.data = null;
 						}
 						if (res.rcode !== 0) {
 							result.error = "DNS rcode: "+res.rcode;
@@ -92,7 +94,7 @@ var DNS = {
 						result.secure = res.secure;
 						result.bogus = res.bogus;
 					} else {
-						result.rdata = null;
+						result.data = null;
 						result.error = "error";
 						result.secure = false;
 						result.bogus = false;
@@ -123,7 +125,7 @@ function dnsCallback(dnsResult, defer, queryError) {
 	log.trace("dnsCallback begin");
 
 	let result = {};
-	result.rdata = dnsResult;
+	result.data = dnsResult;
 	result.error = queryError;
 	result.secure = false;
 	result.bogus = false;

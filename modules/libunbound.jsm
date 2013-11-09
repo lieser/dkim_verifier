@@ -125,6 +125,48 @@ var ub_resolve_free;
 var ub_strerror;
 
 let libunbound = {
+	/**
+	 * The result of the query.
+	 * Does differ from the original ub_result a bit.
+	 * 
+	 * @typedef {Object} ub_result
+	 * @property {String} qname
+	 *           text string, original question
+	 * @property {Number} qtype
+	 *           type code asked for
+	 * @property {Number} qclass
+	 *           class code (CLASS IN (internet))
+	 * @property {Object[]} data
+	 *           Array of converted rdata items. Empty for unsupported RR types.
+	 *           Currently supported types: TXT
+	 * @property {Number[][]} data_raw
+	 *           Array of rdata items as byte array
+	 * @property {String} canonname
+	 *           canonical name of result
+	 * @property {Number} rcode
+	 *           additional error code in case of no data
+	 * @property {Boolean} havedata
+	 *           true if there is data
+	 * @property {Boolean} nxdomain
+	 *           true if nodata because name does not exist
+	 * @property {Boolean} secure
+	 *           true if result is secure.
+	 * @property {Boolean} bogus
+	 *           true if a security failure happened.
+	 * @property {String} why_bogus
+	 *           string with error if bogus
+	 * @property {Number} ttl
+	 *           number of seconds the result is valid
+	 */
+
+	/**
+	 * Perform resolution of the target name.
+	 * 
+	 * @param {String} name
+	 * @param {Number} [rrtype=libunbound.Constants.RR_TYPE_A]
+	 * 
+	 * @return {ub_result}
+	 */
 	resolve: function libunbound_resolve(name, rrtype=Constants.RR_TYPE_A) {
 		"use strict";
 
@@ -141,10 +183,12 @@ let libunbound = {
 			return null;
 		}
 
-		let rdata = [];
-		let rdata_raw = [];
+		// array of converted rdata
+		let data = [];
+		// array of rdata as byte array
+		let data_raw = [];
 		if(_result.contents.havedata) {
-			// get rdata
+			// get data
 			let lenPtr = _result.contents.len;
 			let dataPtr=_result.contents.data;
 			while (!dataPtr.contents.isNull()) {
@@ -152,13 +196,13 @@ let libunbound = {
 				let tmp = ctypes.cast(dataPtr.contents,
 					ctypes.uint8_t.array(lenPtr.contents).ptr
 				).contents;
-				let data = new Array(tmp.length);
+				let rdata = new Array(tmp.length);
 				for (let i = 0; i < tmp.length; i++) {
-					data[i] = tmp[i];
+					rdata[i] = tmp[i];
 				}
-				rdata_raw.push(data);
+				data_raw.push(rdata);
 
-				// convert data for known RR types
+				// convert rdata for known RR types
 				switch (rrtype) {
 					case Constants.RR_TYPE_TXT:
 						// http://tools.ietf.org/html/rfc1035#page-20
@@ -166,15 +210,15 @@ let libunbound = {
 						let i=0;
 						let j;
 						// read all <character-string>s
-						while (i < data.length) {
+						while (i < rdata.length) {
 							// get length of current <character-string>
-							j = data[i];
+							j = rdata[i];
 							i += 1;
 							// read current <character-string>
-							str += String.fromCharCode.apply(null, data.slice(i, i+j));
+							str += String.fromCharCode.apply(null, rdata.slice(i, i+j));
 							i += j;
 						}
-						rdata.push(str);
+						data.push(str);
 						break;
 				}
 				
@@ -182,7 +226,7 @@ let libunbound = {
 				lenPtr = lenPtr.increment();
 			}
 
-			log.debug("rdata: "+rdata);
+			log.debug("data: "+data);
 		}
 
 		let result = {};
@@ -191,7 +235,8 @@ let libunbound = {
 		}
 		result.qtype = _result.contents.qtype;
 		result.qclass = _result.contents.qclass;
-		result.rdata = rdata;
+		result.data = data;
+		result.data_raw = data_raw;
 		if (!_result.contents.canonname.isNull()) {
 			result.canonname = _result.contents.canonname.readString();
 		}
@@ -211,7 +256,6 @@ let libunbound = {
 		
 		return result;
 	},
-	
 };
 
 /**
@@ -225,7 +269,6 @@ function init() {
 		path = OS.Path.join(OS.Constants.Path.profileDir,
 			prefs.getCharPref("libunbound.path"));
 	} else {
-		// path = OS.Path.normalize(prefs.getCharPref("libunbound.path"));
 		path = prefs.getCharPref("libunbound.path");
 	}
 	lib = ctypes.open(path);
@@ -252,7 +295,6 @@ function init() {
 		{ "qname": ctypes.char.ptr },
 		{ "qtype": ctypes.int },
 		{ "qclass": ctypes.int },
-		// { "data": ctypes.char.ptr.array() },
 		{ "data": ctypes.char.ptr.ptr },
 		{ "len": ctypes.int.ptr },
 		{ "canonname": ctypes.char.ptr },
@@ -313,7 +355,7 @@ function init() {
 }
 
 /**
- * init
+ * updates ctx by deleting old an creating new
  */
 function update_ctx() {
 	"use strict";

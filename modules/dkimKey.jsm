@@ -226,7 +226,7 @@ function getKeyFromDNS(d_val, s_val) {
 		}
 
 		log.trace("getKeyFromDNS Task end");
-		throw new Task.Result(result.rdata[0]);
+		throw new Task.Result(result.data[0]);
 	});
 	
 	return promise;
