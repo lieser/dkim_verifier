@@ -8,7 +8,7 @@
   buttons="accept,cancel"
   ondialogaccept="return onAccept();"
   ondialogcancel="return onCancel();"
-	>
+  onload="init();">
 <!--
   buttonlabelcancel="Cancel"
   buttonlabelaccept="Save"
@@ -28,18 +28,23 @@ function onAccept(){
 		input.addr = document.getElementById("addr").value;
 		input.sdid = document.getElementById("sdid").value;
 		input.ruletype = document.getElementById("ruletype").value;
-		switch (parseInt(input.ruletype, 10)) {
-			case Policy.RULE_TYPE["ALL"]:
-				input.priority = Policy.PRIORITY.USERINSERT_RULE_ALL;
-				break;
-			case Policy.RULE_TYPE["NEUTRAL"]:
-				input.priority = Policy.PRIORITY.USERINSERT_RULE_NEUTRAL;
-				break;
-			case Policy.RULE_TYPE["HIDEFAIL"]:
-				input.priority = Policy.PRIORITY.USERINSERT_RULE_HIDEFAIL;
-				break;
-			default:
-				input.priority = 0;
+		priorityMode = document.getElementById("priorityMode").value;
+		if (priorityMode === "1") {
+			switch (parseInt(input.ruletype, 10)) {
+				case Policy.RULE_TYPE["ALL"]:
+					input.priority = Policy.PRIORITY.USERINSERT_RULE_ALL;
+					break;
+				case Policy.RULE_TYPE["NEUTRAL"]:
+					input.priority = Policy.PRIORITY.USERINSERT_RULE_NEUTRAL;
+					break;
+				case Policy.RULE_TYPE["HIDEFAIL"]:
+					input.priority = Policy.PRIORITY.USERINSERT_RULE_HIDEFAIL;
+					break;
+				default:
+					input.priority = 0;
+			}
+		} else {
+			input.priority = document.getElementById("priority").value;
 		}
 		input.enabled = document.getElementById("enabled").checked;
 		
@@ -54,6 +59,16 @@ function onAccept(){
 function onCancel(){
   return true;
 }
+
+function updatePriorityMode() {
+	document.getElementById("priority").disabled =
+		(document.getElementById("priorityMode").value === "1");
+}
+
+function init() {
+	updatePriorityMode();
+}
+
 </script>
     
 <label value="&treeviewSigners.treecol.domain.label;"/>
@@ -72,6 +87,13 @@ function onCancel(){
 		<menuitem label="&signRules.ruletype.HIDEFAIL.label;" value="3"/>
 	</menupopup>
 </menulist>
+<radiogroup id="priorityMode" oncommand="updatePriorityMode();">
+  <radio id="violet" value="1" label="&signRules.priorityMode.auto.label;" selected="true"/>
+  <hbox align="center">
+		<radio id="yellow" value="2" label="&signRules.priorityMode.manual.label;"/>
+		<textbox id="priority"/>
+	</hbox>
+</radiogroup>
 <checkbox id="enabled" label="&treeviewSigners.treecol.enabled.label;" checked="true"/>
 
 </dialog>

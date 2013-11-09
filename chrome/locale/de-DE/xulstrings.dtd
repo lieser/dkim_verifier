@@ -30,5 +30,7 @@
 <!ENTITY signRules.ruletype.SIGNED.label "Muss signiert sein (1)">
 <!ENTITY signRules.ruletype.NEUTRAL.label "Kann signiert sein (2)">
 <!ENTITY signRules.ruletype.HIDEFAIL.label "Inoriere ungültige Signture (3)">
+<!ENTITY signRules.priorityMode.auto.label "Priorität automatisch bestimmen">
+<!ENTITY signRules.priorityMode.manual.label "Setzte Priorität auf">
 
 <!ENTITY button.help.label "Hilfe">
