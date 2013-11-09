@@ -27,7 +27,7 @@
 <!ENTITY policy.signRules.enable.label "Überprüfe ob E-Mail signiert seien sollte">
 <!ENTITY policy.signRules.checkDefaultRules.label "Benutze Standardregeln">
 <!ENTITY policy.signRules.autoAddRule.label "Füge automatisch Regeln basierend auf denn angesehenen DKIM signierten E-Mails hinzu">
-<!ENTITY policy.error.wrong_sdid.asWarning.label "Behandel falsche SDID als Warnung anstatt als Fehler">
+<!ENTITY error.policy.wrong_sdid.asWarning.label "Behandel falsche SDID als Warnung anstatt als Fehler">
 <!ENTITY viewSigners.label "Signierregeln">
 <!ENTITY viewSignerDefaults.label "Standard Signierregeln">
 
@@ -61,6 +61,7 @@
 <!ENTITY debug.label "Aktiviere Debuggen (Zeigt Fehler- und Debug-Informationen in der Fehlerkonsole an)">
 <!ENTITY error.key_testmode.ignore.label "Überprüfe die Signatur auch, falls die Domain DKIM nur testet">
 <!ENTITY error.illformed_i.treatAs.label "Behandel falsch formatierten AUID Tag als">
+<!ENTITY error.policy.key_insecure.treatAs.label "Behandel DKIM Schlüssel nicht durch DNSSEC signiert als">
 
 <!ENTITY error.treatAs.value.0.label "Fehler">
 <!ENTITY error.treatAs.value.1.label "Warnung">

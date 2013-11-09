@@ -19,7 +19,7 @@ var gDKIMOptionsGeneralPane = {
 		var disabled = !document.getElementById("policy.signRules.enable").checked;
 		document.getElementById("policy.signRules.checkDefaultRules").disabled = disabled;
 		document.getElementById("policy.signRules.autoAddRule").disabled = disabled;
-		document.getElementById("policy.error.wrong_sdid.asWarning").disabled = disabled;
+		document.getElementById("error.policy.wrong_sdid.asWarning").disabled = disabled;
 		document.getElementById("viewSigners").disabled = disabled;
 		document.getElementById("viewSignerDefaults").disabled = disabled;
 	},

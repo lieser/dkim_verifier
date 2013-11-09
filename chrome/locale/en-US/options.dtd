@@ -27,7 +27,7 @@
 <!ENTITY policy.signRules.enable.label "Check if e-mail should be signed">
 <!ENTITY policy.signRules.checkDefaultRules.label "Use default rules">
 <!ENTITY policy.signRules.autoAddRule.label "Automatically add rules based on viewed DKIM signed e-mails">
-<!ENTITY policy.error.wrong_sdid.asWarning.label "Treat wrong SDID as warning instead of error">
+<!ENTITY error.policy.wrong_sdid.asWarning.label "Treat wrong SDID as warning instead of error">
 <!ENTITY viewSigners.label "Signers rules">
 <!ENTITY viewSignerDefaults.label "Default signers rules">
 
@@ -61,6 +61,7 @@
 <!ENTITY debug.label "Enable debugging (Outputs errors and debug info in the Error Console)">
 <!ENTITY error.key_testmode.ignore.label "Still verify the signature, if a domain is only testing DKIM">
 <!ENTITY error.illformed_i.treatAs.label "Treat ill-formed AUID tag as">
+<!ENTITY error.policy.key_insecure.treatAs.label "Treat DKIM key not signed by DNSSEC as">
 
 <!ENTITY error.treatAs.value.0.label "error">
 <!ENTITY error.treatAs.value.1.label "warning">

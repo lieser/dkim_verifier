@@ -47,8 +47,8 @@
 		<preference id="pref_policy.signRules.autoAddRule"
 		            name="extensions.dkim_verifier.policy.signRules.autoAddRule"
 		            type="bool"/>
-		<preference id="pref_policy.error.wrong_sdid.asWarning"
-		            name="extensions.dkim_verifier.policy.error.wrong_sdid.asWarning"
+		<preference id="pref_error.policy.wrong_sdid.asWarning"
+		            name="extensions.dkim_verifier.error.policy.wrong_sdid.asWarning"
 		            type="bool"/>
 	</preferences>
 	
@@ -133,9 +133,9 @@
 					<checkbox id="policy.signRules.autoAddRule"
 					          preference="pref_policy.signRules.autoAddRule"
 					          label="&policy.signRules.autoAddRule.label;"/>
-					<checkbox id="policy.error.wrong_sdid.asWarning"
-					          preference="pref_policy.error.wrong_sdid.asWarning"
-					          label="&policy.error.wrong_sdid.asWarning.label;"/>
+					<checkbox id="error.policy.wrong_sdid.asWarning"
+					          preference="pref_error.policy.wrong_sdid.asWarning"
+					          label="&error.policy.wrong_sdid.asWarning.label;"/>
 					<hbox>
 						<button id="viewSigners"
 						        label="&viewSigners.label;"

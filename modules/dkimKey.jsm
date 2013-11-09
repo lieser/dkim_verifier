@@ -104,7 +104,8 @@ var Key = {
 						"  selector TEXT NOT NULL,\n" +
 						"  key TEXT NOT NULL,\n" +
 						"  insertedAt TEXT NOT NULL,\n" +
-						"  lastUsedAt TEXT NOT NULL\n" +
+						"  lastUsedAt TEXT NOT NULL,\n" +
+						"  secure INTEGER NOT NULL\n" +
 						");"
 					);
 					// add version number
@@ -139,6 +140,7 @@ var Key = {
 	 * @typedef {Object} dkimKeyResult
 	 * @property {String} key DKIM key in its textual Representation.
 	 * @property {String} gotFrom "DNS" / "Storage"
+	 * @property {Boolean} secure
 	 */
 
 	/**
@@ -158,37 +160,41 @@ var Key = {
 			log.trace("getKey Task begin");
 
 			var res={};
+			var tmp;
 			
 			switch (prefs.getIntPref("storing")) {
 				case 0: // don't store DKIM keys
-					res.key = yield getKeyFromDNS(d_val, s_val);
+					tmp = yield getKeyFromDNS(d_val, s_val);
 					res.gotFrom = "DNS";
 					break;
 				case 1: // store DKIM keys
-					res.key = yield getKeyFromDB(d_val, s_val);
-					if (res.key) {
+					tmp = yield getKeyFromDB(d_val, s_val);
+					if (tmp) {
 						res.gotFrom = "Storage";
 					} else {
-						res.key = yield getKeyFromDNS(d_val, s_val);
+						tmp =  yield getKeyFromDNS(d_val, s_val);
 						res.gotFrom = "DNS";
-						setKeyInDB(d_val, s_val, res.key);
+						setKeyInDB(d_val, s_val, tmp.key, tmp.secure);
 					}
 					break;
 				case 2: // store DKIM keys and compare with current key
 					var keyDB = yield getKeyFromDB(d_val, s_val);
-					res.key = yield getKeyFromDNS(d_val, s_val);
+					tmp = yield getKeyFromDNS(d_val, s_val);
 					res.gotFrom = "DNS";
 					if (keyDB) {
-						if (keyDB !== res.key) {
+						if (keyDB.key !== tmp.key) {
 							throw new DKIM_SigError("DKIM_POLICYERROR_KEYMISMATCH");
 						}
+						tmp.secure = tmp.secure || keyDB.secure;
 					} else {
-						setKeyInDB(d_val, s_val, res.key);
+						setKeyInDB(d_val, s_val, tmp.key, tmp.secure);
 					}
 					break;
 				default:
 					throw new DKIM_InternalError("invalid key.storing setting");
 			}
+			res.key = tmp.key;
+			res.secure = tmp.secure;
 
 			log.trace("getKey Task begin");
 			throw new Task.Result(res);
@@ -205,7 +211,7 @@ var Key = {
  * @param {String} d_val domain of the Signer
  * @param {String} s_val selector
  * 
- * @return {Promise<String>}
+ * @return {Promise<Object{key, secure}>}
  * 
  * @throws {DKIM_SigError|DKIM_InternalError}
  */
@@ -218,6 +224,9 @@ function getKeyFromDNS(d_val, s_val) {
 		// get the DKIM key
 		var result = yield DNS.resolve(s_val+"._domainkey."+d_val, "TXT");
 		
+		if (result.bogus) {
+			throw new DKIM_InternalError(null, "DKIM_DNSERROR_DNSSEC_BOGUS");
+		}
 		if (result.error !== undefined) {
 			throw new DKIM_InternalError(result.error, "DKIM_DNSERROR_SERVER_ERROR");
 		}
@@ -226,7 +235,7 @@ function getKeyFromDNS(d_val, s_val) {
 		}
 
 		log.trace("getKeyFromDNS Task end");
-		throw new Task.Result(result.data[0]);
+		throw new Task.Result({key: result.data[0], secure: result.secure});
 	});
 	
 	return promise;
@@ -238,7 +247,7 @@ function getKeyFromDNS(d_val, s_val) {
  * @param {String} d_val domain of the Signer
  * @param {String} s_val selector
  * 
- * @return {Promise<String|Null>} The Key if it's in the DB; null otherwise
+ * @return {Promise<Object{key, secure}|Null>} The Key if it's in the DB; null otherwise
  */
 function getKeyFromDB(d_val, s_val) {
 	"use strict";
@@ -254,7 +263,7 @@ function getKeyFromDB(d_val, s_val) {
 		var res = null;
 		try {
 			sqlRes = yield conn.executeCached(
-				"SELECT key\n" +
+				"SELECT key, secure\n" +
 				"FROM keys WHERE\n" +
 				"  SDID = :SDID AND\n" +
 				"  selector = :selector\n" +
@@ -264,7 +273,9 @@ function getKeyFromDB(d_val, s_val) {
 			);
 
 			if (sqlRes.length > 0) {
-				res = sqlRes[0].getResultByName("key");
+				res = {};
+				res.key = sqlRes[0].getResultByName("key");
+				res.secure = (sqlRes[0].getResultByName("secure") === 1);
 				conn.executeCached(
 					"UPDATE keys\n" +
 					"SET lastUsedAt = DATE('now') WHERE\n" +
@@ -292,10 +303,11 @@ function getKeyFromDB(d_val, s_val) {
  * @param {String} d_val domain of the Signer
  * @param {String} s_val selector
  * @param {String} key DKIM key
+ * @param {Boolean} secure
  * 
  * @return {Promise<Undefined>}
  */
-function setKeyInDB(d_val, s_val, key) {
+function setKeyInDB(d_val, s_val, key, secure) {
 	"use strict";
 
 	var promise = Task.spawn(function () {
@@ -308,9 +320,9 @@ function setKeyInDB(d_val, s_val, key) {
 		var sqlRes;
 		try {
 			sqlRes = yield conn.executeCached(
-				"INSERT INTO keys (SDID, selector, key, insertedAt, lastUsedAt)" +
-				"VALUES (:SDID, :selector, :key, DATE('now'), DATE('now'));",
-				{SDID:d_val, selector: s_val, key: key}
+				"INSERT INTO keys (SDID, selector, key, insertedAt, lastUsedAt, secure)" +
+				"VALUES (:SDID, :selector, :key, DATE('now'), DATE('now'),:secure);",
+				{SDID:d_val, selector: s_val, key: key, secure: secure}
 			);
 			log.debug("inserted key into DB");
 		} finally {

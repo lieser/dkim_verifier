@@ -11,6 +11,7 @@
 <!ENTITY treeviewKeys.treecol.key.label "DKIM key">
 <!ENTITY treeviewKeys.treecol.insertedAt.label "Inserted">
 <!ENTITY treeviewKeys.treecol.lastUsedAt.label "Last used">
+<!ENTITY treeviewKeys.treecol.secure.label "DNSSEC">
 <!ENTITY treeviewKeys.deleteSelectedRows.label "Delete selected keys">
 
 <!ENTITY treeviewSigners.title "Signers rules">

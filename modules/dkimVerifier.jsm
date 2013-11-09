@@ -1042,7 +1042,7 @@ var Verifier = (function() {
 			// that is different from the SDID in the signature
 			if (msg.shouldBeSigned.sdid &&
 					msg.shouldBeSigned.sdid !== msg.DKIMSignature.d) {
-				if (prefs.getBoolPref("policy.error.wrong_sdid.asWarning")) {
+				if (prefs.getBoolPref("error.policy.wrong_sdid.asWarning")) {
 					msg.warnings.push("DKIM_POLICYERROR_WRONG_SDID");
 				} else {
 					throw new DKIM_SigError("DKIM_POLICYERROR_WRONG_SDID");
@@ -1104,6 +1104,21 @@ var Verifier = (function() {
 	 */
 	function verifySignaturePart2(msg) {
 		try {
+			// if key is not signed by DNSSEC
+			if (!msg.keyQueryResult.secure) {
+				switch (prefs.getIntPref("error.policy.key_insecure.treatAs")) {
+					case 0: // error
+						throw new DKIM_SigError("DKIM_POLICYERROR_KEY_INSECURE");
+					case 1: // warning
+						msg.warnings.push("DKIM_POLICYERROR_KEY_INSECURE");
+						break;
+					case 2: // ignore
+						break;
+					default:
+						throw new DKIM_InternalError("invalid error.policy.key_insecure.treatAs");
+				}
+			}
+
 			msg.DKIMKey = parseDKIMKeyRecord(msg.keyQueryResult.key);
 			dkimDebugMsg("Parsed DKIM-Key: "+msg.DKIMKey.toSource());
 			

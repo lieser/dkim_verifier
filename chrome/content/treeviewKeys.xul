@@ -18,7 +18,7 @@ var treeView;
 function setView(){
 	Task.spawn(function () {
 		yield Key.initDB();
-		treeView = new SQLiteTreeView(Key.KEY_DB_NAME,"keys",["SDID","selector","key","insertedAt","lastUsedAt"]);
+		treeView = new SQLiteTreeView(Key.KEY_DB_NAME,"keys",["SDID","selector","key","insertedAt","lastUsedAt","secure"]);
 		document.getElementById('my-tree').view = treeView;
 	});
 }
@@ -35,6 +35,8 @@ function setView(){
 		<treecol editable="true" label="&treeviewKeys.treecol.insertedAt.label;" flex="1"/>
 		<splitter class="tree-splitter" />
 		<treecol editable="true" label="&treeviewKeys.treecol.lastUsedAt.label;" flex="1"/>
+		<splitter class="tree-splitter" />
+		<treecol editable="true" label="&treeviewKeys.treecol.secure.label;" flex="1"/>
 	</treecols>
 	<treechildren/>
 </tree>

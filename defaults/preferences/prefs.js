@@ -20,7 +20,7 @@ pref("extensions.dkim_verifier.saveResult", false);
 pref("extensions.dkim_verifier.policy.signRules.enable", false);
 pref("extensions.dkim_verifier.policy.signRules.checkDefaultRules", true);
 pref("extensions.dkim_verifier.policy.signRules.autoAddRule", false);
-pref("extensions.dkim_verifier.policy.error.wrong_sdid.asWarning", false);
+pref("extensions.dkim_verifier.error.policy.wrong_sdid.asWarning", false);
 
 // 0: don't store DKIM keys
 // 1: store DKIM keys
@@ -83,4 +83,5 @@ pref("extensions.dkim_verifier.logging.dump", "Debug");
 pref("extensions.dkim_verifier.debugLevel", 0);
 // 0: error, 1: warning, 2: ignore
 pref("extensions.dkim_verifier.error.illformed_i.treatAs", 1);
+pref("extensions.dkim_verifier.error.policy.key_insecure.treatAs", 2);
 pref("extensions.dkim_verifier.error.key_testmode.ignore", false);
