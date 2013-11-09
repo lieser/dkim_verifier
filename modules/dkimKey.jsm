@@ -15,9 +15,8 @@
 /* jshint strict:true, moz:true */
 /* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
 /* global Components, Services, Sqlite, Task, Promise */
-/* global Logging */
+/* global ModuleGetter, Logging, DNS */
 /* global exceptionToStr, DKIM_SigError, DKIM_InternalError */
-/* global queryDNS, dnsChangeDebug, dnsChangeNameserver, dnsChangeGetNameserversFromOS, dnsChangeTimeoutConnect */
 /* exported EXPORTED_SYMBOLS, Key */
 
 var EXPORTED_SYMBOLS = [
@@ -37,18 +36,16 @@ ModuleGetter.getSqlite(this);
 
 Cu.import("resource://dkim_verifier/logging.jsm");
 Cu.import("resource://dkim_verifier/helper.jsm");
-Cu.import("resource://dkim_verifier/dns.js");
+Cu.import("resource://dkim_verifier/DNSWrapper.jsm");
 
 /**
  * @public
  */
 const KEY_DB_NAME = "dkimKey.sqlite";
 const PREF_BRANCH = "extensions.dkim_verifier.key.";
-const PREF_BRANCH2 = "extensions.dkim_verifier.";
 
 
 var prefs = Services.prefs.getBranch(PREF_BRANCH);
-var prefs2 = Services.prefs.getBranch(PREF_BRANCH2);
 var log = Logging.getLogger("Key");
 var dbInitialized = false;
 // Deferred<boolean>
@@ -159,7 +156,7 @@ var Key = {
 
 		var promise = Task.spawn(function () {
 			log.trace("getKey Task begin");
-			
+
 			var res={};
 			
 			switch (prefs.getIntPref("storing")) {
@@ -215,27 +212,24 @@ var Key = {
 function getKeyFromDNS(d_val, s_val) {
 	"use strict";
 
-	var defer = Promise.defer();
-
-	Task.spawn(function () {
+	var promise = Task.spawn(function () {
 		log.trace("getKeyFromDNS Task begin");
 		
 		// get the DKIM key
-		queryDNS(
-			s_val+"._domainkey."+d_val,
-			"TXT",
-			dnsCallback,
-			defer
-		);
+		var result = yield DNS.resolve(s_val+"._domainkey."+d_val, "TXT");
 		
+		if (result.error !== undefined) {
+			throw new DKIM_InternalError(result.error, "DKIM_DNSERROR_SERVER_ERROR");
+		}
+		if (result.rdata === null) {
+			throw new DKIM_SigError("DKIM_SIGERROR_NOKEY");
+		}
+
 		log.trace("getKeyFromDNS Task end");
-	}).then(null, function onReject(exception) {
-		// Failure!  We can inspect or report the exception.
-		log.fatal(exceptionToStr(exception));
-		defer.reject(exception);
+		throw new Task.Result(result.rdata[0]);
 	});
 	
-	return defer.promise;
+	return promise;
 }
 
 /**
@@ -328,66 +322,10 @@ function setKeyInDB(d_val, s_val, key) {
 	promise.then(null, function onReject(exception) {
 		// Failure!  We can inspect or report the exception.
 		log.fatal(exceptionToStr(exception));
-		dbInitializedDefer.reject(exception);
 	});
 	
 	return promise;
 }
-
-/**
- * callback for the dns result
- */
-function dnsCallback(dnsResult, defer, queryError) {
-	"use strict";
-
-	log.trace("dnsCallback begin");
-
-	if (queryError !== undefined) {
-		defer.reject(new DKIM_InternalError(queryError, "DKIM_DNSERROR_SERVER_ERROR"));
-		return;
-	}
-	if (dnsResult === null) {
-		defer.reject(new DKIM_SigError("DKIM_SIGERROR_NOKEY"));
-		return;
-	}
-	
-	defer.resolve(dnsResult[0]);
-
-	log.trace("dnsCallback end");
-}
-
-var prefObserver = {
-	/*
-	 * gets called called whenever an event occurs on the preference
-	 */
-	observe: function Verifier_observe(subject, topic, data) {
-		"use strict";
-
-		// subject is the nsIPrefBranch we're observing (after appropriate QI)
-		// data is the name of the pref that's been changed (relative to aSubject)
-		
-		if (topic !== "nsPref:changed") {
-			return;
-		}
-		
-		switch(data) {
-			case "debug":
-				dnsChangeDebug(prefs2.getBoolPref("debug"));
-				break;
-			case "dns.getNameserversFromOS":
-				dnsChangeGetNameserversFromOS(
-					prefs2.getBoolPref("dns.getNameserversFromOS")
-				);
-				break;
-			case "dns.nameserver":
-				dnsChangeNameserver(prefs2.getCharPref("dns.nameserver"));
-				break;
-			case "dns.timeout_connect":
-				dnsChangeTimeoutConnect(prefs2.getIntPref("dns.timeout_connect"));
-				break;
-		}
-	},
-};
 
 /**
  * init
@@ -398,17 +336,6 @@ function init() {
 	if (prefs.getIntPref("storing")>0) {
 		Key.initDB();
 	}
-
-	// Register to receive notifications of preference changes
-	prefs2.addObserver("", prefObserver, false);
-	
-	// load preferences
-	dnsChangeDebug(prefs2.getBoolPref("debug"));
-	dnsChangeNameserver(prefs2.getCharPref("dns.nameserver"));
-	dnsChangeGetNameserversFromOS(
-		prefs2.getBoolPref("dns.getNameserversFromOS")
-	);
-	dnsChangeTimeoutConnect(prefs2.getIntPref("dns.timeout_connect"));
 }
 
 Key.KEY_DB_NAME = KEY_DB_NAME;

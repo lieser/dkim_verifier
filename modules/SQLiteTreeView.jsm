@@ -17,6 +17,7 @@
 /* jshint strict:true, moz:true */
 /* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
 /* global Components, OS, FileUtils, Services */
+/* global ModuleGetter */
 /* exported EXPORTED_SYMBOLS, SQLiteTreeView */
 
 var EXPORTED_SYMBOLS = [

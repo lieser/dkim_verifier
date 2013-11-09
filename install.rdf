@@ -28,7 +28,6 @@
 		<em:optionsURL>chrome://dkim_verifier/content/options.xul</em:optionsURL>
 		<!--
 		<em:aboutURL>chrome://myext/content/about.xul</em:aboutURL>
-		<em:iconURL>chrome://myext/skin/icon.png</em:iconURL>
 		-->
 		
 		<em:localized>

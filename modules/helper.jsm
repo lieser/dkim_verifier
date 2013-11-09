@@ -14,7 +14,7 @@
 // options for JSHint
 /* jshint strict:true, moz:true */
 /* global Components, FileUtils, NetUtil, Promise, Services, CommonUtils */
-/* global Logging */
+/* global ModuleGetter, Logging */
 /* exported EXPORTED_SYMBOLS, exceptionToStr, readStringFrom, stringEndsWith, tryGetString, tryGetFormattedString, writeStringToTmpFile, DKIM_SigError, DKIM_InternalError */
 
 var EXPORTED_SYMBOLS = [
@@ -55,8 +55,10 @@ dkimStrings.stringbundle = Services.strings.createBundle(
 );
 dkimStrings.getString = dkimStrings.stringbundle.GetStringFromName;
 dkimStrings.getFormattedString = function (key, strArray) {
+	"use strict";
+
 	return dkimStrings.stringbundle.GetStringFromName(key, strArray, strArray.length);
-}
+};
 
 
 /**

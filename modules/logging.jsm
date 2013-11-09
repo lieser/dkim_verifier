@@ -16,6 +16,7 @@
 /* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
 /* jshint -W069 */ // "['{a}'] is better written in dot notation."
 /* global Components, Services, Log4Moz */
+/* global ModuleGetter */
 /* exported EXPORTED_SYMBOLS, Logging */
 
 var EXPORTED_SYMBOLS = [ "Logging" ];

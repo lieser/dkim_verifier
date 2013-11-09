@@ -2,9 +2,18 @@
 // or via the optional chrome/content/options.xul preferences dialog.
 
 // general preferences
+// 1: JS DNS, 2:
+/*
+ * 1 JS DNS
+ * 2 libunbound
+ */
+pref("extensions.dkim_verifier.dns.resolver", 1);
 pref("extensions.dkim_verifier.dns.getNameserversFromOS", true);
 pref("extensions.dkim_verifier.dns.nameserver", "8.8.8.8");
 pref("extensions.dkim_verifier.dns.timeout_connect", 10);
+pref("extensions.dkim_verifier.dns.dnssec.trustAnchor", ". IN DS 19036 8 2 49AAC11D7B6F6446702E54A1607371607A1A41855200FD2CE1CDDE32F24E8FB5");
+pref("extensions.dkim_verifier.dns.libunbound.path", "extensions/dnssec@nic.cz/plugins/ub_ds_windows-x86.dll");
+pref("extensions.dkim_verifier.dns.libunbound.path.relToProfileDir", true);
 
 pref("extensions.dkim_verifier.saveResult", false);
 

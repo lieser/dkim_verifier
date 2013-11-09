@@ -15,7 +15,7 @@
 /* jshint strict:true, moz:true */
 /* jshint -W069 */ // "['{a}'] is better written in dot notation."
 /* global Components, Services, Sqlite, Task, Promise */
-/* global Logging */
+/* global ModuleGetter, Logging */
 /* global exceptionToStr, readStringFrom, stringEndsWith, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, Policy */
 
@@ -31,7 +31,6 @@ Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/Task.jsm"); // Requires Gecko 17.0
 
 Cu.import("resource://dkim_verifier/ModuleGetter.jsm");
-// ModuleGetter.getosfile(this);
 ModuleGetter.getPromise(this);
 ModuleGetter.getSqlite(this);
 
