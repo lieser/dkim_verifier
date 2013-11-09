@@ -5,9 +5,16 @@
 <!ENTITY general.general.label "General">
 
 <!ENTITY dns.label "DNS">
+<!ENTITY dns.resolver.label "Resolver">
+<!ENTITY dns.resolver.value.1.label "JavaScript DNS Bibliothek">
+<!ENTITY dns.resolver.value.2.label "libunbound">
 <!ENTITY dns.getNameserversFromOS.label "Lade DNS Nameserver aus den Betriebssystemeinstellungen">
 <!ENTITY dns.nameserver.label "DNS Nameserver (Syntax (EBNF): host[&quot;:&quot;port]{&quot;;&quot;host[&quot;:&quot;port]} )">
+
 <!ENTITY dns.timeout_connect.label "DNS Verbindungsaufbau-Timeout (in Sekunden)">
+
+<!ENTITY dns.libunbound.path.label "Pfadname">
+<!ENTITY dns.libunbound.path.relToProfileDir.label "Pfadname relativ zu Profilordner">
 
 <!ENTITY key.storing.value.0.label "Speichere DKIM Schlüssel nicht">
 <!ENTITY key.storing.value.1.label "Speichere DKIM Schlüssel">

@@ -8,22 +8,34 @@
 	<script type="application/javascript" src="chrome://dkim_verifier/content/options_general.js"/>
 	
 	<preferences>
-		<preference id="pref_dns.getNameserversFromOS"
-		            name="extensions.dkim_verifier.dns.getNameserversFromOS"
-		            type="bool"/>
-		<preference id="pref_dns.nameserver"
-		            name="extensions.dkim_verifier.dns.nameserver"
-		            type="string"/>
-		<preference id="pref_dns.timeout_connect"
-		            name="extensions.dkim_verifier.dns.timeout_connect"
-		            type="int"/>
-
 		<preference id="pref_key.storing"
 		            name="extensions.dkim_verifier.key.storing"
 		            type="int"/>
 		<preference id="pref_saveResult"
 		            name="extensions.dkim_verifier.saveResult"
 		            type="bool"/>
+
+
+		<preference id="pref_dns.resolver"
+		            name="extensions.dkim_verifier.dns.resolver"
+		            type="int"/>
+		<preference id="pref_dns.getNameserversFromOS"
+		            name="extensions.dkim_verifier.dns.getNameserversFromOS"
+		            type="bool"/>
+		<preference id="pref_dns.nameserver"
+		            name="extensions.dkim_verifier.dns.nameserver"
+		            type="string"/>
+		
+		<preference id="pref_dns.timeout_connect"
+		            name="extensions.dkim_verifier.dns.timeout_connect"
+		            type="int"/>
+		
+		<preference id="pref_dns.libunbound.path"
+		            name="extensions.dkim_verifier.dns.libunbound.path"
+		            type="string"/>
+		<preference id="pref_dns.libunbound.path.relToProfileDir"
+		            name="extensions.dkim_verifier.dns.libunbound.path.relToProfileDir"
+		            type="string"/>
 
 
 		<preference id="pref_policy.signRules.enable"
@@ -43,25 +55,12 @@
 	<tabbox>
 		<tabs>
 			<tab label="&general.general.label;"/>
+			<tab label="&dns.label;"/>
 			<tab label="&general.policy.label;"/>
 		</tabs>
 		
 		<tabpanels>
 			<tabpanel orient="vertical">
-				<groupbox>
-					<caption label="&dns.label;"/>
-
-					<checkbox preference="pref_dns.getNameserversFromOS"
-					          label="&dns.getNameserversFromOS.label;"/>
-					<label control="dns.nameserver">&dns.nameserver.label;</label>
-					<textbox id="dns.nameserver" preference="pref_dns.nameserver"/>
-					<label control="dns.timeout_connect">&dns.timeout_connect.label;</label>
-					<hbox>
-						<textbox id="dns.timeout_connect" preference="pref_dns.timeout_connect"/>
-						<spacer/>
-					</hbox>
-				</groupbox>
-				
 				<hbox align="center">
 					<menulist id="key.storing"
 					          preference="pref_key.storing"
@@ -78,6 +77,48 @@
 					<spacer/>
 				</hbox>
 				<checkbox preference="pref_saveResult" label="&saveResult.label;"/>
+			</tabpanel>
+			
+			<tabpanel orient="vertical">
+				<hbox align="center">
+					<label value="&dns.resolver.label;"/>
+					<menulist id="dns.resolver.label"
+					          preference="pref_dns.resolver"
+					          oncommand="gDKIMOptionsGeneralPane.update_dns_resolver();">
+						<menupopup>
+							<menuitem label="&dns.resolver.value.1.label;" value="1"/>
+							<menuitem label="&dns.resolver.value.2.label;" value="2"/>
+						</menupopup>
+					</menulist>
+				</hbox>
+				
+				<checkbox preference="pref_dns.getNameserversFromOS"
+				          label="&dns.getNameserversFromOS.label;"/>
+				<label control="dns.nameserver">&dns.nameserver.label;</label>
+				<textbox id="dns.nameserver" preference="pref_dns.nameserver"/>
+				
+				<deck id="resolverDeck">
+					<groupbox>
+						<caption label="&dns.resolver.value.1.label;"/>
+
+						<hbox align="center">
+							<label control="dns.timeout_connect">&dns.timeout_connect.label;</label>
+							<textbox id="dns.timeout_connect" preference="pref_dns.timeout_connect"/>
+							<spacer/>
+						</hbox>
+					</groupbox>
+					
+					<groupbox>
+						<caption label="&dns.resolver.value.2.label;"/>
+						
+						<hbox align="center">
+							<label value="&dns.libunbound.path.label;"/>
+							<textbox id="" preference="pref_dns.libunbound.path" flex ="1"/>
+						</hbox>
+						<checkbox preference="pref_dns.libunbound.path.relToProfileDir"
+						          label="&dns.libunbound.path.relToProfileDir.label;"/>
+					</groupbox>
+				</deck>
 			</tabpanel>
 			
 			<tabpanel orient="vertical">
