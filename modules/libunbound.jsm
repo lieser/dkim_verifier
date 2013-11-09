@@ -378,7 +378,7 @@ function update_ctx() {
 	// read config file if specified
 	if (prefs.getPrefType("libunbound.conf") === prefs.PREF_STRING) {
 		if((retval=ub_ctx_config(ctx, prefs.getCharPref("libunbound.conf"))) !== 0) {
-			log.fatal("error in ub_ctx_config: "+ub_strerror(retval).readString()+
+			log.error("error in ub_ctx_config: "+ub_strerror(retval).readString()+
 				". errno: "+ctypes.errno+"\n");
 		}
 	}
@@ -386,7 +386,7 @@ function update_ctx() {
 	// set debuglevel if specified
 	if (prefs.getPrefType("libunbound.debuglevel") === prefs.PREF_INT) {
 		if((retval=ub_ctx_debuglevel(ctx, prefs.getIntPref("libunbound.debuglevel"))) !== 0) {
-			log.fatal("error in ub_ctx_debuglevel: "+ub_strerror(retval).readString()+
+			log.error("error in ub_ctx_debuglevel: "+ub_strerror(retval).readString()+
 				". errno: "+ctypes.errno+"\n");
 		}
 	}
@@ -394,7 +394,7 @@ function update_ctx() {
 	// get DNS servers form OS
 	if (prefs.getBoolPref("getNameserversFromOS")) {
 		if((retval=ub_ctx_resolvconf(ctx, null)) !== 0) {
-			log.fatal("error in ub_ctx_resolvconf: "+ub_strerror(retval).readString()+
+			log.error("error in ub_ctx_resolvconf: "+ub_strerror(retval).readString()+
 				". errno: "+ctypes.errno+"\n");
 		}
 	}
@@ -404,7 +404,7 @@ function update_ctx() {
 	nameservers.forEach(function(element /*, index, array*/) {
 		if (element.trim() !== "") {
 			if((retval=ub_ctx_set_fwd(ctx, element.trim())) !== 0) {
-				log.fatal("error in ub_ctx_set_fwd: "+ub_strerror(retval).readString()+
+				log.error("error in ub_ctx_set_fwd: "+ub_strerror(retval).readString()+
 					". errno: "+ctypes.errno+"\n");
 			}
 		}
@@ -412,7 +412,7 @@ function update_ctx() {
 	
 	// add root trust anchor
 	if((retval=ub_ctx_add_ta(ctx, prefs.getCharPref("dnssec.trustAnchor"))) !== 0) {
-		log.fatal("error in ub_ctx_add_ta: "+ub_strerror(retval).readString()+
+		log.error("error in ub_ctx_add_ta: "+ub_strerror(retval).readString()+
 			". errno: "+ctypes.errno+"\n");
 	}
 }

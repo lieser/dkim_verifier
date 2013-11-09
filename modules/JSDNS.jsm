@@ -216,7 +216,7 @@ function dnsChangeGetNameserversFromOS(bool) {
 		DNS_ROOT_NAME_SERVERS = PREF_DNS_ROOT_NAME_SERVERS;
 	}
 
-	DNS_Debug("DNS: changed DNS Servers to : " + DNS_ROOT_NAME_SERVERS.toSource());
+	log.config("changed DNS Servers to : " + DNS_ROOT_NAME_SERVERS.toSource());
 }
 
 /*
@@ -251,7 +251,7 @@ function dnsChangeNameserver(nameserver) {
 		DNS_ROOT_NAME_SERVERS = PREF_DNS_ROOT_NAME_SERVERS;
 	}
 
-	DNS_Debug("DNS: changed DNS Servers to : " + DNS_ROOT_NAME_SERVERS.toSource());
+	log.config("changed DNS Servers to : " + DNS_ROOT_NAME_SERVERS.toSource());
 }
 
 /*
@@ -351,11 +351,11 @@ function DNS_get_OS_DNSServers() {
 						});
 					}
 				});
-				DNS_Debug("DNS: Got servers from Windows registry: " +
+				log.config("Got servers from Windows registry: " +
 					OS_DNS_ROOT_NAME_SERVERS.toSource());
 			}
 		} catch (e) {
-			DNS_Debug("DNS: Reading Registry: " + e + "\n" + e.stack);
+			log.error("Error reading Registry: " + e + "\n" + e.stack);
 			
 			if (registry) {
 				registry.close();
@@ -391,9 +391,9 @@ function DNS_get_OS_DNSServers() {
 			
 			stream_filestream.close();
 			
-			DNS_Debug("DNS: Got servers from resolv.conf: " + OS_DNS_ROOT_NAME_SERVERS.toSource());
+			log.config("Got servers from resolv.conf: " + OS_DNS_ROOT_NAME_SERVERS.toSource());
 		} catch (e) {
-			DNS_Debug("DNS: Reading resolv.conf: " + e + "\n" + e.stack);
+			log.error("Error reading resolv.conf: " + e + "\n" + e.stack);
 			
 			if (stream_filestream) {
 				stream_filestream.close();
@@ -430,7 +430,7 @@ function DNS_Test() {
 				}
 			}
 			
-			DNS_Debug("DNS_Test: " + dns_test_domains[dns_test_domidx] + " => " + str);
+			log.debug("DNS_Test: " + dns_test_domains[dns_test_domidx] + " => " + str);
 			dns_test_domidx++;
 			DNS_Test();
 		} );
@@ -523,19 +523,19 @@ function queryDNSRecursive(server, host, recordtype, callback, callbackdata, hop
 		}
 		
 		if (server === null) {
-			DNS_Debug("DNS: no DNS Server alive");
+			log.debug("no DNS Server alive");
 			callback(null, callbackdata, "no DNS Server alive");
 			return;
 		}
 	}
 
 	if (hops === 10) {
-		DNS_Debug("DNS: Maximum number of recursive steps taken in resolving " + host);
+		log.debug("Maximum number of recursive steps taken in resolving " + host);
 		callback(null, callbackdata, DNS_STRINGS.TOO_MANY_HOPS);
 		return;
 	}
 	
-	DNS_Debug("DNS: Resolving " + host + " " + recordtype + " by querying " + server);
+	log.info("Resolving " + host + " " + recordtype + " by querying " + server);
 		
 	var query =
 		// HEADER
@@ -582,22 +582,22 @@ function queryDNSRecursive(server, host, recordtype, callback, callbackdata, hop
 		finished : function(data, status) {
 			if (status !== 0) {
 				if (status === 2152398861) {
-					DNS_Debug("DNS: Resolving " + host + "/" + recordtype + ": DNS server " + server + " refused a TCP connection.");
+					log.debug("Resolving " + host + "/" + recordtype + ": DNS server " + server + " refused a TCP connection.");
 					if (servers === undefined) {
 						callback(null, callbackdata, DNS_STRINGS.CONNECTION_REFUSED(server));
 					}
 				} else if (status === 2152398868) {
-					DNS_Debug("DNS: Resolving " + host + "/" + recordtype + ": DNS server " + server + " timed out on a TCP connection.");
+					log.debug("Resolving " + host + "/" + recordtype + ": DNS server " + server + " timed out on a TCP connection.");
 					if (servers === undefined) {
 						callback(null, callbackdata, DNS_STRINGS.TIMED_OUT(server));
 					}
 				} else if (status === Components.results.NS_ERROR_NET_TIMEOUT) {
-					DNS_Debug("DNS: Resolving " + host + "/" + recordtype + ": DNS server " + server + " timed out on a TCP connection (NS_ERROR_NET_TIMEOUT).");
+					log.debug("Resolving " + host + "/" + recordtype + ": DNS server " + server + " timed out on a TCP connection (NS_ERROR_NET_TIMEOUT).");
 					if (servers === undefined) {
 						callback(null, callbackdata, DNS_STRINGS.TIMED_OUT(server));
 					}
 				} else {
-					DNS_Debug("DNS: Resolving " + host + "/" + recordtype + ": Failed to connect to DNS server " + server + " with error code " + status + ".");
+					log.debug("Resolving " + host + "/" + recordtype + ": Failed to connect to DNS server " + server + " with error code " + status + ".");
 					if (servers === undefined) {
 						callback(null, callbackdata, DNS_STRINGS.SERVER_ERROR(server));
 					}
@@ -616,7 +616,7 @@ function queryDNSRecursive(server, host, recordtype, callback, callbackdata, hop
 			
 			this.process(data);
 			if (!this.done) {
-				DNS_Debug("DNS: Resolving " + host + "/" + recordtype + ": Response was incomplete.");
+				log.debug("Resolving " + host + "/" + recordtype + ": Response was incomplete.");
 				callback(null, callbackdata, DNS_STRINGS.INCOMPLETE_RESPONSE(server));
 			}
 		},
@@ -658,7 +658,7 @@ function queryDNSRecursive(server, host, recordtype, callback, callbackdata, hop
 
 	var ex = DNS_readAllFromSocket(server_hostname, port, query, listener);
 	if (ex !== null) {
-		DNS_Debug("DNS: " + ex + "\n" + ex.stack);
+		log.fatal("" + ex + "\n" + ex.stack);
 	}
 }
 
@@ -783,7 +783,7 @@ function DNS_getRDData(str, server, host, recordtype, callback, callbackdata, ho
 		cls = DNS_strToWord(str.substr(ctx.idx, 2)); ctx.idx += 2;
 	}
 	
-	var debugstr = "DNS: " + host + "/" + recordtype + ": ";
+	var debugstr = "" + host + "/" + recordtype + ": ";
 	
 	var results = [];
 	for (i = 0; i < ancount; i++) {
@@ -795,9 +795,9 @@ function DNS_getRDData(str, server, host, recordtype, callback, callbackdata, ho
 		if (rec.type !== "CNAME") {
 			results.push(rec.rddata);
 		} else {
-			DNS_Debug(debugstr + "CNAME ignored :" + rec.rddata);
+			log.debug(debugstr + "CNAME ignored :" + rec.rddata);
 		}
-		DNS_Debug(debugstr + "Answer: " + rec.rddata);
+		log.debug(debugstr + "Answer: " + rec.rddata);
 	}
 
 	var authorities = Array(aucount);
@@ -805,7 +805,7 @@ function DNS_getRDData(str, server, host, recordtype, callback, callbackdata, ho
 		rec = DNS_readRec(ctx);
 		authorities[i] = rec;
 		if (rec.recognized) {
-			DNS_Debug(debugstr + "Authority: " + rec.type + " " + rec.rddata);
+			log.debug(debugstr + "Authority: " + rec.type + " " + rec.rddata);
 		}
 		// Assuming the domain for this record is the domain we are asking about.
 	}
@@ -813,7 +813,7 @@ function DNS_getRDData(str, server, host, recordtype, callback, callbackdata, ho
 	for (i = 0; i < adcount; i++) {
 		rec = DNS_readRec(ctx);
 		if (rec.recognized) {
-			DNS_Debug(debugstr + "Additional: " + rec.dom + " " + rec.type + " " + rec.rddata);
+			log.debug(debugstr + "Additional: " + rec.dom + " " + rec.type + " " + rec.rddata);
 		}
 		if (rec.type === "A") {
 			for (j = 0; j < results.length; j++) {
@@ -838,14 +838,14 @@ function DNS_getRDData(str, server, host, recordtype, callback, callbackdata, ho
 		// of the DNS server -- Thunderbird and the OS take care of that.
 		for (i = 0; i < aucount; i++) {
 			if (authorities[i].type === "NS" && authorities[i].rddata !== server) {
-				DNS_Debug(debugstr + "Recursing on Authority: " + authorities[i].rddata);
+				log.debug(debugstr + "Recursing on Authority: " + authorities[i].rddata);
 				queryDNSRecursive(authorities[i].rddata, host, recordtype, callback, callbackdata, hops+1);
 				return;
 			}
 		}
 
 		// No authority was able to help us.
-		DNS_Debug(debugstr + "No answer, no authority to recurse on.  DNS lookup failed.");
+		log.debug(debugstr + "No answer, no authority to recurse on.  DNS lookup failed.");
 		callback(null, callbackdata);
 	}
 }
@@ -939,12 +939,6 @@ function DNS_readAllFromSocket(host,port,outputData,listener)
 		return ex;
 	}
 	return null;
-}
-
-function DNS_Debug(message) {
-	"use strict";
-	
-	log.debug(message);
 }
 
 function DNS_StartsWith(a, b) {
