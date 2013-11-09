@@ -14,9 +14,8 @@
 // options for JSHint
 /* jshint strict:true, moz:true */
 /* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
-/* global Components, Services, Task, Promise */
-/* global ModuleGetter, Logging, libunbound */
-/* global queryDNS, dnsChangeDebug, dnsChangeNameserver, dnsChangeGetNameserversFromOS, dnsChangeTimeoutConnect */
+/* global Components, Services, Task, Promise, XPCOMUtils */
+/* global ModuleGetter, Logging, JSDNS, libunbound */
 /* exported EXPORTED_SYMBOLS, DNS */
 
 var EXPORTED_SYMBOLS = [
@@ -35,17 +34,16 @@ Cu.import("resource://dkim_verifier/ModuleGetter.jsm");
 ModuleGetter.getPromise(this);
 
 Cu.import("resource://dkim_verifier/logging.jsm");
-Cu.import("resource://dkim_verifier/dns.js");
+XPCOMUtils.defineLazyModuleGetter(this, "JSDNS",
+	"resource://dkim_verifier/JSDNS.jsm");
 XPCOMUtils.defineLazyModuleGetter(this, "libunbound",
 	"resource://dkim_verifier/libunbound.jsm");
 
 
 const PREF_BRANCH = "extensions.dkim_verifier.dns.";
-const PREF_BRANCH2 = "extensions.dkim_verifier.";
 
 
 var prefs = Services.prefs.getBranch(PREF_BRANCH);
-var prefs2 = Services.prefs.getBranch(PREF_BRANCH2);
 var log = Logging.getLogger("DNSWrapper");
 
 var DNS = {
@@ -77,7 +75,7 @@ var DNS = {
 			
 			switch (prefs.getIntPref("resolver")) {
 				case 1:
-					queryDNS(name, rrtype, dnsCallback, defer);
+					JSDNS.queryDNS(name, rrtype, dnsCallback, defer);
 					break;
 				case 2:
 					let res = libunbound.resolve(name, libunbound.Constants["RR_TYPE_"+rrtype]);
@@ -117,7 +115,7 @@ var DNS = {
 };
 
 /**
- * callback for the dns result of dns.js
+ * callback for the dns result of JSDNS.jsm
  */
 function dnsCallback(dnsResult, defer, queryError) {
 	"use strict";
@@ -134,56 +132,3 @@ function dnsCallback(dnsResult, defer, queryError) {
 
 	log.trace("dnsCallback end");
 }
-
-var prefObserver = {
-	/*
-	 * gets called called whenever an event occurs on the preference
-	 */
-	observe: function Verifier_observe(subject, topic, data) {
-		"use strict";
-
-		// subject is the nsIPrefBranch we're observing (after appropriate QI)
-		// data is the name of the pref that's been changed (relative to aSubject)
-		
-		if (topic !== "nsPref:changed") {
-			return;
-		}
-		
-		switch(data) {
-			case "debug":
-				dnsChangeDebug(prefs2.getBoolPref("debug"));
-				break;
-			case "dns.getNameserversFromOS":
-				dnsChangeGetNameserversFromOS(
-					prefs2.getBoolPref("dns.getNameserversFromOS")
-				);
-				break;
-			case "dns.nameserver":
-				dnsChangeNameserver(prefs2.getCharPref("dns.nameserver"));
-				break;
-			case "dns.timeout_connect":
-				dnsChangeTimeoutConnect(prefs2.getIntPref("dns.timeout_connect"));
-				break;
-		}
-	},
-};
-
-/**
- * init
- */
-function init() {
-	"use strict";
-
-	// Register to receive notifications of preference changes
-	prefs2.addObserver("", prefObserver, false);
-	
-	// load preferences
-	dnsChangeDebug(prefs2.getBoolPref("debug"));
-	dnsChangeNameserver(prefs2.getCharPref("dns.nameserver"));
-	dnsChangeGetNameserversFromOS(
-		prefs2.getBoolPref("dns.getNameserversFromOS")
-	);
-	dnsChangeTimeoutConnect(prefs2.getIntPref("dns.timeout_connect"));
-}
-
-init();

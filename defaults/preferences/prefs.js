@@ -2,7 +2,6 @@
 // or via the optional chrome/content/options.xul preferences dialog.
 
 // general preferences
-// 1: JS DNS, 2:
 /*
  * 1 JS DNS
  * 2 libunbound

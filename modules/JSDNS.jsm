@@ -1,4 +1,21 @@
 /*
+ * JSDNS.jsm
+ * 
+ * Based on Joshua Tauberer's DNS LIBRARY IN JAVASCRIPT
+ * from "Sender Verification Extension" version 0.9.0.6
+ * 
+ * Version: 1.0.0pre1 (09 November 2013)
+ * 
+ * Copyright (c) 2013 Philippe Lieser
+ * 
+ * This software is licensed under the terms of the MIT License.
+ * 
+ * The above copyright and license notice shall be
+ * included in all copies or substantial portions of the Software.
+ */
+
+/* ***** BEGIN ORIGINAL LICENSE/COPYRIGHT NOTICE ***** */
+/*
  * DNS LIBRARY IN JAVASCRIPT
  *
  * Copyright 2005 Joshua Tauberer <http://razor.occams.info>
@@ -32,51 +49,88 @@
  * The Windows registry and the file /etc/resolv.conf (on Linux)
  * can be scanned for a DNS server to use.
  */
+/* ***** END ORIGINAL LICENSE/COPYRIGHT NOTICE ***** */
 
 /*
- * Original from "Sender Verification Extension" version 0.9.0.6
- * Modified by Philippe Lieser for "DKIM Verifier" version 0.5.1
+ * Changelog:
+ * ==========
  *
- * Modifications:
- *  since version 0.3.0
- *   - changed to a JavaScript code module
- *   - DNS_LoadPrefs() not executed
- *   - added debug on/off setting
- *  since version 0.3.4
- *   - CNAME record type partial supported
- *    - doesn't throw a exception anymore
- *    - data not read, and not included in the returned result
- *  since version 0.5.0
- *   - added support of multiple DNS servers
- *  since version 0.5.1
- *   - reenabled support to get DNS Servers from OS
- *    - modified and renamed DNS_LoadPrefs() to DNS_get_OS_DNSServers()
- *   - fixed jshint errors/warnings
- *  since version 0.6.1
- *   - better detection of configured DNS Servers in Windows
- *  since version 0.6.3
- *   - fixed bug for detection of configured DNS Servers in Windows
- *     (if more then one DNS server was configured for an adapter)
- *  since version 0.7.0
- *   - added close() calls in catch blocks
+ * 1.0.0
+ * -----
+ *  - added close() calls in catch blocks
+ *  - now uses Log.jsm for logging
+ *  - preferences are no longer set form the outside,
+ *    but are loaded by the module itself
+ * 
+ * 0.6.3
+ * -----
+ *  - fixed bug for detection of configured DNS Servers in Windows
+ *    (if more then one DNS server was configured for an adapter)
+ * 
+ * 0.6.1
+ * -----
+ *  - better detection of configured DNS Servers in Windows
+ * 
+ * 0.5.1
+ * -----
+ *  - reenabled support to get DNS Servers from OS
+ *   - modified and renamed DNS_LoadPrefs() to DNS_get_OS_DNSServers()
+ *  - fixed jshint errors/warnings
+ * 
+ * 0.5.0
+ * -----
+ *  - added support of multiple DNS servers
+ * 
+ * 0.3.4
+ * -----
+ *  - CNAME record type partial supported
+ *   - doesn't throw a exception anymore
+ *   - data not read, and not included in the returned result
+ * 
+ * 0.3.0
+ * -----
+ *  - changed to a JavaScript code module
+ *  - DNS_LoadPrefs() not executed
+ *  - added debug on/off setting
+ * 0.1.0
+ * -----
+ *  original DNS LIBRARY IN JAVASCRIPT by Joshua Tauberer
+ *  from "Sender Verification Extension" version 0.9.0.6
  */
 
 // options for JSHint
+/* jshint strict:true, moz:true */
 /* jshint -W064 */ //"Missing 'new' prefix when invoking a constructor."
 /* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
-/* global Components, DNS_STRINGS */
-/* exported EXPORTED_SYMBOLS, dnsChangeGetNameserversFromOS, dnsChangeNameserver, dnsChangeDebug, dnsChangeTimeoutConnect, reverseDNS, DNS_Test */
+/* global Components, Log, Services */
+/* global ModuleGetter, DNS_STRINGS */
+/* exported EXPORTED_SYMBOLS, JSDNS */
 
 
 var EXPORTED_SYMBOLS = [
-	"queryDNS",
-	"dnsChangeGetNameserversFromOS",
-	"dnsChangeNameserver",
-	"dnsChangeDebug",
-	"dnsChangeTimeoutConnect"
+	"JSDNS"
 ];
+
+const Cc = Components.classes;
+const Ci = Components.interfaces;
+const Cu = Components.utils;
+
+Cu.import("resource://gre/modules/Services.jsm");
+
+Cu.import("resource://dkim_verifier/ModuleGetter.jsm");
+ModuleGetter.getLog(this);
+
 // load locale strings
 Components.utils.import("chrome://dkim_verifier/locale/dns.js");
+
+
+const LOG_NAME = "DKIM_Verifier.JSDNS";
+const PREF_BRANCH = "extensions.dkim_verifier.dns.";
+
+var JSDNS = {};
+var prefs = Services.prefs.getBranch(PREF_BRANCH);
+var log = Log.repository.getLogger(LOG_NAME);
+
 
 /* structur of DNS_ROOT_NAME_SERVERS, PREF_DNS_ROOT_NAME_SERVERS, OS_DNS_ROOT_NAME_SERVERS:
 	DNS_ROOT_NAME_SERVERS = [
@@ -92,8 +146,54 @@ var OS_DNS_ROOT_NAME_SERVERS = [];
 
 // Preferences
 var getNameserversFromOS = null;
-var dnsDebug = false;
 var timeout_connect = 0xFFFF;
+
+/**
+ * init
+ */
+function init() {
+	"use strict";
+
+	// Register to receive notifications of preference changes
+	prefs.addObserver("", prefObserver, false);
+	
+	// load preferences
+	dnsChangeNameserver(prefs.getCharPref("nameserver"));
+	dnsChangeGetNameserversFromOS(
+		prefs.getBoolPref("getNameserversFromOS")
+	);
+	dnsChangeTimeoutConnect(prefs.getIntPref("timeout_connect"));
+}
+
+var prefObserver = {
+	/*
+	 * gets called called whenever an event occurs on the preference
+	 */
+	observe: function Verifier_observe(subject, topic, data) {
+		"use strict";
+
+		// subject is the nsIPrefBranch we're observing (after appropriate QI)
+		// data is the name of the pref that's been changed (relative to aSubject)
+		
+		if (topic !== "nsPref:changed") {
+			return;
+		}
+		
+		switch(data) {
+			case "getNameserversFromOS":
+				dnsChangeGetNameserversFromOS(
+					prefs.getBoolPref("getNameserversFromOS")
+				);
+				break;
+			case "nameserver":
+				dnsChangeNameserver(prefs.getCharPref("nameserver"));
+				break;
+			case "timeout_connect":
+				dnsChangeTimeoutConnect(prefs.getIntPref("timeout_connect"));
+				break;
+		}
+	},
+};
 
 /*
  * Changes preference getNameserversFromOS and updates DNS Servers
@@ -152,18 +252,6 @@ function dnsChangeNameserver(nameserver) {
 	}
 
 	DNS_Debug("DNS: changed DNS Servers to : " + DNS_ROOT_NAME_SERVERS.toSource());
-}
-
-/*
- * Changes preference dnsDebug
- *
- * @param {Boolean} debug
- * @return {Undefined}
- */
-function dnsChangeDebug(debug) {
-	"use strict";
-	
-	dnsDebug = debug;
 }
 
 /*
@@ -856,16 +944,7 @@ function DNS_readAllFromSocket(host,port,outputData,listener)
 function DNS_Debug(message) {
 	"use strict";
 	
-	if (dnsDebug) {
-		DNS_Log(message);
-	}
-}
-
-function DNS_Log(message) {
-	"use strict";
-	
-	var consoleService = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
-	consoleService.logStringMessage(message);
+	log.debug(message);
 }
 
 function DNS_StartsWith(a, b) {
@@ -891,3 +970,8 @@ function DNS_IsDottedQuad(ip) {
 	}
 	return true;
 }
+
+JSDNS.queryDNS = queryDNS;
+JSDNS.reverseDNS = reverseDNS;
+
+init();
