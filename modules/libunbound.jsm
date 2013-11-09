@@ -115,9 +115,11 @@ var ub_ctx;
 var ub_result;
 var ub_ctx_create;
 var ub_ctx_delete;
+var ub_ctx_config;
 var ub_ctx_set_fwd;
 var ub_ctx_resolvconf;
 var ub_ctx_add_ta;
+var ub_ctx_debuglevel;
 var ub_resolve;
 var ub_resolve_free;
 var ub_strerror;
@@ -135,7 +137,7 @@ let libunbound = {
 			1 /* CLASS IN (internet) */, _result.address()
 		);
 		if (retval !== 0) {
-			log.debug("resolve error: "+ub_strerror(retval)+"\n");
+			log.debug("resolve error: "+ub_strerror(retval).readString()+"\n");
 			return null;
 		}
 
@@ -272,6 +274,10 @@ function init() {
 	ub_ctx_delete = lib.declare("ub_ctx_delete", ctypes.default_abi, ctypes.void_t,
 		ub_ctx.ptr);
 	
+	// int ub_ctx_config(struct ub_ctx* ctx, char* fname);
+	ub_ctx_config = lib.declare("ub_ctx_config", ctypes.default_abi, ctypes.int,
+		ub_ctx.ptr, ctypes.char.ptr);
+	
 	//int ub_ctx_set_fwd(struct ub_ctx* ctx, char* addr);
 	ub_ctx_set_fwd = lib.declare("ub_ctx_set_fwd", ctypes.default_abi, ctypes.int,
 		ub_ctx.ptr, ctypes.char.ptr);
@@ -280,13 +286,13 @@ function init() {
 	ub_ctx_resolvconf = lib.declare("ub_ctx_resolvconf", ctypes.default_abi, ctypes.int,
 		ub_ctx.ptr, ctypes.char.ptr);
 	
-	// int ub_ctx_hosts(struct ub_ctx* ctx, char* fname);
-	// ub_ctx_hosts = lib.declare("ub_ctx_hosts", ctypes.default_abi, ctypes.int,
-		// ub_ctx.ptr, ctypes.char.ptr);
-	
 	// int ub_ctx_add_ta(struct ub_ctx* ctx, char* ta);
 	ub_ctx_add_ta = lib.declare("ub_ctx_add_ta", ctypes.default_abi, ctypes.int,
 		ub_ctx.ptr, ctypes.char.ptr);
+	
+	// int ub_ctx_debuglevel(struct ub_ctx* ctx, int d);
+	ub_ctx_debuglevel = lib.declare("ub_ctx_debuglevel", ctypes.default_abi, ctypes.int,
+		ub_ctx.ptr, ctypes.int);
 	
 	// int ub_resolve(struct ub_ctx* ctx, char* name,
                   // int rrtype, int rrclass, struct ub_result** result);
@@ -311,6 +317,8 @@ function init() {
  */
 function update_ctx() {
 	"use strict";
+	
+	let retval;
 
 	if (!ctx.isNull()) {
 		// delete old context
@@ -321,17 +329,50 @@ function update_ctx() {
 	// create context
 	ctx = ub_ctx_create();
 	if(ctx.isNull()) {
-		log.debug("error: could not create unbound context\n");
-	}
-
-	// get DNS servers form OS
-	let retval;
-	if( (retval=ub_ctx_resolvconf(ctx, null)) !== 0) {
-		log.debug("error in ub_ctx_resolvconf: "+ub_strerror(retval)+". errno: "+ctypes.errno+"\n");
+		log.fatal("error: could not create unbound context\n");
+		return;
 	}
 	
+	// read config file if specified
+	if (prefs.getPrefType("libunbound.conf") === prefs.PREF_STRING) {
+		if((retval=ub_ctx_config(ctx, prefs.getCharPref("libunbound.conf"))) !== 0) {
+			log.fatal("error in ub_ctx_config: "+ub_strerror(retval).readString()+
+				". errno: "+ctypes.errno+"\n");
+		}
+	}
+
+	// set debuglevel if specified
+	if (prefs.getPrefType("libunbound.debuglevel") === prefs.PREF_INT) {
+		if((retval=ub_ctx_debuglevel(ctx, prefs.getIntPref("libunbound.debuglevel"))) !== 0) {
+			log.fatal("error in ub_ctx_debuglevel: "+ub_strerror(retval).readString()+
+				". errno: "+ctypes.errno+"\n");
+		}
+	}
+	
+	// get DNS servers form OS
+	if (prefs.getBoolPref("getNameserversFromOS")) {
+		if((retval=ub_ctx_resolvconf(ctx, null)) !== 0) {
+			log.fatal("error in ub_ctx_resolvconf: "+ub_strerror(retval).readString()+
+				". errno: "+ctypes.errno+"\n");
+		}
+	}
+	
+	// set additional DNS servers
+	let nameservers = prefs.getCharPref("nameserver").split(";");
+	nameservers.forEach(function(element /*, index, array*/) {
+		if (element.trim() !== "") {
+			if((retval=ub_ctx_set_fwd(ctx, element.trim())) !== 0) {
+				log.fatal("error in ub_ctx_set_fwd: "+ub_strerror(retval).readString()+
+					". errno: "+ctypes.errno+"\n");
+			}
+		}
+	});
+	
 	// add root trust anchor
-	ub_ctx_add_ta(ctx, prefs.getCharPref("dnssec.trustAnchor"));
+	if((retval=ub_ctx_add_ta(ctx, prefs.getCharPref("dnssec.trustAnchor"))) !== 0) {
+		log.fatal("error in ub_ctx_add_ta: "+ub_strerror(retval).readString()+
+			". errno: "+ctypes.errno+"\n");
+	}
 }
 
 libunbound.Constants = Constants;
