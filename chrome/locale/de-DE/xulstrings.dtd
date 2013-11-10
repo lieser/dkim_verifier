@@ -2,7 +2,7 @@
 <!ENTITY dkim_verifier.statusbar.title "DKIM:">
 
 <!ENTITY dkim_verifier.reverifyDKIMSignature.label "Überprüfe DKIM Signatur neu">
-<!ENTITY dkim_verifier.policyAddUserException.label "Füge Ausnahme für Signierregel hinzu">
+<!ENTITY dkim_verifier.policyAddUserException.label "Füge Ausnahme für muss signiert sein hinzu">
 
 
 <!ENTITY treeviewKeys.title "DKIM Schlüssel">

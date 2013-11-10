@@ -1,3 +1,18 @@
+1.0.0pre1 [2013-11-10]
+------------------
+ - added signers rules
+ - added key storing
+ - added libunbound as second DNS resolver (supports DNSSEC)
+ - from tooltip now also works if Thunderbird's status bar is disabled
+
+ - fixed some patterns (A-z to A-Za-z, dkim_safe_char, qp_hdr_value)
+ - fixed pattern for note tag in DKIM key
+ - fixed bug in DKIM_SIGWARNING_FROM_NOT_IN_AUID
+ - validate tag list as specified in Section 3.2 of RFC 6376
+ - now differentiation between missing and ill-formed tags
+ - added check that hash declared in DKIM-Signature is included in the hashs declared in the key record
+ - added check that the hash algorithm in the public key is the same as in the header
+
 0.6.3 [2013-10-13]
 ------------------
  - fixed bug for detection of configured DNS Servers in Windows
