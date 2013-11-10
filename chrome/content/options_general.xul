@@ -35,7 +35,7 @@
 		            type="string"/>
 		<preference id="pref_dns.libunbound.path.relToProfileDir"
 		            name="extensions.dkim_verifier.dns.libunbound.path.relToProfileDir"
-		            type="string"/>
+		            type="bool"/>
 
 
 		<preference id="pref_policy.signRules.enable"

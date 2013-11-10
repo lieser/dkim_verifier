@@ -8,3 +8,5 @@ function onLoad(paneID) {
 		window.resizeBy(changeWidthBy, 0);
 	}
 }
+
+var gDKIMonpaneload = this.onLoad;

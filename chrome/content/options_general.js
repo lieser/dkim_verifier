@@ -1,5 +1,6 @@
 var gDKIMOptionsGeneralPane = {
 	init: function () {
+		gDKIMonpaneload("paneGeneral");
 		this.update_key_storing();
 		this.update_dns_resolver();
 		this.update_Policy_signRules_enable();
