@@ -19,7 +19,6 @@
  * ============================
  *  - at the moment, only a subset of valid Local-part in the i-Tag is recognized
  *  - no test for multiple key records in an DNS RRset (Section 3.6.2.2)
- *  - check that the hash function in the public key is the same as in the header (Section 6.1.2)
  *
  */
 
@@ -223,7 +222,7 @@ var Verifier = (function() {
 							posEndHeader = str.indexOf("\n\n");
 							if (posEndHeader !== -1) {
 								NewlineLength = 1;
-								dkimDebugMsg("LF line ending detected");
+								log.debug("LF line ending detected");
 							}
 						}
 						// check for CR line ending
@@ -231,7 +230,7 @@ var Verifier = (function() {
 							posEndHeader = str.indexOf("\r\r");
 							if (posEndHeader !== -1) {
 								NewlineLength = 1;
-								dkimDebugMsg("CR line ending detected");
+								log.debug("CR line ending detected");
 							}
 						}
 						
@@ -868,7 +867,7 @@ var Verifier = (function() {
 			} else if (msg.DKIMSignature.l < bodyCanon.length){
 				// lenght tag smaller when body size
 				msg.warnings.push("DKIM_SIGWARNING_SMALL_L");
-				dkimDebugMsg("Warning: DKIM_SIGWARNING_SMALL_L ("+
+				log.debug("Warning: DKIM_SIGWARNING_SMALL_L ("+
 					dkimStrings.getString("DKIM_SIGWARNING_SMALL_L")+")");
 			}
 
@@ -1036,7 +1035,7 @@ var Verifier = (function() {
 
 			// parse the DKIMSignatureHeader
 			msg.DKIMSignature = parseDKIMSignature(msg.headerFields["dkim-signature"][0], msg.warnings);
-			dkimDebugMsg("Parsed DKIM-Signature: "+msg.DKIMSignature.toSource());
+			log.debug("Parsed DKIM-Signature: "+msg.DKIMSignature.toSource());
 			
 			// error/warning if there is a SDID in the sign rule
 			// that is different from the SDID in the signature
@@ -1055,12 +1054,12 @@ var Verifier = (function() {
 				if (!(stringEndsWith(msg.from, "@"+msg.DKIMSignature.d) ||
 							stringEndsWith(msg.from, "."+msg.DKIMSignature.d))) {
 					msg.warnings.push("DKIM_SIGWARNING_FROM_NOT_IN_SDID");
-					dkimDebugMsg("Warning: DKIM_SIGWARNING_FROM_NOT_IN_SDID ("+
+					log.debug("Warning: DKIM_SIGWARNING_FROM_NOT_IN_SDID ("+
 						dkimStrings.getString("DKIM_SIGWARNING_FROM_NOT_IN_SDID")+")");
 				} else if (!(stringEndsWith(msg.from, msg.DKIMSignature.i) ||
 										 stringEndsWith(msg.from, msg.DKIMSignature.i))) {
 					msg.warnings.push("DKIM_SIGWARNING_FROM_NOT_IN_AUID");
-					dkimDebugMsg("Warning: DKIM_SIGWARNING_FROM_NOT_IN_AUID ("+
+					log.debug("Warning: DKIM_SIGWARNING_FROM_NOT_IN_AUID ("+
 						dkimStrings.getString("DKIM_SIGWARNING_FROM_NOT_IN_AUID")+")");
 				}
 			}
@@ -1069,19 +1068,19 @@ var Verifier = (function() {
 			// warning if signature expired
 			if (msg.DKIMSignature.x !== null && msg.DKIMSignature.x < time) {
 				msg.warnings.push("DKIM_SIGWARNING_EXPIRED");
-				dkimDebugMsg("Warning: DKIM_SIGWARNING_EXPIRED ("+
+				log.debug("Warning: DKIM_SIGWARNING_EXPIRED ("+
 					dkimStrings.getString("DKIM_SIGWARNING_EXPIRED")+")");
 			}
 			// warning if signature in future
 			if (msg.DKIMSignature.t !== null && msg.DKIMSignature.t > time) {
 				msg.warnings.push("DKIM_SIGWARNING_FUTURE");
-				dkimDebugMsg("Warning: DKIM_SIGWARNING_FUTURE ("+
+				log.debug("Warning: DKIM_SIGWARNING_FUTURE ("+
 					dkimStrings.getString("DKIM_SIGWARNING_FUTURE")+")");
 			}
 			
 			// Compute the Message Hashe for the body
 			var bodyHash = computeBodyHash(msg);
-			dkimDebugMsg("computed body hash: "+bodyHash);
+			log.debug("computed body hash: "+bodyHash);
 			
 			// compare body hash
 			if (bodyHash !== msg.DKIMSignature.bh) {
@@ -1120,13 +1119,13 @@ var Verifier = (function() {
 			}
 
 			msg.DKIMKey = parseDKIMKeyRecord(msg.keyQueryResult.key);
-			dkimDebugMsg("Parsed DKIM-Key: "+msg.DKIMKey.toSource());
+			log.debug("Parsed DKIM-Key: "+msg.DKIMKey.toSource());
 			
 			// check that the testing flag is not set
 			if (msg.DKIMKey.t_array.indexOf("y") !== -1) {
 				if (prefs.getBoolPref("error.key_testmode.ignore")) {
 					msg.warnings.push("DKIM_SIGERROR_KEY_TESTMODE");
-					dkimDebugMsg("Warning: DKIM_SIGERROR_KEY_TESTMODE ("+
+					log.debug("Warning: DKIM_SIGERROR_KEY_TESTMODE ("+
 						dkimStrings.getString("DKIM_SIGERROR_KEY_TESTMODE")+")");
 				} else {
 					throw new DKIM_SigError("DKIM_SIGERROR_KEY_TESTMODE");
@@ -1150,7 +1149,7 @@ var Verifier = (function() {
 			
 			// Compute the input for the header hash
 			var headerHashInput = computeHeaderHashInput(msg);
-			dkimDebugMsg("Header hash input:\n" + headerHashInput);
+			log.debug("Header hash input:\n" + headerHashInput);
 
 			// get RSA-key
 			/*
@@ -1197,7 +1196,7 @@ var Verifier = (function() {
 			// warning if key is short
 			if (m_hex.length * 4 < 1024) {
 				msg.warnings.push("DKIM_SIGWARNING_KEYSMALL");
-				dkimDebugMsg("Warning: DKIM_SIGWARNING_KEYSMALL ("+
+				log.debug("Warning: DKIM_SIGWARNING_KEYSMALL ("+
 					dkimStrings.getString("DKIM_SIGWARNING_KEYSMALL")+")");
 			}
 
@@ -1206,7 +1205,13 @@ var Verifier = (function() {
 			rsa.setPublic(m_hex, e_hex);
 			
 			// verify Signature
-			var isValid = rsa.verifyString(headerHashInput, RSA.b64tohex(msg.DKIMSignature.b));
+			var keyInfo = {};
+			var isValid = rsa.verifyString(headerHashInput, RSA.b64tohex(msg.DKIMSignature.b), keyInfo);
+			
+			// hash algorithm defined in public-key data must be the same as in the header
+			if (keyInfo.algName !== msg.DKIMSignature.a_hash) {
+				throw new DKIM_SigError("DKIM_SIGERROR_KEY_HASHMISMATCH");
+			}
 			
 			if (!isValid) {
 				throw new DKIM_SigError("DKIM_SIGERROR_BADSIG");
@@ -1267,13 +1272,6 @@ var Verifier = (function() {
 		msg.dkimResultCallback(msg.msgURI, msg.result);
 	}
 
-	/*
-	 * dkimDebugMsg
-	 */
-	function dkimDebugMsg(message) {
-		log.debug(message);
-	}
-	
 var that = {
 /*
  * public methods/variables
@@ -1311,15 +1309,15 @@ var that = {
 	},
 	
 	/*
-	 * make function dkimDebugMsg(message) public
+	 * make log public
 	 */
-	dkimDebugMsg : dkimDebugMsg
+	log : log
 };
 return that;
 }()); // the parens here cause the anonymous function to execute and return
 
 // for logging in rsasign
 var DKIMVerifier = {};
-DKIMVerifier.dkimDebugMsg = Verifier.dkimDebugMsg;
+DKIMVerifier.log = Verifier.log;
 
 Verifier.init();

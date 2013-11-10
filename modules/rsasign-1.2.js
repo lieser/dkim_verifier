@@ -1,8 +1,11 @@
 /*
  * Original version 1.2.1 (08 May 2013)
- * Modified by Philippe Lieser for "DKIM Verifier" version 0.3.3
+ * Modified by Philippe Lieser for dkimVerifier.jsm
  *
  * Modifications:
+ * since 1.0.0
+ *  - _rsasign_verifyString returns algName via additional info param
+ * since 0.3.3
  *  - added debug info to _rsasign_verifyString
  */
 
@@ -273,11 +276,11 @@ function _rsasign_verifyHexSignatureForMessage(hSig, sMsg) {
  *                 non-hexadecimal charactors including new lines will be ignored.
  * @return returns 1 if valid, otherwise 0
  */
-function _rsasign_verifyString(sMsg, hSig) {
+function _rsasign_verifyString(sMsg, hSig, info) {
     hSig = hSig.replace(_RE_HEXDECONLY, '');
     // if (hSig.length != this.n.bitLength() / 4) return 0;
     if (hSig.length != this.n.bitLength() / 4) {
-        DKIMVerifier.dkimDebugMsg("rsasign: hSig has wrong length");
+        DKIMVerifier.log.debug("rsasign: hSig has wrong length");
         return 0;
         // throw new Error("rsasign Error: hSig has wrong length");
     }
@@ -289,13 +292,14 @@ function _rsasign_verifyString(sMsg, hSig) {
   
     // if (digestInfoAry.length == 0) return false;
     if (digestInfoAry.length == 0) {
-        DKIMVerifier.dkimDebugMsg("rsasign: biDecryptedSig (hex): " + biDecryptedSig.toString(16));
-        DKIMVerifier.dkimDebugMsg("rsasign: n (hex): " + this.n.toString(16));
-        DKIMVerifier.dkimDebugMsg("rsasign: e: " + this.e);
-        DKIMVerifier.dkimDebugMsg("rsasign: digestInfoAry.length == 0");
-        return false;
+        DKIMVerifier.log.debug("rsasign: biDecryptedSig (hex): " + biDecryptedSig.toString(16));
+        DKIMVerifier.log.debug("rsasign: n (hex): " + this.n.toString(16));
+        DKIMVerifier.log.debug("rsasign: e: " + this.e);
+        DKIMVerifier.log.debug("rsasign: digestInfoAry.length == 0");
+        return 0;
     }
     var algName = digestInfoAry[0];
+    info.algName = algName;
     var diHashValue = digestInfoAry[1];
     var ff = _RSASIGN_HASHHEXFUNC[algName];
     var msgHashValue = ff(sMsg);
