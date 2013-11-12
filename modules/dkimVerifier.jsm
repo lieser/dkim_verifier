@@ -1056,8 +1056,7 @@ var Verifier = (function() {
 					msg.warnings.push("DKIM_SIGWARNING_FROM_NOT_IN_SDID");
 					log.debug("Warning: DKIM_SIGWARNING_FROM_NOT_IN_SDID ("+
 						dkimStrings.getString("DKIM_SIGWARNING_FROM_NOT_IN_SDID")+")");
-				} else if (!(stringEndsWith(msg.from, msg.DKIMSignature.i) ||
-										 stringEndsWith(msg.from, msg.DKIMSignature.i))) {
+				} else if (!stringEndsWith(msg.from, msg.DKIMSignature.i)) {
 					msg.warnings.push("DKIM_SIGWARNING_FROM_NOT_IN_AUID");
 					log.debug("Warning: DKIM_SIGWARNING_FROM_NOT_IN_AUID ("+
 						dkimStrings.getString("DKIM_SIGWARNING_FROM_NOT_IN_AUID")+")");

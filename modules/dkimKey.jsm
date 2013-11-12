@@ -230,7 +230,7 @@ function getKeyFromDNS(d_val, s_val) {
 		if (result.error !== undefined) {
 			throw new DKIM_InternalError(result.error, "DKIM_DNSERROR_SERVER_ERROR");
 		}
-		if (result.rdata === null) {
+		if (result.data === null) {
 			throw new DKIM_SigError("DKIM_SIGERROR_NOKEY");
 		}
 
