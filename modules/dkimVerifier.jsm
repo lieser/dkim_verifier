@@ -986,6 +986,7 @@ var Verifier = (function() {
 
 			// get from address
 			var author = msg.headerFields.from[msg.headerFields.from.length-1];
+			author = author.replace(/^From[ \t]*:/i,"");
 			msg.from = msgHeaderParser.extractHeaderAddressMailboxes(author);
 
 			// get list-id
