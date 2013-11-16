@@ -1258,7 +1258,7 @@ var Verifier = (function() {
 			errorType :
 				DKIM_SigError.errorType (only if result="PERMFAIL")
 				DKIM_InternalError.errorType (only if result="TEMPFAIL"; optional)
-			shouldBeSignedBy : string (SDID; since 1.1)
+			shouldBeSignedBy : string[] (SDID; since 1.1)
 			hideFail : Boolean
 		}
 	*/
