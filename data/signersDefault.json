@@ -1,6 +1,6 @@
 {
 	"versionTable": 1,
-	"versionData": 1,
+	"versionData": 2,
 	"rules": [
 		{
 			"domain": "amazon.co.uk",
@@ -65,7 +65,7 @@
 		}, {
 			"domain": "github.com",
 			"addr": "*",
-			"sdid": "github.com",
+			"sdid": "github.com sgmail.github.com",
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_NEUTRAL"
 		}, {
@@ -101,7 +101,7 @@
 		}, {
 			"domain": "googlemail.com",
 			"addr": "*",
-			"sdid": "googlemail.comm",
+			"sdid": "googlemail.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL0"
 		}, {

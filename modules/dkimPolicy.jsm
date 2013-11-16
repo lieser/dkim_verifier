@@ -239,7 +239,7 @@ var Policy = {
 	 * 
 	 * @return {Promise<Object>}
 	 *         .shouldBeSigned true if fromAddress should be signed
-	 *         .sdid {String} Signing Domain Identifier
+	 *         .sdid {String[]} Signing Domain Identifier
 	 *         .foundRule {Boolean} true if enabled rule for fromAddress was found
 	 */
 	shouldBeSigned: function Policy_shouldBeSigned(fromAddress, listID) {
@@ -293,7 +293,8 @@ var Policy = {
 			}
 			
 			if (sqlRes.length > 0) {
-				result.sdid = sqlRes[0].getResultByName("sdid");
+				result.sdid = sqlRes[0].getResultByName("sdid").
+					split(" ").filter(function (x) {return x;});
 				result.foundRule = true;
 				
 				switch (sqlRes[0].getResultByName("ruletype")) {
@@ -314,6 +315,7 @@ var Policy = {
 				}
 			} else {
 				result.shouldBeSigned = false;
+				result.sdid = [];
 				result.foundRule = false;
 			}
 			

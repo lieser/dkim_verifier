@@ -3,7 +3,7 @@
 <!ENTITY domain.description "Wird mit der Basis-Domain der Absenderadresse vergleichen. Die Basis-Domain von zum Beispiel 'email.example.co.uk' ist 'excample.co.uk'.">
 <!ENTITY listID.description "Wird mit der List-ID verglichen, falls die E-Mail über eine E-Mail-Liste empfangen wurde. Beachte das nur der Teil zwischen '&lt;' und '&gt;' von dem List-ID Header die eigentliche List-ID ist. Von der Basis-Domain und der List-ID wird nur eins gleichzeitig verglichen.">
 <!ENTITY addr.description "Wird mit der Absenderadresse vergleichen. Ein '*' entspricht Null oder mehr Zeichen.">
-<!ENTITY sdid.description "Die Domain von der die E-Mail signiert seien sollte. Falls nicht angegeben, ist jede SDID erlaubt.">
+<!ENTITY sdid.description "Die Domain von der die E-Mail signiert seien sollte. Falls nicht angegeben, ist jede SDID erlaubt. Mehr als eine Domain kann angegeben werden, indem Sie durch Leerzeichen getrennt werden.">
 <!ENTITY ruletype.description "Der Regeltype.">
 <!ENTITY ruletype.1.description "E-Mail muss von der spezifizierten SDID signiert sein.">
 <!ENTITY ruletype.2.description "E-Mail muss nicht signiert sein. Falls Sie signiert ist, muss Sie von der spezifizierten SDID signiert sein.">

@@ -23,7 +23,7 @@
  */
 
 // options for JSHint
-/* jshint strict:true, moz:true */
+/* jshint strict:true, moz:true, smarttabs:true */
 /* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
 /* global Components, Dict, Services, Task */
 /* global Logging, Key, Policy */
@@ -1040,8 +1040,8 @@ var Verifier = (function() {
 			
 			// error/warning if there is a SDID in the sign rule
 			// that is different from the SDID in the signature
-			if (msg.shouldBeSigned.sdid &&
-					msg.shouldBeSigned.sdid !== msg.DKIMSignature.d) {
+			if (msg.shouldBeSigned.sdid !== [] &&
+			    msg.shouldBeSigned.sdid.indexOf(msg.DKIMSignature.d) === -1) {
 				if (prefs.getBoolPref("error.policy.wrong_sdid.asWarning")) {
 					msg.warnings.push("DKIM_POLICYERROR_WRONG_SDID");
 				} else {
@@ -1049,11 +1049,11 @@ var Verifier = (function() {
 				}
 			}
 			
-			// if SDID from sign rule is different from SDID in the signature
-			if (msg.shouldBeSigned.sdid !== msg.DKIMSignature.d) {
+			// if there is no SDID in the sign rule
+			if (msg.shouldBeSigned.sdid === []) {
 				// warning if from is not in SDID or AUID
 				if (!(stringEndsWith(msg.from, "@"+msg.DKIMSignature.d) ||
-							stringEndsWith(msg.from, "."+msg.DKIMSignature.d))) {
+				      stringEndsWith(msg.from, "."+msg.DKIMSignature.d))) {
 					msg.warnings.push("DKIM_SIGWARNING_FROM_NOT_IN_SDID");
 					log.debug("Warning: DKIM_SIGWARNING_FROM_NOT_IN_SDID ("+
 						dkimStrings.getString("DKIM_SIGWARNING_FROM_NOT_IN_SDID")+")");
