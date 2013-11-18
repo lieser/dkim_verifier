@@ -61,6 +61,7 @@
  *  - now uses Log.jsm for logging
  *  - preferences are no longer set form the outside,
  *    but are loaded by the module itself
+ *  - now uses stringbundle
  * 
  * 0.6.3
  * -----
@@ -103,7 +104,7 @@
 /* jshint -W064 */ //"Missing 'new' prefix when invoking a constructor."
 /* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
 /* global Components, Log, Services */
-/* global ModuleGetter, DNS_STRINGS */
+/* global ModuleGetter */
 /* exported EXPORTED_SYMBOLS, JSDNS */
 
 
@@ -120,9 +121,6 @@ Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://dkim_verifier/ModuleGetter.jsm");
 ModuleGetter.getLog(this);
 
-// load locale strings
-Components.utils.import("chrome://dkim_verifier/locale/dns.js");
-
 
 const LOG_NAME = "DKIM_Verifier.JSDNS";
 const PREF_BRANCH = "extensions.dkim_verifier.dns.";
@@ -130,6 +128,9 @@ const PREF_BRANCH = "extensions.dkim_verifier.dns.";
 var JSDNS = {};
 var prefs = Services.prefs.getBranch(PREF_BRANCH);
 var log = Log.repository.getLogger(LOG_NAME);
+var DNS_STRINGS = Services.strings.createBundle(
+	"chrome://dkim_verifier/locale/JSDNS.properties"
+);
 
 
 /* structur of DNS_ROOT_NAME_SERVERS, PREF_DNS_ROOT_NAME_SERVERS, OS_DNS_ROOT_NAME_SERVERS:
@@ -531,7 +532,7 @@ function queryDNSRecursive(server, host, recordtype, callback, callbackdata, hop
 
 	if (hops === 10) {
 		log.debug("Maximum number of recursive steps taken in resolving " + host);
-		callback(null, callbackdata, DNS_STRINGS.TOO_MANY_HOPS);
+		callback(null, callbackdata, DNS_STRINGS.GetStringFromName("TOO_MANY_HOPS"));
 		return;
 	}
 	
@@ -584,22 +585,22 @@ function queryDNSRecursive(server, host, recordtype, callback, callbackdata, hop
 				if (status === 2152398861) {
 					log.debug("Resolving " + host + "/" + recordtype + ": DNS server " + server + " refused a TCP connection.");
 					if (servers === undefined) {
-						callback(null, callbackdata, DNS_STRINGS.CONNECTION_REFUSED(server));
+						callback(null, callbackdata, DNS_STRINGS.getFormattedString("CONNECTION_REFUSED", [server], 1));
 					}
 				} else if (status === 2152398868) {
 					log.debug("Resolving " + host + "/" + recordtype + ": DNS server " + server + " timed out on a TCP connection.");
 					if (servers === undefined) {
-						callback(null, callbackdata, DNS_STRINGS.TIMED_OUT(server));
+						callback(null, callbackdata, DNS_STRINGS.getFormattedString("TIMED_OUT", [server], 1));
 					}
 				} else if (status === Components.results.NS_ERROR_NET_TIMEOUT) {
 					log.debug("Resolving " + host + "/" + recordtype + ": DNS server " + server + " timed out on a TCP connection (NS_ERROR_NET_TIMEOUT).");
 					if (servers === undefined) {
-						callback(null, callbackdata, DNS_STRINGS.TIMED_OUT(server));
+						callback(null, callbackdata, DNS_STRINGS.getFormattedString("TIMED_OUT", [server], 1));
 					}
 				} else {
 					log.debug("Resolving " + host + "/" + recordtype + ": Failed to connect to DNS server " + server + " with error code " + status + ".");
 					if (servers === undefined) {
-						callback(null, callbackdata, DNS_STRINGS.SERVER_ERROR(server));
+						callback(null, callbackdata, DNS_STRINGS.getFormattedString("SERVER_ERROR", [server], 1));
 					}
 				}
 				
@@ -617,7 +618,7 @@ function queryDNSRecursive(server, host, recordtype, callback, callbackdata, hop
 			this.process(data);
 			if (!this.done) {
 				log.debug("Resolving " + host + "/" + recordtype + ": Response was incomplete.");
-				callback(null, callbackdata, DNS_STRINGS.INCOMPLETE_RESPONSE(server));
+				callback(null, callbackdata, DNS_STRINGS.getFormattedString("INCOMPLETE_RESPONSE", [server], 1));
 			}
 		},
 		process : function(data){
