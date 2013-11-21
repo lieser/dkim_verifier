@@ -1,7 +1,7 @@
 /*
  * libunbound.jsm
  * 
- * Version: 1.0.0pre1 (27 October 2013)
+ * Version: 1.0.0 (21 November 2013)
  * 
  * Copyright (c) 2013 Philippe Lieser
  * 
@@ -33,6 +33,7 @@ Cu.import("resource://dkim_verifier/ModuleGetter.jsm");
 ModuleGetter.getosfile(this);
 
 Cu.import("resource://dkim_verifier/logging.jsm");
+
 
 const PREF_BRANCH = "extensions.dkim_verifier.dns.";
 

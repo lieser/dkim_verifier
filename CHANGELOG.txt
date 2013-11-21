@@ -1,13 +1,4 @@
-1.0.0pre2 [2013-11-16]
-------------------
- - now more than one SDID can be specified in the sign rules
- - updated default sign rules
-
-fixes for 1.0.0pre1
- - fixed DKIM_SIGERROR_NOKEY
- - fixed parsing of from header
-
-1.0.0pre1 [2013-11-10]
+1.0.0 [2013-11-21]
 ------------------
  - added signers rules
  - added key storing

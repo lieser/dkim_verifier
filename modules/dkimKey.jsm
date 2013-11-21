@@ -1,7 +1,7 @@
 /*
  * dkimKey.jsm
  * 
- * Version: 1.0.0pre1 (27 October 2013)
+ * Version: 1.0.0 (21 November 2013)
  * 
  * Copyright (c) 2013 Philippe Lieser
  * 
@@ -37,6 +37,7 @@ ModuleGetter.getSqlite(this);
 Cu.import("resource://dkim_verifier/logging.jsm");
 Cu.import("resource://dkim_verifier/helper.jsm");
 Cu.import("resource://dkim_verifier/DNSWrapper.jsm");
+
 
 /**
  * @public

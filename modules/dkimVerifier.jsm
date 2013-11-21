@@ -4,7 +4,7 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  * 
- * Version: 1.0.0pre1 (26 October 2013)
+ * Version: 1.0.0 (21 November 2013)
  * 
  * Copyright (c) 2013 Philippe Lieser
  * 
@@ -71,6 +71,7 @@ Services.scriptloader.loadSubScript("resource://dkim_verifier/rsasign-1.2.js",
 
 
 const PREF_BRANCH = "extensions.dkim_verifier.";
+
 
 var messenger;
 var msgHeaderParser;

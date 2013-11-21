@@ -1,9 +1,7 @@
 /*
  * SQLiteTreeView.jsm
  * 
- * Version: 1.0.0pre1 (19 October 2013)
- * 
- * Requires Gecko ???
+ * Version: 1.0.0 (21 November 2013)
  * 
  * Copyright (c) 2013 Philippe Lieser
  * 

@@ -1,7 +1,7 @@
 /*
  * helper.jsm
  *
- * Version: 1.0.0pre1 (26 October 2013)
+ * Version: 1.0.0 (21 November 2013)
  * 
  * Copyright (c) 2013 Philippe Lieser
  * 

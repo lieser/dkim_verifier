@@ -4,7 +4,7 @@
  * Based on Joshua Tauberer's DNS LIBRARY IN JAVASCRIPT
  * from "Sender Verification Extension" version 0.9.0.6
  * 
- * Version: 1.0.0pre1 (09 November 2013)
+ * Version: 1.0.0 (21 November 2013)
  * 
  * Copyright (c) 2013 Philippe Lieser
  * 
@@ -124,6 +124,7 @@ ModuleGetter.getLog(this);
 
 const LOG_NAME = "DKIM_Verifier.JSDNS";
 const PREF_BRANCH = "extensions.dkim_verifier.dns.";
+
 
 var JSDNS = {};
 var prefs = Services.prefs.getBranch(PREF_BRANCH);
