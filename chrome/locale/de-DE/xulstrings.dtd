@@ -3,6 +3,8 @@
 
 <!ENTITY dkim_verifier.reverifyDKIMSignature.label "Überprüfe DKIM Signatur neu">
 <!ENTITY dkim_verifier.policyAddUserException.label "Füge Ausnahme für muss signiert sein hinzu">
+<!ENTITY dkim_verifier.markKeyAsSecure.label "Markiere DKIM Schlüssel als sicher">
+<!ENTITY dkim_verifier.updateKey.label "Aktualisiere DKIM Schlüssel">
 
 
 <!ENTITY treeviewKeys.title "DKIM Schlüssel">

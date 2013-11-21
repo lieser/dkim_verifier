@@ -24,6 +24,12 @@
 		<menuitem id="dkim_verifier.policyAddUserException"
 		          label="&dkim_verifier.policyAddUserException.label;"
 		          oncommand="DKIM_Verifier.Display.policyAddUserException();"/>
+		<menuitem id="dkim_verifier.markKeyAsSecure"
+		          label="&dkim_verifier.markKeyAsSecure.label;"
+		          oncommand="DKIM_Verifier.Display.markKeyAsSecure();"/>
+		<menuitem id="dkim_verifier.updateKey"
+		          label="&dkim_verifier.updateKey.label;"
+		          oncommand="DKIM_Verifier.Display.updateKey();"/>
 	</menupopup>
 	
 	<hbox id="msgHeaderView">

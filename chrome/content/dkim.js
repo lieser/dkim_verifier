@@ -26,6 +26,7 @@ Cu.import("resource://dkim_verifier/logging.jsm", DKIM_Verifier);
 Cu.import("resource://dkim_verifier/helper.jsm", DKIM_Verifier);
 Cu.import("resource://dkim_verifier/dkimVerifier.jsm", DKIM_Verifier);
 Cu.import("resource://dkim_verifier/dkimPolicy.jsm", DKIM_Verifier);
+Cu.import("resource://dkim_verifier/dkimKey.jsm", DKIM_Verifier);
 
 
 const PREF_BRANCH = "extensions.dkim_verifier.";
@@ -51,6 +52,8 @@ DKIM_Verifier.Display = (function() {
 	var headerTooltips;
 	var statusbarpanel;
 	var policyAddUserExceptionButton;
+	var markKeyAsSecureButton;
+	var updateKeyButton;
 	var dkimStrings;
 
 /*
@@ -193,6 +196,7 @@ DKIM_Verifier.Display = (function() {
 	function displayResult(result) {
 		var str;
 	
+		header.dkimResult = result;
 		statusbarpanel.dkimStatus = result.result;
 		switch(result.result) {
 			case "none":
@@ -220,7 +224,7 @@ DKIM_Verifier.Display = (function() {
 							return DKIM_Verifier.tryGetString(dkimStrings, e) || e;
 						}
 					});
-					setWarnings(warnings)
+					setWarnings(warnings);
 				}
 				
 				// highlight from header
@@ -390,6 +394,8 @@ var that = {
 		statusbarpanel = document.getElementById("dkim-verifier-statusbarpanel");
 		policyAddUserExceptionButton = document.
 			getElementById("dkim_verifier.policyAddUserException");
+		markKeyAsSecureButton = document.getElementById("dkim_verifier.markKeyAsSecure");
+		updateKeyButton = document.getElementById("dkim_verifier.updateKey");
 		dkimStrings = document.getElementById("dkimStrings");
 
 		
@@ -410,6 +416,14 @@ var that = {
 			statusbarpanel.useIcons = false;
 		} else {
 			statusbarpanel.useIcons = true;
+		}
+
+		if (prefs.getIntPref("key.storing") === 0) {
+			markKeyAsSecureButton.disabled = true;
+			updateKeyButton.disabled = true;
+		} else {
+			markKeyAsSecureButton.disabled = false;
+			updateKeyButton.disabled = false;
 		}
 
 		that.initHeaderEntry();
@@ -473,6 +487,15 @@ var that = {
 					statusbarpanel.useIcons = false;
 				} else {
 					statusbarpanel.useIcons = true;
+				}
+				break;
+			case "key.storing":
+				if (prefs.getIntPref("key.storing") === 0) {
+					markKeyAsSecureButton.disabled = true;
+					updateKeyButton.disabled = true;
+				} else {
+					markKeyAsSecureButton.disabled = false;
+					updateKeyButton.disabled = false;
 				}
 				break;
 		}
@@ -607,6 +630,30 @@ var that = {
 			var from = msgHeaderParser.extractHeaderAddressMailboxes(mime2DecodedAuthor);
 
 			yield DKIM_Verifier.Policy.addUserException(from);
+			
+			that.reverify();
+		});
+	},
+
+	/*
+	 * mark stored DKIM key as secure
+	 */
+	markKeyAsSecure : function Display_markKeyAsSecure() {
+		Task.spawn(function () {
+			yield DKIM_Verifier.Key.markKeyAsSecure(
+				header.dkimResult.SDID, header.dkimResult.selector);
+			
+			that.reverify();
+		});
+	},
+
+	/*
+	 * update stored DKIM key
+	 */
+	updateKey : function Display_updateKey() {
+		Task.spawn(function () {
+			yield DKIM_Verifier.Key.deleteKey(
+				header.dkimResult.SDID, header.dkimResult.selector);
 			
 			that.reverify();
 		});

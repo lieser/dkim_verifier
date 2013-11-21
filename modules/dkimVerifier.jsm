@@ -953,6 +953,8 @@ var Verifier = (function() {
 				version : "1.1",
 				result : "PERMFAIL",
 				errorType : e.errorType,
+				SDID : msg.DKIMSignature.d,
+				selector : msg.DKIMSignature.s,
 				shouldBeSignedBy : msg.shouldBeSigned.sdid,
 				hideFail : msg.shouldBeSigned.hideFail,
 			};
@@ -1227,6 +1229,7 @@ var Verifier = (function() {
 				version : "1.1",
 				result : "SUCCESS",
 				SDID : msg.DKIMSignature.d,
+				selector : msg.DKIMSignature.s,
 				warnings : msg.warnings,
 				shouldBeSignedBy : msg.shouldBeSigned.sdid,
 			};
@@ -1240,9 +1243,10 @@ var Verifier = (function() {
 	 * The result of the verification.
 	 * 
 	 * @typedef {Object} dkimResult
-	 * @property {String} resultVersion "1.1"
+	 * @property {String} version result version ("1.1")
 	 * @property {String} result "none" / "SUCCESS" / "PERMFAIL" / "TEMPFAIL"
-	 * @property {String} SDID (only if result="SUCCESS")
+	 * @property {String} SDID (only if result="SUCCESS" or "PERMFAIL")
+	 * @property {String} selector (only if result="SUCCESS" or "PERMFAIL")
 	 * @property {String[]} warnings (only if result="SUCCESS")
 	 * @property {String} errorType
 	 * @property {String} shouldBeSignedBy
@@ -1251,9 +1255,10 @@ var Verifier = (function() {
 	/*
 		result format:
 		{
-			resultVersion : "1.1",
+			version : "1.1",
 			result : "none" / "SUCCESS" / "PERMFAIL" / "TEMPFAIL",
-			SDID : string (only if result="SUCCESS"),
+			SDID : string (only if result="SUCCESS" or "PERMFAIL" (since 1.1)),
+			selector : string (only if result="SUCCESS" or "PERMFAIL"; since 1.1),
 			warnings : array (only if result="SUCCESS"),
 			errorType :
 				DKIM_SigError.errorType (only if result="PERMFAIL")

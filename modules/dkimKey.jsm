@@ -203,6 +203,85 @@ var Key = {
 		return promise;
 	},
 	
+	/**
+	 * Delete stored DKIM key.
+	 * 
+	 * @param {String} d_val domain of the Signer
+	 * @param {String} s_val selector
+	 * 
+	 * @return {Promise<Undefined>}
+	 */
+	deleteKey: function Key_markKeyAsSecure(d_val, s_val) {
+		"use strict";
+
+		var promise = Task.spawn(function () {
+			log.trace("deleteKey Task begin");
+			
+			// wait for DB init
+			yield Key.initDB();
+			var conn = yield Sqlite.openConnection({path: KEY_DB_NAME});
+			
+			var sqlRes;
+			try {
+				sqlRes = yield conn.executeCached(
+					"DELETE FROM keys\n" +
+					"WHERE SDID = :SDID AND  selector = :selector;",
+					{SDID:d_val, selector: s_val}
+				);
+				log.debug("deleted key ("+d_val+", "+s_val+")");
+			} finally {
+				yield conn.close();
+			}
+			
+			log.trace("deleteKey Task end");
+		});
+		promise.then(null, function onReject(exception) {
+			// Failure!  We can inspect or report the exception.
+			log.fatal(exceptionToStr(exception));
+		});
+		
+		return promise;
+	},
+	
+	/**
+	 * Mark stored DKIM key as secure.
+	 * 
+	 * @param {String} d_val domain of the Signer
+	 * @param {String} s_val selector
+	 * 
+	 * @return {Promise<Undefined>}
+	 */
+	markKeyAsSecure: function Key_markKeyAsSecure(d_val, s_val) {
+		"use strict";
+
+		var promise = Task.spawn(function () {
+			log.trace("markKeyAsSecure Task begin");
+			
+			// wait for DB init
+			yield Key.initDB();
+			var conn = yield Sqlite.openConnection({path: KEY_DB_NAME});
+			
+			var sqlRes;
+			try {
+				sqlRes = yield conn.executeCached(
+					"UPDATE keys SET secure = 1\n" +
+					"WHERE SDID = :SDID AND  selector = :selector;",
+					{SDID:d_val, selector: s_val}
+				);
+				log.debug("updated key ("+d_val+", "+s_val+") to secure");
+			} finally {
+				yield conn.close();
+			}
+			
+			log.trace("markKeyAsSecure Task end");
+		});
+		promise.then(null, function onReject(exception) {
+			// Failure!  We can inspect or report the exception.
+			log.fatal(exceptionToStr(exception));
+		});
+		
+		return promise;
+	},
 };
 
 /**
