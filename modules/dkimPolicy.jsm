@@ -1,7 +1,7 @@
 /*
  * dkimPolicy.jsm
  * 
- * Version: 1.0.0 (21 November 2013)
+ * Version: 1.0.1 (21 November 2013)
  * 
  * Copyright (c) 2013 Philippe Lieser
  * 
@@ -241,6 +241,7 @@ var Policy = {
 	 *         .shouldBeSigned true if fromAddress should be signed
 	 *         .sdid {String[]} Signing Domain Identifier
 	 *         .foundRule {Boolean} true if enabled rule for fromAddress was found
+	 *         .hideFail {Boolean} true if HIDEFAIL rule was found
 	 */
 	shouldBeSigned: function Policy_shouldBeSigned(fromAddress, listID) {
 		"use strict";
@@ -253,6 +254,9 @@ var Policy = {
 			// return false if signRules is disabled
 			if (!prefs.getBoolPref("signRules.enable")) {
 				result.shouldBeSigned = false;
+				result.sdid = [];
+				result.foundRule = false;
+				result.hideFail = false;
 				throw new Task.Result(result);
 			}
 
@@ -317,6 +321,7 @@ var Policy = {
 				result.shouldBeSigned = false;
 				result.sdid = [];
 				result.foundRule = false;
+				result.hideFail = false;
 			}
 			
 			log.debug("shouldBeSigned: "+result.shouldBeSigned+"; sdid: "+result.sdid+
@@ -348,12 +353,14 @@ var Policy = {
 			
 			// return if autoAddRule is disabled
 			if (!prefs.getBoolPref("signRules.autoAddRule")) {
+				log.trace("autoAddRule is disabled");
 				return;
 			}
 
 			// return if fromAddress is not in SDID
 			if (!(stringEndsWith(fromAddress, "@"+sdid) ||
 			      stringEndsWith(fromAddress, "."+sdid))) {
+				log.trace("fromAddress is not in SDID");
 				return;
 			}
 
