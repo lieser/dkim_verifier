@@ -4,7 +4,7 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  * 
- * Version: 1.0.0 (21 November 2013)
+ * Version: 1.0.1 (22 November 2013)
  * 
  * Copyright (c) 2013 Philippe Lieser
  * 
@@ -1043,7 +1043,7 @@ var Verifier = (function() {
 			
 			// error/warning if there is a SDID in the sign rule
 			// that is different from the SDID in the signature
-			if (msg.shouldBeSigned.sdid !== [] &&
+			if (msg.shouldBeSigned.sdid.length > 0 &&
 			    msg.shouldBeSigned.sdid.indexOf(msg.DKIMSignature.d) === -1) {
 				if (prefs.getBoolPref("error.policy.wrong_sdid.asWarning")) {
 					msg.warnings.push("DKIM_POLICYERROR_WRONG_SDID");
@@ -1053,7 +1053,7 @@ var Verifier = (function() {
 			}
 			
 			// if there is no SDID in the sign rule
-			if (msg.shouldBeSigned.sdid === []) {
+			if (msg.shouldBeSigned.sdid.length === 0) {
 				// warning if from is not in SDID or AUID
 				if (!(stringEndsWith(msg.from, "@"+msg.DKIMSignature.d) ||
 				      stringEndsWith(msg.from, "."+msg.DKIMSignature.d))) {

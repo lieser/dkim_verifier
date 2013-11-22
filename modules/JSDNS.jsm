@@ -93,6 +93,7 @@
  *  - changed to a JavaScript code module
  *  - DNS_LoadPrefs() not executed
  *  - added debug on/off setting
+ * 
  * 0.1.0
  * -----
  *  original DNS LIBRARY IN JAVASCRIPT by Joshua Tauberer

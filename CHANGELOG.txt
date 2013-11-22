@@ -1,3 +1,7 @@
+1.0.1 [2013-11-22]
+------------------
+ - fixed DKIM_SIGWARNING_FROM_NOT_IN_SDID
+
 1.0.0 [2013-11-21]
 ------------------
  - added signers rules
