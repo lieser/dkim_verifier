@@ -1,7 +1,7 @@
 /*
  * dkimPolicy.jsm
  * 
- * Version: 1.0.1 (21 November 2013)
+ * Version: 1.0.2 (03 December 2013)
  * 
  * Copyright (c) 2013 Philippe Lieser
  * 
@@ -276,14 +276,14 @@ var Policy = {
 						"FROM signers WHERE\n" +
 						"  (domain = :domain OR listID = :listID) AND\n" +
 						"  enabled AND\n" +
-						"  lower(:from) GLOB addr\n";
+						"  lower(:from) GLOB lower(addr)\n";
 				if (prefs.getBoolPref("signRules.checkDefaultRules")) {
 					// include default rules
 					sql +=
 						"UNION SELECT addr, sdid, ruletype, priority\n" +
 						"FROM signersDefault WHERE\n" +
 						"  domain = :domain AND\n" +
-						"  lower(:from) GLOB addr\n";
+						"  lower(:from) GLOB lower(addr)\n";
 				}
 				sql +=
 						"ORDER BY priority DESC\n" +
