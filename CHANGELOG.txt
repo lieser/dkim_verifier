@@ -1,3 +1,8 @@
+1.0.3 [2013-12-12]
+------------------
+ - fixed bug in sign rules if from address contains capital letters
+ - fixed verification of unsigned e-mails which are marked as should be signed by sign rules
+
 1.0.2 [2013-11-22]
 ------------------
  - fixed internal error if sign rules are disabled

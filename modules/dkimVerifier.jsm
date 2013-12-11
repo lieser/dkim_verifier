@@ -4,7 +4,7 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  * 
- * Version: 1.0.1 (22 November 2013)
+ * Version: 1.0.2 (12 December 2013)
  * 
  * Copyright (c) 2013 Philippe Lieser
  * 
@@ -948,34 +948,41 @@ var Verifier = (function() {
 	 * handeles Exeption
 	 */
 	function handleExeption(e, msg) {
-		if (e instanceof DKIM_SigError) {
-			// return result
-			msg.result = {
-				version : "1.1",
-				result : "PERMFAIL",
-				errorType : e.errorType,
-				SDID : msg.DKIMSignature.d,
-				selector : msg.DKIMSignature.s,
-				shouldBeSignedBy : msg.shouldBeSigned.sdid,
-				hideFail : msg.shouldBeSigned.hideFail,
-			};
-			returnResult(msg);
-		
-			log.warn(exceptionToStr(e));
-		} else {
-			// return result
-			msg.result = {
-				version : "1.0",
-				result : "TEMPFAIL",
-				errorType : e.errorType
-			};
-			returnResult(msg);
-		
-			if (e instanceof DKIM_InternalError) {
-				log.error(exceptionToStr(e));
+		try {
+			if (e instanceof DKIM_SigError) {
+				// return result
+				if (!msg.DKIMSignature) {
+					msg.DKIMSignature = {}
+				}
+				msg.result = {
+					version : "1.1",
+					result : "PERMFAIL",
+					errorType : e.errorType,
+					SDID : msg.DKIMSignature.d,
+					selector : msg.DKIMSignature.s,
+					shouldBeSignedBy : msg.shouldBeSigned.sdid,
+					hideFail : msg.shouldBeSigned.hideFail,
+				};
+				returnResult(msg);
+			
+				log.warn(exceptionToStr(e));
 			} else {
-				log.fatal(exceptionToStr(e));
+				// return result
+				msg.result = {
+					version : "1.0",
+					result : "TEMPFAIL",
+					errorType : e.errorType
+				};
+				returnResult(msg);
+			
+				if (e instanceof DKIM_InternalError) {
+					log.error(exceptionToStr(e));
+				} else {
+					log.fatal(exceptionToStr(e));
+				}
 			}
+		} catch (exception) {
+			log.fatal("handleExeption: "+exception);
 		}
 	}
 	
