@@ -4,7 +4,7 @@
  * Based on Joshua Tauberer's DNS LIBRARY IN JAVASCRIPT
  * from "Sender Verification Extension" version 0.9.0.6
  * 
- * Version: 1.0.1pre1 (13 December 2013)
+ * Version: 1.0.1pre1 (14 December 2013)
  * 
  * Copyright (c) 2013 Philippe Lieser
  * 
@@ -58,6 +58,8 @@
  * 1.0.1
  * -----
  *  - fixed use of stringbundle
+ *  - added read and write timeout
+ *  - added option to automatically reset all server to alive if all are marked down
  *
  * 1.0.0
  * -----
@@ -154,6 +156,7 @@ var OS_DNS_ROOT_NAME_SERVERS = [];
 // Preferences
 var getNameserversFromOS = null;
 var timeout_connect = 0xFFFF;
+var timeout_read_write;
 
 /**
  * init
@@ -170,6 +173,10 @@ function init() {
 		prefs.getBoolPref("getNameserversFromOS")
 	);
 	dnsChangeTimeoutConnect(prefs.getIntPref("timeout_connect"));
+	if (prefs.getPrefType("timeout_read_write") === prefs.PREF_INT) {
+		timeout_read_write = prefs.getIntPref("timeout_read_write");
+	}
+
 }
 
 var prefObserver = {
@@ -197,6 +204,15 @@ var prefObserver = {
 				break;
 			case "timeout_connect":
 				dnsChangeTimeoutConnect(prefs.getIntPref("timeout_connect"));
+				break;
+			case "timeout_read_write":
+				if (prefs.getPrefType("timeout_read_write") === prefs.PREF_INT) {
+					timeout_read_write = prefs.getIntPref("timeout_read_write");
+					// log.trace("timeout_read_write: "+timeout_read_write);
+				} else {
+					timeout_read_write = null;
+					// log.trace("timeout_read_write disabled");
+				}
 				break;
 		}
 	},
@@ -531,6 +547,12 @@ function queryDNSRecursive(server, host, recordtype, callback, callbackdata, hop
 		
 		if (server === null) {
 			log.debug("no DNS Server alive");
+			if (prefs.getBoolPref("jsdns.autoResetServerAlive")) {
+				servers.forEach(function(element /*, index, array*/) {
+					element.alive = true;
+				});
+				log.debug("set all servers to alive");
+			}
 			callback(null, callbackdata, "no DNS Server alive");
 			return;
 		}
@@ -902,6 +924,10 @@ function DNS_readAllFromSocket(host,port,outputData,listener)
 
 		// change timeout for connection
 		transport.setTimeout(transport.TIMEOUT_CONNECT, timeout_connect);
+		if (timeout_read_write) {
+			transport.setTimeout(transport.TIMEOUT_READ_WRITE, timeout_read_write);
+			log.trace("timeout_read_write set to "+timeout_read_write);
+		}
 		
 		var outstream = transport.openOutputStream(0,0,0);
 		outstream.write(outputData,outputData.length);
