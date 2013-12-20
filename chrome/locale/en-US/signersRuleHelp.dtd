@@ -3,7 +3,7 @@
 <!ENTITY domain.description "Will be matched against the base domain of the From address. For example, the base domain for 'email.example.co.uk' is 'excample.co.uk'.">
 <!ENTITY listID.description "Will be matched against the list-id, if the e-mail was received through an e-mail list. Note that only the part between '&lt;' and '&gt;' of the List-Id header is the actual list-id. Only either the domain or the list-id is matched at the same time.">
 <!ENTITY addr.description "Will be matched against the From address. Use an '*' to match zero or more characters.">
-<!ENTITY sdid.description "The domain by which the e-mails should be signed. If this is left empty, every SDID is allowed. More than one domain can be specified by separating them with a space ">
+<!ENTITY sdid.description "The domain by which the e-mails should be signed. If this is left empty, every SDID is allowed. More than one domain can be specified by separating them with a space.">
 <!ENTITY ruletype.description "The type of the rule.">
 <!ENTITY ruletype.1.description "E-mail must be signed by the specified SDID.">
 <!ENTITY ruletype.2.description "E-mail doesn't have to be signed. If it is signed, it must be by the specified SDID.">

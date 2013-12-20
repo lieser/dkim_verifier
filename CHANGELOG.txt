@@ -1,3 +1,8 @@
+1.0.4 [2013-12-20]
+------------------
+ - fixed bug in an error message of the JavaScript DNS library
+ - added advanced options for the JavaScript DNS library useful in case of bad network connection (not available through GUI)
+
 1.0.3 [2013-12-12]
 ------------------
  - fixed bug in sign rules if from address contains capital letters
