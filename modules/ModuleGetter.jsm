@@ -137,7 +137,7 @@ var ModuleGetter = {
 	 * Defines a getter for the Promise.jsm module.
 	 * 
 	 * Gecko 24 and later: "resource://gre/modules/Promise.jsm"
-	 * Otherwise: "resource:///modules/devtools/Promise.jsm"
+	 * Otherwise: "resource://gre/modules/commonjs/promise/core.js"
 	 * 
 	 * @param {Object} aObject The object to define the lazy getter on.
 	 * @param {String} [aName="Promise"] The name of the getter to define on aObject for the module.

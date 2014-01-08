@@ -73,7 +73,7 @@
 					</menulist>
 					<button id="key.viewKeys"
 					        label="&key.viewKeys.label;"
-					        oncommand="window.open('chrome://dkim_verifier/content/treeviewKeys.xul', 'SignersRules', 'chrome,resizable,centerscreen,width=600,height=300');"/>
+					        oncommand="window.open('chrome://dkim_verifier/content/treeviewKeys.xul', 'dkimKeys', 'chrome,resizable,centerscreen,width=600,height=300');"/>
 					<spacer/>
 				</hbox>
 				<checkbox preference="pref_saveResult" label="&saveResult.label;"/>

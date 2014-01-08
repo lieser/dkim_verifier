@@ -292,6 +292,9 @@ var that = {
  * public methods/variables
  */
  
+	/*
+	 * Initializes the DKIM header entry
+	 */
 	initHeaderEntry: function Display_initHeaderEntry() {
 		if (header && document.getElementById(header.id) !== header) {
 			return;
@@ -306,6 +309,13 @@ var that = {
 		header = view.enclosingBox;
 		row = view.enclosingRow;
 	},
+	
+	/*
+	 * Sets visibility of DKIM header, DKIM statusbarpanel and DKIM tooltip
+	 * based on current state and preferences.
+	 *
+	 * Gets called every time the current state changes.
+	 */
 	setCollapsed: function Display_setCollapsed(state) {
 		function setDKIMFromTooltip(headerBox) {
 			var emailDisplayButton = headerBox.emailAddresses.boxObject.firstChild;
@@ -502,7 +512,9 @@ var that = {
 	},
 	
 	/*
-	 * gets called if a new message ist viewed
+	 * Initializes the header and statusbarpanel
+	 * gets called after onStartHeaders
+	 * gets called before onEndHeaders
 	 */
 	onBeforeShowHeaderPane : function Display_onBeforeShowHeaderPane() {
 		that.initHeaderEntry();
@@ -577,7 +589,7 @@ var that = {
 	onEndAttachments: function Display_onEndAttachments() {},
 
 	/*
-	 * Initializes the DKIM header
+	 * outputFunction for DKIM header (sets the DKIM header value)
 	 */
 	onOutput: function Display_onOutput(headerEntry, headerValue) {
 		header.value = headerValue;
@@ -613,6 +625,7 @@ var that = {
 		var msgURI = gFolderDisplay.selectedMessageUris[0];
 
 		header.value = dkimStrings.getString("loading");
+		setValue("loading");
 		that.onStartHeaders();
 		saveResult(msgURI, "");
 		that.onEndHeaders();
