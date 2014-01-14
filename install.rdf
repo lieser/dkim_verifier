@@ -49,7 +49,26 @@
 
 			</Description>
 		</em:localized>
+		
+		<em:localized>
+			<Description>
+				<em:locale>it-IT</em:locale>
 
+				<!-- DNS Library -->
+				<em:contributor>Joshua Tauberer (libreria DNS)</em:contributor>
+				<!-- RSA and BigInteger Library -->
+				<em:contributor>Tom Wu (libreria RSA)</em:contributor>
+				<!-- RSA signing and verification and asn1hex Library -->
+				<em:contributor>Kenji Urushima (verifica RSA e libreria ASN1)</em:contributor>
+				
+				<em:contributor>Nils Maier</em:contributor>
+
+				<em:translator>Michele Locati</em:translator>
+
+				<em:description>Verifica la firma DKIM di un’email.</em:description>
+
+			</Description>
+		</em:localized>
 		
 		<em:targetApplication>
 			<Description>

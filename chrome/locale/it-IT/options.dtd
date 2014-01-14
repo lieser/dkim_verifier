@@ -1,0 +1,68 @@
+<!ENTITY prefwindow.title "Opzioni DKIM Verifier">
+
+
+<!ENTITY general.label "Generali">
+<!ENTITY general.general.label "Generali">
+
+<!ENTITY dns.label "DNS">
+<!ENTITY dns.resolver.label "Risolutore">
+<!ENTITY dns.resolver.value.1.label "Libreria JavaScript DNS">
+<!ENTITY dns.resolver.value.2.label "libunbound">
+<!ENTITY dns.getNameserversFromOS.label "Ricava i server DNS dalla configurazione del sistema operativo">
+<!ENTITY dns.nameserver.label "Server DNS (sintassi (EBNF): host[&quot;:&quot;porta]{&quot;;&quot;host[&quot;:&quot;porta]} )">
+
+<!ENTITY dns.timeout_connect.label "Scadenza connessione DNS (in secondi)">
+
+<!ENTITY dns.libunbound.path.label "Percorso">
+<!ENTITY dns.libunbound.path.relToProfileDir.label "Percorso relativo alla cartella del profilo">
+
+<!ENTITY key.storing.value.0.label "Non salvare le chiavi DNS">
+<!ENTITY key.storing.value.1.label "Salva le chiavi DKIM">
+<!ENTITY key.storing.value.2.label "Salva le chiavi DKIM e confrontale con la chiave attuale">
+<!ENTITY key.viewKeys.label "Chiavi DKIM">
+
+<!ENTITY saveResult.label "Salva il risultato della verifica">
+
+<!ENTITY general.policy.label "Strategia">
+<!ENTITY policy.signRules.enable.label "Verifica se le email dovrebbero essere firmate">
+<!ENTITY policy.signRules.checkDefaultRules.label "Usa regole predefinite">
+<!ENTITY policy.signRules.autoAddRule.label "Aggiungi regole automaticamente in base alle email con firma DKIM">
+<!ENTITY error.policy.wrong_sdid.asWarning.label "Considera SDID errati come avvisi invece che come errori">
+<!ENTITY viewSigners.label "Regole firmatari">
+<!ENTITY viewSignerDefaults.label "Regole predefinite signatari">
+
+
+<!ENTITY display.label "Visualizza">
+
+<!ENTITY showDKIMHeader.label  "Mostra intestazione DKIM">
+<!ENTITY showDKIMStatusbarpanel.label  "Mostra barra di stato DKIM">
+<!ENTITY showDKIMFromTooltip.label  "Mostra aiuti DKIM per il campo del mittente">
+<!ENTITY showDKIM.value.0.label  "mai">
+<!ENTITY showDKIM.value.10.label "quando un’email con una firma DKIM valida viene visualizzata">
+<!ENTITY showDKIM.value.30.label "quando un’email con una firma DKIM viene visualizzata">
+<!ENTITY showDKIM.value.40.label "quando un’email viene visualizzata">
+<!ENTITY showDKIM.value.50.label "quando un messaggio viene visualizzato">
+<!ENTITY statusbarpanel.result.style.value.1.label "Mostra testo">
+<!ENTITY statusbarpanel.result.style.value.2.label "Mostra icona">
+
+<!ENTITY colorFrom.label "Abilita evidenziazione del campo del mittente">
+<!ENTITY color.label "Colore">
+<!ENTITY color.text.label "Testo:">
+<!ENTITY color.background.label "Sfondo:">
+<!ENTITY color.success.label "Firma valida">
+<!ENTITY color.warning.label "Firma valida con avvisi">
+<!ENTITY color.permfail.label "Firma non valida">
+<!ENTITY color.tempfail.label "Errore temporaneo">
+<!ENTITY color.nosig.label "Email non firmata">
+
+
+<!ENTITY advanced.label "Avanzate">
+
+<!ENTITY debug.label "Abilita debug (errori e informazioni nella console degli errori)">
+<!ENTITY error.key_testmode.ignore.label "Verifica le firme anche se un dominio sta solo provando DKIM">
+<!ENTITY error.illformed_i.treatAs.label "Considera tag AUID con sintassi errata come">
+<!ENTITY error.policy.key_insecure.treatAs.label "Considera chiavi DKIM non firmate da DNSSEC come">
+
+<!ENTITY error.treatAs.value.0.label "errore">
+<!ENTITY error.treatAs.value.1.label "avviso">
+<!ENTITY error.treatAs.value.2.label "niente">
