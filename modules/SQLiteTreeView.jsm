@@ -1,6 +1,8 @@
 /*
  * SQLiteTreeView.jsm
  * 
+ * Implements a nsITreeView for a SQLite DB table.
+ *
  * Version: 1.0.0 (21 November 2013)
  * 
  * Copyright (c) 2013 Philippe Lieser

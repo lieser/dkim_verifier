@@ -1,5 +1,9 @@
 /*
  * DNSWrapper.jsm
+ *
+ * Wrapper to resolve DNS lookups via the following libraries:
+ *  - JSDNS.jsm
+ *  - libunbound.jsm
  * 
  * Version: 1.0.0 (21 November 2013)
  * 

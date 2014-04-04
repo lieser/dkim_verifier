@@ -1,6 +1,9 @@
 /*
  * libunbound.jsm
  * 
+ * Wrapper for the libunbound DNS library.
+ * Currently only the TXT resource record is completely supported.
+ *
  * Version: 1.0.0 (21 November 2013)
  * 
  * Copyright (c) 2013 Philippe Lieser
