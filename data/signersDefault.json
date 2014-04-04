@@ -1,6 +1,6 @@
 {
 	"versionTable": 1,
-	"versionData": 2,
+	"versionData": 3,
 	"rules": [
 		{
 			"domain": "amazon.co.uk",
@@ -83,6 +83,12 @@
 		}, {
 			"domain": "gmxnet.de",
 			"addr": "mailings@gmxnet.de",
+			"sdid": "gmxnet.de",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_NEUTRAL"
+		}, {
+			"domain": "gmxnet.de",
+			"addr": "virenschutz@gmxnet.de",
 			"sdid": "gmxnet.de",
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_NEUTRAL"

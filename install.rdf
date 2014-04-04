@@ -23,7 +23,7 @@
 		
 		<em:contributor>Nils Maier</em:contributor>
 
-		<em:homepageURL>https://github.com/lieser/dkim_verifier</em:homepageURL>
+		<em:homepageURL>https://github.com/lieser/dkim_verifier/wiki</em:homepageURL>
 
 		<em:optionsURL>chrome://dkim_verifier/content/options.xul</em:optionsURL>
 		<!--
