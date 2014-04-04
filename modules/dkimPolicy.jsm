@@ -1,9 +1,9 @@
 /*
  * dkimPolicy.jsm
  * 
- * Version: 1.0.2 (03 December 2013)
+ * Version: 1.1.0pre1 (04 April 2014)
  * 
- * Copyright (c) 2013 Philippe Lieser
+ * Copyright (c) 2013-2014 Philippe Lieser
  * 
  * This software is licensed under the terms of the MIT License.
  * 
@@ -358,15 +358,33 @@ var Policy = {
 			}
 
 			// return if fromAddress is not in SDID
+			// and options state it should
 			if (!(stringEndsWith(fromAddress, "@"+sdid) ||
-			      stringEndsWith(fromAddress, "."+sdid))) {
+			      stringEndsWith(fromAddress, "."+sdid)) &&
+			    prefs.getBoolPref("signRules.autoAddRule.onlyIfFromAddressInSDID")) {
 				log.trace("fromAddress is not in SDID");
 				return;
 			}
 
 			var shouldBeSignedRes = yield Policy.shouldBeSigned(fromAddress);
 			if (!shouldBeSignedRes.foundRule) {
-				yield addRule(fromAddress, sdid, "ALL", "AUTOINSERT_RULE_ALL");
+				var domain;
+				var fromAddressToAdd;
+				switch (prefs.getIntPref("signRules.autoAddRule.for")) {
+					case 0: // from address
+						fromAddressToAdd = fromAddress;
+						break;
+					case 1: // subdomain
+						fromAddressToAdd = "*"+fromAddress.substr(fromAddress.lastIndexOf("@"));
+						break;
+					case 2: // base domain
+						domain = getBaseDomainFromAddr(fromAddress);
+						fromAddressToAdd = "*";
+						break;
+					default:
+						throw new DKIM_InternalError("invalid signRules.autoAddRule.for");
+				}
+				yield addRule(domain, fromAddressToAdd, sdid, "ALL", "AUTOINSERT_RULE_ALL");
 			}
 			
 			log.trace("signedBy Task end");
@@ -415,7 +433,7 @@ var Policy = {
 					}
 				);
 				if (sqlRes.length === 0) {
-					yield addRule(fromAddress, "", "NEUTRAL", "USERINSERT_RULE_NEUTRAL");
+					yield addRule(null, fromAddress, "", "NEUTRAL", "USERINSERT_RULE_NEUTRAL");
 				}
 			} finally {
 				yield conn.close();
@@ -450,6 +468,7 @@ function getBaseDomainFromAddr(addr, aAdditionalParts=0) {
  * Adds rule.
  * Generator function.
  * 
+ * @param {String|Null} domain
  * @param {String} addr
  * @param {String} sdid
  * @param {String} ruletype
@@ -457,12 +476,14 @@ function getBaseDomainFromAddr(addr, aAdditionalParts=0) {
  * 
  * @return {Promise<Undefined>}
  */
-function addRule(addr, sdid, ruletype, priority) {
+function addRule(domain, addr, sdid, ruletype, priority) {
 	"use strict";
 
 	log.trace("addRule begin");
 	
-	var domain = getBaseDomainFromAddr(addr);
+	if (!domain) {
+		domain = getBaseDomainFromAddr(addr);
+	}
 
 	// wait for DB init
 	yield Policy.initDB();

@@ -21,6 +21,11 @@ pref("extensions.dkim_verifier.saveResult", false);
 pref("extensions.dkim_verifier.policy.signRules.enable", false);
 pref("extensions.dkim_verifier.policy.signRules.checkDefaultRules", true);
 pref("extensions.dkim_verifier.policy.signRules.autoAddRule", false);
+pref("extensions.dkim_verifier.policy.signRules.autoAddRule.onlyIfFromAddressInSDID", true);
+// 0: from address
+// 1: subdomain
+// 2: base domain
+pref("extensions.dkim_verifier.policy.signRules.autoAddRule.for", 0);
 pref("extensions.dkim_verifier.error.policy.wrong_sdid.asWarning", false);
 
 // 0: don't store DKIM keys

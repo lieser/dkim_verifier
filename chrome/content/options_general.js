@@ -23,5 +23,15 @@ var gDKIMOptionsGeneralPane = {
 		document.getElementById("error.policy.wrong_sdid.asWarning").disabled = disabled;
 		document.getElementById("viewSigners").disabled = disabled;
 		document.getElementById("viewSignerDefaults").disabled = disabled;
+		
+		this.update_Policy_autoAddRule_enable();
+	},
+	
+	update_Policy_autoAddRule_enable: function () {
+		var disabled = !document.getElementById("policy.signRules.enable").checked ||
+			!document.getElementById("policy.signRules.autoAddRule").checked;
+		document.getElementById("policy.signRules.autoAddRule.onlyIfFromAddressInSDID").
+			disabled = disabled;
+		document.getElementById("policy.signRules.autoAddRule.for").disabled = disabled;
 	},
 }

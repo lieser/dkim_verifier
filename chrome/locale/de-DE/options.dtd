@@ -27,6 +27,10 @@
 <!ENTITY policy.signRules.enable.label "Überprüfe ob E-Mail signiert seien sollte">
 <!ENTITY policy.signRules.checkDefaultRules.label "Benutze Standardregeln">
 <!ENTITY policy.signRules.autoAddRule.label "Füge automatisch Regeln basierend auf denn angesehenen DKIM signierten E-Mails hinzu">
+<!ENTITY policy.signRules.autoAddRule.onlyIfFromAddressInSDID.label "Nur wenn Absenderadresse in SDID ist">
+<!ENTITY policy.signRules.autoAddRule.for.value.0.label "für Absenderadresse">
+<!ENTITY policy.signRules.autoAddRule.for.value.1.label "für Subdomain">
+<!ENTITY policy.signRules.autoAddRule.for.value.2.label "für Basis-Domain">
 <!ENTITY error.policy.wrong_sdid.asWarning.label "Behandel falsche SDID als Warnung anstatt als Fehler">
 <!ENTITY viewSigners.label "Signierregeln">
 <!ENTITY viewSignerDefaults.label "Standard Signierregeln">
