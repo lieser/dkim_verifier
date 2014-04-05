@@ -352,8 +352,9 @@ var Policy = {
 		var promise = Task.spawn(function () {
 			log.trace("signedBy Task begin");
 			
-			// return if autoAddRule is disabled
-			if (!prefs.getBoolPref("signRules.autoAddRule")) {
+			// return if signRules or autoAddRule is disabled
+			if (!prefs.getBoolPref("signRules.enable") ||
+			    !prefs.getBoolPref("signRules.autoAddRule")) {
 				log.trace("autoAddRule is disabled");
 				return;
 			}
