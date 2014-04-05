@@ -4,9 +4,9 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  * 
- * Version: 1.0.2 (12 December 2013)
+ * Version: 1.1.0pre1 (05 April 2014)
  * 
- * Copyright (c) 2013 Philippe Lieser
+ * Copyright (c) 2013-2014 Philippe Lieser
  * 
  * This software is licensed under the terms of the MIT License.
  * 
@@ -19,6 +19,7 @@
  * ============================
  *  - at the moment, only a subset of valid Local-part in the i-Tag is recognized
  *  - no test for multiple key records in an DNS RRset (Section 3.6.2.2)
+ *  - no test that the version tag of the DKIM key is the first tag in the record
  *
  */
 
@@ -363,7 +364,7 @@ var Verifier = (function() {
 	 * 
 	 * @return {Array|Null} The match from the RegExp if tag_name exists, otherwise null
 	 * 
-	 * @throws {DKIM_SigError} Throws if tag_value does not match.
+	 * @throws {DKIM_SigError|DKIM_InternalError} Throws if tag_value does not match.
 	 */
 	function parseTagValue(dict, tag_name, pattern_tag_value, expType = 1) {
 		var tag_value = dict.get(tag_name);
@@ -378,8 +379,10 @@ var Verifier = (function() {
 		if (res === null) {
 			if (expType === 1) {
 				throw new DKIM_SigError("DKIM_SIGERROR_ILLFORMED_"+tag_name.toUpperCase());
-			} else {
+			} else if (expType === 2) {
 				throw new DKIM_SigError("DKIM_SIGERROR_KEY_ILLFORMED_"+tag_name.toUpperCase());
+			} else {
+				throw new DKIM_InternalError("illformed tag "+tag_name);
 			}
 		}
 		
@@ -952,7 +955,7 @@ var Verifier = (function() {
 			if (e instanceof DKIM_SigError) {
 				// return result
 				if (!msg.DKIMSignature) {
-					msg.DKIMSignature = {}
+					msg.DKIMSignature = {};
 				}
 				msg.result = {
 					version : "1.1",
@@ -1324,7 +1327,13 @@ var that = {
 	/*
 	 * make log public
 	 */
-	log : log
+	log : log,
+	
+	/*
+	 * make parsing of the tag-value list public
+	 */
+	parseTagValueList : parseTagValueList,
+	parseTagValue : parseTagValue
 };
 return that;
 }()); // the parens here cause the anonymous function to execute and return

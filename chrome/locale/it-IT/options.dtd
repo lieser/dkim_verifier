@@ -34,6 +34,7 @@
 <!ENTITY error.policy.wrong_sdid.asWarning.label "Considera SDID errati come avvisi invece che come errori">
 <!ENTITY viewSigners.label "Regole firmatari">
 <!ENTITY viewSignerDefaults.label "Regole predefinite signatari">
+<!ENTITY policy.DMARC.shouldBeSigned.enable.label "Use DMARC to heuristically determinate if an e-mail should be signed">
 
 
 <!ENTITY display.label "Visualizza">

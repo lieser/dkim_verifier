@@ -23,6 +23,7 @@ var gDKIMOptionsGeneralPane = {
 		document.getElementById("error.policy.wrong_sdid.asWarning").disabled = disabled;
 		document.getElementById("viewSigners").disabled = disabled;
 		document.getElementById("viewSignerDefaults").disabled = disabled;
+		document.getElementById("policy.DMARC.shouldBeSigned.enable").disabled = disabled;
 		
 		this.update_Policy_autoAddRule_enable();
 	},

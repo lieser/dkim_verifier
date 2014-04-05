@@ -28,6 +28,10 @@ pref("extensions.dkim_verifier.policy.signRules.autoAddRule.onlyIfFromAddressInS
 pref("extensions.dkim_verifier.policy.signRules.autoAddRule.for", 0);
 pref("extensions.dkim_verifier.error.policy.wrong_sdid.asWarning", false);
 
+pref("extensions.dkim_verifier.policy.DMARC.shouldBeSigned.enable", false);
+// "none", "quarantine", "reject"
+pref("extensions.dkim_verifier.policy.DMARC.shouldBeSigned.neededPolicy", "none");
+
 // 0: don't store DKIM keys
 // 1: store DKIM keys
 // 2: store DKIM keys and compare with current key

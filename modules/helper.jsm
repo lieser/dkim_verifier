@@ -1,9 +1,9 @@
 /*
  * helper.jsm
  *
- * Version: 1.0.0 (21 November 2013)
+ * Version: 1.1.0pre1 (05 April 2014)
  * 
- * Copyright (c) 2013 Philippe Lieser
+ * Copyright (c) 2013-2014 Philippe Lieser
  * 
  * This software is licensed under the terms of the MIT License.
  * 
@@ -12,14 +12,16 @@
  */
 
 // options for JSHint
-/* jshint strict:true, moz:true */
+/* jshint strict:true, moz:true, smarttabs:true */
 /* global Components, FileUtils, NetUtil, Promise, Services, CommonUtils */
 /* global ModuleGetter, Logging */
-/* exported EXPORTED_SYMBOLS, exceptionToStr, readStringFrom, stringEndsWith, tryGetString, tryGetFormattedString, writeStringToTmpFile, DKIM_SigError, DKIM_InternalError */
+/* exported EXPORTED_SYMBOLS, exceptionToStr, getBaseDomainFromAddr, getDomainFromAddr, readStringFrom, stringEndsWith, tryGetString, tryGetFormattedString, writeStringToTmpFile, DKIM_SigError, DKIM_InternalError */
 
 var EXPORTED_SYMBOLS = [
 	"dkimStrings",
 	"exceptionToStr",
+	"getBaseDomainFromAddr",
+	"getDomainFromAddr",
 	"readStringFrom",
 	"stringEndsWith",
 	"tryGetString",
@@ -45,6 +47,9 @@ Cu.import("resource://dkim_verifier/logging.jsm");
 
 
 var log = Logging.getLogger("Helper");
+var eTLDService = Components.classes["@mozilla.org/network/effective-tld-service;1"]
+	.getService(Components.interfaces.nsIEffectiveTLDService);
+
 
 /**
  * DKIM stringbundle with the same access methods as XUL:stringbundle
@@ -103,6 +108,36 @@ function exceptionToStr(exception) {
 
 	log.trace("exceptionToStr end");
 	return str;
+}
+
+/**
+ * Returns the base domain for an e-mail address; that is, the public suffix
+ * with a given number of additional domain name parts.
+ * 
+ * @param {String} addr
+ * @param {Number} [aAdditionalParts=0]
+ * 
+ * @return {String}
+ */
+function getBaseDomainFromAddr(addr, aAdditionalParts=0) {
+	"use strict";
+
+	// var fullDomain = addr.substr(addr.lastIndexOf("@")+1);
+	var nsiURI = Services.io.newURI("http://"+addr, null, null);
+	return eTLDService.getBaseDomain(nsiURI, aAdditionalParts);
+}
+
+/**
+ * Returns the full domain for an e-mail address
+ * 
+ * @param {String} addr
+ * 
+ * @return {String}
+ */
+function getDomainFromAddr(addr) {
+	"use strict";
+
+	return addr.substr(addr.lastIndexOf("@")+1);
 }
 
 /**

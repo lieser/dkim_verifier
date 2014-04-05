@@ -1,7 +1,7 @@
 /*
  * dkimPolicy.jsm
  * 
- * Version: 1.1.0pre1 (04 April 2014)
+ * Version: 1.1.0pre2 (05 April 2014)
  * 
  * Copyright (c) 2013-2014 Philippe Lieser
  * 
@@ -12,11 +12,11 @@
  */
 
 // options for JSHint
-/* jshint strict:true, moz:true */
+/* jshint strict:true, moz:true, smarttabs:true */
 /* jshint -W069 */ // "['{a}'] is better written in dot notation."
 /* global Components, Services, Sqlite, Task, Promise */
-/* global ModuleGetter, Logging */
-/* global exceptionToStr, readStringFrom, stringEndsWith, DKIM_InternalError */
+/* global ModuleGetter, Logging, DMARC */
+/* global exceptionToStr, getBaseDomainFromAddr, readStringFrom, stringEndsWith, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, Policy */
 
 var EXPORTED_SYMBOLS = [
@@ -36,6 +36,7 @@ ModuleGetter.getSqlite(this);
 
 Cu.import("resource://dkim_verifier/logging.jsm");
 Cu.import("resource://dkim_verifier/helper.jsm");
+Cu.import("resource://dkim_verifier/dkimDMARC.jsm");
 
 
 const DB_POLICY_NAME = "dkimPolicy.sqlite";
@@ -70,8 +71,6 @@ const PRIORITY = {
 
 var prefs = Services.prefs.getBranch(PREF_BRANCH);
 var log = Logging.getLogger("Policy");
-var eTLDService = Components.classes["@mozilla.org/network/effective-tld-service;1"]
-	.getService(Components.interfaces.nsIEffectiveTLDService);
 var dbInitialized = false;
 // Deferred<boolean>
 var dbInitializedDefer = Promise.defer();
@@ -257,6 +256,7 @@ var Policy = {
 				result.sdid = [];
 				result.foundRule = false;
 				result.hideFail = false;
+				log.trace("shouldBeSigned Task end");
 				throw new Task.Result(result);
 			}
 
@@ -318,8 +318,9 @@ var Policy = {
 						throw new DKIM_InternalError("unknown rule type");
 				}
 			} else {
-				result.shouldBeSigned = false;
-				result.sdid = [];
+				var dmarcRes = yield DMARC.shouldBeSigned(fromAddress);
+				result.shouldBeSigned = dmarcRes.shouldBeSigned;
+				result.sdid = dmarcRes.sdid;
 				result.foundRule = false;
 				result.hideFail = false;
 			}
@@ -447,22 +448,6 @@ var Policy = {
 		return promise;
 	},
 };
-
-/**
- * Returns the base domain for an e-mail address; that is, the public suffix with a given number of additional domain name parts.
- * 
- * @param {String} addr
- * @param {Number} [aAdditionalParts=0]
- * 
- * @return {String}
- */
-function getBaseDomainFromAddr(addr, aAdditionalParts=0) {
-	"use strict";
-
-	// var fullDomain = addr.substr(addr.lastIndexOf("@")+1);
-	var nsiURI = Services.io.newURI("http://"+addr, null, null);
-	return eTLDService.getBaseDomain(nsiURI, aAdditionalParts);
-}
 
 /**
  * Adds rule.

@@ -59,6 +59,9 @@
 		<preference id="pref_error.policy.wrong_sdid.asWarning"
 		            name="extensions.dkim_verifier.error.policy.wrong_sdid.asWarning"
 		            type="bool"/>
+		<preference id="pref_policy.DMARC.shouldBeSigned.enable"
+		            name="extensions.dkim_verifier.policy.DMARC.shouldBeSigned.enable"
+		            type="bool"/>
 	</preferences>
 	
 	<tabbox>
@@ -159,6 +162,9 @@
 					<checkbox id="error.policy.wrong_sdid.asWarning"
 					          preference="pref_error.policy.wrong_sdid.asWarning"
 					          label="&error.policy.wrong_sdid.asWarning.label;"/>
+					<checkbox id="policy.DMARC.shouldBeSigned.enable"
+					          preference="pref_policy.DMARC.shouldBeSigned.enable"
+					          label="&policy.DMARC.shouldBeSigned.enable.label;"/>
 					<hbox>
 						<button id="viewSigners"
 						        label="&viewSigners.label;"
