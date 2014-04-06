@@ -4,9 +4,9 @@
  * Based on Joshua Tauberer's DNS LIBRARY IN JAVASCRIPT
  * from "Sender Verification Extension" version 0.9.0.6
  * 
- * Version: 1.0.1 (20 December 2013)
+ * Version: 1.0.2 (06 April 2014)
  * 
- * Copyright (c) 2013 Philippe Lieser
+ * Copyright (c) 2013-2014 Philippe Lieser
  * 
  * This software is licensed under the terms of the MIT License.
  * 
@@ -54,6 +54,10 @@
 /*
  * Changelog:
  * ==========
+ *
+ * 1.0.2
+ * -----
+ *  - fixed last line of /etc/resolv.conf not being read
  *
  * 1.0.1
  * -----
@@ -403,14 +407,16 @@ function DNS_get_OS_DNSServers() {
 			var stream_reader = stream.QueryInterface(Components.interfaces.nsILineInputStream);
 			
 			var out_line = {};
-			while (stream_reader.readLine(out_line)) {
+			var hasmore;
+			do {
+				hasmore = stream_reader.readLine(out_line);
 				if (DNS_StartsWith(out_line.value, "nameserver ")) {
 					OS_DNS_ROOT_NAME_SERVERS.push({
 						server : out_line.value.substring("nameserver ".length).trim(),
 						alive : true
 					});
 				}
-			}
+			} while (hasmore);
 			
 			stream_filestream.close();
 			

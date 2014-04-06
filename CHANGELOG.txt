@@ -1,8 +1,9 @@
-1.1.0pre1 [2014-04-05]
+1.1.0pre1 [2014-04-06]
 ------------------
  - added options for automatically added sign rules
  - added option to use DMARC to heuristically determinate if an e-mail should be signed
  - fixed sign rules being automatically added even if signRules are disabled
+ - fixed bug in getting DNS name server from OS under Linux/Mac (last line was not read)
 
 1.0.5 [2014-01-14]
 ------------------
