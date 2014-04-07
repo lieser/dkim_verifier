@@ -27,14 +27,14 @@
 <!ENTITY policy.signRules.enable.label "Verifica se le email dovrebbero essere firmate">
 <!ENTITY policy.signRules.checkDefaultRules.label "Usa regole predefinite">
 <!ENTITY policy.signRules.autoAddRule.label "Aggiungi regole automaticamente in base alle email con firma DKIM">
-<!ENTITY policy.signRules.autoAddRule.onlyIfFromAddressInSDID.label "Only if From address is in SDID">
-<!ENTITY policy.signRules.autoAddRule.for.value.0.label "for From address">
-<!ENTITY policy.signRules.autoAddRule.for.value.1.label "for subdomain">
-<!ENTITY policy.signRules.autoAddRule.for.value.2.label "for base domain">
-<!ENTITY error.policy.wrong_sdid.asWarning.label "Considera SDID errati come avvisi invece che come errori">
+<!ENTITY policy.signRules.autoAddRule.onlyIfFromAddressInSDID.label "Solo se l’indirizzo del mittente è nel SDID">
+<!ENTITY policy.signRules.autoAddRule.for.value.0.label "per indirizzo mittente">
+<!ENTITY policy.signRules.autoAddRule.for.value.1.label "per sotto-dominio">
+<!ENTITY policy.signRules.autoAddRule.for.value.2.label "per dominio di base">
+<!ENTITY error.policy.wrong_sdid.asWarning.label "Considera SDID errato come un avviso invece che come un errore">
 <!ENTITY viewSigners.label "Regole firmatari">
 <!ENTITY viewSignerDefaults.label "Regole predefinite signatari">
-<!ENTITY policy.DMARC.shouldBeSigned.enable.label "Use DMARC to heuristically determinate if an e-mail should be signed">
+<!ENTITY policy.DMARC.shouldBeSigned.enable.label "Usa DMARC per determinare euristicamente se un’email dovrebbe essere firmata">
 
 
 <!ENTITY display.label "Visualizza">
