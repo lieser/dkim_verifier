@@ -10,7 +10,7 @@
 		<em:name>DKIM Verifier</em:name>
 		<em:description>Verifies the DKIM-Signature of an e-mail.</em:description>
 
-		<em:version>1.1.0</em:version>
+		<em:version>1.1.1pre1</em:version>
 
 		<em:creator>Philippe Lieser</em:creator>
 		
@@ -32,7 +32,7 @@
 		
 		<em:localized>
 			<Description>
-				<em:locale>de-DE</em:locale>
+				<em:locale>de</em:locale>
 
 				<!-- DNS Library -->
 				<em:contributor>Joshua Tauberer (DNS Bibliothek)</em:contributor>
@@ -52,7 +52,7 @@
 		
 		<em:localized>
 			<Description>
-				<em:locale>it-IT</em:locale>
+				<em:locale>it</em:locale>
 
 				<!-- DNS Library -->
 				<em:contributor>Joshua Tauberer (libreria DNS)</em:contributor>
