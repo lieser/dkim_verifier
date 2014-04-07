@@ -1,4 +1,4 @@
-1.1.0pre1 [2014-04-06]
+1.1.0 [2014-04-07]
 ------------------
  - added options for automatically added sign rules
  - added option to use DMARC to heuristically determinate if an e-mail should be signed

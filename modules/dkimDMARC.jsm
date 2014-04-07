@@ -6,7 +6,7 @@
  *
  * This module is NOT conform to DMARC.
  *
- * Version: 1.0.0pre1 (05 April 2014)
+ * Version: 1.0.0 (05 April 2014)
  * 
  * Copyright (c) 2014 Philippe Lieser
  * 
