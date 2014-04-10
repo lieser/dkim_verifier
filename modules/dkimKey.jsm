@@ -1,9 +1,9 @@
 /*
  * dkimKey.jsm
  * 
- * Version: 1.0.0 (21 November 2013)
+ * Version: 1.0.1 (10 April 2014)
  * 
- * Copyright (c) 2013 Philippe Lieser
+ * Copyright (c) 2013-2014 Philippe Lieser
  * 
  * This software is licensed under the terms of the MIT License.
  * 
@@ -307,7 +307,7 @@ function getKeyFromDNS(d_val, s_val) {
 		if (result.bogus) {
 			throw new DKIM_InternalError(null, "DKIM_DNSERROR_DNSSEC_BOGUS");
 		}
-		if (result.error !== undefined) {
+		if (result.rcode !== 0 && result.rcode !== 3 /* NXDomain */) {
 			throw new DKIM_InternalError(result.error, "DKIM_DNSERROR_SERVER_ERROR");
 		}
 		if (result.data === null) {

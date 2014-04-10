@@ -6,7 +6,7 @@
  *
  * This module is NOT conform to DMARC.
  *
- * Version: 1.0.0 (05 April 2014)
+ * Version: 1.0.1 (10 April 2014)
  * 
  * Copyright (c) 2014 Philippe Lieser
  * 
@@ -267,7 +267,7 @@ function getDMARCRecord(domain) {
 		if (result.bogus) {
 			throw new DKIM_InternalError(null, "DKIM_DNSERROR_DNSSEC_BOGUS");
 		}
-		if (result.error !== undefined) {
+		if (result.rcode !== 0 && result.rcode !== 3 /* NXDomain */) {
 			throw new DKIM_InternalError(result.error, "DKIM_DNSERROR_SERVER_ERROR");
 		}
 		

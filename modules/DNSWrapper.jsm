@@ -5,9 +5,9 @@
  *  - JSDNS.jsm
  *  - libunbound.jsm
  * 
- * Version: 1.0.0 (21 November 2013)
+ * Version: 2.0.0 (10 April 2014)
  * 
- * Copyright (c) 2013 Philippe Lieser
+ * Copyright (c) 2013-2014 Philippe Lieser
  * 
  * This software is licensed under the terms of the MIT License.
  * 
@@ -55,10 +55,20 @@ var DNS = {
 	 * The result of the query.
 	 * 
 	 * @typedef {Object} DNSResult
-	 * @property {Object[]|Null} data Array of rdata items, or null if no entry in DNS
-	 * @property {String|Undefined} error undefined if no error; otherwise an error description
+	 * @property {Object[]|Null} data Array of rdata items, or null if error or no entry in DNS
+	 * @property {Number} rcode DNS error code
 	 * @property {Boolean} secure true if result is secure.
 	 * @property {Boolean} bogus true if a security failure happened.
+	 */
+	
+	/*
+	 * some DNS rcodes:
+	 *   0  NoError   No Error [RFC1035]
+	 *   1  FormErr   Format Error [RFC1035]
+	 *   2  ServFail  Server Failure [RFC1035]
+	 *   3  NXDomain  Non-Existent Domain [RFC1035]
+	 *   4  NotImp    Not Implemented [RFC1035]
+	 *   5  Refused   Query Refused [RFC1035]
 	 */
 
 	/**
@@ -90,18 +100,18 @@ var DNS = {
 						} else {
 							result.data = null;
 						}
-						if (res.rcode !== 0) {
-							result.error = "DNS rcode: "+res.rcode;
-						}
+						result.rcode = res.rcode;
 						result.secure = res.secure;
 						result.bogus = res.bogus;
 					} else {
+						// error in libunbound
 						result.data = null;
-						result.error = "error";
+						result.rcode = 2; // ServFail
 						result.secure = false;
 						result.bogus = false;
 					}
 
+					log.debug("result: "+result.toSource());
 					defer.resolve(result);
 					break;
 				default:
@@ -128,10 +138,15 @@ function dnsCallback(dnsResult, defer, queryError) {
 
 	let result = {};
 	result.data = dnsResult;
-	result.error = queryError;
+	if (queryError !== undefined) {
+		result.rcode = 2; // ServFail
+	} else {
+		result.rcode = 0; // NoError
+	}
 	result.secure = false;
 	result.bogus = false;
 	
+	log.debug("result: "+result.toSource());
 	defer.resolve(result);
 
 	log.trace("dnsCallback end");
