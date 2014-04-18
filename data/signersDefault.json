@@ -105,6 +105,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
+			"domain": "google.com",
+			"addr": "*@plus.google.com",
+			"sdid": "plus.google.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
 			"domain": "googlemail.com",
 			"addr": "*",
 			"sdid": "googlemail.com",
