@@ -1,7 +1,7 @@
 /*
  * helper.jsm
  *
- * Version: 1.1.0 (05 April 2014)
+ * Version: 1.1.1pre1 (28 April 2014)
  * 
  * Copyright (c) 2013-2014 Philippe Lieser
  * 
@@ -33,6 +33,7 @@ var EXPORTED_SYMBOLS = [
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
+const Cr = Components.results;
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/FileUtils.jsm");
@@ -124,7 +125,22 @@ function getBaseDomainFromAddr(addr, aAdditionalParts=0) {
 
 	// var fullDomain = addr.substr(addr.lastIndexOf("@")+1);
 	var nsiURI = Services.io.newURI("http://"+addr, null, null);
-	return eTLDService.getBaseDomain(nsiURI, aAdditionalParts);
+	var res;
+	try {
+		res = eTLDService.getBaseDomain(nsiURI, aAdditionalParts);
+	} catch (e) {
+		// domains like "blogspot.co.uk", "blogspot.com", "googlecode.com"
+		// are on the public suffix list, but should be valid base domains
+		// because e-mails may be send from them
+		if (e.result === Cr.NS_ERROR_INSUFFICIENT_DOMAIN_LEVELS && aAdditionalParts === 0) {
+			// add "invalid" subdomain to avoid error
+			var host = "invalid."+nsiURI.asciiHost;
+			res = eTLDService.getBaseDomainFromHost(host, 0);
+			// remove "invalid" sudomain from result
+			res = res.substr(8);
+		}
+	}
+	return res;
 }
 
 /**
