@@ -1,4 +1,4 @@
-1.1.2pre1 [2014-04-28]
+1.1.2 [2014-05-08]
 ------------------
  - fixed error if e-mail is from a domain on the public suffix list (like "googlecode.com")
  - updated default sign rules
