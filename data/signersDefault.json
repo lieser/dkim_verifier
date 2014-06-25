@@ -1,6 +1,6 @@
 {
 	"versionTable": 1,
-	"versionData": 4,
+	"versionData": 5,
 	"rules": [
 		{
 			"domain": "amazon.co.uk",
@@ -56,6 +56,12 @@
 			"sdid": "ebay.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "ebay.de",
+			"addr": "*@reply.ebay.de",
+			"sdid": "reply.ebay.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
 			"domain": "facebookmail.com",
 			"addr": "*",
