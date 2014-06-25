@@ -1,7 +1,7 @@
 /*
  * dkimPolicy.jsm
  * 
- * Version: 1.1.1pre1 (25 June 2014)
+ * Version: 1.1.1 (25 June 2014)
  * 
  * Copyright (c) 2013-2014 Philippe Lieser
  * 

@@ -1,4 +1,4 @@
-1.1.3pre1 [2014-06-25]
+1.2.0 [2014-06-25]
 ------------------
  - added option for sign rules to allow also subdomains of the SDIDs (enabled by default)
  - fixed comparison of domains (was case sensitive)
