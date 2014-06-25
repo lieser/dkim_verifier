@@ -1,7 +1,7 @@
 /*
  * dkimPolicy.jsm
  * 
- * Version: 1.1.0 (05 April 2014)
+ * Version: 1.1.1pre1 (25 June 2014)
  * 
  * Copyright (c) 2013-2014 Philippe Lieser
  * 
@@ -274,7 +274,8 @@ var Policy = {
 				var sql =
 						"SELECT addr, sdid, ruletype, priority\n" +
 						"FROM signers WHERE\n" +
-						"  (domain = :domain OR listID = :listID) AND\n" +
+						"  (lower(domain) = lower(:domain) OR\n" +
+						"   lower(listID) = lower(:listID)) AND\n" +
 						"  enabled AND\n" +
 						"  lower(:from) GLOB lower(addr)\n";
 				if (prefs.getBoolPref("signRules.checkDefaultRules")) {
@@ -282,7 +283,7 @@ var Policy = {
 					sql +=
 						"UNION SELECT addr, sdid, ruletype, priority\n" +
 						"FROM signersDefault WHERE\n" +
-						"  domain = :domain AND\n" +
+						"  lower(domain) = lower(:domain) AND\n" +
 						"  lower(:from) GLOB lower(addr)\n";
 				}
 				sql +=
@@ -421,8 +422,8 @@ var Policy = {
 				var sqlRes = yield conn.executeCached(
 					"SELECT addr, sdid, ruletype, priority, enabled\n" +
 					"FROM signers WHERE\n" +
-					"  domain = :domain AND\n" +
-					"  addr = :addr AND\n" +
+					"  lower(domain) = lower(:domain) AND\n" +
+					"  lower(addr) = lower(:addr) AND\n" +
 					"  ruletype = :ruletype AND\n" +
 					"  priority = :priority AND\n" +
 					"  enabled\n" +

@@ -1,3 +1,7 @@
+1.1.3pre1 [2014-06-25]
+------------------
+ - fixed comparison of domains (was case sensitive)
+
 1.1.2 [2014-05-08]
 ------------------
  - fixed error if e-mail is from a domain on the public suffix list (like "googlecode.com")

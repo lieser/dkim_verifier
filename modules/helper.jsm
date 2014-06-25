@@ -1,7 +1,7 @@
 /*
  * helper.jsm
  *
- * Version: 1.1.1 (28 April 2014)
+ * Version: 1.1.1pre1 (25 June 2014)
  * 
  * Copyright (c) 2013-2014 Philippe Lieser
  * 
@@ -15,7 +15,7 @@
 /* jshint strict:true, moz:true, smarttabs:true */
 /* global Components, FileUtils, NetUtil, Promise, Services, CommonUtils */
 /* global ModuleGetter, Logging */
-/* exported EXPORTED_SYMBOLS, exceptionToStr, getBaseDomainFromAddr, getDomainFromAddr, readStringFrom, stringEndsWith, tryGetString, tryGetFormattedString, writeStringToTmpFile, DKIM_SigError, DKIM_InternalError */
+/* exported EXPORTED_SYMBOLS, exceptionToStr, getBaseDomainFromAddr, getDomainFromAddr, readStringFrom, stringEndsWith, stringEqual, tryGetString, tryGetFormattedString, writeStringToTmpFile, DKIM_SigError, DKIM_InternalError */
 
 var EXPORTED_SYMBOLS = [
 	"dkimStrings",
@@ -24,6 +24,7 @@ var EXPORTED_SYMBOLS = [
 	"getDomainFromAddr",
 	"readStringFrom",
 	"stringEndsWith",
+	"stringEqual",
 	"tryGetString",
 	"tryGetFormattedString",
 	"writeStringToTmpFile",
@@ -193,6 +194,7 @@ function readStringFrom(aSource) {
 
 /**
  * Returns true if str ends with x.
+ * Comparison is done case insensitive.
  * 
  * @param {String} str
  * @param {String} strEnd
@@ -202,9 +204,25 @@ function readStringFrom(aSource) {
 function stringEndsWith(str, x) {
 	"use strict";
 
-	var index = str.lastIndexOf(x);
+	var index = str.toLowerCase().lastIndexOf(x.toLowerCase());
 	return index >= 0 && index === str.length - x.length;
 }
+
+/**
+ * Returns true if str1 is equal str2.
+ * Comparison is done case insensitive.
+ * 
+ * @param {String} str1
+ * @param {String} str2
+ * 
+ * @return {Boolean}
+ */
+function stringEqual(str1, str2) {
+	"use strict";
+
+	return str1.toLowerCase() === str2.toLowerCase();
+}
+
 /**
  * try to get string from stringbundle
  * 
@@ -227,6 +245,7 @@ function tryGetString(stringbundle, name) {
 		return null;
 	}
 }
+
 /**
  * try to get formatted string from stringbundle
  * 

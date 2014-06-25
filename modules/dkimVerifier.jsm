@@ -4,7 +4,7 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  * 
- * Version: 1.1.0 (05 April 2014)
+ * Version: 1.1.1pre1 (25 June 2014)
  * 
  * Copyright (c) 2013-2014 Philippe Lieser
  * 
@@ -28,7 +28,7 @@
 /* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
 /* global Components, Dict, Services, Task */
 /* global Logging, Key, Policy */
-/* global dkimStrings, exceptionToStr, stringEndsWith, writeStringToTmpFile, DKIM_SigError, DKIM_InternalError */
+/* global dkimStrings, exceptionToStr, stringEndsWith, stringEqual, writeStringToTmpFile, DKIM_SigError, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, Verifier */
 
 var EXPORTED_SYMBOLS = [
@@ -605,11 +605,11 @@ var Verifier = (function() {
 			DKIMSignature.i = "@"+DKIMSignature.d;
 			DKIMSignature.i_domain = DKIMSignature.d;
 		} else {
-			if (!(new RegExp(DKIMSignature.d+"$").test(AUIDTag[0]))) {
-				throw new DKIM_SigError("DKIM_SIGERROR_SUBDOMAIN_I");
-			}
 			DKIMSignature.i = AUIDTag[0];
 			DKIMSignature.i_domain = AUIDTag[1];
+			if (!stringEndsWith(DKIMSignature.i_domain, DKIMSignature.d)) {
+				throw new DKIM_SigError("DKIM_SIGERROR_SUBDOMAIN_I");
+			}
 		}
 
 		// get Body length count (plain-text unsigned decimal integer; OPTIONAL, default is entire body)
@@ -1054,7 +1054,8 @@ var Verifier = (function() {
 			// error/warning if there is a SDID in the sign rule
 			// that is different from the SDID in the signature
 			if (msg.shouldBeSigned.sdid.length > 0 &&
-			    msg.shouldBeSigned.sdid.indexOf(msg.DKIMSignature.d) === -1) {
+			    !msg.shouldBeSigned.sdid.some(function (element/*, index, array*/) {
+			      return stringEqual(msg.DKIMSignature.d, element);})) {
 				if (prefs.getBoolPref("error.policy.wrong_sdid.asWarning")) {
 					msg.warnings.push("DKIM_POLICYERROR_WRONG_SDID");
 				} else {
@@ -1148,7 +1149,7 @@ var Verifier = (function() {
 			// if s flag is set in DKIM key record
 			// AUID must be from the same domain as SDID (and not a subdomain)
 			if (msg.DKIMKey.t_array.indexOf("s") !== -1 &&
-			    msg.DKIMSignature.i_domain !== msg.DKIMSignature.d) {
+			    !stringEqual(msg.DKIMSignature.i_domain, msg.DKIMSignature.d)) {
 				throw new DKIM_SigError("DKIM_SIGERROR_DOMAIN_I");
 			}
 
