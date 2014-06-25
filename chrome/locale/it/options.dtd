@@ -31,7 +31,7 @@
 <!ENTITY policy.signRules.autoAddRule.for.value.0.label "per indirizzo mittente">
 <!ENTITY policy.signRules.autoAddRule.for.value.1.label "per sotto-dominio">
 <!ENTITY policy.signRules.autoAddRule.for.value.2.label "per dominio di base">
-<!ENTITY policy.signRules.sdid.allowSubDomains.label "Allow also subdomains of the SDIDs">
+<!ENTITY policy.signRules.sdid.allowSubDomains.label "Permetti anche i sotto-domini dei SDID">
 <!ENTITY error.policy.wrong_sdid.asWarning.label "Considera SDID errato come un avviso invece che come un errore">
 <!ENTITY viewSigners.label "Regole firmatari">
 <!ENTITY viewSignerDefaults.label "Regole predefinite signatari">
