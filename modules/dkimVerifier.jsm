@@ -1055,7 +1055,12 @@ var Verifier = (function() {
 			// that is different from the SDID in the signature
 			if (msg.shouldBeSigned.sdid.length > 0 &&
 			    !msg.shouldBeSigned.sdid.some(function (element/*, index, array*/) {
-			      return stringEqual(msg.DKIMSignature.d, element);})) {
+			      if (prefs.getBoolPref("policy.signRules.sdid.allowSubDomains")) {
+			        return stringEndsWith(msg.DKIMSignature.d, element);
+			      } else {
+			        return stringEqual(msg.DKIMSignature.d, element);
+			      }
+			    })) {
 				if (prefs.getBoolPref("error.policy.wrong_sdid.asWarning")) {
 					msg.warnings.push("DKIM_POLICYERROR_WRONG_SDID");
 				} else {

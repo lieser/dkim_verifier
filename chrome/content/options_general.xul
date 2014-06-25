@@ -56,6 +56,9 @@
 		<preference id="pref_policy.signRules.autoAddRule.for"
 		            name="extensions.dkim_verifier.policy.signRules.autoAddRule.for"
 		            type="int"/>
+		<preference id="pref_policy.signRules.sdid.allowSubDomains"
+		            name="extensions.dkim_verifier.policy.signRules.sdid.allowSubDomains"
+		            type="bool"/>
 		<preference id="pref_error.policy.wrong_sdid.asWarning"
 		            name="extensions.dkim_verifier.error.policy.wrong_sdid.asWarning"
 		            type="bool"/>
@@ -159,6 +162,9 @@
 							</menupopup>
 						</menulist>
 					</vbox>
+					<checkbox id="policy.signRules.sdid.allowSubDomains"
+					          preference="pref_policy.signRules.sdid.allowSubDomains"
+					          label="&policy.signRules.sdid.allowSubDomains.label;"/>
 					<checkbox id="error.policy.wrong_sdid.asWarning"
 					          preference="pref_error.policy.wrong_sdid.asWarning"
 					          label="&error.policy.wrong_sdid.asWarning.label;"/>

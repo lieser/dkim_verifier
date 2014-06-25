@@ -31,6 +31,7 @@
 <!ENTITY policy.signRules.autoAddRule.for.value.0.label "for From address">
 <!ENTITY policy.signRules.autoAddRule.for.value.1.label "for subdomain">
 <!ENTITY policy.signRules.autoAddRule.for.value.2.label "for base domain">
+<!ENTITY policy.signRules.sdid.allowSubDomains.label "Allow also subdomains of the SDIDs">
 <!ENTITY error.policy.wrong_sdid.asWarning.label "Treat wrong SDID as a warning instead of an error">
 <!ENTITY viewSigners.label "Signers rules">
 <!ENTITY viewSignerDefaults.label "Default signers rules">

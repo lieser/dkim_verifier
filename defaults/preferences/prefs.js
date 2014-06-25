@@ -26,6 +26,7 @@ pref("extensions.dkim_verifier.policy.signRules.autoAddRule.onlyIfFromAddressInS
 // 1: subdomain
 // 2: base domain
 pref("extensions.dkim_verifier.policy.signRules.autoAddRule.for", 0);
+pref("extensions.dkim_verifier.policy.signRules.sdid.allowSubDomains", true);
 pref("extensions.dkim_verifier.error.policy.wrong_sdid.asWarning", false);
 
 pref("extensions.dkim_verifier.policy.DMARC.shouldBeSigned.enable", false);

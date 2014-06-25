@@ -275,7 +275,10 @@ var Policy = {
 						"SELECT addr, sdid, ruletype, priority\n" +
 						"FROM signers WHERE\n" +
 						"  (lower(domain) = lower(:domain) OR\n" +
-						"   lower(listID) = lower(:listID)) AND\n" +
+						"   (listID IS NOT NULL AND\n" +
+						"    listID != '' AND\n" +
+						"    lower(listID) = lower(:listID))\n" +
+						"  ) AND\n" +
 						"  enabled AND\n" +
 						"  lower(:from) GLOB lower(addr)\n";
 				if (prefs.getBoolPref("signRules.checkDefaultRules")) {
