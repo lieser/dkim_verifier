@@ -1,7 +1,7 @@
 /*
  * helper.jsm
  *
- * Version: 1.2.0 (25 June 2014)
+ * Version: 1.2.1 (30 June 2014)
  * 
  * Copyright (c) 2013-2014 Philippe Lieser
  * 
@@ -64,7 +64,7 @@ dkimStrings.getString = dkimStrings.stringbundle.GetStringFromName;
 dkimStrings.getFormattedString = function (key, strArray) {
 	"use strict";
 
-	return dkimStrings.stringbundle.GetStringFromName(key, strArray, strArray.length);
+	return dkimStrings.stringbundle.formatStringFromName(key, strArray, strArray.length);
 };
 
 
