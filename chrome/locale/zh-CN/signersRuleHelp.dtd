@@ -1,0 +1,11 @@
+<!ENTITY signersRuleHelp.title "签名者规则帮助">
+<!ENTITY domain.description "From 地址违反基础域的将被匹配。例如，'email.example.co.uk' 的基础域是 'excample.co.uk'。">
+<!ENTITY listID.description "违反 list-id 将被匹配，如果邮件是通过邮件列表而接收。请注意，只有 List-Id 头的 '&lt;' 和 '&gt;' 之间的部分是真正的 list-id。在同一时间，域或 list-id 任意一个匹配都视为匹配。">
+<!ENTITY addr.description "From 地址违反将被匹配。使用 '*' 匹配零个或多个字符。">
+<!ENTITY sdid.description "该域的电子邮件应该被签名。如果这为空，每个 SDID 都是允许的。指定多个域可以通过空格分隔。">
+<!ENTITY ruletype.description "规则的类型。">
+<!ENTITY ruletype.1.description "电子邮件必须被特定的 SDID 签名。">
+<!ENTITY ruletype.2.description "电子邮件不必被签名。如果它已被签名，则它必须被特定的 SDID 签名。">
+<!ENTITY ruletype.3.description "电子邮件不必被签名。如果它已被签名，则它必须被特定的 SDID 签名。如果该邮件有一个无效的签名，它将被视为没有签名。">
+<!ENTITY priority.description "规则的优先级。如果有一个以上的规则被匹配，则具有较高优先级的规则被使用。">
+<!ENTITY enabled.description "1 如果规则已启用，0 如果规则被禁用。">

@@ -70,6 +70,26 @@
 			</Description>
 		</em:localized>
 		
+		<em:localized>
+			<Description>
+				<em:locale>zh-CN</em:locale>
+
+				<!-- DNS Library -->
+				<em:contributor>Joshua Tauberer (DNS Library)</em:contributor>
+				<!-- RSA and BigInteger Library -->
+				<em:contributor>Tom Wu (RSA Library)</em:contributor>
+				<!-- RSA signing and verification and asn1hex Library -->
+				<em:contributor>Kenji Urushima (RSA verification and ASN1 Library)</em:contributor>
+				
+				<em:contributor>Nils Maier</em:contributor>
+
+				<em:translator>YFdyh000</em:translator>
+
+				<em:description>Verifies the DKIM-Signature of an e-mail.</em:description>
+
+			</Description>
+		</em:localized>
+		
 		<em:targetApplication>
 			<Description>
 				<em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id> <!-- Thunderbird -->
