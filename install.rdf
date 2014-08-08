@@ -58,6 +58,7 @@
 			<Description>
 				<em:locale>zh-CN</em:locale>
 				<em:translator>YFdyh000</em:translator>
+				<em:description>验证邮件的 DKIM 签名。</em:description>
 				<em:contributor>Joshua Tauberer (DNS Bibliothek)</em:contributor>
 				<em:contributor>Tom Wu (RSA Bibliothek)</em:contributor>
 				<em:contributor>Kenji Urushima (RSA Verifizierung und ASN1 Bibliothek)</em:contributor>
