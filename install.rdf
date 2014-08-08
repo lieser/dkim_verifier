@@ -14,82 +14,14 @@
 
 		<em:creator>Philippe Lieser</em:creator>
 		
-		<!-- DNS Library -->
 		<em:contributor>Joshua Tauberer (DNS Library)</em:contributor>
-		<!-- RSA and BigInteger Library -->
 		<em:contributor>Tom Wu (RSA Library)</em:contributor>
-		<!-- RSA signing and verification and asn1hex Library -->
 		<em:contributor>Kenji Urushima (RSA verification and ASN1 Library)</em:contributor>
-		
 		<em:contributor>Nils Maier</em:contributor>
 
 		<em:homepageURL>https://github.com/lieser/dkim_verifier/wiki</em:homepageURL>
-
 		<em:optionsURL>chrome://dkim_verifier/content/options.xul</em:optionsURL>
-		<!--
-		<em:aboutURL>chrome://myext/content/about.xul</em:aboutURL>
-		-->
-		
-		<em:localized>
-			<Description>
-				<em:locale>de</em:locale>
 
-				<!-- DNS Library -->
-				<em:contributor>Joshua Tauberer (DNS Bibliothek)</em:contributor>
-				<!-- RSA and BigInteger Library -->
-				<em:contributor>Tom Wu (RSA Bibliothek)</em:contributor>
-				<!-- RSA signing and verification and asn1hex Library -->
-				<em:contributor>Kenji Urushima (RSA Verifizierung und ASN1 Bibliothek)</em:contributor>
-				
-				<em:contributor>Nils Maier</em:contributor>
-
-				<em:translator>ionum</em:translator>
-
-				<em:description>Überprüft die DKIM-Signatur von E-Mails.</em:description>
-
-			</Description>
-		</em:localized>
-		
-		<em:localized>
-			<Description>
-				<em:locale>it</em:locale>
-
-				<!-- DNS Library -->
-				<em:contributor>Joshua Tauberer (libreria DNS)</em:contributor>
-				<!-- RSA and BigInteger Library -->
-				<em:contributor>Tom Wu (libreria RSA)</em:contributor>
-				<!-- RSA signing and verification and asn1hex Library -->
-				<em:contributor>Kenji Urushima (verifica RSA e libreria ASN1)</em:contributor>
-				
-				<em:contributor>Nils Maier</em:contributor>
-
-				<em:translator>Michele Locati</em:translator>
-
-				<em:description>Verifica la firma DKIM di un’email.</em:description>
-
-			</Description>
-		</em:localized>
-		
-		<em:localized>
-			<Description>
-				<em:locale>zh-CN</em:locale>
-
-				<!-- DNS Library -->
-				<em:contributor>Joshua Tauberer (DNS Library)</em:contributor>
-				<!-- RSA and BigInteger Library -->
-				<em:contributor>Tom Wu (RSA Library)</em:contributor>
-				<!-- RSA signing and verification and asn1hex Library -->
-				<em:contributor>Kenji Urushima (RSA verification and ASN1 Library)</em:contributor>
-				
-				<em:contributor>Nils Maier</em:contributor>
-
-				<em:translator>YFdyh000</em:translator>
-
-				<em:description>Verifies the DKIM-Signature of an e-mail.</em:description>
-
-			</Description>
-		</em:localized>
-		
 		<em:targetApplication>
 			<Description>
 				<em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id> <!-- Thunderbird -->
@@ -97,6 +29,41 @@
 				<em:maxVersion>31.*</em:maxVersion>
 			</Description>
 		</em:targetApplication>
+		
+		<em:localized>
+			<Description>
+				<em:locale>de</em:locale>
+				<em:translator>ionum</em:translator>
+				<em:description>Überprüft die DKIM-Signatur von E-Mails.</em:description>
+				<em:contributor>Joshua Tauberer (DNS Bibliothek)</em:contributor>
+				<em:contributor>Tom Wu (RSA Bibliothek)</em:contributor>
+				<em:contributor>Kenji Urushima (RSA Verifizierung und ASN1 Bibliothek)</em:contributor>
+				<em:contributor>Nils Maier</em:contributor>
+			</Description>
+		</em:localized>
+		
+		<em:localized>
+			<Description>
+				<em:locale>it</em:locale>
+				<em:translator>Michele Locati</em:translator>
+				<em:description>Verifica la firma DKIM di un’email.</em:description>
+				<em:contributor>Joshua Tauberer (libreria DNS)</em:contributor>
+				<em:contributor>Tom Wu (libreria RSA)</em:contributor>
+				<em:contributor>Kenji Urushima (verifica RSA e libreria ASN1)</em:contributor>
+				<em:contributor>Nils Maier</em:contributor>
+			</Description>
+		</em:localized>
+		
+		<em:localized>
+			<Description>
+				<em:locale>zh-CN</em:locale>
+				<em:translator>YFdyh000</em:translator>
+				<em:contributor>Joshua Tauberer (DNS Bibliothek)</em:contributor>
+				<em:contributor>Tom Wu (RSA Bibliothek)</em:contributor>
+				<em:contributor>Kenji Urushima (RSA Verifizierung und ASN1 Bibliothek)</em:contributor>
+				<em:contributor>Nils Maier</em:contributor>
+			</Description>
+		</em:localized>
 
 	</Description>     
 </RDF>
