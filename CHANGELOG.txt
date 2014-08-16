@@ -1,4 +1,4 @@
-1.2.2pre1 [2014-08-02]
+1.2.2 [2014-08-16]
 ------------------
  - added Chinese (Simplified) translation (by YFdyh000)
  - fixed the showing of a wrong error reason in some cases of a bad RSA signature
