@@ -1,9 +1,9 @@
 /*
  * logging.jsm
  *
- * Version: 1.0.0 (21 November 2013)
+ * Version: 1.0.1 (23 August 2014)
  *
- * Copyright (c) 2013 Philippe Lieser
+ * Copyright (c) 2013-2014 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -115,37 +115,33 @@ function SimpleFormatter(dateFormat) {
 	if (dateFormat)
 		this.dateFormat = dateFormat;
 }
-SimpleFormatter.prototype = {
-	__proto__: Log4Moz.Formatter.prototype,
-
-	_dateFormat: null,
-
-	get dateFormat() {
-		"use strict";
-	
-		if (!this._dateFormat)
-			this._dateFormat = "%Y-%m-%d %H:%M:%S";
-		return this._dateFormat;
+SimpleFormatter.prototype = Object.create(Log4Moz.Formatter.prototype, {
+	dateFormat: {
+		get: function() {
+			"use strict";
+			if (!this._dateFormat)
+				this._dateFormat = "%Y-%m-%d %H:%M:%S";
+			return this._dateFormat;
+		},
+		set: function(format) {
+			"use strict";
+			this._dateFormat = format;
+		}
 	},
 
-	set dateFormat(format) {
-		"use strict";
-	
-		this._dateFormat = format;
-	},
-
-	format: function SimpleFormatter_format(message) {
-		"use strict";
-	
-		var date = new Date(message.time);
-		var formatMsg = new String(
-			date.toLocaleFormat(this.dateFormat) + "\t" +
-			message.loggerName + "\t" + message.levelDesc + "\t" +
-			message.message + "\n");
-		formatMsg.level = message.level;
-		return formatMsg;
+	format: {
+		value: function SimpleFormatter_format(message) {
+			"use strict";
+			var date = new Date(message.time);
+			var formatMsg = new String(
+				date.toLocaleFormat(this.dateFormat) + "\t" +
+				message.loggerName + "\t" + message.levelDesc + "\t" +
+				message.message + "\n");
+			formatMsg.level = message.level;
+			return formatMsg;
+		}
 	}
-};
+});
 
 // https://wiki.mozilla.org/Labs/JS_Modules#Logging
 /**
