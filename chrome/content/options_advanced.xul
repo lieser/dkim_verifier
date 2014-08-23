@@ -15,6 +15,9 @@
 		<preference id="pref_error.illformed_i.treatAs"
 		            name="extensions.dkim_verifier.error.illformed_i.treatAs"
 		            type="int"/>
+		<preference id="pref_error.illformed_s.treatAs"
+		            name="extensions.dkim_verifier.error.illformed_s.treatAs"
+		            type="int"/>
 		<preference id="pref_error.policy.key_insecure.treatAs"
 		            name="extensions.dkim_verifier.error.policy.key_insecure.treatAs"
 		            type="int"/>
@@ -26,6 +29,17 @@
 	<hbox align="center">
 		<label>&error.illformed_i.treatAs.label;</label>
 		<menulist preference="pref_error.illformed_i.treatAs">
+			<menupopup>
+				<menuitem label="&error.treatAs.value.0.label;" value="0"/>
+				<menuitem label="&error.treatAs.value.1.label;" value="1"/>
+				<menuitem label="&error.treatAs.value.2.label;" value="2"/>
+			</menupopup>
+		</menulist>
+		<spacer/>
+	</hbox>
+	<hbox align="center">
+		<label>&error.illformed_s.treatAs.label;</label>
+		<menulist preference="pref_error.illformed_s.treatAs">
 			<menupopup>
 				<menuitem label="&error.treatAs.value.0.label;" value="0"/>
 				<menuitem label="&error.treatAs.value.1.label;" value="1"/>

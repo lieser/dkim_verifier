@@ -632,7 +632,26 @@ var Verifier = (function() {
 		}
 
 		// get selector subdividing the namespace for the "d=" (domain) tag (plain-text; REQUIRED)
-		var SelectorTag = parseTagValue(dict, "s", sub_domain+"(?:\\."+sub_domain+")*");
+		var SelectorTag;
+		try {
+			SelectorTag = parseTagValue(dict, "s", sub_domain+"(?:\\."+sub_domain+")*");
+		} catch (exception if exception instanceof DKIM_SigError &&
+		         exception.errorType === "DKIM_SIGERROR_ILLFORMED_S") {
+			// try to parse selector in a more relaxed way
+			var sub_domain_ = "(?:[A-Za-z0-9_](?:[A-Za-z0-9_-]*[A-Za-z0-9_])?)";
+			SelectorTag = parseTagValue(dict, "s", sub_domain_+"(?:\\."+sub_domain_+")*");
+			switch (prefs.getIntPref("error.illformed_s.treatAs")) {
+				case 0: // error
+					throw exception;
+				case 1: // warning
+					warnings.push("DKIM_SIGERROR_ILLFORMED_S");
+					break;
+				case 2: // ignore
+					break;
+				default:
+					throw new DKIM_InternalError("invalid error.illformed_s.treatAs");
+			}
+		}
 		if (SelectorTag === null) {
 			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_S");
 		}

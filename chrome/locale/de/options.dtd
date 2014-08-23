@@ -67,6 +67,7 @@
 <!ENTITY debug.label "Aktiviere Debuggen (Zeigt Fehler- und Debug-Informationen in der Fehlerkonsole an)">
 <!ENTITY error.key_testmode.ignore.label "Überprüfe die Signatur auch, falls die Domain DKIM nur testet">
 <!ENTITY error.illformed_i.treatAs.label "Behandel falsch formatierten AUID Tag als">
+<!ENTITY error.illformed_i.treatAs.label "Behandel falsch formatierten selector Tag als">
 <!ENTITY error.policy.key_insecure.treatAs.label "Behandel DKIM Schlüssel nicht durch DNSSEC signiert als">
 
 <!ENTITY error.treatAs.value.0.label "Fehler">
