@@ -67,7 +67,7 @@
 <!ENTITY debug.label "Abilita debug (errori e informazioni nella console degli errori)">
 <!ENTITY error.key_testmode.ignore.label "Verifica le firme anche se un dominio sta solo provando DKIM">
 <!ENTITY error.illformed_i.treatAs.label "Considera tag AUID con sintassi errata come">
-<!ENTITY error.illformed_i.treatAs.label "Considera tag selector con sintassi errata come">
+<!ENTITY error.illformed_s.treatAs.label "Considera tag selector con sintassi errata come">
 <!ENTITY error.policy.key_insecure.treatAs.label "Considera chiavi DKIM non firmate da DNSSEC come">
 
 <!ENTITY error.treatAs.value.0.label "errore">
