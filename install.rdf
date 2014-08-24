@@ -65,6 +65,18 @@
 				<em:contributor>Nils Maier</em:contributor>
 			</Description>
 		</em:localized>
+		
+		<em:localized>
+			<Description>
+				<em:locale>fr</em:locale>
+				<em:translator>Christophe CHAUVET</em:translator>
+				<em:description>Vérification de la signature DKIM d'un courriel.</em:description>
+				<em:contributor>Joshua Tauberer (bibliothèque DNS)</em:contributor>
+				<em:contributor>Tom Wu (Bibliothèque RSA)</em:contributor>
+				<em:contributor>Kenji Urushima (verification RSA et bibliothèque ASN1)</em:contributor>
+				<em:contributor>Nils Maier</em:contributor>
+			</Description>
+		</em:localized>
 
 	</Description>     
 </RDF>
