@@ -6,14 +6,13 @@
 	<Description about="urn:mozilla:install-manifest">
 		<em:id>dkim_verifier@pl</em:id>
 		<em:type>2</em:type> <!-- Extensions -->
-		
+		<em:version>1.3.0pre1</em:version>
+
 		<em:name>DKIM Verifier</em:name>
 		<em:description>Verifies the DKIM-Signature of an e-mail.</em:description>
 
-		<em:version>1.3.0pre1</em:version>
-
 		<em:creator>Philippe Lieser</em:creator>
-		
+
 		<em:contributor>Joshua Tauberer (DNS Library)</em:contributor>
 		<em:contributor>Tom Wu (RSA Library)</em:contributor>
 		<em:contributor>Kenji Urushima (RSA verification and ASN1 Library)</em:contributor>
@@ -24,12 +23,13 @@
 
 		<em:targetApplication>
 			<Description>
-				<em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id> <!-- Thunderbird -->
+				<!-- Thunderbird -->
+				<em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
 				<em:minVersion>17.0</em:minVersion>
 				<em:maxVersion>31.*</em:maxVersion>
 			</Description>
 		</em:targetApplication>
-		
+
 		<em:localized>
 			<Description>
 				<em:locale>de</em:locale>
@@ -41,7 +41,32 @@
 				<em:contributor>Nils Maier</em:contributor>
 			</Description>
 		</em:localized>
-		
+
+		<!-- for Babezilla -->
+		<em:localized>
+			<Description>
+				<em:locale>en-US</em:locale>
+				<em:name>DKIM Verifier</em:name>
+				<em:description>Verifies the DKIM-Signature of an e-mail.</em:description>
+				<em:contributor>Joshua Tauberer (DNS Library)</em:contributor>
+				<em:contributor>Tom Wu (RSA Library)</em:contributor>
+				<em:contributor>Kenji Urushima (RSA verification and ASN1 Library)</em:contributor>
+				<em:contributor>Nils Maier</em:contributor>
+			</Description>
+		</em:localized>
+
+		<em:localized>
+			<Description>
+				<em:locale>fr</em:locale>
+				<em:translator>Christophe CHAUVET</em:translator>
+				<em:description>Vérification de la signature DKIM d'un courriel.</em:description>
+				<em:contributor>Joshua Tauberer (bibliothèque DNS)</em:contributor>
+				<em:contributor>Tom Wu (Bibliothèque RSA)</em:contributor>
+				<em:contributor>Kenji Urushima (verification RSA et bibliothèque ASN1)</em:contributor>
+				<em:contributor>Nils Maier</em:contributor>
+			</Description>
+		</em:localized>
+
 		<em:localized>
 			<Description>
 				<em:locale>it</em:locale>
@@ -53,27 +78,15 @@
 				<em:contributor>Nils Maier</em:contributor>
 			</Description>
 		</em:localized>
-		
+
 		<em:localized>
 			<Description>
 				<em:locale>zh-CN</em:locale>
 				<em:translator>YFdyh000</em:translator>
 				<em:description>验证邮件的 DKIM 签名。</em:description>
-				<em:contributor>Joshua Tauberer (DNS Bibliothek)</em:contributor>
-				<em:contributor>Tom Wu (RSA Bibliothek)</em:contributor>
-				<em:contributor>Kenji Urushima (RSA Verifizierung und ASN1 Bibliothek)</em:contributor>
-				<em:contributor>Nils Maier</em:contributor>
-			</Description>
-		</em:localized>
-		
-		<em:localized>
-			<Description>
-				<em:locale>fr</em:locale>
-				<em:translator>Christophe CHAUVET</em:translator>
-				<em:description>Vérification de la signature DKIM d'un courriel.</em:description>
-				<em:contributor>Joshua Tauberer (bibliothèque DNS)</em:contributor>
-				<em:contributor>Tom Wu (Bibliothèque RSA)</em:contributor>
-				<em:contributor>Kenji Urushima (verification RSA et bibliothèque ASN1)</em:contributor>
+				<em:contributor>Joshua Tauberer (DNS Library)</em:contributor>
+				<em:contributor>Tom Wu (RSA Library)</em:contributor>
+				<em:contributor>Kenji Urushima (RSA verification and ASN1 Library)</em:contributor>
 				<em:contributor>Nils Maier</em:contributor>
 			</Description>
 		</em:localized>
