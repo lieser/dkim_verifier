@@ -395,6 +395,7 @@ var Verifier = (function() {
 	 */
 	function parseDKIMSignature(DKIMSignatureHeader, warnings) {
 		var DKIMSignature = {
+			original_header : DKIMSignatureHeader,
 			v : null, // Version
 			a_sig : null, // signature algorithm (signing part)
 			a_hash : null, // signature algorithm (hashing part)
@@ -863,10 +864,10 @@ var Verifier = (function() {
 	 * Computing the Message Hash for the body 
 	 * specified in Section 3.7 of RFC 6376
 	 */
-	function computeBodyHash(msg) {
+	function computeBodyHash(msg,DKIMSignature) {
 		// canonicalize body
 		var bodyCanon;
-		switch (msg.DKIMSignature.c_body) {
+		switch (DKIMSignature.c_body) {
 			case "simple":
 				bodyCanon = canonicalizationBodySimple(msg.bodyPlain);
 				break;
@@ -882,12 +883,12 @@ var Verifier = (function() {
 		}
 		
 		// if a body length count is given
-		if (msg.DKIMSignature.l !== null) {
+		if (DKIMSignature.l !== null) {
 			// check the value of the body lenght tag
-			if (msg.DKIMSignature.l > bodyCanon.length) {
+			if (DKIMSignature.l > bodyCanon.length) {
 				// lenght tag exceeds body size
 				throw new DKIM_SigError("DKIM_SIGERROR_TOOLARGE_L");
-			} else if (msg.DKIMSignature.l < bodyCanon.length){
+			} else if (DKIMSignature.l < bodyCanon.length){
 				// lenght tag smaller when body size
 				msg.warnings.push("DKIM_SIGWARNING_SMALL_L");
 				log.debug("Warning: DKIM_SIGWARNING_SMALL_L ("+
@@ -895,12 +896,12 @@ var Verifier = (function() {
 			}
 
 			// truncated body to the length specified in the "l=" tag
-			bodyCanon = bodyCanon.substr(0, msg.DKIMSignature.l);
+			bodyCanon = bodyCanon.substr(0, DKIMSignature.l);
 		}
 		
 		// compute body hash
 		var bodyHash;
-		switch (msg.DKIMSignature.a_hash) {
+		switch (DKIMSignature.a_hash) {
 			case "sha1":
 				bodyHash = dkim_hash(bodyCanon, "sha1", "b64");
 				break;
@@ -918,13 +919,13 @@ var Verifier = (function() {
 	 * Computing the input for the header Hash
 	 * specified in Section 3.7 of RFC 6376
 	 */
-	function computeHeaderHashInput(msg) {
+	function computeHeaderHashInput(msg,DKIMSignature) {
 		var hashInput = "";
 		var headerFieldArray, headerField;
 
 		// set header canonicalization algorithm
 		var headerCanonAlgo;
-		switch (msg.DKIMSignature.c_header) {
+		switch (DKIMSignature.c_header) {
 			case "simple":
 				headerCanonAlgo = function (headerField) {return headerField;};
 				break;
@@ -937,10 +938,10 @@ var Verifier = (function() {
 		
 		// get header fields specified by the "h=" tag
 		// and join their canonicalized form
-		for(var i = 0; i <  msg.DKIMSignature.h_array.length; i++) {
+		for(var i = 0; i <  DKIMSignature.h_array.length; i++) {
 			// if multiple instances of the same header field are signed
 			// include them in reverse order (from bottom to top)
-			headerFieldArray = msg.headerFields[msg.DKIMSignature.h_array[i]];
+			headerFieldArray = msg.headerFields[DKIMSignature.h_array[i]];
 			// nonexisting header field MUST be treated as the null string
 			if (headerFieldArray !== undefined) {
 				headerField = headerFieldArray.pop();
@@ -952,10 +953,10 @@ var Verifier = (function() {
 		
 		// add DKIM-Signature header to the hash input
 		// with the value of the "b=" tag (including all surrounding whitespace) deleted
-		var pos_bTag = msg.headerFields["dkim-signature"][0].indexOf(msg.DKIMSignature.b_folded);
-		var tempBegin = msg.headerFields["dkim-signature"][0].substr(0, pos_bTag);
+		var pos_bTag = DKIMSignature.original_header.indexOf(DKIMSignature.b_folded);
+		var tempBegin = DKIMSignature.original_header.substr(0, pos_bTag);
 		tempBegin = tempBegin.replace(new RegExp(pattFWS+"?$"), "");
-		var tempEnd = msg.headerFields["dkim-signature"][0].substr(pos_bTag+msg.DKIMSignature.b_folded.length);
+		var tempEnd = DKIMSignature.original_header.substr(pos_bTag+DKIMSignature.b_folded.length);
 		tempEnd = tempEnd.replace(new RegExp("^"+pattFWS+"?"), "");
 		var temp = tempBegin + tempEnd;
 		// canonicalized using the header canonicalization algorithm specified in the "c=" tag
@@ -1049,7 +1050,7 @@ var Verifier = (function() {
 				return;
 			}
 			
-			verifySignaturePart1(msg);
+			processSignatures(msg);
 		});
 		promise.then(null, function onReject(exception) {
 			// Failure!  We can inspect or report the exception.
@@ -1059,220 +1060,267 @@ var Verifier = (function() {
 
 	/*
 	 * 1. part of verifying the signature
-	 * will verify until key query, the rest is in verifySignaturePart2
+	 * will verify if signature matches
 	 */
-	function verifySignaturePart1(msg) {
-		var promise = Task.spawn(function () {
-			// all warnings about the signature will go in her
-			msg.warnings = [];
+	function verifySignaturePart1(msg,DKIMSignature) {
+		// error/warning if there is a SDID in the sign rule
+		// that is different from the SDID in the signature
+		if (msg.shouldBeSigned.sdid.length > 0 &&
+			!msg.shouldBeSigned.sdid.some(function (element/*, index, array*/) {
+			  if (prefs.getBoolPref("policy.signRules.sdid.allowSubDomains")) {
+				return stringEndsWith(DKIMSignature.d, element);
+			  } else {
+				return stringEqual(DKIMSignature.d, element);
+			  }
+			})) {
+			if (prefs.getBoolPref("error.policy.wrong_sdid.asWarning")) {
+				msg.warnings.push("DKIM_POLICYERROR_WRONG_SDID");
+			} else {
+				return "DKIM_POLICYERROR_WRONG_SDID";
+			}
+		}
+		
+		// if there is no SDID in the sign rule
+		if (msg.shouldBeSigned.sdid.length === 0) {
+			// warning if from is not in SDID or AUID
+			if (!(stringEndsWith(msg.from, "@"+DKIMSignature.d) ||
+				  stringEndsWith(msg.from, "."+DKIMSignature.d))) {
+				msg.warnings.push("DKIM_SIGWARNING_FROM_NOT_IN_SDID");
+				log.debug("Warning: DKIM_SIGWARNING_FROM_NOT_IN_SDID ("+
+					dkimStrings.getString("DKIM_SIGWARNING_FROM_NOT_IN_SDID")+")");
+			} else if (!stringEndsWith(msg.from, DKIMSignature.i)) {
+				msg.warnings.push("DKIM_SIGWARNING_FROM_NOT_IN_AUID");
+				log.debug("Warning: DKIM_SIGWARNING_FROM_NOT_IN_AUID ("+
+					dkimStrings.getString("DKIM_SIGWARNING_FROM_NOT_IN_AUID")+")");
+			}
+		}
 
-			// parse the DKIMSignatureHeader
-			msg.DKIMSignature = parseDKIMSignature(msg.headerFields["dkim-signature"][0], msg.warnings);
-			log.debug("Parsed DKIM-Signature: "+msg.DKIMSignature.toSource());
-			
-			// error/warning if there is a SDID in the sign rule
-			// that is different from the SDID in the signature
-			if (msg.shouldBeSigned.sdid.length > 0 &&
-			    !msg.shouldBeSigned.sdid.some(function (element/*, index, array*/) {
-			      if (prefs.getBoolPref("policy.signRules.sdid.allowSubDomains")) {
-			        return stringEndsWith(msg.DKIMSignature.d, element);
-			      } else {
-			        return stringEqual(msg.DKIMSignature.d, element);
-			      }
-			    })) {
-				if (prefs.getBoolPref("error.policy.wrong_sdid.asWarning")) {
-					msg.warnings.push("DKIM_POLICYERROR_WRONG_SDID");
-				} else {
-					throw new DKIM_SigError("DKIM_POLICYERROR_WRONG_SDID");
-				}
-			}
-			
-			// if there is no SDID in the sign rule
-			if (msg.shouldBeSigned.sdid.length === 0) {
-				// warning if from is not in SDID or AUID
-				if (!(stringEndsWith(msg.from, "@"+msg.DKIMSignature.d) ||
-				      stringEndsWith(msg.from, "."+msg.DKIMSignature.d))) {
-					msg.warnings.push("DKIM_SIGWARNING_FROM_NOT_IN_SDID");
-					log.debug("Warning: DKIM_SIGWARNING_FROM_NOT_IN_SDID ("+
-						dkimStrings.getString("DKIM_SIGWARNING_FROM_NOT_IN_SDID")+")");
-				} else if (!stringEndsWith(msg.from, msg.DKIMSignature.i)) {
-					msg.warnings.push("DKIM_SIGWARNING_FROM_NOT_IN_AUID");
-					log.debug("Warning: DKIM_SIGWARNING_FROM_NOT_IN_AUID ("+
-						dkimStrings.getString("DKIM_SIGWARNING_FROM_NOT_IN_AUID")+")");
-				}
-			}
-
-			var time = Math.round(Date.now() / 1000);
-			// warning if signature expired
-			if (msg.DKIMSignature.x !== null && msg.DKIMSignature.x < time) {
-				msg.warnings.push("DKIM_SIGWARNING_EXPIRED");
-				log.debug("Warning: DKIM_SIGWARNING_EXPIRED ("+
-					dkimStrings.getString("DKIM_SIGWARNING_EXPIRED")+")");
-			}
-			// warning if signature in future
-			if (msg.DKIMSignature.t !== null && msg.DKIMSignature.t > time) {
-				msg.warnings.push("DKIM_SIGWARNING_FUTURE");
-				log.debug("Warning: DKIM_SIGWARNING_FUTURE ("+
-					dkimStrings.getString("DKIM_SIGWARNING_FUTURE")+")");
-			}
-			
-			// Compute the Message Hashe for the body
-			var bodyHash = computeBodyHash(msg);
-			log.debug("computed body hash: "+bodyHash);
-			
-			// compare body hash
-			if (bodyHash !== msg.DKIMSignature.bh) {
-				throw new DKIM_SigError("DKIM_SIGERROR_CORRUPT_BH");
-			}
-
-			// get the DKIM key
-			msg.keyQueryResult = yield Key.getKey(msg.DKIMSignature.d, msg.DKIMSignature.s);
-			verifySignaturePart2(msg);
-		});
-		promise.then(null, function onReject(exception) {
-			// Failure!  We can inspect or report the exception.
-			handleExeption(exception, msg);
-		});
+		var time = Math.round(Date.now() / 1000);
+		// warning if signature expired
+		if (DKIMSignature.x !== null && DKIMSignature.x < time) {
+			msg.warnings.push("DKIM_SIGWARNING_EXPIRED");
+			log.debug("Warning: DKIM_SIGWARNING_EXPIRED ("+
+				dkimStrings.getString("DKIM_SIGWARNING_EXPIRED")+")");
+		}
+		// warning if signature in future
+		if (DKIMSignature.t !== null && DKIMSignature.t > time) {
+			msg.warnings.push("DKIM_SIGWARNING_FUTURE");
+			log.debug("Warning: DKIM_SIGWARNING_FUTURE ("+
+				dkimStrings.getString("DKIM_SIGWARNING_FUTURE")+")");
+		}
+		
+		// Compute the Message Hashe for the body
+		var bodyHash = computeBodyHash(msg,DKIMSignature);
+		log.debug("computed body hash: "+bodyHash);
+		
+		// compare body hash
+		if (bodyHash !== DKIMSignature.bh) {
+			return "DKIM_SIGERROR_CORRUPT_BH";
+		}
+		
+		return "";
 	}
 	
 	/*
 	 * 2. part of verifying the signature
 	 * will continue verifying after key is received
 	 */
-	function verifySignaturePart2(msg) {
-		try {
-			// if key is not signed by DNSSEC
-			if (!msg.keyQueryResult.secure) {
-				switch (prefs.getIntPref("error.policy.key_insecure.treatAs")) {
-					case 0: // error
-						throw new DKIM_SigError("DKIM_POLICYERROR_KEY_INSECURE");
-					case 1: // warning
-						msg.warnings.push("DKIM_POLICYERROR_KEY_INSECURE");
-						break;
-					case 2: // ignore
-						break;
-					default:
-						throw new DKIM_InternalError("invalid error.policy.key_insecure.treatAs");
-				}
+	function verifySignaturePart2(msg,DKIMSignature) {
+		// if key is not signed by DNSSEC
+		if (!msg.keyQueryResult.secure) {
+			switch (prefs.getIntPref("error.policy.key_insecure.treatAs")) {
+				case 0: // error
+					return "DKIM_POLICYERROR_KEY_INSECURE";
+				case 1: // warning
+					msg.warnings.push("DKIM_POLICYERROR_KEY_INSECURE");
+					break;
+				case 2: // ignore
+					break;
+				default:
+					return "invalid error.policy.key_insecure.treatAs";
 			}
-
-			msg.DKIMKey = parseDKIMKeyRecord(msg.keyQueryResult.key);
-			log.debug("Parsed DKIM-Key: "+msg.DKIMKey.toSource());
-			
-			// check that the testing flag is not set
-			if (msg.DKIMKey.t_array.indexOf("y") !== -1) {
-				if (prefs.getBoolPref("error.key_testmode.ignore")) {
-					msg.warnings.push("DKIM_SIGERROR_KEY_TESTMODE");
-					log.debug("Warning: DKIM_SIGERROR_KEY_TESTMODE ("+
-						dkimStrings.getString("DKIM_SIGERROR_KEY_TESTMODE")+")");
-				} else {
-					throw new DKIM_SigError("DKIM_SIGERROR_KEY_TESTMODE");
-				}
-			}
-
-			// if s flag is set in DKIM key record
-			// AUID must be from the same domain as SDID (and not a subdomain)
-			if (msg.DKIMKey.t_array.indexOf("s") !== -1 &&
-			    !stringEqual(msg.DKIMSignature.i_domain, msg.DKIMSignature.d)) {
-				throw new DKIM_SigError("DKIM_SIGERROR_DOMAIN_I");
-			}
-
-			// If the "h=" tag exists in the DKIM key record
-			// the hash algorithm implied by the "a=" tag in the DKIM-Signature header field
-			// must be included in the contents of the "h=" tag
-			if (msg.DKIMKey.h_array &&
-			    msg.DKIMKey.h_array.indexOf(msg.DKIMSignature.a_hash) === -1) {
-				throw new DKIM_SigError("DKIM_SIGERROR_KEY_HASHNOTINCLUDED");
-			}
-			
-			// Compute the input for the header hash
-			var headerHashInput = computeHeaderHashInput(msg);
-			log.debug("Header hash input:\n" + headerHashInput);
-
-			// get RSA-key
-			/*
-			the rsa key must be in the following ASN.1 DER format
-				
-			SEQUENCE(2 elem) -- our posTopArray
-				SEQUENCE(2 elem)
-					OBJECT IDENTIFIER 1.2.840.113549.1.1.1 (Comment: PKCS #1; Description: rsaEncryption)
-					NULL
-				BIT STRING(1 elem)
-					SEQUENCE(2 elem) -- our posKeyArray
-						INTEGER (modulus)
-						INTEGER (publicExponent)
-			*/
-			var asnKey = RSA.b64tohex(msg.DKIMKey.p);
-			var posTopArray = null;
-			var posKeyArray = null;
-			
-			// check format by comparing the 1. child in the top element
-			posTopArray = RSA.ASN1HEX.getPosArrayOfChildren_AtObj(asnKey,0);
-			if (posTopArray === null || posTopArray.length !== 2) {
-				throw new DKIM_SigError("DKIM_SIGERROR_KEYDECODE");
-			}
-			if (RSA.ASN1HEX.getHexOfTLV_AtObj(asnKey, posTopArray[0]) !==
-				"300d06092a864886f70d0101010500") {
-				throw new DKIM_SigError("DKIM_SIGERROR_KEYDECODE");
-			}
-			
-			// get pos of SEQUENCE under BIT STRING
-			// asn1hex does not support BIT STRING, so we will compute the position
-			var pos = RSA.ASN1HEX.getStartPosOfV_AtObj(asnKey, posTopArray[1]) + 2;
-			
-			// get pos of modulus and publicExponent
-			posKeyArray = RSA.ASN1HEX.getPosArrayOfChildren_AtObj(asnKey, pos);
-			if (posKeyArray === null || posKeyArray.length !== 2) {
-				throw new DKIM_SigError("DKIM_SIGERROR_KEYDECODE");
-			}
-			
-			// get modulus
-			var m_hex = RSA.ASN1HEX.getHexOfV_AtObj(asnKey,posKeyArray[0]);
-			// get public exponent
-			var e_hex = RSA.ASN1HEX.getHexOfV_AtObj(asnKey,posKeyArray[1]);
-
-			// warning if key is short
-			if (m_hex.length * 4 < 1024) {
-				msg.warnings.push("DKIM_SIGWARNING_KEYSMALL");
-				log.debug("Warning: DKIM_SIGWARNING_KEYSMALL ("+
-					dkimStrings.getString("DKIM_SIGWARNING_KEYSMALL")+")");
-			}
-
-			// set RSA-key
-			var rsa = new RSA.RSAKey();
-			rsa.setPublic(m_hex, e_hex);
-			
-			// verify Signature
-			var keyInfo = {};
-			var isValid = rsa.verifyString(headerHashInput, RSA.b64tohex(msg.DKIMSignature.b), keyInfo);
-			
-			if (!isValid) {
-				throw new DKIM_SigError("DKIM_SIGERROR_BADSIG");
-			}
-			
-			// hash algorithm defined in public-key data must be the same as in the header
-			if (keyInfo.algName !== msg.DKIMSignature.a_hash) {
-				throw new DKIM_SigError("DKIM_SIGERROR_KEY_HASHMISMATCH");
-			}
-			
-			// add should be signed rule
-			if (!msg.shouldBeSigned.foundRule) {
-				Policy.signedBy(msg.from, msg.DKIMSignature.d);
-			}
-			
-			// return result
-			msg.result = {
-				version : "1.1",
-				result : "SUCCESS",
-				SDID : msg.DKIMSignature.d,
-				selector : msg.DKIMSignature.s,
-				warnings : msg.warnings,
-				shouldBeSignedBy : msg.shouldBeSigned.sdid,
-			};
-			returnResult(msg);
-		} catch(e) {
-			handleExeption(e, msg);
 		}
+
+		msg.DKIMKey = parseDKIMKeyRecord(msg.keyQueryResult.key);
+		log.debug("Parsed DKIM-Key: "+msg.DKIMKey.toSource());
+		
+		// check that the testing flag is not set
+		if (msg.DKIMKey.t_array.indexOf("y") !== -1) {
+			if (prefs.getBoolPref("error.key_testmode.ignore")) {
+				msg.warnings.push("DKIM_SIGERROR_KEY_TESTMODE");
+				log.debug("Warning: DKIM_SIGERROR_KEY_TESTMODE ("+
+					dkimStrings.getString("DKIM_SIGERROR_KEY_TESTMODE")+")");
+			} else {
+				return "DKIM_SIGERROR_KEY_TESTMODE";
+			}
+		}
+
+		// if s flag is set in DKIM key record
+		// AUID must be from the same domain as SDID (and not a subdomain)
+		if (msg.DKIMKey.t_array.indexOf("s") !== -1 &&
+			!stringEqual(DKIMSignature.i_domain, DKIMSignature.d)) {
+			return "DKIM_SIGERROR_DOMAIN_I";
+		}
+
+		// If the "h=" tag exists in the DKIM key record
+		// the hash algorithm implied by the "a=" tag in the DKIM-Signature header field
+		// must be included in the contents of the "h=" tag
+		if (msg.DKIMKey.h_array &&
+			msg.DKIMKey.h_array.indexOf(DKIMSignature.a_hash) === -1) {
+			return "DKIM_SIGERROR_KEY_HASHNOTINCLUDED";
+		}
+		
+		// Compute the input for the header hash
+		var headerHashInput = computeHeaderHashInput(msg,DKIMSignature);
+		log.debug("Header hash input:\n" + headerHashInput);
+
+		// get RSA-key
+		/*
+		the rsa key must be in the following ASN.1 DER format
+			
+		SEQUENCE(2 elem) -- our posTopArray
+			SEQUENCE(2 elem)
+				OBJECT IDENTIFIER 1.2.840.113549.1.1.1 (Comment: PKCS #1; Description: rsaEncryption)
+				NULL
+			BIT STRING(1 elem)
+				SEQUENCE(2 elem) -- our posKeyArray
+					INTEGER (modulus)
+					INTEGER (publicExponent)
+		*/
+		var asnKey = RSA.b64tohex(msg.DKIMKey.p);
+		var posTopArray = null;
+		var posKeyArray = null;
+		
+		// check format by comparing the 1. child in the top element
+		posTopArray = RSA.ASN1HEX.getPosArrayOfChildren_AtObj(asnKey,0);
+		if (posTopArray === null || posTopArray.length !== 2) {
+			return "DKIM_SIGERROR_KEYDECODE";
+		}
+		if (RSA.ASN1HEX.getHexOfTLV_AtObj(asnKey, posTopArray[0]) !==
+			"300d06092a864886f70d0101010500") {
+			return "DKIM_SIGERROR_KEYDECODE";
+		}
+		
+		// get pos of SEQUENCE under BIT STRING
+		// asn1hex does not support BIT STRING, so we will compute the position
+		var pos = RSA.ASN1HEX.getStartPosOfV_AtObj(asnKey, posTopArray[1]) + 2;
+		
+		// get pos of modulus and publicExponent
+		posKeyArray = RSA.ASN1HEX.getPosArrayOfChildren_AtObj(asnKey, pos);
+		if (posKeyArray === null || posKeyArray.length !== 2) {
+			return "DKIM_SIGERROR_KEYDECODE";
+		}
+		
+		// get modulus
+		var m_hex = RSA.ASN1HEX.getHexOfV_AtObj(asnKey,posKeyArray[0]);
+		// get public exponent
+		var e_hex = RSA.ASN1HEX.getHexOfV_AtObj(asnKey,posKeyArray[1]);
+
+		// warning if key is short
+		if (m_hex.length * 4 < 1024) {
+			msg.warnings.push("DKIM_SIGWARNING_KEYSMALL");
+			log.debug("Warning: DKIM_SIGWARNING_KEYSMALL ("+
+				dkimStrings.getString("DKIM_SIGWARNING_KEYSMALL")+")");
+		}
+
+		// set RSA-key
+		var rsa = new RSA.RSAKey();
+		rsa.setPublic(m_hex, e_hex);
+		
+		// verify Signature
+		var keyInfo = {};
+		log.debug( "verifyString " + DKIMSignature.b );
+		var isValid = rsa.verifyString(headerHashInput, RSA.b64tohex(DKIMSignature.b), keyInfo);
+			
+		if (!isValid) {
+			return "DKIM_SIGERROR_BADSIG";
+		}
+			
+		// hash algorithm defined in public-key data must be the same as in the header
+		if (keyInfo.algName !== DKIMSignature.a_hash) {
+			return "DKIM_SIGERROR_KEY_HASHMISMATCH";
+		}
+			
+		// add should be signed rule
+		if (!msg.shouldBeSigned.foundRule) {
+			Policy.signedBy(msg.from, DKIMSignature.d);
+		}
+		
+		// return result
+		log.debug("Everything is fine");
+		msg.result = {
+			version : "1.1",
+			result : "SUCCESS",
+			SDID : DKIMSignature.d,
+			selector : DKIMSignature.s,
+			warnings : msg.warnings,
+			shouldBeSignedBy : msg.shouldBeSigned.sdid,
+		};
+		returnResult(msg);
+		return "";
+	}
+
+	/*
+	 * processes signatures
+	 */
+
+	function processSignatures(msg) {
+		var iDKIMSignatureIdx = 0;
+		var verifiedSignatures = [];
+		var DKIMSignature;
+		var err;
+		
+		// all warnings about the signatures will go in here
+		msg.warnings = [];
+		
+		log.debug( msg.headerFields["dkim-signature"].length + " DKIM-Signatures found." );
+		
+		for( iDKIMSignatureIdx; iDKIMSignatureIdx <= msg.headerFields["dkim-signature"].length - 1; iDKIMSignatureIdx++ ) {
+			log.debug("Parsing DKIM-Signature " + (iDKIMSignatureIdx+1) + "...");
+			DKIMSignature = parseDKIMSignature( msg.headerFields["dkim-signature"][iDKIMSignatureIdx], msg.warnings );
+			msg.DKIMSignature = DKIMSignature;
+
+			log.debug("Parsed DKIM-Signature: "+DKIMSignature);
+			
+			err = verifySignaturePart1(msg, DKIMSignature);
+			
+			if( err == "" ) {
+				verifiedSignatures.push( DKIMSignature );
+			} else {
+				log.debug( "verifySignaturePart1 returned " + err );
+			}
+		}
+		
+		log.debug( verifiedSignatures.length + " DKIM-Signature[s] passed the first verification." );
+		
+		// TO BE IMPROVED: only raises exception using the error from the last processed signature
+		if( verifiedSignatures.length == 0 ) {
+			throw new DKIM_SigError( err );
+		}
+		
+		var promise = Task.spawn(function () {
+			for( iDKIMSignatureIdx = 0; iDKIMSignatureIdx <= verifiedSignatures.length-1; iDKIMSignatureIdx++ ) {
+				DKIMSignature = verifiedSignatures[iDKIMSignatureIdx];
+				msg.DKIMSignature = DKIMSignature;
+			
+				// get the DKIM key
+				log.debug("Getting key for " + msg.DKIMSignature.d + " " + msg.DKIMSignature.s + "...");
+				msg.keyQueryResult = yield Key.getKey(msg.DKIMSignature.d, msg.DKIMSignature.s);
+				err = verifySignaturePart2(msg,DKIMSignature);
+				
+				// signature verified!
+				if (err=="") {
+					return;
+				}
+			}
+			
+			// TO BE IMPROVED: only raises exception using the error from the last processed signature
+			throw new DKIM_SigError( err );
+		});
+		promise.then(null, function onReject(exception) {
+			// Failure!  We can inspect or report the exception.
+			handleExeption(exception, msg);
+		});
 	}
 	
 	/**
