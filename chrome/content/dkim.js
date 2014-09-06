@@ -15,7 +15,7 @@
 // options for JSHint
 /* jshint strict:true, moz:true */
 /* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
-/* global Components, Cu, Services, messenger, gMessageListeners, gFolderDisplay, gExpandedHeaderView, createHeaderEntry, syncGridColumnWidths, currentHeaderData, gMessageDisplay */
+/* global Components, Cu, Services, gMessageListeners, gFolderDisplay, gExpandedHeaderView, createHeaderEntry, syncGridColumnWidths, currentHeaderData, gMessageDisplay */
 /* global Task */
 
 Cu.import("resource://gre/modules/Task.jsm"); // Requires Gecko 17.0
@@ -24,7 +24,7 @@ Cu.import("resource://gre/modules/Task.jsm"); // Requires Gecko 17.0
 var DKIM_Verifier = {};
 Cu.import("resource://dkim_verifier/logging.jsm", DKIM_Verifier);
 Cu.import("resource://dkim_verifier/helper.jsm", DKIM_Verifier);
-Cu.import("resource://dkim_verifier/dkimVerifier.jsm", DKIM_Verifier);
+Cu.import("resource://dkim_verifier/authVerifier.jsm", DKIM_Verifier);
 Cu.import("resource://dkim_verifier/dkimPolicy.jsm", DKIM_Verifier);
 Cu.import("resource://dkim_verifier/dkimKey.jsm", DKIM_Verifier);
 
@@ -118,7 +118,7 @@ DKIM_Verifier.Display = (function() {
 	/*
 	 * handeles Exeption
 	 */
-	function handleExeption(e, msg) {
+	function handleExeption(e) {
 		var result;
 		
 		// show result
@@ -135,61 +135,7 @@ DKIM_Verifier.Display = (function() {
 			log.fatal(DKIM_Verifier.exceptionToStr(e));
 		}
 	}
-	
-	/*
-	 * save result
-	 */
-	function saveResult(msgURI, result) {
-		if (prefs.getBoolPref("saveResult")) {
-			// don't save result if message is external
-			if (gFolderDisplay.selectedMessageIsExternal) {
-				return;
-			}
 		
-			var msgHdr = messenger.messageServiceFromURI(msgURI).
-				messageURIToMsgHdr(msgURI);
-			
-			if (result === "") {
-				log.debug("reset result");
-				msgHdr.setStringProperty("dkim_verifier@pl-result", "");
-			} else {
-				log.debug("save result");
-				msgHdr.setStringProperty("dkim_verifier@pl-result", JSON.stringify(result));
-			}
-		}
-	}
-	
-	/*
-	 * get result
-	 */
-	function getResult(msgURI) {
-		if (prefs.getBoolPref("saveResult")) {
-			// don't read result if message is external
-			if (gFolderDisplay.selectedMessageIsExternal) {
-				return null;
-			}
-
-			var msgHdr = messenger.messageServiceFromURI(msgURI).
-				messageURIToMsgHdr(msgURI);
-			
-			var result = msgHdr.getStringProperty("dkim_verifier@pl-result");
-			
-			if (result !== "") {
-				log.debug("result found: "+result);
-			
-				result = JSON.parse(result);
-
-				if (result.version.match(/^[0-9]+/)[0] !== "1") {
-					throw new DKIM_Verifier.DKIM_InternalError("Result has wrong Version ("+result.version+")");
-				}
-			
-				return result;
-			}
-		}
-		
-		return null;
-	}
-	
 	/*
 	 * display result
 	 */
@@ -571,19 +517,18 @@ var that = {
 			
 			// get msg uri
 			var msgURI = gFolderDisplay.selectedMessageUris[0];
-
-			// check for saved result
-			var result = getResult(msgURI);
-			if (result !== null) {
-				displayResult(result);
-				return;
-			}
+			// get msgHdr
+			var msgHdr = gFolderDisplay.selectedMessage;
 			
-			// parse msg into msg.header and msg.body
-			// this function will continue the verification
-			DKIM_Verifier.Verifier.verify(msgURI, that.dkimResultCallback);
+			// get authentication result
+			let authResult = DKIM_Verifier.AuthVerifier.verify(msgHdr, msgURI);
+			authResult.then(function (result) {
+				that.dkimResultCallback(msgURI, result);
+			}, function (exception) {
+				handleExeption(exception);
+			});
 		} catch(e) {
-			handleExeption(e, {"msgURI": msgURI});
+			handleExeption(e);
 		}
 	},
 	onEndAttachments: function Display_onEndAttachments() {},
@@ -603,17 +548,13 @@ var that = {
 	 */
 	dkimResultCallback: function Display_dkimResultCallback(msgURI, result) {
 		try {
-			// don't save result if it's a TEMPFAIL
-			if (result.result !== "TEMPFAIL") {
-				saveResult(msgURI, result);
-			}
 			// only show result if it's for the currently viewed message
 			var currentMsgURI = gFolderDisplay.selectedMessageUris[0];
 			if (currentMsgURI === msgURI) {
 				displayResult(result);
 			}
 		} catch(e) {
-			handleExeption(e, {"msgURI": msgURI});
+			handleExeption(e);
 		}
 	},
 	
@@ -621,14 +562,17 @@ var that = {
 	 * Reverify DKIM Signature
 	 */
 	reverify : function Display_reverify() {
-		// get msg uri
-		var msgURI = gFolderDisplay.selectedMessageUris[0];
+		// get msgHdr
+		var msgHdr = gFolderDisplay.selectedMessage;
 
 		header.value = dkimStrings.getString("loading");
 		setValue("loading");
 		that.onStartHeaders();
-		saveResult(msgURI, "");
-		that.onEndHeaders();
+		DKIM_Verifier.AuthVerifier.resetResult(msgHdr).then(function () {
+			that.onEndHeaders();
+		}, function (exception) {
+			handleExeption(exception);
+		});
 	},
 
 	/*
