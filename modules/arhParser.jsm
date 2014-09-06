@@ -21,6 +21,8 @@
 
 "use strict";
 
+const module_version = "1.0.0pre1";
+
 var EXPORTED_SYMBOLS = [
 	"ARHParser"
 ];
@@ -30,7 +32,6 @@ const Ci = Components.interfaces;
 const Cu = Components.utils;
 
 Cu.import("resource://dkim_verifier/logging.jsm");
-Cu.import("resource://dkim_verifier/helper.jsm");
 
 
 let log = Logging.getLogger("ARHParser");
@@ -94,10 +95,12 @@ let token_p = "[^ \\x00-\\x1F\\7F()<>@,;:\\\\\"/[\\]?=]+";
 let value_p = "(?:" + token_p + "|" + quoted_string_p + ")";
 let value_cp = "(?:(" + token_p + ")|" + quoted_string_cp + ")";
 // domain-name as specified in Section 3.5 of RFC 6376 [DKIM].
-var domain_name_p = "(?:" + sub_domain_p + "(?:\\." + sub_domain_p + ")+)";
+let domain_name_p = "(?:" + sub_domain_p + "(?:\\." + sub_domain_p + ")+)";
 
 
-var ARHParser = {
+let ARHParser = {
+	get version() { return module_version; },
+
 	/**
 	 *  Parses an Authentication-Results header.
 	 *  
