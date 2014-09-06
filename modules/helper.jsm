@@ -1,7 +1,7 @@
 /*
  * helper.jsm
  *
- * Version: 1.2.1 (30 June 2014)
+ * Version: 1.2.2pre1 (06 September 2014)
  * 
  * Copyright (c) 2013-2014 Philippe Lieser
  * 
@@ -78,6 +78,11 @@ function exceptionToStr(exception) {
 
 	log.trace("exceptionToStr begin");
 	
+	if(!exception) {
+		log.fatal("exceptionToStr: exception undefined or null");
+		exception = new Error();
+	}
+
 	var str = CommonUtils.exceptionStr(exception);
 	log.trace(str);
 	
