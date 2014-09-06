@@ -4,7 +4,7 @@
  * Based on Joshua Tauberer's DNS LIBRARY IN JAVASCRIPT
  * from "Sender Verification Extension" version 0.9.0.6
  * 
- * Version: 1.0.2 (06 April 2014)
+ * Version: 1.0.3 (06 September 2014)
  * 
  * Copyright (c) 2013-2014 Philippe Lieser
  * 
@@ -54,6 +54,10 @@
 /*
  * Changelog:
  * ==========
+ *
+ * 1.0.3
+ * -----
+ *  - increased max read length of TXT record
  *
  * 1.0.2
  * -----
@@ -747,10 +751,13 @@ function DNS_readRec(ctx) {
 	if (rec.type === 16) {
 		rec.type = "TXT";
 		rec.rddata = "";
-		ctr = 10;
+		ctr = 1000;
 		while (rec.rdlen > 0 && ctr-- > 0) {
 			txtlen = DNS_strToOctet(ctx.str.substr(ctx.idx,1)); ctx.idx++; rec.rdlen--;
 			rec.rddata += ctx.str.substr(ctx.idx, txtlen); ctx.idx += txtlen; rec.rdlen -= txtlen;
+		}
+		if (ctr < 0) {
+			log.error("TXT record exceeds configured max read length");
 		}
 	} else if (rec.type === 1) {
 		// Return as a dotted-quad
