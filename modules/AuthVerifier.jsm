@@ -15,8 +15,8 @@
 
 // options for JSHint
 /* jshint strict:true, moz:true, smarttabs:true, unused:true */
-/* global Components, Services, Task, Promise */
-/* global ModuleGetter, Logging, Verifier */
+/* global Components, Services, Task */
+/* global Logging, Policy, Verifier, MsgReader */
 /* global exceptionToStr, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, AuthVerifier */
 
@@ -35,12 +35,11 @@ const Cu = Components.utils;
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/Task.jsm");
 
-Cu.import("resource://dkim_verifier/ModuleGetter.jsm");
-ModuleGetter.getPromise(this);
-
 Cu.import("resource://dkim_verifier/logging.jsm");
 Cu.import("resource://dkim_verifier/helper.jsm");
+Cu.import("resource://dkim_verifier/dkimPolicy.jsm");
 Cu.import("resource://dkim_verifier/dkimVerifier.jsm");
+Cu.import("resource://dkim_verifier/MsgReader.jsm");
 
 const PREF_BRANCH = "extensions.dkim_verifier.";
 
@@ -71,12 +70,35 @@ var AuthVerifier = {
 				msgURI = msgHdr.folder.getUriForMsg(msgHdr);
 			}
 
+			// read msg
+			let msg = yield MsgReader.read(msgURI);
+			msg.msgURI = msgURI;
+
+			// parse the header
+			msg.headerFields = MsgReader.parseHeader(msg.headerPlain);
+
+			let msgHeaderParser = Cc["@mozilla.org/messenger/headerparser;1"].
+				createInstance(Ci.nsIMsgHeaderParser);
+
+			// get from address
+			let author = msg.headerFields.from[msg.headerFields.from.length-1];
+			author = author.replace(/^From[ \t]*:/i,"");
+			msg.from = msgHeaderParser.extractHeaderAddressMailboxes(author);
+
+			// get list-id
+			let listId = null;
+			if (msg.headerFields["list-id"]) {
+				listId = msg.headerFields["list-id"][0];
+				listId = msgHeaderParser.extractHeaderAddressMailboxes(listId);
+			}
+
+			// check if msg should be signed by DKIM
+			msg.DKIM = {};
+			msg.DKIM.signPolicy = yield Policy.shouldBeSigned(msg.from, listId);
+
 			// verify DKIM signature
-			let dkimResult_defer = Promise.defer();
-			Verifier.verify(msgURI, function (msgURI, result) {
-				dkimResult_defer.resolve(result);
-			});
-			dkimResult = yield dkimResult_defer.promise;
+			dkimResult = yield Verifier.verify2(msg);
+
 			// save DKIM result
 			saveDKIMResult(msgHdr, dkimResult);
 
