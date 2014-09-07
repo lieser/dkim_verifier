@@ -16,7 +16,7 @@
 // options for JSHint
 /* jshint strict:true, moz:true, smarttabs:true, unused:true */
 /* global Components, Services, Task */
-/* global Logging, Policy, Verifier, MsgReader */
+/* global Logging, MsgReader, ARHParser */
 /* global exceptionToStr, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, AuthVerifier */
 
@@ -37,9 +37,11 @@ Cu.import("resource://gre/modules/Task.jsm");
 
 Cu.import("resource://dkim_verifier/logging.jsm");
 Cu.import("resource://dkim_verifier/helper.jsm");
-Cu.import("resource://dkim_verifier/dkimPolicy.jsm");
-Cu.import("resource://dkim_verifier/dkimVerifier.jsm");
 Cu.import("resource://dkim_verifier/MsgReader.jsm");
+Cu.import("resource://dkim_verifier/ARHParser.jsm");
+let DKIM = {};
+Cu.import("resource://dkim_verifier/dkimPolicy.jsm", DKIM);
+Cu.import("resource://dkim_verifier/dkimVerifier.jsm", DKIM);
 
 const PREF_BRANCH = "extensions.dkim_verifier.";
 
@@ -94,10 +96,31 @@ var AuthVerifier = {
 
 			// check if msg should be signed by DKIM
 			msg.DKIM = {};
-			msg.DKIM.signPolicy = yield Policy.shouldBeSigned(msg.from, listId);
+			msg.DKIM.signPolicy = yield DKIM.Policy.shouldBeSigned(msg.from, listId);
+
+			// read Authentication-Results header
+			if (prefs.getBoolPref("arh.read") &&
+			    msg.headerFields["authentication-results"]) {
+				for (let i = 0; i < msg.headerFields["authentication-results"].length; i++) {
+					let arh = ARHParser.parse(msg.headerFields["authentication-results"][i]);
+					let arhDKIM = arh.resinfo.find(function (element) {
+						return element.method === "dkim";
+					});
+					let arhSPF = arh.resinfo.find(function (element) {
+						return element.method === "spf";
+					});
+					let arhDMARC = arh.resinfo.find(function (element) {
+						return element.method === "dmarc";
+					});
+					if (arhDKIM) {
+						throw new Task.Result(dkimResultToAuthResult(
+							arhDKIMToDkimResult(arhDKIM)));
+					}
+				}
+			}
 
 			// verify DKIM signature
-			dkimResult = yield Verifier.verify2(msg);
+			dkimResult = yield DKIM.Verifier.verify2(msg);
 
 			// save DKIM result
 			saveDKIMResult(msgHdr, dkimResult);
@@ -183,6 +206,55 @@ function loadDKIMResult(msgHdr) {
 	}
 
 	return null;
+}
+
+/**
+ * Convert DKIM ARHresinfo to dkimResult
+ * 
+ * @param {ARHresinfo} arhDKIM
+ * @return {dkimResult}
+ */
+function arhDKIMToDkimResult(arhDKIM) {
+	let dkimResult = {};
+	dkimResult.version = "1.0";
+	switch (arhDKIM.result) {
+		case "none":
+			dkimResult.result = "none";
+			break;
+		case "pass":
+			dkimResult.result = "SUCCESS";
+			let SDID = arhDKIM.propertys.find(function (property) {
+				return (property.type === "header" &&
+					(property.name === "d" || property.name === "i"));
+			});
+			if (SDID) {
+				dkimResult.SDID = SDID.value;
+			}
+			dkimResult.warnings = [];
+			break;
+		case "fail":
+		case "policy":
+		case "neutral":
+		case "permerror":
+			dkimResult.result = "PERMFAIL";
+			if (arhDKIM.reason) {
+				dkimResult.errorType = arhDKIM.reason;
+			} else {
+				dkimResult.errorType = "";
+			}
+			break;
+		case "temperror":
+			dkimResult.result = "TEMPFAIL";
+			if (arhDKIM.reason) {
+				dkimResult.errorType = arhDKIM.reason;
+			} else {
+				dkimResult.errorType = "";
+			}
+			break;
+		default:
+			throw new DKIM_InternalError("invalid dkim result in arh");
+	}
+	return dkimResult;
 }
 
 /**
