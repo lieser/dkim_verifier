@@ -27,7 +27,7 @@
 /* jshint strict:true, moz:true, smarttabs:true */
 /* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
 /* global Components, Dict, Services, Task */
-/* global Logging, Key, Policy */
+/* global Logging, Key, Policy, MsgReader */
 /* global dkimStrings, exceptionToStr, stringEndsWith, stringEqual, writeStringToTmpFile, DKIM_SigError, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, Verifier */
 
@@ -47,6 +47,7 @@ Cu.import("resource://dkim_verifier/logging.jsm");
 Cu.import("resource://dkim_verifier/helper.jsm");
 Cu.import("resource://dkim_verifier/dkimKey.jsm");
 Cu.import("resource://dkim_verifier/dkimPolicy.jsm");
+Cu.import("resource://dkim_verifier/MsgReader.jsm");
 
 // namespaces
 var RSA = {};
@@ -182,128 +183,6 @@ var Verifier = (function() {
 				throw new DKIM_InternalError("unsupported hash output selected");
 
 		}
-	}
-
-	/*
-	 * reads the message and parse it into header and body
-	 * calls verifyBegin at the end
-	 */
-	function parseMsg(msg) {
-		msg.headerPlain = "";
-		msg.bodyPlain = "";
-		
-		var StreamListener =
-		{
-			headerFinished: false,
-			
-			QueryInterface : function(iid)  {
-						if (iid.equals(Components.interfaces.nsIStreamListener) ||
-							iid.equals(Components.interfaces.nsISupports)) {
-							return this;
-						}
-						
-						throw Components.results.NS_NOINTERFACE;
-			},
-
-			onDataAvailable: function ( request , context , inputStream , offset , count ) {
-				var str;
-				var NewlineLength = 2;
-				
-				try {
-					var scriptableInputStream = Components.classes["@mozilla.org/scriptableinputstream;1"].
-						createInstance(Components.interfaces.nsIScriptableInputStream);
-					scriptableInputStream.init(inputStream);
-
-					if (!this.headerFinished) {
-						// read header
-						str = scriptableInputStream.read(count);
-						var posEndHeader = str.indexOf("\r\n\r\n");
-						
-						// check for LF line ending
-						if (posEndHeader === -1) {
-							posEndHeader = str.indexOf("\n\n");
-							if (posEndHeader !== -1) {
-								NewlineLength = 1;
-								log.debug("LF line ending detected");
-							}
-						}
-						// check for CR line ending
-						if (posEndHeader === -1) {
-							posEndHeader = str.indexOf("\r\r");
-							if (posEndHeader !== -1) {
-								NewlineLength = 1;
-								log.debug("CR line ending detected");
-							}
-						}
-						
-						// check for end of header
-						if (posEndHeader === -1) {
-							// end of header not yet reached
-							msg.headerPlain += str;
-						} else {
-							// end of header reached
-							msg.headerPlain += str.substr(0, posEndHeader + NewlineLength);
-							msg.bodyPlain = str.substr(posEndHeader + 2*NewlineLength);
-							this.headerFinished = true;
-						}
-					} else {
-						// read body
-						msg.bodyPlain += scriptableInputStream.read(count);
-					}
-				} catch (e) {
-					handleExeption(e, msg);
-				}
-			},
-			
-			onStartRequest: function (/* request , context */) {
-			},
-			
-			onStopRequest: function (/* aRequest , aContext , aStatusCode */) {
-				try {
-					// if end of msg is reached before end of header,
-					// it is no in correct e-mail format
-					if (!this.headerFinished) {
-						throw new DKIM_InternalError("Message is not in correct e-mail format",
-							"DKIM_INTERNALERROR_INCORRECT_EMAIL_FORMAT");
-					}
-
-					// convert all EOLs to CRLF
-					msg.headerPlain = msg.headerPlain.replace(/(\r\n|\n|\r)/g, "\r\n");
-					msg.bodyPlain = msg.bodyPlain.replace(/(\r\n|\n|\r)/g, "\r\n");
-					
-					verifyBegin(msg);
-				} catch (e) {
-					handleExeption(e, msg);
-				}
-			}
-		};
-
-		var messageService = messenger.messageServiceFromURI(msg.msgURI);
-		messageService.CopyMessage(msg.msgURI, StreamListener, false, null /* aUrlListener */, null /* aMsgWindow */, {});
-	}
-
-	/*
-	 * parse the message header
-	 */
-	function parseHeader(header) {
-		var headerFields = {};
-
-		// split header fields
-		var headerArray = header.split(/\r\n(?=\S|$)/);
-		var hName;
-		for(var i = 0; i < headerArray.length; i++) {
-			// store fields under header field name (in lower case) in an array
-			hName = headerArray[i].match(/\S+(?=\s*:)/);
-			if (hName !== null) {
-				hName = hName[0].toLowerCase();
-				if (headerFields[hName] === undefined) {
-					headerFields[hName] = [];
-				}
-				headerFields[hName].push(headerArray[i]+"\r\n");
-			}
-		}
-		
-		return headerFields;
 	}
 
 	/**
@@ -1014,7 +893,7 @@ var Verifier = (function() {
 	function verifyBegin(msg) {
 		var promise = Task.spawn(function () {
 			// parse the header
-			msg.headerFields = parseHeader(msg.headerPlain);
+			msg.headerFields = MsgReader.parseHeader(msg.headerPlain);
 
 			// get from address
 			var author = msg.headerFields.from[msg.headerFields.from.length-1];
@@ -1343,10 +1222,13 @@ var that = {
 	 * @param {dkimResultCallback} dkimResultCallback
 	 */
 	verify: function Verifier_verify(msgURI, dkimResultCallback) {
-		var msg = {};
-		msg.msgURI = msgURI;
-		msg.dkimResultCallback = dkimResultCallback;
-		parseMsg(msg);
+		MsgReader.read(msgURI).then(function (msg) {
+			msg.msgURI = msgURI;
+			msg.dkimResultCallback = dkimResultCallback;
+			verifyBegin(msg);
+		}, function (exception) {
+			handleExeption(exception,  {"msgURI": msgURI});
+		});
 	},
 	
 	/*
