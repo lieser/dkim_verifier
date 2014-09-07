@@ -1,5 +1,5 @@
 /*
- * arhParser.jsm
+ * ARHParser.jsm
  * 
  * Parser for the Authentication-Results header as specified in RFC 7001.
  *

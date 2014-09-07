@@ -1,5 +1,5 @@
 /*
- * authVerifier.jsm
+ * AuthVerifier.jsm
  * 
  * Authentication Verifier.
  *

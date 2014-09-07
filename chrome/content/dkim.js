@@ -24,7 +24,7 @@ Cu.import("resource://gre/modules/Task.jsm"); // Requires Gecko 17.0
 var DKIM_Verifier = {};
 Cu.import("resource://dkim_verifier/logging.jsm", DKIM_Verifier);
 Cu.import("resource://dkim_verifier/helper.jsm", DKIM_Verifier);
-Cu.import("resource://dkim_verifier/authVerifier.jsm", DKIM_Verifier);
+Cu.import("resource://dkim_verifier/AuthVerifier.jsm", DKIM_Verifier);
 Cu.import("resource://dkim_verifier/dkimPolicy.jsm", DKIM_Verifier);
 Cu.import("resource://dkim_verifier/dkimKey.jsm", DKIM_Verifier);
 
