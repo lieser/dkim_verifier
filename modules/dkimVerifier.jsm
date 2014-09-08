@@ -827,7 +827,7 @@ var Verifier = (function() {
 		for(var i = 0; i <  DKIMSignature.h_array.length; i++) {
 			// if multiple instances of the same header field are signed
 			// include them in reverse order (from bottom to top)
-			headerFieldArray = msg.headerFields[DKIMSignature.h_array[i]];
+			headerFieldArray = msg.headerFields[DKIMSignature.h_array[i]].slice();
 			// nonexisting header field MUST be treated as the null string
 			if (headerFieldArray !== undefined) {
 				headerField = headerFieldArray.pop();
