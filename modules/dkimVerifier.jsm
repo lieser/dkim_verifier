@@ -291,7 +291,7 @@ var Verifier = (function() {
 			s : null, // selector
 			t : null, // Signature Timestamp
 			x : null, // Signature Expiration
-			z : null // Copied header fields			
+			z : null // Copied header fields
 		};
 		return DKIMSignature;
 	}
@@ -750,7 +750,7 @@ var Verifier = (function() {
 	 * Computing the Message Hash for the body 
 	 * specified in Section 3.7 of RFC 6376
 	 */
-	function computeBodyHash(msg,DKIMSignature) {
+	function computeBodyHash(msg, DKIMSignature) {
 		// canonicalize body
 		var bodyCanon;
 		switch (DKIMSignature.c_body) {
@@ -805,7 +805,7 @@ var Verifier = (function() {
 	 * Computing the input for the header Hash
 	 * specified in Section 3.7 of RFC 6376
 	 */
-	function computeHeaderHashInput(msg,DKIMSignature) {
+	function computeHeaderHashInput(msg, DKIMSignature) {
 		var hashInput = "";
 		var headerFieldArray, headerField;
 
@@ -917,17 +917,17 @@ var Verifier = (function() {
 	/*
 	 * 1. part of verifying the signature (key query excluded)
 	 */
-	function verifySignaturePart1(msg,DKIMSignature) {
+	function verifySignaturePart1(msg, DKIMSignature) {
 		// error/warning if there is a SDID in the sign rule
 		// that is different from the SDID in the signature
 		if (msg.shouldBeSigned.sdid.length > 0 &&
-			!msg.shouldBeSigned.sdid.some(function (element/*, index, array*/) {
-			  if (prefs.getBoolPref("policy.signRules.sdid.allowSubDomains")) {
-				return stringEndsWith(DKIMSignature.d, element);
-			  } else {
-				return stringEqual(DKIMSignature.d, element);
-			  }
-			})) {
+		    !msg.shouldBeSigned.sdid.some(function (element/*, index, array*/) {
+		      if (prefs.getBoolPref("policy.signRules.sdid.allowSubDomains")) {
+		        return stringEndsWith(DKIMSignature.d, element);
+		      } else {
+		        return stringEqual(DKIMSignature.d, element);
+		      }
+		    })) {
 			if (prefs.getBoolPref("error.policy.wrong_sdid.asWarning")) {
 				DKIMSignature.warnings.push("DKIM_POLICYERROR_WRONG_SDID");
 			} else {
@@ -939,7 +939,7 @@ var Verifier = (function() {
 		if (msg.shouldBeSigned.sdid.length === 0) {
 			// warning if from is not in SDID or AUID
 			if (!(stringEndsWith(msg.from, "@"+DKIMSignature.d) ||
-				  stringEndsWith(msg.from, "."+DKIMSignature.d))) {
+			    stringEndsWith(msg.from, "."+DKIMSignature.d))) {
 				DKIMSignature.warnings.push("DKIM_SIGWARNING_FROM_NOT_IN_SDID");
 				log.debug("Warning: DKIM_SIGWARNING_FROM_NOT_IN_SDID ("+
 					dkimStrings.getString("DKIM_SIGWARNING_FROM_NOT_IN_SDID")+")");
@@ -1011,7 +1011,7 @@ var Verifier = (function() {
 		// if s flag is set in DKIM key record
 		// AUID must be from the same domain as SDID (and not a subdomain)
 		if (DKIMSignature.DKIMKey.t_array.indexOf("s") !== -1 &&
-			!stringEqual(DKIMSignature.i_domain, DKIMSignature.d)) {
+		    !stringEqual(DKIMSignature.i_domain, DKIMSignature.d)) {
 			throw new DKIM_SigError( "DKIM_SIGERROR_DOMAIN_I" );
 		}
 
@@ -1019,7 +1019,7 @@ var Verifier = (function() {
 		// the hash algorithm implied by the "a=" tag in the DKIM-Signature header field
 		// must be included in the contents of the "h=" tag
 		if (DKIMSignature.DKIMKey.h_array &&
-			DKIMSignature.DKIMKey.h_array.indexOf(DKIMSignature.a_hash) === -1) {
+		    DKIMSignature.DKIMKey.h_array.indexOf(DKIMSignature.a_hash) === -1) {
 			throw new DKIM_SigError( "DKIM_SIGERROR_KEY_HASHNOTINCLUDED" );
 		}
 		
@@ -1050,7 +1050,7 @@ var Verifier = (function() {
 			throw new DKIM_SigError( "DKIM_SIGERROR_KEYDECODE" );
 		}
 		if (RSA.ASN1HEX.getHexOfTLV_AtObj(asnKey, posTopArray[0]) !==
-			"300d06092a864886f70d0101010500") {
+		    "300d06092a864886f70d0101010500") {
 			throw new DKIM_SigError( "DKIM_SIGERROR_KEYDECODE" );
 		}
 		
@@ -1124,14 +1124,14 @@ var Verifier = (function() {
 
 		// contains all DKIM-Signatures which have been parsed and, in case, verified
 		msg.DKIMSignatures = [];
-	
+
 		// RFC6376 - 3.5.  The DKIM-Signature Header Field
 		// "The DKIM-Signature header field SHOULD be treated as though it were a
 		// trace header field as defined in Section 3.6 of [RFC5322] and hence
 		// SHOULD NOT be reordered and SHOULD be prepended to the message."
 		//
 		// The first added signature is verified first.
-		for( iDKIMSignatureIdx = msg.headerFields["dkim-signature"].length - 1; iDKIMSignatureIdx >=0; iDKIMSignatureIdx-- ) {
+		for (iDKIMSignatureIdx = msg.headerFields["dkim-signature"].length - 1; iDKIMSignatureIdx >=0; iDKIMSignatureIdx--) {
 			DKIMSignature = newDKIMSignature( msg.headerFields["dkim-signature"][iDKIMSignatureIdx] );
 
 			try {
@@ -1160,11 +1160,11 @@ var Verifier = (function() {
 		}
 
 		// at this point all message's DKIM-Signatures are loaded in .DKIMSignatures
-		for( iDKIMSignatureIdx = 0; iDKIMSignatureIdx <= msg.DKIMSignatures.length - 1; iDKIMSignatureIdx++ ) {
+		for (iDKIMSignatureIdx = 0; iDKIMSignatureIdx <= msg.DKIMSignatures.length - 1; iDKIMSignatureIdx++) {
 			DKIMSignature = msg.DKIMSignatures[iDKIMSignatureIdx];
 
 			msg.result = DKIMSignature.verification_result;
-			if( msg.result.result === "SUCCESS" ) {
+			if (msg.result.result === "SUCCESS") {
 				log.debug("Returning SUCCESS: " + msg.result.toSource());
 				return;
 			}
