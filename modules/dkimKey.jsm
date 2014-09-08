@@ -212,7 +212,7 @@ var Key = {
 	 * 
 	 * @return {Promise<Undefined>}
 	 */
-	deleteKey: function Key_markKeyAsSecure(d_val, s_val) {
+	deleteKey: function Key_deleteKey(d_val, s_val) {
 		"use strict";
 
 		var promise = Task.spawn(function () {
