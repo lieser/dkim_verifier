@@ -858,41 +858,36 @@ var Verifier = (function() {
 	 * returns dkimResult object
 	 */
 	function handleExeption(e, msg, DKIMSignature = {} ) {
-		try {
-			if (e instanceof DKIM_SigError) {
-				// return result
-				var result = {
-					version : "1.1",
-					result : "PERMFAIL",
-					errorType : e.errorType,
-					SDID : DKIMSignature.d,
-					selector : DKIMSignature.s,
-					shouldBeSignedBy : msg.shouldBeSigned.sdid,
-					hideFail : msg.shouldBeSigned.hideFail,
-				};
-				
-				log.warn(exceptionToStr(e));
-				
-				return result;
-			} else {
-				// return result
-				var result = {
-					version : "1.0",
-					result : "TEMPFAIL",
-					errorType : e.errorType
-				};
+		if (e instanceof DKIM_SigError) {
+			// return result
+			let result = {
+				version : "1.1",
+				result : "PERMFAIL",
+				errorType : e.errorType,
+				SDID : DKIMSignature.d,
+				selector : DKIMSignature.s,
+				shouldBeSignedBy : msg.shouldBeSigned.sdid,
+				hideFail : msg.shouldBeSigned.hideFail,
+			};
+
+			log.warn(exceptionToStr(e));
 			
-				if (e instanceof DKIM_InternalError) {
-					log.error(exceptionToStr(e));
-				} else {
-					log.fatal(exceptionToStr(e));
-				}
-				
-				return result;
+			return result;
+		} else {
+			// return result
+			let result = {
+				version : "1.0",
+				result : "TEMPFAIL",
+				errorType : e.errorType
+			};
+
+			if (e instanceof DKIM_InternalError) {
+				log.error(exceptionToStr(e));
+			} else {
+				log.fatal(exceptionToStr(e));
 			}
-		} catch (exception) {
-			log.fatal("handleExeption: "+exception);
-			return {};
+
+			return result;
 		}
 	}
 	
