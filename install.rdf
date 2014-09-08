@@ -17,6 +17,7 @@
 		<em:contributor>Tom Wu (RSA Library)</em:contributor>
 		<em:contributor>Kenji Urushima (RSA verification and ASN1 Library)</em:contributor>
 		<em:contributor>Nils Maier</em:contributor>
+		<em:contributor>Pier Carlo Chiodi AKA pierky</em:contributor>
 
 		<em:homepageURL>https://github.com/lieser/dkim_verifier/wiki</em:homepageURL>
 		<em:optionsURL>chrome://dkim_verifier/content/options.xul</em:optionsURL>
@@ -39,6 +40,7 @@
 				<em:contributor>Tom Wu (RSA Bibliothek)</em:contributor>
 				<em:contributor>Kenji Urushima (RSA Verifizierung und ASN1 Bibliothek)</em:contributor>
 				<em:contributor>Nils Maier</em:contributor>
+				<em:contributor>Pier Carlo Chiodi AKA pierky</em:contributor>
 			</Description>
 		</em:localized>
 
@@ -52,6 +54,7 @@
 				<em:contributor>Tom Wu (RSA Library)</em:contributor>
 				<em:contributor>Kenji Urushima (RSA verification and ASN1 Library)</em:contributor>
 				<em:contributor>Nils Maier</em:contributor>
+				<em:contributor>Pier Carlo Chiodi AKA pierky</em:contributor>
 			</Description>
 		</em:localized>
 
@@ -64,6 +67,7 @@
 				<em:contributor>Tom Wu (Bibliothèque RSA)</em:contributor>
 				<em:contributor>Kenji Urushima (verification RSA et bibliothèque ASN1)</em:contributor>
 				<em:contributor>Nils Maier</em:contributor>
+				<em:contributor>Pier Carlo Chiodi AKA pierky</em:contributor>
 			</Description>
 		</em:localized>
 
@@ -76,6 +80,7 @@
 				<em:contributor>Tom Wu (libreria RSA)</em:contributor>
 				<em:contributor>Kenji Urushima (verifica RSA e libreria ASN1)</em:contributor>
 				<em:contributor>Nils Maier</em:contributor>
+				<em:contributor>Pier Carlo Chiodi AKA pierky</em:contributor>
 			</Description>
 		</em:localized>
 
@@ -88,6 +93,7 @@
 				<em:contributor>Tom Wu (RSA Library)</em:contributor>
 				<em:contributor>Kenji Urushima (RSA verification and ASN1 Library)</em:contributor>
 				<em:contributor>Nils Maier</em:contributor>
+				<em:contributor>Pier Carlo Chiodi AKA pierky</em:contributor>
 			</Description>
 		</em:localized>
 
