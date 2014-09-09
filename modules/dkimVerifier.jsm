@@ -341,7 +341,6 @@ var Verifier = (function() {
 		var DKIMSignature = {
 			original_header : DKIMSignatureHeader,
 			warnings: [],
-			verification_result: {}, // dkimSigResultV2 object populated by verifySignaturePart2 or by exception handlers
 			v : null, // Version
 			a_sig : null, // signature algorithm (signing part)
 			a_hash : null, // signature algorithm (hashing part)
@@ -964,10 +963,23 @@ var Verifier = (function() {
 		}
 	}
 
-	/*
-	 * 1. part of verifying the signature (key query excluded)
+	/**
+	 * Verifying a single DKIM signature
+	 * 
+	 * @remark Generator function.
+	 * @param {Object} msg
+	 * @param {String} DKIMSignatureHeader
+	 * @throws DKIM_SigError
+	 * @throws DKIM_InternalError
+	 * @return {dkimSigResultV2}
 	 */
-	function verifySignaturePart1(msg, DKIMSignature) {
+	function verifySignature(msg, DKIMSignatureHeader) {
+		var DKIMSignature = newDKIMSignature(DKIMSignatureHeader);
+
+		log.trace("Parsing DKIM-Signature ...");
+		parseDKIMSignature(DKIMSignature);
+		log.debug("Parsed DKIM-Signature: " + DKIMSignature.toSource());
+
 		// check SDID and AUID
 		Policy.checkSDID(msg.shouldBeSigned.sdid, msg.from, DKIMSignature.d,
 			DKIMSignature.i, DKIMSignature.warnings);
@@ -976,31 +988,27 @@ var Verifier = (function() {
 		// warning if signature expired
 		if (DKIMSignature.x !== null && DKIMSignature.x < time) {
 			DKIMSignature.warnings.push("DKIM_SIGWARNING_EXPIRED");
-			log.debug("Warning: DKIM_SIGWARNING_EXPIRED ("+
-				dkimStrings.getString("DKIM_SIGWARNING_EXPIRED")+")");
+			log.debug("Warning: DKIM_SIGWARNING_EXPIRED");
 		}
 		// warning if signature in future
 		if (DKIMSignature.t !== null && DKIMSignature.t > time) {
 			DKIMSignature.warnings.push("DKIM_SIGWARNING_FUTURE");
-			log.debug("Warning: DKIM_SIGWARNING_FUTURE ("+
-				dkimStrings.getString("DKIM_SIGWARNING_FUTURE")+")");
+			log.debug("Warning: DKIM_SIGWARNING_FUTURE");
 		}
 		
 		// Compute the Message Hashe for the body
-		var bodyHash = computeBodyHash(msg,DKIMSignature);
-		log.debug("computed body hash: "+bodyHash);
+		var bodyHash = computeBodyHash(msg, DKIMSignature);
+		log.debug("computed body hash: " + bodyHash);
 		
 		// compare body hash
 		if (bodyHash !== DKIMSignature.bh) {
-			throw new DKIM_SigError( "DKIM_SIGERROR_CORRUPT_BH" );
+			throw new DKIM_SigError("DKIM_SIGERROR_CORRUPT_BH");
 		}
-	}
-	
-	/*
-	 * 2. part of verifying the signature
-	 * will continue verifying after key is received
-	 */
-	function verifySignaturePart2(msg,DKIMSignature) {
+
+		log.trace("Receiving DNS key for DKIM-Signature ...");
+		DKIMSignature.keyQueryResult = yield Key.getKey(DKIMSignature.d, DKIMSignature.s);
+		log.trace("Received DNS key for DKIM-Signature");
+
 		// if key is not signed by DNSSEC
 		if (!DKIMSignature.keyQueryResult.secure) {
 			switch (prefs.getIntPref("error.policy.key_insecure.treatAs")) {
@@ -1008,6 +1016,7 @@ var Verifier = (function() {
 					throw new DKIM_SigError( "DKIM_POLICYERROR_KEY_INSECURE" );
 				case 1: // warning
 					DKIMSignature.warnings.push("DKIM_POLICYERROR_KEY_INSECURE");
+					log.debug("Warning: DKIM_POLICYERROR_KEY_INSECURE");
 					break;
 				case 2: // ignore
 					break;
@@ -1017,14 +1026,13 @@ var Verifier = (function() {
 		}
 
 		DKIMSignature.DKIMKey = parseDKIMKeyRecord(DKIMSignature.keyQueryResult.key);
-		log.debug("Parsed DKIM-Key: "+DKIMSignature.DKIMKey.toSource());
-		
+		log.debug("Parsed DKIM-Key: " + DKIMSignature.DKIMKey.toSource());
+
 		// check that the testing flag is not set
 		if (DKIMSignature.DKIMKey.t_array.indexOf("y") !== -1) {
 			if (prefs.getBoolPref("error.key_testmode.ignore")) {
 				DKIMSignature.warnings.push("DKIM_SIGERROR_KEY_TESTMODE");
-				log.debug("Warning: DKIM_SIGERROR_KEY_TESTMODE ("+
-					dkimStrings.getString("DKIM_SIGERROR_KEY_TESTMODE")+")");
+				log.debug("Warning: DKIM_SIGERROR_KEY_TESTMODE");
 			} else {
 				throw new DKIM_SigError( "DKIM_SIGERROR_KEY_TESTMODE" );
 			}
@@ -1034,7 +1042,7 @@ var Verifier = (function() {
 		// AUID must be from the same domain as SDID (and not a subdomain)
 		if (DKIMSignature.DKIMKey.t_array.indexOf("s") !== -1 &&
 		    !stringEqual(DKIMSignature.i_domain, DKIMSignature.d)) {
-			throw new DKIM_SigError( "DKIM_SIGERROR_DOMAIN_I" );
+			throw new DKIM_SigError("DKIM_SIGERROR_DOMAIN_I");
 		}
 
 		// If the "h=" tag exists in the DKIM key record
@@ -1054,12 +1062,12 @@ var Verifier = (function() {
 		var isValid = verifyRSASig(DKIMSignature.DKIMKey.p, headerHashInput,
 			DKIMSignature.b, DKIMSignature.warnings, keyInfo);
 		if (!isValid) {
-			throw new DKIM_SigError( "DKIM_SIGERROR_BADSIG" );
+			throw new DKIM_SigError("DKIM_SIGERROR_BADSIG");
 		}
 			
 		// hash algorithm defined in public-key data must be the same as in the header
 		if (keyInfo.algName !== DKIMSignature.a_hash) {
-			throw new DKIM_SigError( "DKIM_SIGERROR_KEY_HASHMISMATCH" );
+			throw new DKIM_SigError("DKIM_SIGERROR_KEY_HASHMISMATCH");
 		}
 			
 		// add should be signed rule
@@ -1068,14 +1076,15 @@ var Verifier = (function() {
 		}
 		
 		// return result
-		log.debug("Everything is fine");
-		DKIMSignature.verification_result = {
+		log.trace("Everything is fine");
+		var verification_result = {
 			version : "1.0",
 			result : "SUCCESS",
 			SDID : DKIMSignature.d,
 			selector : DKIMSignature.s,
 			warnings : DKIMSignature.warnings,
 		};
+		throw new Task.Result(verification_result);
 	}
 
 	/**
@@ -1088,12 +1097,10 @@ var Verifier = (function() {
 	function processSignatures(msg) {
 		let iDKIMSignatureIdx = 0;
 		let DKIMSignature;
+		// contains the result of all DKIM-Signatures which have been verified
 		let sigResults = [];
 
 		log.debug( msg.headerFields["dkim-signature"].length + " DKIM-Signatures found." );
-
-		// contains all DKIM-Signatures which have been parsed and, in case, verified
-		msg.DKIMSignatures = [];
 
 		// RFC6376 - 3.5.  The DKIM-Signature Header Field
 		// "The DKIM-Signature header field SHOULD be treated as though it were a
@@ -1101,33 +1108,22 @@ var Verifier = (function() {
 		// SHOULD NOT be reordered and SHOULD be prepended to the message."
 		//
 		// The first added signature is verified first.
-		for (iDKIMSignatureIdx = msg.headerFields["dkim-signature"].length - 1; iDKIMSignatureIdx >=0; iDKIMSignatureIdx--) {
-			DKIMSignature = newDKIMSignature( msg.headerFields["dkim-signature"][iDKIMSignatureIdx] );
-
+		for (iDKIMSignatureIdx = msg.headerFields["dkim-signature"].length - 1;
+		     iDKIMSignatureIdx >=0; iDKIMSignatureIdx--) {
+			let sigRes;
 			try {
-				log.debug("Parsing DKIM-Signature " + (iDKIMSignatureIdx+1) + "...");
-				parseDKIMSignature( DKIMSignature );
-				log.debug("Parsed DKIM-Signature: " + DKIMSignature.toSource());
-				
-				log.debug("Verifying DKIM-Signature " + (iDKIMSignatureIdx+1) + " - part 1...");
-				verifySignaturePart1(msg, DKIMSignature);
-				log.debug("Verified DKIM-Signature " + (iDKIMSignatureIdx+1) + " - part 1");
-				
-				log.debug("Receiving DNS key for DKIM-Signature " + (iDKIMSignatureIdx+1) + "...");
-				DKIMSignature.keyQueryResult = yield Key.getKey(DKIMSignature.d, DKIMSignature.s);
-				log.debug("Received DNS key for DKIM-Signature " + (iDKIMSignatureIdx+1));
-				
-				log.debug("Verifying DKIM-Signature " + (iDKIMSignatureIdx+1) + " - part 2...");
-				verifySignaturePart2(msg, DKIMSignature);
-				log.debug("Verified DKIM-Signature " + (iDKIMSignatureIdx+1) + " - part 2: " + DKIMSignature.verification_result.toSource());
+				log.debug("Verifying DKIM-Signature " + (iDKIMSignatureIdx+1) + " ...");
+				sigRes = yield verifySignature(msg,
+					msg.headerFields["dkim-signature"][iDKIMSignatureIdx]);
+				log.debug("Verified DKIM-Signature " + (iDKIMSignatureIdx+1));
 			} catch(e) {
-				DKIMSignature.verification_result = handleExeption(e, msg, DKIMSignature);
+				sigRes = handleExeption(e, msg, DKIMSignature);
 				log.debug("Exception on DKIM-Signature " + (iDKIMSignatureIdx+1));
 			}
 
-			log.debug("Adding DKIM-Signature " + (iDKIMSignatureIdx+1) + " to message's signatures list");
-			msg.DKIMSignatures.push( DKIMSignature );
-			sigResults.push(DKIMSignature.verification_result);
+			log.trace("Adding DKIM-Signature " + (iDKIMSignatureIdx+1) +
+				" result to result list");
+			sigResults.push(sigRes);
 		}
 
 		throw new Task.Result(sigResults);
