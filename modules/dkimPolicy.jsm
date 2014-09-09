@@ -16,7 +16,7 @@
 /* jshint -W069 */ // "['{a}'] is better written in dot notation."
 /* global Components, Services, Sqlite, Task, Promise */
 /* global ModuleGetter, Logging, DMARC */
-/* global exceptionToStr, getBaseDomainFromAddr, readStringFrom, stringEndsWith, DKIM_InternalError */
+/* global exceptionToStr, getBaseDomainFromAddr, readStringFrom, stringEndsWith, stringEqual, DKIM_SigError, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, Policy */
 
 var EXPORTED_SYMBOLS = [
@@ -362,7 +362,9 @@ var Policy = {
 	 * @param {String[]} warnings
 	 * @throws DKIM_SigError
 	 */
-	checkSDID: function (allowedSDIDs, from, sdid, auid, warnings) {
+	checkSDID: function Policy_checkSDID(allowedSDIDs, from, sdid, auid, warnings) {
+		"use strict";
+
 		// error/warning if there is a SDID in the sign rule
 		// that is different from the SDID in the signature
 		if (allowedSDIDs.length > 0 &&
