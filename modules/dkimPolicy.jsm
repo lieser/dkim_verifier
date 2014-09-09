@@ -231,16 +231,26 @@ var Policy = {
 	},
 
 	/**
+	 * DKIM signing policy for a message.
+	 * 
+	 * @typedef {Object} DKIMSignPolicy
+	 * @property {Boolean} shouldBeSigned
+	 *           true if message should be signed
+	 * @property {String[]} sdid
+	 *           Signing Domain Identifier
+	 * @property {Boolean} foundRule
+	 *           true if enabled rule for message was found
+	 * @property {Boolean} hideFail
+	 *           true if HIDEFAIL rule was found
+	 */
+
+	 /**
 	 * Determinates if e-mail by fromAddress should be signed
 	 * 
 	 * @param {String} fromAddress
 	 * @param {String} [listID]
 	 * 
-	 * @return {Promise<Object>}
-	 *         .shouldBeSigned true if fromAddress should be signed
-	 *         .sdid {String[]} Signing Domain Identifier
-	 *         .foundRule {Boolean} true if enabled rule for fromAddress was found
-	 *         .hideFail {Boolean} true if HIDEFAIL rule was found
+	 * @return {Promise<DKIMSignPolicy>}
 	 */
 	shouldBeSigned: function Policy_shouldBeSigned(fromAddress, listID) {
 		"use strict";

@@ -981,7 +981,7 @@ var Verifier = (function() {
 		log.debug("Parsed DKIM-Signature: " + DKIMSignature.toSource());
 
 		// check SDID and AUID
-		Policy.checkSDID(msg.shouldBeSigned.sdid, msg.from, DKIMSignature.d,
+		Policy.checkSDID(msg.DKIMSignPolicy.sdid, msg.from, DKIMSignature.d,
 			DKIMSignature.i, DKIMSignature.warnings);
 
 		var time = Math.round(Date.now() / 1000);
@@ -1071,7 +1071,7 @@ var Verifier = (function() {
 		}
 			
 		// add should be signed rule
-		if (!msg.shouldBeSigned.foundRule) {
+		if (!msg.DKIMSignPolicy.foundRule) {
 			Policy.signedBy(msg.from, DKIMSignature.d);
 		}
 		
@@ -1234,13 +1234,13 @@ var that = {
 				}
 
 				// check if msg should be signed
-				msg.shouldBeSigned = yield Policy.shouldBeSigned(msg.from, listId);
+				msg.DKIMSignPolicy = yield Policy.shouldBeSigned(msg.from, listId);
 
 				let sigResults = yield processSignatures(msg);
 
 				// check if DKIMSignatureHeader exist
 				if (sigResults.length === 0) {
-					if (!msg.shouldBeSigned.shouldBeSigned) {
+					if (!msg.DKIMSignPolicy.shouldBeSigned) {
 						result = {
 							version : "1.0",
 							result : "none"
@@ -1251,8 +1251,8 @@ var that = {
 							version : "1.1",
 							result : "PERMFAIL",
 							errorType : "DKIM_POLICYERROR_MISSING_SIG",
-							shouldBeSignedBy : msg.shouldBeSigned.sdid,
-							hideFail : msg.shouldBeSigned.hideFail,
+							shouldBeSignedBy : msg.DKIMSignPolicy.sdid,
+							hideFail : msg.DKIMSignPolicy.hideFail,
 						};
 
 						log.warn("verify: DKIM_POLICYERROR_MISSING_SIG");
@@ -1265,8 +1265,8 @@ var that = {
 						selector : sigResults[0].selector,
 						warnings : sigResults[0].warnings,
 						errorType : sigResults[0].errorType,
-						shouldBeSignedBy : msg.shouldBeSigned.sdid,
-						hideFail : msg.shouldBeSigned.hideFail,
+						shouldBeSignedBy : msg.DKIMSignPolicy.sdid,
+						hideFail : msg.DKIMSignPolicy.hideFail,
 					};
 				}
 			} catch (exception) {
@@ -1296,12 +1296,11 @@ var that = {
 	 *                      .<header name> {Array[String]}
 	 *        .bodyPlain {String}
 	 *        .from {String}
-	 *        .DKIM.signPolicy {Object}
+	 *        .DKIMSignPolicy {DKIMSignPolicy}
 	 * @return {Promise<dkimResultV2>}
 	 */
 	verify2: function Verifier_verify2(msg) {
 		var promise = Task.spawn(function () {
-			msg.shouldBeSigned = msg.DKIM.signPolicy;
 			let res = {};
 			res.version = "2.0";
 			res.signatures = yield processSignatures(msg);

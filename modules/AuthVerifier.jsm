@@ -95,8 +95,7 @@ var AuthVerifier = {
 			}
 
 			// check if msg should be signed by DKIM
-			msg.DKIM = {};
-			msg.DKIM.signPolicy = yield DKIM.Policy.shouldBeSigned(msg.from, listId);
+			msg.DKIMSignPolicy = yield DKIM.Policy.shouldBeSigned(msg.from, listId);
 
 			// read Authentication-Results header
 			if (prefs.getBoolPref("arh.read") &&
@@ -124,7 +123,7 @@ var AuthVerifier = {
 
 			// check if DKIMSignatureHeader exist
 			if (dkimResultV2.signatures.length === 0) {
-				if (!msg.DKIM.signPolicy.shouldBeSigned) {
+				if (!msg.DKIMSignPolicy.shouldBeSigned) {
 					dkimResult = {
 						version : "1.0",
 						result : "none"
@@ -135,8 +134,8 @@ var AuthVerifier = {
 						version : "1.1",
 						result : "PERMFAIL",
 						errorType : "DKIM_POLICYERROR_MISSING_SIG",
-						shouldBeSignedBy : msg.DKIM.signPolicy.sdid,
-						hideFail : msg.DKIM.signPolicy.hideFail,
+						shouldBeSignedBy : msg.DKIMSignPolicy.sdid,
+						hideFail : msg.DKIMSignPolicy.hideFail,
 					};
 
 					log.warn("verify: DKIM_POLICYERROR_MISSING_SIG");
@@ -149,8 +148,8 @@ var AuthVerifier = {
 					selector : dkimResultV2.signatures[0].selector,
 					warnings : dkimResultV2.signatures[0].warnings,
 					errorType : dkimResultV2.signatures[0].errorType,
-					shouldBeSignedBy : msg.DKIM.signPolicy.sdid,
-					hideFail : msg.DKIM.signPolicy.hideFail,
+					shouldBeSignedBy : msg.DKIMSignPolicy.sdid,
+					hideFail : msg.DKIMSignPolicy.hideFail,
 				};
 			}
 
