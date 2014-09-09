@@ -17,7 +17,7 @@
 /* jshint strict:true, moz:true, smarttabs:true, unused:true */
 /* global Components, Services, Task */
 /* global Logging, MsgReader, ARHParser */
-/* global exceptionToStr, DKIM_InternalError */
+/* global exceptionToStr, getDomainFromAddr, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, AuthVerifier */
 
 "use strict";
@@ -255,14 +255,17 @@ function arhDKIMToDkimResult(arhDKIM) {
 			break;
 		case "pass":
 			dkimResult.result = "SUCCESS";
-			let SDID = arhDKIM.propertys.find(function (property) {
-				return (property.type === "header" &&
-					(property.name === "d" || property.name === "i"));
-			});
-			if (SDID) {
-				dkimResult.SDID = SDID.value;
-			}
 			dkimResult.warnings = [];
+			let sdid = arhDKIM.propertys.header.d;
+			let auid = arhDKIM.propertys.header.i;
+			if (sdid || auid) {
+				if (!sdid) {
+					sdid = getDomainFromAddr(auid);
+				} else if (!auid) {
+					auid = "@" + sdid;
+				}
+				dkimResult.SDID = sdid;
+			}
 			break;
 		case "fail":
 		case "policy":

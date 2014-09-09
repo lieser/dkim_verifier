@@ -181,13 +181,13 @@ function parseResinfo(str) {
 	let property_p = special_smtp_verb_p + "|" + Keyword_p;
 	let propspec_p = "(" + ptype_p + ")" + CFWS_op + "\\." + CFWS_op +
 		"(" + property_p + ")" + CFWS_op + "=" + CFWS_op + "(" + pvalue_p + ")";
-	res.propertys = [];
+	res.propertys = {};
+	res.propertys.smtp = {};
+	res.propertys.header = {};
+	res.propertys.body = {};
+	res.propertys.policy = {};
 	while ((reg_match = match_o(str, propspec_p)) !== null) {
-		let prop = {};
-		prop.type = reg_match[1];
-		prop.name = reg_match[2];
-		prop.value = reg_match[3];
-		res.propertys.push(prop);
+		res.propertys[reg_match[1]][reg_match[2]] = reg_match[3]
 	}
 
 	log.debug(res.toSource());
