@@ -120,7 +120,39 @@ var AuthVerifier = {
 			}
 
 			// verify DKIM signature
-			dkimResult = yield DKIM.Verifier.verify2(msg);
+			let dkimResultV2 = yield DKIM.Verifier.verify2(msg);
+
+			// check if DKIMSignatureHeader exist
+			if (dkimResultV2.signatures.length === 0) {
+				if (!msg.DKIM.signPolicy.shouldBeSigned) {
+					dkimResult = {
+						version : "1.0",
+						result : "none"
+					};
+					return;
+				} else {
+					dkimResult = {
+						version : "1.1",
+						result : "PERMFAIL",
+						errorType : "DKIM_POLICYERROR_MISSING_SIG",
+						shouldBeSignedBy : msg.DKIM.signPolicy.sdid,
+						hideFail : msg.DKIM.signPolicy.hideFail,
+					};
+
+					log.warn("verify: DKIM_POLICYERROR_MISSING_SIG");
+				}
+			} else {
+				dkimResult = {
+					version : "1.1",
+					result : dkimResultV2.signatures[0].result,
+					SDID : dkimResultV2.signatures[0].SDID,
+					selector : dkimResultV2.signatures[0].selector,
+					warnings : dkimResultV2.signatures[0].warnings,
+					errorType : dkimResultV2.signatures[0].errorType,
+					shouldBeSignedBy : msg.DKIM.signPolicy.sdid,
+					hideFail : msg.DKIM.signPolicy.hideFail,
+				};
+			}
 
 			// save DKIM result
 			saveDKIMResult(msgHdr, dkimResult);

@@ -4,7 +4,7 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  * 
- * Version: 1.3.0pre1 (23 August 2014)
+ * Version: 1.3.0pre2 (09 September 2014)
  * 
  * Copyright (c) 2013-2014 Philippe Lieser
  * 
@@ -272,7 +272,7 @@ var Verifier = (function() {
 		var DKIMSignature = {
 			original_header : DKIMSignatureHeader,
 			warnings: [],
-			verification_result: {}, // dkimResult object populated by verifySignaturePart2 or by exception handlers
+			verification_result: {}, // dkimSigResultV2 object populated by verifySignaturePart2 or by exception handlers
 			v : null, // Version
 			a_sig : null, // signature algorithm (signing part)
 			a_hash : null, // signature algorithm (hashing part)
@@ -853,21 +853,23 @@ var Verifier = (function() {
 		return hashInput;
 	}
 	
-	/*
+	/**
 	 * handeles Exeption
-	 * returns dkimResult object
+	 * 
+	 * @param {Error} e
+	 * @param {Object} msg
+	 * @param {Object} [DKIMSignature]
+	 * @return {dkimSigResultV2}
 	 */
 	function handleExeption(e, msg, DKIMSignature = {} ) {
 		if (e instanceof DKIM_SigError) {
 			// return result
 			let result = {
-				version : "1.1",
+				version : "1.0",
 				result : "PERMFAIL",
-				errorType : e.errorType,
 				SDID : DKIMSignature.d,
 				selector : DKIMSignature.s,
-				shouldBeSignedBy : msg.shouldBeSigned.sdid,
-				hideFail : msg.shouldBeSigned.hideFail,
+				errorType : e.errorType,
 			};
 
 			log.warn(exceptionToStr(e));
@@ -878,6 +880,8 @@ var Verifier = (function() {
 			let result = {
 				version : "1.0",
 				result : "TEMPFAIL",
+				SDID : DKIMSignature.d,
+				selector : DKIMSignature.s,
 				errorType : e.errorType
 			};
 
@@ -889,29 +893,6 @@ var Verifier = (function() {
 
 			return result;
 		}
-	}
-	
-	/*
-	 * checks if msg is signed, and begins verification if it is
-	 * 
-	 * Generator function.
-	 */
-	function verifyBegin(msg) {
-		// check if DKIMSignatureHeader exist
-		if (msg.headerFields["dkim-signature"] === undefined) {
-			if (!msg.shouldBeSigned.shouldBeSigned) {
-				// return result
-				msg.result = {
-					version : "1.0",
-					result : "none"
-				};
-				return;
-			} else {
-				throw new DKIM_SigError("DKIM_POLICYERROR_MISSING_SIG");
-			}
-		}
-
-		yield processSignatures(msg);
 	}
 
 	/*
@@ -1102,23 +1083,25 @@ var Verifier = (function() {
 		// return result
 		log.debug("Everything is fine");
 		DKIMSignature.verification_result = {
-			version : "1.1",
+			version : "1.0",
 			result : "SUCCESS",
 			SDID : DKIMSignature.d,
 			selector : DKIMSignature.s,
 			warnings : DKIMSignature.warnings,
-			shouldBeSignedBy : msg.shouldBeSigned.sdid,
 		};
 	}
 
-	/*
+	/**
 	 * processes signatures
 	 * 
-	 * Generator function.
+	 * @remark Generator function.
+	 * @param {Object} msg
+	 * @return {dkimSigResultV2[]}
 	 */
 	function processSignatures(msg) {
-		var iDKIMSignatureIdx = 0;
-		var DKIMSignature;
+		let iDKIMSignatureIdx = 0;
+		let DKIMSignature;
+		let sigResults = [];
 
 		log.debug( msg.headerFields["dkim-signature"].length + " DKIM-Signatures found." );
 
@@ -1157,51 +1140,64 @@ var Verifier = (function() {
 
 			log.debug("Adding DKIM-Signature " + (iDKIMSignatureIdx+1) + " to message's signatures list");
 			msg.DKIMSignatures.push( DKIMSignature );
+			sigResults.push(DKIMSignature.verification_result);
 		}
 
-		// at this point all message's DKIM-Signatures are loaded in .DKIMSignatures
-		for (iDKIMSignatureIdx = 0; iDKIMSignatureIdx <= msg.DKIMSignatures.length - 1; iDKIMSignatureIdx++) {
-			DKIMSignature = msg.DKIMSignatures[iDKIMSignatureIdx];
-
-			msg.result = DKIMSignature.verification_result;
-			if (msg.result.result === "SUCCESS") {
-				log.debug("Returning SUCCESS: " + msg.result.toSource());
-				return;
-			}
-		}
-
-		log.debug("Returning last processed result: " + msg.result.toSource());
-		return;
+		throw new Task.Result(sigResults);
 	}
 	
+
 	/**
-	 * The result of the verification.
+	 * The result of the verification (Version 1).
 	 * 
-	 * @typedef {Object} dkimResult
-	 * @property {String} version result version ("1.1")
-	 * @property {String} result "none" / "SUCCESS" / "PERMFAIL" / "TEMPFAIL"
-	 * @property {String} SDID (only if result="SUCCESS" or "PERMFAIL")
-	 * @property {String} selector (only if result="SUCCESS" or "PERMFAIL")
-	 * @property {String[]} warnings (only if result="SUCCESS")
-	 * @property {String} errorType
-	 * @property {String} shouldBeSignedBy
-	 * @property {Boolean} hideFail
+	 * @typedef {Object} dkimResultV1
+	 * @property {String} version
+	 *           result version ("1.0" / "1.1")
+	 * @property {String} result
+	 *           "none" / "SUCCESS" / "PERMFAIL" / "TEMPFAIL"
+	 * @property {String} [SDID]
+	 *           required if result="SUCCESS
+	 * @property {String} [selector]
+	 *           added in version 1.1
+	 * @property {String[]} [warnings]
+	 *           required if result="SUCCESS
+	 * @property {String} [errorType]
+	 *           if result="PERMFAIL: DKIM_SigError.errorType
+	 *           if result="TEMPFAIL: DKIM_InternalError.errorType or Undefined
+	 * @property {String} [shouldBeSignedBy]
+	 *           added in version 1.1
+	 * @property {Boolean} [hideFail]
+	 *           added in  version 1.1
 	 */
-	/*
-		result format:
-		{
-			version : "1.1",
-			result : "none" / "SUCCESS" / "PERMFAIL" / "TEMPFAIL",
-			SDID : string (only if result="SUCCESS" or "PERMFAIL" (since 1.1)),
-			selector : string (only if result="SUCCESS" or "PERMFAIL"; since 1.1),
-			warnings : array (only if result="SUCCESS"),
-			errorType :
-				DKIM_SigError.errorType (only if result="PERMFAIL")
-				DKIM_InternalError.errorType (only if result="TEMPFAIL"; optional)
-			shouldBeSignedBy : string[] (SDID; since 1.1)
-			hideFail : Boolean
-		}
-	*/
+
+	/**
+	 * The result of the verification of a single DKIM signature (Version 2).
+	 * 
+	 * @typedef {Object} dkimSigResultV2
+	 * @property {String} version
+	 *           result version ("1.0")
+	 * @property {String} result
+	 *           "SUCCESS" / "PERMFAIL" / "TEMPFAIL"
+	 * @property {String|Null} SDID
+	 *           null if error occurred before/during parsing of signature
+	 * @property {String|Null} selector
+	 *           null if error occurred before/during parsing of signature
+	 * @property {String[]} [warnings]
+	 *           Array of strings from dkim.properties
+	 *           required if result="SUCCESS"
+	 * @property {String} [errorType]
+	 *           if result="PERMFAIL: DKIM_SigError.errorType
+	 *           if result="TEMPFAIL: DKIM_InternalError.errorType or Undefined
+	 */
+
+	/**
+	 * The result of the verification (Version 2).
+	 * 
+	 * @typedef {Object} dkimResultV2
+	 * @property {String} version
+	 *           result version ("2.0")
+	 * @property {dkimSigResultV2[]} signatures
+	 */
 
 var that = {
 /*
@@ -1223,7 +1219,7 @@ var that = {
 	 * 
 	 * @callback dkimResultCallback
 	 * @param {String} msgURI
-	 * @param {dkimResult} result
+	 * @param {dkimResultV1} result
 	 */
 	
 	/**
@@ -1234,8 +1230,9 @@ var that = {
 	 * @param {dkimResultCallback} dkimResultCallback
 	 */
 	verify: function Verifier_verify(msgURI, dkimResultCallback) {
-		var promise = Task.spawn(function () {
+		let promise = Task.spawn(function () {
 			let msg;
+			let result;
 			try {
 				msg = yield MsgReader.read(msgURI);
 				msg.msgURI = msgURI;
@@ -1244,12 +1241,12 @@ var that = {
 				msg.headerFields = MsgReader.parseHeader(msg.headerPlain);
 
 				// get from address
-				var author = msg.headerFields.from[msg.headerFields.from.length-1];
+				let author = msg.headerFields.from[msg.headerFields.from.length-1];
 				author = author.replace(/^From[ \t]*:/i,"");
 				msg.from = msgHeaderParser.extractHeaderAddressMailboxes(author);
 
 				// get list-id
-				var listId = null;
+				let listId = null;
 				if (msg.headerFields["list-id"]) {
 					listId = msg.headerFields["list-id"][0];
 					listId = msgHeaderParser.extractHeaderAddressMailboxes(listId);
@@ -1258,18 +1255,55 @@ var that = {
 				// check if msg should be signed
 				msg.shouldBeSigned = yield Policy.shouldBeSigned(msg.from, listId);
 
-				yield verifyBegin(msg);
+				let sigResults = yield processSignatures(msg);
+
+				// check if DKIMSignatureHeader exist
+				if (sigResults.length === 0) {
+					if (!msg.shouldBeSigned.shouldBeSigned) {
+						result = {
+							version : "1.0",
+							result : "none"
+						};
+						return;
+					} else {
+						result = {
+							version : "1.1",
+							result : "PERMFAIL",
+							errorType : "DKIM_POLICYERROR_MISSING_SIG",
+							shouldBeSignedBy : msg.shouldBeSigned.sdid,
+							hideFail : msg.shouldBeSigned.hideFail,
+						};
+
+						log.warn("verify: DKIM_POLICYERROR_MISSING_SIG");
+					}
+				} else {
+					result = {
+						version : "1.1",
+						result : sigResults[0].result,
+						SDID : sigResults[0].SDID,
+						selector : sigResults[0].selector,
+						warnings : sigResults[0].warnings,
+						errorType : sigResults[0].errorType,
+						shouldBeSignedBy : msg.shouldBeSigned.sdid,
+						hideFail : msg.shouldBeSigned.hideFail,
+					};
+				}
 			} catch (exception) {
 				if (!msg) {
 					msg = {"msgURI": msgURI};
 				}
-				msg.result = handleExeption(exception, msg);
+				result = {
+					version : "1.0",
+					result : "TEMPFAIL",
+					errorType : exception.errorType
+				};
+				log.warn(exceptionToStr(exception));
 			}
 
-			dkimResultCallback(msg.msgURI, msg.result);
+			dkimResultCallback(msg.msgURI, result);
 		});
 		promise.then(null, function onReject(exception) {
-			log.fatal("verify: "+exception);
+			log.fatal("verify: " + exceptionToStr(exception));
 		});
 	},
 
@@ -1282,21 +1316,18 @@ var that = {
 	 *        .bodyPlain {String}
 	 *        .from {String}
 	 *        .DKIM.signPolicy {Object}
-	 * @return {Promise<dkimResult>}
+	 * @return {Promise<dkimResultV2>}
 	 */
 	verify2: function Verifier_verify2(msg) {
 		var promise = Task.spawn(function () {
-			try {
-				msg.shouldBeSigned = msg.DKIM.signPolicy;
-				yield verifyBegin(msg);
-			} catch (exception) {
-				msg.result = handleExeption(exception, msg);
-			}
-
-			throw new Task.Result(msg.result);
+			msg.shouldBeSigned = msg.DKIM.signPolicy;
+			let res = {};
+			res.version = "2.0";
+			res.signatures = yield processSignatures(msg);
+			throw new Task.Result(res);
 		});
 		promise.then(null, function onReject(exception) {
-			log.warn("verify: "+exception);
+			log.warn("verify2: " + exceptionToStr(exception));
 		});
 		return promise;
 	},
