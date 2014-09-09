@@ -898,37 +898,9 @@ var Verifier = (function() {
 	 * 1. part of verifying the signature (key query excluded)
 	 */
 	function verifySignaturePart1(msg, DKIMSignature) {
-		// error/warning if there is a SDID in the sign rule
-		// that is different from the SDID in the signature
-		if (msg.shouldBeSigned.sdid.length > 0 &&
-		    !msg.shouldBeSigned.sdid.some(function (element/*, index, array*/) {
-		      if (prefs.getBoolPref("policy.signRules.sdid.allowSubDomains")) {
-		        return stringEndsWith(DKIMSignature.d, element);
-		      } else {
-		        return stringEqual(DKIMSignature.d, element);
-		      }
-		    })) {
-			if (prefs.getBoolPref("error.policy.wrong_sdid.asWarning")) {
-				DKIMSignature.warnings.push("DKIM_POLICYERROR_WRONG_SDID");
-			} else {
-				throw new DKIM_SigError( "DKIM_POLICYERROR_WRONG_SDID" );
-			}
-		}
-		
-		// if there is no SDID in the sign rule
-		if (msg.shouldBeSigned.sdid.length === 0) {
-			// warning if from is not in SDID or AUID
-			if (!(stringEndsWith(msg.from, "@"+DKIMSignature.d) ||
-			    stringEndsWith(msg.from, "."+DKIMSignature.d))) {
-				DKIMSignature.warnings.push("DKIM_SIGWARNING_FROM_NOT_IN_SDID");
-				log.debug("Warning: DKIM_SIGWARNING_FROM_NOT_IN_SDID ("+
-					dkimStrings.getString("DKIM_SIGWARNING_FROM_NOT_IN_SDID")+")");
-			} else if (!stringEndsWith(msg.from, DKIMSignature.i)) {
-				DKIMSignature.warnings.push("DKIM_SIGWARNING_FROM_NOT_IN_AUID");
-				log.debug("Warning: DKIM_SIGWARNING_FROM_NOT_IN_AUID ("+
-					dkimStrings.getString("DKIM_SIGWARNING_FROM_NOT_IN_AUID")+")");
-			}
-		}
+		// check SDID and AUID
+		Policy.checkSDID(msg.shouldBeSigned.sdid, msg.from, DKIMSignature.d,
+			DKIMSignature.i, DKIMSignature.warnings);
 
 		var time = Math.round(Date.now() / 1000);
 		// warning if signature expired

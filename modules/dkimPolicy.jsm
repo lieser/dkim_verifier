@@ -1,7 +1,7 @@
 /*
  * dkimPolicy.jsm
  * 
- * Version: 1.1.1 (25 June 2014)
+ * Version: 1.2.0pre1 (09 September 2014)
  * 
  * Copyright (c) 2013-2014 Philippe Lieser
  * 
@@ -342,6 +342,49 @@ var Policy = {
 		return promise;
 	},
 	
+	/**
+	 * Checks the SDID and AUID of a DKIM signatures.
+	 * 
+	 * @param {String[]} allowedSDIDs
+	 * @param {String} from
+	 * @param {String} sdid
+	 * @param {String} auid
+	 * @param {String[]} warnings
+	 * @throws DKIM_SigError
+	 */
+	checkSDID: function (allowedSDIDs, from, sdid, auid, warnings) {
+		// error/warning if there is a SDID in the sign rule
+		// that is different from the SDID in the signature
+		if (allowedSDIDs.length > 0 &&
+		    !allowedSDIDs.some(function (element/*, index, array*/) {
+		      if (prefs.getBoolPref("policy.signRules.sdid.allowSubDomains")) {
+		        return stringEndsWith(sdid, element);
+		      } else {
+		        return stringEqual(sdid, element);
+		      }
+		    })) {
+			if (prefs.getBoolPref("error.policy.wrong_sdid.asWarning")) {
+				warnings.push("DKIM_POLICYERROR_WRONG_SDID");
+				log.debug("Warning: DKIM_POLICYERROR_WRONG_SDID");
+			} else {
+				throw new DKIM_SigError( "DKIM_POLICYERROR_WRONG_SDID" );
+			}
+		}
+
+		// if there is no SDID in the sign rule
+		if (allowedSDIDs.length === 0) {
+			// warning if from is not in SDID or AUID
+			if (!(stringEndsWith(from, "@" + sdid) ||
+			    stringEndsWith(from, "." + sdid))) {
+				warnings.push("DKIM_SIGWARNING_FROM_NOT_IN_SDID");
+				log.debug("Warning: DKIM_SIGWARNING_FROM_NOT_IN_SDID");
+			} else if (!stringEndsWith(from, auid)) {
+				warnings.push("DKIM_SIGWARNING_FROM_NOT_IN_AUID");
+				log.debug("Warning: DKIM_SIGWARNING_FROM_NOT_IN_AUID");
+			}
+		}
+	},
+
 	/**
 	 * Adds should be signed rule if no enabled rule for fromAddress is found
 	 * 
