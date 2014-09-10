@@ -256,11 +256,11 @@ function tryGetString(stringbundle, name) {
  * 
  * @param stringbundle
  * @param {String} name
- * @param {String[]} params
+ * @param {String[]} [params]
  * 
  * @return {String|null}
  */
-function tryGetFormattedString(stringbundle, name, params) {
+function tryGetFormattedString(stringbundle, name, params = []) {
 	"use strict";
 
 	if (!name) {
@@ -321,15 +321,18 @@ function writeStringToTmpFile(string, fileName) {
  * @constructor
  * 
  * @param {String} errorType
+ * @param {String[]} [errorStrParams]
  * 
  * @return {DKIM_SigError}
  */
-function DKIM_SigError(errorType) {
+function DKIM_SigError(errorType, errorStrParams = []) {
 	"use strict";
 
 	this.name = dkimStrings.getString("DKIM_SIGERROR");
 	this.errorType = errorType;
-	this.message = tryGetString(dkimStrings, errorType) ||
+	this.errorStrParams = errorStrParams;
+	this.message =
+		tryGetFormattedString(dkimStrings, errorType, errorStrParams) ||
 		errorType ||
 		dkimStrings.getString("DKIM_SIGERROR_DEFAULT");
 

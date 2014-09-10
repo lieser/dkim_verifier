@@ -17,7 +17,7 @@
 /* jshint strict:true, moz:true, smarttabs:true, unused:true */
 /* global Components, Services, Task */
 /* global Logging, MsgReader, ARHParser */
-/* global exceptionToStr, getDomainFromAddr, DKIM_InternalError */
+/* global dkimStrings, exceptionToStr, getDomainFromAddr, tryGetFormattedString, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, AuthVerifier */
 
 "use strict";
@@ -53,6 +53,30 @@ var AuthVerifier = {
 	get version() { return module_version; },
 
 	/**
+	 * @typedef {Object} AuthResult
+	 * @property {String} version
+	 *           result version ("1.0")
+	 * @property {AuthResultDKIM[]} dkim
+	 * @property {???} spf
+	 * @property {???} dmarc
+	 */
+
+	/**
+	 * @typedef {Object} AuthResultDKIM
+	 * @extends dkimSigResultV2
+	 * @property {Number} res_num
+	 *           10: SUCCESS
+	 *           20: TEMPFAIL
+	 *           30: PERMFAIL
+	 *           35: PERMFAIL treat as no sig
+	 *           40: no sig
+	 * @property {String} result_str
+	 *           localized result string
+	 * @property {String[]} [warnings_str]
+	 *           localized warnings
+	 */
+
+	/**
 	 * Verifies the authentication of the msg.
 	 *
 	 * @param {nsIMsgDBHdr} msgHdr
@@ -62,10 +86,10 @@ var AuthVerifier = {
 	verify: function _authVerifier_verify(msgHdr, msgURI) {
 		var promise = Task.spawn(function () {
 			// check for saved DKIM result
-			let dkimResult = loadDKIMResult(msgHdr);
-			if (dkimResult !== null) {
-				throw new Task.Result(dkimResultToAuthResult(dkimResult));
-			}
+			// let dkimResult = loadDKIMResult(msgHdr);
+			// if (dkimResult !== null) {
+				// throw new Task.Result(dkimResult_to_AuthResult(dkimResult));
+			// }
 
 			// get msgURI if not specified
 			if (!msgURI) {
@@ -97,66 +121,24 @@ var AuthVerifier = {
 			// check if msg should be signed by DKIM
 			msg.DKIMSignPolicy = yield DKIM.Policy.shouldBeSigned(msg.from, listId);
 
+			let authResult;
+
 			// read Authentication-Results header
-			if (prefs.getBoolPref("arh.read") &&
-			    msg.headerFields["authentication-results"]) {
-				for (let i = 0; i < msg.headerFields["authentication-results"].length; i++) {
-					let arh = ARHParser.parse(msg.headerFields["authentication-results"][i]);
-					let arhDKIM = arh.resinfo.find(function (element) {
-						return element.method === "dkim";
-					});
-					let arhSPF = arh.resinfo.find(function (element) {
-						return element.method === "spf";
-					});
-					let arhDMARC = arh.resinfo.find(function (element) {
-						return element.method === "dmarc";
-					});
-					if (arhDKIM) {
-						throw new Task.Result(dkimResultToAuthResult(
-							arhDKIMToDkimResult(arhDKIM)));
-					}
-				}
-			}
+			authResult = getARHResult(msg);
 
-			// verify DKIM signature
-			let dkimResultV2 = yield DKIM.Verifier.verify2(msg);
-
-			// check if DKIMSignatureHeader exist
-			if (dkimResultV2.signatures.length === 0) {
-				if (!msg.DKIMSignPolicy.shouldBeSigned) {
-					dkimResult = {
-						version : "1.0",
-						result : "none"
-					};
-					return;
-				} else {
-					dkimResult = {
-						version : "1.1",
-						result : "PERMFAIL",
-						errorType : "DKIM_POLICYERROR_MISSING_SIG",
-						shouldBeSignedBy : msg.DKIMSignPolicy.sdid,
-						hideFail : msg.DKIMSignPolicy.hideFail,
-					};
-
-					log.warn("verify: DKIM_POLICYERROR_MISSING_SIG");
-				}
-			} else {
-				dkimResult = {
-					version : "1.1",
-					result : dkimResultV2.signatures[0].result,
-					SDID : dkimResultV2.signatures[0].SDID,
-					selector : dkimResultV2.signatures[0].selector,
-					warnings : dkimResultV2.signatures[0].warnings,
-					errorType : dkimResultV2.signatures[0].errorType,
-					shouldBeSignedBy : msg.DKIMSignPolicy.sdid,
-					hideFail : msg.DKIMSignPolicy.hideFail,
+			if (!authResult) {
+				// verify DKIM signatures
+				let dkimResultV2 = yield DKIM.Verifier.verify2(msg);
+				authResult = {
+					version: "1.0",
+					dkim: dkimResultV2.signatures.map(dkimSigResultV2_to_AuthResultDKIM),
 				};
 			}
 
 			// save DKIM result
-			saveDKIMResult(msgHdr, dkimResult);
+			// saveDKIMResult(msgHdr, dkimResult);
 
-			throw new Task.Result(dkimResultToAuthResult(dkimResult));
+			throw new Task.Result(authResult);
 		});
 		promise.then(null, function onReject(exception) {
 			log.warn(exceptionToStr(exception));
@@ -180,6 +162,71 @@ var AuthVerifier = {
 		return promise;
 	},
 };
+
+/**
+ * Get the Authentication-Results header as an AuthResult.
+ * 
+ * @param {Object} msg
+ * @return {AuthResult|Null}
+ */
+function getARHResult(msg) {
+	if (!prefs.getBoolPref("arh.read") ||
+	    !msg.headerFields["authentication-results"]) {
+		return null;
+	}
+
+	// get DKIM, SPF and DMARC res
+	let arhDKIM = [];
+	let arhSPF = [];
+	let arhDMARC = [];
+	for (let i = 0; i < msg.headerFields["authentication-results"].length; i++) {
+		let arh = ARHParser.parse(msg.headerFields["authentication-results"][i]);
+		arhDKIM = arhDKIM.concat(arh.resinfo.filter(function (element) {
+			return element.method === "dkim";
+		}));
+		arhSPF = arhSPF.concat(arh.resinfo.filter(function (element) {
+			return element.method === "spf";
+		}));
+		arhDMARC = arhDMARC.concat(arh.resinfo.filter(function (element) {
+			return element.method === "dmarc";
+		}));
+	}
+
+	// convert DKIM results
+	let dkimSigResults = arhDKIM.map(arhDKIM_to_dkimSigResultV2);
+
+	// check for signature existents
+	DKIM.Verifier.checkForSignatureExsistens(msg, dkimSigResults);
+
+	// check SDID and AUID of DKIM results
+	for (let i = 0; i < dkimSigResults.length; i++) {
+		if (dkimSigResults[i].result === "SUCCESS") {
+			try {
+				DKIM.Policy.checkSDID(
+					msg.DKIMSignPolicy.sdid,
+					msg.from,
+					dkimSigResults[i].sdid,
+					dkimSigResults[i].auid,
+					dkimSigResults[i].warnings
+				);
+			} catch(exception) {
+				dkimSigResults[i] = DKIM.Verifier.handleExeption(
+					exception,
+					msg,
+					{d: dkimSigResults[i].sdid, i: dkimSigResults[i].auid}
+				);
+			}
+		}
+	}
+
+	let authResult = {
+		version: "1.0",
+		dkim: dkimSigResults.map(dkimSigResultV2_to_AuthResultDKIM),
+		spf: arhSPF,
+		dmac: arhDMARC,
+	};
+	return authResult;
+}
 
 /**
  * Save DKIM result
@@ -243,18 +290,18 @@ function loadDKIMResult(msgHdr) {
  * Convert DKIM ARHresinfo to dkimResult
  * 
  * @param {ARHresinfo} arhDKIM
- * @return {dkimResult}
+ * @return {dkimSigResultV2}
  */
-function arhDKIMToDkimResult(arhDKIM) {
-	let dkimResult = {};
-	dkimResult.version = "1.0";
+function arhDKIM_to_dkimSigResultV2(arhDKIM) {
+	let dkimSigResult = {};
+	dkimSigResult.version = "2.0";
 	switch (arhDKIM.result) {
 		case "none":
-			dkimResult.result = "none";
+			dkimSigResult.result = "none";
 			break;
 		case "pass":
-			dkimResult.result = "SUCCESS";
-			dkimResult.warnings = [];
+			dkimSigResult.result = "SUCCESS";
+			dkimSigResult.warnings = [];
 			let sdid = arhDKIM.propertys.header.d;
 			let auid = arhDKIM.propertys.header.i;
 			if (sdid || auid) {
@@ -263,40 +310,93 @@ function arhDKIMToDkimResult(arhDKIM) {
 				} else if (!auid) {
 					auid = "@" + sdid;
 				}
-				dkimResult.SDID = sdid;
+				dkimSigResult.sdid = sdid;
+				dkimSigResult.auid = auid;
 			}
 			break;
 		case "fail":
 		case "policy":
 		case "neutral":
 		case "permerror":
-			dkimResult.result = "PERMFAIL";
+			dkimSigResult.result = "PERMFAIL";
 			if (arhDKIM.reason) {
-				dkimResult.errorType = arhDKIM.reason;
+				dkimSigResult.errorType = arhDKIM.reason;
 			} else {
-				dkimResult.errorType = "";
+				dkimSigResult.errorType = "";
 			}
 			break;
 		case "temperror":
-			dkimResult.result = "TEMPFAIL";
+			dkimSigResult.result = "TEMPFAIL";
 			if (arhDKIM.reason) {
-				dkimResult.errorType = arhDKIM.reason;
+				dkimSigResult.errorType = arhDKIM.reason;
 			} else {
-				dkimResult.errorType = "";
+				dkimSigResult.errorType = "";
 			}
 			break;
 		default:
-			throw new DKIM_InternalError("invalid dkim result in arh");
+			throw new DKIM_InternalError("invalid dkim result in arh: " +
+				arhDKIM.result);
 	}
-	return dkimResult;
+	return dkimSigResult;
 }
 
 /**
- * Convert dkimResult to AuthResult
+ * Convert dkimResultV1 to dkimResultV2
  * 
- * @param {dkimResult} dkimResult
- * @return {AuthResult}
+ * @param {dkimResultV1} dkimResult
+ * @return {dkimResultV2}
  */
-function dkimResultToAuthResult(dkimResult) {
-	return dkimResult;
+function dkimResultV1_to_dkimResultV2(dkimResultV1) {
+	let dkimResultV2 = dkimResultV1;
+	return dkimResultV2;
+}
+
+/**
+ * Convert dkimSigResultV2 to AuthResultDKIM
+ * 
+ * @param {dkimSigResultV2} dkimSigResult
+ * @return {AuthResultDKIM}
+ * @throws DKIM_InternalError
+ */
+function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) {
+	let authResultDKIM = dkimSigResult;
+	switch(dkimSigResult.result) {
+		case "SUCCESS":
+			authResultDKIM.res_num = 10;
+			authResultDKIM.result_str = dkimStrings.getFormattedString("SUCCESS",
+				[dkimSigResult.sdid]);
+			authResultDKIM.warnings_str = dkimSigResult.warnings.map(function(e) {
+				return tryGetFormattedString(dkimStrings, e.name, e.params) || e.name;
+			});
+			break;
+		case "TEMPFAIL":
+			authResultDKIM.res_num = 20;
+			authResultDKIM.result_str =
+				tryGetFormattedString(dkimStrings, dkimSigResult.errorType,
+					dkimSigResult.errorStrParams) ||
+				dkimSigResult.errorType ||
+				dkimStrings.getString("DKIM_INTERNALERROR_NAME");
+			break;
+		case "PERMFAIL":
+			if (dkimSigResult.hideFail) {
+				authResultDKIM.res_num = 35;
+			} else {
+				authResultDKIM.res_num = 30;
+			}
+			let errorMsg =
+				tryGetFormattedString(dkimStrings, dkimSigResult.errorType,
+					dkimSigResult.errorStrParams) ||
+				dkimSigResult.errorType;
+			authResultDKIM.result_str = dkimStrings.getFormattedString("PERMFAIL",
+				[errorMsg]);
+			break;
+		case "none":
+			authResultDKIM.res_num = 40;
+			authResultDKIM.result_str = dkimStrings.getString("NOSIG");
+			break;
+		default:
+			throw new DKIM_InternalError("unkown result: " + dkimSigResult.result);
+	}
+
+	return authResultDKIM;
 }

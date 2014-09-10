@@ -119,117 +119,71 @@ DKIM_Verifier.Display = (function() {
 	 * handeles Exeption
 	 */
 	function handleExeption(e) {
-		var result;
-		
-		// show result
-		result = {
-			version : "1.0",
-			result : "TEMPFAIL",
-			errorType : e.errorType
-		};
-		displayResult(result);
-	
+		// log error
 		if (e instanceof DKIM_Verifier.DKIM_InternalError) {
 			log.error(DKIM_Verifier.exceptionToStr(e));
 		} else {
 			log.fatal(DKIM_Verifier.exceptionToStr(e));
 		}
+
+		// show error
+		let authResultDKIM = {
+			version : "2.0",
+			result : "TEMPFAIL",
+			errorType : e.errorType,
+			res_num : 20,
+			result_str : dkimStrings.getString("DKIM_INTERNALERROR_NAME"),
+		};
+		let authResult = {
+			version: "1.0",
+			dkim: [authResultDKIM],
+		};
+		displayResult(authResult);
 	}
 		
-	/*
+	/**
 	 * display result
+	 * 
+	 * @param {AuthResult} result
 	 */
 	function displayResult(result) {
-		var str;
-	
-		header.dkimResult = result;
-		statusbarpanel.dkimStatus = result.result;
-		switch(result.result) {
-			case "none":
-				header.value = dkimStrings.getString("NOSIG");
-				that.setCollapsed(40);
-				setValue(dkimStrings.getString("NOSIG"));
+		header.dkimResult = result.dkim[0];
+		statusbarpanel.dkimStatus = result.dkim[0].result;
+		that.setCollapsed(result.dkim[0].res_num);
+		header.value = result.dkim[0].result_str;
+		setValue(result.dkim[0].result_str);
 
-				// highlight from header
-				highlightHeader("nosig");
-				
-				break;
-			case "SUCCESS":
-				that.setCollapsed(10);
-				str = dkimStrings.getFormattedString("SUCCESS", [result.SDID]);
-				header.value = str;
-				setValue(str);
-				
-				// show warnings
-				if (result.warnings.length > 0) {
-					var warnings = result.warnings.map(function(e) {
-						if (e === "DKIM_POLICYERROR_WRONG_SDID") {
-							return DKIM_Verifier.
-								tryGetFormattedString(dkimStrings, e, [result.shouldBeSignedBy]) || e;
-						} else {
-							return DKIM_Verifier.tryGetString(dkimStrings, e) || e;
-						}
-					});
-					setWarnings(warnings);
-				}
-				
-				// highlight from header
-				if (result.warnings.length === 0) {
+		switch(result.dkim[0].res_num) {
+			case 10:
+				if (result.dkim[0].warnings_str.length === 0) {
 					highlightHeader("success");
 				} else {
+					setWarnings(result.dkim[0].warnings_str);
 					highlightHeader("warning");
 				}
-				
 				break;
-			case "PERMFAIL":
-				that.setCollapsed(30);
-				var errorMsg;
-				switch (result.errorType) {
-					case "DKIM_POLICYERROR_MISSING_SIG":
-					case "DKIM_POLICYERROR_WRONG_SDID":
-						errorMsg = DKIM_Verifier.
-							tryGetFormattedString(dkimStrings, result.errorType, [result.shouldBeSignedBy]) ||
-							result.errorType;
-						policyAddUserExceptionButton.disabled = false;
-						break;
-					default :
-						errorMsg = DKIM_Verifier.tryGetString(dkimStrings, result.errorType) ||
-							result.errorType;
-				}
-				str = dkimStrings.getFormattedString("PERMFAIL", [errorMsg]);
-				header.value = str;
-				setValue(str);
-
-				// if domain is testing DKIM
-				// or hideFail is set to true,
-				// treat msg as not signed
-				if (result.errorType === "DKIM_SIGERROR_KEY_TESTMODE" ||
-				    result.hideFail) {
-					that.setCollapsed(40);
-					// highlight from header
-					highlightHeader("nosig");
-					break;
-				}
-				
-				// highlight from header
-				highlightHeader("permfail");
-				
-				break;
-			case "TEMPFAIL":
-				that.setCollapsed(20);
-				
-				str = DKIM_Verifier.tryGetString(dkimStrings, result.errorType) ||
-					result.errorType ||
-					dkimStrings.getString("DKIM_INTERNALERROR_NAME");
-				header.value = str;
-				setValue(str);
-				
-				// highlight from header
+			case 20:
 				highlightHeader("tempfail");
-				
+				break;
+			case 30:
+				highlightHeader("permfail");
+				break;
+			case 35:
+			case 40:
+				highlightHeader("nosig");
 				break;
 			default:
-				throw new DKIM_Verifier.DKIM_InternalError("unkown result");
+				throw new DKIM_Verifier.DKIM_InternalError("unkown res_num: " +
+					result.dkim[0].res_num);
+		}
+
+		// policyAddUserExceptionButton
+		if (result.dkim[0].errorType === "DKIM_POLICYERROR_MISSING_SIG" ||
+		    result.dkim[0].errorType === "DKIM_POLICYERROR_WRONG_SDID" ||
+		    ( result.dkim[0].warnings &&
+		      result.dkim[0].warnings.indexOf("DKIM_POLICYERROR_WRONG_SDID") !== -1
+		    )) {
+			policyAddUserExceptionButton.disabled = false;
 		}
 	}
 	

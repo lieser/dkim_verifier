@@ -242,7 +242,7 @@ var Verifier = (function() {
 
 		// warning if key is short
 		if (m_hex.length * 4 < 1024) {
-			warnings.push("DKIM_SIGWARNING_KEYSMALL");
+			warnings.push({name: "DKIM_SIGWARNING_KEYSMALL"});
 			log.debug("Warning: DKIM_SIGWARNING_KEYSMALL");
 		}
 
@@ -548,7 +548,7 @@ var Verifier = (function() {
 				case 0: // error
 					throw exception;
 				case 1: // warning
-					DKIMSignature.warnings.push("DKIM_SIGERROR_ILLFORMED_I");
+					DKIMSignature.warnings.push({name: "DKIM_SIGERROR_ILLFORMED_I"});
 					break;
 				case 2: // ignore
 					break;
@@ -599,7 +599,7 @@ var Verifier = (function() {
 				case 0: // error
 					throw exception;
 				case 1: // warning
-					DKIMSignature.warnings.push("DKIM_SIGERROR_ILLFORMED_S");
+					DKIMSignature.warnings.push({name: "DKIM_SIGERROR_ILLFORMED_S"});
 					break;
 				case 2: // ignore
 					break;
@@ -844,7 +844,7 @@ var Verifier = (function() {
 				throw new DKIM_SigError("DKIM_SIGERROR_TOOLARGE_L");
 			} else if (DKIMSignature.l < bodyCanon.length){
 				// lenght tag smaller when body size
-				DKIMSignature.warnings.push("DKIM_SIGWARNING_SMALL_L");
+				DKIMSignature.warnings.push({name: "DKIM_SIGWARNING_SMALL_L"});
 				log.debug("Warning: DKIM_SIGWARNING_SMALL_L ("+
 					dkimStrings.getString("DKIM_SIGWARNING_SMALL_L")+")");
 			}
@@ -933,11 +933,14 @@ var Verifier = (function() {
 		if (e instanceof DKIM_SigError) {
 			// return result
 			let result = {
-				version : "1.0",
+				version : "2.0",
 				result : "PERMFAIL",
-				SDID : DKIMSignature.d,
+				sdid : DKIMSignature.d,
+				auid : DKIMSignature.i,
 				selector : DKIMSignature.s,
 				errorType : e.errorType,
+				hideFail : e.errorType === "DKIM_SIGERROR_KEY_TESTMODE" ||
+					msg.DKIMSignPolicy.hideFail,
 			};
 
 			log.warn(exceptionToStr(e));
@@ -946,9 +949,10 @@ var Verifier = (function() {
 		} else {
 			// return result
 			let result = {
-				version : "1.0",
+				version : "2.0",
 				result : "TEMPFAIL",
-				SDID : DKIMSignature.d,
+				sdid : DKIMSignature.d,
+				auid : DKIMSignature.i,
 				selector : DKIMSignature.s,
 				errorType : e.errorType
 			};
@@ -969,9 +973,9 @@ var Verifier = (function() {
 	 * @remark Generator function.
 	 * @param {Object} msg
 	 * @param {String} DKIMSignatureHeader
+	 * @return {dkimSigResultV2}
 	 * @throws DKIM_SigError
 	 * @throws DKIM_InternalError
-	 * @return {dkimSigResultV2}
 	 */
 	function verifySignature(msg, DKIMSignatureHeader) {
 		var DKIMSignature = newDKIMSignature(DKIMSignatureHeader);
@@ -987,12 +991,12 @@ var Verifier = (function() {
 		var time = Math.round(Date.now() / 1000);
 		// warning if signature expired
 		if (DKIMSignature.x !== null && DKIMSignature.x < time) {
-			DKIMSignature.warnings.push("DKIM_SIGWARNING_EXPIRED");
+			DKIMSignature.warnings.push({name: "DKIM_SIGWARNING_EXPIRED"});
 			log.debug("Warning: DKIM_SIGWARNING_EXPIRED");
 		}
 		// warning if signature in future
 		if (DKIMSignature.t !== null && DKIMSignature.t > time) {
-			DKIMSignature.warnings.push("DKIM_SIGWARNING_FUTURE");
+			DKIMSignature.warnings.push({name: "DKIM_SIGWARNING_FUTURE"});
 			log.debug("Warning: DKIM_SIGWARNING_FUTURE");
 		}
 		
@@ -1013,9 +1017,9 @@ var Verifier = (function() {
 		if (!DKIMSignature.keyQueryResult.secure) {
 			switch (prefs.getIntPref("error.policy.key_insecure.treatAs")) {
 				case 0: // error
-					throw new DKIM_SigError( "DKIM_POLICYERROR_KEY_INSECURE" );
+					throw new DKIM_SigError("DKIM_POLICYERROR_KEY_INSECURE");
 				case 1: // warning
-					DKIMSignature.warnings.push("DKIM_POLICYERROR_KEY_INSECURE");
+					DKIMSignature.warnings.push({name: "DKIM_POLICYERROR_KEY_INSECURE"});
 					log.debug("Warning: DKIM_POLICYERROR_KEY_INSECURE");
 					break;
 				case 2: // ignore
@@ -1031,7 +1035,7 @@ var Verifier = (function() {
 		// check that the testing flag is not set
 		if (DKIMSignature.DKIMKey.t_array.indexOf("y") !== -1) {
 			if (prefs.getBoolPref("error.key_testmode.ignore")) {
-				DKIMSignature.warnings.push("DKIM_SIGERROR_KEY_TESTMODE");
+				DKIMSignature.warnings.push({name: "DKIM_SIGERROR_KEY_TESTMODE"});
 				log.debug("Warning: DKIM_SIGERROR_KEY_TESTMODE");
 			} else {
 				throw new DKIM_SigError( "DKIM_SIGERROR_KEY_TESTMODE" );
@@ -1080,7 +1084,8 @@ var Verifier = (function() {
 		var verification_result = {
 			version : "1.0",
 			result : "SUCCESS",
-			SDID : DKIMSignature.d,
+			sdid : DKIMSignature.d,
+			auid : DKIMSignature.i,
 			selector : DKIMSignature.s,
 			warnings : DKIMSignature.warnings,
 		};
@@ -1128,7 +1133,36 @@ var Verifier = (function() {
 
 		throw new Task.Result(sigResults);
 	}
-	
+
+	/**
+	 * Checks if at least on signature exists.
+	 * If not, adds one to signatures with result "no sig" or "missing sig".
+	 * 
+	 * @param {Object} msg
+	 * @param {dkimSigResultV2[]} signatures
+	 */
+	function checkForSignatureExsistens(msg, signatures) {
+		// check if a DKIM signature exists
+		if (signatures.length === 0) {
+			let dkimSigResultV2;
+			if (!msg.DKIMSignPolicy.shouldBeSigned) {
+				dkimSigResultV2 = {
+					version: "2.0",
+					result: "none",
+				};
+			} else {
+				dkimSigResultV2 = handleExeption(
+					new DKIM_SigError(
+						"DKIM_POLICYERROR_MISSING_SIG",
+						[msg.DKIMSignPolicy.shouldBeSignedBy]
+					),
+					msg
+				);
+			}
+
+			signatures.push(dkimSigResultV2);
+		}
+	}
 
 	/**
 	 * The result of the verification (Version 1).
@@ -1158,19 +1192,22 @@ var Verifier = (function() {
 	 * 
 	 * @typedef {Object} dkimSigResultV2
 	 * @property {String} version
-	 *           result version ("1.0")
+	 *           result version ("2.0")
 	 * @property {String} result
-	 *           "SUCCESS" / "PERMFAIL" / "TEMPFAIL"
-	 * @property {String|Null} SDID
-	 *           null if error occurred before/during parsing of signature
-	 * @property {String|Null} selector
-	 *           null if error occurred before/during parsing of signature
-	 * @property {String[]} [warnings]
-	 *           Array of strings from dkim.properties
+	 *           "none" / "SUCCESS" / "PERMFAIL" / "TEMPFAIL"
+	 * @property {String} [sdid]
+	 * @property {String} [auid]
+	 * @property {String} [selector]
+	 * @property {Object<name: String, [params]: String[]>[]} [warnings]
+	 *           Array of warning_objects.
+	 *             warning_objects.name: strings from dkim.properties
+	 *             warning_objects.params: optional params for formatted string
 	 *           required if result="SUCCESS"
 	 * @property {String} [errorType]
 	 *           if result="PERMFAIL: DKIM_SigError.errorType
 	 *           if result="TEMPFAIL: DKIM_InternalError.errorType or Undefined
+	 * @property {String} [errorStrParams]
+	 * @property {Boolean} [hideFail]
 	 */
 
 	/**
@@ -1239,36 +1276,19 @@ var that = {
 				let sigResults = yield processSignatures(msg);
 
 				// check if DKIMSignatureHeader exist
-				if (sigResults.length === 0) {
-					if (!msg.DKIMSignPolicy.shouldBeSigned) {
-						result = {
-							version : "1.0",
-							result : "none"
-						};
-						return;
-					} else {
-						result = {
-							version : "1.1",
-							result : "PERMFAIL",
-							errorType : "DKIM_POLICYERROR_MISSING_SIG",
-							shouldBeSignedBy : msg.DKIMSignPolicy.sdid,
-							hideFail : msg.DKIMSignPolicy.hideFail,
-						};
+				checkForSignatureExsistens(msg, sigResults);
 
-						log.warn("verify: DKIM_POLICYERROR_MISSING_SIG");
-					}
-				} else {
-					result = {
-						version : "1.1",
-						result : sigResults[0].result,
-						SDID : sigResults[0].SDID,
-						selector : sigResults[0].selector,
-						warnings : sigResults[0].warnings,
-						errorType : sigResults[0].errorType,
-						shouldBeSignedBy : msg.DKIMSignPolicy.sdid,
-						hideFail : msg.DKIMSignPolicy.hideFail,
-					};
-				}
+				result = {
+					version : "1.1",
+					result : sigResults[0].result,
+					SDID : sigResults[0].sdid,
+					selector : sigResults[0].selector,
+					warnings : sigResults[0].warnings &&
+						sigResults[0].warnings.map(function (e) {return e.name;}),
+					errorType : sigResults[0].errorType,
+					shouldBeSignedBy : msg.DKIMSignPolicy.sdid,
+					hideFail : sigResults[0].hideFail,
+				};
 			} catch (exception) {
 				if (!msg) {
 					msg = {"msgURI": msgURI};
@@ -1304,6 +1324,7 @@ var that = {
 			let res = {};
 			res.version = "2.0";
 			res.signatures = yield processSignatures(msg);
+			checkForSignatureExsistens(msg, res.signatures);
 			throw new Task.Result(res);
 		});
 		promise.then(null, function onReject(exception) {
@@ -1311,12 +1332,22 @@ var that = {
 		});
 		return promise;
 	},
-	
+
 	/*
 	 * make log public
 	 */
 	log : log,
 	
+	/*
+	 * make handleExeption public
+	 */
+	handleExeption : handleExeption,
+
+	/*
+	 * make checkForSignatureExsistens public
+	 */
+	checkForSignatureExsistens : checkForSignatureExsistens,
+
 	/*
 	 * make parsing of the tag-value list public
 	 */

@@ -376,10 +376,11 @@ var Policy = {
 		      }
 		    })) {
 			if (prefs.getBoolPref("error.policy.wrong_sdid.asWarning")) {
-				warnings.push("DKIM_POLICYERROR_WRONG_SDID");
+				warnings.push(
+					{name: "DKIM_POLICYERROR_WRONG_SDID",	params: [allowedSDIDs]});
 				log.debug("Warning: DKIM_POLICYERROR_WRONG_SDID");
 			} else {
-				throw new DKIM_SigError( "DKIM_POLICYERROR_WRONG_SDID" );
+				throw new DKIM_SigError("DKIM_POLICYERROR_WRONG_SDID", [allowedSDIDs]);
 			}
 		}
 
@@ -388,10 +389,10 @@ var Policy = {
 			// warning if from is not in SDID or AUID
 			if (!(stringEndsWith(from, "@" + sdid) ||
 			    stringEndsWith(from, "." + sdid))) {
-				warnings.push("DKIM_SIGWARNING_FROM_NOT_IN_SDID");
+				warnings.push({name: "DKIM_SIGWARNING_FROM_NOT_IN_SDID"});
 				log.debug("Warning: DKIM_SIGWARNING_FROM_NOT_IN_SDID");
 			} else if (!stringEndsWith(from, auid)) {
-				warnings.push("DKIM_SIGWARNING_FROM_NOT_IN_AUID");
+				warnings.push({name: "DKIM_SIGWARNING_FROM_NOT_IN_AUID"});
 				log.debug("Warning: DKIM_SIGWARNING_FROM_NOT_IN_AUID");
 			}
 		}
