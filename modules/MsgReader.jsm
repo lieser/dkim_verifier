@@ -15,7 +15,7 @@
 
 // options for JSHint
 /* jshint strict:true, moz:true, smarttabs:true, unused:true */
-/* global Components, Promise */
+/* global Components, Dict, Promise */
 /* global ModuleGetter, Logging */
 /* global DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, MsgReader */
@@ -31,6 +31,8 @@ var EXPORTED_SYMBOLS = [
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
+
+Cu.import("resource://gre/modules/Dict.jsm");
 
 Cu.import("resource://dkim_verifier/ModuleGetter.jsm");
 ModuleGetter.getPromise(this);
@@ -166,11 +168,12 @@ var MsgReader = {
 	 * Parses the header of a message.
 	 *
 	 * @param {String} headerPlain
-	 * @return {Object}
-	 *         .<header name> {Array[String]}
+	 * @return {Dict}
+	 *           key: {String} <header name>
+	 *           value: {Array[String]}
 	 */
 	parseHeader: function _MsgReader_parseHeader(headerPlain) {
-		var headerFields = {};
+		var headerFields = new Dict();
 
 		// split header fields
 		var headerArray = headerPlain.split(/\r\n(?=\S|$)/);
@@ -180,10 +183,10 @@ var MsgReader = {
 			hName = headerArray[i].match(/\S+(?=\s*:)/);
 			if (hName !== null) {
 				hName = hName[0].toLowerCase();
-				if (headerFields[hName] === undefined) {
-					headerFields[hName] = [];
+				if (!headerFields.has(hName)) {
+					headerFields.set(hName, []);
 				}
-				headerFields[hName].push(headerArray[i]+"\r\n");
+				headerFields.get(hName).push(headerArray[i]+"\r\n");
 			}
 		}
 

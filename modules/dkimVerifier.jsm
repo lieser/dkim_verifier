@@ -895,7 +895,7 @@ var Verifier = (function() {
 		for(var i = 0; i <  DKIMSignature.h_array.length; i++) {
 			// if multiple instances of the same header field are signed
 			// include them in reverse order (from bottom to top)
-			headerFieldArray = msg.headerFields[DKIMSignature.h_array[i]].slice();
+			headerFieldArray = msg.headerFields.get(DKIMSignature.h_array[i]).slice();
 			// nonexisting header field MUST be treated as the null string
 			if (headerFieldArray !== undefined) {
 				headerField = headerFieldArray.pop();
@@ -1105,7 +1105,8 @@ var Verifier = (function() {
 		// contains the result of all DKIM-Signatures which have been verified
 		let sigResults = [];
 
-		log.debug( msg.headerFields["dkim-signature"].length + " DKIM-Signatures found." );
+		log.debug(msg.headerFields.get("dkim-signature").length +
+			" DKIM-Signatures found.");
 
 		// RFC6376 - 3.5.  The DKIM-Signature Header Field
 		// "The DKIM-Signature header field SHOULD be treated as though it were a
@@ -1113,13 +1114,13 @@ var Verifier = (function() {
 		// SHOULD NOT be reordered and SHOULD be prepended to the message."
 		//
 		// The first added signature is verified first.
-		for (iDKIMSignatureIdx = msg.headerFields["dkim-signature"].length - 1;
+		for (iDKIMSignatureIdx = msg.headerFields.get("dkim-signature").length - 1;
 		     iDKIMSignatureIdx >=0; iDKIMSignatureIdx--) {
 			let sigRes;
 			try {
 				log.debug("Verifying DKIM-Signature " + (iDKIMSignatureIdx+1) + " ...");
 				sigRes = yield verifySignature(msg,
-					msg.headerFields["dkim-signature"][iDKIMSignatureIdx]);
+					msg.headerFields.get("dkim-signature")[iDKIMSignatureIdx]);
 				log.debug("Verified DKIM-Signature " + (iDKIMSignatureIdx+1));
 			} catch(e) {
 				sigRes = handleExeption(e, msg, DKIMSignature);
@@ -1293,8 +1294,9 @@ var that = {
 	 * Verifies the message given message.
 	 * 
 	 * @param {Object} msg
-	 *        .headerFields {Object}
-	 *                      .<header name> {Array[String]}
+	 *        .headerFields {Dict}
+	 *          key: {String} <header name>
+	 *          value: {Array[String]}
 	 *        .bodyPlain {String}
 	 *        .from {String}
 	 *        .DKIMSignPolicy {DKIMSignPolicy}
@@ -1319,8 +1321,9 @@ var that = {
 	 * 
 	 * @param {String} msgURI
 	 * @return {Promise<Object>}
-	 *         .headerFields {Object}
-	 *                      .<header name> {Array[String]}
+	 *         .headerFields {Dict}
+	 *           key: {String} <header name>
+	 *           value: {Array[String]}
 	 *         .bodyPlain {String}
 	 *         .from {String}
 	 *         .DKIMSignPolicy {DKIMSignPolicy}
@@ -1338,14 +1341,15 @@ var that = {
 				createInstance(Ci.nsIMsgHeaderParser);
 
 			// get from address
-			let author = msg.headerFields.from[msg.headerFields.from.length-1];
+			let author = msg.headerFields.
+				get("from")[msg.headerFields.get("from").length-1];
 			author = author.replace(/^From[ \t]*:/i,"");
 			msg.from = msgHeaderParser.extractHeaderAddressMailboxes(author);
 
 			// get list-id
 			let listId = null;
-			if (msg.headerFields["list-id"]) {
-				listId = msg.headerFields["list-id"][0];
+			if (msg.headerFields.has("list-id")) {
+				listId = msg.headerFields.get("list-id")[0];
 				listId = msgHeaderParser.extractHeaderAddressMailboxes(listId);
 			}
 

@@ -16,7 +16,7 @@
 // options for JSHint
 /* jshint strict:true, moz:true, smarttabs:true, unused:true */
 /* global Components, Services, Task */
-/* global Logging, MsgReader, ARHParser */
+/* global Logging, ARHParser */
 /* global dkimStrings, exceptionToStr, getDomainFromAddr, tryGetFormattedString, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, AuthVerifier */
 
@@ -149,7 +149,7 @@ var AuthVerifier = {
  */
 function getARHResult(msg) {
 	if (!prefs.getBoolPref("arh.read") ||
-	    !msg.headerFields["authentication-results"]) {
+	    !msg.headerFields.has("authentication-results")) {
 		return null;
 	}
 
@@ -157,8 +157,8 @@ function getARHResult(msg) {
 	let arhDKIM = [];
 	let arhSPF = [];
 	let arhDMARC = [];
-	for (let i = 0; i < msg.headerFields["authentication-results"].length; i++) {
-		let arh = ARHParser.parse(msg.headerFields["authentication-results"][i]);
+	for (let i = 0; i < msg.headerFields.get("authentication-results").length; i++) {
+		let arh = ARHParser.parse(msg.headerFields.get("authentication-results")[i]);
 		arhDKIM = arhDKIM.concat(arh.resinfo.filter(function (element) {
 			return element.method === "dkim";
 		}));
