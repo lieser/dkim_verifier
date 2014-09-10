@@ -1252,26 +1252,7 @@ var that = {
 			let msg;
 			let result;
 			try {
-				msg = yield MsgReader.read(msgURI);
-				msg.msgURI = msgURI;
-
-				// parse the header
-				msg.headerFields = MsgReader.parseHeader(msg.headerPlain);
-
-				// get from address
-				let author = msg.headerFields.from[msg.headerFields.from.length-1];
-				author = author.replace(/^From[ \t]*:/i,"");
-				msg.from = msgHeaderParser.extractHeaderAddressMailboxes(author);
-
-				// get list-id
-				let listId = null;
-				if (msg.headerFields["list-id"]) {
-					listId = msg.headerFields["list-id"][0];
-					listId = msgHeaderParser.extractHeaderAddressMailboxes(listId);
-				}
-
-				// check if msg should be signed
-				msg.DKIMSignPolicy = yield Policy.shouldBeSigned(msg.from, listId);
+				msg = yield that.createMsg(msgURI);
 
 				let sigResults = yield processSignatures(msg);
 
@@ -1329,6 +1310,52 @@ var that = {
 		});
 		promise.then(null, function onReject(exception) {
 			log.warn("verify2: " + exceptionToStr(exception));
+		});
+		return promise;
+	},
+
+	/**
+	 * Creates a message object given the msgURI.
+	 * 
+	 * @param {String} msgURI
+	 * @return {Promise<Object>}
+	 *         .headerFields {Object}
+	 *                      .<header name> {Array[String]}
+	 *         .bodyPlain {String}
+	 *         .from {String}
+	 *         .DKIMSignPolicy {DKIMSignPolicy}
+	 */
+	createMsg: function Verifier_createMsg(msgURI) {
+		var promise = Task.spawn(function () {
+			// read msg
+			let msg = yield MsgReader.read(msgURI);
+			msg.msgURI = msgURI;
+
+			// parse the header
+			msg.headerFields = MsgReader.parseHeader(msg.headerPlain);
+
+			let msgHeaderParser = Cc["@mozilla.org/messenger/headerparser;1"].
+				createInstance(Ci.nsIMsgHeaderParser);
+
+			// get from address
+			let author = msg.headerFields.from[msg.headerFields.from.length-1];
+			author = author.replace(/^From[ \t]*:/i,"");
+			msg.from = msgHeaderParser.extractHeaderAddressMailboxes(author);
+
+			// get list-id
+			let listId = null;
+			if (msg.headerFields["list-id"]) {
+				listId = msg.headerFields["list-id"][0];
+				listId = msgHeaderParser.extractHeaderAddressMailboxes(listId);
+			}
+
+			// check if msg should be signed by DKIM
+			msg.DKIMSignPolicy = yield Policy.shouldBeSigned(msg.from, listId);
+
+			throw new Task.Result(msg);
+		});
+		promise.then(null, function onReject(exception) {
+			log.warn("createMsg: " + exceptionToStr(exception));
 		});
 		return promise;
 	},

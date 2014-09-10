@@ -96,30 +96,8 @@ var AuthVerifier = {
 				msgURI = msgHdr.folder.getUriForMsg(msgHdr);
 			}
 
-			// read msg
-			let msg = yield MsgReader.read(msgURI);
-			msg.msgURI = msgURI;
-
-			// parse the header
-			msg.headerFields = MsgReader.parseHeader(msg.headerPlain);
-
-			let msgHeaderParser = Cc["@mozilla.org/messenger/headerparser;1"].
-				createInstance(Ci.nsIMsgHeaderParser);
-
-			// get from address
-			let author = msg.headerFields.from[msg.headerFields.from.length-1];
-			author = author.replace(/^From[ \t]*:/i,"");
-			msg.from = msgHeaderParser.extractHeaderAddressMailboxes(author);
-
-			// get list-id
-			let listId = null;
-			if (msg.headerFields["list-id"]) {
-				listId = msg.headerFields["list-id"][0];
-				listId = msgHeaderParser.extractHeaderAddressMailboxes(listId);
-			}
-
-			// check if msg should be signed by DKIM
-			msg.DKIMSignPolicy = yield DKIM.Policy.shouldBeSigned(msg.from, listId);
+			// create msg object
+			let msg = yield DKIM.Verifier.createMsg(msgURI);
 
 			let authResult;
 
