@@ -102,10 +102,31 @@ let ARHParser = {
 	get version() { return module_version; },
 
 	/**
+	 * @typedef {Object} ARHHeader
+	 * @property {String} authserv_id
+	 * @property {Number} [authres_version]
+	 * @property {ARHResinfo[]} resinfo
+	 */
+
+	/**
+	 * @typedef {Object} ARHResinfo
+	 * @property {String} method
+	 * @property {Number} [method_version]
+	 * @property {String} result
+	 *           none|pass|fail|softfail|policy|neutral|temperror|permerror
+	 * @property {String} [reason]
+	 * @property {Object} propertys
+	 * @property {Object} propertys.smtp
+	 * @property {Object} propertys.header
+	 * @property {Object} propertys.body
+	 * @property {Object} propertys.policy
+	 */
+
+	/**
 	 *  Parses an Authentication-Results header.
 	 *  
 	 *  @param {String} authresHeader Authentication-Results header
-	 *  @return Parsed Authentication-Results header
+	 *  @return {ARHHeader} Parsed Authentication-Results header
 	 */
 	parse: function _ARHParser_parse(authresHeader) {
 	  // remove header name
@@ -148,7 +169,7 @@ let ARHParser = {
  *  Parses the next resinfo in str. The parsed part of str is removed from str.
  *  
  *  @param {RefString} str
- *  @return Parsed resinfo
+ *  @return {ARHResinfo} Parsed resinfo
  */
 function parseResinfo(str) {
 	log.trace("parse str: " + str.toSource());

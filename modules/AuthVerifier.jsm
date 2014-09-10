@@ -57,8 +57,8 @@ var AuthVerifier = {
 	 * @property {String} version
 	 *           result version ("1.0")
 	 * @property {AuthResultDKIM[]} dkim
-	 * @property {???} spf
-	 * @property {???} dmarc
+	 * @property {ARHResinfo[]} spf
+	 * @property {ARHResinfo[]} dmarc
 	 */
 
 	/**
