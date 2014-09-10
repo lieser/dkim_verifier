@@ -73,3 +73,5 @@
 <!ENTITY error.treatAs.value.0.label "errore">
 <!ENTITY error.treatAs.value.1.label "avviso">
 <!ENTITY error.treatAs.value.2.label "niente">
+
+<!ENTITY arh.read.label "Read Authentication-Results header">

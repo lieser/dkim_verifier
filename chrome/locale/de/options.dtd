@@ -73,3 +73,5 @@
 <!ENTITY error.treatAs.value.0.label "Fehler">
 <!ENTITY error.treatAs.value.1.label "Warnung">
 <!ENTITY error.treatAs.value.2.label "nichts">
+
+<!ENTITY arh.read.label "Lese Authentication-Results header">
