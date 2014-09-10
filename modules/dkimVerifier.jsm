@@ -943,6 +943,8 @@ var Verifier = (function() {
 				errorStrParams : e.errorStrParams,
 				hideFail : e.errorType === "DKIM_SIGERROR_KEY_TESTMODE" ||
 					msg.DKIMSignPolicy.hideFail,
+				keySecure : DKIMSignature.keyQueryResult &&
+					DKIMSignature.keyQueryResult.secure,
 			};
 
 			log.warn(exceptionToStr(e));
@@ -1084,6 +1086,7 @@ var Verifier = (function() {
 			auid : DKIMSignature.i,
 			selector : DKIMSignature.s,
 			warnings : DKIMSignature.warnings,
+			keySecure : DKIMSignature.keyQueryResult.secure,
 		};
 		throw new Task.Result(verification_result);
 	}
@@ -1209,6 +1212,7 @@ var Verifier = (function() {
 	 *           if result="TEMPFAIL: DKIM_InternalError.errorType or Undefined
 	 * @property {String} [errorStrParams]
 	 * @property {Boolean} [hideFail]
+	 * @property {Boolean} [keySecure]
 	 */
 
 	/**

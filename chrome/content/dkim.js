@@ -185,6 +185,15 @@ DKIM_Verifier.Display = (function() {
 		    )) {
 			policyAddUserExceptionButton.disabled = false;
 		}
+
+		// markKeyAsSecureButton / updateKeyButton
+		if (prefs.getIntPref("key.storing") !== 0 &&
+		    result.dkim[0].sdid && result.dkim[0].selector) {
+			updateKeyButton.disabled = false;
+			if (!result.dkim[0].keySecure) {
+				markKeyAsSecureButton.disabled = false;
+			}
+		}
 	}
 	
 var that = {
@@ -328,14 +337,6 @@ var that = {
 			statusbarpanel.useIcons = true;
 		}
 
-		if (prefs.getIntPref("key.storing") === 0) {
-			markKeyAsSecureButton.disabled = true;
-			updateKeyButton.disabled = true;
-		} else {
-			markKeyAsSecureButton.disabled = false;
-			updateKeyButton.disabled = false;
-		}
-
 		that.initHeaderEntry();
 
 		// register monitors for message displaying
@@ -399,15 +400,6 @@ var that = {
 					statusbarpanel.useIcons = true;
 				}
 				break;
-			case "key.storing":
-				if (prefs.getIntPref("key.storing") === 0) {
-					markKeyAsSecureButton.disabled = true;
-					updateKeyButton.disabled = true;
-				} else {
-					markKeyAsSecureButton.disabled = false;
-					updateKeyButton.disabled = false;
-				}
-				break;
 		}
 	},
 	
@@ -455,6 +447,8 @@ var that = {
 		highlightHeader("clearHeader");
 		
 		policyAddUserExceptionButton.disabled = true;
+		markKeyAsSecureButton.disabled = true;
+		updateKeyButton.disabled = true;
 	},
 
 	/*
