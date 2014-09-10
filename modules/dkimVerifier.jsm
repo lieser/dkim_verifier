@@ -973,18 +973,12 @@ var Verifier = (function() {
 	 * 
 	 * @remark Generator function.
 	 * @param {Object} msg
-	 * @param {String} DKIMSignatureHeader
+	 * @param {Object} DKIMSignature
 	 * @return {dkimSigResultV2}
 	 * @throws DKIM_SigError
 	 * @throws DKIM_InternalError
 	 */
-	function verifySignature(msg, DKIMSignatureHeader) {
-		var DKIMSignature = newDKIMSignature(DKIMSignatureHeader);
-
-		log.trace("Parsing DKIM-Signature ...");
-		parseDKIMSignature(DKIMSignature);
-		log.debug("Parsed DKIM-Signature: " + DKIMSignature.toSource());
-
+	function verifySignature(msg, DKIMSignature) {
 		// check SDID and AUID
 		Policy.checkSDID(msg.DKIMSignPolicy.sdid, msg.from, DKIMSignature.d,
 			DKIMSignature.i, DKIMSignature.warnings);
@@ -1120,8 +1114,12 @@ var Verifier = (function() {
 			let sigRes;
 			try {
 				log.debug("Verifying DKIM-Signature " + (iDKIMSignatureIdx+1) + " ...");
-				sigRes = yield verifySignature(msg,
+				DKIMSignature = newDKIMSignature(
 					msg.headerFields.get("dkim-signature")[iDKIMSignatureIdx]);
+				parseDKIMSignature(DKIMSignature);
+				log.debug("Parsed DKIM-Signature " + (iDKIMSignatureIdx+1) + ": " +
+					DKIMSignature.toSource());
+				sigRes = yield verifySignature(msg, DKIMSignature);
 				log.debug("Verified DKIM-Signature " + (iDKIMSignatureIdx+1));
 			} catch(e) {
 				sigRes = handleExeption(e, msg, DKIMSignature);
