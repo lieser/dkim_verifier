@@ -940,6 +940,7 @@ var Verifier = (function() {
 				auid : DKIMSignature.i,
 				selector : DKIMSignature.s,
 				errorType : e.errorType,
+				errorStrParams : e.errorStrParams,
 				hideFail : e.errorType === "DKIM_SIGERROR_KEY_TESTMODE" ||
 					msg.DKIMSignPolicy.hideFail,
 			};

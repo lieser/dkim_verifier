@@ -41,6 +41,7 @@ Cu.import("resource://dkim_verifier/dkimDMARC.jsm");
 
 const DB_POLICY_NAME = "dkimPolicy.sqlite";
 const PREF_BRANCH = "extensions.dkim_verifier.policy.";
+const ERROR_PREF_BRANCH = "extensions.dkim_verifier.error.";
 
 /**
  * rule types
@@ -70,6 +71,7 @@ const PRIORITY = {
 
 
 var prefs = Services.prefs.getBranch(PREF_BRANCH);
+var error_prefs = Services.prefs.getBranch(ERROR_PREF_BRANCH);
 var log = Logging.getLogger("Policy");
 var dbInitialized = false;
 // Deferred<boolean>
@@ -369,13 +371,13 @@ var Policy = {
 		// that is different from the SDID in the signature
 		if (allowedSDIDs.length > 0 &&
 		    !allowedSDIDs.some(function (element/*, index, array*/) {
-		      if (prefs.getBoolPref("policy.signRules.sdid.allowSubDomains")) {
+		      if (prefs.getBoolPref("signRules.sdid.allowSubDomains")) {
 		        return stringEndsWith(sdid, element);
 		      } else {
 		        return stringEqual(sdid, element);
 		      }
 		    })) {
-			if (prefs.getBoolPref("error.policy.wrong_sdid.asWarning")) {
+			if (error_prefs.getBoolPref("policy.wrong_sdid.asWarning")) {
 				warnings.push(
 					{name: "DKIM_POLICYERROR_WRONG_SDID",	params: [allowedSDIDs]});
 				log.debug("Warning: DKIM_POLICYERROR_WRONG_SDID");
