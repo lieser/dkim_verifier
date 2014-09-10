@@ -28,7 +28,7 @@
 /* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
 /* global Components, Dict, Services, Task */
 /* global Logging, Key, Policy, MsgReader */
-/* global dkimStrings, exceptionToStr, stringEndsWith, stringEqual, writeStringToTmpFile, DKIM_SigError, DKIM_InternalError */
+/* global dkimStrings, addrIsInDomain, domainIsInDomain, exceptionToStr, stringEndsWith, stringEqual, writeStringToTmpFile, DKIM_SigError, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, Verifier */
 
 var EXPORTED_SYMBOLS = [
@@ -1263,6 +1263,7 @@ var that = {
 
 				// check if DKIMSignatureHeader exist
 				checkForSignatureExsistens(msg, sigResults);
+				that.sortSignatures(msg, sigResults);
 
 				result = {
 					version : "1.1",
@@ -1303,6 +1304,7 @@ var that = {
 	 *          value: {Array[String]}
 	 *        .bodyPlain {String}
 	 *        .from {String}
+	 *        .listId {String}
 	 *        .DKIMSignPolicy {DKIMSignPolicy}
 	 * @return {Promise<dkimResultV2>}
 	 */
@@ -1312,6 +1314,7 @@ var that = {
 			res.version = "2.0";
 			res.signatures = yield processSignatures(msg);
 			checkForSignatureExsistens(msg, res.signatures);
+			that.sortSignatures(msg, res.signatures);
 			throw new Task.Result(res);
 		});
 		promise.then(null, function onReject(exception) {
@@ -1330,6 +1333,7 @@ var that = {
 	 *           value: {Array[String]}
 	 *         .bodyPlain {String}
 	 *         .from {String}
+	 *         .listId {String}
 	 *         .DKIMSignPolicy {DKIMSignPolicy}
 	 */
 	createMsg: function Verifier_createMsg(msgURI) {
@@ -1351,14 +1355,13 @@ var that = {
 			msg.from = msgHeaderParser.extractHeaderAddressMailboxes(author);
 
 			// get list-id
-			let listId = null;
 			if (msg.headerFields.has("list-id")) {
-				listId = msg.headerFields.get("list-id")[0];
-				listId = msgHeaderParser.extractHeaderAddressMailboxes(listId);
+				msg.listId = msg.headerFields.get("list-id")[0];
+				msg.listId = msgHeaderParser.extractHeaderAddressMailboxes(msg.listId);
 			}
 
 			// check if msg should be signed by DKIM
-			msg.DKIMSignPolicy = yield Policy.shouldBeSigned(msg.from, listId);
+			msg.DKIMSignPolicy = yield Policy.shouldBeSigned(msg.from, msg.listId);
 
 			throw new Task.Result(msg);
 		});
@@ -1366,6 +1369,101 @@ var that = {
 			log.warn("createMsg: " + exceptionToStr(exception));
 		});
 		return promise;
+	},
+
+	/**
+	 * Sorts the given signatures.
+	 * 
+	 * @param {Object} msg
+	 * @param {dkimSigResultV2[]} signatures
+	 */
+	sortSignatures: function Verifier_sortSignatures(msg, signatures) {
+		function result_compare(sig1, sig2) {
+			if (sig1.result === sig2.result) {
+				return 0;
+			}
+
+			if (sig1.result === "SUCCESS") {
+				return -1;
+			} else if (sig2.result === "SUCCESS") {
+				return 1;
+			}
+
+			if (sig1.result === "TEMPFAIL") {
+				return -1;
+			} else if (sig2.result === "TEMPFAIL") {
+				return 1;
+			}
+
+			if (sig1.result === "PERMFAIL") {
+				return -1;
+			} else if (sig2.result === "PERMFAIL") {
+				return 1;
+			}
+
+			throw new DKIM_InternalError("result_compare: sig1.result: " +
+				sig1.result + "; sig2.result: " + sig2.result);
+		}
+
+		function warnings_compare(sig1, sig2) {
+			if (sig1.result !== "SUCCESS") {
+				return 0;
+			}
+			if (!sig1.warnings || sig1.warnings.length === 0) {
+				// sig1 has no warnings
+				if (!sig2.warnings || sig2.warnings.length === 0) {
+					// both sigs have no warnings
+					return 0;
+				} else {
+					// sig2 has warings
+					return -1;
+				}
+			} else {
+				// sig1 has warnings
+				if (!sig2.warnings || sig2.warnings.length === 0) {
+					// sig2 has no warings
+					return 1;
+				} else {
+					// both sigs have warnings
+					return 0;
+				}
+			}
+		}
+
+		function sdid_compare(sig1, sig2) {
+			if (sig1.sdid === sig2.sdid) {
+				return 0;
+			}
+
+			if (addrIsInDomain(msg.from, sig1.sdid)) {
+				return -1;
+			} else if (addrIsInDomain(msg.from, sig2.sdid)) {
+				return 1;
+			}
+
+			if (domainIsInDomain(msg.listId, sig1.sdid)) {
+				return -1;
+			} else if (domainIsInDomain(msg.listId, sig2.sdid)) {
+				return 1;
+			}
+		}
+
+		signatures.sort(function (sig1, sig2) {
+			let cmp;
+			cmp = result_compare(sig1, sig2);
+			if (cmp !== 0) {
+				return cmp;
+			}
+			cmp = warnings_compare(sig1, sig2);
+			if (cmp !== 0) {
+				return cmp;
+			}
+			cmp = sdid_compare(sig1, sig2);
+			if (cmp !== 0) {
+				return cmp;
+			}
+			return -1;
+		});
 	},
 
 	/*

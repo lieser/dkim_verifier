@@ -389,8 +389,7 @@ var Policy = {
 		// if there is no SDID in the sign rule
 		if (allowedSDIDs.length === 0) {
 			// warning if from is not in SDID or AUID
-			if (!(stringEndsWith(from, "@" + sdid) ||
-			    stringEndsWith(from, "." + sdid))) {
+			if (!addrIsInDomain(from, sdid)) {
 				warnings.push({name: "DKIM_SIGWARNING_FROM_NOT_IN_SDID"});
 				log.debug("Warning: DKIM_SIGWARNING_FROM_NOT_IN_SDID");
 			} else if (!stringEndsWith(from, auid)) {

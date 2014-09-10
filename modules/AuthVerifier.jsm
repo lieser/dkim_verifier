@@ -197,6 +197,9 @@ function getARHResult(msg) {
 		}
 	}
 
+	// sort signatures
+	DKIM.Verifier.sortSignatures(msg, dkimSigResults);
+
 	let authResult = {
 		version: "1.0",
 		dkim: dkimSigResults.map(dkimSigResultV2_to_AuthResultDKIM),

@@ -1,7 +1,7 @@
 /*
  * helper.jsm
  *
- * Version: 1.2.2pre1 (06 September 2014)
+ * Version: 1.3.0pre1 (06 September 2014)
  * 
  * Copyright (c) 2013-2014 Philippe Lieser
  * 
@@ -15,10 +15,12 @@
 /* jshint strict:true, moz:true, smarttabs:true */
 /* global Components, FileUtils, NetUtil, Promise, Services, CommonUtils */
 /* global ModuleGetter, Logging */
-/* exported EXPORTED_SYMBOLS, exceptionToStr, getBaseDomainFromAddr, getDomainFromAddr, readStringFrom, stringEndsWith, stringEqual, tryGetString, tryGetFormattedString, writeStringToTmpFile, DKIM_SigError, DKIM_InternalError */
+/* exported EXPORTED_SYMBOLS, addrIsInDomain, domainIsInDomain, exceptionToStr, getBaseDomainFromAddr, getDomainFromAddr, readStringFrom, stringEndsWith, stringEqual, tryGetString, tryGetFormattedString, writeStringToTmpFile, DKIM_SigError, DKIM_InternalError */
 
 var EXPORTED_SYMBOLS = [
 	"dkimStrings",
+	"addrIsInDomain",
+	"domainIsInDomain",
 	"exceptionToStr",
 	"getBaseDomainFromAddr",
 	"getDomainFromAddr",
@@ -67,6 +69,36 @@ dkimStrings.getFormattedString = function (key, strArray) {
 	return dkimStrings.stringbundle.formatStringFromName(key, strArray, strArray.length);
 };
 
+
+/**
+ * Returns true if e-mail address is from domain or a subdomain of it.
+ * 
+ * @param {String} addr
+ * @param {String} domain
+ * 
+ * @return {Boolean}
+ */
+function addrIsInDomain(addr, domain) {
+	"use strict";
+
+	return stringEndsWith(addr, "@" + domain) ||
+		stringEndsWith(addr, "." + domain);
+}
+
+/**
+ * Returns true if domain1 is the same or a subdomain of domain2.
+ * 
+ * @param {String} domain1
+ * @param {String} domain2
+ * 
+ * @return {Boolean}
+ */
+function domainIsInDomain(domain1, domain2) {
+	"use strict";
+
+	return stringEqual(domain1, domain2) ||
+		stringEndsWith(domain1, "." + domain2);
+}
 
 /**
  * @param {Error} exception
