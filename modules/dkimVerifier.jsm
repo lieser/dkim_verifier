@@ -889,10 +889,16 @@ var Verifier = (function() {
 			default:
 				throw new DKIM_InternalError("unsupported canonicalization algorithm (header) got parsed");
 		}
-		
+
+		// copy header fileds
+		var newHeaderItems = {};
+		for (var [key, val] of msg.headerFields.listitems()) {
+			newHeaderItems[key] = val.slice();
+		}
+		var headerFields = new Dict(newHeaderItems);
+
 		// get header fields specified by the "h=" tag
 		// and join their canonicalized form
-		var headerFields = msg.headerFields.copy();
 		for(var i = 0; i <  DKIMSignature.h_array.length; i++) {
 			// if multiple instances of the same header field are signed
 			// include them in reverse order (from bottom to top)
