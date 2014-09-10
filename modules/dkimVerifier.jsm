@@ -392,7 +392,7 @@ var Verifier = (function() {
 		if (versionTag[0] === "1") {
 			DKIMSignature.v = "1";
 		} else {
-			throw new DKIM_SigError("DKIM_SIGERROR_VERSION");
+			throw new DKIM_InternalError(null, "DKIM_SIGERROR_VERSION");
 		}
 
 		// get signature algorithm (plain-text;REQUIRED)
