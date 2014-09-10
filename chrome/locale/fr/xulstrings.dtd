@@ -1,4 +1,6 @@
 <!ENTITY dkim_verifier.header.title "DKIM ">
+<!ENTITY dkim_verifier.header.spf "SPF:">
+<!ENTITY dkim_verifier.header.dmarc "DMARC:">
 <!ENTITY dkim_verifier.statusbar.title "DKIM:">
 
 <!ENTITY dkim_verifier.reverifyDKIMSignature.label "Revérifier la signature DKIM">

@@ -57,8 +57,8 @@ var AuthVerifier = {
 	 * @property {String} version
 	 *           result version ("1.0")
 	 * @property {AuthResultDKIM[]} dkim
-	 * @property {ARHResinfo[]} spf
-	 * @property {ARHResinfo[]} dmarc
+	 * @property {ARHResinfo[]} [spf]
+	 * @property {ARHResinfo[]} [dmarc]
 	 */
 
 	/**
@@ -204,7 +204,7 @@ function getARHResult(msg) {
 		version: "1.0",
 		dkim: dkimSigResults.map(dkimSigResultV2_to_AuthResultDKIM),
 		spf: arhSPF,
-		dmac: arhDMARC,
+		dmarc: arhDMARC,
 	};
 	return authResult;
 }

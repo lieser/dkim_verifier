@@ -194,6 +194,15 @@ DKIM_Verifier.Display = (function() {
 				markKeyAsSecureButton.disabled = false;
 			}
 		}
+
+		// SPF result
+		if (result.spf && result.spf[0]) {
+			header.spfValue = result.spf[0].result;
+		}
+		// DMARC result
+		if (result.dmarc && result.dmarc[0]) {
+			header.dmarcValue = result.dmarc[0].result;
+		}
 	}
 	
 var that = {
@@ -442,6 +451,8 @@ var that = {
 	 */
 	onStartHeaders: function Display_onStartHeaders() {
 		setWarnings([]);
+		header.spfValue = "";
+		header.dmarcValue = "";
 
 		// reset highlight from header
 		highlightHeader("clearHeader");

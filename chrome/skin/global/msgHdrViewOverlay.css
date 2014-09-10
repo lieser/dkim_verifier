@@ -9,3 +9,17 @@
   -moz-binding: url(chrome://dkim_verifier/content/bindings.xml#dkim-verifier-header-tooltips-box) !important;
   -moz-box-align: center;
 }
+
+#expandeddkim-verifierBox  [anonid="spf"] {
+  visibility: hidden;
+}
+#expandeddkim-verifierBox[spf="true"]  [anonid="spf"] {
+  visibility: visible;
+}
+
+#expandeddkim-verifierBox  [anonid="dmarc"] {
+  visibility: hidden;
+}
+#expandeddkim-verifierBox[dmarc="true"]  [anonid="dmarc"] {
+  visibility: visible;
+}

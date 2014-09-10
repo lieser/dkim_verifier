@@ -17,11 +17,37 @@
                        role="textbox"
                        aria-readonly="true" />
       <xul:image class="alert-icon" tooltip="dkim-verifier-header-tooltip-warnings"/>
+      <xul:hbox anonid="spf">
+        <xul:description anonid="spfLabel"
+                         class="headerValue"
+                         style="text-align: right"
+          >&dkim_verifier.header.spf;</xul:description>
+        <xul:description anonid="spfValue"
+                         class="headerValue"
+                         readonly="true"
+                         context="copyPopup"
+                         role="textbox"
+                         aria-readonly="true" />
+      </xul:hbox>
+      <xul:hbox anonid="dmarc">
+        <xul:description anonid="dmarcLabel"
+                         class="headerValue"
+                         style="text-align: right"
+          >&dkim_verifier.header.dmarc;</xul:description>
+        <xul:description anonid="dmarcValue"
+                         class="headerValue"
+                         readonly="true"
+                         context="copyPopup"
+                         role="textbox"
+                         aria-readonly="true" />
+      </xul:hbox>
       <xul:separator flex="1"/>
     </content>
     <implementation>
       <field name="headerValue">document.getAnonymousElementByAttribute(this, "anonid", "headerValue");</field>
       <field name="tooltip">document.getAnonymousElementByAttribute(this, "anonid", "tooltip");</field>
+      <field name="headerSPFValue">document.getAnonymousElementByAttribute(this, "anonid", "spfValue");</field>
+      <field name="headerDMARCValue">document.getAnonymousElementByAttribute(this, "anonid", "dmarcValue");</field>
 
       <property name="value">
         <setter><![CDATA[
@@ -31,6 +57,26 @@
       <property name="warnings">
         <setter><![CDATA[
           this.setAttribute("warnings", val.length > 0);
+        ]]></setter>
+      </property>
+      <property name="spfValue">
+        <setter><![CDATA[
+          if (val) {
+            this.setAttribute("spf", true);
+          } else {
+            this.setAttribute("spf", false);
+          }
+          this.headerSPFValue.textContent = val;
+        ]]></setter>
+      </property>
+      <property name="dmarcValue">
+        <setter><![CDATA[
+          if (val) {
+            this.setAttribute("dmarc", true);
+          } else {
+            this.setAttribute("dmarc", false);
+          }
+          this.headerDMARCValue.textContent = val;
         ]]></setter>
       </property>
     </implementation>
@@ -133,9 +179,9 @@
   
   <binding id="dkim-verifier-header-tooltips-box">
     <content>
-			<xul:tooltip id="dkim-verifier-header-tooltip-warnings">
-				<xul:vbox anonid="tooltip-warnings"/>
-			</xul:tooltip>
+      <xul:tooltip id="dkim-verifier-header-tooltip-warnings">
+        <xul:vbox anonid="tooltip-warnings"/>
+      </xul:tooltip>
       <xul:tooltip anonid="tooltip-from" id="dkim-verifier-header-tooltip-from">
         <xul:hbox>
           <xul:label value="&dkim_verifier.statusbar.title;"/>
@@ -148,14 +194,14 @@
     </content>
     <implementation>
       <field name="tooltipWarnings">
-				document.getAnonymousElementByAttribute(this, "anonid", "tooltip-warnings");
-			</field>
+        document.getAnonymousElementByAttribute(this, "anonid", "tooltip-warnings");
+      </field>
       <field name="tooltipFromValue">
-				document.getAnonymousElementByAttribute(this, "anonid", "tooltip-from-value");
-			</field>
+        document.getAnonymousElementByAttribute(this, "anonid", "tooltip-from-value");
+      </field>
       <field name="tooltipFromWarnings">
-				document.getAnonymousElementByAttribute(this, "anonid", "tooltip-from-warnings");
-			</field>
+        document.getAnonymousElementByAttribute(this, "anonid", "tooltip-from-warnings");
+      </field>
 
       <property name="value">
         <setter><![CDATA[
