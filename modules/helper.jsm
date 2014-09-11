@@ -278,7 +278,7 @@ function tryGetString(stringbundle, name) {
 	try {
 		return stringbundle.getString(name);
 	} catch (ex) {
-		log.error(exceptionToStr(ex));
+		log.warn(exceptionToStr(ex));
 		return null;
 	}
 }
@@ -302,7 +302,7 @@ function tryGetFormattedString(stringbundle, name, params = []) {
 	try {
 		return stringbundle.getFormattedString(name, params);
 	} catch (ex) {
-		log.error(exceptionToStr(ex));
+		log.warn(exceptionToStr(ex));
 		return null;
 	}
 }
