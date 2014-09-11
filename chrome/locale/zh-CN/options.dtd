@@ -3,7 +3,7 @@
 <!ENTITY general.general.label "常规">
 <!ENTITY dns.label "DNS">
 <!ENTITY dns.resolver.label "解析">
-<!ENTITY dns.resolver.value.1.label "JavaScript DNS library">
+<!ENTITY dns.resolver.value.1.label "JavaScript DNS 软件库">
 <!ENTITY dns.resolver.value.2.label "libunbound">
 <!ENTITY dns.getNameserversFromOS.label "从操作系统的配置获取 DNS 名称服务器">
 <!ENTITY dns.nameserver.label "DNS 名称服务器 (语法 (EBNF): host[&quot;:&quot;port]{&quot;;&quot;host[&quot;:&quot;port]} )">
@@ -52,7 +52,9 @@
 <!ENTITY debug.label "启用调试（在错误控制台中输出错误和调试信息）">
 <!ENTITY error.key_testmode.ignore.label "如果一个域只是在测试 DKIM，仍然验证签名">
 <!ENTITY error.illformed_i.treatAs.label "将格式不良的 AUID 标签视作">
+<!ENTITY error.illformed_s.treatAs.label "将格式不良的选择器标签视作">
 <!ENTITY error.policy.key_insecure.treatAs.label "将非 DNSSEC 的 DKIM 密钥视作">
 <!ENTITY error.treatAs.value.0.label "错误">
 <!ENTITY error.treatAs.value.1.label "警告">
 <!ENTITY error.treatAs.value.2.label "无事">
+<!ENTITY arh.read.label "阅读 Authentication-Results 报头">
