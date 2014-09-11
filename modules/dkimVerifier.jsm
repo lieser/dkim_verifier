@@ -31,6 +31,8 @@
 /* global dkimStrings, addrIsInDomain, domainIsInDomain, exceptionToStr, stringEndsWith, stringEqual, writeStringToTmpFile, DKIM_SigError, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, Verifier */
 
+const module_version = "1.3.0pre2";
+
 var EXPORTED_SYMBOLS = [
 	"Verifier"
 ];
@@ -1491,7 +1493,9 @@ var that = {
 	 * make parsing of the tag-value list public
 	 */
 	parseTagValueList : parseTagValueList,
-	parseTagValue : parseTagValue
+	parseTagValue : parseTagValue,
+
+	version: module_version,
 };
 return that;
 }()); // the parens here cause the anonymous function to execute and return
