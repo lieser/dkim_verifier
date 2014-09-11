@@ -74,4 +74,4 @@
 <!ENTITY error.treatAs.value.1.label "avertissement">
 <!ENTITY error.treatAs.value.2.label "rien">
 
-<!ENTITY arh.read.label "Read Authentication-Results header">
+<!ENTITY arh.read.label "Lecture du résultat de l'authentification de l'entête">
