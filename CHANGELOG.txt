@@ -1,9 +1,9 @@
-1.3.0pre2 [2014-09-11]
+1.3.0pre3 [2014-09-11]
 ------------------
  - added option to treat ill-formed selector tag as as error/warning/nothing (default warning; previous behavior was error)
  - added support for multiple signatures
  - added option to read Authentication-Results header
- - added French translation
+ - added French translation (by Christophe CHAUVET)
  - fixed problem with JavaScript DNS Resolver and big DKIM keys, resulting in error "Key couldn't be decoded"
 
  - temporary disabled saving of result (loading a already saved result still works)
