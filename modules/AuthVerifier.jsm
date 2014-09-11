@@ -86,10 +86,15 @@ var AuthVerifier = {
 	verify: function _authVerifier_verify(msgHdr, msgURI) {
 		var promise = Task.spawn(function () {
 			// check for saved DKIM result
-			// let dkimResult = loadDKIMResult(msgHdr);
-			// if (dkimResult !== null) {
-				// throw new Task.Result(dkimResult_to_AuthResult(dkimResult));
-			// }
+			let dkimResult = loadDKIMResult(msgHdr);
+			if (dkimResult !== null) {
+				let authResult = {
+					version: "1.0",
+					dkim: [dkimSigResultV2_to_AuthResultDKIM(
+						dkimResultV1_to_dkimSigResultV2(dkimResult))],
+				};
+				throw new Task.Result(authResult);
+			}
 
 			// get msgURI if not specified
 			if (!msgURI) {
@@ -322,14 +327,36 @@ function arhDKIM_to_dkimSigResultV2(arhDKIM) {
 }
 
 /**
- * Convert dkimResultV1 to dkimResultV2
+ * Convert dkimResultV1 to dkimSigResultV2
  * 
  * @param {dkimResultV1} dkimResult
- * @return {dkimResultV2}
+ * @return {dkimSigResultV2}
  */
-function dkimResultV1_to_dkimResultV2(dkimResultV1) {
-	let dkimResultV2 = dkimResultV1;
-	return dkimResultV2;
+function dkimResultV1_to_dkimSigResultV2(dkimResultV1) {
+	let dkimSigResultV2 = dkimResultV1;
+	let dkimSigResultV2 = {
+		version: "2.0",
+		result: dkimResultV1.result,
+		sdid: dkimResultV1.SDID,
+		selector: dkimResultV1.selector,
+		errorType: dkimResultV1.errorType,
+		hideFail: dkimResultV1.hideFail,
+	};
+	if (dkimResultV1.warnings) {
+		dkimSigResultV2.warnings = dkimResultV1.warnings.map(
+			function (w) {
+				if (w === "DKIM_POLICYERROR_WRONG_SDID") {
+					return {name: w, params: [dkimResultV1.shouldBeSignedBy]};
+				}
+				return {name: w};
+			}
+		);
+	}
+	if (dkimResultV1.errorType === "DKIM_POLICYERROR_WRONG_SDID" ||
+	    dkimResultV1.errorType === "DKIM_POLICYERROR_MISSING_SIG") {
+		dkimSigResultV2.errorStrParams = [dkimResultV1.shouldBeSignedBy];
+	}
+	return dkimSigResultV2;
 }
 
 /**
