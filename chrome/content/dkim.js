@@ -466,7 +466,7 @@ var that = {
 	 * starts verification
 	 */
 	onEndHeaders: function Display_onEndHeaders() {
-		try {
+		let promise = Task.spawn(function () {
 			// return if msg is RSS feed or news
 			if (gFolderDisplay.selectedMessageIsFeed || gFolderDisplay.selectedMessageIsNews) {
 				that.setCollapsed(50);
@@ -480,15 +480,17 @@ var that = {
 			var msgHdr = gFolderDisplay.selectedMessage;
 			
 			// get authentication result
-			let authResult = DKIM_Verifier.AuthVerifier.verify(msgHdr, msgURI);
-			authResult.then(function (result) {
-				that.dkimResultCallback(msgURI, result);
-			}, function (exception) {
-				handleExeption(exception);
-			});
-		} catch(e) {
-			handleExeption(e);
-		}
+			let authResult = yield DKIM_Verifier.AuthVerifier.verify(msgHdr, msgURI);
+			
+			// only show result if it's for the currently viewed message
+			var currentMsgURI = gFolderDisplay.selectedMessageUris[0];
+			if (currentMsgURI === msgURI) {
+				displayResult(authResult);
+			}
+		});
+		promise.then(null, function onReject(exception) {
+			handleExeption(exception);
+		});
 	},
 	onEndAttachments: function Display_onEndAttachments() {},
 
@@ -497,24 +499,6 @@ var that = {
 	 */
 	onOutput: function Display_onOutput(headerEntry, headerValue) {
 		header.value = headerValue;
-	},
-
-	/**
-	 * Callback for the result of the verification.
-	 * 
-	 * @param {String} msgURI
-	 * @param {dkimResult} result
-	 */
-	dkimResultCallback: function Display_dkimResultCallback(msgURI, result) {
-		try {
-			// only show result if it's for the currently viewed message
-			var currentMsgURI = gFolderDisplay.selectedMessageUris[0];
-			if (currentMsgURI === msgURI) {
-				displayResult(result);
-			}
-		} catch(e) {
-			handleExeption(e);
-		}
 	},
 	
 	/*
