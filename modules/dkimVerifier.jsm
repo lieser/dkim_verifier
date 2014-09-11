@@ -77,8 +77,6 @@ Services.scriptloader.loadSubScript("resource://dkim_verifier/rsasign-1.2.js",
 const PREF_BRANCH = "extensions.dkim_verifier.";
 
 
-var msgHeaderParser;
-
 /*
  * DKIM Verifier module
  */
@@ -1241,8 +1239,6 @@ var that = {
 	 * init
 	 */
 	init : function Verifier_init() {
-		msgHeaderParser = Components.classes["@mozilla.org/messenger/headerparser;1"].
-			createInstance(Components.interfaces.nsIMsgHeaderParser);
 	},
 
 	/**
