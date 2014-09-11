@@ -1110,8 +1110,12 @@ var Verifier = (function() {
 		// contains the result of all DKIM-Signatures which have been verified
 		let sigResults = [];
 
-		log.debug(msg.headerFields.get("dkim-signature").length +
-			" DKIM-Signatures found.");
+		if (msg.headerFields.get("dkim-signature")) {
+			log.debug(msg.headerFields.get("dkim-signature").length +
+				" DKIM-Signatures found.");
+		} else {
+			throw new Task.Result(sigResults);
+		}
 
 		// RFC6376 - 3.5.  The DKIM-Signature Header Field
 		// "The DKIM-Signature header field SHOULD be treated as though it were a
