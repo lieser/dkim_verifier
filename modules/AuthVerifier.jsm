@@ -401,8 +401,12 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) {
 				tryGetFormattedString(dkimStrings, dkimSigResult.errorType,
 					dkimSigResult.errorStrParams) ||
 				dkimSigResult.errorType;
-			authResultDKIM.result_str = dkimStrings.getFormattedString("PERMFAIL",
-				[errorMsg]);
+			if (errorMsg) {
+				authResultDKIM.result_str = dkimStrings.getFormattedString("PERMFAIL",
+					[errorMsg]);
+			} else {
+				authResultDKIM.result_str = dkimStrings.getString("PERMFAIL_NO_REASON");
+			}
 			break;
 		case "none":
 			authResultDKIM.res_num = 40;
