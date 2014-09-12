@@ -4,9 +4,9 @@
  - added support for multiple signatures
  - added option to read Authentication-Results header
  - added French translation (by Christophe CHAUVET)
- - fixed problem with JavaScript DNS Resolver and big DKIM keys, resulting in error "Key couldn't be decoded"
+ - fixed problem with JavaScript DNS Resolver and long DKIM keys, resulting in error "Key couldn't be decoded"
 
- - temporary disabled saving of result (loading a already saved result still works)
+ - temporary disabled saving of result (loading an already saved result still works)
 
 1.2.2 [2014-08-16]
 ------------------
