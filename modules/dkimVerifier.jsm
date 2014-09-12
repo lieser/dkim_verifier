@@ -1168,7 +1168,7 @@ var Verifier = (function() {
 				dkimSigResultV2 = handleExeption(
 					new DKIM_SigError(
 						"DKIM_POLICYERROR_MISSING_SIG",
-						[msg.DKIMSignPolicy.shouldBeSignedBy]
+						[msg.DKIMSignPolicy.sdid]
 					),
 					msg
 				);
