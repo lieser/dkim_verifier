@@ -246,7 +246,7 @@ function match(str, pattern) {
 	let reg_match = match_o(str, pattern);
 	if (reg_match === null) {
 		log.debug("str to match against:" + str.toSource());
-		throw new Error("no match");
+		throw new Error("Parsing error");
 	}
 	return reg_match;
 }

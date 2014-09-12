@@ -163,7 +163,13 @@ function getARHResult(msg) {
 	let arhSPF = [];
 	let arhDMARC = [];
 	for (let i = 0; i < msg.headerFields.get("authentication-results").length; i++) {
-		let arh = ARHParser.parse(msg.headerFields.get("authentication-results")[i]);
+		let arh;
+		try {
+			arh = ARHParser.parse(msg.headerFields.get("authentication-results")[i]);
+		} catch (exception) {
+			log.error(exceptionToStr(exception));
+			continue;
+		}
 		arhDKIM = arhDKIM.concat(arh.resinfo.filter(function (element) {
 			return element.method === "dkim";
 		}));
