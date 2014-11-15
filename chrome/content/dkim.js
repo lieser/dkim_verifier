@@ -4,7 +4,7 @@
  * Verifies the DKIM signature if a new message is viewed,
  * and displays the result.
  *
- * Copyright (c) 2013 Philippe Lieser
+ * Copyright (c) 2013-2014 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
