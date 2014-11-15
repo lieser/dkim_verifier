@@ -178,19 +178,22 @@ DKIM_Verifier.Display = (function() {
 		}
 
 		// policyAddUserExceptionButton
-		if (result.dkim[0].errorType === "DKIM_POLICYERROR_MISSING_SIG" ||
-		    result.dkim[0].errorType === "DKIM_POLICYERROR_WRONG_SDID" ||
-		    ( result.dkim[0].warnings &&
-		      result.dkim[0].warnings.indexOf("DKIM_POLICYERROR_WRONG_SDID") !== -1
-		    )) {
+		if ((result.dkim[0].errorType === "DKIM_POLICYERROR_MISSING_SIG" ||
+		     result.dkim[0].errorType === "DKIM_POLICYERROR_WRONG_SDID" ||
+		     ( result.dkim[0].warnings &&
+		       result.dkim[0].warnings.indexOf("DKIM_POLICYERROR_WRONG_SDID") !== -1
+		     )
+		    ) && policyAddUserExceptionButton) {
 			policyAddUserExceptionButton.disabled = false;
 		}
 
 		// markKeyAsSecureButton / updateKeyButton
 		if (prefs.getIntPref("key.storing") !== 0 &&
 		    result.dkim[0].sdid && result.dkim[0].selector) {
-			updateKeyButton.disabled = false;
-			if (!result.dkim[0].keySecure) {
+			if (updateKeyButton) {
+				updateKeyButton.disabled = false;
+			}
+			if (!result.dkim[0].keySecure && markKeyAsSecureButton) {
 				markKeyAsSecureButton.disabled = false;
 			}
 		}
@@ -457,9 +460,15 @@ var that = {
 		// reset highlight from header
 		highlightHeader("clearHeader");
 		
-		policyAddUserExceptionButton.disabled = true;
-		markKeyAsSecureButton.disabled = true;
-		updateKeyButton.disabled = true;
+		if (policyAddUserExceptionButton) {
+			policyAddUserExceptionButton.disabled = true;
+		}
+		if (markKeyAsSecureButton) {
+			markKeyAsSecureButton.disabled = true;
+		}
+		if (updateKeyButton) {
+			updateKeyButton.disabled = true;
+		}
 	},
 
 	/*
