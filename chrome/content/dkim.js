@@ -135,7 +135,7 @@ DKIM_Verifier.Display = (function() {
 			result_str : dkimStrings.getString("DKIM_INTERNALERROR_NAME"),
 		};
 		let authResult = {
-			version: "1.0",
+			version: "2.0",
 			dkim: [authResultDKIM],
 		};
 		displayResult(authResult);

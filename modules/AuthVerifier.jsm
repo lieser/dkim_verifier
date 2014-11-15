@@ -55,7 +55,7 @@ var AuthVerifier = {
 	/**
 	 * @typedef {Object} AuthResult
 	 * @property {String} version
-	 *           result version ("1.0")
+	 *           result version ("2.0")
 	 * @property {AuthResultDKIM[]} dkim
 	 * @property {ARHResinfo[]} [spf]
 	 * @property {ARHResinfo[]} [dmarc]
@@ -85,14 +85,9 @@ var AuthVerifier = {
 	 */
 	verify: function _authVerifier_verify(msgHdr, msgURI) {
 		var promise = Task.spawn(function () {
-			// check for saved DKIM result
-			let dkimResult = loadDKIMResult(msgHdr);
-			if (dkimResult !== null) {
-				let authResult = {
-					version: "1.0",
-					dkim: [dkimSigResultV2_to_AuthResultDKIM(
-						dkimResultV1_to_dkimSigResultV2(dkimResult))],
-				};
+			// check for saved AuthResult
+			let authResult = loadAuthResult(msgHdr);
+			if (authResult) {
 				throw new Task.Result(authResult);
 			}
 
@@ -104,8 +99,6 @@ var AuthVerifier = {
 			// create msg object
 			let msg = yield DKIM.Verifier.createMsg(msgURI);
 
-			let authResult;
-
 			// read Authentication-Results header
 			authResult = getARHResult(msg);
 
@@ -113,13 +106,13 @@ var AuthVerifier = {
 				// verify DKIM signatures
 				let dkimResultV2 = yield DKIM.Verifier.verify2(msg);
 				authResult = {
-					version: "1.0",
+					version: "2.0",
 					dkim: dkimResultV2.signatures.map(dkimSigResultV2_to_AuthResultDKIM),
 				};
 			}
 
-			// save DKIM result
-			// saveDKIMResult(msgHdr, dkimResult);
+			// save AuthResult
+			saveAuthResult(msgHdr, authResult);
 
 			throw new Task.Result(authResult);
 		});
@@ -137,7 +130,7 @@ var AuthVerifier = {
 	 */
 	resetResult: function _authVerifier_resetResult(msgHdr) {
 		var promise = Task.spawn(function () {
-			saveDKIMResult(msgHdr, "");
+			saveAuthResult(msgHdr, "");
 		});
 		promise.then(null, function onReject(exception) {
 			log.warn(exceptionToStr(exception));
@@ -212,7 +205,7 @@ function getARHResult(msg) {
 	DKIM.Verifier.sortSignatures(msg, dkimSigResults);
 
 	let authResult = {
-		version: "1.0",
+		version: "2.0",
 		dkim: dkimSigResults.map(dkimSigResultV2_to_AuthResultDKIM),
 		spf: arhSPF,
 		dmarc: arhDMARC,
@@ -221,57 +214,69 @@ function getARHResult(msg) {
 }
 
 /**
- * Save DKIM result
+ * Save authentication result
  * 
  * @param {nsIMsgDBHdr} msgHdr
- * @param {dkimResult} dkimResult
+ * @param {AuthResult} authResult
  */
-function saveDKIMResult(msgHdr, dkimResult) {
+function saveAuthResult(msgHdr, authResult) {
 	if (prefs.getBoolPref("saveResult")) {
 		// don't save result if message is external
 		if (!msgHdr.folder) {
-			return;
-		}
-		// don't save DKIM result if it's a TEMPFAIL
-		if (dkimResult.result !== "TEMPFAIL") {
+			log.debug("result not saved because message is external");
 			return;
 		}
 
-		if (dkimResult === "") {
-			log.debug("reset DKIM result");
+		if (authResult === "") {
+			// reset result
+			log.debug("reset AuthResult result");
 			msgHdr.setStringProperty("dkim_verifier@pl-result", "");
+		} else if (authResult.dkim[0].result === "TEMPFAIL") {
+			// don't save result if DKIM result is a TEMPFAIL
+			log.debug("result not saved because DKIM result is a TEMPFAIL");
 		} else {
-			log.debug("save DKIM result");
-			msgHdr.setStringProperty("dkim_verifier@pl-result", JSON.stringify(dkimResult));
+			log.debug("save AuthResult result");
+			msgHdr.setStringProperty("dkim_verifier@pl-result", JSON.stringify(authResult));
 		}
 	}
 }
 
 /**
- * Get saved DKIM result
+ * Get saved authentication result
  * 
  * @param {nsIMsgDBHdr} msgHdr
- * @return {dkimResult|Null} dkimResult
+ * @return {AuthResult|Null} authResult
  */
-function loadDKIMResult(msgHdr) {
+function loadAuthResult(msgHdr) {
 	if (prefs.getBoolPref("saveResult")) {
 		// don't read result if message is external
 		if (!msgHdr.folder) {
-			return;
+			return null;
 		}
 
-		let dkimResult = msgHdr.getStringProperty("dkim_verifier@pl-result");
+		let authResult = msgHdr.getStringProperty("dkim_verifier@pl-result");
 
-		if (dkimResult !== "") {
-			log.debug("DKIM result found: "+dkimResult);
+		if (authResult !== "") {
+			log.debug("AuthResult result found: "+authResult);
 
-			dkimResult = JSON.parse(dkimResult);
+			authResult = JSON.parse(authResult);
 
-			if (dkimResult.version.match(/^[0-9]+/)[0] !== "1") {
-				throw new DKIM_InternalError("DKIM result has wrong Version ("+dkimResult.version+")");
+			if (authResult.version.match(/^[0-9]+/)[0] === "1") {
+				// old dkimResultV1 (AuthResult version 1)
+				let res = {
+					version: "2.0",
+					dkim: [dkimSigResultV2_to_AuthResultDKIM(
+						dkimResultV1_to_dkimSigResultV2(authResult))],
+				};
+				return res;
+			}
+			if (authResult.version.match(/^[0-9]+/)[0] === "2") {
+				// AuthResult version 2
+				return authResult;
 			}
 
-			return dkimResult;
+			throw new DKIM_InternalError("AuthResult result has wrong Version (" +
+				authResult.version + ")");
 		}
 	}
 
