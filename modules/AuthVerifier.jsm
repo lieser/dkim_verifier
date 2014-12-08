@@ -3,7 +3,7 @@
  * 
  * Authentication Verifier.
  *
- * Version: 1.0.0pre2 (15 November 2014)
+ * Version: 1.0.0 (08 December 2014)
  * 
  * Copyright (c) 2014 Philippe Lieser
  * 
@@ -22,7 +22,7 @@
 
 "use strict";
 
-const module_version = "1.0.0pre2";
+const module_version = "1.0.0";
 
 var EXPORTED_SYMBOLS = [
 	"AuthVerifier"

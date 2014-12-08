@@ -1,7 +1,7 @@
 /*
  * dkimPolicy.jsm
  * 
- * Version: 1.2.0pre1 (09 September 2014)
+ * Version: 1.2.0 (08 December 2014)
  * 
  * Copyright (c) 2013-2014 Philippe Lieser
  * 
@@ -16,8 +16,10 @@
 /* jshint -W069 */ // "['{a}'] is better written in dot notation."
 /* global Components, Services, Sqlite, Task, Promise */
 /* global ModuleGetter, Logging, DMARC */
-/* global exceptionToStr, getBaseDomainFromAddr, readStringFrom, stringEndsWith, stringEqual, DKIM_SigError, DKIM_InternalError */
+/* global addrIsInDomain, exceptionToStr, getBaseDomainFromAddr, readStringFrom, stringEndsWith, stringEqual, DKIM_SigError, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, Policy */
+
+const module_version = "1.2.0";
 
 var EXPORTED_SYMBOLS = [
 	"Policy"
@@ -78,6 +80,8 @@ var dbInitialized = false;
 var dbInitializedDefer = Promise.defer();
 
 var Policy = {
+	get version() { return module_version; },
+
 	/**
 	 * init DB
 	 * May be called more then once
