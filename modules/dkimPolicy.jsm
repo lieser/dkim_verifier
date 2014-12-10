@@ -353,7 +353,7 @@ var Policy = {
 		});
 		promise.then(null, function onReject(exception) {
 			// Failure!  We can inspect or report the exception.
-			log.fatal(exceptionToStr(exception));
+			log.warn(exceptionToStr(exception));
 		});
 		return promise;
 	},

@@ -123,7 +123,7 @@ function exceptionToStr(exception) {
 	if (posStackTrace !== -1) {
 		var tmp = str.substr(posStackTrace+13);
 		tmp = tmp.replace(
-			/ < (?:[^ ]| (?!< ))*(?:Sqlite\.jsm|promise\.js|Promise\.jsm|Task\.jsm)(?:[^ ]| (?!< ))*/g,
+			/ < (?:[^ ]| (?!< ))*(?:Sqlite\.jsm|promise\.js|Promise\.jsm|Promise-backend\.js|Task\.jsm)(?:[^ ]| (?!< ))*/g,
 			""
 		);
 		str = str.substr(0, posStackTrace+13) + tmp;

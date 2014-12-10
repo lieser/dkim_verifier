@@ -344,7 +344,6 @@ function arhDKIM_to_dkimSigResultV2(arhDKIM) {
  * @return {dkimSigResultV2}
  */
 function dkimResultV1_to_dkimSigResultV2(dkimResultV1) {
-	let dkimSigResultV2 = dkimResultV1;
 	let dkimSigResultV2 = {
 		version: "2.0",
 		result: dkimResultV1.result,

@@ -129,7 +129,7 @@ let ARHParser = {
 	 *  @return {ARHHeader} Parsed Authentication-Results header
 	 */
 	parse: function _ARHParser_parse(authresHeader) {
-	  // remove header name
+		// remove header name
 		authresHeader = authresHeader.replace(
 			new RegExp("^Authentication-Results:"+CFWS_op, "i"), "");
 		authresHeader = new RefString(authresHeader);
