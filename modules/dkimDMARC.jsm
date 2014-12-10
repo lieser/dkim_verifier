@@ -87,7 +87,14 @@ var DMARC = {
 				throw new Task.Result(res);
 			}
 			
-			let DMARCPolicy = yield getDMARCPolicy(fromAddress);
+			let DMARCPolicy;
+			try {
+				DMARCPolicy = yield getDMARCPolicy(fromAddress);
+			} catch (e) {
+				// ignore errors on getting the DMARC policy
+				log.error(exceptionToStr(e));
+				throw new Task.Result(res);
+			}
 			let neededPolicy = prefs.getCharPref("shouldBeSigned.neededPolicy");
 			if (DMARCPolicy &&
 			    (neededPolicy === "none" ||
