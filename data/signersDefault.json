@@ -1,6 +1,6 @@
 {
 	"versionTable": 1,
-	"versionData": 5,
+	"versionData": 6,
 	"rules": [
 		{
 			"domain": "amazon.co.uk",
@@ -27,9 +27,21 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "babelzilla.org",
+			"addr": "*",
+			"sdid": "babelzilla.org",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "battle.net",
 			"addr": "*",
 			"sdid": "battle.net",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "blaucloud.de",
+			"addr": "*@blaucloud.de",
+			"sdid": "blaucloud.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -44,6 +56,12 @@
 			"sdid": "email.blizzard.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
+			"domain": "coursera.org",
+			"addr": "*",
+			"sdid": "coursera.org",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
 		}, {
 			"domain": "couchsurfing.com",
 			"addr": "*",
@@ -60,6 +78,18 @@
 			"domain": "ebay.de",
 			"addr": "*@reply.ebay.de",
 			"sdid": "reply.ebay.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
+			"domain": "easyjet.com",
+			"addr": "*",
+			"sdid": "easyjet.com",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "easyjet.com",
+			"addr": "*@email.easyJet.com",
+			"sdid": "email.easyJet.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
@@ -135,9 +165,39 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "here.com",
+			"addr": "*",
+			"sdid": "here.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "leagueoflegends.com",
 			"addr": "*@email.leagueoflegends.com",
 			"sdid": "email.leagueoflegends.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "linkedin.com",
+			"addr": "*",
+			"sdid": "linkedin.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "mailbox.org",
+			"addr": "*",
+			"sdid": "mailbox.org",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL0"
+		}, {
+			"domain": "mailc.net",
+			"addr": "*",
+			"sdid": "mailc.net",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL0"
+		}, {
+			"domain": "netflix.com",
+			"addr": "*",
+			"sdid": "mailer.netflix.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -165,15 +225,33 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
+			"domain": "postpro.net",
+			"addr": "*",
+			"sdid": "postpro.net",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL0"
+		}, {
 			"domain": "qantas.com.au",
 			"addr": "*@yourbooking.qantas.com.au",
 			"sdid": "yourbooking.qantas.com.au",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "sent.com",
+			"addr": "*",
+			"sdid": "sent.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL0"
+		}, {
 			"domain": "square-enix.com",
 			"addr": "*@xmail.square-enix.com",
 			"sdid": "xmail.square-enix.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "stackoverflow.com",
+			"addr": "*",
+			"sdid": "stackoverflow.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -182,6 +260,24 @@
 			"sdid": "steampowered.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "superuser.com",
+			"addr": "*",
+			"sdid": "superuser.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "ubi.com",
+			"addr": "*",
+			"sdid": "ubi.com",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "ubi.com",
+			"addr": "*@email.ubi.com",
+			"sdid": "ubi.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
 			"domain": "united-domains.de",
 			"addr": "*",
@@ -218,6 +314,12 @@
 			"sdid": "ymail.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL0"
+		}, {
+			"domain": "youtube.com",
+			"addr": "*",
+			"sdid": "youtube.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
 		}
 	]
 }
