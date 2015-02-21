@@ -8,8 +8,8 @@
 <!ENTITY dns.resolver.label "Resolver">
 <!ENTITY dns.resolver.value.1.label "JavaScript DNS library">
 <!ENTITY dns.resolver.value.2.label "libunbound">
-<!ENTITY dns.getNameserversFromOS.label "Get DNS name servers from OS configuration">
-<!ENTITY dns.nameserver.label "DNS name servers (Syntax (EBNF): host[&quot;:&quot;port]{&quot;;&quot;host[&quot;:&quot;port]} )">
+<!ENTITY dns.getNameserversFromOS.label "Get DNS servers from OS configuration">
+<!ENTITY dns.nameserver.label "DNS servers (Syntax (EBNF): host[&quot;:&quot;port]{&quot;;&quot;host[&quot;:&quot;port]} )">
 
 <!ENTITY dns.timeout_connect.label "DNS connect timeout (in seconds)">
 

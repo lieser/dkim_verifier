@@ -100,7 +100,7 @@ function init() {
 	
 	setupLogging(LOG_NAME);
 
-	log = Logging.getLogger(LOG_NAME+".Logging");
+	log = Logging.getLogger("Logging");
 	log.debug("initialized");
 }
 
