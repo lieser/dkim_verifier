@@ -22,7 +22,7 @@
 
 "use strict";
 
-const module_version = "1.0.0";
+const module_version = "1.0.1";
 
 var EXPORTED_SYMBOLS = [
 	"AuthVerifier"
