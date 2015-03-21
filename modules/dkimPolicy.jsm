@@ -1,9 +1,9 @@
 /*
  * dkimPolicy.jsm
  * 
- * Version: 1.2.1 (10 December 2014)
+ * Version: 1.2.2 (21 March 2015)
  * 
- * Copyright (c) 2013-2014 Philippe Lieser
+ * Copyright (c) 2013-2015 Philippe Lieser
  * 
  * This software is licensed under the terms of the MIT License.
  * 
@@ -19,7 +19,7 @@
 /* global addrIsInDomain, exceptionToStr, getBaseDomainFromAddr, readStringFrom, stringEndsWith, stringEqual, DKIM_SigError, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, Policy */
 
-const module_version = "1.2.0";
+const module_version = "1.2.2";
 
 var EXPORTED_SYMBOLS = [
 	"Policy"
@@ -80,7 +80,7 @@ var dbInitialized = false;
 var dbInitializedDefer = Promise.defer();
 
 var Policy = {
-	get version() { return module_version; },
+	get version() { "use strict"; return module_version; },
 
 	/**
 	 * init DB
@@ -426,8 +426,7 @@ var Policy = {
 
 			// return if fromAddress is not in SDID
 			// and options state it should
-			if (!(stringEndsWith(fromAddress, "@"+sdid) ||
-			      stringEndsWith(fromAddress, "."+sdid)) &&
+			if (!addrIsInDomain(fromAddress, sdid) &&
 			    prefs.getBoolPref("signRules.autoAddRule.onlyIfFromAddressInSDID")) {
 				log.trace("fromAddress is not in SDID");
 				return;

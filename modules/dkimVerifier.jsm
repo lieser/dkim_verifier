@@ -4,9 +4,9 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  * 
- * Version: 1.3.0 (08 December 2014)
+ * Version: 1.3.1 (21 March 2015)
  * 
- * Copyright (c) 2013-2014 Philippe Lieser
+ * Copyright (c) 2013-2015 Philippe Lieser
  * 
  * This software is licensed under the terms of the MIT License.
  * 
@@ -28,10 +28,10 @@
 /* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
 /* global Components, Dict, Services, Task */
 /* global Logging, Key, Policy, MsgReader */
-/* global dkimStrings, addrIsInDomain, domainIsInDomain, exceptionToStr, stringEndsWith, stringEqual, writeStringToTmpFile, DKIM_SigError, DKIM_InternalError */
+/* global dkimStrings, addrIsInDomain2, domainIsInDomain, exceptionToStr, stringEndsWith, stringEqual, writeStringToTmpFile, DKIM_SigError, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, Verifier */
 
-const module_version = "1.3.0";
+const module_version = "1.3.1";
 
 var EXPORTED_SYMBOLS = [
 	"Verifier"
@@ -1443,17 +1443,21 @@ var that = {
 				return 0;
 			}
 
-			if (addrIsInDomain(msg.from, sig1.sdid)) {
+			if (addrIsInDomain2(msg.from, sig1.sdid)) {
 				return -1;
-			} else if (addrIsInDomain(msg.from, sig2.sdid)) {
+			} else if (addrIsInDomain2(msg.from, sig2.sdid)) {
 				return 1;
 			}
 
-			if (domainIsInDomain(msg.listId, sig1.sdid)) {
-				return -1;
-			} else if (domainIsInDomain(msg.listId, sig2.sdid)) {
-				return 1;
+			if (msg.listId) {
+				if (domainIsInDomain(msg.listId, sig1.sdid)) {
+					return -1;
+				} else if (domainIsInDomain(msg.listId, sig2.sdid)) {
+					return 1;
+				}
 			}
+
+			return 0;
 		}
 
 		signatures.sort(function (sig1, sig2) {

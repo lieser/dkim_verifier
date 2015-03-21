@@ -1,9 +1,9 @@
 /*
  * helper.jsm
  *
- * Version: 1.3.1 (10 December 2014)
+ * Version: 1.4.0 (21 March 2015)
  * 
- * Copyright (c) 2013-2014 Philippe Lieser
+ * Copyright (c) 2013-2015 Philippe Lieser
  * 
  * This software is licensed under the terms of the MIT License.
  * 
@@ -15,11 +15,12 @@
 /* jshint strict:true, moz:true, smarttabs:true */
 /* global Components, FileUtils, NetUtil, Promise, Services, CommonUtils */
 /* global ModuleGetter, Logging */
-/* exported EXPORTED_SYMBOLS, addrIsInDomain, domainIsInDomain, exceptionToStr, getBaseDomainFromAddr, getDomainFromAddr, readStringFrom, stringEndsWith, stringEqual, tryGetString, tryGetFormattedString, writeStringToTmpFile, DKIM_SigError, DKIM_InternalError */
+/* exported EXPORTED_SYMBOLS, addrIsInDomain, addrIsInDomain2, domainIsInDomain, exceptionToStr, getBaseDomainFromAddr, getDomainFromAddr, readStringFrom, stringEndsWith, stringEqual, tryGetString, tryGetFormattedString, writeStringToTmpFile, DKIM_SigError, DKIM_InternalError */
 
 var EXPORTED_SYMBOLS = [
 	"dkimStrings",
 	"addrIsInDomain",
+	"addrIsInDomain2",
 	"domainIsInDomain",
 	"exceptionToStr",
 	"getBaseDomainFromAddr",
@@ -83,6 +84,23 @@ function addrIsInDomain(addr, domain) {
 
 	return stringEndsWith(addr, "@" + domain) ||
 		stringEndsWith(addr, "." + domain);
+}
+
+/**
+ * Returns true if e-mail address is from the domain or a subdomain of it or if
+ * the domain is a subdomain of the e-mail address.
+ * 
+ * @param {String} addr
+ * @param {String} domain
+ * 
+ * @return {Boolean}
+ */
+function addrIsInDomain2(addr, domain) {
+	"use strict";
+
+	return stringEndsWith(addr, "@" + domain) ||
+		stringEndsWith(addr, "." + domain) ||
+		stringEndsWith(domain, "." + getDomainFromAddr(addr));
 }
 
 /**
