@@ -6,9 +6,9 @@
  *
  * This module is NOT conform to DMARC.
  *
- * Version: 1.0.2 (10 December 2014)
+ * Version: 1.0.3 (21 June 2015)
  * 
- * Copyright (c) 2014 Philippe Lieser
+ * Copyright (c) 2014-2015 Philippe Lieser
  * 
  * This software is licensed under the terms of the MIT License.
  * 
@@ -23,6 +23,8 @@
 /* global ModuleGetter, Logging, Verifier, DNS */
 /* global exceptionToStr, getBaseDomainFromAddr, getDomainFromAddr, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, DMARC */
+
+const module_version = "1.0.3";
 
 var EXPORTED_SYMBOLS = [
 	"DMARC"
@@ -61,6 +63,8 @@ let prefs = Services.prefs.getBranch(PREF_BRANCH);
 let log = Logging.getLogger("DMARC");
 
 var DMARC = {
+	get version() { "use strict"; return module_version; },
+
 	/**
 	 * Tries to determinate with DMARC if an e-mail should be signed.
 	 * 
@@ -325,10 +329,10 @@ function parseDMARCRecord(DMARCRecordStr) {
 	};
 	
 	// parse tag-value list
-	let dict = Verifier.parseTagValueList(DMARCRecordStr);
-	if (dict === -1) {
+	let tagMap = Verifier.parseTagValueList(DMARCRecordStr);
+	if (tagMap === -1) {
 		throw new DKIM_InternalError("DKIM_DMARCERROR_ILLFORMED_TAGSPEC");
-	} else if (dict === -2) {
+	} else if (tagMap === -2) {
 		throw new DKIM_InternalError("DKIM_DMARCERROR_DUPLICATE_TAG");
 	}
 
@@ -337,7 +341,7 @@ function parseDMARCRecord(DMARCRecordStr) {
 	// of this tag MUST match precisely; if it does not or it is absent,
 	// the entire retrieved record MUST be ignored.  It MUST be the first
 	// tag in the list.
-	let versionTag = Verifier.parseTagValue(dict, "v", "DMARC1", 3);
+	let versionTag = Verifier.parseTagValue(tagMap, "v", "DMARC1", 3);
 	if (versionTag === null) {
 		throw new DKIM_InternalError("DKIM_DMARCERROR_MISSING_V");
 	} else {
@@ -347,7 +351,7 @@ function parseDMARCRecord(DMARCRecordStr) {
 	// adkim:  (plain-text; OPTIONAL, default is "r".)  Indicates whether
 	// strict or relaxed DKIM identifier alignment mode is required by
 	// the Domain Owner.
-	let adkimTag = Verifier.parseTagValue(dict, "adkim", "[rs]", 3);
+	let adkimTag = Verifier.parseTagValue(tagMap, "adkim", "[rs]", 3);
 	if (adkimTag === null || versionTag[0] === "DMARC1") {
 		DMARCRecord.adkim = "r";
 	} else {
@@ -372,7 +376,7 @@ function parseDMARCRecord(DMARCRecordStr) {
 	//    email that fails the DMARC mechanism check.  Rejection SHOULD
 	//    occur during the SMTP transaction.  See Section 15.4 for some
 	//    discussion of SMTP rejection methods and their implications.
-	let pTag = Verifier.parseTagValue(dict, "p", "(?:none|quarantine|reject)", 3);
+	let pTag = Verifier.parseTagValue(tagMap, "p", "(?:none|quarantine|reject)", 3);
 	if (pTag === null) {
 		throw new DKIM_InternalError("DKIM_DMARCERROR_MISSING_P");
 	} else {
@@ -395,7 +399,7 @@ function parseDMARCRecord(DMARCRecordStr) {
 	//    selected = true
 	//  else
 	//    selected = false
-	let pctTag = Verifier.parseTagValue(dict, "pct", "[0-9]{1,3}", 3);
+	let pctTag = Verifier.parseTagValue(tagMap, "pct", "[0-9]{1,3}", 3);
 	if (pctTag === null) {
 		DMARCRecord.pct = 100;
 	} else {
@@ -414,7 +418,7 @@ function parseDMARCRecord(DMARCRecordStr) {
 	// Note that "sp" will be ignored for DMARC records published on sub-
 	// domains of Organizational Domains due to the effect of the DMARC
 	// Policy Discovery mechanism described in Section 8.
-	let spTag = Verifier.parseTagValue(dict, "sp", "(?:none|quarantine|reject)", 3);
+	let spTag = Verifier.parseTagValue(tagMap, "sp", "(?:none|quarantine|reject)", 3);
 	if (spTag !== null) {
 		DMARCRecord.sp = spTag[0];
 	}
