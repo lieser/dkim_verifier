@@ -3,9 +3,9 @@
  * 
  * Reads and parses a message.
  *
- * Version: 1.0.0 (08 December 2014)
+ * Version: 2.0.0 (21 June 2015)
  * 
- * Copyright (c) 2014 Philippe Lieser
+ * Copyright (c) 2014-2015 Philippe Lieser
  * 
  * This software is licensed under the terms of the MIT License.
  * 
@@ -14,15 +14,15 @@
  */
 
 // options for JSHint
-/* jshint strict:true, moz:true, smarttabs:true, unused:true */
-/* global Components, Dict, Promise */
+/* jshint strict:true, globalstrict:true, esnext:true, moz:true, smarttabs:true, unused:true */
+/* global Components, Promise */
 /* global ModuleGetter, Logging */
 /* global DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, MsgReader */
 
 "use strict";
 
-const module_version = "1.0.0";
+const module_version = "2.0.0";
 
 var EXPORTED_SYMBOLS = [
 	"MsgReader"
@@ -31,8 +31,6 @@ var EXPORTED_SYMBOLS = [
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
-
-Cu.import("resource://gre/modules/Dict.jsm");
 
 Cu.import("resource://dkim_verifier/ModuleGetter.jsm");
 ModuleGetter.getPromise(this);
@@ -168,12 +166,12 @@ var MsgReader = {
 	 * Parses the header of a message.
 	 *
 	 * @param {String} headerPlain
-	 * @return {Dict}
+	 * @return {Map}
 	 *           key: {String} <header name>
 	 *           value: {Array[String]}
 	 */
 	parseHeader: function _MsgReader_parseHeader(headerPlain) {
-		var headerFields = new Dict();
+		var headerFields = new Map();
 
 		// split header fields
 		var headerArray = headerPlain.split(/\r\n(?=\S|$)/);

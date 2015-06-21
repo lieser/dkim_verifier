@@ -4,7 +4,7 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  * 
- * Version: 1.3.1 (21 March 2015)
+ * Version: 2.0.0 (21 June 2015)
  * 
  * Copyright (c) 2013-2015 Philippe Lieser
  * 
@@ -24,14 +24,14 @@
  */
 
 // options for JSHint
-/* jshint strict:true, moz:true, smarttabs:true */
+/* jshint strict:true, esnext:true, moz:true, smarttabs:true */
 /* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
-/* global Components, Dict, Services, Task */
+/* global Components, Services, Task */
 /* global Logging, Key, Policy, MsgReader */
 /* global dkimStrings, addrIsInDomain2, domainIsInDomain, exceptionToStr, stringEndsWith, stringEqual, writeStringToTmpFile, DKIM_SigError, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, Verifier */
 
-const module_version = "1.3.1";
+const module_version = "2.0.0";
 
 var EXPORTED_SYMBOLS = [
 	"Verifier"
@@ -41,7 +41,6 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://gre/modules/Dict.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/Task.jsm"); // Requires Gecko 17.0
 
@@ -260,7 +259,7 @@ var Verifier = (function() {
 	 * 
 	 * @param {String} str
 	 * 
-	 * @return {Dict|Number} Dict
+	 * @return {Map|Number} Map
 	 *                       -1 if a tag-spec is ill-formed
 	 *                       -2 duplicate tag names
 	 */
@@ -275,7 +274,7 @@ var Verifier = (function() {
 		}
 		
 		var array = str.split(";");
-		var dict = new Dict();
+		var map = new Map();
 		var tmp;
 		var name;
 		var value;
@@ -291,21 +290,21 @@ var Verifier = (function() {
 			value = tmp[2];
 			
 			// check that tag is no duplicate
-			if (dict.has(name)) {
+			if (map.has(name)) {
 				return -2;
 			}
 			
 			// store Tag=Value pair
-			dict.set(name, value);
+			map.set(name, value);
 		}
 		
-		return dict;
+		return map;
 	}
 	
 	/**
-	 * Parse a tag value stored in a Dict
+	 * Parse a tag value stored in a Map.
 	 * 
-	 * @param {Dict} dict
+	 * @param {Map} map
 	 * @param {String} tag_name name of the tag
 	 * @param {String} pattern_tag_value Pattern for the tag-value
 	 * @param {Number} [expType=1] Type of exception to throw. 1 for DKIM header, 2 for DKIM key.
@@ -314,8 +313,8 @@ var Verifier = (function() {
 	 * 
 	 * @throws {DKIM_SigError|DKIM_InternalError} Throws if tag_value does not match.
 	 */
-	function parseTagValue(dict, tag_name, pattern_tag_value, expType = 1) {
-		var tag_value = dict.get(tag_name);
+	function parseTagValue(map, tag_name, pattern_tag_value, expType = 1) {
+		var tag_value = map.get(tag_name);
 		// return null if tag_name doesn't exists
 		if (tag_value === undefined) {
 			return null;
@@ -376,16 +375,16 @@ var Verifier = (function() {
 		// strip the \r\n at the end
 		DKIMSignatureHeader = DKIMSignatureHeader.substr(0, DKIMSignatureHeader.length-2);
 		// parse tag-value list
-		var dict = parseTagValueList(DKIMSignatureHeader);
-		if (dict === -1) {
+		var tagMap = parseTagValueList(DKIMSignatureHeader);
+		if (tagMap === -1) {
 			throw new DKIM_SigError("DKIM_SIGERROR_ILLFORMED_TAGSPEC");
-		} else if (dict === -2) {
+		} else if (tagMap === -2) {
 			throw new DKIM_SigError("DKIM_SIGERROR_DUPLICATE_TAG");
 		}
 		
 		// get Version (plain-text; REQUIRED)
 		// must be "1"
-		var versionTag = parseTagValue(dict, "v", "[0-9]+");
+		var versionTag = parseTagValue(tagMap, "v", "[0-9]+");
 		if (versionTag === null) {
 			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_V");
 		}
@@ -400,7 +399,7 @@ var Verifier = (function() {
 		var sig_a_tag_k = "(rsa|[A-Za-z](?:[A-Za-z]|[0-9])*)";
 		var sig_a_tag_h = "(sha1|sha256|[A-Za-z](?:[A-Za-z]|[0-9])*)";
 		var sig_a_tag_alg = sig_a_tag_k+"-"+sig_a_tag_h;
-		var algorithmTag = parseTagValue(dict, "a", sig_a_tag_alg);
+		var algorithmTag = parseTagValue(tagMap, "a", sig_a_tag_alg);
 		if (algorithmTag === null) {
 			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_A");
 		}
@@ -412,7 +411,7 @@ var Verifier = (function() {
 		}
 
 		// get signature data (base64;REQUIRED)
-		var signatureDataTag = parseTagValue(dict, "b", base64string);
+		var signatureDataTag = parseTagValue(tagMap, "b", base64string);
 		if (signatureDataTag === null) {
 			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_B");
 		}
@@ -420,7 +419,7 @@ var Verifier = (function() {
 		DKIMSignature.b_folded = signatureDataTag[0];
 
 		// get body hash (base64;REQUIRED)
-		var bodyHashTag = parseTagValue(dict, "bh", base64string);
+		var bodyHashTag = parseTagValue(tagMap, "bh", base64string);
 		if (bodyHashTag === null) {
 			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_BH");
 		}
@@ -429,7 +428,7 @@ var Verifier = (function() {
 		// get Message canonicalization (plain-text; OPTIONAL, default is "simple/simple")
 		// currently only "simple" or "relaxed" for both header and body
 		var sig_c_tag_alg = "(simple|relaxed|"+hyphenated_word+")";
-		var msCanonTag = parseTagValue(dict, "c", sig_c_tag_alg+"(?:/"+sig_c_tag_alg+")?");
+		var msCanonTag = parseTagValue(tagMap, "c", sig_c_tag_alg+"(?:/"+sig_c_tag_alg+")?");
 		if (msCanonTag === null) {
 			DKIMSignature.c_header = "simple";
 			DKIMSignature.c_body = "simple";
@@ -457,7 +456,7 @@ var Verifier = (function() {
 		// Pattern for sub-domain as specified in Section 4.1.2 of RFC 5321
 		var sub_domain = "(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?)";
 		var domain_name = "(?:"+sub_domain+"(?:\\."+sub_domain+")+)";
-		var SDIDTag = parseTagValue(dict, "d", domain_name);
+		var SDIDTag = parseTagValue(tagMap, "d", domain_name);
 		if (SDIDTag === null) {
 			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_D");
 		}
@@ -465,7 +464,7 @@ var Verifier = (function() {
 
 		// get Signed header fields (plain-text, but see description; REQUIRED)
 		var sig_h_tag = "("+hdr_name+")"+"(?:"+pattFWS+"?:"+pattFWS+"?"+hdr_name+")*";
-		var signedHeadersTag = parseTagValue(dict, "h", sig_h_tag);
+		var signedHeadersTag = parseTagValue(tagMap, "h", sig_h_tag);
 		if (signedHeadersTag === null) {
 			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_H");
 		}
@@ -541,7 +540,7 @@ var Verifier = (function() {
 		var sig_i_tag = local_part+"?@("+domain_name+")";
 		var AUIDTag = null;
 		try {
-			AUIDTag = parseTagValue(dict, "i", sig_i_tag);
+			AUIDTag = parseTagValue(tagMap, "i", sig_i_tag);
 		} catch (exception if exception instanceof DKIM_SigError &&
 		         exception.errorType === "DKIM_SIGERROR_ILLFORMED_I") {
 			switch (prefs.getIntPref("error.illformed_i.treatAs")) {
@@ -568,7 +567,7 @@ var Verifier = (function() {
 		}
 
 		// get Body length count (plain-text unsigned decimal integer; OPTIONAL, default is entire body)
-		var BodyLengthTag = parseTagValue(dict, "l", "[0-9]{1,76}");
+		var BodyLengthTag = parseTagValue(tagMap, "l", "[0-9]{1,76}");
 		if (BodyLengthTag !== null) {
 			DKIMSignature.l = parseInt(BodyLengthTag[0], 10);
 		}
@@ -576,7 +575,7 @@ var Verifier = (function() {
 		// get query methods (plain-text; OPTIONAL, default is "dns/txt")
 		var sig_q_tag_method = "(?:dns/txt|"+hyphenated_word+"(?:/"+qp_hdr_value+")?)";
 		var sig_q_tag = sig_q_tag_method+"(?:"+pattFWS+"?:"+pattFWS+"?"+sig_q_tag_method+")*";
-		var QueryMetTag = parseTagValue(dict, "q", sig_q_tag);
+		var QueryMetTag = parseTagValue(tagMap, "q", sig_q_tag);
 		if (QueryMetTag === null) {
 			DKIMSignature.q = "dns/txt";
 		} else {
@@ -589,12 +588,12 @@ var Verifier = (function() {
 		// get selector subdividing the namespace for the "d=" (domain) tag (plain-text; REQUIRED)
 		var SelectorTag;
 		try {
-			SelectorTag = parseTagValue(dict, "s", sub_domain+"(?:\\."+sub_domain+")*");
+			SelectorTag = parseTagValue(tagMap, "s", sub_domain+"(?:\\."+sub_domain+")*");
 		} catch (exception if exception instanceof DKIM_SigError &&
 		         exception.errorType === "DKIM_SIGERROR_ILLFORMED_S") {
 			// try to parse selector in a more relaxed way
 			var sub_domain_ = "(?:[A-Za-z0-9_](?:[A-Za-z0-9_-]*[A-Za-z0-9_])?)";
-			SelectorTag = parseTagValue(dict, "s", sub_domain_+"(?:\\."+sub_domain_+")*");
+			SelectorTag = parseTagValue(tagMap, "s", sub_domain_+"(?:\\."+sub_domain_+")*");
 			switch (prefs.getIntPref("error.illformed_s.treatAs")) {
 				case 0: // error
 					throw exception;
@@ -614,7 +613,7 @@ var Verifier = (function() {
 		
 		// get Signature Timestamp (plain-text unsigned decimal integer; RECOMMENDED,
 		// default is an unknown creation time)
-		var SigTimeTag = parseTagValue(dict, "t", "[0-9]+");
+		var SigTimeTag = parseTagValue(tagMap, "t", "[0-9]+");
 		if (SigTimeTag !== null) {
 			DKIMSignature.t = parseInt(SigTimeTag[0], 10);
 		}
@@ -622,7 +621,7 @@ var Verifier = (function() {
 		// get Signature Expiration (plain-text unsigned decimal integer; 
 		// RECOMMENDED, default is no expiration)
 		// The value of the "x=" tag MUST be greater than the value of the "t=" tag if both are present
-		var ExpTimeTag = parseTagValue(dict, "x", "[0-9]+");
+		var ExpTimeTag = parseTagValue(tagMap, "x", "[0-9]+");
 		if (ExpTimeTag !== null) {
 			DKIMSignature.x = parseInt(ExpTimeTag[0], 10);
 			if (DKIMSignature.t !== null && DKIMSignature.x < DKIMSignature.t) {
@@ -633,7 +632,7 @@ var Verifier = (function() {
 		// get Copied header fields (dkim-quoted-printable, but see description; OPTIONAL, default is null)
 		var sig_z_tag_copy = hdr_name+pattFWS+"?:"+qp_hdr_value;
 		var sig_z_tag = sig_z_tag_copy+"(\\|"+pattFWS+"?"+sig_z_tag_copy+")*";
-		var CopyHeaderFieldsTag = parseTagValue(dict, "z", sig_z_tag);
+		var CopyHeaderFieldsTag = parseTagValue(tagMap, "z", sig_z_tag);
 		if (CopyHeaderFieldsTag !== null) {
 			DKIMSignature.z = CopyHeaderFieldsTag[0].replace(new RegExp(pattFWS,"g"), "");
 		}
@@ -659,10 +658,10 @@ var Verifier = (function() {
 		};
 		
 		// parse tag-value list
-		var dict = parseTagValueList(DKIMKeyRecord);
-		if (dict === -1) {
+		var tagMap = parseTagValueList(DKIMKeyRecord);
+		if (tagMap === -1) {
 			throw new DKIM_SigError("DKIM_SIGERROR_KEY_ILLFORMED_TAGSPEC");
-		} else if (dict === -2) {
+		} else if (tagMap === -2) {
 			throw new DKIM_SigError("DKIM_SIGERROR_KEY_DUPLICATE_TAG");
 		}
 
@@ -670,7 +669,7 @@ var Verifier = (function() {
 		// If specified, this tag MUST be set to "DKIM1"
 		// This tag MUST be the first tag in the record
 		var key_v_tag_value = dkim_safe_char+"*";
-		var versionTag = parseTagValue(dict, "v", key_v_tag_value, 2);
+		var versionTag = parseTagValue(tagMap, "v", key_v_tag_value, 2);
 		if (versionTag === null || versionTag[0] === "DKIM1") {
 			DKIMKey.v = "DKIM1";
 		} else {
@@ -680,7 +679,7 @@ var Verifier = (function() {
 		// get Acceptable hash algorithms (plain-text; OPTIONAL, defaults toallowing all algorithms)
 		var key_h_tag_alg = "(?:sha1|sha256|"+hyphenated_word+")";
 		var key_h_tag = key_h_tag_alg+"(?:"+pattFWS+"?:"+pattFWS+"?"+key_h_tag_alg+")*";
-		var algorithmTag = parseTagValue(dict, "h", key_h_tag, 2);
+		var algorithmTag = parseTagValue(tagMap, "h", key_h_tag, 2);
 		if (algorithmTag !== null) {
 			DKIMKey.h = algorithmTag[0];
 			DKIMKey.h_array = DKIMKey.h.split(":").map(String.trim).filter(function (x) {return x;});
@@ -688,7 +687,7 @@ var Verifier = (function() {
 		
 		// get Key type (plain-text; OPTIONAL, default is "rsa")
 		var key_k_tag_type = "(?:rsa|"+hyphenated_word+")";
-		var keyTypeTag = parseTagValue(dict, "k", key_k_tag_type, 2);
+		var keyTypeTag = parseTagValue(tagMap, "k", key_k_tag_type, 2);
 		if (keyTypeTag === null || keyTypeTag[0] === "rsa") {
 			DKIMKey.k = "rsa";
 		} else {
@@ -698,14 +697,14 @@ var Verifier = (function() {
 		// get Notes (qp-section; OPTIONAL, default is empty)
 		var ptext = "(?:"+hex_octet+"|[!-<>-~])";
 		var qp_section = "(?:(?:"+ptext+"| |\t)*"+ptext+")?";
-		var notesTag = parseTagValue(dict, "n", qp_section, 2);
+		var notesTag = parseTagValue(tagMap, "n", qp_section, 2);
 		if (notesTag !== null) {
 			DKIMKey.n = notesTag[0];
 		}
 		
 		// get Public-key data (base64; REQUIRED)
 		// empty value means that this public key has been revoked
-		var keyTag = parseTagValue(dict, "p", base64string+"?", 2);
+		var keyTag = parseTagValue(tagMap, "p", base64string+"?", 2);
 		if (keyTag === null) {
 			throw new DKIM_SigError("DKIM_SIGERROR_KEY_MISSING_P");
 		} else {
@@ -719,7 +718,7 @@ var Verifier = (function() {
 		// get Service Type (plain-text; OPTIONAL; default is "*")
 		var key_s_tag_type = "(?:email|\\*|"+hyphenated_word+")";
 		var key_s_tag = key_s_tag_type+"(?:"+pattFWS+"?:"+pattFWS+"?"+key_s_tag_type+")*";
-		var serviceTypeTag = parseTagValue(dict, "s", key_s_tag, 2);
+		var serviceTypeTag = parseTagValue(tagMap, "s", key_s_tag, 2);
 		if (serviceTypeTag === null) {
 			DKIMKey.s = "*";
 		} else {
@@ -733,7 +732,7 @@ var Verifier = (function() {
 		// get Flags (plaintext; OPTIONAL, default is no flags set)
 		var key_t_tag_flag = "(?:y|s|"+hyphenated_word+")";
 		var key_t_tag = key_t_tag_flag+"(?:"+pattFWS+"?:"+pattFWS+"?"+key_t_tag_flag+")*";
-		var flagsTag = parseTagValue(dict, "t", key_t_tag, 2);
+		var flagsTag = parseTagValue(tagMap, "t", key_t_tag, 2);
 		if (flagsTag !== null) {
 			DKIMKey.t = flagsTag[0];
 			// get the flags and store them in an array
@@ -891,11 +890,10 @@ var Verifier = (function() {
 		}
 
 		// copy header fileds
-		var newHeaderItems = {};
-		for (var [key, val] of msg.headerFields.listitems()) {
-			newHeaderItems[key] = val.slice();
+		var headerFields = new Map();
+		for (var [key, val] of msg.headerFields) {
+			headerFields.set(key, val.slice());
 		}
-		var headerFields = new Dict(newHeaderItems);
 
 		// get header fields specified by the "h=" tag
 		// and join their canonicalized form
@@ -1307,7 +1305,7 @@ var that = {
 	 * Verifies the message given message.
 	 * 
 	 * @param {Object} msg
-	 *        .headerFields {Dict}
+	 *        .headerFields {Map}
 	 *          key: {String} <header name>
 	 *          value: {Array[String]}
 	 *        .bodyPlain {String}
@@ -1336,7 +1334,7 @@ var that = {
 	 * 
 	 * @param {String} msgURI
 	 * @return {Promise<Object>}
-	 *         .headerFields {Dict}
+	 *         .headerFields {Map}
 	 *           key: {String} <header name>
 	 *           value: {Array[String]}
 	 *         .bodyPlain {String}
