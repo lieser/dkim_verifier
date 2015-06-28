@@ -216,8 +216,7 @@ SPFContext.prototype = Object.create(null, {
 						(ip_.type === "IPv4")? "A" : "AAA");
 					throw new Task.Result(
 						records.data.some(function (element/*, index, array*/) {
-							return ip_.isInNetwork(new IP(mechanism.ip4),
-								(ip_.type === "IPv4")?
+							return ip_.isInNetwork(new IP(element), (ip_.type === "IPv4")?
 									mechanism.ip4_cidr_length : mechanism.ip6_cidr_length);
 						}));
 				case "mx":
@@ -518,9 +517,9 @@ function match_o(str, pattern) {
 function IP(s){
 	if (s.indexOf(".") !== -1) {
 		this._buffer = s.split(".").map(function(e) {return parseInt(e, 10);});
-		this.type = "IPv4"
+		this.type = "IPv4";
 	} else {
-		this.type = "IPv6"
+		this.type = "IPv6";
 		throw new Error("TODO: ip6");
 	}
 }
