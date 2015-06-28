@@ -16,6 +16,11 @@
 /*
  * Violations against RFC 7208:
  * ============================
+ *  - no IPv6 support
+ *  - no support for mechanism "mx"
+ *  - no support for mechanism "ptr"
+ *  - no support for macro expansion
+ *  - no support for explanation string
  *  - ...
  */
 
@@ -206,14 +211,19 @@ SPFContext.prototype = Object.create(null, {
 				case "a":
 					this.increaseDNSLookupCount();
 					let target = this.expandDomainSpec(mechanism.domain_spec) || domain;
-					// TODO: A or AAAA lookup
-					let records = yield queryDNS(target, "A");
-					// TODO: match addresses
-					throw new Error("TODO: match addresses");
+					let ip_ = IP(ip);
+					let records = yield queryDNS(target,
+						(ip_.type === "IPv4")? "A" : "AAA");
+					throw new Task.Result(
+						records.data.some(function (element/*, index, array*/) {
+							return ip_.isInNetwork(new IP(mechanism.ip4),
+								(ip_.type === "IPv4")?
+									mechanism.ip4_cidr_length : mechanism.ip6_cidr_length);
+						}));
 				case "mx":
 					this.increaseDNSLookupCount();
 					let target = this.expandDomainSpec(mechanism.domain_spec) || domain;
-					let records = yield queryDNS(target, "MX");
+					// let records = yield queryDNS(target, "MX");
 					// TODO: address lookup on each MX name returned and comp. of addresses
 					throw new Error("TODO: mx");
 				case "ptr":
@@ -240,6 +250,12 @@ SPFContext.prototype = Object.create(null, {
 		}
 	},
 
+	/**
+	 * Increases the DNS Lookup count and checks if it is still in the limit.
+	 * Specified in section 4.6.4. of RFC 7208.
+	 * 
+	 * @throws {Error} If DNS Lookup Limits is reached
+	 */
 	increaseDNSLookupCount: {
 		value: function SPFContext_increaseDNSLookupCount() {
 			if (this._DNSLookupCount === undefined) {
@@ -253,8 +269,19 @@ SPFContext.prototype = Object.create(null, {
 		}
 	},
 
+	/**
+	 * Performs a macro expansion.
+	 * Specified in section 7 of RFC 7208.
+	 * 
+	 * @param {String} str
+	 * @param {String} rrtype
+	 * @return {Promise<Object[]>}
+	 */
 	expandDomainSpec: {
-		// TDOD: expandDomainSpec
+		value: function SPFContext_expandDomainSpec(str) {
+			// TODO: expandDomainSpec
+			return str;
+		}
 	},
 });
 
@@ -482,13 +509,18 @@ function match_o(str, pattern) {
 
 
 /**
- * A IPv4 or IPv6 address.
+ * Constructs a IPv4 or IPv6 address from a string.
  * Stored as s byte array.
+ * 
+ * @typedef {Object} IP
+ * @property {String} type "IPv4" / "IPv6"
  */
 function IP(s){
 	if (s.indexOf(".") !== -1) {
 		this._buffer = s.split(".").map(function(e) {return parseInt(e, 10);});
+		this.type = "IPv4"
 	} else {
+		this.type = "IPv6"
 		throw new Error("TODO: ip6");
 	}
 }
