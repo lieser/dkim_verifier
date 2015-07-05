@@ -187,6 +187,8 @@ SPFContext.prototype = Object.create(null, {
 				throw new Task.Result(record.data);
 			}
 
+			let target;
+			let records;
 			switch (mechanism.mechanism) {
 				case "all":
 					throw new Task.Result(true);
@@ -210,9 +212,9 @@ SPFContext.prototype = Object.create(null, {
 					throw new Error("invalid check_host result: " + check_host_res);
 				case "a":
 					this.increaseDNSLookupCount();
-					let target = this.expandDomainSpec(mechanism.domain_spec) || domain;
+					target = this.expandDomainSpec(mechanism.domain_spec) || domain;
 					let ip_ = IP(ip);
-					let records = yield queryDNS(target,
+					records = yield queryDNS(target,
 						(ip_.type === "IPv4")? "A" : "AAA");
 					throw new Task.Result(
 						records.data.some(function (element/*, index, array*/) {
@@ -221,7 +223,7 @@ SPFContext.prototype = Object.create(null, {
 						}));
 				case "mx":
 					this.increaseDNSLookupCount();
-					let target = this.expandDomainSpec(mechanism.domain_spec) || domain;
+					target = this.expandDomainSpec(mechanism.domain_spec) || domain;
 					// let records = yield queryDNS(target, "MX");
 					// TODO: address lookup on each MX name returned and comp. of addresses
 					throw new Error("TODO: mx");
@@ -236,8 +238,8 @@ SPFContext.prototype = Object.create(null, {
 						new IP(mechanism.ip6), mechanism.ip6_cidr_length));
 				case "exists":
 					this.increaseDNSLookupCount();
-					let target = this.expandDomainSpec(mechanism.domain_spec);
-					let records = yield queryDNS(target, "A");
+					target = this.expandDomainSpec(mechanism.domain_spec);
+					records = yield queryDNS(target, "A");
 					if (records.length > 0) {
 						throw new Task.Result(true);
 					}
@@ -293,7 +295,6 @@ SPFContext.prototype = Object.create(null, {
 
 /**
  * @typedef {Object} SPFTerm
- * @property {String} version "spf1"
  * @property {String} type "mechanism" / "modifier"
  * 
  * @property {String} [qualifier]
@@ -322,7 +323,7 @@ function parseRecord(str) {
 	str = new RefString(str);
 
 	// match version
-	if (str.match_o("v=spf1(?: +| *$)") === null) {
+	if (match_o(str, "v=spf1(?= |$)") === null) {
 		return null;
 	}
 	let record = {};
@@ -331,14 +332,14 @@ function parseRecord(str) {
 	// get the terms
 	record.mechanism = [];
 	record.modifier = [];
-	while (str !== "") {
+	while (true) {
+		match(str, " +|$");
+		if (str.value === "") {
+			break;
+		}
 		let term = parseTerm(str);
 		record[term.type].push(term);
-		match_o(str, " *");
 	}
-
-	// match end of record
-	str.match(" *$");
 
 	// The "redirect" and "exp" modifier MUST NOT appear in a record more than
 	// once each.
@@ -372,7 +373,7 @@ function parseTerm(str) {
 	let macro_string_p = "(?:" + macro_expand_p + "|" + macro_literal_p + ")*";
 	let explain_string_p = "(?:" + macro_string_p + "| )*";
 	let toplabel_p = "(?:[A-Za-z0-9]+-[A-Za-z0-9-]*[A-Za-z0-9])|(?:[A-Za-z0-9]*[A-Za-z][A-Za-z0-9]*)";
-	let domain_end_p = "(?:(?:\." + toplabel_p + "\.?)|" + macro_expand_p + ")";
+	let domain_end_p = "(?:(?:\\." + toplabel_p + "\\.?)|" + macro_expand_p + ")";
 	let domain_spec_cp = "(" + macro_string_p + domain_end_p + ")";
 
 	// try to match a directive
@@ -392,7 +393,8 @@ function parseTerm(str) {
 		let dual_cidr_length_ocp = "(?:" + ip4_cidr_length_ocp + "(?:/" +
 			ip6_cidr_length_cp + ")?)?";
 		let qnum_p = "(?:1[0-9]{2}|2[0-4][0-9]|25[0-5]|[1-9][0-9]|[0-9])";
-		let ip4_network_cp = qnum_p + "\." + qnum_p + "\." + qnum_p + "\." + qnum_p;
+		let ip4_network_cp = "(" + qnum_p + "\\." + qnum_p + "\\." + qnum_p +
+			"\\." + qnum_p + ")";
 		// does also match invalid addresses
 		let ip6_network_cp = "([0-9a-zA-Z:.]+)";
 
@@ -480,7 +482,8 @@ RefString.prototype.toSource = function() {
 function match(str, pattern) {
 	let reg_match = match_o(str, pattern);
 	if (reg_match === null) {
-		log.debug("str failed to match against:" + str.toSource());
+		log.debug("str failed to match " + pattern.toSource() + " against:" +
+			str.toSource());
 		throw new Error("SPF_PERMERROR: Parsing error");
 	}
 	return reg_match;
@@ -496,7 +499,7 @@ function match(str, pattern) {
  *                        an Array, containing the matches
  */
 function match_o(str, pattern) {
-	let regexp = new RegExp("^" + pattern, "i");
+	let regexp = new RegExp("^(?:" + pattern + ")", "i");
 	let reg_match = str.match(regexp);
 	if (reg_match === null) {
 		return null;
@@ -552,3 +555,6 @@ IP.prototype.isInNetwork = function(network, cidr_length) {
 	}
 	/* jshint bitwise:true */
 };
+
+// expose internal components for testing
+SPF._parseRecord = parseRecord;
