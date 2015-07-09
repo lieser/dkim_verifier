@@ -4,7 +4,7 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  * 
- * Version: 2.0.0 (21 June 2015)
+ * Version: 2.1.0pre1 (08 July 2015)
  * 
  * Copyright (c) 2013-2015 Philippe Lieser
  * 
@@ -31,7 +31,7 @@
 /* global dkimStrings, addrIsInDomain2, domainIsInDomain, exceptionToStr, stringEndsWith, stringEqual, writeStringToTmpFile, DKIM_SigError, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, Verifier */
 
-const module_version = "2.0.0";
+const module_version = "2.1.0pre1";
 
 var EXPORTED_SYMBOLS = [
 	"Verifier"
@@ -840,6 +840,7 @@ var Verifier = (function() {
 			// check the value of the body lenght tag
 			if (DKIMSignature.l > bodyCanon.length) {
 				// lenght tag exceeds body size
+				log.debug("bodyCanon.length: " + bodyCanon.length);
 				throw new DKIM_SigError("DKIM_SIGERROR_TOOLARGE_L");
 			} else if (DKIMSignature.l < bodyCanon.length){
 				// lenght tag smaller when body size
@@ -1068,7 +1069,27 @@ var Verifier = (function() {
 		var isValid = verifyRSASig(DKIMSignature.DKIMKey.p, headerHashInput,
 			DKIMSignature.b, DKIMSignature.warnings, keyInfo);
 		if (!isValid) {
-			throw new DKIM_SigError("DKIM_SIGERROR_BADSIG");
+			if (prefs.getIntPref("error.contentTypeCharsetAddedQuotes.treatAs") > 0) {
+				log.debug("Try with removed quotes in Content-Type charset.");
+				msg.headerFields.get("content-type")[0] =
+					msg.headerFields.get("content-type")[0].
+					replace(/charset="([^"]+)"/i,	"charset=$1");
+				// Compute the input for the header hash
+				headerHashInput = computeHeaderHashInput(msg,DKIMSignature);
+				log.debug("Header hash input:\n" + headerHashInput);
+				// verify Signature
+				keyInfo = {};
+				isValid = verifyRSASig(DKIMSignature.DKIMKey.p, headerHashInput,
+					DKIMSignature.b, DKIMSignature.warnings, keyInfo);
+				if (!isValid) {
+					throw new DKIM_SigError("DKIM_SIGERROR_BADSIG");
+				} else if (prefs.getIntPref("error.contentTypeCharsetAddedQuotes.treatAs") === 1) {
+					DKIMSignature.warnings.push({name: "DKIM_SIGERROR_CONTENT_TYPE_CHARSET_ADDED_QUOTES"});
+					log.debug("Warning: DKIM_SIGERROR_CONTENT_TYPE_CHARSET_ADDED_QUOTES");
+				}
+			} else {
+				throw new DKIM_SigError("DKIM_SIGERROR_BADSIG");
+			}
 		}
 			
 		// hash algorithm defined in public-key data must be the same as in the header
