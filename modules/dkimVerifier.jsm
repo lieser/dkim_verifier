@@ -4,7 +4,7 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  * 
- * Version: 2.1.0pre1 (08 July 2015)
+ * Version: 2.1.0 (08 July 2015)
  * 
  * Copyright (c) 2013-2015 Philippe Lieser
  * 
@@ -31,7 +31,7 @@
 /* global dkimStrings, addrIsInDomain2, domainIsInDomain, exceptionToStr, stringEndsWith, stringEqual, writeStringToTmpFile, DKIM_SigError, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, Verifier */
 
-const module_version = "2.1.0pre1";
+const module_version = "2.1.0";
 
 var EXPORTED_SYMBOLS = [
 	"Verifier"
