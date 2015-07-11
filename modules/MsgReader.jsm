@@ -3,7 +3,7 @@
  * 
  * Reads and parses a message.
  *
- * Version: 2.0.0 (21 June 2015)
+ * Version: 2.0.1 (11 July 2015)
  * 
  * Copyright (c) 2014-2015 Philippe Lieser
  * 
@@ -22,7 +22,7 @@
 
 "use strict";
 
-const module_version = "2.0.0";
+const module_version = "2.0.1";
 
 var EXPORTED_SYMBOLS = [
 	"MsgReader"
@@ -178,7 +178,7 @@ var MsgReader = {
 		var hName;
 		for(var i = 0; i < headerArray.length; i++) {
 			// store fields under header field name (in lower case) in an array
-			hName = headerArray[i].match(/\S+(?=\s*:)/);
+			hName = headerArray[i].match(/[!-9;-~]+(?=:)/);
 			if (hName !== null) {
 				hName = hName[0].toLowerCase();
 				if (!headerFields.has(hName)) {
