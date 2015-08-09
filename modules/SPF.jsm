@@ -569,7 +569,7 @@ IP.prototype.isInNetwork = function(network, cidr_length) {
 	}
 	let rem = cidr_length % 8;
 	if (rem !== 0) {
-		return ((this._buffer[i] | network._buffer[i]) >>> (8 - rem)) === 0;
+		return ((this._buffer[i] ^ network._buffer[i]) >>> (8 - rem)) === 0;
 	} else {
 		return true;
 	}
