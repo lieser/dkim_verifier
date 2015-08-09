@@ -577,5 +577,6 @@ IP.prototype.isInNetwork = function(network, cidr_length) {
 };
 
 // expose internal components for testing
+SPF._SPFContext = SPFContext;
 SPF._parseRecord = parseRecord;
 SPF._IP = IP;
