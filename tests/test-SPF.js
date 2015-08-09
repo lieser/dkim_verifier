@@ -13,11 +13,12 @@
 
 "use strict";
 
-
 Components.utils.import("resource://dkim_verifier/SPF.jsm");
 
-do_subtest("resource://dkim_verifier_tests/SPF-test-IP.js");
-do_subtest("resource://dkim_verifier_tests/SPF-test-parse.js");
+
+do_subtest("resource://dkim_verifier_tests/test-SPF-IP.js");
+do_subtest("resource://dkim_verifier_tests/test-SPF-parse.js");
+do_subtest("resource://dkim_verifier_tests/test-SPF-check_host.js");
 
 function run_test() {
 }

@@ -13,4 +13,4 @@
 "use strict";
 
 
-do_subtest("resource://dkim_verifier_tests/SPF-test.js");
+do_subtest("resource://dkim_verifier_tests/test-SPF.js");
