@@ -1,3 +1,11 @@
+1.3.6pre1 [2015-07-21]
+------------------
+ - added additional debugging calls
+
+ 1.3.5 [2015-07-11]
+------------------
+ - fixed bug if a header field body started with a ":"
+
 1.3.4 [2015-06-21]
 ------------------
  - added compatibility for Thunderbird 40
