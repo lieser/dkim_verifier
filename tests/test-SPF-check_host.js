@@ -9,7 +9,7 @@
 
 /* jshint strict:true, globalstrict:true, moz:true */
 /* global Assert, do_load_module, do_test_pending, do_test_finished, do_print */
-/* global Components, SPF, Task, initDNSTestStub, DNSTestData */
+/* global Components, SPF, Task, initDNSTestStub, DNS */
 /* exported run_test */
 
 "use strict";
@@ -20,7 +20,7 @@ do_load_module("resource://dkim_verifier_tests/DNSTestStub.js");
 
 
 function rfcSimpleExamples_01() {
-	DNSTestData["example.com"].TXT = ["v=spf1 +all"];
+	DNS._DNSTestData["example.com"].TXT = ["v=spf1 +all"];
 	let spf_ctx = new SPF._SPFContext();
 	let res;
 
@@ -34,7 +34,7 @@ function rfcSimpleExamples_01() {
 }
 
 function rfcSimpleExamples_02() {
-	DNSTestData["example.com"].TXT = ["v=spf1 a -all"];
+	DNS._DNSTestData["example.com"].TXT = ["v=spf1 a -all"];
 	let spf_ctx = new SPF._SPFContext();
 	let res;
 
@@ -52,7 +52,7 @@ function rfcSimpleExamples_02() {
 }
 
 function rfcSimpleExamples_03() {
-	DNSTestData["example.com"].TXT = ["v=spf1 a:example.org -all"];
+	DNS._DNSTestData["example.com"].TXT = ["v=spf1 a:example.org -all"];
 	let spf_ctx = new SPF._SPFContext();
 	let res;
 
@@ -70,37 +70,37 @@ function rfcSimpleExamples_03() {
 }
 
 function rfcSimpleExamples_04() {
-	DNSTestData["example.com"].TXT = ["v=spf1 mx -all"];
+	DNS._DNSTestData["example.com"].TXT = ["v=spf1 mx -all"];
 	let spf_ctx = new SPF._SPFContext();
 	let res;
 }
 
 function rfcSimpleExamples_05() {
-	DNSTestData["example.com"].TXT = ["v=spf1 mx:example.org -all"];
+	DNS._DNSTestData["example.com"].TXT = ["v=spf1 mx:example.org -all"];
 	let spf_ctx = new SPF._SPFContext();
 	let res;
 }
 
 function rfcSimpleExamples_06() {
-	DNSTestData["example.com"].TXT = ["v=spf1 mx mx:example.org -all"];
+	DNS._DNSTestData["example.com"].TXT = ["v=spf1 mx mx:example.org -all"];
 	let spf_ctx = new SPF._SPFContext();
 	let res;
 }
 
 function rfcSimpleExamples_07() {
-	DNSTestData["example.com"].TXT = ["v=spf1 mx/30 mx:example.org/30 -all"];
+	DNS._DNSTestData["example.com"].TXT = ["v=spf1 mx/30 mx:example.org/30 -all"];
 	let spf_ctx = new SPF._SPFContext();
 	let res;
 }
 
 function rfcSimpleExamples_08() {
-	DNSTestData["example.com"].TXT = ["v=spf1 ptr -all"];
+	DNS._DNSTestData["example.com"].TXT = ["v=spf1 ptr -all"];
 	let spf_ctx = new SPF._SPFContext();
 	let res;
 }
 
 function rfcSimpleExamples_09() {
-	DNSTestData["example.com"].TXT = ["v=spf1 ip4:192.0.2.128/28 -all"];
+	DNS._DNSTestData["example.com"].TXT = ["v=spf1 ip4:192.0.2.128/28 -all"];
 	let spf_ctx = new SPF._SPFContext();
 	let res;
 

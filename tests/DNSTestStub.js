@@ -21,9 +21,10 @@ function initDNSTestStub() {
 		return;
 	}
 	DNS._dnsTestStubInitialized = true;
+	DNS._DNSTestData = DNSTestData;
 	let resolve_orig = DNS.resolve;
 	DNS.resolve = function (name, rrtype="A") {
-		let hostData = DNSTestData[name];
+		let hostData = DNS._DNSTestData[name];
 		if (!hostData) {
 			return resolve_orig(name, rrtype);
 		}
@@ -70,11 +71,13 @@ var DNSTestData = {
 	},
 
 	"example.org": {
-		A: [
-			"192.0.2.140",
-		],
 		MX: [
 			{preference: 10, host: "mail-c"},
+		],
+	},
+	"mail-c.xample.org": {
+		A: [
+			"192.0.2.140",
 		],
 	},
 };
