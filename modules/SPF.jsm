@@ -25,9 +25,9 @@
  */
 
 // options for JSHint
-/* jshint strict:true, moz:true, smarttabs:true, unused:true, bitwise:true */
+/* jshint strict:true, globalstrict:true, moz:true, smarttabs:true, unused:true, bitwise:true */
 /* global Components, Task */
-/* global Logging, DNS */
+/* global Logging, DNS, exceptionToStr */
 /* exported EXPORTED_SYMBOLS, SPF */
 
 "use strict";
@@ -45,6 +45,7 @@ const Cu = Components.utils;
 Cu.import("resource://gre/modules/Task.jsm");
 
 Cu.import("resource://dkim_verifier/logging.jsm");
+Cu.import("resource://dkim_verifier/helper.jsm");
 Cu.import("resource://dkim_verifier/DNSWrapper.jsm");
 
 
@@ -77,40 +78,35 @@ SPFContext.prototype = Object.create(null, {
 			// Record lookup
 			let record = yield DNS.resolve(domain, "TXT");
 			if (record.rcode === 3) {
-				log.warning("SPF DNS lookup for " + domain + " returns NXDOMAIN");
+				log.warn("SPF DNS lookup for " + domain + " returns NXDOMAIN");
 				throw new Task.Result("permerror");
 			}
 			if (record.bogus || record.rcode !== 0) {
-				log.warning("SPF DNS lookup for " + domain + " returns bogus or error");
+				log.warn("SPF DNS lookup for " + domain + " returns bogus or error");
 				throw new Task.Result("temperror");
 			}
 
-			// Record selection
 			try {
+				// Record selection
 				// Parse all records
+				record.data = record.data || [];
 				record = record.data.map(parseRecord);
-			} catch (e) {
-				// "v=spf1" record with invalid syntax
-				log.warning(e);
-				throw new Task.Result("permerror");
-			}
-			// Filter non "v=spf1" records
-			record.filter(function(e){ return e !== null;});
+				// Filter non "v=spf1" records
+				record.filter(function(e){ return e !== null;});
 
-			if (record.length === 0) {
-				log.warning("Found no spf1 record.");
-				throw new Task.Result("none");
-			}
-			if (record.length > 1) {
-				log.warning("Found more than one spf1 record.");
-				throw new Task.Result("permerror");
-			}
-			record = record[0];
+				if (record.length === 0) {
+					log.warn("Found no spf1 record.");
+					throw new Task.Result("none");
+				}
+				if (record.length > 1) {
+					log.warn("Found more than one spf1 record.");
+					throw new Task.Result("permerror");
+				}
+				record = record[0];
 
-			// Mechanism evaluation
-			try {
+				// Mechanism evaluation
 				for (let i = 0; i < record.mechanism.length; i++) {
-					if ((yield this.matchMechanism(record.mechanism[i])), ip, domain, sender) {
+					if (yield this.matchMechanism(record.mechanism[i], ip, domain, sender)) {
 						switch (record.mechanism[i].qualifier) {
 							case "+":
 								throw new Task.Result("pass");
@@ -128,13 +124,17 @@ SPFContext.prototype = Object.create(null, {
 					}
 				}
 			} catch (e) {
-				if (e.message === "SPF_TEMPERROR") {
+				if (e instanceof Task.Result) {
+					throw e;
+				} else if (e.message === "SPF_TEMPERROR") {
+					log.warn(exceptionToStr(e));
 					throw new Task.Result("temperror");
 				} else if (e.message === "SPF_PERMERROR") {
+					log.warn(exceptionToStr(e));
 					throw new Task.Result("permerror");
 				} else {
 					// TODO: propagate non SPF errors
-					log.warning(e);
+					log.error(exceptionToStr(e));
 					throw new Task.Result("permerror");
 				}
 			}
@@ -173,12 +173,12 @@ SPFContext.prototype = Object.create(null, {
 			function queryDNS(name, rrtype) {
 				let record = yield DNS.resolve(name, "A");
 				if (record.bogus || (record.rcode !== 0 && record.rcode !== 3)) {
-					log.warning(rrtype + " DNS lookup for " + name +
+					log.warn(rrtype + " DNS lookup for " + name +
 						" returns bogus or error other than NXDOMAIN");
 					throw new Error("SPF_TEMPERROR");
 				}
 				if (record.rcode === 3) {
-					log.warning(rrtype + " DNS lookup for " +	name +
+					log.warn(rrtype + " DNS lookup for " +	name +
 						" returns NXDOMAIN");
 				}
 				if (record.data === null) {
@@ -213,11 +213,11 @@ SPFContext.prototype = Object.create(null, {
 				case "a":
 					this.increaseDNSLookupCount();
 					target = this.expandDomainSpec(mechanism.domain_spec) || domain;
-					let ip_ = IP(ip);
+					let ip_ = new IP(ip);
 					records = yield queryDNS(target,
 						(ip_.type === "IPv4")? "A" : "AAA");
 					throw new Task.Result(
-						records.data.some(function (element/*, index, array*/) {
+						records.some(function (element/*, index, array*/) {
 							return ip_.isInNetwork(new IP(element), (ip_.type === "IPv4")?
 									mechanism.ip4_cidr_length : mechanism.ip6_cidr_length);
 						}));
