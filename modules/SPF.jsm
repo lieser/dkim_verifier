@@ -523,7 +523,27 @@ function IP(s){
 		this.type = "IPv4";
 	} else {
 		this.type = "IPv6";
-		throw new Error("TODO: ip6");
+		// split in right and left part
+		let parts = s.split("::");
+		// split right and left part into groups
+		parts = parts.map(function(e) {return e.split(":");});
+		// add omitted groups
+		parts.push([]);
+		let groups = parts[0];
+		let omitted_length = 8 - parts[0].length - parts[1].length;
+		for (let i = 0; i < omitted_length; i++) {
+			groups.push("0");
+		}
+		groups = groups.concat(parts[1]);
+		// convert groups to byte array
+		this._buffer = [];
+		for (let i = 0; i < 8; i++) {
+			// add leading zeroes
+			let e = "0".repeat(4 - groups[i].length) + groups[i];
+			// convert
+			this._buffer.push(parseInt(e.substr(0, 2), 16));
+			this._buffer.push(parseInt(e.substr(2, 4), 16));
+		}
 	}
 }
 
@@ -558,3 +578,4 @@ IP.prototype.isInNetwork = function(network, cidr_length) {
 
 // expose internal components for testing
 SPF._parseRecord = parseRecord;
+SPF._IP = IP;

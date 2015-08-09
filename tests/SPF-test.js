@@ -16,6 +16,7 @@
 
 Components.utils.import("resource://dkim_verifier/SPF.jsm");
 
+do_subtest("resource://dkim_verifier_tests/SPF-test-IP.js");
 do_subtest("resource://dkim_verifier_tests/SPF-test-parse.js");
 
 function run_test() {

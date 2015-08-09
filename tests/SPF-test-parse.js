@@ -14,7 +14,7 @@
 "use strict";
 
 
-function rfcSimpleExamples_01 () {
+function rfcSimpleExamples_01() {
 	let res_exp = {
 		version: "spf1",
 		mechanism: [{
@@ -29,7 +29,7 @@ function rfcSimpleExamples_01 () {
 	Assert.deepEqual(res, res_exp, "rfcSimpleExamples_01");
 }
 
-function rfcSimpleExamples_02 () {
+function rfcSimpleExamples_02() {
 	let res_exp = {
 		version: "spf1",
 		mechanism: [{
@@ -51,7 +51,7 @@ function rfcSimpleExamples_02 () {
 	Assert.deepEqual(res, res_exp, "rfcSimpleExamples_02");
 }
 
-function rfcSimpleExamples_03 () {
+function rfcSimpleExamples_03() {
 	let res_exp = {
 		version: "spf1",
 		mechanism: [{
@@ -73,7 +73,7 @@ function rfcSimpleExamples_03 () {
 	Assert.deepEqual(res, res_exp, "rfcSimpleExamples_03");
 }
 
-function rfcSimpleExamples_04 () {
+function rfcSimpleExamples_04() {
 	let res_exp = {
 		version: "spf1",
 		mechanism: [{
@@ -95,7 +95,7 @@ function rfcSimpleExamples_04 () {
 	Assert.deepEqual(res, res_exp, "rfcSimpleExamples_04");
 }
 
-function rfcSimpleExamples_05 () {
+function rfcSimpleExamples_05() {
 	let res_exp = {
 		version: "spf1",
 		mechanism: [{
@@ -117,7 +117,7 @@ function rfcSimpleExamples_05 () {
 	Assert.deepEqual(res, res_exp, "rfcSimpleExamples_05");
 }
 
-function rfcSimpleExamples_06 () {
+function rfcSimpleExamples_06() {
 	let res_exp = {
 		version: "spf1",
 		mechanism: [{
@@ -146,7 +146,7 @@ function rfcSimpleExamples_06 () {
 	Assert.deepEqual(res, res_exp, "rfcSimpleExamples_06");
 }
 
-function rfcSimpleExamples_07 () {
+function rfcSimpleExamples_07() {
 	let res_exp = {
 		version: "spf1",
 		mechanism: [{
@@ -175,7 +175,7 @@ function rfcSimpleExamples_07 () {
 	Assert.deepEqual(res, res_exp, "rfcSimpleExamples_07");
 }
 
-function rfcSimpleExamples_08 () {
+function rfcSimpleExamples_08() {
 	let res_exp = {
 		version: "spf1",
 		mechanism: [{
@@ -195,7 +195,7 @@ function rfcSimpleExamples_08 () {
 	Assert.deepEqual(res, res_exp, "rfcSimpleExamples_08");
 }
 
-function rfcSimpleExamples_09 () {
+function rfcSimpleExamples_09() {
 	let res_exp = {
 		version: "spf1",
 		mechanism: [{
