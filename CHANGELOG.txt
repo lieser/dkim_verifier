@@ -1,5 +1,6 @@
-1.3.6pre1 [2015-07-21]
+1.3.6 [2015-09-13]
 ------------------
+ - fixed error in parsing of Authentication-Results header
  - added additional debugging calls
 
  1.3.5 [2015-07-11]
