@@ -3,7 +3,7 @@
  * 
  * Parser for the Authentication-Results header as specified in RFC 7001.
  *
- * Version: 1.0.0 (08 December 2014)
+ * Version: 1.0.1 (13 September 2015)
  * 
  * Copyright (c) 2014 Philippe Lieser
  * 
@@ -21,7 +21,7 @@
 
 "use strict";
 
-const module_version = "1.0.0";
+const module_version = "1.0.1";
 
 var EXPORTED_SYMBOLS = [
 	"ARHParser"
@@ -90,7 +90,7 @@ let quoted_string_cp = "(?:" + CFWS_op +
 // Note: obs-local-part is not included, so this pattern matches less then specified!
 let local_part_p = "(?:" + dot_atom_p + "|" + quoted_string_p + ")";
 // token as specified in Section 5.1 of RFC 2045.
-let token_p = "[^ \\x00-\\x1F\\7F()<>@,;:\\\\\"/[\\]?=]+";
+let token_p = "[^ \\x00-\\x1F\\x7F()<>@,;:\\\\\"/[\\]?=]+";
 // "value" as specified in Section 5.1 of RFC 2045.
 let value_p = "(?:" + token_p + "|" + quoted_string_p + ")";
 let value_cp = "(?:(" + token_p + ")|" + quoted_string_cp + ")";
@@ -197,7 +197,7 @@ function parseResinfo(str) {
 
 	// get propspec (optional)
 	let ptype_p = "smtp|header|body|policy";
-	let pvalue_p = value_p + "|(?:" + local_part_p + "?@)?" + domain_name_p;
+	let pvalue_p = value_p + "|(?:(?:" + local_part_p + "?@)?" + domain_name_p + ")";
 	let special_smtp_verb_p = "mailfrom|rcptto";
 	let property_p = special_smtp_verb_p + "|" + Keyword_p;
 	let propspec_p = "(" + ptype_p + ")" + CFWS_op + "\\." + CFWS_op +
@@ -245,7 +245,7 @@ RefString.prototype.toSource = function() {
 function match(str, pattern) {
 	let reg_match = match_o(str, pattern);
 	if (reg_match === null) {
-		log.debug("str to match against:" + str.toSource());
+		log.trace("str to match against:" + str.toSource());
 		throw new Error("Parsing error");
 	}
 	return reg_match;
@@ -263,7 +263,7 @@ function match(str, pattern) {
  *                        an Array, containing the matches
  */
 function match_o(str, pattern) {
-	let regexp = new RegExp("^" + CFWS_op + pattern +
+	let regexp = new RegExp("^" + CFWS_op + "(?:" + pattern + ")" +
 		"(?:(?:" + CFWS_op + "\r\n$)|(?=;)|(?=" + CFWS_p + "))");
 	let reg_match = str.match(regexp);
 	if (reg_match === null) {
