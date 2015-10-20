@@ -4,9 +4,9 @@
  * Based on Joshua Tauberer's DNS LIBRARY IN JAVASCRIPT
  * from "Sender Verification Extension" version 0.9.0.6
  * 
- * Version: 1.0.3 (06 September 2014)
+ * Version: 1.1.0pre1 (20 October 2015)
  * 
- * Copyright (c) 2013-2014 Philippe Lieser
+ * Copyright (c) 2013-2015 Philippe Lieser
  * 
  * This software is licensed under the terms of the MIT License.
  * 
@@ -54,6 +54,10 @@
 /*
  * Changelog:
  * ==========
+ *
+ * 1.1.0
+ * -----
+ *  - no longer get the DNS servers from deactivated interfaces under windows
  *
  * 1.0.3
  * -----
@@ -334,32 +338,50 @@ function DNS_get_OS_DNSServers() {
 			var registry_class = Components.classes["@mozilla.org/windows-registry-key;1"];
 			var registry_object = registry_class.createInstance();
 			var registry = registry_object.QueryInterface(Components.interfaces.nsIWindowsRegKey);
+			var reg;
 			
 			registry.open(registry.ROOT_KEY_LOCAL_MACHINE,
-				"SYSTEM\\CurrentControlSet\\Services\\Tcpip",
+				"SYSTEM\\CurrentControlSet",
 				registry.ACCESS_QUERY_VALUE);
 			
 			// get interfaces in routing order
-			var registryLinkage = registry.openChild("Linkage", registry.ACCESS_READ);
+			var registryLinkage = registry.openChild("Services\\Tcpip\\Linkage",
+				registry.ACCESS_READ);
 			// nsIWindowsRegKey doesn't support REG_MULTI_SZ type out of the box
 			// from http://mxr.mozilla.org/comm-central/source/mozilla/browser/components/migration/src/IEProfileMigrator.js#129
 			// slice(1,-1) to remove the " at the beginning and end
 			var str = registryLinkage.readStringValue("Route");
 			var interfaces = [v.slice(1,-1) for (v of str.split("\0")) if (v)];
-			registryLinkage.close();
+
+			// filter out deactivated interfaces
+			var registryNetworkAdapters = registry.openChild(
+				"Control\\Network\\{4D36E972-E325-11CE-BFC1-08002BE10318}",
+				registry.ACCESS_QUERY_VALUE);
+			var registryDevInterfaces = registry.openChild(
+				"Control\\DeviceClasses\\{cac88484-7515-4c03-82e6-71a87abac361}",
+				registry.ACCESS_QUERY_VALUE);
+			interfaces = interfaces.filter(function (element /*, index, array*/) {
+				reg = registryNetworkAdapters.openChild(element + "\\Connection",
+					registry.ACCESS_READ);
+				var interfaceID = reg.readStringValue("PnpInstanceID");
+				reg.close();
+				interfaceID = interfaceID.replace(/\\/g, "#");
+				interfaceID = "##?#" + interfaceID +
+					"#{cac88484-7515-4c03-82e6-71a87abac361}";
+				reg = registryDevInterfaces.openChild(interfaceID + "\\#\\Control",
+					registry.ACCESS_READ);
+				var linked = reg.readIntValue("Linked");
+				reg.close();
+				return linked === 1;
+			});
 			
 			// get NameServer and DhcpNameServer of all interfaces
 			var registryInterfaces = registry.openChild(
-				"Parameters\\Interfaces",
-				registry.ACCESS_READ
-			);
-			var reg;
+				"Services\\Tcpip\\Parameters\\Interfaces",
+				registry.ACCESS_READ);
 			var ns = "";
 			for (var i=0; i < interfaces.length; i++) {
-				reg = registryInterfaces.openChild(
-					interfaces[i],
-					registry.ACCESS_READ
-				);
+				reg = registryInterfaces.openChild(interfaces[i],	registry.ACCESS_READ);
 				if (reg.hasValue("NameServer")) {
 					ns += " " + reg.readStringValue("NameServer");
 				}
@@ -368,9 +390,6 @@ function DNS_get_OS_DNSServers() {
 				}
 				reg.close();
 			}
-			registryInterfaces.close();
-			
-			registry.close();
 			
 			if (ns !== "") {
 				var servers = ns.split(/ |,/);
@@ -387,9 +406,12 @@ function DNS_get_OS_DNSServers() {
 			}
 		} catch (e) {
 			log.error("Error reading Registry: " + e + "\n" + e.stack);
-			
+		} finally {
 			if (registry) {
 				registry.close();
+			}
+			if (registryLinkage) {
+				registryLinkage.close();
 			}
 			if (registryInterfaces) {
 				registryInterfaces.close();
