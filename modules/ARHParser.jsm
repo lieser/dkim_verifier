@@ -1,9 +1,9 @@
 /*
  * ARHParser.jsm
  * 
- * Parser for the Authentication-Results header as specified in RFC 7001.
+ * Parser for the Authentication-Results header as specified in RFC 7601.
  *
- * Version: 1.0.1 (13 September 2015)
+ * Version: 1.1.0pre1 (16 November 2015)
  * 
  * Copyright (c) 2014 Philippe Lieser
  * 
@@ -21,7 +21,7 @@
 
 "use strict";
 
-const module_version = "1.0.1";
+const module_version = "1.1.0";
 
 var EXPORTED_SYMBOLS = [
 	"ARHParser"
@@ -120,6 +120,8 @@ let ARHParser = {
 	 * @property {Object} propertys.header
 	 * @property {Object} propertys.body
 	 * @property {Object} propertys.policy
+	 * @property {Object} [propertys.<Keyword>]
+	 *           ARHResinfo can also include other propertys besides the aboves.
 	 */
 
 	/**
@@ -196,11 +198,10 @@ function parseResinfo(str) {
 	}
 
 	// get propspec (optional)
-	let ptype_p = "smtp|header|body|policy";
 	let pvalue_p = value_p + "|(?:(?:" + local_part_p + "?@)?" + domain_name_p + ")";
 	let special_smtp_verb_p = "mailfrom|rcptto";
 	let property_p = special_smtp_verb_p + "|" + Keyword_p;
-	let propspec_p = "(" + ptype_p + ")" + CFWS_op + "\\." + CFWS_op +
+	let propspec_p = "(" + Keyword_p + ")" + CFWS_op + "\\." + CFWS_op +
 		"(" + property_p + ")" + CFWS_op + "=" + CFWS_op + "(" + pvalue_p + ")";
 	res.propertys = {};
 	res.propertys.smtp = {};
@@ -208,6 +209,9 @@ function parseResinfo(str) {
 	res.propertys.body = {};
 	res.propertys.policy = {};
 	while ((reg_match = match_o(str, propspec_p)) !== null) {
+		if (!res.propertys[reg_match[1]]) {
+			res.propertys[reg_match[1]] = {};
+		}
 		res.propertys[reg_match[1]][reg_match[2]] = reg_match[3]
 	}
 
