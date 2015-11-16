@@ -4,7 +4,7 @@
  * Based on Joshua Tauberer's DNS LIBRARY IN JAVASCRIPT
  * from "Sender Verification Extension" version 0.9.0.6
  * 
- * Version: 1.1.0pre1 (20 October 2015)
+ * Version: 1.1.0pre2 (20 October 2015)
  * 
  * Copyright (c) 2013-2015 Philippe Lieser
  * 
@@ -352,6 +352,7 @@ function DNS_get_OS_DNSServers() {
 			// slice(1,-1) to remove the " at the beginning and end
 			var str = registryLinkage.readStringValue("Route");
 			var interfaces = [v.slice(1,-1) for (v of str.split("\0")) if (v)];
+			log.debug("Found " + interfaces.length + " interfaces.");
 
 			// filter out deactivated interfaces
 			var registryNetworkAdapters = registry.openChild(
@@ -365,14 +366,25 @@ function DNS_get_OS_DNSServers() {
 					registry.ACCESS_READ);
 				var interfaceID = reg.readStringValue("PnpInstanceID");
 				reg.close();
-				interfaceID = interfaceID.replace(/\\/g, "#");
-				interfaceID = "##?#" + interfaceID +
+				var interfaceID_ = interfaceID.replace(/\\/g, "#");
+				interfaceID_ = "##?#" + interfaceID_ +
 					"#{cac88484-7515-4c03-82e6-71a87abac361}";
-				reg = registryDevInterfaces.openChild(interfaceID + "\\#\\Control",
-					registry.ACCESS_READ);
-				var linked = reg.readIntValue("Linked");
-				reg.close();
-				return linked === 1;
+				var linked;
+				if (registryDevInterfaces.hasChild(interfaceID_ + "\\#\\Control")) {
+					reg = registryDevInterfaces.openChild(interfaceID_ + "\\#\\Control",
+						registry.ACCESS_READ);
+					if (reg.hasValue("Linked")) {
+						linked = reg.readIntValue("Linked")
+					}
+					reg.close();
+				}
+				if (linked === 1) {
+					log.trace("Interface activated: " + interfaceID);
+					return true;
+				} else {
+					log.debug("Interface deactivated: " + interfaceID);
+					return false;
+				}
 			});
 			
 			// get NameServer and DhcpNameServer of all interfaces
