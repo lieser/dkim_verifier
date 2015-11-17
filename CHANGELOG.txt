@@ -1,4 +1,4 @@
-1.4.0pre1 [2015-10-20]
+1.4.0pre2 [2015-11-17]
 ------------------
  - JavaScript DNS library: no longer get the DNS servers from deactivated interfaces under windows
  - Authentication-Results header: allow also unknown property types to be compliant with RFC 7601
