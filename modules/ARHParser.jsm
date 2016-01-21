@@ -137,6 +137,7 @@ let ARHParser = {
 		authresHeader = new RefString(authresHeader);
 
 		let res = {};
+		res.resinfo = [];
 		let reg_match;
 
 		// get authserv-id and authres-version
@@ -152,13 +153,11 @@ let ARHParser = {
 		// check if message authentication was performed
 		reg_match = match_o(authresHeader, ";" + CFWS_op+"?none");
 		if (reg_match !== null) {
-			// TODO: ???
 			log.debug("no-result");
-			return;
+			return res;
 		}
 
 		// get the resinfos
-		res.resinfo = [];
 		while (authresHeader.value !== "") {
 			res.resinfo.push(parseResinfo(authresHeader));
 		}
