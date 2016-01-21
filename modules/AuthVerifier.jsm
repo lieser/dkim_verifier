@@ -3,9 +3,9 @@
  * 
  * Authentication Verifier.
  *
- * Version: 1.0.1 (10 December 2014)
+ * Version: 1.1.0pre1 (21 January 2016)
  * 
- * Copyright (c) 2014 Philippe Lieser
+ * Copyright (c) 2014-2016 Philippe Lieser
  * 
  * This software is licensed under the terms of the MIT License.
  * 
@@ -22,7 +22,7 @@
 
 "use strict";
 
-const module_version = "1.0.1";
+const module_version = "1.1.0";
 
 var EXPORTED_SYMBOLS = [
 	"AuthVerifier"
