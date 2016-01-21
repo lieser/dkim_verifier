@@ -102,7 +102,7 @@ var AuthVerifier = {
 			// read Authentication-Results header
 			authResult = getARHResult(msg);
 
-			if (!authResult) {
+			if (!authResult || authResult.dkim.length === 0) {
 				// verify DKIM signatures
 				let dkimResultV2 = yield DKIM.Verifier.verify2(msg);
 				authResult = {
@@ -176,9 +176,6 @@ function getARHResult(msg) {
 
 	// convert DKIM results
 	let dkimSigResults = arhDKIM.map(arhDKIM_to_dkimSigResultV2);
-
-	// check for signature existents
-	DKIM.Verifier.checkForSignatureExsistens(msg, dkimSigResults);
 
 	// check SDID and AUID of DKIM results
 	for (let i = 0; i < dkimSigResults.length; i++) {
