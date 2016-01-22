@@ -5,9 +5,9 @@
  *  - JSDNS.jsm
  *  - libunbound.jsm
  * 
- * Version: 2.0.0 (10 April 2014)
+ * Version: 2.1.0 (22 January 2016)
  * 
- * Copyright (c) 2013-2014 Philippe Lieser
+ * Copyright (c) 2013-2016 Philippe Lieser
  * 
  * This software is licensed under the terms of the MIT License.
  * 
@@ -21,6 +21,8 @@
 /* global Components, Services, Task, Promise, XPCOMUtils */
 /* global ModuleGetter, Logging, JSDNS, libunbound */
 /* exported EXPORTED_SYMBOLS, DNS */
+
+const module_version = "2.1.0";
 
 var EXPORTED_SYMBOLS = [
 	"DNS"
@@ -51,6 +53,8 @@ var prefs = Services.prefs.getBranch(PREF_BRANCH);
 var log = Logging.getLogger("DNSWrapper");
 
 var DNS = {
+	get version() {"use strict"; return module_version; },
+
 	/**
 	 * The result of the query.
 	 * 
@@ -92,7 +96,8 @@ var DNS = {
 					JSDNS.queryDNS(name, rrtype, dnsCallback, defer);
 					break;
 				case 2:
-					let res = libunbound.resolve(name, libunbound.Constants["RR_TYPE_"+rrtype]);
+					let res = yield libunbound.
+						resolve(name, libunbound.Constants["RR_TYPE_"+rrtype]);
 					let result = {};
 					if (res !== null) {
 						if (res.havedata) {

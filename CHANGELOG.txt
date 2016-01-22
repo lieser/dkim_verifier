@@ -1,9 +1,10 @@
-1.4.0pre3 [2016-01-21]
+1.4.0pre4 [2016-01-22]
 ------------------
  - JavaScript DNS library: no longer get the DNS servers from deactivated interfaces under windows
  - Authentication-Results header: allow also unknown property types to be compliant with RFC 7601
  - Authentication-Results header: continue verification if there is no DKIM result in the ARH header
  - Authentication-Results header: fixed bug if ARH header exists, but no message authentication was done
+ - libunbound resolver: no longer blocks the UI of Thunderbird
 
 1.3.6 [2015-09-13]
 ------------------
