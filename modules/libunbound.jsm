@@ -4,7 +4,7 @@
  * Wrapper for the libunbound DNS library. The actual work is done in the
  * ChromeWorker libunboundWorker.jsm.
  *
- * Version: 2.0.0pre1 (22 January 2016)
+ * Version: 2.0.0pre2 (22 January 2016)
  * 
  * Copyright (c) 2013-2016 Philippe Lieser
  * 
@@ -188,6 +188,21 @@ let libunbound = {
 function init() {
 	"use strict";
 
+	load();
+	update_ctx();
+
+	// Register to receive notifications of preference changes
+	prefs.addObserver("", prefObserver, false);
+
+	log.debug("initialized");
+}
+
+/**
+ * load library
+ */
+function load() {
+	"use strict";
+
 	let path;
 	if (prefs.getBoolPref("libunbound.path.relToProfileDir")) {
 		path = OS.Path.join(OS.Constants.Path.profileDir,
@@ -201,10 +216,6 @@ function init() {
 		method: "load",
 		path: path,
 	});
-
-	update_ctx();
-
-	log.debug("initialized");
 }
 
 /**
@@ -312,6 +323,37 @@ libunboundWorker.onmessage = function(msg) {
 	} catch (e) {
 		log.fatal(exceptionToStr(e));
 	}
+};
+
+var prefObserver = {
+	/*
+	 * gets called called whenever an event occurs on the preference
+	 */
+	observe: function Verifier_observe(subject, topic, data) {
+		"use strict";
+
+		// subject is the nsIPrefBranch we're observing (after appropriate QI)
+		// data is the name of the pref that's been changed (relative to aSubject)
+
+		if (topic !== "nsPref:changed") {
+			return;
+		}
+
+		switch(data) {
+			case "libunbound.path.relToProfileDir":
+			case "libunbound.path":
+				load();
+				update_ctx();
+				break;
+			case "libunbound.conf":
+			case "libunbound.debuglevel":
+			case "getNameserversFromOS":
+			case "nameserver":
+			case "dnssec.trustAnchor":
+				update_ctx();
+				break;
+		}
+	},
 };
 
 libunbound.Constants = Constants;

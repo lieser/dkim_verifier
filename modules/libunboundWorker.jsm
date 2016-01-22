@@ -4,7 +4,7 @@
  * A ChromeWorker wrapper for the libunbound DNS library.
  * Currently only the TXT resource record is completely supported.
  *
- * Version: 1.0.0pre1 (22 January 2016)
+ * Version: 1.0.0pre2 (22 January 2016)
  * 
  * Copyright (c) 2016 Philippe Lieser
  * 
@@ -249,6 +249,15 @@ function resolve(name, rrtype=Constants.RR_TYPE_A) {
 function load(path) {
 	"use strict";
 
+	// if library was already loaded, do a cleanup first before reloading it
+	if (lib) {
+		// delete old context
+		ub_ctx_delete(ctx);
+		ctx = ctypes.voidptr_t();
+		// close library
+		lib.close();
+		lib = null;
+	}
 	lib = ctypes.open(path);
 
 	ub_ctx = new ctypes.StructType("ub_ctx");
