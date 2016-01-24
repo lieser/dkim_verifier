@@ -3,7 +3,7 @@
  * 
  * Authentication Verifier.
  *
- * Version: 1.1.0pre1 (21 January 2016)
+ * Version: 1.1.0pre2 (24 January 2016)
  * 
  * Copyright (c) 2014-2016 Philippe Lieser
  * 
@@ -398,10 +398,78 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) {
 			} else {
 				authResultDKIM.res_num = 30;
 			}
+			let errorType = dkimSigResult.errorType;
+			if (!prefs.getBoolPref("error.detailedReasons")) {
+				switch (errorType) {
+					case "DKIM_SIGERROR_ILLFORMED_TAGSPEC":
+					case "DKIM_SIGERROR_DUPLICATE_TAG":
+					case "DKIM_SIGERROR_MISSING_V":
+					case "DKIM_SIGERROR_ILLFORMED_V":
+					case "DKIM_SIGERROR_MISSING_A":
+					case "DKIM_SIGERROR_ILLFORMED_A":
+					case "DKIM_SIGERROR_MISSING_B":
+					case "DKIM_SIGERROR_ILLFORMED_B":
+					case "DKIM_SIGERROR_MISSING_BH":
+					case "DKIM_SIGERROR_ILLFORMED_BH":
+					case "DKIM_SIGERROR_ILLFORMED_C":
+					case "DKIM_SIGERROR_MISSING_D":
+					case "DKIM_SIGERROR_ILLFORMED_D":
+					case "DKIM_SIGERROR_MISSING_H":
+					case "DKIM_SIGERROR_ILLFORMED_H":
+					case "DKIM_SIGERROR_SUBDOMAIN_I":
+					case "DKIM_SIGERROR_DOMAIN_I":
+					case "DKIM_SIGERROR_ILLFORMED_I":
+					case "DKIM_SIGERROR_ILLFORMED_L":
+					case "DKIM_SIGERROR_ILLFORMED_Q":
+					case "DKIM_SIGERROR_MISSING_S":
+					case "DKIM_SIGERROR_ILLFORMED_S":
+					case "DKIM_SIGERROR_ILLFORMED_T":
+					case "DKIM_SIGERROR_TIMESTAMPS":
+					case "DKIM_SIGERROR_ILLFORMED_X":
+					case "DKIM_SIGERROR_ILLFORMED_Z":
+						errorType = "DKIM_SIGERROR_ILLFORMED";
+						break;
+					case "DKIM_SIGERROR_VERSION":
+					case "DKIM_SIGERROR_UNKNOWN_A":
+					case "DKIM_SIGERROR_UNKNOWN_C_H":
+					case "DKIM_SIGERROR_UNKNOWN_C_B":
+					case "DKIM_SIGERROR_UNKNOWN_Q":
+						errorType = "DKIM_SIGERROR_UNSUPPORTED";
+						break;
+					case "DKIM_SIGERROR_KEY_ILLFORMED_TAGSPEC":
+					case "DKIM_SIGERROR_KEY_DUPLICATE_TAG":
+					case "DKIM_SIGERROR_KEY_ILLFORMED_V":
+					case "DKIM_SIGERROR_KEY_ILLFORMED_H":
+					case "DKIM_SIGERROR_KEY_ILLFORMED_K":
+					case "DKIM_SIGERROR_KEY_ILLFORMED_N":
+					case "DKIM_SIGERROR_KEY_MISSING_P":
+					case "DKIM_SIGERROR_KEY_ILLFORMED_P":
+					case "DKIM_SIGERROR_KEY_ILLFORMED_S":
+					case "DKIM_SIGERROR_KEY_ILLFORMED_T":
+						errorType = "DKIM_SIGERROR_KEY_ILLFORMED";
+						break;
+					case "DKIM_SIGERROR_KEY_INVALID_V":
+					case "DKIM_SIGERROR_KEY_HASHNOTINCLUDED":
+					case "DKIM_SIGERROR_KEY_UNKNOWN_K":
+					case "DKIM_SIGERROR_KEY_HASHMISMATCH":
+					case "DKIM_SIGERROR_KEY_NOTEMAILKEY":
+					case "DKIM_SIGERROR_KEYDECODE":
+						errorType = "DKIM_SIGERROR_KEY_INVALID";
+						break;
+					case "DKIM_SIGERROR_BADSIG":
+					case "DKIM_SIGERROR_CORRUPT_BH":
+					case "DKIM_SIGERROR_MISSING_FROM":
+					case "DKIM_SIGERROR_TOOLARGE_L":
+					case "DKIM_SIGERROR_NOKEY":
+					case "DKIM_SIGERROR_KEY_REVOKED":
+					case "DKIM_SIGERROR_KEY_TESTMODE":
+						break;
+				}
+			}
 			let errorMsg =
-				tryGetFormattedString(dkimStrings, dkimSigResult.errorType,
+				tryGetFormattedString(dkimStrings, errorType,
 					dkimSigResult.errorStrParams) ||
-				dkimSigResult.errorType;
+				errorType;
 			if (errorMsg) {
 				authResultDKIM.result_str = dkimStrings.getFormattedString("PERMFAIL",
 					[errorMsg]);
