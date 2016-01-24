@@ -35,6 +35,7 @@
 			<Description>
 				<em:locale>de</em:locale>
 				<em:translator>ionum</em:translator>
+				<em:translator>Philippe Lieser</em:translator>
 				<em:description>Überprüft die DKIM-Signatur von E-Mails.</em:description>
 				<em:contributor>Joshua Tauberer (DNS Bibliothek)</em:contributor>
 				<em:contributor>Tom Wu (RSA Bibliothek)</em:contributor>
