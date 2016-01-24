@@ -154,6 +154,10 @@ var ub_strerror;
 function resolve(name, rrtype=Constants.RR_TYPE_A) {
 	"use strict";
 
+	if (!ub_resolve) {
+		throw new Error("libunbound not correctly initialized (ub_resolve missing)");
+	}
+
 	let _result = ub_result.ptr();
 	let retval;
 
@@ -351,6 +355,10 @@ function load(path) {
 function update_ctx(conf, debuglevel, getNameserversFromOS, nameservers, trustAnchor) {
 	"use strict";
 
+	if (!ub_ctx_create) {
+		throw new Error("libunbound not correctly initialized (ub_ctx_create missing)");
+	}
+
 	let retval;
 
 	if (!ctx.isNull()) {
@@ -407,7 +415,7 @@ function update_ctx(conf, debuglevel, getNameserversFromOS, nameservers, trustAn
 }
 
 /**
- * updates ctx by deleting old an creating new
+ * Handle the requests from libunbound.jsm
  */
 onmessage = function(msg) {
 	"use strict";
@@ -446,8 +454,10 @@ onmessage = function(msg) {
 			log.debug("Posting exception back to main script: " +
 				exception.toString());
 			postMessage({
+				type: "error",
+				subType: "DKIM_DNSERROR_UNKOWN",
 				callId: msg.data.callId,
-				exception: "libunboundWorker: " + exception.toString(),
+				message: "libunboundWorker: " + exception.toString(),
 			});
 		}
 	} catch (e) {

@@ -18,7 +18,7 @@
 /* jshint strict:true, moz:true */
 /* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
 /* global Components, OS, Services, ChromeWorker */
-/* global ModuleGetter, Logging, exceptionToStr */
+/* global ModuleGetter, Logging, exceptionToStr, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, libunbound */
 
 const module_version = "2.0.0";
@@ -267,7 +267,7 @@ function update_ctx() {
 }
 
 /**
- * Handle the callbacks form the ChromeWorker
+ * Handle the callbacks from the ChromeWorker
  */
 libunboundWorker.onmessage = function(msg) {
 	"use strict";
@@ -305,18 +305,23 @@ libunboundWorker.onmessage = function(msg) {
 			return;
 		}
 
+		let exception;
+		if (msg.data.type === "error") {
+			exception = new DKIM_InternalError(msg.data.message, msg.data.subType);
+		}
+
 		let defer = openCalls.get(msg.data.callId);
 		if (defer === undefined) {
-			if (msg.data.exception) {
-				log.fatal(msg.data.exception);
+			if (exception) {
+				log.fatal(exceptionToStr(exception));
 			} else {
 				log.error("Got unexpected callback: " + msg.data);
 			}
 			return;
 		}
 		openCalls.delete(msg.data.callId);
-		if (msg.data.exception) {
-			defer.reject(msg.data.exception);
+		if (exception) {
+			defer.reject(exception);
 			return;
 		}
 		defer.resolve(msg.data.result);
