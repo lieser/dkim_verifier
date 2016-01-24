@@ -455,7 +455,7 @@ onmessage = function(msg) {
 				exception.toString());
 			postMessage({
 				type: "error",
-				subType: "DKIM_DNSERROR_UNKOWN",
+				subType: "DKIM_DNSERROR_UNKNOWN",
 				callId: msg.data.callId,
 				message: "libunboundWorker: " + exception.toString(),
 			});
