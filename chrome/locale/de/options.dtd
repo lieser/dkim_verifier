@@ -65,6 +65,7 @@
 <!ENTITY advanced.label "Erweitert">
 
 <!ENTITY debug.label "Aktiviere Debuggen (Zeigt Fehler- und Debug-Informationen in der Fehlerkonsole an)">
+<!ENTITY error.detailedReasons.label "Zeige detaillierte Fehlerursachen">
 <!ENTITY error.key_testmode.ignore.label "Überprüfe die Signatur auch, falls die Domain DKIM nur testet">
 <!ENTITY error.illformed_i.treatAs.label "Behandel falsch formatierten AUID Tag als">
 <!ENTITY error.illformed_s.treatAs.label "Behandel falsch formatierten selector Tag als">
