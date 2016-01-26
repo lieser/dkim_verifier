@@ -17,7 +17,7 @@
 /* jshint strict:true, moz:true, smarttabs:true, unused:true */
 /* global Components, Services, Task */
 /* global Logging, ARHParser */
-/* global dkimStrings, exceptionToStr, getDomainFromAddr, tryGetFormattedString, DKIM_InternalError */
+/* global dkimStrings, domainIsInDomain, exceptionToStr, getDomainFromAddr, tryGetFormattedString, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, AuthVerifier */
 
 "use strict";
@@ -100,7 +100,7 @@ var AuthVerifier = {
 			let msg = yield DKIM.Verifier.createMsg(msgURI);
 
 			// read Authentication-Results header
-			authResult = getARHResult(msg);
+			authResult = getARHResult(msgHdr, msg);
 
 			if (!authResult || authResult.dkim.length === 0) {
 				// verify DKIM signatures
@@ -145,8 +145,20 @@ var AuthVerifier = {
  * @param {Object} msg
  * @return {AuthResult|Null}
  */
-function getARHResult(msg) {
-	if (!prefs.getBoolPref("arh.read") ||
+function getARHResult(msgHdr, msg) {
+	function testAllowedAuthserv(e) {
+		if (this.authserv_id === e) {
+			return true;
+		}
+		if (e.charAt(0) === "@") {
+			return domainIsInDomain(this.authserv_id, e.substr(1));
+		}
+		return false;
+	}
+
+	if (msgHdr.folder.server.getIntValue("dkim_verifier.arh.read") === 2 ||
+	    (msgHdr.folder.server.getIntValue("dkim_verifier.arh.read") === 0 &&
+	      !prefs.getBoolPref("arh.read")) ||
 	    !msg.headerFields.has("authentication-results")) {
 		return null;
 	}
@@ -163,6 +175,15 @@ function getARHResult(msg) {
 			log.error(exceptionToStr(exception));
 			continue;
 		}
+
+		// only use header if the authserv_id is in the allowed servers
+		let allowedAuthserv = msgHdr.folder.server.
+			getCharValue("dkim_verifier.arh.allowedAuthserv").split(" ");
+		if (allowedAuthserv.length > 0 &&
+		    !allowedAuthserv.some(testAllowedAuthserv, arh)) {
+			continue;
+		}
+
 		arhDKIM = arhDKIM.concat(arh.resinfo.filter(function (element) {
 			return element.method === "dkim";
 		}));

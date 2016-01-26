@@ -101,3 +101,10 @@ pref("extensions.dkim_verifier.error.key_testmode.ignore", false);
 pref("extensions.dkim_verifier.error.contentTypeCharsetAddedQuotes.treatAs", 0);
 
 pref("extensions.dkim_verifier.arh.read", false);
+
+
+// account specific options
+// 0: default, 1: yes, 2: no
+pref("mail.server.default.dkim_verifier.arh.read", 0);
+// empty to allow all
+pref("mail.server.default.dkim_verifier.arh.allowedAuthserv", "");

@@ -15,3 +15,8 @@ locale		dkim_verifier zh-CN		chrome/locale/zh-CN/
 
 overlay		chrome://messenger/content/msgHdrViewOverlay.xul  chrome://dkim_verifier/content/msgHdrViewOverlay.xul
 overlay		chrome://messenger/content/mailWindowOverlay.xul  chrome://dkim_verifier/content/statusbarOverlay.xul
+
+# Account preference service
+component {850258f2-ae8b-421a-8a9c-bd99fdcc8097} components/accountManagerExtension.js
+contract @mozilla.org/accountmanager/extension;1?name=dkim_verifier-prefs {850258f2-ae8b-421a-8a9c-bd99fdcc8097}
+category mailnews-accountmanager-extensions dkimverifier-account-manager-extension @mozilla.org/accountmanager/extension;1?name=dkim_verifier-prefs
