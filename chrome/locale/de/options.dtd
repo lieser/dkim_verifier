@@ -76,3 +76,10 @@
 <!ENTITY error.treatAs.value.2.label "nichts">
 
 <!ENTITY arh.read.label "Lese Authentication-Results header">
+
+<!ENTITY acc.arh.read.label "Lese Authentication-Results header:">
+<!ENTITY acc.arh.allowedAuthserv.label "Vertrauten Authentifizierungs-Server:">
+
+<!ENTITY acc.boolean.value.0.label "Benutzte Standardwert">
+<!ENTITY acc.boolean.value.1.label "Ja">
+<!ENTITY acc.boolean.value.2.label "Nein">
