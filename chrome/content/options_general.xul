@@ -15,6 +15,9 @@
 		<preference id="pref_saveResult"
 		            name="extensions.dkim_verifier.saveResult"
 		            type="bool"/>
+		<preference id="pref_arh.read"
+		            name="extensions.dkim_verifier.arh.read"
+		            type="bool"/>
 
 
 		<!-- DNS tab -->
@@ -75,6 +78,7 @@
 		</tabs>
 		
 		<tabpanels>
+			<!-- general tab -->
 			<tabpanel orient="vertical">
 				<hbox align="center">
 					<menulist id="key.storing"
@@ -92,8 +96,11 @@
 					<spacer/>
 				</hbox>
 				<checkbox preference="pref_saveResult" label="&saveResult.label;"/>
+
+				<checkbox preference="pref_arh.read" label="&arh.read.label;"/>
 			</tabpanel>
 			
+			<!-- DNS tab -->
 			<tabpanel orient="vertical">
 				<hbox align="center">
 					<label value="&dns.resolver.label;"/>
@@ -136,6 +143,7 @@
 				</deck>
 			</tabpanel>
 			
+			<!-- policy tab -->
 			<tabpanel orient="vertical">
 				<checkbox id="policy.signRules.enable"
 				          preference="pref_policy.signRules.enable"

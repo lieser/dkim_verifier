@@ -24,9 +24,6 @@
 		<preference id="pref_error.policy.key_insecure.treatAs"
 		            name="extensions.dkim_verifier.error.policy.key_insecure.treatAs"
 		            type="int"/>
-		<preference id="pref_arh.read"
-		            name="extensions.dkim_verifier.arh.read"
-		            type="bool"/>
 	</preferences>
 	
 	<checkbox preference="pref_debug" label="&debug.label;"/>
@@ -66,8 +63,6 @@
 		</menulist>
 		<spacer/>
 	</hbox>
-
-	<checkbox preference="pref_arh.read" label="&arh.read.label;"/>
 
 </prefpane>
 
