@@ -162,6 +162,7 @@ let ARHParser = {
 			res.resinfo.push(parseResinfo(authresHeader));
 		}
 
+		log.debug(res.toSource());
 		return res;
 	},
 };
@@ -214,7 +215,7 @@ function parseResinfo(str) {
 		res.propertys[reg_match[1]][reg_match[2]] = reg_match[3]
 	}
 
-	log.debug(res.toSource());
+	log.trace(res.toSource());
 	return res;
 }
 
