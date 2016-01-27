@@ -59,10 +59,8 @@
 <!ENTITY error.treatAs.value.1.label "警告">
 <!ENTITY error.treatAs.value.2.label "无事">
 <!ENTITY arh.read.label "阅读 Authentication-Results 报头">
-
-<!ENTITY acc.arh.read.label "Read Authentication-Results header:">
-<!ENTITY acc.arh.allowedAuthserv.label "Trusted authentication servers:">
-
-<!ENTITY acc.boolean.value.0.label "Use default value">
-<!ENTITY acc.boolean.value.1.label "Yes">
-<!ENTITY acc.boolean.value.2.label "No">
+<!ENTITY acc.arh.read.label "读取 Authentication-Results 头:">
+<!ENTITY acc.arh.allowedAuthserv.label "信任的身份验证服务器:">
+<!ENTITY acc.boolean.value.0.label "使用默认值">
+<!ENTITY acc.boolean.value.1.label "是">
+<!ENTITY acc.boolean.value.2.label "否">
