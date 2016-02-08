@@ -77,9 +77,9 @@
 
 <!ENTITY arh.read.label "Lecture du résultat de l'authentification de l'entête">
 
-<!ENTITY acc.arh.read.label "Read Authentication-Results header:">
-<!ENTITY acc.arh.allowedAuthserv.label "Trusted authentication servers:">
+<!ENTITY acc.arh.read.label "Lecture de l'entête du résultat de l'authentification:">
+<!ENTITY acc.arh.allowedAuthserv.label "Serveurs d'authentification vérifiés:">
 
-<!ENTITY acc.boolean.value.0.label "Use default value">
-<!ENTITY acc.boolean.value.1.label "Yes">
-<!ENTITY acc.boolean.value.2.label "No">
+<!ENTITY acc.boolean.value.0.label "Utiliser les valeurs par défaut">
+<!ENTITY acc.boolean.value.1.label "Oui">
+<!ENTITY acc.boolean.value.2.label "Non">
