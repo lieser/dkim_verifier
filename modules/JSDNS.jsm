@@ -4,7 +4,7 @@
  * Based on Joshua Tauberer's DNS LIBRARY IN JAVASCRIPT
  * from "Sender Verification Extension" version 0.9.0.6
  * 
- * Version: 1.1.0pre2 (20 October 2015)
+ * Version: 1.1.0 (16 November 2015)
  * 
  * Copyright (c) 2013-2015 Philippe Lieser
  * 

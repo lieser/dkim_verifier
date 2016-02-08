@@ -1,14 +1,14 @@
-1.4.0pre4 [2016-01-22]
+1.4.0 [2016-02-08]
 ------------------
- - JavaScript DNS library: no longer get the DNS servers from deactivated interfaces under windows
- - Authentication-Results header: allow also unknown property types to be compliant with RFC 7601
- - Authentication-Results header: continue verification if there is no DKIM result in the ARH header
- - Authentication-Results header: fixed bug if ARH header exists, but no message authentication was done
+ - simplified shown error reasons and added advanced option for detailed reasons
  - Authentication-Results header: reading of the ARH can now be set for each account
  - Authentication-Results header: added option to only trust specific authentication servers
+ - Authentication-Results header: continue verification if there is no DKIM result in the ARH header
+ - Authentication-Results header: allow also unknown property types to be compliant with RFC 7601
+ - Authentication-Results header: fixed bug if ARH header exists, but no message authentication was done
+ - JavaScript DNS library: no longer get the DNS servers from deactivated interfaces under windows
  - libunbound resolver: no longer blocks the UI of Thunderbird
  - libunbound resolver: changing preferences no longer needs a restart
- - simplified shown error reasons and added advanced option for detailed reasons
 
 1.3.6 [2015-09-13]
 ------------------

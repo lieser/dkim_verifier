@@ -4,7 +4,7 @@
  * A ChromeWorker wrapper for the libunbound DNS library.
  * Currently only the TXT resource record is completely supported.
  *
- * Version: 1.0.0pre2 (22 January 2016)
+ * Version: 1.0.0 (24 January 2016)
  * 
  * Copyright (c) 2016 Philippe Lieser
  * 

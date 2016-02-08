@@ -3,7 +3,7 @@
  * 
  * Parser for the Authentication-Results header as specified in RFC 7601.
  *
- * Version: 1.1.0pre2 (21 January 2016)
+ * Version: 1.1.0 (27 January 2016)
  * 
  * Copyright (c) 2014-2016 Philippe Lieser
  * 

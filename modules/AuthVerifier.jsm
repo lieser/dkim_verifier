@@ -3,7 +3,7 @@
  * 
  * Authentication Verifier.
  *
- * Version: 1.1.0pre2 (24 January 2016)
+ * Version: 1.1.0 (26 January 2016)
  * 
  * Copyright (c) 2014-2016 Philippe Lieser
  * 
