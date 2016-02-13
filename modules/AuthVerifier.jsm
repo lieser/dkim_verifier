@@ -3,7 +3,7 @@
  * 
  * Authentication Verifier.
  *
- * Version: 1.1.0 (26 January 2016)
+ * Version: 1.1.1 (13 February 2016)
  * 
  * Copyright (c) 2014-2016 Philippe Lieser
  * 
@@ -22,7 +22,7 @@
 
 "use strict";
 
-const module_version = "1.1.0";
+const module_version = "1.1.1";
 
 var EXPORTED_SYMBOLS = [
 	"AuthVerifier"
@@ -178,7 +178,8 @@ function getARHResult(msgHdr, msg) {
 
 		// only use header if the authserv_id is in the allowed servers
 		let allowedAuthserv = msgHdr.folder.server.
-			getCharValue("dkim_verifier.arh.allowedAuthserv").split(" ");
+			getCharValue("dkim_verifier.arh.allowedAuthserv").split(" ").
+			filter(function (e) {return e});
 		if (allowedAuthserv.length > 0 &&
 		    !allowedAuthserv.some(testAllowedAuthserv, arh)) {
 			continue;
