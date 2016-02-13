@@ -46,6 +46,7 @@ Cu.import("resource://gre/modules/Services.jsm");
 
 Cu.import("resource://dkim_verifier/ModuleGetter.jsm");
 ModuleGetter.getCommonUtils(this);
+ModuleGetter.getLog(this);
 ModuleGetter.getPromise(this);
 
 Cu.import("resource://dkim_verifier/logging.jsm");
@@ -55,6 +56,13 @@ var log = Logging.getLogger("Helper");
 var eTLDService = Components.classes["@mozilla.org/network/effective-tld-service;1"]
 	.getService(Components.interfaces.nsIEffectiveTLDService);
 
+
+var exceptionStr;
+if (Services.vc.compare(Services.appinfo.platformVersion, "46.0-1") >= 0) {
+	exceptionStr = Log.exceptionStr;
+} else {
+	exceptionStr = CommonUtils.exceptionStr;
+}
 
 /**
  * DKIM stringbundle with the same access methods as XUL:stringbundle
@@ -133,7 +141,7 @@ function exceptionToStr(exception) {
 		exception = new Error();
 	}
 
-	var str = CommonUtils.exceptionStr(exception);
+	var str = exceptionStr(exception);
 	log.trace(str);
 	
 	// cut stack trace from Sqlite.jsm, promise.js, Promise.jsm, Task.jsm calls
@@ -150,7 +158,9 @@ function exceptionToStr(exception) {
 	// Sqlite.jsm errors
 	if (exception.errors) {
 		// exception.errors is an array of mozIStorageError
-		str += "\n"+[(e.message) for (e of exception.errors)].join("\n");
+		str += "\n" + exception.errors.map(function (e) {
+				return e.message;
+			}).join("\n");
 		str += "\nreported at: ";
 		str += new Error().stack.split("\n")[1];
 	}

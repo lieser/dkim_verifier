@@ -351,7 +351,11 @@ function DNS_get_OS_DNSServers() {
 			// from http://mxr.mozilla.org/comm-central/source/mozilla/browser/components/migration/src/IEProfileMigrator.js#129
 			// slice(1,-1) to remove the " at the beginning and end
 			var str = registryLinkage.readStringValue("Route");
-			var interfaces = [v.slice(1,-1) for (v of str.split("\0")) if (v)];
+			var interfaces = str.split("\0").map(function (e) {
+				return e.slice(1,-1);
+			}).filter(function (e) {
+				return e;
+			});
 			log.debug("Found " + interfaces.length + " interfaces.");
 
 			// filter out deactivated interfaces

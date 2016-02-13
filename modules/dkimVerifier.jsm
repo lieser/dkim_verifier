@@ -173,7 +173,10 @@ var Verifier = (function() {
 				var hash = hasher.finish(false);
 
 				// convert the binary hash data to a hex string.
-				return [toHexString(hash.charCodeAt(i)) for (i in hash)].join("");
+				hash = hash.split("").map(function (e, i) {
+					return toHexString(e.charCodeAt(0));
+				}).join("");
+				return hash;
 			case "b64":
 				// true for base-64, false for binary data output
 				return hasher.finish(true);
