@@ -1,9 +1,9 @@
 /*
  * helper.jsm
  *
- * Version: 1.4.0 (21 March 2015)
+ * Version: 1.4.1 (13 February 2016)
  * 
- * Copyright (c) 2013-2015 Philippe Lieser
+ * Copyright (c) 2013-2016 Philippe Lieser
  * 
  * This software is licensed under the terms of the MIT License.
  * 

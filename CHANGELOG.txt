@@ -1,3 +1,8 @@
+1.4.1 [2016-02-13]
+------------------
+ - fixed incompatibility with Thunderbird 46
+ - Authentication-Results header: fixed trusting all authentication servers
+
 1.4.0 [2016-02-08]
 ------------------
  - simplified shown error reasons and added advanced option for detailed reasons

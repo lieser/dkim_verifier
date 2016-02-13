@@ -4,9 +4,9 @@
  * Based on Joshua Tauberer's DNS LIBRARY IN JAVASCRIPT
  * from "Sender Verification Extension" version 0.9.0.6
  * 
- * Version: 1.1.0 (16 November 2015)
+ * Version: 1.1.1 (13 February 2016)
  * 
- * Copyright (c) 2013-2015 Philippe Lieser
+ * Copyright (c) 2013-2016 Philippe Lieser
  * 
  * This software is licensed under the terms of the MIT License.
  * 
@@ -54,6 +54,10 @@
 /*
  * Changelog:
  * ==========
+ *
+ * 1.1.1
+ * -----
+ *  - fixed incompatibility with Gecko 46
  *
  * 1.1.0
  * -----
