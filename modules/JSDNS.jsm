@@ -4,7 +4,7 @@
  * Based on Joshua Tauberer's DNS LIBRARY IN JAVASCRIPT
  * from "Sender Verification Extension" version 0.9.0.6
  * 
- * Version: 1.1.1 (13 February 2016)
+ * Version: 1.2.0 (16 March 2016)
  * 
  * Copyright (c) 2013-2016 Philippe Lieser
  * 
@@ -54,6 +54,10 @@
 /*
  * Changelog:
  * ==========
+ *
+ * 1.2.0
+ * -----
+ *  - added support to use a proxy
  *
  * 1.1.1
  * -----
@@ -971,11 +975,23 @@ function DNS_readAllFromSocket(host,port,outputData,listener)
 	"use strict";
 	
 	try {
+		var proxy = null;
+		if (prefs.getBoolPref("proxy.enable")) {
+			var pps = Cc["@mozilla.org/network/protocol-proxy-service;1"].
+				getService(Ci.nsIProtocolProxyService);
+			proxy = pps.newProxyInfo(
+				prefs.getCharPref("proxy.type"),
+				prefs.getCharPref("proxy.host"),
+				prefs.getCharPref("proxy.port"),
+				0, 0xffffffff, null
+			);
+		}
+
 		var transportService =
-			Components.classes["@mozilla.org/network/socket-transport-service;1"]
-			.getService(Components.interfaces.nsISocketTransportService);
-		
-		var transport = transportService.createTransport(null,0,host,port,null);
+			Cc["@mozilla.org/network/socket-transport-service;1"].
+			getService(Ci.nsISocketTransportService);
+		var transport = transportService.
+			createTransport(null,0,host,port,proxy);
 
 		// change timeout for connection
 		transport.setTimeout(transport.TIMEOUT_CONNECT, timeout_connect);

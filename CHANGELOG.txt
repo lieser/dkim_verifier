@@ -1,3 +1,7 @@
+1.5.0pre1 [2016-03-16]
+------------------
+ - JavaScript DNS library: added support to use a proxy
+
 1.4.1 [2016-02-13]
 ------------------
  - fixed incompatibility with Thunderbird 46
