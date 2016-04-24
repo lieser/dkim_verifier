@@ -1,5 +1,6 @@
-1.5.0pre1 [2016-03-16]
+1.5.0pre2 [2016-04-24]
 ------------------
+ - added option to enable/disable DKIM verification for each account
  - JavaScript DNS library: added support to use a proxy
  - fixed installing problem if extensions.getAddons.cache.enabled is set to false (https://bugzilla.mozilla.org/show_bug.cgi?id=1187725)
 
