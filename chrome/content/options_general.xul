@@ -175,7 +175,7 @@
 						
 						<hbox align="center">
 							<label value="&dns.libunbound.path.label;"/>
-							<textbox id="" preference="pref_dns.libunbound.path" flex ="1"/>
+							<textbox preference="pref_dns.libunbound.path" flex ="1"/>
 						</hbox>
 						<checkbox preference="pref_dns.libunbound.path.relToProfileDir"
 						          label="&dns.libunbound.path.relToProfileDir.label;"/>
@@ -201,14 +201,17 @@
 						<checkbox id="policy.signRules.autoAddRule.onlyIfFromAddressInSDID"
 						          preference="pref_policy.signRules.autoAddRule.onlyIfFromAddressInSDID"
 						          label="&policy.signRules.autoAddRule.onlyIfFromAddressInSDID.label;"/>
-						<menulist id="policy.signRules.autoAddRule.for"
-						          preference="pref_policy.signRules.autoAddRule.for">
-							<menupopup>
-								<menuitem label="&policy.signRules.autoAddRule.for.value.0.label;" value="0"/>
-								<menuitem label="&policy.signRules.autoAddRule.for.value.1.label;" value="1"/>
-								<menuitem label="&policy.signRules.autoAddRule.for.value.2.label;" value="2"/>
-							</menupopup>
-						</menulist>
+						<hbox align="center">
+							<menulist id="policy.signRules.autoAddRule.for"
+									  preference="pref_policy.signRules.autoAddRule.for">
+								<menupopup>
+									<menuitem label="&policy.signRules.autoAddRule.for.value.0.label;" value="0"/>
+									<menuitem label="&policy.signRules.autoAddRule.for.value.1.label;" value="1"/>
+									<menuitem label="&policy.signRules.autoAddRule.for.value.2.label;" value="2"/>
+								</menupopup>
+							</menulist>
+							<spacer/>
+						</hbox>
 					</vbox>
 					<checkbox id="policy.signRules.sdid.allowSubDomains"
 					          preference="pref_policy.signRules.sdid.allowSubDomains"
