@@ -1,7 +1,22 @@
 // Default preference values. These are accessible via the preferences system
 // or via the optional chrome/content/options.xul preferences dialog.
 
-// general preferences
+////////////////////////////////////////////////////////////////////////////////
+// general preferences - General
+////////////////////////////////////////////////////////////////////////////////
+
+// 0: don't store DKIM keys
+// 1: store DKIM keys
+// 2: store DKIM keys and compare with current key
+pref("extensions.dkim_verifier.key.storing", 0);
+
+pref("extensions.dkim_verifier.saveResult", false);
+pref("extensions.dkim_verifier.arh.read", false);
+
+////////////////////////////////////////////////////////////////////////////////
+// general preferences - DNS
+////////////////////////////////////////////////////////////////////////////////
+
 /*
  * 1 JS DNS
  * 2 libunbound
@@ -19,8 +34,10 @@ pref("extensions.dkim_verifier.dns.jsdns.autoResetServerAlive", false);
 pref("extensions.dkim_verifier.dns.libunbound.path", "extensions/dnssec@nic.cz/plugins/ub_ds_windows-x86.dll");
 pref("extensions.dkim_verifier.dns.libunbound.path.relToProfileDir", true);
 
-pref("extensions.dkim_verifier.saveResult", false);
 
+////////////////////////////////////////////////////////////////////////////////
+// general preferences - Policy
+////////////////////////////////////////////////////////////////////////////////
 
 pref("extensions.dkim_verifier.policy.signRules.enable", false);
 pref("extensions.dkim_verifier.policy.signRules.checkDefaultRules", true);
@@ -37,12 +54,10 @@ pref("extensions.dkim_verifier.policy.DMARC.shouldBeSigned.enable", false);
 // "none", "quarantine", "reject"
 pref("extensions.dkim_verifier.policy.DMARC.shouldBeSigned.neededPolicy", "none");
 
-// 0: don't store DKIM keys
-// 1: store DKIM keys
-// 2: store DKIM keys and compare with current key
-pref("extensions.dkim_verifier.key.storing", 0);
 
+////////////////////////////////////////////////////////////////////////////////
 // display preferences
+////////////////////////////////////////////////////////////////////////////////
 /*
  * 0   never
  * 10  when an e-mail with a valid DKIM signature is viewed  (SUCCESS)
@@ -89,7 +104,10 @@ pref("extensions.dkim_verifier.color.nosig.text", "windowtext");
 pref("extensions.dkim_verifier.color.nosig.background", "transparent");
 
 
+////////////////////////////////////////////////////////////////////////////////
 // advanced preferences
+////////////////////////////////////////////////////////////////////////////////
+
 pref("extensions.dkim_verifier.debug", false);
 // "Fatal", "Error", "Warn", "Info", "Config", "Debug", "Trace", "All"
 pref("extensions.dkim_verifier.logging.console", "Debug");
@@ -104,10 +122,11 @@ pref("extensions.dkim_verifier.error.policy.key_insecure.treatAs", 2);
 pref("extensions.dkim_verifier.error.key_testmode.ignore", false);
 pref("extensions.dkim_verifier.error.contentTypeCharsetAddedQuotes.treatAs", 0);
 
-pref("extensions.dkim_verifier.arh.read", false);
 
-
+////////////////////////////////////////////////////////////////////////////////
 // account specific options
+////////////////////////////////////////////////////////////////////////////////
+
 // 0: default, 1: yes, 2: no
 pref("mail.server.default.dkim_verifier.arh.read", 0);
 // empty to allow all
