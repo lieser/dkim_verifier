@@ -37,6 +37,18 @@
 		<preference id="pref_dns.timeout_connect"
 		            name="extensions.dkim_verifier.dns.timeout_connect"
 		            type="int"/>
+		<preference id="pref_dns.proxy.enable"
+		            name="extensions.dkim_verifier.dns.proxy.enable"
+		            type="bool"/>
+		<preference id="pref_dns.proxy.type"
+		            name="extensions.dkim_verifier.dns.proxy.type"
+		            type="string"/>
+		<preference id="pref_dns.proxy.host"
+		            name="extensions.dkim_verifier.dns.proxy.host"
+		            type="string"/>
+		<preference id="pref_dns.proxy.port"
+		            name="extensions.dkim_verifier.dns.proxy.port"
+		            type="string"/>
 		
 		<preference id="pref_dns.libunbound.path"
 		            name="extensions.dkim_verifier.dns.libunbound.path"
@@ -131,6 +143,31 @@
 							<textbox id="dns.timeout_connect" preference="pref_dns.timeout_connect"/>
 							<spacer/>
 						</hbox>
+						<checkbox id="dns.proxy.enable"
+						          preference="pref_dns.proxy.enable"
+						          label="&dns.proxy.enable.label;"
+						          oncommand="gDKIMOptionsGeneralPane.update_dns_proxy();"/>
+						<vbox class="indent">
+							<hbox align="center">
+								<label class="proxyConfig" value="&dns.proxy.type.label;"/>
+								<menulist id="dns.proxy.type"
+								          class="proxyConfig"
+										  preference="pref_dns.proxy.type">
+									<menupopup>
+										<menuitem label="SOCKS v5" value="socks"/>
+										<menuitem label="SOCKS v4" value="socks4"/>
+									</menupopup>
+								</menulist>
+								<spacer/>
+							</hbox>
+							<hbox align="center">
+								<label class="proxyConfig" value="&dns.proxy.host.label;"/>
+								<textbox class="proxyConfig" preference="pref_dns.proxy.host"/>
+								<label class="proxyConfig" value="&dns.proxy.port.label;"/>
+								<textbox class="proxyConfig" preference="pref_dns.proxy.port" width="50"/>
+								<spacer/>
+							</hbox>
+						</vbox>
 					</groupbox>
 					
 					<groupbox>

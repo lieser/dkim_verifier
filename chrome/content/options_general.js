@@ -3,6 +3,7 @@ var gDKIMOptionsGeneralPane = {
 		gDKIMonpaneload("paneGeneral");
 		this.update_key_storing();
 		this.update_dns_resolver();
+		this.update_dns_proxy();
 		this.update_Policy_signRules_enable();
 	},
 	
@@ -14,6 +15,14 @@ var gDKIMOptionsGeneralPane = {
 	update_dns_resolver: function () {
 		var deckIndex = document.getElementById("dns.resolver.label").value - 1;
 		document.getElementById("resolverDeck").selectedIndex = deckIndex;
+	},
+
+	update_dns_proxy: function () {
+		var disabled = !document.getElementById("dns.proxy.enable").checked;
+		var proxyConfigs = document.querySelectorAll(".proxyConfig")
+		for (var e of proxyConfigs) {
+			e.disabled = disabled;
+		}
 	},
 
 	update_Policy_signRules_enable: function () {

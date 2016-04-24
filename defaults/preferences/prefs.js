@@ -29,6 +29,7 @@ pref("extensions.dkim_verifier.dns.nameserver", "8.8.8.8");
 pref("extensions.dkim_verifier.dns.timeout_connect", 10);
 pref("extensions.dkim_verifier.dns.dnssec.trustAnchor", ". IN DS 19036 8 2 49AAC11D7B6F6446702E54A1607371607A1A41855200FD2CE1CDDE32F24E8FB5");
 pref("extensions.dkim_verifier.dns.proxy.enable", false);
+// "socks", "socks4"
 pref("extensions.dkim_verifier.dns.proxy.type", "socks");
 pref("extensions.dkim_verifier.dns.proxy.host", "");
 pref("extensions.dkim_verifier.dns.proxy.port", "");
