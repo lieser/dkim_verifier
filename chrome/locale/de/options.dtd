@@ -3,6 +3,7 @@
 
 <!ENTITY general.label "General">
 <!ENTITY general.general.label "General">
+<!ENTITY dkim.enable.label "Überprüfe DKIM Signaturen">
 
 <!ENTITY dns.label "DNS">
 <!ENTITY dns.resolver.label "Resolver">
@@ -12,6 +13,10 @@
 <!ENTITY dns.nameserver.label "DNS Server (Syntax (EBNF): host[&quot;:&quot;port]{&quot;;&quot;host[&quot;:&quot;port]} )">
 
 <!ENTITY dns.timeout_connect.label "DNS Verbindungsaufbau-Timeout (in Sekunden)">
+<!ENTITY dns.proxy.enable.label "Benutze einen Proxy für die Verbindung zu den DNS Servern">
+<!ENTITY dns.proxy.type.label "Proxy-Type:">
+<!ENTITY dns.proxy.host.label "Proxy-Server:">
+<!ENTITY dns.proxy.port.label "Port:">
 
 <!ENTITY dns.libunbound.path.label "Pfadname">
 <!ENTITY dns.libunbound.path.relToProfileDir.label "Pfadname relativ zu Profilordner">
@@ -69,7 +74,7 @@
 <!ENTITY error.key_testmode.ignore.label "Überprüfe die Signatur auch, falls die Domain DKIM nur testet">
 <!ENTITY error.illformed_i.treatAs.label "Behandel falsch formatierten AUID Tag als">
 <!ENTITY error.illformed_s.treatAs.label "Behandel falsch formatierten selector Tag als">
-<!ENTITY error.policy.key_insecure.treatAs.label "Behandel DKIM Schlüssel nicht durch DNSSEC signiert als">
+<!ENTITY error.policy.key_insecure.treatAs.label "Behandel nicht durch DNSSEC gesicherte DKIM Schlüssel als">
 
 <!ENTITY error.treatAs.value.0.label "Fehler">
 <!ENTITY error.treatAs.value.1.label "Warnung">
@@ -77,6 +82,7 @@
 
 <!ENTITY arh.read.label "Lese Authentication-Results header">
 
+<!ENTITY acc.dkim.enable.label "Überprüfe DKIM Signaturen:">
 <!ENTITY acc.arh.read.label "Lese Authentication-Results header:">
 <!ENTITY acc.arh.allowedAuthserv.label "Vertrauten Authentifizierungs-Server:">
 

@@ -1,6 +1,7 @@
 <!ENTITY prefwindow.title "DKIM Verifier 选项">
 <!ENTITY general.label "常规">
 <!ENTITY general.general.label "常规">
+<!ENTITY dkim.enable.label "Verify DKIM signatures">
 <!ENTITY dns.label "DNS">
 <!ENTITY dns.resolver.label "解析">
 <!ENTITY dns.resolver.value.1.label "JavaScript DNS 软件库">
@@ -8,6 +9,10 @@
 <!ENTITY dns.getNameserversFromOS.label "从操作系统的配置获取 DNS 名称服务器">
 <!ENTITY dns.nameserver.label "DNS 名称服务器 (语法 (EBNF): host[&quot;:&quot;port]{&quot;;&quot;host[&quot;:&quot;port]} )">
 <!ENTITY dns.timeout_connect.label "DNS 连接超时 (秒)">
+<!ENTITY dns.proxy.enable.label "Use a Proxy to connect to the DNS servers">
+<!ENTITY dns.proxy.type.label "Proxy type:">
+<!ENTITY dns.proxy.host.label "Proxy server:">
+<!ENTITY dns.proxy.port.label "Port:">
 <!ENTITY dns.libunbound.path.label "路径">
 <!ENTITY dns.libunbound.path.relToProfileDir.label "配置文件目录的相对路径">
 <!ENTITY key.storing.value.0.label "不要存储 DKIM 密钥">
@@ -59,6 +64,7 @@
 <!ENTITY error.treatAs.value.1.label "警告">
 <!ENTITY error.treatAs.value.2.label "无事">
 <!ENTITY arh.read.label "阅读 Authentication-Results 报头">
+<!ENTITY acc.dkim.enable.label "Verify DKIM signatures:">
 <!ENTITY acc.arh.read.label "读取 Authentication-Results 头:">
 <!ENTITY acc.arh.allowedAuthserv.label "信任的身份验证服务器:">
 <!ENTITY acc.boolean.value.0.label "使用默认值">

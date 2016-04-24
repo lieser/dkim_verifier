@@ -3,6 +3,7 @@
 
 <!ENTITY general.label "Générale">
 <!ENTITY general.general.label "Générale">
+<!ENTITY dkim.enable.label "Verify DKIM signatures">
 
 <!ENTITY dns.label "DNS">
 <!ENTITY dns.resolver.label "Resolution">
@@ -12,6 +13,10 @@
 <!ENTITY dns.nameserver.label "Nom de serveur DNS (Syntaxe (EBNF): host[&quot;:&quot;port]{&quot;;&quot;host[&quot;:&quot;port]} )">
 
 <!ENTITY dns.timeout_connect.label "Expiration de la connexion DNS (en secondes)">
+<!ENTITY dns.proxy.enable.label "Use a Proxy to connect to the DNS servers">
+<!ENTITY dns.proxy.type.label "Proxy type:">
+<!ENTITY dns.proxy.host.label "Proxy server:">
+<!ENTITY dns.proxy.port.label "Port:">
 
 <!ENTITY dns.libunbound.path.label "Chemin">
 <!ENTITY dns.libunbound.path.relToProfileDir.label "Chemin relatif vers le dossier de profile">
@@ -77,6 +82,7 @@
 
 <!ENTITY arh.read.label "Lecture du résultat de l'authentification de l'entête">
 
+<!ENTITY acc.dkim.enable.label "Verify DKIM signatures:">
 <!ENTITY acc.arh.read.label "Lecture de l'entête du résultat de l'authentification:">
 <!ENTITY acc.arh.allowedAuthserv.label "Serveurs d'authentification vérifiés:">
 
