@@ -9,6 +9,9 @@
 	
 	<preferences>
 		<!-- general tab -->
+		<preference id="pref_dkim.enable"
+		            name="extensions.dkim_verifier.dkim.enable"
+		            type="bool"/>
 		<preference id="pref_key.storing"
 		            name="extensions.dkim_verifier.key.storing"
 		            type="int"/>
@@ -80,6 +83,7 @@
 		<tabpanels>
 			<!-- general tab -->
 			<tabpanel orient="vertical">
+				<checkbox preference="pref_dkim.enable" label="&dkim.enable.label;"/>
 				<hbox align="center">
 					<menulist id="key.storing"
 					          preference="pref_key.storing"
@@ -96,7 +100,6 @@
 					<spacer/>
 				</hbox>
 				<checkbox preference="pref_saveResult" label="&saveResult.label;"/>
-
 				<checkbox preference="pref_arh.read" label="&arh.read.label;"/>
 			</tabpanel>
 			

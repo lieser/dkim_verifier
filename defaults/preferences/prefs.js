@@ -5,6 +5,8 @@
 // general preferences - General
 ////////////////////////////////////////////////////////////////////////////////
 
+pref("extensions.dkim_verifier.dkim.enable", true);
+
 // 0: don't store DKIM keys
 // 1: store DKIM keys
 // 2: store DKIM keys and compare with current key
@@ -58,6 +60,7 @@ pref("extensions.dkim_verifier.policy.DMARC.shouldBeSigned.neededPolicy", "none"
 ////////////////////////////////////////////////////////////////////////////////
 // display preferences
 ////////////////////////////////////////////////////////////////////////////////
+
 /*
  * 0   never
  * 10  when an e-mail with a valid DKIM signature is viewed  (SUCCESS)
@@ -128,6 +131,7 @@ pref("extensions.dkim_verifier.error.contentTypeCharsetAddedQuotes.treatAs", 0);
 ////////////////////////////////////////////////////////////////////////////////
 
 // 0: default, 1: yes, 2: no
+pref("mail.server.default.dkim_verifier.dkim.enable", 0);
 pref("mail.server.default.dkim_verifier.arh.read", 0);
 // empty to allow all
 pref("mail.server.default.dkim_verifier.arh.allowedAuthserv", "");

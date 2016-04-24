@@ -103,12 +103,26 @@ var AuthVerifier = {
 			authResult = getARHResult(msgHdr, msg);
 
 			if (!authResult || authResult.dkim.length === 0) {
-				// verify DKIM signatures
-				let dkimResultV2 = yield DKIM.Verifier.verify2(msg);
-				authResult = {
-					version: "2.0",
-					dkim: dkimResultV2.signatures.map(dkimSigResultV2_to_AuthResultDKIM),
-				};
+				// DKIM Verification enabled?
+				if (msgHdr.folder.server.
+					  getIntValue("dkim_verifier.dkim.enable") === 1 ||
+					(msgHdr.folder.server.
+					   getIntValue("dkim_verifier.dkim.enable") === 0 &&
+					 prefs.getBoolPref("dkim.enable"))) {
+					// verify DKIM signatures
+					let dkimResultV2 = yield DKIM.Verifier.verify2(msg);
+					authResult = {
+						version: "2.0",
+						dkim: dkimResultV2.signatures.
+							map(dkimSigResultV2_to_AuthResultDKIM),
+					};
+				} else {
+					authResult = {
+						version: "2.0",
+						dkim: [{version: "2.0", result: "none"}].
+							map(dkimSigResultV2_to_AuthResultDKIM),
+					};
+				}
 			}
 
 			// save AuthResult
