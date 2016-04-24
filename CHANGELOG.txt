@@ -1,6 +1,7 @@
 1.5.0pre1 [2016-03-16]
 ------------------
  - JavaScript DNS library: added support to use a proxy
+ - fixed installing problem if extensions.getAddons.cache.enabled is set to false (https://bugzilla.mozilla.org/show_bug.cgi?id=1187725)
 
 1.4.1 [2016-02-13]
 ------------------

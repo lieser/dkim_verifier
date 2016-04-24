@@ -34,6 +34,7 @@
 		<em:localized>
 			<Description>
 				<em:locale>de</em:locale>
+				<em:name>DKIM Verifier</em:name>
 				<em:translator>ionum</em:translator>
 				<em:translator>Philippe Lieser</em:translator>
 				<em:description>Überprüft die DKIM-Signatur von E-Mails.</em:description>
@@ -62,6 +63,7 @@
 		<em:localized>
 			<Description>
 				<em:locale>fr</em:locale>
+				<em:name>DKIM Verifier</em:name>
 				<em:translator>Christophe CHAUVET</em:translator>
 				<em:description>Vérification de la signature DKIM d'un courriel.</em:description>
 				<em:contributor>Joshua Tauberer (bibliothèque DNS)</em:contributor>
@@ -75,6 +77,7 @@
 		<em:localized>
 			<Description>
 				<em:locale>it</em:locale>
+				<em:name>DKIM Verifier</em:name>
 				<em:translator>Michele Locati</em:translator>
 				<em:description>Verifica la firma DKIM di un’email.</em:description>
 				<em:contributor>Joshua Tauberer (libreria DNS)</em:contributor>
@@ -88,6 +91,7 @@
 		<em:localized>
 			<Description>
 				<em:locale>zh-CN</em:locale>
+				<em:name>DKIM Verifier</em:name>
 				<em:translator>YFdyh000</em:translator>
 				<em:description>验证邮件的 DKIM 签名。</em:description>
 				<em:contributor>Joshua Tauberer (DNS Library)</em:contributor>
