@@ -3,7 +3,7 @@
 
 <!ENTITY general.label "Generali">
 <!ENTITY general.general.label "Generali">
-<!ENTITY dkim.enable.label "Verify DKIM signatures">
+<!ENTITY dkim.enable.label "Verifica le firme DKIM">
 
 <!ENTITY dns.label "DNS">
 <!ENTITY dns.resolver.label "Risolutore">
@@ -13,10 +13,10 @@
 <!ENTITY dns.nameserver.label "Server DNS (sintassi (EBNF): host[&quot;:&quot;porta]{&quot;;&quot;host[&quot;:&quot;porta]} )">
 
 <!ENTITY dns.timeout_connect.label "Scadenza connessione DNS (in secondi)">
-<!ENTITY dns.proxy.enable.label "Use a Proxy to connect to the DNS servers">
-<!ENTITY dns.proxy.type.label "Proxy type:">
-<!ENTITY dns.proxy.host.label "Proxy server:">
-<!ENTITY dns.proxy.port.label "Port:">
+<!ENTITY dns.proxy.enable.label "Usa un proxy per connetterti ai server DNS">
+<!ENTITY dns.proxy.type.label "Tipo di proxy:">
+<!ENTITY dns.proxy.host.label "Server proxy:">
+<!ENTITY dns.proxy.port.label "Porta:">
 
 <!ENTITY dns.libunbound.path.label "Percorso">
 <!ENTITY dns.libunbound.path.relToProfileDir.label "Percorso relativo alla cartella del profilo">
@@ -82,7 +82,7 @@
 
 <!ENTITY arh.read.label "Leggi l’intestazione Authentication-Results">
 
-<!ENTITY acc.dkim.enable.label "Verify DKIM signatures:">
+<!ENTITY acc.dkim.enable.label "Verifica le firme DKIM:">
 <!ENTITY acc.arh.read.label "Leggi l’intestazione Authentication-Results:">
 <!ENTITY acc.arh.allowedAuthserv.label "Server di autenticazione attendibili:">
 
