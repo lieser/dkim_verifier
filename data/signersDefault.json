@@ -1,6 +1,6 @@
 {
 	"versionTable": 1,
-	"versionData": 6,
+	"versionData": 7,
 	"rules": [
 		{
 			"domain": "amazon.co.uk",
@@ -96,6 +96,12 @@
 			"domain": "facebookmail.com",
 			"addr": "*",
 			"sdid": "facebookmail.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "firefox.com",
+			"addr": "*",
+			"sdid": "firefox.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
