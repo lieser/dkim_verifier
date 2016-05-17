@@ -3,6 +3,7 @@
  - added option to enable/disable DKIM verification for each account
  - JavaScript DNS library: added support to use a proxy
  - sign rules: updated default rules (added firefox.com)
+ - DKIM key: empty, but existing DNS record is now treated as a missing key instead as an ill-formed one
  - fixed installing problem if extensions.getAddons.cache.enabled is set to false (https://bugzilla.mozilla.org/show_bug.cgi?id=1187725)
 
 1.4.1 [2016-02-13]

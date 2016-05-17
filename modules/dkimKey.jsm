@@ -1,9 +1,9 @@
 /*
  * dkimKey.jsm
  * 
- * Version: 1.0.1 (10 April 2014)
+ * Version: 1.1.0 (17 May 2016)
  * 
- * Copyright (c) 2013-2014 Philippe Lieser
+ * Copyright (c) 2013-2016 Philippe Lieser
  * 
  * This software is licensed under the terms of the MIT License.
  * 
@@ -18,6 +18,8 @@
 /* global ModuleGetter, Logging, DNS */
 /* global exceptionToStr, DKIM_SigError, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, Key */
+
+const module_version = "1.1.0";
 
 var EXPORTED_SYMBOLS = [
 	"Key"
@@ -53,6 +55,8 @@ var dbInitialized = false;
 var dbInitializedDefer = Promise.defer();
 
 var Key = {
+	get version() { "use strict"; return module_version; },
+
 	/**
 	 * init DB
 	 * May be called more then once
@@ -310,7 +314,7 @@ function getKeyFromDNS(d_val, s_val) {
 		if (result.rcode !== 0 && result.rcode !== 3 /* NXDomain */) {
 			throw new DKIM_InternalError(result.error, "DKIM_DNSERROR_SERVER_ERROR");
 		}
-		if (result.data === null) {
+		if (result.data === null || result.data[0] === "") {
 			throw new DKIM_SigError("DKIM_SIGERROR_NOKEY");
 		}
 
