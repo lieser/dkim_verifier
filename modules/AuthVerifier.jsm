@@ -3,7 +3,7 @@
  * 
  * Authentication Verifier.
  *
- * Version: 1.2.0 (24 April 2016)
+ * Version: 1.2.1 (24 Mai 2016)
  * 
  * Copyright (c) 2014-2016 Philippe Lieser
  * 
@@ -22,7 +22,7 @@
 
 "use strict";
 
-const module_version = "1.2.0";
+const module_version = "1.2.1";
 
 var EXPORTED_SYMBOLS = [
 	"AuthVerifier"
@@ -104,11 +104,18 @@ var AuthVerifier = {
 
 			if (!authResult || authResult.dkim.length === 0) {
 				// DKIM Verification enabled?
-				if (msgHdr.folder.server.
-					  getIntValue("dkim_verifier.dkim.enable") === 1 ||
-					(msgHdr.folder.server.
-					   getIntValue("dkim_verifier.dkim.enable") === 0 &&
-					 prefs.getBoolPref("dkim.enable"))) {
+				let dkimEnable = false;
+				if (!msgHdr.folder) {
+					// message is external
+					dkimEnable = prefs.getBoolPref("dkim.enable")
+				} else if (msgHdr.folder.server.getIntValue("dkim_verifier.dkim.enable") === 0) {
+					// account uses global default
+					dkimEnable = prefs.getBoolPref("dkim.enable")
+				} else if (msgHdr.folder.server.getIntValue("dkim_verifier.dkim.enable") === 1) {
+					// dkim enabled for account
+					dkimEnable = true;
+				}
+				if (dkimEnable) {
 					// verify DKIM signatures
 					let dkimResultV2 = yield DKIM.Verifier.verify2(msg);
 					authResult = {
@@ -170,10 +177,12 @@ function getARHResult(msgHdr, msg) {
 		return false;
 	}
 
-	if (msgHdr.folder.server.getIntValue("dkim_verifier.arh.read") === 2 ||
-	    (msgHdr.folder.server.getIntValue("dkim_verifier.arh.read") === 0 &&
+	if (!msg.headerFields.has("authentication-results") ||
+	    ( ( !msgHdr.folder ||
+	        msgHdr.folder.server.getIntValue("dkim_verifier.arh.read") === 0) &&
 	      !prefs.getBoolPref("arh.read")) ||
-	    !msg.headerFields.has("authentication-results")) {
+	    ( msgHdr.folder &&
+		  msgHdr.folder.server.getIntValue("dkim_verifier.arh.read") === 2)) {
 		return null;
 	}
 
@@ -191,9 +200,15 @@ function getARHResult(msgHdr, msg) {
 		}
 
 		// only use header if the authserv_id is in the allowed servers
-		let allowedAuthserv = msgHdr.folder.server.
-			getCharValue("dkim_verifier.arh.allowedAuthserv").split(" ").
-			filter(function (e) {return e});
+		let allowedAuthserv;
+		if (msgHdr.folder) {
+			allowedAuthserv = msgHdr.folder.server.
+				getCharValue("dkim_verifier.arh.allowedAuthserv").split(" ").
+				filter(function (e) {return e});
+		} else {
+			// no option exist for external messages, allow all
+			allowedAuthserv = [];
+		}
 		if (allowedAuthserv.length > 0 &&
 		    !allowedAuthserv.some(testAllowedAuthserv, arh)) {
 			continue;
