@@ -1,8 +1,14 @@
 {
 	"versionTable": 1,
-	"versionData": 7,
+	"versionData": 8,
 	"rules": [
 		{
+			"domain": "adlice.com",
+			"addr": "*",
+			"sdid": "adlice.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "amazon.co.uk",
 			"addr": "*",
 			"sdid": "amazon.co.uk",
@@ -20,6 +26,12 @@
 			"sdid": "amazon.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "aol.com",
+			"addr": "*",
+			"sdid": "aol.com mx.aol.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL0"
 		}, {
 			"domain": "apple.com",
 			"addr": "*@id.apple.com",
@@ -56,6 +68,12 @@
 			"sdid": "email.blizzard.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
+			"domain": "carglass.de",
+			"addr": "*",
+			"sdid": "carglass.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
 		}, {
 			"domain": "coursera.org",
 			"addr": "*",
@@ -177,6 +195,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "immobilienscout24.de",
+			"addr": "*",
+			"sdid": "immobilienscout24.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "leagueoflegends.com",
 			"addr": "*@email.leagueoflegends.com",
 			"sdid": "email.leagueoflegends.com",
@@ -248,6 +272,12 @@
 			"sdid": "sent.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL0"
+		}, {
+			"domain": "shore.com",
+			"addr": "*",
+			"sdid": "shore.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
 		}, {
 			"domain": "square-enix.com",
 			"addr": "*@xmail.square-enix.com",
@@ -324,6 +354,12 @@
 			"domain": "youtube.com",
 			"addr": "*",
 			"sdid": "youtube.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "zendesk.com",
+			"addr": "*",
+			"sdid": "zendesk.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}

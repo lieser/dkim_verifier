@@ -1,6 +1,7 @@
 1.5.1pre1 [2016-05-24]
 ------------------
  - fixed verification for external messages
+ - sign rules: updated default rules
 
 1.5.0 [2016-05-17]
 ------------------
