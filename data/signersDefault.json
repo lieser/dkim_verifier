@@ -1,8 +1,14 @@
 {
 	"versionTable": 1,
-	"versionData": 8,
+	"versionData": 9,
 	"rules": [
 		{
+			"domain": "1und1.de",
+			"addr": "*",
+			"sdid": "1und1.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "adlice.com",
 			"addr": "*",
 			"sdid": "adlice.com",
@@ -24,6 +30,12 @@
 			"domain": "amazon.de",
 			"addr": "*",
 			"sdid": "amazon.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "amazonses.com",
+			"addr": "*",
+			"sdid": "amazonses.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -69,6 +81,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
+			"domain": "campact.de",
+			"addr": "*",
+			"sdid": "campact.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "carglass.de",
 			"addr": "*",
 			"sdid": "carglass.de",
@@ -87,17 +105,17 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
-			"domain": "ebay.de",
+			"domain": "dhl.de",
 			"addr": "*",
-			"sdid": "ebay.de",
+			"sdid": "dhl.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
-			"domain": "ebay.de",
-			"addr": "*@reply.ebay.de",
-			"sdid": "reply.ebay.de",
+			"domain": "docmorris.de",
+			"addr": "*",
+			"sdid": "docmorris.de",
 			"ruletype": "ALL",
-			"priority": "DEFAULT_RULE_ALL_2"
+			"priority": "DEFAULT_RULE_ALL"
 		}, {
 			"domain": "easyjet.com",
 			"addr": "*",
@@ -110,6 +128,30 @@
 			"sdid": "email.easyJet.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
+			"domain": "ebay.de",
+			"addr": "*",
+			"sdid": "ebay.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "ebay.de",
+			"addr": "*@reply.ebay.de",
+			"sdid": "reply.ebay.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
+			"domain": "ebay-kleinanzeigen.de",
+			"addr": "*",
+			"sdid": "ebay-kleinanzeigen.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "europcar-news.com",
+			"addr": "*",
+			"sdid": "europcar-news.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
 		}, {
 			"domain": "facebookmail.com",
 			"addr": "*",
@@ -201,6 +243,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "jpc.de",
+			"addr": "*",
+			"sdid": "jpc.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "leagueoflegends.com",
 			"addr": "*@email.leagueoflegends.com",
 			"sdid": "email.leagueoflegends.com",
@@ -225,6 +273,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL0"
 		}, {
+			"domain": "microsoft.com",
+			"addr": "*",
+			"sdid": "microsoft.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "netflix.com",
 			"addr": "*",
 			"sdid": "mailer.netflix.com",
@@ -234,6 +288,12 @@
 			"domain": "o2.de",
 			"addr": "*@news.o2.de",
 			"sdid": "news.o2.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "openpetition.de",
+			"addr": "*",
+			"sdid": "openpetition.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -279,6 +339,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "sophos.com",
+			"addr": "*",
+			"sdid": "sophos.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "square-enix.com",
 			"addr": "*@xmail.square-enix.com",
 			"sdid": "xmail.square-enix.com",
@@ -300,6 +366,12 @@
 			"domain": "superuser.com",
 			"addr": "*",
 			"sdid": "superuser.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "tenderapp.com",
+			"addr": "*",
+			"sdid": "tenderapp.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
