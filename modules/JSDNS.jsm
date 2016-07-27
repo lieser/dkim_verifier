@@ -4,7 +4,7 @@
  * Based on Joshua Tauberer's DNS LIBRARY IN JAVASCRIPT
  * from "Sender Verification Extension" version 0.9.0.6
  * 
- * Version: 1.2.0 (16 March 2016)
+ * Version: 1.3.0 (27 July 2016)
  * 
  * Copyright (c) 2013-2016 Philippe Lieser
  * 
@@ -54,6 +54,10 @@
 /*
  * Changelog:
  * ==========
+ *
+ * 1.3.0
+ * -----
+ *  - added support for rcode
  *
  * 1.2.0
  * -----
@@ -837,10 +841,20 @@ function DNS_readRec(ctx) {
 function DNS_getRDData(str, server, host, recordtype, callback, callbackdata, hops) {
 	"use strict";
 	
+	var debugstr = "" + host + "/" + recordtype + ": ";
+	
+	var flags = DNS_strToWord(str.substr(2, 2));
 	var qcount = DNS_strToWord(str.substr(4, 2));
 	var ancount = DNS_strToWord(str.substr(6, 2));
 	var aucount = DNS_strToWord(str.substr(8, 2));
 	var adcount = DNS_strToWord(str.substr(10, 2));
+	
+	var rcode = flags & 0xF;
+	if (rcode !== 0) {
+		log.debug(debugstr + "Lookup failed with rcode " + rcode);
+		callback(null, callbackdata, "Lookup failed with rcode " + rcode, rcode);
+		return;
+	}
 	
 	var ctx = { str : str, idx : 12 };
 	
@@ -870,8 +884,6 @@ function DNS_getRDData(str, server, host, recordtype, callback, callbackdata, ho
 		type = DNS_strToWord(str.substr(ctx.idx, 2)); ctx.idx += 2;
 		cls = DNS_strToWord(str.substr(ctx.idx, 2)); ctx.idx += 2;
 	}
-	
-	var debugstr = "" + host + "/" + recordtype + ": ";
 	
 	var results = [];
 	for (i = 0; i < ancount; i++) {

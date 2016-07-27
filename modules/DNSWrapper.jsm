@@ -136,14 +136,16 @@ var DNS = {
 /**
  * callback for the dns result of JSDNS.jsm
  */
-function dnsCallback(dnsResult, defer, queryError) {
+function dnsCallback(dnsResult, defer, queryError, rcode) {
 	"use strict";
 
 	log.trace("dnsCallback begin");
 
 	let result = {};
 	result.data = dnsResult;
-	if (queryError !== undefined) {
+	if (rcode !== undefined) {
+		result.rcode = rcode;
+	} else if (queryError !== undefined) {
 		result.rcode = 2; // ServFail
 	} else {
 		result.rcode = 0; // NoError

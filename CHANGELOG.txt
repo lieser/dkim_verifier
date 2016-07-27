@@ -1,6 +1,7 @@
 1.6.0pre11 [2016-07-27]
 ------------------
  - added option to indicate successful DNSSEC verification with a lock
+ - JSDNS: differentiate between a server error and an non existing DKIM key
 
 1.5.1 [2016-06-11]
 ------------------
