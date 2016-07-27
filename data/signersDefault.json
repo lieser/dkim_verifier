@@ -281,7 +281,7 @@
 		}, {
 			"domain": "netflix.com",
 			"addr": "*",
-			"sdid": "mailer.netflix.com",
+			"sdid": "netflix.com mailer.netflix.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -294,6 +294,12 @@
 			"domain": "openpetition.de",
 			"addr": "*",
 			"sdid": "openpetition.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "payleven.de",
+			"addr": "*",
+			"sdid": "payleven.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
