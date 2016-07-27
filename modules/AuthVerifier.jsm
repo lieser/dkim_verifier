@@ -3,7 +3,7 @@
  * 
  * Authentication Verifier.
  *
- * Version: 1.2.1 (24 Mai 2016)
+ * Version: 1.3.0pre1 (27 July 2016)
  * 
  * Copyright (c) 2014-2016 Philippe Lieser
  * 
@@ -22,7 +22,7 @@
 
 "use strict";
 
-const module_version = "1.2.1";
+const module_version = "1.3.0";
 
 var EXPORTED_SYMBOLS = [
 	"AuthVerifier"
@@ -429,8 +429,13 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) {
 	switch(dkimSigResult.result) {
 		case "SUCCESS":
 			authResultDKIM.res_num = 10;
+			let keySecureStr = "";
+			if (dkimSigResult.keySecure &&
+			    prefs.getBoolPref("display.keySecure")) {
+				keySecureStr = " \uD83D\uDD12";
+			}
 			authResultDKIM.result_str = dkimStrings.getFormattedString("SUCCESS",
-				[dkimSigResult.sdid]);
+				[dkimSigResult.sdid + keySecureStr]);
 			authResultDKIM.warnings_str = dkimSigResult.warnings.map(function(e) {
 				return tryGetFormattedString(dkimStrings, e.name, e.params) || e.name;
 			});
