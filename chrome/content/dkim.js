@@ -590,7 +590,7 @@ var that = {
 		let promise = Task.spawn(function () {
 			log.trace("markKeyAsSecure Task")
 			yield DKIM_Verifier.Key.markKeyAsSecure(
-				header.dkimResult.SDID, header.dkimResult.selector);
+				header.dkimResult.sdid, header.dkimResult.selector);
 			
 			that.reverify();
 		});
@@ -606,7 +606,7 @@ var that = {
 		let promise = Task.spawn(function () {
 			log.trace("updateKey Task")
 			yield DKIM_Verifier.Key.deleteKey(
-				header.dkimResult.SDID, header.dkimResult.selector);
+				header.dkimResult.sdid, header.dkimResult.selector);
 			
 			that.reverify();
 		});
