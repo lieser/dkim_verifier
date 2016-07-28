@@ -80,7 +80,10 @@
 <!ENTITY error.treatAs.value.1.label "avviso">
 <!ENTITY error.treatAs.value.2.label "niente">
 
+<!ENTITY display.keySecure.label "Indicate successful DNSSEC validation with a lock after the SDID">
+
 <!ENTITY arh.read.label "Leggi l’intestazione Authentication-Results">
+<!ENTITY arh.replaceAddonResult.label "Reading the Authentication-Results header replaces the add-ons verification">
 
 <!ENTITY acc.dkim.enable.label "Verifica le firme DKIM:">
 <!ENTITY acc.arh.read.label "Leggi l’intestazione Authentication-Results:">

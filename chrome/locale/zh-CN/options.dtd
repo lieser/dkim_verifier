@@ -63,7 +63,9 @@
 <!ENTITY error.treatAs.value.0.label "错误">
 <!ENTITY error.treatAs.value.1.label "警告">
 <!ENTITY error.treatAs.value.2.label "无事">
+<!ENTITY display.keySecure.label "Indicate successful DNSSEC validation with a lock after the SDID">
 <!ENTITY arh.read.label "阅读 Authentication-Results 报头">
+<!ENTITY arh.replaceAddonResult.label "Reading the Authentication-Results header replaces the add-ons verification">
 <!ENTITY acc.dkim.enable.label "验证 DKIM 签名:">
 <!ENTITY acc.arh.read.label "读取 Authentication-Results 头:">
 <!ENTITY acc.arh.allowedAuthserv.label "信任的身份验证服务器:">

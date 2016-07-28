@@ -80,7 +80,10 @@
 <!ENTITY error.treatAs.value.1.label "Warnung">
 <!ENTITY error.treatAs.value.2.label "nichts">
 
+<!ENTITY display.keySecure.label "Kennzeichne erfolgreiche DNSSEC Validierung mit einem Schloss hinter der SDID">
+
 <!ENTITY arh.read.label "Lese Authentication-Results header">
+<!ENTITY arh.replaceAddonResult.label "Das Lesen des Authentication-Results header ersetzt die Add-on eigene Verifikation">
 
 <!ENTITY acc.dkim.enable.label "Überprüfe DKIM Signaturen:">
 <!ENTITY acc.arh.read.label "Lese Authentication-Results header:">
