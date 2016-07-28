@@ -55,6 +55,8 @@ DKIM_Verifier.Display = (function() {
 	var markKeyAsSecureButton;
 	var updateKeyButton;
 	var dkimStrings;
+	var dkimHdrStyleEL;
+	var dkimHdrStyle;
 
 /*
  * private methods
@@ -165,6 +167,26 @@ DKIM_Verifier.Display = (function() {
 				} else {
 					setWarnings(result.dkim[0].warnings_str);
 					highlightHeader("warning");
+				}
+
+				// if result contains an url to a favicon,
+				// insert a dynamic css rule to show it before the from address
+				if (result.dkim[0].favicon) {
+					dkimHdrStyle.insertRule(
+						"#expandedfromBox::before { \
+							content:'';\
+							background-image: url('" + result.dkim[0].favicon + "');\
+							background-size: contain;\
+							display: list-item;\
+							list-style-position: inside;\
+							list-style-type: '';\
+							height: calc(1.7em + 2px);\
+							width: calc(1.7em + 2px);\
+							margin: 0px;\
+							margin-inline-start: 3px;\
+							margin-inline-end: 0.1em;\
+							padding: 0px;\
+						}", 0);
 				}
 				break;
 			case 20:
@@ -341,6 +363,11 @@ var that = {
 			updateKeyButton = document.getElementById("dkim_verifier.updateKey");
 			dkimStrings = document.getElementById("dkimStrings");
 
+			// create dynamic style sheet
+			dkimHdrStyleEL = document.createElementNS("http://www.w3.org/1999/xhtml", "style");
+			document.documentElement.appendChild(dkimHdrStyleEL);
+			dkimHdrStyle = dkimHdrStyleEL.sheet;
+
 			// Register to receive notifications of preference changes
 			prefs.addObserver("", that, false);
 
@@ -484,6 +511,9 @@ var that = {
 			header.spfValue = "";
 			header.dmarcValue = "";
 			header.arhDkimValue = "";
+
+			// reset dynamic style sheet
+			dkimHdrStyle.deleteRule(0);
 
 			// reset highlight from header
 			highlightHeader("clearHeader");
