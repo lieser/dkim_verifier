@@ -120,6 +120,7 @@ pref("extensions.dkim_verifier.logging.dump", "Debug");
 pref("extensions.dkim_verifier.debugLevel", 0);
 pref("extensions.dkim_verifier.error.detailedReasons", false);
 pref("extensions.dkim_verifier.display.keySecure", true);
+pref("extensions.dkim_verifier.arh.replaceAddonResult", true);
 // 0: error, 1: warning, 2: ignore
 pref("extensions.dkim_verifier.error.illformed_i.treatAs", 1);
 pref("extensions.dkim_verifier.error.illformed_s.treatAs", 1);

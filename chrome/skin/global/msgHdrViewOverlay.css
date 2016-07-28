@@ -17,3 +17,7 @@
 #expandeddkim-verifierBox:not([dmarc="true"])  [anonid="dmarc"] {
   display: none;
 }
+
+#expandeddkim-verifierBox:not([arhDkim="true"])  [anonid="arhDkim"] {
+  display: none;
+}

@@ -17,6 +17,18 @@
                        role="textbox"
                        aria-readonly="true" />
       <xul:image class="alert-icon" tooltip="dkim-verifier-header-tooltip-warnings"/>
+      <xul:hbox anonid="arhDkim">
+        <xul:description anonid="arhDkimLabel"
+                         class="headerValue"
+                         style="text-align: right"
+          >&dkim_verifier.statusbar.title;</xul:description>
+        <xul:description anonid="arhDkimValue"
+                         class="headerValue"
+                         readonly="true"
+                         context="copyPopup"
+                         role="textbox"
+                         aria-readonly="true" />
+      </xul:hbox>
       <xul:hbox anonid="spf">
         <xul:description anonid="spfLabel"
                          class="headerValue"
@@ -48,6 +60,7 @@
       <field name="tooltip">document.getAnonymousElementByAttribute(this, "anonid", "tooltip");</field>
       <field name="headerSPFValue">document.getAnonymousElementByAttribute(this, "anonid", "spfValue");</field>
       <field name="headerDMARCValue">document.getAnonymousElementByAttribute(this, "anonid", "dmarcValue");</field>
+      <field name="headerArhDKIMValue">document.getAnonymousElementByAttribute(this, "anonid", "arhDkimValue");</field>
 
       <property name="value">
         <setter><![CDATA[
@@ -77,6 +90,16 @@
             this.setAttribute("dmarc", false);
           }
           this.headerDMARCValue.textContent = val;
+        ]]></setter>
+      </property>
+      <property name="arhDkimValue">
+        <setter><![CDATA[
+          if (val) {
+            this.setAttribute("arhDkim", true);
+          } else {
+            this.setAttribute("arhDkim", false);
+          }
+          this.headerArhDKIMValue.textContent = val;
         ]]></setter>
       </property>
     </implementation>

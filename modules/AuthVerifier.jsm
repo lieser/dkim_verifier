@@ -55,10 +55,12 @@ var AuthVerifier = {
 	/**
 	 * @typedef {Object} AuthResult
 	 * @property {String} version
-	 *           result version ("2.0")
+	 *           result version ("2.1")
 	 * @property {AuthResultDKIM[]} dkim
 	 * @property {ARHResinfo[]} [spf]
 	 * @property {ARHResinfo[]} [dmarc]
+	 * @property {Object} [arh]
+	 * @property {AuthResultDKIM[]} [arh.dkim]
 	 */
 
 	/**
@@ -100,17 +102,35 @@ var AuthVerifier = {
 			let msg = yield DKIM.Verifier.createMsg(msgURI);
 
 			// read Authentication-Results header
-			authResult = getARHResult(msgHdr, msg);
+			let arhResult = getARHResult(msgHdr, msg);
 
-			if (!authResult || authResult.dkim.length === 0) {
+			if (arhResult) {
+				if (prefs.getBoolPref("arh.replaceAddonResult")) {
+					authResult = arhResult;
+				} else {
+					authResult = {
+						version: "2.1",
+						spf: arhResult.spf,
+						dmarc: arhResult.dmarc,
+						arh: {},
+					};
+					authResult.arh.dkim = arhResult.dkim;
+				}
+			} else {
+				authResult = {
+					version: "2.0",
+				};
+			}
+
+			if (!authResult.dkim || authResult.dkim.length === 0) {
 				// DKIM Verification enabled?
 				let dkimEnable = false;
 				if (!msgHdr.folder) {
 					// message is external
-					dkimEnable = prefs.getBoolPref("dkim.enable")
+					dkimEnable = prefs.getBoolPref("dkim.enable");
 				} else if (msgHdr.folder.server.getIntValue("dkim_verifier.dkim.enable") === 0) {
 					// account uses global default
-					dkimEnable = prefs.getBoolPref("dkim.enable")
+					dkimEnable = prefs.getBoolPref("dkim.enable");
 				} else if (msgHdr.folder.server.getIntValue("dkim_verifier.dkim.enable") === 1) {
 					// dkim enabled for account
 					dkimEnable = true;
@@ -118,19 +138,15 @@ var AuthVerifier = {
 				if (dkimEnable) {
 					// verify DKIM signatures
 					let dkimResultV2 = yield DKIM.Verifier.verify2(msg);
-					authResult = {
-						version: "2.0",
-						dkim: dkimResultV2.signatures.
-							map(dkimSigResultV2_to_AuthResultDKIM),
-					};
+					authResult.dkim = dkimResultV2.signatures.
+							map(dkimSigResultV2_to_AuthResultDKIM);
 				} else {
-					authResult = {
-						version: "2.0",
-						dkim: [{version: "2.0", result: "none"}].
-							map(dkimSigResultV2_to_AuthResultDKIM),
-					};
+					authResult.dkim = [{version: "2.0", result: "none"}].
+							map(dkimSigResultV2_to_AuthResultDKIM);
 				}
 			}
+
+			log.debug("authResult: " + authResult.toSource());
 
 			// save AuthResult
 			saveAuthResult(msgHdr, authResult);
@@ -228,23 +244,26 @@ function getARHResult(msgHdr, msg) {
 	// convert DKIM results
 	let dkimSigResults = arhDKIM.map(arhDKIM_to_dkimSigResultV2);
 
+	// if ARH result is replacing the add-ons,
 	// check SDID and AUID of DKIM results
-	for (let i = 0; i < dkimSigResults.length; i++) {
-		if (dkimSigResults[i].result === "SUCCESS") {
-			try {
-				DKIM.Policy.checkSDID(
-					msg.DKIMSignPolicy.sdid,
-					msg.from,
-					dkimSigResults[i].sdid,
-					dkimSigResults[i].auid,
-					dkimSigResults[i].warnings
-				);
-			} catch(exception) {
-				dkimSigResults[i] = DKIM.Verifier.handleExeption(
-					exception,
-					msg,
-					{d: dkimSigResults[i].sdid, i: dkimSigResults[i].auid}
-				);
+	if (prefs.getBoolPref("arh.replaceAddonResult")) {
+		for (let i = 0; i < dkimSigResults.length; i++) {
+			if (dkimSigResults[i].result === "SUCCESS") {
+				try {
+					DKIM.Policy.checkSDID(
+						msg.DKIMSignPolicy.sdid,
+						msg.from,
+						dkimSigResults[i].sdid,
+						dkimSigResults[i].auid,
+						dkimSigResults[i].warnings
+					);
+				} catch(exception) {
+					dkimSigResults[i] = DKIM.Verifier.handleExeption(
+						exception,
+						msg,
+						{d: dkimSigResults[i].sdid, i: dkimSigResults[i].auid}
+					);
+				}
 			}
 		}
 	}

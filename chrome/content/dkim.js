@@ -4,7 +4,7 @@
  * Verifies the DKIM signature if a new message is viewed,
  * and displays the result.
  *
- * Copyright (c) 2013-2014 Philippe Lieser
+ * Copyright (c) 2013-2016 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -210,6 +210,10 @@ DKIM_Verifier.Display = (function() {
 		// DMARC result
 		if (result.dmarc && result.dmarc[0]) {
 			header.dmarcValue = result.dmarc[0].result;
+		}
+		// ARH DKIM result
+		if (result.arh && result.arh.dkim && result.arh.dkim[0]) {
+			header.arhDkimValue = result.arh.dkim[0].result_str;
 		}
 		log.trace("displayResult end")
 	}
@@ -479,6 +483,7 @@ var that = {
 			setWarnings([]);
 			header.spfValue = "";
 			header.dmarcValue = "";
+			header.arhDkimValue = "";
 
 			// reset highlight from header
 			highlightHeader("clearHeader");
