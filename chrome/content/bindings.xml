@@ -16,7 +16,9 @@
                        context="copyPopup"
                        role="textbox"
                        aria-readonly="true" />
-      <xul:image class="alert-icon" tooltip="dkim-verifier-header-tooltip-warnings"/>
+      <xul:image anonid="dkimWarningIcon"
+                 class="alert-icon"
+                 tooltip="dkim-verifier-header-tooltip-warnings"/>
       <xul:hbox anonid="arhDkim">
         <xul:description anonid="arhDkimLabel"
                          class="headerValue"

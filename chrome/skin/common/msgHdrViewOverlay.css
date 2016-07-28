@@ -10,6 +10,3 @@
   margin-left: 1ex;
   visibility: hidden;
 }
-#expandeddkim-verifierBox[warnings="true"] > image {
-  visibility: visible;
-}
