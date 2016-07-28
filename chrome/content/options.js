@@ -1,6 +1,9 @@
+Components.utils.import("resource://gre/modules/Services.jsm");
+
 function onLoad(paneID) {
-	var fadeInEffect = Application.prefs.get('browser.preferences.animateFadeIn');
-	if (!fadeInEffect.value) {
+	var fadeInEffect = Services.prefs.
+		getBoolPref("browser.preferences.animateFadeIn");
+	if (!fadeInEffect) {
 		window.sizeToContent();
 	} else {
 		var currentPane = document.getElementById(paneID);
