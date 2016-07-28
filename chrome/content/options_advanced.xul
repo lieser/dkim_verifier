@@ -15,6 +15,12 @@
 		<preference id="pref_error.key_testmode.ignore"
 		            name="extensions.dkim_verifier.error.key_testmode.ignore"
 		            type="bool"/>
+		<preference id="pref_display.keySecure"
+		            name="extensions.dkim_verifier.display.keySecure"
+		            type="bool"/>
+		<preference id="pref_arh.replaceAddonResult"
+		            name="extensions.dkim_verifier.arh.replaceAddonResult"
+		            type="bool"/>
 		<preference id="pref_error.illformed_i.treatAs"
 		            name="extensions.dkim_verifier.error.illformed_i.treatAs"
 		            type="int"/>
@@ -30,6 +36,10 @@
 	<checkbox preference="pref_error.detailedReasons" label="&error.detailedReasons.label;"/>
 	<checkbox preference="pref_error.key_testmode.ignore"
 	          label="&error.key_testmode.ignore.label;"/>
+	<checkbox preference="pref_display.keySecure"
+	          label="&display.keySecure.label;"/>
+	<checkbox preference="pref_arh.replaceAddonResult"
+	          label="&arh.replaceAddonResult.label;"/>
 	<hbox align="center">
 		<label>&error.illformed_i.treatAs.label;</label>
 		<menulist preference="pref_error.illformed_i.treatAs">
