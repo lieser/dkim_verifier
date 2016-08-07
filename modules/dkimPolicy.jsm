@@ -1,9 +1,9 @@
 /*
  * dkimPolicy.jsm
  * 
- * Version: 1.2.2 (21 March 2015)
+ * Version: 1.3.0 (07 August 2016)
  * 
- * Copyright (c) 2013-2015 Philippe Lieser
+ * Copyright (c) 2013-2016 Philippe Lieser
  * 
  * This software is licensed under the terms of the MIT License.
  * 
@@ -19,7 +19,7 @@
 /* global addrIsInDomain, exceptionToStr, getBaseDomainFromAddr, readStringFrom, stringEndsWith, stringEqual, DKIM_SigError, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, Policy */
 
-const module_version = "1.2.2";
+const module_version = "1.3.0";
 
 var EXPORTED_SYMBOLS = [
 	"Policy"
@@ -78,6 +78,8 @@ var log = Logging.getLogger("Policy");
 var dbInitialized = false;
 // Deferred<boolean>
 var dbInitializedDefer = Promise.defer();
+
+var favicons;
 
 var Policy = {
 	get version() { "use strict"; return module_version; },
@@ -401,6 +403,36 @@ var Policy = {
 				log.debug("Warning: DKIM_SIGWARNING_FROM_NOT_IN_AUID");
 			}
 		}
+	},
+
+	/**
+	 * Get the URL to the favicon, if available.
+	 * 
+	 * @param {String} sdid
+	 * @param {String} from
+	 * @return {Promise<String|undefined>} url to favicon
+	 */
+	getFavicon: function Policy_getFavicon(sdid) {
+		"use strict";
+
+		var promise = Task.spawn(function () {
+			if (!favicons) {
+				var faviconsStr = yield readStringFrom("resource://dkim_verifier_data/favicon.json");
+				favicons = JSON.parse(faviconsStr);
+			}
+
+			var url = favicons[getBaseDomainFromAddr(sdid)];
+			if (url) {
+				url = "resource://dkim_verifier_data/favicon/" + url;
+			}
+
+			throw new Task.Result(url);
+		});
+		promise.then(null, function onReject(exception) {
+			// Failure!  We can inspect or report the exception.
+			log.warn(exceptionToStr(exception));
+		});
+		return promise;
 	},
 
 	/**

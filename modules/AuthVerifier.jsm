@@ -3,7 +3,7 @@
  * 
  * Authentication Verifier.
  *
- * Version: 1.3.0pre1 (27 July 2016)
+ * Version: 1.3.0pre1 (07 August 2016)
  * 
  * Copyright (c) 2014-2016 Philippe Lieser
  * 
@@ -76,6 +76,8 @@ var AuthVerifier = {
 	 *           localized result string
 	 * @property {String[]} [warnings_str]
 	 *           localized warnings
+	 * @property {String} [favicon]
+	 *           url to the favicon of the sdid
 	 */
 
 	/**
@@ -144,6 +146,11 @@ var AuthVerifier = {
 					authResult.dkim = [{version: "2.0", result: "none"}].
 							map(dkimSigResultV2_to_AuthResultDKIM);
 				}
+			}
+
+			for (let i = 0; i < authResult.dkim.length; i++) {
+				authResult.dkim[i].favicon =
+					yield DKIM.Policy.getFavicon(authResult.dkim[i].sdid);
 			}
 
 			log.debug("authResult: " + authResult.toSource());
