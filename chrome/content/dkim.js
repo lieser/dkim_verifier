@@ -171,7 +171,8 @@ DKIM_Verifier.Display = (function() {
 
 				// if result contains an url to a favicon,
 				// insert a dynamic css rule to show it before the from address
-				if (result.dkim[0].favicon) {
+				if (prefs.getBoolPref("display.favicon.show") &&
+				    result.dkim[0].favicon) {
 					dkimHdrStyle.insertRule(
 						"#expandedfromBox::before { \
 							content:'';\

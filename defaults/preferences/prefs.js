@@ -107,6 +107,8 @@ pref("extensions.dkim_verifier.color.tempfail.background", "transparent");
 pref("extensions.dkim_verifier.color.nosig.text", "windowtext");
 pref("extensions.dkim_verifier.color.nosig.background", "transparent");
 
+pref("extensions.dkim_verifier.display.favicon.show", true);
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // advanced preferences

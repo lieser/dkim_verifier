@@ -57,6 +57,10 @@
 		<preference id="pref_showDKIMFromTooltip"
 		            name="extensions.dkim_verifier.showDKIMFromTooltip"
 		            type="int"/>
+
+		<preference id="pref_display.favicon.show"
+		            name="extensions.dkim_verifier.display.favicon.show"
+		            type="bool"/>
 	</preferences>
 	
 	<groupbox>
@@ -127,6 +131,7 @@
 			</rows>
 		</grid>
 	</groupbox>
+
 	<groupbox>
 		<hbox align="center">
 			<label>&showDKIMHeader.label;</label>
@@ -174,6 +179,9 @@
 			<spacer/>
 		</hbox>
 	</groupbox>
+
+	<checkbox preference="pref_display.favicon.show"
+	          label="&display.favicon.show.label;"/>
 </prefpane>
 
 </overlay>
