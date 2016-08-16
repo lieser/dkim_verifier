@@ -513,7 +513,9 @@ var that = {
 			header.arhDkimValue = "";
 
 			// reset dynamic style sheet
-			dkimHdrStyle.deleteRule(0);
+			while (dkimHdrStyle.cssRules[0]) {
+				dkimHdrStyle.deleteRule(0);
+			}
 
 			// reset highlight from header
 			highlightHeader("clearHeader");
