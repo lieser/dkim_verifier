@@ -66,6 +66,8 @@
 <!ENTITY color.tempfail.label "Temporary error">
 <!ENTITY color.nosig.label "Unsigned e-mail">
 
+<!ENTITY display.favicon.show.label "Show the favicon of some known signing domains">
+
 
 <!ENTITY advanced.label "Advanced">
 
