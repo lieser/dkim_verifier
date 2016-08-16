@@ -36,8 +36,8 @@ mail-multi-emailHeaderField:not([dkimFavicon="true"]) [anonid="dkimFavicon"] {
 
 mail-multi-emailHeaderField [anonid="dkimFavicon"] {
   min-width: 0px !important;
-  width: 1.7em;
-  height: 1.7em;
-  margin-bottom: 4px !important;
+  width: 1.5em;
+  height: 1.5em;
+  margin-bottom: 5px !important;
   background-size: contain;
 }
