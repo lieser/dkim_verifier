@@ -264,5 +264,36 @@
       </property>
     </implementation>
   </binding>
+
+  <binding id="dkim-mail-multi-emailHeaderField"
+           extends="chrome://messenger/content/mailWidgets.xml#mail-multi-emailHeaderField">
+    <content>
+      <xul:hbox class="headerValueBox" anonid="longEmailAddresses" flex="1"
+                singleline="true"
+                align="baseline">
+        <xul:description anonid="dkimFavicon"
+                         class="headerValue"/>
+        <xul:description class="headerValue" containsEmail="true"
+                         anonid="emailAddresses" flex="1"
+                         orient="vertical" pack="start" />
+      </xul:hbox>
+      <xul:label class="moreIndicator" onclick="this.parentNode.toggleWrap()"
+                 collapsed="true" anonid="more"/>
+    </content>
+    <implementation>
+      <field name="dkimFavicon">document.getAnonymousElementByAttribute(this, "anonid", "dkimFavicon");</field>
+
+      <property name="dkimFaviconUrl">
+        <setter><![CDATA[
+          this.dkimFavicon.style.backgroundImage = "url('" + val + "')";
+          if (val) {
+            this.setAttribute("dkimFavicon", true);
+          } else {
+            this.setAttribute("dkimFavicon", false);
+          }
+        ]]></setter>
+      </property>
+    </implementation>
+  </binding>
 </bindings>
 <!-- vim: set et ts=2 sw=2 : -->

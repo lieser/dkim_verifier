@@ -51,12 +51,13 @@ DKIM_Verifier.Display = (function() {
 	var row;
 	var headerTooltips;
 	var statusbarpanel;
+	var expandedfromBox;
+	var collapsed1LfromBox; // for CompactHeader addon
+	var collapsed2LfromBox; // for CompactHeader addon
 	var policyAddUserExceptionButton;
 	var markKeyAsSecureButton;
 	var updateKeyButton;
 	var dkimStrings;
-	var dkimHdrStyleEL;
-	var dkimHdrStyle;
 
 /*
  * private methods
@@ -102,18 +103,32 @@ DKIM_Verifier.Display = (function() {
 		
 		// highlight or reset header
 		if (prefs.getBoolPref("colorFrom") || status === "clearHeader") {
-			var expandedfromBox = document.getElementById("expandedfromBox");
 			highlightEmailAddresses(expandedfromBox);
 
 			// for CompactHeader addon
-			var collapsed1LfromBox = document.getElementById("CompactHeader_collapsed1LfromBox");
 			if (collapsed1LfromBox) {
 				highlightEmailAddresses(collapsed1LfromBox);
 			}
-			var collapsed2LfromBox = document.getElementById("CompactHeader_collapsed2LfromBox");
 			if (collapsed2LfromBox) {
 				highlightEmailAddresses(collapsed2LfromBox);
 			}
+		}
+	}
+
+	/**
+	 * Sets the url to the favicon. Empty string to reset it.
+	 * 
+	 * @param {String} faviconUrl
+	 */
+	function setFaviconUrl(faviconUrl) {
+		expandedfromBox.dkimFaviconUrl = faviconUrl;
+
+		// for CompactHeader addon
+		if (collapsed1LfromBox) {
+			collapsed1LfromBox.dkimFaviconUrl = faviconUrl;
+		}
+		if (collapsed2LfromBox) {
+			collapsed2LfromBox.dkimFaviconUrl = faviconUrl;
 		}
 	}
 
@@ -169,25 +184,10 @@ DKIM_Verifier.Display = (function() {
 					highlightHeader("warning");
 				}
 
-				// if result contains an url to a favicon,
-				// insert a dynamic css rule to show it before the from address
+				// if enabled and available, set url to favicon
 				if (prefs.getBoolPref("display.favicon.show") &&
 				    result.dkim[0].favicon) {
-					dkimHdrStyle.insertRule(
-						"#expandedfromBox::before { \
-							content:'';\
-							background-image: url('" + result.dkim[0].favicon + "');\
-							background-size: contain;\
-							display: list-item;\
-							list-style-position: inside;\
-							list-style-type: '';\
-							height: calc(1.7em + 2px);\
-							width: calc(1.7em + 2px);\
-							margin: 0px;\
-							margin-inline-start: 3px;\
-							margin-inline-end: 0.1em;\
-							padding: 0px;\
-						}", 0);
+					setFaviconUrl(result.dkim[0].favicon);
 				}
 				break;
 			case 20:
@@ -358,16 +358,14 @@ var that = {
 			// get xul elements
 			headerTooltips = document.getElementById("dkim-verifier-header-tooltips");
 			statusbarpanel = document.getElementById("dkim-verifier-statusbarpanel");
+			expandedfromBox = document.getElementById("expandedfromBox");
+			collapsed1LfromBox = document.getElementById("CompactHeader_collapsed1LfromBox");
+			collapsed2LfromBox = document.getElementById("CompactHeader_collapsed2LfromBox");
 			policyAddUserExceptionButton = document.
 				getElementById("dkim_verifier.policyAddUserException");
 			markKeyAsSecureButton = document.getElementById("dkim_verifier.markKeyAsSecure");
 			updateKeyButton = document.getElementById("dkim_verifier.updateKey");
 			dkimStrings = document.getElementById("dkimStrings");
-
-			// create dynamic style sheet
-			dkimHdrStyleEL = document.createElementNS("http://www.w3.org/1999/xhtml", "style");
-			document.documentElement.appendChild(dkimHdrStyleEL);
-			dkimHdrStyle = dkimHdrStyleEL.sheet;
 
 			// Register to receive notifications of preference changes
 			prefs.addObserver("", that, false);
@@ -513,13 +511,11 @@ var that = {
 			header.dmarcValue = "";
 			header.arhDkimValue = "";
 
-			// reset dynamic style sheet
-			while (dkimHdrStyle.cssRules[0]) {
-				dkimHdrStyle.deleteRule(0);
-			}
-
 			// reset highlight from header
 			highlightHeader("clearHeader");
+
+			// reset favicon
+			setFaviconUrl("");
 
 			if (policyAddUserExceptionButton) {
 				policyAddUserExceptionButton.disabled = true;
