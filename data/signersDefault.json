@@ -1,6 +1,6 @@
 {
 	"versionTable": 1,
-	"versionData": 9,
+	"versionData": 10,
 	"rules": [
 		{
 			"domain": "1und1.de",
@@ -12,6 +12,12 @@
 			"domain": "adlice.com",
 			"addr": "*",
 			"sdid": "adlice.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "airbnb.com",
+			"addr": "*",
+			"sdid": "airbnb.com email.airbnb.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -354,6 +360,12 @@
 			"domain": "square-enix.com",
 			"addr": "*@xmail.square-enix.com",
 			"sdid": "xmail.square-enix.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "stackexchange.com",
+			"addr": "*",
+			"sdid": "stackexchange.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
