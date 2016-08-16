@@ -1,7 +1,7 @@
 1.6.0pre2 [2016-08-16]
 ------------------
  - added option to indicate successful DNSSEC validation with a lock (enabled by default)
- - added option to show the favicon of some known senders (enabled by default)
+ - added option to show the favicon of some known signing domains (enabled by default)
  - added option to show the ARH result alongside the add-ons, instead of replacing it
  - JSDNS: differentiate between a server error and an non existing DKIM key
  - sign rules: ignore must be signed for outgoing messages
