@@ -15,7 +15,7 @@
 
 // options for JSHint
 /* jshint strict:true, moz:true, smarttabs:true, unused:true */
-/* global Components, Services, Task */
+/* global Components, Services, Task, MailServices, fixIterator */
 /* global Logging, ARHParser */
 /* global dkimStrings, domainIsInDomain, exceptionToStr, getDomainFromAddr, tryGetFormattedString, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, AuthVerifier */
@@ -34,6 +34,8 @@ const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/Task.jsm");
+Cu.import("resource:///modules/mailServices.js");
+Cu.import("resource:///modules/iteratorUtils.jsm");
 
 Cu.import("resource://dkim_verifier/logging.jsm");
 Cu.import("resource://dkim_verifier/helper.jsm");
@@ -102,6 +104,12 @@ var AuthVerifier = {
 
 			// create msg object
 			let msg = yield DKIM.Verifier.createMsg(msgURI);
+
+			// ignore must be signed for outgoing messages
+			if (msg.DKIMSignPolicy.shouldBeSigned && isOutgoing(msgHdr)) {
+				log.debug("ignored must be signed for outgoing message");
+				msg.DKIMSignPolicy.shouldBeSigned = false;
+			}
 
 			// read Authentication-Results header
 			let arhResult = getARHResult(msgHdr, msg);
@@ -568,4 +576,41 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) {
 	}
 
 	return authResultDKIM;
+}
+
+/**
+ * Checks if a message is outgoing
+ * 
+ * @param {nsIMsgDBHdr} msgHdr
+ * @return Boolean
+ */
+function isOutgoing(msgHdr) {
+	if (!msgHdr.folder) {
+		// msg is external
+		return false;
+	}
+	if (msgHdr.folder.getFlag(Ci.nsMsgFolderFlags.SentMail)) {
+		// msg is in sent folder
+		return true;
+	}
+
+	// return true if one of the servers identities contain the from address
+	let author = msgHdr.mime2DecodedAuthor;
+	let identities;
+	if (MailServices.accounts.getIdentitiesForServer) {
+		identities = MailServices.accounts.
+			getIdentitiesForServer(msgHdr.folder.server);
+	} else {
+		// for older versions of Thunderbird
+		identities = MailServices.accounts.
+			GetIdentitiesForServer(msgHdr.folder.server);
+	}
+	for (let identity in fixIterator(identities, Ci.nsIMsgIdentity)) {
+		if (author.includes(identity.email)) {
+			return true;
+		}
+	}
+
+	// default to false
+	return false;
 }

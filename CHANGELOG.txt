@@ -4,6 +4,7 @@
  - added option to show the favicon of some known senders (enabled by default)
  - added option to show the ARH result alongside the add-ons, instead of replacing it
  - JSDNS: differentiate between a server error and an non existing DKIM key
+ - sign rules: ignore must be signed for outgoing messages
  - fixed updating a DKIM key or marking it as secure via the "Other Actions" button
 
 1.5.1 [2016-06-11]
