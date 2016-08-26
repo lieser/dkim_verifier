@@ -273,6 +273,7 @@
                 align="baseline">
         <xul:description anonid="dkimFavicon"
                          class="headerValue"
+                         tooltip="dkim-verifier-header-tooltip-from"
                          value="" /> <!-- dummy text for align baseline -->
         <xul:description class="headerValue" containsEmail="true"
                          anonid="emailAddresses" flex="1"
