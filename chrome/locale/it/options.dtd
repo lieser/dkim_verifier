@@ -66,7 +66,7 @@
 <!ENTITY color.tempfail.label "Errore temporaneo">
 <!ENTITY color.nosig.label "Email non firmata">
 
-<!ENTITY display.favicon.show.label "Show the favicon of some known signing domains">
+<!ENTITY display.favicon.show.label "Show the favicon of known signing domains before the From address">
 
 
 <!ENTITY advanced.label "Avanzate">
