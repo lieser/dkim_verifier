@@ -272,7 +272,8 @@
                 singleline="true"
                 align="baseline">
         <xul:description anonid="dkimFavicon"
-                         class="headerValue"/>
+                         class="headerValue"
+                         value="" <!-- dummy text for align baseline -->/>
         <xul:description class="headerValue" containsEmail="true"
                          anonid="emailAddresses" flex="1"
                          orient="vertical" pack="start" />
