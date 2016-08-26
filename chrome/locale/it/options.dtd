@@ -66,7 +66,7 @@
 <!ENTITY color.tempfail.label "Errore temporaneo">
 <!ENTITY color.nosig.label "Email non firmata">
 
-<!ENTITY display.favicon.show.label "Show the favicon of known signing domains before the From address">
+<!ENTITY display.favicon.show.label "Mostra l’icona dei preferiti per i domini di firma noti prima dell’indirizzo del mittente">
 
 
 <!ENTITY advanced.label "Avanzate">
@@ -82,10 +82,10 @@
 <!ENTITY error.treatAs.value.1.label "avviso">
 <!ENTITY error.treatAs.value.2.label "niente">
 
-<!ENTITY display.keySecure.label "Indicate successful DNSSEC validation with a lock after the SDID">
+<!ENTITY display.keySecure.label "Indica una validazione DNSSEC avvenuta con successo con un blocco dopo il SDID">
 
 <!ENTITY arh.read.label "Leggi l’intestazione Authentication-Results">
-<!ENTITY arh.replaceAddonResult.label "Reading the Authentication-Results header replaces the add-ons verification">
+<!ENTITY arh.replaceAddonResult.label "La lettura dell’intestazione Authentication-Results sostituisce la verifica del componente aggiuntivo">
 
 <!ENTITY acc.dkim.enable.label "Verifica le firme DKIM:">
 <!ENTITY acc.arh.read.label "Leggi l’intestazione Authentication-Results:">
