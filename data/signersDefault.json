@@ -1,6 +1,6 @@
 {
 	"versionTable": 1,
-	"versionData": 10,
+	"versionData": 11,
 	"rules": [
 		{
 			"domain": "1und1.de",
@@ -68,6 +68,12 @@
 			"sdid": "battle.net",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "bahn.de",
+			"addr": "*",
+			"sdid": "bahn.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_NEUTRAL"
 		}, {
 			"domain": "blaucloud.de",
 			"addr": "*@blaucloud.de",
@@ -390,6 +396,12 @@
 			"domain": "tenderapp.com",
 			"addr": "*",
 			"sdid": "tenderapp.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "tk.de",
+			"addr": "*",
+			"sdid": "tk.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
