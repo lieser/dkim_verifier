@@ -53,7 +53,7 @@
 <!ENTITY color.permfail.label "无效签名">
 <!ENTITY color.tempfail.label "暂时出错">
 <!ENTITY color.nosig.label "未签名邮件">
-<!ENTITY display.favicon.show.label "Show the favicon of some known signing domains">
+<!ENTITY display.favicon.show.label "在发件人地址前显示已知签名域名的网站图标">
 <!ENTITY advanced.label "高级">
 <!ENTITY debug.label "启用调试（在错误控制台中输出错误和调试信息）">
 <!ENTITY error.detailedReasons.label "Show detailed error reasons">
@@ -64,9 +64,9 @@
 <!ENTITY error.treatAs.value.0.label "错误">
 <!ENTITY error.treatAs.value.1.label "警告">
 <!ENTITY error.treatAs.value.2.label "无事">
-<!ENTITY display.keySecure.label "Indicate successful DNSSEC validation with a lock after the SDID">
+<!ENTITY display.keySecure.label "在 SDID 后面用锁标识成功的 DNSSEC 验证">
 <!ENTITY arh.read.label "阅读 Authentication-Results 报头">
-<!ENTITY arh.replaceAddonResult.label "Reading the Authentication-Results header replaces the add-ons verification">
+<!ENTITY arh.replaceAddonResult.label "读取 Authentication-Results 头替换本附加组件的验证">
 <!ENTITY acc.dkim.enable.label "验证 DKIM 签名:">
 <!ENTITY acc.arh.read.label "读取 Authentication-Results 头:">
 <!ENTITY acc.arh.allowedAuthserv.label "信任的身份验证服务器:">
