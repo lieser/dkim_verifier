@@ -66,7 +66,7 @@
 <!ENTITY color.tempfail.label "Erreur temporaire">
 <!ENTITY color.nosig.label "Courriel non signé">
 
-<!ENTITY display.favicon.show.label "Show the favicon of known signing domains before the From address">
+<!ENTITY display.favicon.show.label "Afficher l'icône des signatures de domaine connus avant l'adresse De">
 
 
 <!ENTITY advanced.label "Avancés">
@@ -82,10 +82,10 @@
 <!ENTITY error.treatAs.value.1.label "avertissement">
 <!ENTITY error.treatAs.value.2.label "rien">
 
-<!ENTITY display.keySecure.label "Indicate successful DNSSEC validation with a lock after the SDID">
+<!ENTITY display.keySecure.label "Indiquez le succès de la validation DNSSEC avec un verrou après le SSID">
 
 <!ENTITY arh.read.label "Lecture du résultat de l'authentification de l'entête">
-<!ENTITY arh.replaceAddonResult.label "Reading the Authentication-Results header replaces the add-ons verification">
+<!ENTITY arh.replaceAddonResult.label "Lecture de l'en-tête Authentication-Results pour remplacer la vérification des add-ons">
 
 <!ENTITY acc.dkim.enable.label "Vérifier les signatures DKIM:">
 <!ENTITY acc.arh.read.label "Lecture de l'entête du résultat de l'authentification:">
