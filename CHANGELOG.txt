@@ -1,4 +1,4 @@
-1.6.0pre2 [2016-08-16]
+1.6.0 [2016-09-25]
 ------------------
  - added option to indicate successful DNSSEC validation with a lock (enabled by default)
  - added option to show the favicon of some known signing domains (enabled by default)

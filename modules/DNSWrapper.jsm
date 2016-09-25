@@ -5,7 +5,7 @@
  *  - JSDNS.jsm
  *  - libunbound.jsm
  * 
- * Version: 2.1.0 (22 January 2016)
+ * Version: 2.2.0 (27 July 2016)
  * 
  * Copyright (c) 2013-2016 Philippe Lieser
  * 
@@ -22,7 +22,7 @@
 /* global ModuleGetter, Logging, JSDNS, libunbound */
 /* exported EXPORTED_SYMBOLS, DNS */
 
-const module_version = "2.1.0";
+const module_version = "2.2.0";
 
 var EXPORTED_SYMBOLS = [
 	"DNS"
