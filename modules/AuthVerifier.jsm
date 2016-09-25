@@ -94,6 +94,7 @@ var AuthVerifier = {
 			// check for saved AuthResult
 			let authResult = loadAuthResult(msgHdr);
 			if (authResult) {
+				authResult = yield addFavicons(authResult);
 				throw new Task.Result(authResult);
 			}
 
@@ -156,15 +157,12 @@ var AuthVerifier = {
 				}
 			}
 
-			for (let i = 0; i < authResult.dkim.length; i++) {
-				authResult.dkim[i].favicon =
-					yield DKIM.Policy.getFavicon(authResult.dkim[i].sdid);
-			}
-
 			log.debug("authResult: " + authResult.toSource());
 
 			// save AuthResult
 			saveAuthResult(msgHdr, authResult);
+
+			authResult = yield addFavicons(authResult);
 
 			throw new Task.Result(authResult);
 		});
@@ -576,6 +574,25 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) {
 	}
 
 	return authResultDKIM;
+}
+
+/**
+ * Add favicons to the DKIM results.
+ * 
+ * Generator function.
+ * 
+ * @param {AuthResult} authResult
+ * @return {Promise<AuthResult>} authResult
+ */
+function addFavicons(authResult) {
+	if (!prefs.getBoolPref("display.favicon.show")) {
+		throw new Task.Result(authResult);
+	}
+	for (let i = 0; i < authResult.dkim.length; i++) {
+		authResult.dkim[i].favicon =
+			yield DKIM.Policy.getFavicon(authResult.dkim[i].sdid);
+	}
+	throw new Task.Result(authResult);
 }
 
 /**
