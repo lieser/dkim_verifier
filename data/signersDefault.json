@@ -1,6 +1,6 @@
 {
 	"versionTable": 1,
-	"versionData": 11,
+	"versionData": 12,
 	"rules": [
 		{
 			"domain": "1und1.de",
@@ -54,6 +54,12 @@
 			"domain": "apple.com",
 			"addr": "*@id.apple.com",
 			"sdid": "id.apple.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "apple.com",
+			"addr": "*@insideapple.apple.com",
+			"sdid": "insideapple.apple.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
