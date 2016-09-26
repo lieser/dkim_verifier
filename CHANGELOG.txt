@@ -1,3 +1,7 @@
+1.6.1 [2016-09-26]
+------------------
+ - fixed problem with old Thunderbird versions and sign rules
+
 1.6.0 [2016-09-25]
 ------------------
  - added option to indicate successful DNSSEC validation with a lock (enabled by default)

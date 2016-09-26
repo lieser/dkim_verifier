@@ -3,7 +3,7 @@
  * 
  * Authentication Verifier.
  *
- * Version: 1.3.0 (25 September 2016)
+ * Version: 1.3.1 (26 September 2016)
  * 
  * Copyright (c) 2014-2016 Philippe Lieser
  * 
@@ -623,7 +623,12 @@ function isOutgoing(msgHdr) {
 			GetIdentitiesForServer(msgHdr.folder.server);
 	}
 	for (let identity in fixIterator(identities, Ci.nsIMsgIdentity)) {
-		if (author.includes(identity.email)) {
+		if (author.includes) {
+			if (author.includes(identity.email)) {
+				return true;
+			}
+		} else if (author.search(identity.email) !== -1){
+			// for older versions of Thunderbird
 			return true;
 		}
 	}
