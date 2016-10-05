@@ -89,15 +89,17 @@ DKIM_Verifier.Display = (function() {
 	 */
 	function highlightHeader(status) {
 		function highlightEmailAddresses(headerBox) {
+			var emailValue = headerBox.emailAddresses.firstChild.
+				getPart("emailValue");
 			if (status !== "clearHeader") {
-				headerBox.emailAddresses.style.borderRadius = "3px";
-				headerBox.emailAddresses.style.color = prefs.
+				emailValue.style.borderRadius = "3px";
+				emailValue.style.color = prefs.
 					getCharPref("color."+status+".text");
-				headerBox.emailAddresses.style.backgroundColor = prefs.
+				emailValue.style.backgroundColor = prefs.
 					getCharPref("color."+status+".background");
 			} else {
-				headerBox.emailAddresses.style.color = "";
-				headerBox.emailAddresses.style.backgroundColor = "";
+				emailValue.style.color = "";
+				emailValue.style.backgroundColor = "";
 			}
 		}
 		
@@ -322,10 +324,6 @@ var that = {
 		}
 
 		// DKIM tooltip for From header
-		var expandedfromBox = document.getElementById("expandedfromBox");
-		// for CompactHeader addon
-		var collapsed1LfromBox = document.getElementById("CompactHeader_collapsed1LfromBox");
-		var collapsed2LfromBox = document.getElementById("CompactHeader_collapsed2LfromBox");
 		if (prefs.getIntPref("showDKIMFromTooltip") >= state ) {
 			// show tooltip for From header
 			setDKIMFromTooltip(expandedfromBox);
