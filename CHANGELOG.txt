@@ -1,6 +1,8 @@
-1.6.2pre1 [2016-10-05]
+1.6.2pre2 [2016-10-06]
 ------------------
  - fixed incompatibility with Silvermel/Charamel
+ - fixed Problem with copied header fields
+ - updated default rules and favicons
 
 1.6.1 [2016-09-26]
 ------------------

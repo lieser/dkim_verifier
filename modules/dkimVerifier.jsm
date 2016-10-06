@@ -4,7 +4,7 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  * 
- * Version: 2.1.1 (13 February 2016)
+ * Version: 2.1.2 (06 October 2016)
  * 
  * Copyright (c) 2013-2016 Philippe Lieser
  * 
@@ -31,7 +31,7 @@
 /* global dkimStrings, addrIsInDomain2, domainIsInDomain, exceptionToStr, stringEndsWith, stringEqual, writeStringToTmpFile, DKIM_SigError, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, Verifier */
 
-const module_version = "2.1.1";
+const module_version = "2.1.2";
 
 var EXPORTED_SYMBOLS = [
 	"Verifier"
@@ -109,7 +109,8 @@ var Verifier = (function() {
 	// Pattern for dkim-safe-char as specified in Section 2.11 of RFC 6376
 	var dkim_safe_char = "[!-:<>-~]";
 	// Pattern for hex-octet as specified in Section 6.7 of RFC 2045
-	var hex_octet = "(?:=[0-9ABCDEF]{2})";
+	// we also allow added FWS (needed for Copied header fields)
+	var hex_octet = "(?:="+pattFWS+"?[0-9ABCDEF]"+pattFWS+"?[0-9ABCDEF])";
 	// Pattern for qp-hdr-value as specified in Section 2.10 of RFC 6376
 	// same as dkim-quoted-printable with "|" encoded as specified in Section 2.11 of RFC 6376
 	var qp_hdr_value = "(?:(?:"+pattFWS+"|"+hex_octet+"|[!-:<>-{}-~])*)";
