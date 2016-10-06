@@ -89,6 +89,10 @@ DKIM_Verifier.Display = (function() {
 	 */
 	function highlightHeader(status) {
 		function highlightEmailAddresses(headerBox) {
+			if (!headerBox.emailAddresses.firstChild) {
+				log.trace("Skiped highlightEmailAddresses (!firstChild)");
+				return;
+			}
 			var emailValue = headerBox.emailAddresses.firstChild.
 				getPart("emailValue");
 			if (status !== "clearHeader") {
