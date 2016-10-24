@@ -4,7 +4,7 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  * 
- * Version: 2.1.2 (06 October 2016)
+ * Version: 2.1.2 (24 October 2016)
  * 
  * Copyright (c) 2013-2016 Philippe Lieser
  * 
@@ -634,7 +634,8 @@ var Verifier = (function() {
 		}
 		
 		// get Copied header fields (dkim-quoted-printable, but see description; OPTIONAL, default is null)
-		var sig_z_tag_copy = hdr_name+pattFWS+"?:"+qp_hdr_value;
+		var hdr_name_FWS = "(?:(?:[!-9<-~]"+pattFWS+"?)+)";
+		var sig_z_tag_copy = hdr_name_FWS+pattFWS+"?:"+qp_hdr_value;
 		var sig_z_tag = sig_z_tag_copy+"(\\|"+pattFWS+"?"+sig_z_tag_copy+")*";
 		var CopyHeaderFieldsTag = parseTagValue(tagMap, "z", sig_z_tag);
 		if (CopyHeaderFieldsTag !== null) {
