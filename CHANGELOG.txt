@@ -1,4 +1,4 @@
-1.6.2pre2 [2016-10-06]
+1.6.2 [2016-10-24]
 ------------------
  - fixed incompatibility with Silvermel/Charamel
  - fixed Problem with copied header fields
