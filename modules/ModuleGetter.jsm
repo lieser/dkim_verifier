@@ -1,9 +1,9 @@
 /*
  * ModuleGetter.jsm
  *
- * Version: 1.0.0 (21 November 2013)
+ * Version: 1.0.1 (10 November 2016)
  *
- * Copyright (c) 2013 Philippe Lieser
+ * Copyright (c) 2013-2016 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -16,6 +16,8 @@
 /* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
 /* global Components, Services, XPCOMUtils */
 /* exported EXPORTED_SYMBOLS, ModuleGetter */
+
+"use strict";
 
 var EXPORTED_SYMBOLS = [ "ModuleGetter" ];
 
@@ -38,8 +40,6 @@ var ModuleGetter = {
 	 * @param {String} [aName="CommonUtils"] The name of the getter to define on aObject for the module.
 	 */
 	getCommonUtils: function ModuleGetter_getCommonUtils(aObject, aName="CommonUtils"){
-		"use strict";
-
 		XPCOMUtils.defineLazyGetter(aObject, aName, function () {
 			try {
 				var temp = {};
@@ -68,8 +68,6 @@ var ModuleGetter = {
 	 * @param {String} [aName="Log"] The name of the getter to define on aObject for the module.
 	 */
 	getLog: function ModuleGetter_getLog(aObject, aName="Log"){
-		"use strict";
-
 		XPCOMUtils.defineLazyGetter(aObject, aName, function () {
 			try {
 				var temp = {};
@@ -107,8 +105,6 @@ var ModuleGetter = {
 	 * @param {String} [aName="OS"] The name of the getter to define on aObject for the module.
 	 */
 	getosfile: function ModuleGetter_getosfile(aObject, aName="OS"){
-		"use strict";
-
 		XPCOMUtils.defineLazyGetter(aObject, aName, function () {
 			try {
 				var temp = {};
@@ -143,8 +139,6 @@ var ModuleGetter = {
 	 * @param {String} [aName="Promise"] The name of the getter to define on aObject for the module.
 	 */
 	getPromise: function ModuleGetter_getLog(aObject, aName="Promise"){
-		"use strict";
-
 		XPCOMUtils.defineLazyGetter(aObject, aName, function () {
 			try {
 				var temp = {};
@@ -172,8 +166,6 @@ var ModuleGetter = {
 	 * @param {String} [aName="Sqlite"] The name of the getter to define on aObject for the module.
 	 */
 	getSqlite: function ModuleGetter_getSqlite(aObject, aName="Sqlite"){
-		"use strict";
-
 		XPCOMUtils.defineLazyGetter(aObject, aName, function () {
 			try {
 				var temp = {};

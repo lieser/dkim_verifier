@@ -5,7 +5,7 @@
  *  - JSDNS.jsm
  *  - libunbound.jsm
  * 
- * Version: 2.2.0 (27 July 2016)
+ * Version: 2.2.1 (10 November 2016)
  * 
  * Copyright (c) 2013-2016 Philippe Lieser
  * 
@@ -22,7 +22,9 @@
 /* global ModuleGetter, Logging, JSDNS, libunbound */
 /* exported EXPORTED_SYMBOLS, DNS */
 
-const module_version = "2.2.0";
+"use strict";
+
+const module_version = "2.2.1";
 
 var EXPORTED_SYMBOLS = [
 	"DNS"
@@ -53,7 +55,7 @@ var prefs = Services.prefs.getBranch(PREF_BRANCH);
 var log = Logging.getLogger("DNSWrapper");
 
 var DNS = {
-	get version() {"use strict"; return module_version; },
+	get version() {return module_version; },
 
 	/**
 	 * The result of the query.
@@ -84,8 +86,6 @@ var DNS = {
 	 * @return {Promise<DNSResult>}
 	 */
 	resolve: function DNS_resolve(name, rrtype="A") {
-		"use strict";
-
 		let defer = Promise.defer();
 
 		Task.spawn(function () {
@@ -137,8 +137,6 @@ var DNS = {
  * callback for the dns result of JSDNS.jsm
  */
 function dnsCallback(dnsResult, defer, queryError, rcode) {
-	"use strict";
-
 	log.trace("dnsCallback begin");
 
 	let result = {};

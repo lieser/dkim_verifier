@@ -4,7 +4,7 @@
  * Wrapper for the libunbound DNS library. The actual work is done in the
  * ChromeWorker libunboundWorker.jsm.
  *
- * Version: 2.0.0 (24 January 2016)
+ * Version: 2.0.1 (10 November 2016)
  * 
  * Copyright (c) 2013-2016 Philippe Lieser
  * 
@@ -21,7 +21,9 @@
 /* global ModuleGetter, Logging, exceptionToStr, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, libunbound */
 
-const module_version = "2.0.0";
+"use strict";
+
+const module_version = "2.0.1";
 
 var EXPORTED_SYMBOLS = [
 	"libunbound"
@@ -121,7 +123,7 @@ var maxCallId = 0;
 var openCalls = new Map();
 
 let libunbound = {
-	get version() {"use strict"; return module_version; },
+	get version() {return module_version; },
 
 	/**
 	 * The result of the query.
@@ -166,8 +168,6 @@ let libunbound = {
 	 * @return {Promise<ub_result>}
 	 */
 	resolve: function libunbound_resolve(name, rrtype=Constants.RR_TYPE_A) {
-		"use strict";
-
 		let defer = Promise.defer();
 		openCalls.set(++maxCallId, defer);
 		
@@ -186,8 +186,6 @@ let libunbound = {
  * init
  */
 function init() {
-	"use strict";
-
 	load();
 	update_ctx();
 
@@ -201,8 +199,6 @@ function init() {
  * load library
  */
 function load() {
-	"use strict";
-
 	let path;
 	if (prefs.getBoolPref("libunbound.path.relToProfileDir")) {
 		path = OS.Path.join(OS.Constants.Path.profileDir,
@@ -222,8 +218,6 @@ function load() {
  * updates ctx by deleting old an creating new
  */
 function update_ctx() {
-	"use strict";
-	
 	// read config file if specified
 	let conf;
 	if (prefs.getPrefType("libunbound.conf") === prefs.PREF_STRING) {
@@ -270,8 +264,6 @@ function update_ctx() {
  * Handle the callbacks from the ChromeWorker
  */
 libunboundWorker.onmessage = function(msg) {
-	"use strict";
-
 	try {
 		log.trace("Message received from worker: " + msg.data.toSource());
 
@@ -335,8 +327,6 @@ var prefObserver = {
 	 * gets called called whenever an event occurs on the preference
 	 */
 	observe: function Verifier_observe(subject, topic, data) {
-		"use strict";
-
 		// subject is the nsIPrefBranch we're observing (after appropriate QI)
 		// data is the name of the pref that's been changed (relative to aSubject)
 
