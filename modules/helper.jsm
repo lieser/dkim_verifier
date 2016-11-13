@@ -17,6 +17,8 @@
 /* global ModuleGetter, Logging */
 /* exported EXPORTED_SYMBOLS, addrIsInDomain, addrIsInDomain2, domainIsInDomain, exceptionToStr, getBaseDomainFromAddr, getDomainFromAddr, readStringFrom, stringEndsWith, stringEqual, tryGetString, tryGetFormattedString, writeStringToTmpFile, DKIM_SigError, DKIM_InternalError */
 
+"use strict";
+
 var EXPORTED_SYMBOLS = [
 	"dkimStrings",
 	"addrIsInDomain",
@@ -73,8 +75,6 @@ dkimStrings.stringbundle = Services.strings.createBundle(
 );
 dkimStrings.getString = dkimStrings.stringbundle.GetStringFromName;
 dkimStrings.getFormattedString = function (key, strArray) {
-	"use strict";
-
 	return dkimStrings.stringbundle.formatStringFromName(key, strArray, strArray.length);
 };
 
@@ -88,8 +88,6 @@ dkimStrings.getFormattedString = function (key, strArray) {
  * @return {Boolean}
  */
 function addrIsInDomain(addr, domain) {
-	"use strict";
-
 	return stringEndsWith(addr, "@" + domain) ||
 		stringEndsWith(addr, "." + domain);
 }
@@ -104,8 +102,6 @@ function addrIsInDomain(addr, domain) {
  * @return {Boolean}
  */
 function addrIsInDomain2(addr, domain) {
-	"use strict";
-
 	return stringEndsWith(addr, "@" + domain) ||
 		stringEndsWith(addr, "." + domain) ||
 		stringEndsWith(domain, "." + getDomainFromAddr(addr));
@@ -120,8 +116,6 @@ function addrIsInDomain2(addr, domain) {
  * @return {Boolean}
  */
 function domainIsInDomain(domain1, domain2) {
-	"use strict";
-
 	return stringEqual(domain1, domain2) ||
 		stringEndsWith(domain1, "." + domain2);
 }
@@ -132,8 +126,6 @@ function domainIsInDomain(domain1, domain2) {
  * @return {String} formatted error message
  */
 function exceptionToStr(exception) {
-	"use strict";
-
 	log.trace("exceptionToStr begin");
 	
 	if(!exception) {
@@ -187,8 +179,6 @@ function exceptionToStr(exception) {
  * @return {String}
  */
 function getBaseDomainFromAddr(addr, aAdditionalParts=0) {
-	"use strict";
-
 	// var fullDomain = addr.substr(addr.lastIndexOf("@")+1);
 	var nsiURI = Services.io.newURI("http://"+addr, null, null);
 	var res;
@@ -217,8 +207,6 @@ function getBaseDomainFromAddr(addr, aAdditionalParts=0) {
  * @return {String}
  */
 function getDomainFromAddr(addr) {
-	"use strict";
-
 	return addr.substr(addr.lastIndexOf("@")+1);
 }
 
@@ -232,8 +220,6 @@ function getDomainFromAddr(addr) {
  * @return {Promise<String>}
  */
 function readStringFrom(aSource) {
-	"use strict";
-
 	log.trace("readStringFrom begin");
 
 	var defer = Promise.defer();
@@ -267,8 +253,6 @@ function readStringFrom(aSource) {
  * @return {Boolean}
  */
 function stringEndsWith(str, x) {
-	"use strict";
-
 	var index = str.toLowerCase().lastIndexOf(x.toLowerCase());
 	return index >= 0 && index === str.length - x.length;
 }
@@ -283,8 +267,6 @@ function stringEndsWith(str, x) {
  * @return {Boolean}
  */
 function stringEqual(str1, str2) {
-	"use strict";
-
 	return str1.toLowerCase() === str2.toLowerCase();
 }
 
@@ -297,8 +279,6 @@ function stringEqual(str1, str2) {
  * @return {String|null}
  */
 function tryGetString(stringbundle, name) {
-	"use strict";
-
 	if (!name) {
 		return null;
 	}
@@ -321,8 +301,6 @@ function tryGetString(stringbundle, name) {
  * @return {String|null}
  */
 function tryGetFormattedString(stringbundle, name, params = []) {
-	"use strict";
-
 	if (!name) {
 		return null;
 	}
@@ -344,8 +322,6 @@ function tryGetFormattedString(stringbundle, name, params = []) {
  * @param {String} fileName
  */
 function writeStringToTmpFile(string, fileName) {
-	"use strict";
-	
 	var file = Components.classes["@mozilla.org/file/directory_service;1"]
 					.getService(Components.interfaces.nsIProperties)
 					.get("TmpD", Components.interfaces.nsIFile);
@@ -386,8 +362,6 @@ function writeStringToTmpFile(string, fileName) {
  * @return {DKIM_SigError}
  */
 function DKIM_SigError(errorType, errorStrParams = []) {
-	"use strict";
-
 	this.name = dkimStrings.getString("DKIM_SIGERROR");
 	this.errorType = errorType;
 	this.errorStrParams = errorStrParams;
@@ -416,8 +390,6 @@ DKIM_SigError.prototype.constructor = DKIM_SigError;
  * @return {DKIM_InternalError}
  */
 function DKIM_InternalError(message, errorType) {
-	"use strict";
-
 	this.name = dkimStrings.getString("DKIM_INTERNALERROR");
 	this.errorType = errorType;
 	this.message = message ||
