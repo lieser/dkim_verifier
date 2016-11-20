@@ -1,6 +1,7 @@
-1.6.3pre1 [2016-11-10]
+1.6.3 [2016-11-20]
 ------------------
  - fixed incompatibility with Thunderbird 52
+ - updated default rules and favicons
 
 1.6.2 [2016-10-24]
 ------------------
