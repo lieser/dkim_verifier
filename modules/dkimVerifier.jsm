@@ -1110,7 +1110,7 @@ var Verifier = (function() {
 		// return result
 		log.trace("Everything is fine");
 		var verification_result = {
-			version : "1.0",
+			version : "2.0",
 			result : "SUCCESS",
 			sdid : DKIMSignature.d,
 			auid : DKIMSignature.i,

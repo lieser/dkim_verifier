@@ -3,9 +3,9 @@
  * 
  * Authentication Verifier.
  *
- * Version: 1.3.1 (26 September 2016)
+ * Version: 1.3.2 (29 January 2017)
  * 
- * Copyright (c) 2014-2016 Philippe Lieser
+ * Copyright (c) 2014-2017 Philippe Lieser
  * 
  * This software is licensed under the terms of the MIT License.
  * 
@@ -22,7 +22,7 @@
 
 "use strict";
 
-const module_version = "1.3.0";
+const module_version = "1.3.2";
 
 var EXPORTED_SYMBOLS = [
 	"AuthVerifier"
@@ -55,18 +55,31 @@ var AuthVerifier = {
 	get version() { return module_version; },
 
 	/**
-	 * @typedef {Object} AuthResult
+	 * @typedef {Object} AuthResult|AuthResultV2
 	 * @property {String} version
 	 *           result version ("2.1")
 	 * @property {AuthResultDKIM[]} dkim
 	 * @property {ARHResinfo[]} [spf]
 	 * @property {ARHResinfo[]} [dmarc]
 	 * @property {Object} [arh]
+	 *           added in version 2.1
 	 * @property {AuthResultDKIM[]} [arh.dkim]
+	 *           added in version 2.1
 	 */
 
 	/**
-	 * @typedef {Object} AuthResultDKIM
+	 * @typedef {Object} SavedAuthResult|SavedAuthResultV3
+	 * @property {String} version
+	 *           result version ("3.0")
+	 * @property {dkimSigResultV2[]} dkim
+	 * @property {ARHResinfo[]} [spf]
+	 * @property {ARHResinfo[]} [dmarc]
+	 * @property {Object} [arh]
+	 * @property {dkimSigResultV2[]} [arh.dkim]
+	 */
+
+	/**
+	 * @typedef {Object} AuthResultDKIM|AuthResultDKIMV2
 	 * @extends dkimSigResultV2
 	 * @property {Number} res_num
 	 *           10: SUCCESS
@@ -92,10 +105,10 @@ var AuthVerifier = {
 	verify: function _authVerifier_verify(msgHdr, msgURI) {
 		var promise = Task.spawn(function () {
 			// check for saved AuthResult
-			let authResult = loadAuthResult(msgHdr);
-			if (authResult) {
-				authResult = yield addFavicons(authResult);
-				throw new Task.Result(authResult);
+			let savedAuthResult = loadAuthResult(msgHdr);
+			if (savedAuthResult) {
+				throw new Task.Result(
+					yield SavedAuthResult_to_AuthResult(savedAuthResult));
 			}
 
 			// get msgURI if not specified
@@ -117,23 +130,23 @@ var AuthVerifier = {
 
 			if (arhResult) {
 				if (prefs.getBoolPref("arh.replaceAddonResult")) {
-					authResult = arhResult;
+					savedAuthResult = arhResult;
 				} else {
-					authResult = {
-						version: "2.1",
+					savedAuthResult = {
+						version: "3.0",
 						spf: arhResult.spf,
 						dmarc: arhResult.dmarc,
 						arh: {},
 					};
-					authResult.arh.dkim = arhResult.dkim;
+					savedAuthResult.arh.dkim = arhResult.dkim;
 				}
 			} else {
-				authResult = {
-					version: "2.0",
+				savedAuthResult = {
+					version: "3.0",
 				};
 			}
 
-			if (!authResult.dkim || authResult.dkim.length === 0) {
+			if (!savedAuthResult.dkim || savedAuthResult.dkim.length === 0) {
 				// DKIM Verification enabled?
 				let dkimEnable = false;
 				if (!msgHdr.folder) {
@@ -149,21 +162,17 @@ var AuthVerifier = {
 				if (dkimEnable) {
 					// verify DKIM signatures
 					let dkimResultV2 = yield DKIM.Verifier.verify2(msg);
-					authResult.dkim = dkimResultV2.signatures.
-							map(dkimSigResultV2_to_AuthResultDKIM);
+					savedAuthResult.dkim = dkimResultV2.signatures;
 				} else {
-					authResult.dkim = [{version: "2.0", result: "none"}].
-							map(dkimSigResultV2_to_AuthResultDKIM);
+					savedAuthResult.dkim = [{version: "2.0", result: "none"}];
 				}
 			}
 
-			log.debug("authResult: " + authResult.toSource());
-
 			// save AuthResult
-			saveAuthResult(msgHdr, authResult);
+			saveAuthResult(msgHdr, savedAuthResult);
 
-			authResult = yield addFavicons(authResult);
-
+			let authResult = yield SavedAuthResult_to_AuthResult(savedAuthResult)
+			log.debug("authResult: " + authResult.toSource());
 			throw new Task.Result(authResult);
 		});
 		promise.then(null, function onReject(exception) {
@@ -190,10 +199,10 @@ var AuthVerifier = {
 };
 
 /**
- * Get the Authentication-Results header as an AuthResult.
+ * Get the Authentication-Results header as an SavedAuthResult.
  * 
  * @param {Object} msg
- * @return {AuthResult|Null}
+ * @return {SavedAuthResult|Null}
  */
 function getARHResult(msgHdr, msg) {
 	function testAllowedAuthserv(e) {
@@ -284,22 +293,22 @@ function getARHResult(msgHdr, msg) {
 	// sort signatures
 	DKIM.Verifier.sortSignatures(msg, dkimSigResults);
 
-	let authResult = {
-		version: "2.0",
-		dkim: dkimSigResults.map(dkimSigResultV2_to_AuthResultDKIM),
+	let savedAuthResult = {
+		version: "3.0",
+		dkim: dkimSigResults,
 		spf: arhSPF,
 		dmarc: arhDMARC,
 	};
-	return authResult;
+	return savedAuthResult;
 }
 
 /**
  * Save authentication result
  * 
  * @param {nsIMsgDBHdr} msgHdr
- * @param {AuthResult} authResult
+ * @param {SavedAuthResult} savedAuthResult
  */
-function saveAuthResult(msgHdr, authResult) {
+function saveAuthResult(msgHdr, savedAuthResult) {
 	if (prefs.getBoolPref("saveResult")) {
 		// don't save result if message is external
 		if (!msgHdr.folder) {
@@ -307,16 +316,17 @@ function saveAuthResult(msgHdr, authResult) {
 			return;
 		}
 
-		if (authResult === "") {
+		if (savedAuthResult === "") {
 			// reset result
 			log.debug("reset AuthResult result");
 			msgHdr.setStringProperty("dkim_verifier@pl-result", "");
-		} else if (authResult.dkim[0].result === "TEMPFAIL") {
+		} else if (savedAuthResult.dkim[0].result === "TEMPFAIL") {
 			// don't save result if DKIM result is a TEMPFAIL
 			log.debug("result not saved because DKIM result is a TEMPFAIL");
 		} else {
 			log.debug("save AuthResult result");
-			msgHdr.setStringProperty("dkim_verifier@pl-result", JSON.stringify(authResult));
+			msgHdr.setStringProperty("dkim_verifier@pl-result",
+				JSON.stringify(savedAuthResult));
 		}
 	}
 }
@@ -325,7 +335,7 @@ function saveAuthResult(msgHdr, authResult) {
  * Get saved authentication result
  * 
  * @param {nsIMsgDBHdr} msgHdr
- * @return {AuthResult|Null} authResult
+ * @return {SavedAuthResult|Null} savedAuthResult
  */
 function loadAuthResult(msgHdr) {
 	if (prefs.getBoolPref("saveResult")) {
@@ -334,29 +344,39 @@ function loadAuthResult(msgHdr) {
 			return null;
 		}
 
-		let authResult = msgHdr.getStringProperty("dkim_verifier@pl-result");
+		let savedAuthResult = msgHdr.getStringProperty("dkim_verifier@pl-result");
 
-		if (authResult !== "") {
-			log.debug("AuthResult result found: "+authResult);
+		if (savedAuthResult !== "") {
+			log.debug("AuthResult result found: " + savedAuthResult);
 
-			authResult = JSON.parse(authResult);
+			savedAuthResult = JSON.parse(savedAuthResult);
 
-			if (authResult.version.match(/^[0-9]+/)[0] === "1") {
+			if (savedAuthResult.version.match(/^[0-9]+/)[0] === "1") {
 				// old dkimResultV1 (AuthResult version 1)
 				let res = {
-					version: "2.0",
-					dkim: [dkimSigResultV2_to_AuthResultDKIM(
-						dkimResultV1_to_dkimSigResultV2(authResult))],
+					version: "3.0",
+					dkim: [dkimResultV1_to_dkimSigResultV2(savedAuthResult)],
 				};
 				return res;
 			}
-			if (authResult.version.match(/^[0-9]+/)[0] === "2") {
+			if (savedAuthResult.version.match(/^[0-9]+/)[0] === "2") {
 				// AuthResult version 2
-				return authResult;
+				savedAuthResult.version = "3.0";
+				savedAuthResult.dkim = savedAuthResult.dkim.map(
+					AuthResultDKIMV2_to_dkimSigResultV2);
+				if (savedAuthResult.arh && savedAuthResult.arh.dkim) {
+					savedAuthResult.arh.dkim = savedAuthResult.arh.dkim.map(
+						AuthResultDKIMV2_to_dkimSigResultV2);
+				}
+				return savedAuthResult;
+			}
+			if (savedAuthResult.version.match(/^[0-9]+/)[0] === "3") {
+				// SavedAuthResult version 3
+				return savedAuthResult;
 			}
 
 			throw new DKIM_InternalError("AuthResult result has wrong Version (" +
-				authResult.version + ")");
+				savedAuthResult.version + ")");
 		}
 	}
 
@@ -574,6 +594,41 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) {
 	}
 
 	return authResultDKIM;
+}
+
+/**
+ * Convert SavedAuthResult to AuthResult
+ * 
+ * Generator function.
+ * 
+ * @param {SavedAuthResult} savedAuthResult
+ * @return {Promise<AuthResult>} authResult
+ */
+function SavedAuthResult_to_AuthResult(savedAuthResult) {
+	let authResult = savedAuthResult;
+	authResult.version = "2.1";
+	authResult.dkim = authResult.dkim.map(dkimSigResultV2_to_AuthResultDKIM);
+	if (authResult.arh && authResult.arh.dkim) {
+		authResult.arh.dkim = authResult.arh.dkim.map(
+			dkimSigResultV2_to_AuthResultDKIM);
+	}
+	authResult = yield addFavicons(authResult);
+	throw new Task.Result(authResult);
+}
+
+/**
+ * Convert AuthResultV2 to dkimSigResultV2
+ * 
+ * @param {AuthResultDKIMV2} authResultDKIM
+ * @return {Promise<dkimSigResultV2>} dkimSigResultV2
+ */
+function AuthResultDKIMV2_to_dkimSigResultV2(authResultDKIM) {
+	let dkimSigResult = authResultDKIM;
+	dkimSigResult.res_num = undefined;
+	dkimSigResult.result_str = undefined;
+	dkimSigResult.warnings_str = undefined;
+	dkimSigResult.favicon = undefined;
+	return dkimSigResult;
 }
 
 /**

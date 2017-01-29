@@ -1,3 +1,7 @@
+1.6.4pre1 [2017-01-29]
+------------------
+ - fixed saving of result with DNSSEC lock
+
 1.6.3 [2016-11-20]
 ------------------
  - fixed incompatibility with Thunderbird 52
