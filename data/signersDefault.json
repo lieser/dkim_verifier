@@ -1,6 +1,6 @@
 {
 	"versionTable": 1,
-	"versionData": 13,
+	"versionData": 14,
 	"rules": [
 		{
 			"domain": "1und1.de",
@@ -95,7 +95,37 @@
 		}, {
 			"domain": "blizzard.com",
 			"addr": "*@email.blizzard.com",
-			"sdid": "email.blizzard.com",
+			"sdid": "blizzard.com email.blizzard.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
+			"domain": "bosch.com",
+			"addr": "*",
+			"sdid": "bosch.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "bosch.com",
+			"addr": "*@de.bosch.com",
+			"sdid": "bosch.com de.bosch.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
+			"domain": "box.com",
+			"addr": "*",
+			"sdid": "box.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "bueromarkt-ag.de",
+			"addr": "*",
+			"sdid": "bueromarkt-ag.de",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "bueromarkt-ag.de",
+			"addr": "*@newsletter.bueromarkt-ag.de",
+			"sdid": "bueromarkt-ag.de newsletter.bueromarkt-ag.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
@@ -129,6 +159,18 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "dropbox.com",
+			"addr": "*",
+			"sdid": "dropbox.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "dropboxmail.com",
+			"addr": "*",
+			"sdid": "dropboxmail.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "easyjet.com",
 			"addr": "*",
 			"sdid": "easyjet.com",
@@ -137,7 +179,7 @@
 		}, {
 			"domain": "easyjet.com",
 			"addr": "*@email.easyJet.com",
-			"sdid": "email.easyJet.com",
+			"sdid": "easyJet.com email.easyJet.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
@@ -149,13 +191,19 @@
 		}, {
 			"domain": "ebay.de",
 			"addr": "*@reply.ebay.de",
-			"sdid": "reply.ebay.de",
+			"sdid": "ebay.de eply.ebay.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
 			"domain": "ebay-kleinanzeigen.de",
 			"addr": "*",
 			"sdid": "ebay-kleinanzeigen.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "ekosport.de",
+			"addr": "*",
+			"sdid": "ekosport.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -177,6 +225,24 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "forschungsgruppe.de",
+			"addr": "*",
+			"sdid": "forschungsgruppe.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "germanwings.com",
+			"addr": "*",
+			"sdid": "germanwings.com",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "germanwings.com",
+			"addr": "*@info.germanwings.com",
+			"sdid": "germanwings.com info.germanwings.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
 			"domain": "github.com",
 			"addr": "*",
 			"sdid": "github.com sgmail.github.com",
@@ -189,6 +255,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL0"
 		}, {
+			"domain": "gmx.net",
+			"addr": "*@sicher.gmx.net",
+			"sdid": "gmx.net sicher.gmx.net",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "gmxnet.de",
 			"addr": "*",
 			"sdid": "gmxnet.de",
@@ -197,7 +269,7 @@
 		}, {
 			"domain": "gmxnet.de",
 			"addr": "mailings@gmxnet.de",
-			"sdid": "gmxnet.de",
+			"sdid": "gmxnet.de mailings.gmx.net",
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_NEUTRAL"
 		}, {
@@ -215,13 +287,13 @@
 		}, {
 			"domain": "google.com",
 			"addr": "*@accounts.google.com",
-			"sdid": "accounts.google.com",
+			"sdid": "google.com accounts.google.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
 			"domain": "google.com",
 			"addr": "*@plus.google.com",
-			"sdid": "plus.google.com",
+			"sdid": "google.com plus.google.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
@@ -269,7 +341,7 @@
 		}, {
 			"domain": "leagueoflegends.com",
 			"addr": "*@email.leagueoflegends.com",
-			"sdid": "email.leagueoflegends.com",
+			"sdid": "leagueoflegends.com email.leagueoflegends.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -300,6 +372,12 @@
 			"domain": "microsoft.com",
 			"addr": "*",
 			"sdid": "microsoft.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "mozilla-community.org",
+			"addr": "*",
+			"sdid": "mozilla-community.org",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -341,15 +419,27 @@
 		}, {
 			"domain": "paypal.de",
 			"addr": "*@e.paypal.de",
-			"sdid": "e.paypal.de",
+			"sdid": "paypal.de e.paypal.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
 			"domain": "paypal.de",
 			"addr": "*@info.paypal.de",
-			"sdid": "info.paypal.de",
+			"sdid": "paypal.de info.paypal.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
+			"domain": "paypal.de",
+			"addr": "*@mail.paypal.de",
+			"sdid": "paypal.de mail.paypal.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
+			"domain": "perdue.com",
+			"addr": "*",
+			"sdid": "perdue.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
 		}, {
 			"domain": "postpro.net",
 			"addr": "*",
@@ -427,7 +517,7 @@
 			"addr": "*",
 			"sdid": "ubi.com",
 			"ruletype": "NEUTRAL",
-			"priority": "DEFAULT_RULE_ALL"
+			"priority": "DEFAULT_RULE_NEUTRAL"
 		}, {
 			"domain": "ubi.com",
 			"addr": "*@email.ubi.com",
@@ -444,6 +534,12 @@
 			"domain": "uslowrates.com",
 			"addr": "*",
 			"sdid": "uslowrates.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "wikimedia.org",
+			"addr": "*",
+			"sdid": "wikimedia.org",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
