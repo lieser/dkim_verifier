@@ -421,7 +421,10 @@ var Policy = {
 				favicons = JSON.parse(faviconsStr);
 			}
 
-			var url = favicons[getBaseDomainFromAddr(sdid)];
+			var url = favicons[sdid];
+			if (!url) {
+				url = favicons[getBaseDomainFromAddr(sdid)];
+			}
 			if (url) {
 				url = "resource://dkim_verifier_data/favicon/" + url;
 			}
