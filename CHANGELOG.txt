@@ -1,6 +1,7 @@
-1.6.4pre1 [2017-01-29]
+1.6.4pre2 [2017-02-03]
 ------------------
  - fixed saving of result with DNSSEC lock
+ - fixed incompatibility with Thunderbird 52 and libunbound
  - updated default rules and favicons
 
 1.6.3 [2016-11-20]

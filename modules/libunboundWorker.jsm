@@ -4,9 +4,9 @@
  * A ChromeWorker wrapper for the libunbound DNS library.
  * Currently only the TXT resource record is completely supported.
  *
- * Version: 1.0.0 (24 January 2016)
+ * Version: 1.0.1 (03 February 2017)
  * 
- * Copyright (c) 2016 Philippe Lieser
+ * Copyright (c) 2016-2017 Philippe Lieser
  * 
  * This software is licensed under the terms of the MIT License.
  * 
@@ -19,41 +19,36 @@
 /* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
 /* global ctypes, onmessage, postMessage, dump */
 
+"use strict";
+
 
 const log_prefix = "libunboundWorker: ";
 var log = {
 	fatal : function (msg) {
-		"use strict";
 		let toSend = {type: "log", subType: "fatal", message: log_prefix + msg};
 		postMessage(toSend);
 	},
 	error : function (msg) {
-		"use strict";
 		let toSend = {type : "log", subType: "error", message: log_prefix + msg};
 		postMessage(toSend);
 	},
 	warn : function (msg) {
-		"use strict";
 		let toSend = {type : "log", subType: "warn", message: log_prefix + msg};
 		postMessage(toSend);
 	},
 	info : function (msg) {
-		"use strict";
 		let toSend = {type : "log", subType: "info", message: log_prefix + msg};
 		postMessage(toSend);
 	},
 	config : function (msg) {
-		"use strict";
 		let toSend = {type : "log", subType: "config", message: log_prefix + msg};
 		postMessage(toSend);
 	},
 	debug : function (msg) {
-		"use strict";
 		let toSend = {type : "log", subType: "debug", message: log_prefix + msg};
 		postMessage(toSend);
 	},
 	trace : function (msg) {
-		"use strict";
 		let toSend = {type : "log", subType: "trace", message: log_prefix + msg};
 		postMessage(toSend);
 	},
@@ -152,8 +147,6 @@ var ub_strerror;
  * @return {ub_result}
  */
 function resolve(name, rrtype=Constants.RR_TYPE_A) {
-	"use strict";
-
 	if (!ub_resolve) {
 		throw new Error("libunbound not correctly initialized (ub_resolve missing)");
 	}
@@ -251,8 +244,6 @@ function resolve(name, rrtype=Constants.RR_TYPE_A) {
  * @param {String} path
 */
 function load(path) {
-	"use strict";
-
 	// if library was already loaded, do a cleanup first before reloading it
 	if (lib) {
 		// delete old context
@@ -353,8 +344,6 @@ function load(path) {
  * @param {String} trustAnchor
  */
 function update_ctx(conf, debuglevel, getNameserversFromOS, nameservers, trustAnchor) {
-	"use strict";
-
 	if (!ub_ctx_create) {
 		throw new Error("libunbound not correctly initialized (ub_ctx_create missing)");
 	}
@@ -418,8 +407,6 @@ function update_ctx(conf, debuglevel, getNameserversFromOS, nameservers, trustAn
  * Handle the requests from libunbound.jsm
  */
 onmessage = function(msg) {
-	"use strict";
-
   log.trace("Message received from main script: " + msg.data.toSource());
 	try {
 		try {
