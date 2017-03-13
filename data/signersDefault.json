@@ -1,6 +1,6 @@
 {
 	"versionTable": 1,
-	"versionData": 14,
+	"versionData": 15,
 	"rules": [
 		{
 			"domain": "1und1.de",
@@ -191,7 +191,7 @@
 		}, {
 			"domain": "ebay.de",
 			"addr": "*@reply.ebay.de",
-			"sdid": "ebay.de eply.ebay.de",
+			"sdid": "ebay.de reply.ebay.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
