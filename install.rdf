@@ -102,5 +102,19 @@
 			</Description>
 		</em:localized>
 
-	</Description>     
+    <em:localized>
+			<Description>
+				<em:locale>ja-JP</em:locale>
+				<em:name>DKIM Verifier</em:name>
+				<em:translator>SAKURAI Kenichi</em:translator>
+				<em:description>メールの DKIM 署名を検証します</em:description>
+				<em:contributor>Joshua Tauberer (DNS Library)</em:contributor>
+				<em:contributor>Tom Wu (RSA Library)</em:contributor>
+				<em:contributor>Kenji Urushima (RSA verification and ASN1 Library)</em:contributor>
+				<em:contributor>Nils Maier</em:contributor>
+				<em:contributor>Pier Carlo Chiodi AKA pierky</em:contributor>
+			</Description>
+		</em:localized>
+
+	</Description>
 </RDF>
