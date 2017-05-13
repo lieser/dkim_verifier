@@ -1,0 +1,12 @@
+<!ENTITY signersRuleHelp.title "署名者ルールのヘルプ">
+
+<!ENTITY domain.description "差出人アドレスのベースドメインにマッチする。例えば、「email.example.co.uk」のベースドメインは「example.co.uk」。">
+<!ENTITY listID.description "メーリングリスト経由でメールを受信した場合、リスト ID にマッチする。リスト ID ヘッダの「&lt;」と「&gt;」に囲まれた部分のみが実際のリスト ID となることに注意すること。一度にマッチするのはドメインとリスト ID のいずれか一方のみ。">
+<!ENTITY addr.description "差出人アドレスにマッチする。0 文字以上にマッチさせるには「*」を使うこと。">
+<!ENTITY sdid.description "メールが署名されているべきドメイン。空の場合、どの SDID でも許可される。スペースで区切ることにより複数のドメインを指定可能です。">
+<!ENTITY ruletype.description "ルールのタイプ。">
+<!ENTITY ruletype.1.description "メールは特定の SDID により署名されている必要がある。">
+<!ENTITY ruletype.2.description "メールは署名されている必要はない。もし署名されている場合は、特定の SDID による署名でなければならない。">
+<!ENTITY ruletype.3.description "メールは署名されている必要はない。もし署名されている場合は、特定の SDID による署名でなければならない。無効な署名のメールは、署名無しとして扱う。">
+<!ENTITY priority.description "ルールの優先度。複数のルールがマッチした場合は、最も優先度が高いルールが適用される。">
+<!ENTITY enabled.description "ルールが有効な場合 1、無効な場合 0。">
