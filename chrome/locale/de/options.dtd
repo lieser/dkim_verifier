@@ -29,9 +29,9 @@
 <!ENTITY saveResult.label "Speichere das Ergebnis der Überprüfung ">
 
 <!ENTITY general.policy.label "Policy">
-<!ENTITY policy.signRules.enable.label "Überprüfe ob E-Mail signiert seien sollte">
+<!ENTITY policy.signRules.enable.label "Überprüfe ob E-Mail signiert sein sollte">
 <!ENTITY policy.signRules.checkDefaultRules.label "Benutze Standardregeln">
-<!ENTITY policy.signRules.autoAddRule.label "Füge automatisch Regeln basierend auf denn angesehenen DKIM signierten E-Mails hinzu">
+<!ENTITY policy.signRules.autoAddRule.label "Füge automatisch Regeln basierend auf den angesehenen DKIM signierten E-Mails hinzu">
 <!ENTITY policy.signRules.autoAddRule.onlyIfFromAddressInSDID.label "Nur wenn die Absenderadresse in der SDID ist">
 <!ENTITY policy.signRules.autoAddRule.for.value.0.label "für Absenderadresse">
 <!ENTITY policy.signRules.autoAddRule.for.value.1.label "für Subdomain">
@@ -40,7 +40,7 @@
 <!ENTITY error.policy.wrong_sdid.asWarning.label "Behandel falsche SDID als Warnung anstatt als Fehler">
 <!ENTITY viewSigners.label "Signierregeln">
 <!ENTITY viewSignerDefaults.label "Standard Signierregeln">
-<!ENTITY policy.DMARC.shouldBeSigned.enable.label "Benutze DMARC um heuristisch zu bestimmen ob eine E-Mail signiert seien sollte">
+<!ENTITY policy.DMARC.shouldBeSigned.enable.label "Benutze DMARC um heuristisch zu bestimmen ob eine E-Mail signiert sein sollte">
 
 
 <!ENTITY display.label "Anzeige">
