@@ -2,6 +2,7 @@
 ------------------
  - libunbound resolver: added ability to specify multiple trust anchors
  - libunbound resolver: added new root trust anchor (key tag 20326)
+ - updated default rules and favicons
 
 1.6.5 [2017-05-14]
 ------------------

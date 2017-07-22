@@ -1,6 +1,6 @@
 {
 	"versionTable": 1,
-	"versionData": 15,
+	"versionData": 16,
 	"rules": [
 		{
 			"domain": "1und1.de",
@@ -14,6 +14,12 @@
 			"sdid": "adlice.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "airberlin.com",
+			"addr": "*",
+			"sdid": "airberlin.com news.airberlin.com service.airberlin.com",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_NEUTRAL"
 		}, {
 			"domain": "airbnb.com",
 			"addr": "*",
@@ -156,8 +162,8 @@
 			"domain": "dhl.de",
 			"addr": "*",
 			"sdid": "dhl.de",
-			"ruletype": "ALL",
-			"priority": "DEFAULT_RULE_ALL"
+			"ruletype": "NEUTRAL",
+			"priority": "USERINSERT_RULE_NEUTRAL"
 		}, {
 			"domain": "dropbox.com",
 			"addr": "*",
@@ -465,6 +471,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "sky.de",
+			"addr": "*",
+			"sdid": "sky.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "sophos.com",
 			"addr": "*",
 			"sdid": "sophos.com",
@@ -486,6 +498,12 @@
 			"domain": "stackoverflow.com",
 			"addr": "*",
 			"sdid": "stackoverflow.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "stackoverflow.email",
+			"addr": "*",
+			"sdid": "stackoverflow.email",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
