@@ -1,4 +1,4 @@
-1.7.0pre1 [2017-07-22]
+1.7.0 [2017-07-22]
 ------------------
  - libunbound resolver: added ability to specify multiple trust anchors
  - libunbound resolver: added new root trust anchor (key tag 20326)

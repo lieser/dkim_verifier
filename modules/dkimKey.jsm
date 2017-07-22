@@ -25,8 +25,6 @@ var EXPORTED_SYMBOLS = [
 	"Key"
 ];
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
@@ -312,7 +310,7 @@ function getKeyFromDNS(d_val, s_val) {
 			throw new DKIM_InternalError(null, "DKIM_DNSERROR_DNSSEC_BOGUS");
 		}
 		if (result.rcode !== 0 && result.rcode !== 3 /* NXDomain */) {
-			log.info("DNS query failed with result: " + result.toSource())
+			log.info("DNS query failed with result: " + result.toSource());
 			throw new DKIM_InternalError("rcode: " + result.rcode,
 				"DKIM_DNSERROR_SERVER_ERROR");
 		}
