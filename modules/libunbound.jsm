@@ -4,9 +4,9 @@
  * Wrapper for the libunbound DNS library. The actual work is done in the
  * ChromeWorker libunboundWorker.jsm.
  *
- * Version: 2.0.1 (10 November 2016)
+ * Version: 2.1.0 (19 July 2017)
  * 
- * Copyright (c) 2013-2016 Philippe Lieser
+ * Copyright (c) 2013-2017 Philippe Lieser
  * 
  * This software is licensed under the terms of the MIT License.
  * 
@@ -247,7 +247,7 @@ function update_ctx() {
 	});
 	
 	// add root trust anchor
-	let trustAnchor = prefs.getCharPref("dnssec.trustAnchor");
+	let trustAnchors = prefs.getCharPref("dnssec.trustAnchor").split(";");
 
 	libunboundWorker.postMessage({
 		callId: ++maxCallId,
@@ -256,7 +256,7 @@ function update_ctx() {
 		debuglevel: debuglevel,
 		getNameserversFromOS: getNameserversFromOS,
 		nameservers: nameservers,
-		trustAnchor: trustAnchor,
+		trustAnchors: trustAnchors,
 	});
 }
 

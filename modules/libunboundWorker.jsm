@@ -4,7 +4,7 @@
  * A ChromeWorker wrapper for the libunbound DNS library.
  * Currently only the TXT resource record is completely supported.
  *
- * Version: 1.0.1 (03 February 2017)
+ * Version: 2.0.0 (19 July 2017)
  * 
  * Copyright (c) 2016-2017 Philippe Lieser
  * 
@@ -161,7 +161,7 @@ function resolve(name, rrtype=Constants.RR_TYPE_A) {
 	);
 	if (retval !== 0) {
 		log.debug("resolve error: "+ub_strerror(retval).readString()+"\n");
-		return null;
+		throw new Error("resolve error: "+ub_strerror(retval).readString());
 	}
 
 	// array of converted rdata
@@ -341,9 +341,9 @@ function load(path) {
  * @param {Number} debuglevel
  * @param {Boolean} getNameserversFromOS
  * @param {String[]} nameservers
- * @param {String} trustAnchor
+ * @param {String[]} trustAnchors
  */
-function update_ctx(conf, debuglevel, getNameserversFromOS, nameservers, trustAnchor) {
+function update_ctx(conf, debuglevel, getNameserversFromOS, nameservers, trustAnchors) {
 	if (!ub_ctx_create) {
 		throw new Error("libunbound not correctly initialized (ub_ctx_create missing)");
 	}
@@ -394,11 +394,13 @@ function update_ctx(conf, debuglevel, getNameserversFromOS, nameservers, trustAn
 		}
 	});
 
-	// add root trust anchor
-	if((retval=ub_ctx_add_ta(ctx, trustAnchor)) !== 0) {
-		throw new Error("error in ub_ctx_add_ta: " +
-			ub_strerror(retval).readString() + ". errno: " + ctypes.errno);
-	}
+	// add root trust anchors
+	trustAnchors.forEach(function(element /*, index, array*/) {
+		if((retval=ub_ctx_add_ta(ctx, element.trim())) !== 0) {
+			throw new Error("error in ub_ctx_add_ta: " +
+				ub_strerror(retval).readString() + ". errno: " + ctypes.errno);
+		}
+	});
 
 	log.debug("context created");
 }
@@ -407,7 +409,7 @@ function update_ctx(conf, debuglevel, getNameserversFromOS, nameservers, trustAn
  * Handle the requests from libunbound.jsm
  */
 onmessage = function(msg) {
-  log.trace("Message received from main script: " + msg.data.toSource());
+	log.trace("Message received from main script: " + msg.data.toSource());
 	try {
 		try {
 			let res;
@@ -423,7 +425,7 @@ onmessage = function(msg) {
 				case "update_ctx":
 					update_ctx(msg.data.conf, msg.data.debuglevel,
 						msg.data.getNameserversFromOS, msg.data.nameservers,
-						msg.data.trustAnchor);
+						msg.data.trustAnchors);
 					break;
 				default:
 					throw new Error("unknown method " + msg.data.method);
@@ -431,7 +433,8 @@ onmessage = function(msg) {
 
 			// return result if available
 			if (res !== undefined) {
-				log.trace("Posting result back to main script: " + res.toSource());
+				log.trace("Posting result back to main script: " +
+					(res ? res.toSource() : res));
 				postMessage({
 					callId: msg.data.callId,
 					result: res,

@@ -1,9 +1,9 @@
 /*
  * dkimKey.jsm
  * 
- * Version: 1.1.0 (17 May 2016)
+ * Version: 1.1.1 (22 July 2017)
  * 
- * Copyright (c) 2013-2016 Philippe Lieser
+ * Copyright (c) 2013-2017 Philippe Lieser
  * 
  * This software is licensed under the terms of the MIT License.
  * 
@@ -19,7 +19,7 @@
 /* global exceptionToStr, DKIM_SigError, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, Key */
 
-const module_version = "1.1.0";
+const module_version = "1.1.1";
 
 var EXPORTED_SYMBOLS = [
 	"Key"
@@ -312,7 +312,9 @@ function getKeyFromDNS(d_val, s_val) {
 			throw new DKIM_InternalError(null, "DKIM_DNSERROR_DNSSEC_BOGUS");
 		}
 		if (result.rcode !== 0 && result.rcode !== 3 /* NXDomain */) {
-			throw new DKIM_InternalError(result.error, "DKIM_DNSERROR_SERVER_ERROR");
+			log.info("DNS query failed with result: " + result.toSource())
+			throw new DKIM_InternalError("rcode: " + result.rcode,
+				"DKIM_DNSERROR_SERVER_ERROR");
 		}
 		if (result.data === null || result.data[0] === "") {
 			throw new DKIM_SigError("DKIM_SIGERROR_NOKEY");
