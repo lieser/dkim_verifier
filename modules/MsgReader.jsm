@@ -3,9 +3,9 @@
  * 
  * Reads and parses a message.
  *
- * Version: 2.0.1 (11 July 2015)
+ * Version: 2.1.0pre1 (14 November 2017)
  * 
- * Copyright (c) 2014-2015 Philippe Lieser
+ * Copyright (c) 2014-2017 Philippe Lieser
  * 
  * This software is licensed under the terms of the MIT License.
  * 
@@ -15,14 +15,14 @@
 
 // options for JSHint
 /* jshint strict:true, globalstrict:true, esnext:true, moz:true, smarttabs:true, unused:true */
-/* global Components, Promise */
+/* global Components */
 /* global ModuleGetter, Logging */
-/* global DKIM_InternalError */
+/* global Deferred, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, MsgReader */
 
 "use strict";
 
-const module_version = "2.0.1";
+const module_version = "2.1.0pre1";
 
 var EXPORTED_SYMBOLS = [
 	"MsgReader"
@@ -33,7 +33,6 @@ const Ci = Components.interfaces;
 const Cu = Components.utils;
 
 Cu.import("resource://dkim_verifier/ModuleGetter.jsm");
-ModuleGetter.getPromise(this);
 
 Cu.import("resource://dkim_verifier/logging.jsm");
 Cu.import("resource://dkim_verifier/helper.jsm");
@@ -54,7 +53,7 @@ var MsgReader = {
 	 * @throws DKIM_InternalError
 	 */
 	read: function _MsgReader_read(msgURI) {
-		let res_defer = Promise.defer();
+		let res_defer = new Deferred();
 		let res = {};
 		res.headerPlain = "";
 		res.bodyPlain = "";

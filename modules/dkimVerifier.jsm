@@ -4,9 +4,9 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  * 
- * Version: 2.1.2 (24 October 2016)
+ * Version: 2.2.0pre1 (14 November 2017)
  * 
- * Copyright (c) 2013-2016 Philippe Lieser
+ * Copyright (c) 2013-2017 Philippe Lieser
  * 
  * This software is licensed under the terms of the MIT License.
  * 
@@ -26,12 +26,12 @@
 // options for JSHint
 /* jshint strict:true, esnext:true, moz:true, smarttabs:true */
 /* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
-/* global Components, Services, Task */
+/* global Components, Services */
 /* global Logging, Key, Policy, MsgReader */
 /* global dkimStrings, addrIsInDomain2, domainIsInDomain, exceptionToStr, stringEndsWith, stringEqual, writeStringToTmpFile, DKIM_SigError, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, Verifier */
 
-const module_version = "2.1.2";
+const module_version = "2.2.0pre1";
 
 var EXPORTED_SYMBOLS = [
 	"Verifier"
@@ -42,7 +42,6 @@ const Ci = Components.interfaces;
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
-Cu.import("resource://gre/modules/Task.jsm"); // Requires Gecko 17.0
 
 Cu.import("resource://dkim_verifier/logging.jsm");
 Cu.import("resource://dkim_verifier/helper.jsm");
@@ -984,14 +983,13 @@ var Verifier = (function() {
 	/**
 	 * Verifying a single DKIM signature
 	 * 
-	 * @remark Generator function.
 	 * @param {Object} msg
 	 * @param {Object} DKIMSignature
 	 * @return {dkimSigResultV2}
 	 * @throws DKIM_SigError
 	 * @throws DKIM_InternalError
 	 */
-	function verifySignature(msg, DKIMSignature) {
+	async function verifySignature(msg, DKIMSignature) {
 		// check SDID and AUID
 		Policy.checkSDID(msg.DKIMSignPolicy.sdid, msg.from, DKIMSignature.d,
 			DKIMSignature.i, DKIMSignature.warnings);
@@ -1018,7 +1016,7 @@ var Verifier = (function() {
 		}
 
 		log.trace("Receiving DNS key for DKIM-Signature ...");
-		DKIMSignature.keyQueryResult = yield Key.getKey(DKIMSignature.d, DKIMSignature.s);
+		DKIMSignature.keyQueryResult = await Key.getKey(DKIMSignature.d, DKIMSignature.s);
 		log.trace("Received DNS key for DKIM-Signature");
 
 		// if key is not signed by DNSSEC
@@ -1118,17 +1116,16 @@ var Verifier = (function() {
 			warnings : DKIMSignature.warnings,
 			keySecure : DKIMSignature.keyQueryResult.secure,
 		};
-		throw new Task.Result(verification_result);
+		return verification_result;
 	}
 
 	/**
 	 * processes signatures
 	 * 
-	 * @remark Generator function.
 	 * @param {Object} msg
 	 * @return {dkimSigResultV2[]}
 	 */
-	function processSignatures(msg) {
+	async function processSignatures(msg) {
 		let iDKIMSignatureIdx = 0;
 		let DKIMSignature;
 		// contains the result of all DKIM-Signatures which have been verified
@@ -1138,7 +1135,7 @@ var Verifier = (function() {
 			log.debug(msg.headerFields.get("dkim-signature").length +
 				" DKIM-Signatures found.");
 		} else {
-			throw new Task.Result(sigResults);
+			return sigResults;
 		}
 
 		// RFC6376 - 3.5.  The DKIM-Signature Header Field
@@ -1157,7 +1154,7 @@ var Verifier = (function() {
 				parseDKIMSignature(DKIMSignature);
 				log.debug("Parsed DKIM-Signature " + (iDKIMSignatureIdx+1) + ": " +
 					DKIMSignature.toSource());
-				sigRes = yield verifySignature(msg, DKIMSignature);
+				sigRes = await verifySignature(msg, DKIMSignature);
 				log.debug("Verified DKIM-Signature " + (iDKIMSignatureIdx+1));
 			} catch(e) {
 				sigRes = handleExeption(e, msg, DKIMSignature);
@@ -1169,7 +1166,7 @@ var Verifier = (function() {
 			sigResults.push(sigRes);
 		}
 
-		throw new Task.Result(sigResults);
+		return sigResults;
 	}
 
 	/**
@@ -1285,13 +1282,13 @@ var that = {
 	 * @param {dkimResultCallback} dkimResultCallback
 	 */
 	verify: function Verifier_verify(msgURI, dkimResultCallback) {
-		let promise = Task.spawn(function () {
+		let promise = (async () => {
 			let msg;
 			let result;
 			try {
-				msg = yield that.createMsg(msgURI);
+				msg = await that.createMsg(msgURI);
 
-				let sigResults = yield processSignatures(msg);
+				let sigResults = await processSignatures(msg);
 
 				// check if DKIMSignatureHeader exist
 				checkForSignatureExsistens(msg, sigResults);
@@ -1321,7 +1318,7 @@ var that = {
 			}
 
 			dkimResultCallback(msg.msgURI, result);
-		});
+		})();
 		promise.then(null, function onReject(exception) {
 			log.fatal("verify: " + exceptionToStr(exception));
 		});
@@ -1341,14 +1338,14 @@ var that = {
 	 * @return {Promise<dkimResultV2>}
 	 */
 	verify2: function Verifier_verify2(msg) {
-		var promise = Task.spawn(function () {
+		var promise = (async () => {
 			let res = {};
 			res.version = "2.0";
-			res.signatures = yield processSignatures(msg);
+			res.signatures = await processSignatures(msg);
 			checkForSignatureExsistens(msg, res.signatures);
 			that.sortSignatures(msg, res.signatures);
-			throw new Task.Result(res);
-		});
+			return res;
+		})();
 		promise.then(null, function onReject(exception) {
 			log.warn("verify2: " + exceptionToStr(exception));
 		});
@@ -1369,9 +1366,9 @@ var that = {
 	 *         .DKIMSignPolicy {DKIMSignPolicy}
 	 */
 	createMsg: function Verifier_createMsg(msgURI) {
-		var promise = Task.spawn(function () {
+		var promise = (async () => {
 			// read msg
-			let msg = yield MsgReader.read(msgURI);
+			let msg = await MsgReader.read(msgURI);
 			msg.msgURI = msgURI;
 
 			// parse the header
@@ -1393,10 +1390,10 @@ var that = {
 			}
 
 			// check if msg should be signed by DKIM
-			msg.DKIMSignPolicy = yield Policy.shouldBeSigned(msg.from, msg.listId);
+			msg.DKIMSignPolicy = await Policy.shouldBeSigned(msg.from, msg.listId);
 
-			throw new Task.Result(msg);
-		});
+			return msg;
+		})();
 		promise.then(null, function onReject(exception) {
 			log.warn("createMsg: " + exceptionToStr(exception));
 		});

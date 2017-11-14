@@ -4,7 +4,7 @@
  * Wrapper for the libunbound DNS library. The actual work is done in the
  * ChromeWorker libunboundWorker.jsm.
  *
- * Version: 2.1.0 (19 July 2017)
+ * Version: 2.2.0pre1 (14 November 2017)
  * 
  * Copyright (c) 2013-2017 Philippe Lieser
  * 
@@ -18,12 +18,12 @@
 /* jshint strict:true, moz:true */
 /* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
 /* global Components, OS, Services, ChromeWorker */
-/* global ModuleGetter, Logging, exceptionToStr, DKIM_InternalError */
+/* global ModuleGetter, Logging, Deferred, exceptionToStr, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, libunbound */
 
 "use strict";
 
-const module_version = "2.0.1";
+const module_version = "2.2.0pre1";
 
 var EXPORTED_SYMBOLS = [
 	"libunbound"
@@ -35,7 +35,6 @@ Cu.import("resource://gre/modules/Services.jsm");
 
 Cu.import("resource://dkim_verifier/ModuleGetter.jsm");
 ModuleGetter.getosfile(this);
-ModuleGetter.getPromise(this);
 
 Cu.import("resource://dkim_verifier/logging.jsm");
 Cu.import("resource://dkim_verifier/helper.jsm");
@@ -166,7 +165,7 @@ let libunbound = {
 	 * @return {Promise<ub_result>}
 	 */
 	resolve: function libunbound_resolve(name, rrtype=Constants.RR_TYPE_A) {
-		let defer = Promise.defer();
+		let defer = new Deferred();		
 		openCalls.set(++maxCallId, defer);
 		
 		libunboundWorker.postMessage({

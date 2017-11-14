@@ -3,7 +3,7 @@
  * 
  * Authentication Verifier.
  *
- * Version: 1.3.2 (29 January 2017)
+ * Version: 1.4.0pre1 (14 November 2017)
  * 
  * Copyright (c) 2014-2017 Philippe Lieser
  * 
@@ -14,15 +14,15 @@
  */
 
 // options for JSHint
-/* jshint strict:true, moz:true, smarttabs:true, unused:true */
-/* global Components, Services, Task, MailServices, fixIterator */
+/* jshint strict:true, moz:true, esversion:6, smarttabs:true, unused:true */
+/* global Components, Services, MailServices, fixIterator */
 /* global Logging, ARHParser */
 /* global dkimStrings, domainIsInDomain, exceptionToStr, getDomainFromAddr, tryGetFormattedString, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, AuthVerifier */
 
 "use strict";
 
-const module_version = "1.3.2";
+const module_version = "1.4.0pre1";
 
 var EXPORTED_SYMBOLS = [
 	"AuthVerifier"
@@ -33,7 +33,6 @@ const Ci = Components.interfaces;
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
-Cu.import("resource://gre/modules/Task.jsm");
 Cu.import("resource:///modules/mailServices.js");
 Cu.import("resource:///modules/iteratorUtils.jsm");
 
@@ -103,12 +102,11 @@ var AuthVerifier = {
 	 * @return {Promise<AuthResult>}
 	 */
 	verify: function _authVerifier_verify(msgHdr, msgURI) {
-		var promise = Task.spawn(function () {
+		let promise = (async () => {
 			// check for saved AuthResult
 			let savedAuthResult = loadAuthResult(msgHdr);
 			if (savedAuthResult) {
-				throw new Task.Result(
-					yield SavedAuthResult_to_AuthResult(savedAuthResult));
+				return SavedAuthResult_to_AuthResult(savedAuthResult);
 			}
 
 			// get msgURI if not specified
@@ -117,7 +115,7 @@ var AuthVerifier = {
 			}
 
 			// create msg object
-			let msg = yield DKIM.Verifier.createMsg(msgURI);
+			let msg = await DKIM.Verifier.createMsg(msgURI);
 
 			// ignore must be signed for outgoing messages
 			if (msg.DKIMSignPolicy.shouldBeSigned && isOutgoing(msgHdr)) {
@@ -161,7 +159,7 @@ var AuthVerifier = {
 				}
 				if (dkimEnable) {
 					// verify DKIM signatures
-					let dkimResultV2 = yield DKIM.Verifier.verify2(msg);
+					let dkimResultV2 = await DKIM.Verifier.verify2(msg);
 					savedAuthResult.dkim = dkimResultV2.signatures;
 				} else {
 					savedAuthResult.dkim = [{version: "2.0", result: "none"}];
@@ -171,10 +169,10 @@ var AuthVerifier = {
 			// save AuthResult
 			saveAuthResult(msgHdr, savedAuthResult);
 
-			let authResult = yield SavedAuthResult_to_AuthResult(savedAuthResult)
+			let authResult = await SavedAuthResult_to_AuthResult(savedAuthResult);
 			log.debug("authResult: " + authResult.toSource());
-			throw new Task.Result(authResult);
-		});
+			return authResult;
+		})();
 		promise.then(null, function onReject(exception) {
 			log.warn(exceptionToStr(exception));
 		});
@@ -188,9 +186,9 @@ var AuthVerifier = {
 	 * @return {Promise<Undefined>}
 	 */
 	resetResult: function _authVerifier_resetResult(msgHdr) {
-		var promise = Task.spawn(function () {
+		var promise = (async () => {
 			saveAuthResult(msgHdr, "");
-		});
+		})();
 		promise.then(null, function onReject(exception) {
 			log.warn(exceptionToStr(exception));
 		});
@@ -599,12 +597,10 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) {
 /**
  * Convert SavedAuthResult to AuthResult
  * 
- * Generator function.
- * 
  * @param {SavedAuthResult} savedAuthResult
  * @return {Promise<AuthResult>} authResult
  */
-function SavedAuthResult_to_AuthResult(savedAuthResult) {
+async function SavedAuthResult_to_AuthResult(savedAuthResult) {
 	let authResult = savedAuthResult;
 	authResult.version = "2.1";
 	authResult.dkim = authResult.dkim.map(dkimSigResultV2_to_AuthResultDKIM);
@@ -612,8 +608,7 @@ function SavedAuthResult_to_AuthResult(savedAuthResult) {
 		authResult.arh.dkim = authResult.arh.dkim.map(
 			dkimSigResultV2_to_AuthResultDKIM);
 	}
-	authResult = yield addFavicons(authResult);
-	throw new Task.Result(authResult);
+	return addFavicons(authResult);
 }
 
 /**
@@ -634,20 +629,18 @@ function AuthResultDKIMV2_to_dkimSigResultV2(authResultDKIM) {
 /**
  * Add favicons to the DKIM results.
  * 
- * Generator function.
- * 
  * @param {AuthResult} authResult
  * @return {Promise<AuthResult>} authResult
  */
-function addFavicons(authResult) {
+async function addFavicons(authResult) {
 	if (!prefs.getBoolPref("display.favicon.show")) {
-		throw new Task.Result(authResult);
+		return authResult;
 	}
 	for (let i = 0; i < authResult.dkim.length; i++) {
 		authResult.dkim[i].favicon =
-			yield DKIM.Policy.getFavicon(authResult.dkim[i].sdid);
+			await DKIM.Policy.getFavicon(authResult.dkim[i].sdid);
 	}
-	throw new Task.Result(authResult);
+	return authResult;
 }
 
 /**

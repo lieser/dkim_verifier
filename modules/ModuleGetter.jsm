@@ -1,9 +1,9 @@
 /*
  * ModuleGetter.jsm
  *
- * Version: 1.0.1 (10 November 2016)
+ * Version: 2.0.0pre1 (14 November 2017)
  *
- * Copyright (c) 2013-2016 Philippe Lieser
+ * Copyright (c) 2013-2017 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -129,33 +129,6 @@ var ModuleGetter = {
 		});
 	},
 
-	/**
-	 * Defines a getter for the Promise.jsm module.
-	 * 
-	 * Gecko 24 and later: "resource://gre/modules/Promise.jsm"
-	 * Otherwise: "resource://gre/modules/commonjs/promise/core.js"
-	 * 
-	 * @param {Object} aObject The object to define the lazy getter on.
-	 * @param {String} [aName="Promise"] The name of the getter to define on aObject for the module.
-	 */
-	getPromise: function ModuleGetter_getLog(aObject, aName="Promise"){
-		XPCOMUtils.defineLazyGetter(aObject, aName, function () {
-			try {
-				var temp = {};
-				
-				if (Services.vc.compare(Services.appinfo.platformVersion, "24.0-1") >= 0) {
-					Cu.import("resource://gre/modules/Promise.jsm", temp);
-				} else {
-					Cu.import("resource://gre/modules/commonjs/promise/core.js", temp);
-				}
-				
-				return temp.Promise;
-			} catch (e) {
-				Cu.reportError(e);
-			}
-		});
-	},
-	
 	/**
 	 * Defines a getter for the Sqlite.jsm module.
 	 * 

@@ -13,12 +13,10 @@
  */
 
 // options for JSHint
-/* jshint strict:true, moz:true */
+/* jshint strict:true, moz:true, esversion:6 */
+/* jshint expr:true */
 /* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
 /* global Components, Cu, Services, gMessageListeners, gFolderDisplay, gExpandedHeaderView, createHeaderEntry, syncGridColumnWidths, currentHeaderData, gMessageDisplay */
-/* global Task */
-
-Cu.import("resource://gre/modules/Task.jsm"); // Requires Gecko 17.0
 
 // namespace
 var DKIM_Verifier = {};
@@ -540,7 +538,7 @@ var that = {
 	 * starts verification
 	 */
 	onEndHeaders: function Display_onEndHeaders() {
-		let promise = Task.spawn(function () {
+		let promise = (async () => {
 			log.trace("onEndHeaders Task begin");
 			// return if msg is RSS feed or news
 			if (gFolderDisplay.selectedMessageIsFeed || gFolderDisplay.selectedMessageIsNews) {
@@ -555,7 +553,7 @@ var that = {
 			var msgHdr = gFolderDisplay.selectedMessage;
 			
 			// get authentication result
-			let authResult = yield DKIM_Verifier.AuthVerifier.verify(msgHdr, msgURI);
+			let authResult = await DKIM_Verifier.AuthVerifier.verify(msgHdr, msgURI);
 			
 			// only show result if it's for the currently viewed message
 			var currentMsgURI = gFolderDisplay.selectedMessageUris[0];
@@ -563,7 +561,7 @@ var that = {
 				displayResult(authResult);
 			}
 			log.trace("onEndHeaders Task end");
-		});
+		})();
 		promise.then(null, function onReject(exception) {
 			handleExeption(exception);
 		});
@@ -599,7 +597,7 @@ var that = {
 	 * policyAddUserException
 	 */
 	policyAddUserException : function Display_policyAddUserException() {
-		let promise = Task.spawn(function () {
+		let promise = (async () => {
 			log.trace("policyAddUserException Task");
 			// get from address
 			var mime2DecodedAuthor = gMessageDisplay.displayedMessage.author;
@@ -607,10 +605,10 @@ var that = {
 				createInstance(Components.interfaces.nsIMsgHeaderParser);
 			var from = msgHeaderParser.extractHeaderAddressMailboxes(mime2DecodedAuthor);
 
-			yield DKIM_Verifier.Policy.addUserException(from);
+			await DKIM_Verifier.Policy.addUserException(from);
 			
 			that.reverify();
-		});
+		})();
 		promise.then(null, function onReject(exception) {
 			log.fatal(DKIM_Verifier.exceptionToStr(exception));
 		});
@@ -620,13 +618,13 @@ var that = {
 	 * mark stored DKIM key as secure
 	 */
 	markKeyAsSecure : function Display_markKeyAsSecure() {
-		let promise = Task.spawn(function () {
+		let promise = (async () => {
 			log.trace("markKeyAsSecure Task")
-			yield DKIM_Verifier.Key.markKeyAsSecure(
+			await DKIM_Verifier.Key.markKeyAsSecure(
 				header.dkimResult.sdid, header.dkimResult.selector);
 			
 			that.reverify();
-		});
+		})();
 		promise.then(null, function onReject(exception) {
 			log.fatal(DKIM_Verifier.exceptionToStr(exception));
 		});
@@ -636,13 +634,13 @@ var that = {
 	 * update stored DKIM key
 	 */
 	updateKey : function Display_updateKey() {
-		let promise = Task.spawn(function () {
+		let promise = (async () => {
 			log.trace("updateKey Task")
-			yield DKIM_Verifier.Key.deleteKey(
+			await DKIM_Verifier.Key.deleteKey(
 				header.dkimResult.sdid, header.dkimResult.selector);
 			
 			that.reverify();
-		});
+		})();
 		promise.then(null, function onReject(exception) {
 			log.fatal(DKIM_Verifier.exceptionToStr(exception));
 		});

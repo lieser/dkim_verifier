@@ -8,16 +8,14 @@
    onload="setView();">
 
 <script type="text/javascript">
-Components.utils.import("resource://gre/modules/Task.jsm");
-
 Components.utils.import("resource://dkim_verifier/SQLiteTreeView.jsm");
 Components.utils.import("resource://dkim_verifier/dkimPolicy.jsm");
 
 function setView(){
-	Task.spawn(function () {
-		yield Policy.initDB();
+	(async () => {
+		await Policy.initDB();
 		document.getElementById('my-tree').view = new SQLiteTreeView("dkimPolicy.sqlite","signersDefault",["domain","addr","sdid","ruletype","priority"]);
-	});
+	})();
 }
 </script>
 

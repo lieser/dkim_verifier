@@ -1,9 +1,9 @@
 /*
  * helper.jsm
  *
- * Version: 1.4.2 (13 November 2016)
+ * Version: 1.5.0pre1 (14 November 2017)
  * 
- * Copyright (c) 2013-2016 Philippe Lieser
+ * Copyright (c) 2013-2017 Philippe Lieser
  * 
  * This software is licensed under the terms of the MIT License.
  * 
@@ -13,13 +13,14 @@
 
 // options for JSHint
 /* jshint strict:true, moz:true, smarttabs:true */
-/* global Components, FileUtils, NetUtil, Promise, Services, CommonUtils */
+/* global Components, FileUtils, NetUtil, Services, CommonUtils */
 /* global ModuleGetter, Logging */
 /* exported EXPORTED_SYMBOLS, addrIsInDomain, addrIsInDomain2, domainIsInDomain, exceptionToStr, getBaseDomainFromAddr, getDomainFromAddr, readStringFrom, stringEndsWith, stringEqual, tryGetString, tryGetFormattedString, writeStringToTmpFile, DKIM_SigError, DKIM_InternalError */
 
 "use strict";
 
 var EXPORTED_SYMBOLS = [
+	"Deferred",
 	"dkimStrings",
 	"addrIsInDomain",
 	"addrIsInDomain2",
@@ -49,7 +50,6 @@ Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://dkim_verifier/ModuleGetter.jsm");
 ModuleGetter.getCommonUtils(this);
 ModuleGetter.getLog(this);
-ModuleGetter.getPromise(this);
 
 Cu.import("resource://dkim_verifier/logging.jsm");
 
@@ -58,6 +58,29 @@ var log = Logging.getLogger("Helper");
 var eTLDService = Components.classes["@mozilla.org/network/effective-tld-service;1"]
 	.getService(Components.interfaces.nsIEffectiveTLDService);
 
+
+/**
+ * @typedef {Object} Deferred
+ * @property {Promise} promise
+ * @property {Function} resolve
+ *           Function to call to resolve promise
+ * @property {Function} reject
+ *           Function to call to reject promise
+ */
+
+ /**
+ * Deferred Promise
+ * 
+ * @constructor
+ *  
+ * @return {Deferred}
+ */
+function Deferred() {
+	this.promise = new Promise((resolve, reject) => {
+		this.resolve = resolve;
+		this.reject = reject;
+	});
+}
 
 var exceptionStr;
 if (Services.vc.compare(Services.appinfo.platformVersion, "46.0-1") >= 0) {
@@ -222,7 +245,7 @@ function getDomainFromAddr(addr) {
 function readStringFrom(aSource) {
 	log.trace("readStringFrom begin");
 
-	var defer = Promise.defer();
+	var defer = new Deferred();
 
 	NetUtil.asyncFetch(aSource, function(inputStream, status) {
 		if (!Components.isSuccessCode(status)) {
