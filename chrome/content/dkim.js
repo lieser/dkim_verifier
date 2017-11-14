@@ -174,7 +174,7 @@ DKIM_Verifier.Display = (function() {
 	 * @param {AuthResult} result
 	 */
 	function displayResult(result) {
-		log.trace("displayResult begin")
+		log.trace("displayResult begin");
 		header.dkimResult = result.dkim[0];
 		statusbarpanel.dkimStatus = result.dkim[0].result;
 		that.setCollapsed(result.dkim[0].res_num);
@@ -183,7 +183,9 @@ DKIM_Verifier.Display = (function() {
 
 		switch(result.dkim[0].res_num) {
 			case 10:
-				if (result.dkim[0].warnings_str.length === 0) {
+				if (!result.dkim[0].warnings_str ||
+				    result.dkim[0].warnings_str.length === 0)
+				{
 					highlightHeader("success");
 				} else {
 					setWarnings(result.dkim[0].warnings_str);
@@ -244,7 +246,7 @@ DKIM_Verifier.Display = (function() {
 		if (result.arh && result.arh.dkim && result.arh.dkim[0]) {
 			header.arhDkimValue = result.arh.dkim[0].result_str;
 		}
-		log.trace("displayResult end")
+		log.trace("displayResult end");
 	}
 	
 var that = {
@@ -356,7 +358,7 @@ var that = {
 	 */
 	startup : function Display_startup() {
 		try {
-			log.trace("startup begin")
+			log.trace("startup begin");
 			// get xul elements
 			headerTooltips = document.getElementById("dkim-verifier-header-tooltips");
 			statusbarpanel = document.getElementById("dkim-verifier-statusbarpanel");
@@ -410,7 +412,7 @@ var that = {
 				};
 				tabmail.registerTabMonitor(that.tabMonitor);
 			}
-			log.trace("startup end")
+			log.trace("startup end");
 		} catch (e) {
 			log.fatal(DKIM_Verifier.exceptionToStr(e));
 		}
@@ -469,7 +471,7 @@ var that = {
 	 */
 	onBeforeShowHeaderPane : function Display_onBeforeShowHeaderPane() {
 		try {
-			log.trace("onBeforeShowHeaderPane begin")
+			log.trace("onBeforeShowHeaderPane begin");
 			that.initHeaderEntry();
 			var reverifyDKIMSignature = document.
 				getElementById("dkim_verifier.reverifyDKIMSignature");
@@ -496,7 +498,7 @@ var that = {
 					reverifyDKIMSignature.disabled = false;
 				}
 			}
-			log.trace("onBeforeShowHeaderPane end")
+			log.trace("onBeforeShowHeaderPane end");
 		} catch (e) {
 			log.fatal(DKIM_Verifier.exceptionToStr(e));
 		}
@@ -507,7 +509,7 @@ var that = {
 	 */
 	onStartHeaders: function Display_onStartHeaders() {
 		try {
-			log.trace("onStartHeaders begin")
+			log.trace("onStartHeaders begin");
 			setWarnings([]);
 			header.spfValue = "";
 			header.dmarcValue = "";
@@ -528,7 +530,7 @@ var that = {
 			if (updateKeyButton) {
 				updateKeyButton.disabled = true;
 			}
-			log.trace("onStartHeaders end")
+			log.trace("onStartHeaders end");
 		} catch (e) {
 			log.fatal(DKIM_Verifier.exceptionToStr(e));
 		}
@@ -539,7 +541,7 @@ var that = {
 	 */
 	onEndHeaders: function Display_onEndHeaders() {
 		let promise = Task.spawn(function () {
-			log.trace("onEndHeaders Task begin")
+			log.trace("onEndHeaders Task begin");
 			// return if msg is RSS feed or news
 			if (gFolderDisplay.selectedMessageIsFeed || gFolderDisplay.selectedMessageIsNews) {
 				that.setCollapsed(50);
@@ -560,7 +562,7 @@ var that = {
 			if (currentMsgURI === msgURI) {
 				displayResult(authResult);
 			}
-			log.trace("onEndHeaders Task end")
+			log.trace("onEndHeaders Task end");
 		});
 		promise.then(null, function onReject(exception) {
 			handleExeption(exception);
@@ -579,7 +581,7 @@ var that = {
 	 * Reverify DKIM Signature
 	 */
 	reverify : function Display_reverify() {
-		log.trace("reverify")
+		log.trace("reverify");
 		// get msgHdr
 		var msgHdr = gFolderDisplay.selectedMessage;
 
@@ -598,7 +600,7 @@ var that = {
 	 */
 	policyAddUserException : function Display_policyAddUserException() {
 		let promise = Task.spawn(function () {
-			log.trace("policyAddUserException Task")
+			log.trace("policyAddUserException Task");
 			// get from address
 			var mime2DecodedAuthor = gMessageDisplay.displayedMessage.author;
 			var msgHeaderParser = Components.classes["@mozilla.org/messenger/headerparser;1"].
