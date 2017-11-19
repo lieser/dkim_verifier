@@ -15,7 +15,7 @@
 /* jshint strict:true, moz:true, smarttabs:true */
 /* jshint -W069 */ // "['{a}'] is better written in dot notation."
 /* global Components, Services, Sqlite */
-/* global ModuleGetter, Logging, DMARC */
+/* global Logging, DMARC */
 /* global addrIsInDomain, Deferred, exceptionToStr, getBaseDomainFromAddr, readStringFrom, stringEndsWith, stringEqual, DKIM_SigError, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, Policy */
 
@@ -30,9 +30,7 @@ const Ci = Components.interfaces;
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
-
-Cu.import("resource://dkim_verifier/ModuleGetter.jsm");
-ModuleGetter.getSqlite(this);
+Cu.import("resource://gre/modules/Sqlite.jsm");
 
 Cu.import("resource://dkim_verifier/logging.jsm");
 Cu.import("resource://dkim_verifier/helper.jsm");

@@ -3,9 +3,9 @@
  * 
  * Implements a nsITreeView for a SQLite DB table.
  *
- * Version: 1.0.0 (21 November 2013)
+ * Version: 1.1.0pre1 (19 November 2017)
  * 
- * Copyright (c) 2013 Philippe Lieser
+ * Copyright (c) 2013-2017 Philippe Lieser
  * 
  * This software is licensed under the terms of the MIT License.
  * 
@@ -17,7 +17,6 @@
 /* jshint strict:true, moz:true */
 /* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
 /* global Components, OS, FileUtils, Services */
-/* global ModuleGetter */
 /* exported EXPORTED_SYMBOLS, SQLiteTreeView */
 
 var EXPORTED_SYMBOLS = [
@@ -29,10 +28,8 @@ const Ci = Components.interfaces;
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/FileUtils.jsm");
+Cu.import("resource://gre/modules/osfile.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
-
-Cu.import("resource://dkim_verifier/ModuleGetter.jsm");
-ModuleGetter.getosfile(this);
 
 
 /**

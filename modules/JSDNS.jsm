@@ -4,7 +4,7 @@
  * Based on Joshua Tauberer's DNS LIBRARY IN JAVASCRIPT
  * from "Sender Verification Extension" version 0.9.0.6
  * 
- * Version: 1.3.0 (27 July 2016)
+ * Version: 1.4.0pre1 (19 November 2017)
  * 
  * Copyright (c) 2013-2016 Philippe Lieser
  * 
@@ -54,6 +54,10 @@
 /*
  * Changelog:
  * ==========
+ *
+ * 1.4.0
+ * -----
+ *  - no longer needs ModuleGetter.jsm
  *
  * 1.3.0
  * -----
@@ -135,7 +139,6 @@
 /* jshint -W064 */ //"Missing 'new' prefix when invoking a constructor."
 /* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
 /* global Components, Log, Services */
-/* global ModuleGetter */
 /* exported EXPORTED_SYMBOLS, JSDNS */
 
 
@@ -147,10 +150,8 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
+Cu.import("resource://gre/modules/Log.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
-
-Cu.import("resource://dkim_verifier/ModuleGetter.jsm");
-ModuleGetter.getLog(this);
 
 
 const LOG_NAME = "DKIM_Verifier.JSDNS";

@@ -15,7 +15,7 @@
 /* jshint strict:true, moz:true */
 /* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
 /* global Components, Services, Sqlite */
-/* global ModuleGetter, Logging, DNS */
+/* global Logging, DNS */
 /* global Deferred, exceptionToStr, DKIM_SigError, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, Key */
 
@@ -28,9 +28,7 @@ var EXPORTED_SYMBOLS = [
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
-
-Cu.import("resource://dkim_verifier/ModuleGetter.jsm");
-ModuleGetter.getSqlite(this);
+Cu.import("resource://gre/modules/Sqlite.jsm");
 
 Cu.import("resource://dkim_verifier/logging.jsm");
 Cu.import("resource://dkim_verifier/helper.jsm");

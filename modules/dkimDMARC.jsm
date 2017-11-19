@@ -20,7 +20,7 @@
 /* jshint strict:true, moz:true, smarttabs:true */
 /* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
 /* global Components, Services, XPCOMUtils */
-/* global ModuleGetter, Logging, Verifier, DNS */
+/* global Logging, Verifier, DNS */
 /* global exceptionToStr, getBaseDomainFromAddr, getDomainFromAddr, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, DMARC */
 
@@ -36,8 +36,6 @@ const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
-
-Cu.import("resource://dkim_verifier/ModuleGetter.jsm");
 
 Cu.import("resource://dkim_verifier/logging.jsm");
 Cu.import("resource://dkim_verifier/helper.jsm");

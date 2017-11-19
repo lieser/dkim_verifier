@@ -1,9 +1,9 @@
 /*
  * logging.jsm
  *
- * Version: 1.0.1 (23 August 2014)
+ * Version: 1.1.0pre1 (19 November 2017)
  *
- * Copyright (c) 2013-2014 Philippe Lieser
+ * Copyright (c) 2013-2017 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -15,8 +15,7 @@
 /* jshint strict:true, esnext:true */
 /* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
 /* jshint -W069 */ // "['{a}'] is better written in dot notation."
-/* global Components, Services, Log4Moz */
-/* global ModuleGetter */
+/* global Components, Services, Log */
 /* exported EXPORTED_SYMBOLS, Logging */
 
 var EXPORTED_SYMBOLS = [ "Logging" ];
@@ -25,10 +24,8 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
+Cu.import("resource://gre/modules/Log.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
-
-Cu.import("resource://dkim_verifier/ModuleGetter.jsm");
-ModuleGetter.getLog(this, "Log4Moz");
 
 
 // "Fatal", "Error", "Warn", "Info", "Config", "Debug", "Trace", "All"
@@ -52,9 +49,9 @@ var Logging = {
 		"use strict";
 
 		if (loggerName) {
-			return Log4Moz.repository.getLogger(LOG_NAME + "." + loggerName);
+			return Log.repository.getLogger(LOG_NAME + "." + loggerName);
 		} else {
-			return Log4Moz.repository.getLogger(LOG_NAME);
+			return Log.repository.getLogger(LOG_NAME);
 		}
 	},
 	
@@ -69,20 +66,20 @@ var Logging = {
 	addAppenderTo: function Logging_addAppenderTo(loggerName, subPrefBranch){
 		"use strict";
 
-		var logger = Log4Moz.repository.getLogger(loggerName);
+		var logger = Log.repository.getLogger(loggerName);
 		var formatter = new SimpleFormatter();
 		var cappender;
 		var dappender;
 		if (prefs.getPrefType(subPrefBranch+"logging.console") === prefs.PREF_STRING) {
 			// A console appender outputs to the JS Error Console
-			cappender = new Log4Moz.ConsoleAppender(formatter);
-			cappender.level = Log4Moz.Level[prefs.getCharPref(subPrefBranch+"logging.console")];
+			cappender = new Log.ConsoleAppender(formatter);
+			cappender.level = Log.Level[prefs.getCharPref(subPrefBranch+"logging.console")];
 			logger.addAppender(cappender);
 		}
 		if (prefs.getPrefType(subPrefBranch+"logging.dump") === prefs.PREF_STRING) {
 			// A dump appender outputs to standard out
-			dappender = new Log4Moz.DumpAppender(formatter);
-			dappender.level = Log4Moz.Level[prefs.getCharPref(subPrefBranch+"logging.dump")];
+			dappender = new Log.DumpAppender(formatter);
+			dappender.level = Log.Level[prefs.getCharPref(subPrefBranch+"logging.dump")];
 			logger.addAppender(dappender);
 		}
 		
@@ -115,7 +112,7 @@ function SimpleFormatter(dateFormat) {
 	if (dateFormat)
 		this.dateFormat = dateFormat;
 }
-SimpleFormatter.prototype = Object.create(Log4Moz.Formatter.prototype, {
+SimpleFormatter.prototype = Object.create(Log.Formatter.prototype, {
 	dateFormat: {
 		get: function() {
 			"use strict";
@@ -155,11 +152,11 @@ function setupLogging(loggerName) {
 		"use strict";
 	
 		// Loggers are hierarchical, lowering this log level will affect all output
-		var logger = Log4Moz.repository.getLogger(loggerName);
+		var logger = Log.repository.getLogger(loggerName);
 		if (prefs.getBoolPref("debug")) {
-			logger.level = Log4Moz.Level["All"];
+			logger.level = Log.Level["All"];
 		} else {
-			logger.level = Log4Moz.Level[LOG_LEVEL];
+			logger.level = Log.Level[LOG_LEVEL];
 		}
 
 		var capp;
@@ -203,20 +200,20 @@ PrefObserver.prototype = {
 			case "debug":
 				if (this.logger) {
 					if (prefs.getBoolPref("debug")) {
-						this.logger.level = Log4Moz.Level["All"];
+						this.logger.level = Log.Level["All"];
 					} else {
-						this.logger.level = Log4Moz.Level[LOG_LEVEL];
+						this.logger.level = Log.Level[LOG_LEVEL];
 					}
 				}
 				break;
 			case "logging.console":
 				if (this.capp) {
-					this.capp.level = Log4Moz.Level[prefs.getCharPref("logging.console")];
+					this.capp.level = Log.Level[prefs.getCharPref("logging.console")];
 				}
 				break;
 			case "logging.dump":
 				if (this.dapp) {
-					this.dapp.level = Log4Moz.Level[prefs.getCharPref("logging.dump")];
+					this.dapp.level = Log.Level[prefs.getCharPref("logging.dump")];
 				}
 				break;
 		}

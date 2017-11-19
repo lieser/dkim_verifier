@@ -16,7 +16,7 @@
 // options for JSHint
 /* jshint strict:true, globalstrict:true, esnext:true, moz:true, smarttabs:true, unused:true */
 /* global Components */
-/* global ModuleGetter, Logging */
+/* global Logging */
 /* global Deferred, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, MsgReader */
 
@@ -31,8 +31,6 @@ var EXPORTED_SYMBOLS = [
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
-
-Cu.import("resource://dkim_verifier/ModuleGetter.jsm");
 
 Cu.import("resource://dkim_verifier/logging.jsm");
 Cu.import("resource://dkim_verifier/helper.jsm");

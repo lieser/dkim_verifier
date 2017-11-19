@@ -18,7 +18,7 @@
 /* jshint strict:true, moz:true */
 /* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
 /* global Components, OS, Services, ChromeWorker */
-/* global ModuleGetter, Logging, Deferred, exceptionToStr, DKIM_InternalError */
+/* global Logging, Deferred, exceptionToStr, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, libunbound */
 
 "use strict";
@@ -31,10 +31,8 @@ var EXPORTED_SYMBOLS = [
 
 const Cu = Components.utils;
 
+Cu.import("resource://gre/modules/osfile.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
-
-Cu.import("resource://dkim_verifier/ModuleGetter.jsm");
-ModuleGetter.getosfile(this);
 
 Cu.import("resource://dkim_verifier/logging.jsm");
 Cu.import("resource://dkim_verifier/helper.jsm");

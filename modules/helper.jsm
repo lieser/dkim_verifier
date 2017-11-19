@@ -14,7 +14,7 @@
 // options for JSHint
 /* jshint strict:true, moz:true, smarttabs:true */
 /* global Components, FileUtils, NetUtil, Services, CommonUtils */
-/* global ModuleGetter, Logging */
+/* global Logging */
 /* exported EXPORTED_SYMBOLS, addrIsInDomain, addrIsInDomain2, domainIsInDomain, exceptionToStr, getBaseDomainFromAddr, getDomainFromAddr, readStringFrom, stringEndsWith, stringEqual, tryGetString, tryGetFormattedString, writeStringToTmpFile, DKIM_SigError, DKIM_InternalError */
 
 "use strict";
@@ -44,12 +44,10 @@ const Cr = Components.results;
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/FileUtils.jsm");
+Cu.import("resource://gre/modules/Log.jsm");
 Cu.import("resource://gre/modules/NetUtil.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
-
-Cu.import("resource://dkim_verifier/ModuleGetter.jsm");
-ModuleGetter.getCommonUtils(this);
-ModuleGetter.getLog(this);
+Cu.import("resource://services-common/utils.js");
 
 Cu.import("resource://dkim_verifier/logging.jsm");
 
@@ -82,12 +80,7 @@ function Deferred() {
 	});
 }
 
-var exceptionStr;
-if (Services.vc.compare(Services.appinfo.platformVersion, "46.0-1") >= 0) {
-	exceptionStr = Log.exceptionStr;
-} else {
-	exceptionStr = CommonUtils.exceptionStr;
-}
+var exceptionStr = Log.exceptionStr;
 
 /**
  * DKIM stringbundle with the same access methods as XUL:stringbundle
@@ -150,7 +143,8 @@ function domainIsInDomain(domain1, domain2) {
  */
 function exceptionToStr(exception) {
 	log.trace("exceptionToStr begin");
-	
+	log.debug(exception.toSource());
+
 	if(!exception) {
 		log.fatal("exceptionToStr: exception undefined or null");
 		exception = new Error();
@@ -158,6 +152,7 @@ function exceptionToStr(exception) {
 
 	var str = exceptionStr(exception);
 	log.trace(str);
+	log.debug(str);
 	
 	// cut stack trace from Sqlite.jsm, promise.js, Promise.jsm, Task.jsm calls
 	var posStackTrace = str.lastIndexOf("Stack trace: ");

@@ -19,7 +19,7 @@
 /* jshint strict:true, moz:true */
 /* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
 /* global Components, Services, XPCOMUtils */
-/* global ModuleGetter, Logging, JSDNS, libunbound */
+/* global Logging, JSDNS, libunbound */
 /* exported EXPORTED_SYMBOLS, DNS */
 
 "use strict";
@@ -36,8 +36,6 @@ const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
-
-Cu.import("resource://dkim_verifier/ModuleGetter.jsm");
 
 Cu.import("resource://dkim_verifier/logging.jsm");
 XPCOMUtils.defineLazyModuleGetter(this, "JSDNS",

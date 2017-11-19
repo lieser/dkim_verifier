@@ -661,22 +661,10 @@ function isOutgoing(msgHdr) {
 
 	// return true if one of the servers identities contain the from address
 	let author = msgHdr.mime2DecodedAuthor;
-	let identities;
-	if (MailServices.accounts.getIdentitiesForServer) {
-		identities = MailServices.accounts.
+	let	identities = MailServices.accounts.
 			getIdentitiesForServer(msgHdr.folder.server);
-	} else {
-		// for older versions of Thunderbird
-		identities = MailServices.accounts.
-			GetIdentitiesForServer(msgHdr.folder.server);
-	}
 	for (let identity in fixIterator(identities, Ci.nsIMsgIdentity)) {
-		if (author.includes) {
-			if (author.includes(identity.email)) {
-				return true;
-			}
-		} else if (author.search(identity.email) !== -1){
-			// for older versions of Thunderbird
+		if (author.includes(identity.email)) {
 			return true;
 		}
 	}
