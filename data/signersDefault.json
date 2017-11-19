@@ -1,6 +1,6 @@
 {
 	"versionTable": 1,
-	"versionData": 16,
+	"versionData": 17,
 	"rules": [
 		{
 			"domain": "1und1.de",
@@ -17,7 +17,7 @@
 		}, {
 			"domain": "airberlin.com",
 			"addr": "*",
-			"sdid": "airberlin.com news.airberlin.com service.airberlin.com",
+			"sdid": "airberlin.com news.airberlin.com service.airberlin.com plusgrade.airberlin.com",
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_NEUTRAL"
 		}, {
@@ -161,7 +161,7 @@
 		}, {
 			"domain": "dhl.de",
 			"addr": "*",
-			"sdid": "dhl.de",
+			"sdid": "dhl.de info.dhl.de",
 			"ruletype": "NEUTRAL",
 			"priority": "USERINSERT_RULE_NEUTRAL"
 		}, {
@@ -284,6 +284,12 @@
 			"sdid": "gmxnet.de",
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_NEUTRAL"
+		}, {
+			"domain": "gog.com",
+			"addr": "*",
+			"sdid": "gog.com email.gog.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
 		}, {
 			"domain": "google.com",
 			"addr": "*",
@@ -459,6 +465,18 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "sbroker.de",
+			"addr": "*",
+			"sdid": "sbroker.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "sbroker.info",
+			"addr": "*",
+			"sdid": "sbroker.info reply.sbroker.info",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "sent.com",
 			"addr": "*",
 			"sdid": "sent.com",
@@ -473,7 +491,7 @@
 		}, {
 			"domain": "sky.de",
 			"addr": "*",
-			"sdid": "sky.de",
+			"sdid": "sky.de infoservice.sky.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {

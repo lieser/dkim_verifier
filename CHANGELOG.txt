@@ -2,6 +2,7 @@
 ------------------
  - now requires at least Thunderbird 52
  - fixed incompatibility with Thunderbird 57
+ - updated default rules and favicons
 
 1.7.0 [2017-07-22]
 ------------------
