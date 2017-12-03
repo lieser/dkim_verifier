@@ -15,15 +15,12 @@
 /* jshint strict:true, esnext:true */
 /* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
 /* jshint -W069 */ // "['{a}'] is better written in dot notation."
+/* eslint strict: ["warn", "function"] */
 /* global Components, Services, Log */
 /* exported EXPORTED_SYMBOLS, Logging */
 
 var EXPORTED_SYMBOLS = [ "Logging" ];
 
-// @ts-ignore
-const Cc = Components.classes;
-// @ts-ignore
-const Ci = Components.interfaces;
 // @ts-ignore
 const Cu = Components.utils;
 

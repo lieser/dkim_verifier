@@ -30,8 +30,6 @@ var EXPORTED_SYMBOLS = [
 ];
 
 // @ts-ignore
-const Cc = Components.classes;
-// @ts-ignore
 const Ci = Components.interfaces;
 // @ts-ignore
 const Cu = Components.utils;
@@ -313,6 +311,7 @@ function getARHResult(msgHdr, msg) {
  * 
  * @param {nsIMsgDBHdr} msgHdr
  * @param {SavedAuthResult|Null} savedAuthResult
+ * @return {void}
  */
 function saveAuthResult(msgHdr, savedAuthResult) {
 	if (prefs.getBoolPref("saveResult")) {
@@ -404,7 +403,7 @@ function arhDKIM_to_dkimSigResultV2(arhDKIM) {
 		case "none":
 			dkimSigResult.result = "none";
 			break;
-		case "pass":
+		case "pass": {
 			dkimSigResult.result = "SUCCESS";
 			dkimSigResult.warnings = [];
 			let sdid = arhDKIM.propertys.header.d;
@@ -419,6 +418,7 @@ function arhDKIM_to_dkimSigResultV2(arhDKIM) {
 				dkimSigResult.auid = auid;
 			}
 			break;
+		}
 		case "fail":
 		case "policy":
 		case "neutral":
@@ -484,11 +484,11 @@ function dkimResultV1_to_dkimSigResultV2(dkimResultV1) {
  * @return {AuthResultDKIM}
  * @throws DKIM_InternalError
  */
-function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) {
+function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-line complexity
 	/** @type {IAuthVerifier.AuthResultDKIM} */
 	let authResultDKIM = dkimSigResult;
 	switch(dkimSigResult.result) {
-		case "SUCCESS":
+		case "SUCCESS": {
 			authResultDKIM.res_num = 10;
 			let keySecureStr = "";
 			if (dkimSigResult.keySecure &&
@@ -501,6 +501,7 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) {
 				return tryGetFormattedString(dkimStrings, e.name, e.params) || e.name;
 			});
 			break;
+		}
 		case "TEMPFAIL":
 			authResultDKIM.res_num = 20;
 			authResultDKIM.result_str =
@@ -509,7 +510,7 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) {
 				dkimSigResult.errorType ||
 				dkimStrings.getString("DKIM_INTERNALERROR_NAME");
 			break;
-		case "PERMFAIL":
+		case "PERMFAIL": {
 			if (dkimSigResult.hideFail) {
 				authResultDKIM.res_num = 35;
 			} else {
@@ -594,6 +595,7 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) {
 				authResultDKIM.result_str = dkimStrings.getString("PERMFAIL_NO_REASON");
 			}
 			break;
+		}
 		case "none":
 			authResultDKIM.res_num = 40;
 			authResultDKIM.result_str = dkimStrings.getString("NOSIG");
@@ -660,7 +662,7 @@ async function addFavicons(authResult) {
  * Checks if a message is outgoing
  * 
  * @param {nsIMsgDBHdr} msgHdr
- * @return Boolean
+ * @return {boolean}
  */
 function isOutgoing(msgHdr) {
 	if (!msgHdr.folder) {

@@ -14,6 +14,7 @@
 // options for JSHint
 /* jshint strict:true, moz:true, smarttabs:true */
 /* jshint -W069 */ // "['{a}'] is better written in dot notation."
+/* eslint strict: ["warn", "function"] */
 /* global Components, Services, Sqlite */
 /* global Logging, DMARC */
 /* global addrIsInDomain, Deferred, exceptionToStr, getBaseDomainFromAddr, readStringFrom, stringEndsWith, stringEqual, DKIM_SigError, DKIM_InternalError */
@@ -26,10 +27,6 @@ var EXPORTED_SYMBOLS = [
 	"Policy"
 ];
 
-// @ts-ignore
-const Cc = Components.classes;
-// @ts-ignore
-const Ci = Components.interfaces;
 // @ts-ignore
 const Cu = Components.utils;
 
@@ -375,6 +372,7 @@ var Policy = {
 	 * @param {String} sdid
 	 * @param {String} auid
 	 * @param {{name: String, params?: any[]}[]} warnings
+	 * @return {void}
 	 * @throws DKIM_SigError
 	 */
 	checkSDID: function Policy_checkSDID(allowedSDIDs, from, sdid, auid, warnings) {
@@ -604,6 +602,7 @@ async function addRule(domain, addr, sdid, ruletype, priority) {
 
 /**
  * init module
+ * @return {void}
  */
 function init() {
 	"use strict";

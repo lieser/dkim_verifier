@@ -184,6 +184,7 @@ let libunbound = {
 
 /**
  * init
+ * @return {void}
  */
 function init() {
 	load();
@@ -197,6 +198,7 @@ function init() {
 
 /**
  * load library
+ * @return {void}
  */
 function load() {
 	let path;
@@ -216,6 +218,7 @@ function load() {
 
 /**
  * updates ctx by deleting old an creating new
+ * @return {void}
  */
 function update_ctx() {
 	// read config file if specified

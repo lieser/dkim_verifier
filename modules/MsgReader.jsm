@@ -65,7 +65,7 @@ var MsgReader = {
 		{
 			headerFinished: false,
 
-			QueryInterface : function(iid)  {
+			QueryInterface : function(iid) {
 						if (iid.equals(Components.interfaces.nsIStreamListener) ||
 							iid.equals(Components.interfaces.nsISupports)) {
 							return this;

@@ -29,10 +29,6 @@ var EXPORTED_SYMBOLS = [
 ];
 
 // @ts-ignore
-const Cc = Components.classes;
-// @ts-ignore
-const Ci = Components.interfaces;
-// @ts-ignore
 const Cu = Components.utils;
 
 Cu.import("resource://dkim_verifier/logging.jsm");
@@ -228,6 +224,8 @@ function parseResinfo(str) {
 
 /**
  *  Object wrapper around a string.
+ * @constructor
+ * @param {string} s
  */
 function RefString(s) {
     this.value = s;

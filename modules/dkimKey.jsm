@@ -14,6 +14,7 @@
 // options for JSHint
 /* jshint strict:true, moz:true */
 /* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
+/* eslint strict: ["warn", "function"] */
 /* global Components, Services, Sqlite */
 /* global Logging, DNS */
 /* global Deferred, exceptionToStr, DKIM_SigError, DKIM_InternalError */
@@ -178,7 +179,7 @@ var Key = {
 				if (tmp) {
 					res.gotFrom = "Storage";
 				} else {
-					tmp =  await getKeyFromDNS(d_val, s_val);
+					tmp = await getKeyFromDNS(d_val, s_val);
 					res.gotFrom = "DNS";
 					setKeyInDB(d_val, s_val, tmp.key, tmp.secure);
 				}
@@ -354,7 +355,7 @@ async function getKeyFromDB(d_val, s_val) {
 		if (sqlRes.length > 0) {
 			res = {};
 			res.key = sqlRes[0].getResultByName("key");
-			res.secure = (sqlRes[0].getResultByName("secure") === 1);
+			res.secure = sqlRes[0].getResultByName("secure") === 1;
 			await conn.executeCached(
 				"UPDATE keys\n" +
 				"SET lastUsedAt = DATE('now') WHERE\n" +
@@ -417,6 +418,7 @@ function setKeyInDB(d_val, s_val, key, secure) {
 
 /**
  * init
+ * @return {void}
  */
 function init() {
 	"use strict";

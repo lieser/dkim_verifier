@@ -32,10 +32,6 @@ var EXPORTED_SYMBOLS = [
 ];
 
 // @ts-ignore
-const Cc = Components.classes;
-// @ts-ignore
-const Ci = Components.interfaces;
-// @ts-ignore
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
@@ -92,7 +88,7 @@ var DNS = {
 		switch (prefs.getIntPref("resolver")) {
 			case 1:
 				return asyncJSDNS_QueryDNS(name, rrtype);
-			case 2:
+			case 2: {
 				let res = await libunbound.
 					resolve(name, libunbound.Constants["RR_TYPE_"+rrtype]);
 				/** @type {DNSResult} */
@@ -116,6 +112,7 @@ var DNS = {
 
 				log.debug("result: "+result.toSource());
 				return result;
+			}
 			default:
 				throw new Error("invalid resolver preference");
 		}
@@ -125,6 +122,9 @@ var DNS = {
 
 /**
  * Promise wrapper for the dns result of JSDNS.jsm
+ * @param {string} name
+ * @param {string} rrtype
+ * @return {Promise<DNSResult>}
  */
 function asyncJSDNS_QueryDNS(name, rrtype) {
 	function dnsCallback(dnsResult, defer, queryError, rcode) {

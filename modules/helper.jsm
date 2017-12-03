@@ -13,7 +13,7 @@
 
 // options for JSHint
 /* jshint strict:true, moz:true, smarttabs:true */
-/* global Components, FileUtils, NetUtil, Services, CommonUtils */
+/* global Components, FileUtils, Log, NetUtil, Services */
 /* global Logging */
 /* exported EXPORTED_SYMBOLS, addrIsInDomain, addrIsInDomain2, domainIsInDomain, exceptionToStr, getBaseDomainFromAddr, getDomainFromAddr, readStringFrom, stringEndsWith, stringEqual, tryGetString, tryGetFormattedString, writeStringToTmpFile, DKIM_SigError, DKIM_InternalError */
 
@@ -38,10 +38,6 @@ var EXPORTED_SYMBOLS = [
 	"DKIM_InternalError"
 ];
 
-// @ts-ignore
-const Cc = Components.classes;
-// @ts-ignore
-const Ci = Components.interfaces;
 const Cr = Components.results;
 // @ts-ignore
 const Cu = Components.utils;
@@ -57,8 +53,8 @@ Cu.import("resource://dkim_verifier/logging.jsm");
 
 // @ts-ignore
 var log = Logging.getLogger("Helper");
-var eTLDService = Components.classes["@mozilla.org/network/effective-tld-service;1"]
-	.getService(Components.interfaces.nsIEffectiveTLDService);
+var eTLDService = Components.classes["@mozilla.org/network/effective-tld-service;1"].
+	getService(Components.interfaces.nsIEffectiveTLDService);
 
 
 /**
@@ -298,7 +294,7 @@ function stringEqual(str1, str2) {
 /**
  * try to get string from stringbundle
  * 
- * @param stringbundle
+ * @param {XUL_stringbundle} stringbundle
  * @param {String} name
  * 
  * @return {String|null}
@@ -319,9 +315,9 @@ function tryGetString(stringbundle, name) {
 /**
  * try to get formatted string from stringbundle
  * 
- * @param stringbundle
+ * @param {XUL_stringbundle} stringbundle
  * @param {String} name
- * @param {String[]|String[][]} [params]
+ * @param {String[]|(String[][]} [params]
  * 
  * @return {String|null}
  */
@@ -345,11 +341,12 @@ function tryGetFormattedString(stringbundle, name, params = []) {
  * 
  * @param {String} string
  * @param {String} fileName
+ * @return {void}
  */
 function writeStringToTmpFile(string, fileName) {
-	var file = Components.classes["@mozilla.org/file/directory_service;1"]
-					.getService(Components.interfaces.nsIProperties)
-					.get("TmpD", Components.interfaces.nsIFile);
+	var file = Components.classes["@mozilla.org/file/directory_service;1"].
+					getService(Components.interfaces.nsIProperties).
+					get("TmpD", Components.interfaces.nsIFile);
 	file.append(fileName);
 	
 	// file is nsIFile, data is a string

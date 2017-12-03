@@ -4,7 +4,7 @@
  * A ChromeWorker wrapper for the libunbound DNS library.
  * Currently only the TXT resource record is completely supported.
  *
- * Version: 2.0.0 (19 July 2017)
+ * Version: 2.0.1pre1 (03 December 2017)
  * 
  * Copyright (c) 2016-2017 Philippe Lieser
  * 
@@ -17,7 +17,9 @@
 // options for JSHint
 /* jshint strict:true, moz:true */
 /* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
+/* eslint no-global-assign: ["error", {"exceptions": ["onmessage"]}] */
 /* global ctypes, onmessage, postMessage, dump */
+/* exported onmessage */
 
 "use strict";
 
@@ -186,7 +188,7 @@ function resolve(name, rrtype=Constants.RR_TYPE_A) {
 
 			// convert rdata for known RR types
 			switch (rrtype) {
-				case Constants.RR_TYPE_TXT:
+				case Constants.RR_TYPE_TXT: {
 					// http://tools.ietf.org/html/rfc1035#page-20
 					let str = "";
 					let i=0;
@@ -202,6 +204,7 @@ function resolve(name, rrtype=Constants.RR_TYPE_A) {
 					}
 					data.push(str);
 					break;
+				}
 			}
 
 			dataPtr = dataPtr.increment();
@@ -243,6 +246,7 @@ function resolve(name, rrtype=Constants.RR_TYPE_A) {
  * Load library
  *
  * @param {String} path
+ * @return {void}
 */
 function load(path) {
 	// if library was already loaded, do a cleanup first before reloading it
@@ -343,6 +347,7 @@ function load(path) {
  * @param {Boolean} getNameserversFromOS
  * @param {String[]} nameservers
  * @param {String[]} trustAnchors
+ * @return {void}
  */
 function update_ctx(conf, debuglevel, getNameserversFromOS, nameservers, trustAnchors) {
 	if (!ub_ctx_create) {

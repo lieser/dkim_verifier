@@ -16,6 +16,7 @@
 // options for JSHint
 /* jshint strict:true, moz:true */
 /* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
+/* eslint strict: ["warn", "function"] */
 /* global Components, OS, FileUtils, Services */
 /* exported EXPORTED_SYMBOLS, SQLiteTreeView */
 
@@ -23,10 +24,6 @@ var EXPORTED_SYMBOLS = [
 	"SQLiteTreeView"
 ];
 
-// @ts-ignore
-const Cc = Components.classes;
-// @ts-ignore
-const Ci = Components.interfaces;
 // @ts-ignore
 const Cu = Components.utils;
 
@@ -73,12 +70,13 @@ SQLiteTreeView.prototype = {
 	
 	/**
 	 * Updates orderClause. Should be called if the sort order is changed
+	 * @return {void}
 	 */
 	_updateOrderClause: function SQLiteTreeView__updateOrderClause() {
 		"use strict";
 
 		this.orderClause = this.sortOrder.map(function (elem) {
-			return this.columns[elem.index] + (elem.orderDirection  ? " DESC": "");
+			return this.columns[elem.index] + (elem.orderDirection ? " DESC": "");
 		}, this).join(", ");
 		// dump(this.orderClause+"\n");
 	},
@@ -156,6 +154,7 @@ SQLiteTreeView.prototype = {
 	 * Adds a new row to the database
 	 * 
 	 * @param {Object} params Named params to insert
+	 * @return {void}
 	 */
 	addRow: function SQLiteTreeView_addRow(params) {
 		"use strict";
@@ -174,6 +173,7 @@ SQLiteTreeView.prototype = {
 	
 	/**
 	 * Delete selected rows
+	 * @return {void}
 	 */
 	deleteSelectedRows: function SQLiteTreeView_deleteSelectedRows() {
 		"use strict";
@@ -224,7 +224,7 @@ SQLiteTreeView.prototype = {
 
 		if (col.index === this.sortOrder[0].index) {
 			// change sort order direction
-			this.sortOrder[0].orderDirection  = !this.sortOrder[0].orderDirection ;
+			this.sortOrder[0].orderDirection = !this.sortOrder[0].orderDirection ;
 		} else {
 			// change sort order sequence
 			

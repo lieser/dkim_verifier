@@ -16,6 +16,8 @@
 /* jshint strict:true, moz:true, esversion:6 */
 /* jshint expr:true */
 /* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
+/* eslint-env browser */
+/* eslint strict: ["warn", "function"] */
 /* global Components, Cu, Services, gMessageListeners, gFolderDisplay, gExpandedHeaderView, createHeaderEntry, syncGridColumnWidths, currentHeaderData, gMessageDisplay */
 
 // namespace
@@ -67,6 +69,7 @@ DKIM_Verifier.Display = (function() {
 	 * Sets the result value for headerTooltips and statusbarpanel.
 	 * 
 	 * @param {String} value
+	 * @return {void}
 	 */
 	function setValue(value) {
 		headerTooltips.value = value;
@@ -77,6 +80,7 @@ DKIM_Verifier.Display = (function() {
 	 * Sets the warnings for header, headerTooltips and statusbarpanel.
 	 * 
 	 * @param {String[]} warnings
+	 * @return {void}
 	 */
 	function setWarnings(warnings) {
 		header.warnings = warnings;
@@ -125,6 +129,7 @@ DKIM_Verifier.Display = (function() {
 	 * Sets the url to the favicon. Empty string to reset it.
 	 * 
 	 * @param {String} faviconUrl
+	 * @return {void}
 	 */
 	function setFaviconUrl(faviconUrl) {
 		expandedfromBox.dkimFaviconUrl = faviconUrl;
@@ -172,6 +177,7 @@ DKIM_Verifier.Display = (function() {
 	 * display result
 	 * 
 	 * @param {IAuthVerifier.IAuthResult} result
+	 * @return {void}
 	 */
 	function displayResult(result) {
 		log.trace("displayResult begin");
