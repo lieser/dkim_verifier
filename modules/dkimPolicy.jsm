@@ -19,14 +19,18 @@
 /* global addrIsInDomain, Deferred, exceptionToStr, getBaseDomainFromAddr, readStringFrom, stringEndsWith, stringEqual, DKIM_SigError, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, Policy */
 
+// @ts-ignore
 const module_version = "1.4.0pre1";
 
 var EXPORTED_SYMBOLS = [
 	"Policy"
 ];
 
+// @ts-ignore
 const Cc = Components.classes;
+// @ts-ignore
 const Ci = Components.interfaces;
+// @ts-ignore
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
@@ -38,6 +42,7 @@ Cu.import("resource://dkim_verifier/dkimDMARC.jsm");
 
 
 const DB_POLICY_NAME = "dkimPolicy.sqlite";
+// @ts-ignore
 const PREF_BRANCH = "extensions.dkim_verifier.policy.";
 const ERROR_PREF_BRANCH = "extensions.dkim_verifier.error.";
 
@@ -68,12 +73,17 @@ const PRIORITY = {
 };
 
 
+// @ts-ignore
 var prefs = Services.prefs.getBranch(PREF_BRANCH);
 var error_prefs = Services.prefs.getBranch(ERROR_PREF_BRANCH);
+// @ts-ignore
 var log = Logging.getLogger("Policy");
 var dbInitialized = false;
-// Deferred<boolean>
+/** @type {IDeferred<boolean>} */
+// @ts-ignore
 var dbInitializedDefer = new Deferred();
+
+
 
 var favicons;
 
@@ -252,7 +262,7 @@ var Policy = {
 	 * Determinates if e-mail by fromAddress should be signed
 	 * 
 	 * @param {String} fromAddress
-	 * @param {String} [listID]
+	 * @param {String|Null} [listID]
 	 * 
 	 * @return {Promise<DKIMSignPolicy>}
 	 */
@@ -262,6 +272,7 @@ var Policy = {
 		var promise = (async () => {
 			log.trace("shouldBeSigned Task begin");
 			
+			/** @type {DKIMSignPolicy} */
 			var result = {};
 
 			// return false if signRules is disabled
@@ -363,7 +374,7 @@ var Policy = {
 	 * @param {String} from
 	 * @param {String} sdid
 	 * @param {String} auid
-	 * @param {String[]} warnings
+	 * @param {{name: String, params?: any[]}[]} warnings
 	 * @throws DKIM_SigError
 	 */
 	checkSDID: function Policy_checkSDID(allowedSDIDs, from, sdid, auid, warnings) {
@@ -381,7 +392,7 @@ var Policy = {
 		    })) {
 			if (error_prefs.getBoolPref("policy.wrong_sdid.asWarning")) {
 				warnings.push(
-					{name: "DKIM_POLICYERROR_WRONG_SDID",	params: [allowedSDIDs]});
+					{name: "DKIM_POLICYERROR_WRONG_SDID", params: [allowedSDIDs]});
 				log.debug("Warning: DKIM_POLICYERROR_WRONG_SDID");
 			} else {
 				throw new DKIM_SigError("DKIM_POLICYERROR_WRONG_SDID", [allowedSDIDs]);
@@ -440,7 +451,7 @@ var Policy = {
 	 * @param {String} fromAddress
 	 * @param {String} sdid
 	 * 
-	 * @return {Promise<Undefined>}
+	 * @return {Promise<void>}
 	 */
 	signedBy: function Policy_signedBy(fromAddress, sdid) {
 		"use strict";
@@ -498,7 +509,7 @@ var Policy = {
 	 * 
 	 * @param {String} fromAddress
 	 * 
-	 * @return {Promise<Undefined>}
+	 * @return {Promise<void>}
 	 */
 	addUserException: function Policy_addUserException(fromAddress) {
 		"use strict";
@@ -548,13 +559,13 @@ var Policy = {
 /**
  * Adds rule.
  * 
- * @param {String|Null} domain
+ * @param {String|null|undefined} domain
  * @param {String} addr
  * @param {String} sdid
  * @param {String} ruletype
  * @param {String} priority
  * 
- * @return {Promise<Undefined>}
+ * @return {Promise<void>}
  */
 async function addRule(domain, addr, sdid, ruletype, priority) {
 	"use strict";

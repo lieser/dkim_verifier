@@ -22,19 +22,24 @@
 
 "use strict";
 
+// @ts-ignore
 const module_version = "2.1.0pre1";
 
 var EXPORTED_SYMBOLS = [
 	"MsgReader"
 ];
 
+// @ts-ignore
 const Cc = Components.classes;
+// @ts-ignore
 const Ci = Components.interfaces;
+// @ts-ignore
 const Cu = Components.utils;
 
 Cu.import("resource://dkim_verifier/logging.jsm");
 Cu.import("resource://dkim_verifier/helper.jsm");
 
+// @ts-ignore
 let log = Logging.getLogger("MsgReader");
 
 

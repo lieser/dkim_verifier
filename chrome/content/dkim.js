@@ -1,4 +1,4 @@
-/*
+/**
  * dkim.js - DKIM Verifier Extension for Mozilla Thunderbird
  * 
  * Verifies the DKIM signature if a new message is viewed,
@@ -19,6 +19,7 @@
 /* global Components, Cu, Services, gMessageListeners, gFolderDisplay, gExpandedHeaderView, createHeaderEntry, syncGridColumnWidths, currentHeaderData, gMessageDisplay */
 
 // namespace
+// @ts-ignore
 var DKIM_Verifier = {};
 Cu.import("resource://dkim_verifier/logging.jsm", DKIM_Verifier);
 Cu.import("resource://dkim_verifier/helper.jsm", DKIM_Verifier);
@@ -27,6 +28,7 @@ Cu.import("resource://dkim_verifier/dkimPolicy.jsm", DKIM_Verifier);
 Cu.import("resource://dkim_verifier/dkimKey.jsm", DKIM_Verifier);
 
 
+// @ts-ignore
 const PREF_BRANCH = "extensions.dkim_verifier.";
 
 /*
@@ -169,7 +171,7 @@ DKIM_Verifier.Display = (function() {
 	/**
 	 * display result
 	 * 
-	 * @param {AuthResult} result
+	 * @param {IAuthVerifier.IAuthResult} result
 	 */
 	function displayResult(result) {
 		log.trace("displayResult begin");
@@ -383,9 +385,9 @@ var that = {
 
 			// load preferences
 			if (prefs.getIntPref("statusbarpanel.result.style") === 1) {
-				statusbarpanel.useIcons = false;
+				statusbarpanel["useIcons"] = false;
 			} else {
-				statusbarpanel.useIcons = true;
+				statusbarpanel["useIcons"] = true;
 			}
 
 			that.initHeaderEntry();
@@ -483,7 +485,7 @@ var that = {
 				setValue(dkimStrings.getString("NOT_EMAIL"));
 				statusbarpanel.dkimStatus = "none";
 				if (reverifyDKIMSignature) {
-					reverifyDKIMSignature.disabled = true;
+					reverifyDKIMSignature["disabled"] = true;
 				}
 			} else {
 				currentHeaderData[entry] = {
@@ -493,7 +495,7 @@ var that = {
 				setValue(dkimStrings.getString("loading"));
 				statusbarpanel.dkimStatus = "loading";
 				if (reverifyDKIMSignature) {
-					reverifyDKIMSignature.disabled = false;
+					reverifyDKIMSignature["disabled"] = false;
 				}
 			}
 			log.trace("onBeforeShowHeaderPane end");

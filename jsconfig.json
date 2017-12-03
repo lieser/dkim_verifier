@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "target": "es2017",
+        "lib": [
+            "es2017",
+            "dom"
+        ],
+        "strictNullChecks": true,
+        "checkJs": true
+    },
+    "exclude": [
+    ]
+}

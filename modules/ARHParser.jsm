@@ -21,19 +21,24 @@
 
 "use strict";
 
+// @ts-ignore
 const module_version = "1.1.0";
 
 var EXPORTED_SYMBOLS = [
 	"ARHParser"
 ];
 
+// @ts-ignore
 const Cc = Components.classes;
+// @ts-ignore
 const Ci = Components.interfaces;
+// @ts-ignore
 const Cu = Components.utils;
 
 Cu.import("resource://dkim_verifier/logging.jsm");
 
 
+// @ts-ignore
 let log = Logging.getLogger("ARHParser");
 
 
@@ -98,31 +103,31 @@ let value_cp = "(?:(" + token_p + ")|" + quoted_string_cp + ")";
 let domain_name_p = "(?:" + sub_domain_p + "(?:\\." + sub_domain_p + ")+)";
 
 
+/**
+ * @typedef {Object} ARHHeader
+ * @property {String} authserv_id
+ * @property {Number} [authres_version]
+ * @property {ARHResinfo[]} resinfo
+ */
+
+/**
+ * @typedef {Object} ARHResinfo
+ * @property {String} method
+ * @property {Number} [method_version]
+ * @property {String} result
+ *           none|pass|fail|softfail|policy|neutral|temperror|permerror
+ * @property {String} [reason]
+ * @property {Object} propertys
+ * @property {Object} propertys.smtp
+ * @property {Object} propertys.header
+ * @property {Object} propertys.body
+ * @property {Object} propertys.policy
+ * @property {Object} [propertys._Keyword_]
+ *           ARHResinfo can also include other propertys besides the aboves.
+ */
+
 let ARHParser = {
 	get version() { return module_version; },
-
-	/**
-	 * @typedef {Object} ARHHeader
-	 * @property {String} authserv_id
-	 * @property {Number} [authres_version]
-	 * @property {ARHResinfo[]} resinfo
-	 */
-
-	/**
-	 * @typedef {Object} ARHResinfo
-	 * @property {String} method
-	 * @property {Number} [method_version]
-	 * @property {String} result
-	 *           none|pass|fail|softfail|policy|neutral|temperror|permerror
-	 * @property {String} [reason]
-	 * @property {Object} propertys
-	 * @property {Object} propertys.smtp
-	 * @property {Object} propertys.header
-	 * @property {Object} propertys.body
-	 * @property {Object} propertys.policy
-	 * @property {Object} [propertys.<Keyword>]
-	 *           ARHResinfo can also include other propertys besides the aboves.
-	 */
 
 	/**
 	 *  Parses an Authentication-Results header.
@@ -134,14 +139,15 @@ let ARHParser = {
 		// remove header name
 		authresHeader = authresHeader.replace(
 			new RegExp("^Authentication-Results:"+CFWS_op, "i"), "");
-		authresHeader = new RefString(authresHeader);
+		let authresHeaderRef = new RefString(authresHeader);
 
+		/** @type {ARHHeader} */
 		let res = {};
 		res.resinfo = [];
 		let reg_match;
 
 		// get authserv-id and authres-version
-		reg_match = match(authresHeader,
+		reg_match = match(authresHeaderRef,
 			value_cp + "(?:" + CFWS_p + "([0-9]+)" + CFWS_op +" )?");
 		res.authserv_id = reg_match[1] || reg_match[2];
 		if (reg_match[3]) {
@@ -151,15 +157,15 @@ let ARHParser = {
 		}
 
 		// check if message authentication was performed
-		reg_match = match_o(authresHeader, ";" + CFWS_op+"?none");
+		reg_match = match_o(authresHeaderRef, ";" + CFWS_op+"?none");
 		if (reg_match !== null) {
 			log.debug("no-result");
 			return res;
 		}
 
 		// get the resinfos
-		while (authresHeader.value !== "") {
-			res.resinfo.push(parseResinfo(authresHeader));
+		while (authresHeaderRef.value !== "") {
+			res.resinfo.push(parseResinfo(authresHeaderRef));
 		}
 
 		log.debug(res.toSource());
@@ -177,8 +183,9 @@ function parseResinfo(str) {
 	log.trace("parse str: " + str.toSource());
 
 	let reg_match;
+	/** @type {ARHResinfo} */
 	let res = {};
-
+	
 	// get methodspec
 	let method_version_p = CFWS_op + "/" + CFWS_op + "([0-9]+)";
 	let method_p = "(" + Keyword_p + ")(?:" + method_version_p + ")?";

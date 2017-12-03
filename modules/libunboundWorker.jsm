@@ -23,6 +23,7 @@
 
 
 const log_prefix = "libunboundWorker: ";
+// @ts-ignore
 var log = {
 	fatal : function (msg) {
 		let toSend = {type: "log", subType: "fatal", message: log_prefix + msg};

@@ -24,14 +24,14 @@
 /* global exceptionToStr, getBaseDomainFromAddr, getDomainFromAddr, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, DMARC */
 
+// @ts-ignore
 const module_version = "1.1.0pre1";
 
 var EXPORTED_SYMBOLS = [
 	"DMARC"
 ];
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
+// @ts-ignore
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
@@ -52,10 +52,13 @@ XPCOMUtils.defineLazyModuleGetter(
 /**
  * @public
  */
+// @ts-ignore
 const PREF_BRANCH = "extensions.dkim_verifier.policy.DMARC.";
 
 
+// @ts-ignore
 let prefs = Services.prefs.getBranch(PREF_BRANCH);
+// @ts-ignore
 let log = Logging.getLogger("DMARC");
 
 var DMARC = {
@@ -158,7 +161,7 @@ var DMARC = {
  * 
  * @param {String} fromAddress
  * 
- * @return {Promise<DMARCPolicy>|Promise<Null>}
+ * @return {Promise<DMARCPolicy|Null>}
  * 
  * @throws {DKIM_InternalError}
  */
@@ -247,7 +250,7 @@ async function getDMARCPolicy(fromAddress) {
  * 
  * @param {String} domain
  * 
- * @return {Promise<DMARCRecord>|Promise<Null>}
+ * @return {Promise<DMARCRecord|Null>}
  * 
  * @throws {DKIM_InternalError}
  */

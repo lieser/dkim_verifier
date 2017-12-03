@@ -23,12 +23,14 @@
 
 "use strict";
 
+// @ts-ignore
 const module_version = "2.2.0pre1";
 
 var EXPORTED_SYMBOLS = [
 	"libunbound"
 ];
 
+// @ts-ignore
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/osfile.jsm");
@@ -38,6 +40,7 @@ Cu.import("resource://dkim_verifier/logging.jsm");
 Cu.import("resource://dkim_verifier/helper.jsm");
 
 
+// @ts-ignore
 const PREF_BRANCH = "extensions.dkim_verifier.dns.";
 
 
@@ -109,7 +112,43 @@ var Constants = {
 	RR_TYPE_X25: 19,
 };
 
+/**
+ * The result of the query.
+ * Does differ from the original ub_result a bit.
+ * 
+ * @typedef {Object} ub_result
+ * @property {String} qname
+ *           text string, original question
+ * @property {Number} qtype
+ *           type code asked for
+ * @property {Number} qclass
+ *           class code (CLASS IN (internet))
+ * @property {Object[]} data
+ *           Array of converted rdata items. Empty for unsupported RR types.
+ *           Currently supported types: TXT
+ * @property {Number[][]} data_raw
+ *           Array of rdata items as byte array
+ * @property {String} canonname
+ *           canonical name of result
+ * @property {Number} rcode
+ *           additional error code in case of no data
+ * @property {Boolean} havedata
+ *           true if there is data
+ * @property {Boolean} nxdomain
+ *           true if nodata because name does not exist
+ * @property {Boolean} secure
+ *           true if result is secure.
+ * @property {Boolean} bogus
+ *           true if a security failure happened.
+ * @property {String} why_bogus
+ *           string with error if bogus
+ * @property {Number} ttl
+ *           number of seconds the result is valid
+ */
+
+// @ts-ignore
 var prefs = Services.prefs.getBranch(PREF_BRANCH);
+// @ts-ignore
 var log = Logging.getLogger("libunbound");
 
 var libunboundWorker =
@@ -119,40 +158,6 @@ var openCalls = new Map();
 
 let libunbound = {
 	get version() {return module_version; },
-
-	/**
-	 * The result of the query.
-	 * Does differ from the original ub_result a bit.
-	 * 
-	 * @typedef {Object} ub_result
-	 * @property {String} qname
-	 *           text string, original question
-	 * @property {Number} qtype
-	 *           type code asked for
-	 * @property {Number} qclass
-	 *           class code (CLASS IN (internet))
-	 * @property {Object[]} data
-	 *           Array of converted rdata items. Empty for unsupported RR types.
-	 *           Currently supported types: TXT
-	 * @property {Number[][]} data_raw
-	 *           Array of rdata items as byte array
-	 * @property {String} canonname
-	 *           canonical name of result
-	 * @property {Number} rcode
-	 *           additional error code in case of no data
-	 * @property {Boolean} havedata
-	 *           true if there is data
-	 * @property {Boolean} nxdomain
-	 *           true if nodata because name does not exist
-	 * @property {Boolean} secure
-	 *           true if result is secure.
-	 * @property {Boolean} bogus
-	 *           true if a security failure happened.
-	 * @property {String} why_bogus
-	 *           string with error if bogus
-	 * @property {Number} ttl
-	 *           number of seconds the result is valid
-	 */
 
 	/**
 	 * Perform resolution of the target name.

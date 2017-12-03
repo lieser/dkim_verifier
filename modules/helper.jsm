@@ -38,9 +38,12 @@ var EXPORTED_SYMBOLS = [
 	"DKIM_InternalError"
 ];
 
+// @ts-ignore
 const Cc = Components.classes;
+// @ts-ignore
 const Ci = Components.interfaces;
 const Cr = Components.results;
+// @ts-ignore
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/FileUtils.jsm");
@@ -52,6 +55,7 @@ Cu.import("resource://services-common/utils.js");
 Cu.import("resource://dkim_verifier/logging.jsm");
 
 
+// @ts-ignore
 var log = Logging.getLogger("Helper");
 var eTLDService = Components.classes["@mozilla.org/network/effective-tld-service;1"]
 	.getService(Components.interfaces.nsIEffectiveTLDService);
@@ -59,7 +63,8 @@ var eTLDService = Components.classes["@mozilla.org/network/effective-tld-service
 
 /**
  * @typedef {Object} Deferred
- * @property {Promise} promise
+ * @template T
+ * @property {Promise<T>} promise
  * @property {Function} resolve
  *           Function to call to resolve promise
  * @property {Function} reject
@@ -78,6 +83,7 @@ function Deferred() {
 		this.resolve = resolve;
 		this.reject = reject;
 	});
+	return this;
 }
 
 var exceptionStr = Log.exceptionStr;
@@ -85,14 +91,15 @@ var exceptionStr = Log.exceptionStr;
 /**
  * DKIM stringbundle with the same access methods as XUL:stringbundle
  */
-var dkimStrings = {};
-dkimStrings.stringbundle = Services.strings.createBundle(
-	"chrome://dkim_verifier/locale/dkim.properties"
-);
-dkimStrings.getString = dkimStrings.stringbundle.GetStringFromName;
-dkimStrings.getFormattedString = function (key, strArray) {
-	return dkimStrings.stringbundle.formatStringFromName(key, strArray, strArray.length);
-};
+var dkimStrings = {
+	stringbundle: Services.strings.createBundle(
+		"chrome://dkim_verifier/locale/dkim.properties"
+	),
+	getString: this.stringbundle.GetStringFromName,
+	getFormattedString: function (key, strArray) {
+		return this.stringbundle.formatStringFromName(key, strArray, strArray.length);
+	},
+}
 
 
 /**
@@ -266,7 +273,7 @@ function readStringFrom(aSource) {
  * Comparison is done case insensitive.
  * 
  * @param {String} str
- * @param {String} strEnd
+ * @param {String} x
  * 
  * @return {Boolean}
  */
@@ -314,7 +321,7 @@ function tryGetString(stringbundle, name) {
  * 
  * @param stringbundle
  * @param {String} name
- * @param {String[]} [params]
+ * @param {String[]|String[][]} [params]
  * 
  * @return {String|null}
  */
@@ -375,7 +382,7 @@ function writeStringToTmpFile(string, fileName) {
  * @constructor
  * 
  * @param {String} errorType
- * @param {String[]} [errorStrParams]
+ * @param {any[]} [errorStrParams]
  * 
  * @return {DKIM_SigError}
  */
@@ -393,6 +400,7 @@ function DKIM_SigError(errorType, errorStrParams = []) {
 	var err = new Error();
 	this.stack = err.stack.substring(err.stack.indexOf('\n')+1);
 	this.lineNumber = parseInt(this.stack.match(/[^:]*$/m), 10);
+	return this;
 }
 DKIM_SigError.prototype = new Error();
 DKIM_SigError.prototype.constructor = DKIM_SigError;
@@ -402,7 +410,7 @@ DKIM_SigError.prototype.constructor = DKIM_SigError;
  * 
  * @constructor
  * 
- * @param {String} message
+ * @param {String|null} [message]
  * @param {String} [errorType]
  * 
  * @return {DKIM_InternalError}
@@ -420,6 +428,7 @@ function DKIM_InternalError(message, errorType) {
 	var err = new Error();
 	this.stack = err.stack.substring(err.stack.indexOf('\n')+1);
 	this.lineNumber = parseInt(this.stack.match(/[^:]*$/m), 10);
+	return this;
 }
 DKIM_InternalError.prototype = new Error();
 DKIM_InternalError.prototype.constructor = DKIM_InternalError;

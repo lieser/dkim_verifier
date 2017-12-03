@@ -23,8 +23,11 @@ var EXPORTED_SYMBOLS = [
 	"SQLiteTreeView"
 ];
 
+// @ts-ignore
 const Cc = Components.classes;
+// @ts-ignore
 const Ci = Components.interfaces;
+// @ts-ignore
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/FileUtils.jsm");

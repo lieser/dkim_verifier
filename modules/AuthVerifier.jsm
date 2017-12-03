@@ -22,14 +22,18 @@
 
 "use strict";
 
+// @ts-ignore
 const module_version = "1.4.0pre1";
 
 var EXPORTED_SYMBOLS = [
 	"AuthVerifier"
 ];
 
+// @ts-ignore
 const Cc = Components.classes;
+// @ts-ignore
 const Ci = Components.interfaces;
+// @ts-ignore
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
@@ -40,59 +44,61 @@ Cu.import("resource://dkim_verifier/logging.jsm");
 Cu.import("resource://dkim_verifier/helper.jsm");
 Cu.import("resource://dkim_verifier/MsgReader.jsm");
 Cu.import("resource://dkim_verifier/ARHParser.jsm");
+// @ts-ignore
 let DKIM = {};
 Cu.import("resource://dkim_verifier/dkimPolicy.jsm", DKIM);
 Cu.import("resource://dkim_verifier/dkimVerifier.jsm", DKIM);
 
+// @ts-ignore
 const PREF_BRANCH = "extensions.dkim_verifier.";
 
+// @ts-ignore
 let log = Logging.getLogger("AuthVerifier");
+// @ts-ignore
 let prefs = Services.prefs.getBranch(PREF_BRANCH);
 
+/**
+ * @typedef {Object} AuthResult|AuthResultV2
+ * @property {String} version
+ *           result version ("2.1")
+ * @property {AuthResultDKIM[]} dkim
+ * @property {ARHResinfo[]} [spf]
+ * @property {ARHResinfo[]} [dmarc]
+ * @property {{dkim?: AuthResultDKIM[]}} [arh]
+ *           added in version 2.1
+ */
+
+/**
+ * @typedef {Object} SavedAuthResult|SavedAuthResultV3
+ * @property {String} version
+ *           result version ("3.0")
+ * @property {dkimSigResultV2[]} dkim
+ * @property {ARHResinfo[]} [spf]
+ * @property {ARHResinfo[]} [dmarc]
+ * @property {Object} [arh]
+ * @property {dkimSigResultV2[]} [arh.dkim]
+ */
+
+/**
+ * @typedef {Object} AuthResultDKIM|AuthResultDKIMV2
+ * @extends dkimSigResultV2
+ * @property {Number} res_num
+ *           10: SUCCESS
+ *           20: TEMPFAIL
+ *           30: PERMFAIL
+ *           35: PERMFAIL treat as no sig
+ *           40: no sig
+ * @property {String} result_str
+ *           localized result string
+ * @property {String[]} [warnings_str]
+ *           localized warnings
+ * @property {String} [favicon]
+ *           url to the favicon of the sdid
+ */
+// @ts-ignore
 
 var AuthVerifier = {
 	get version() { return module_version; },
-
-	/**
-	 * @typedef {Object} AuthResult|AuthResultV2
-	 * @property {String} version
-	 *           result version ("2.1")
-	 * @property {AuthResultDKIM[]} dkim
-	 * @property {ARHResinfo[]} [spf]
-	 * @property {ARHResinfo[]} [dmarc]
-	 * @property {Object} [arh]
-	 *           added in version 2.1
-	 * @property {AuthResultDKIM[]} [arh.dkim]
-	 *           added in version 2.1
-	 */
-
-	/**
-	 * @typedef {Object} SavedAuthResult|SavedAuthResultV3
-	 * @property {String} version
-	 *           result version ("3.0")
-	 * @property {dkimSigResultV2[]} dkim
-	 * @property {ARHResinfo[]} [spf]
-	 * @property {ARHResinfo[]} [dmarc]
-	 * @property {Object} [arh]
-	 * @property {dkimSigResultV2[]} [arh.dkim]
-	 */
-
-	/**
-	 * @typedef {Object} AuthResultDKIM|AuthResultDKIMV2
-	 * @extends dkimSigResultV2
-	 * @property {Number} res_num
-	 *           10: SUCCESS
-	 *           20: TEMPFAIL
-	 *           30: PERMFAIL
-	 *           35: PERMFAIL treat as no sig
-	 *           40: no sig
-	 * @property {String} result_str
-	 *           localized result string
-	 * @property {String[]} [warnings_str]
-	 *           localized warnings
-	 * @property {String} [favicon]
-	 *           url to the favicon of the sdid
-	 */
 
 	/**
 	 * Verifies the authentication of the msg.
@@ -170,6 +176,7 @@ var AuthVerifier = {
 			saveAuthResult(msgHdr, savedAuthResult);
 
 			let authResult = await SavedAuthResult_to_AuthResult(savedAuthResult);
+			// @ts-ignore
 			log.debug("authResult: " + authResult.toSource());
 			return authResult;
 		})();
@@ -183,11 +190,11 @@ var AuthVerifier = {
 	 * Resets the stored authentication result of the msg.
 	 *
 	 * @param {nsIMsgDBHdr} msgHdr
-	 * @return {Promise<Undefined>}
+	 * @return {Promise<void>}
 	 */
 	resetResult: function _authVerifier_resetResult(msgHdr) {
 		var promise = (async () => {
-			saveAuthResult(msgHdr, "");
+			saveAuthResult(msgHdr, null);
 		})();
 		promise.then(null, function onReject(exception) {
 			log.warn(exceptionToStr(exception));
@@ -199,6 +206,7 @@ var AuthVerifier = {
 /**
  * Get the Authentication-Results header as an SavedAuthResult.
  * 
+ * @param {nsIMsgDBHdr} msgHdr
  * @param {Object} msg
  * @return {SavedAuthResult|Null}
  */
@@ -304,7 +312,7 @@ function getARHResult(msgHdr, msg) {
  * Save authentication result
  * 
  * @param {nsIMsgDBHdr} msgHdr
- * @param {SavedAuthResult} savedAuthResult
+ * @param {SavedAuthResult|Null} savedAuthResult
  */
 function saveAuthResult(msgHdr, savedAuthResult) {
 	if (prefs.getBoolPref("saveResult")) {
@@ -314,7 +322,7 @@ function saveAuthResult(msgHdr, savedAuthResult) {
 			return;
 		}
 
-		if (savedAuthResult === "") {
+		if (savedAuthResult === null) {
 			// reset result
 			log.debug("reset AuthResult result");
 			msgHdr.setStringProperty("dkim_verifier@pl-result", "");
@@ -342,12 +350,13 @@ function loadAuthResult(msgHdr) {
 			return null;
 		}
 
-		let savedAuthResult = msgHdr.getStringProperty("dkim_verifier@pl-result");
+		let savedAuthResultJSON = msgHdr.getStringProperty("dkim_verifier@pl-result");
 
-		if (savedAuthResult !== "") {
-			log.debug("AuthResult result found: " + savedAuthResult);
+		if (savedAuthResultJSON !== "") {
+			log.debug("AuthResult result found: " + savedAuthResultJSON);
 
-			savedAuthResult = JSON.parse(savedAuthResult);
+			/** @type {SavedAuthResult} */
+			let savedAuthResult = JSON.parse(savedAuthResultJSON);
 
 			if (savedAuthResult.version.match(/^[0-9]+/)[0] === "1") {
 				// old dkimResultV1 (AuthResult version 1)
@@ -384,10 +393,11 @@ function loadAuthResult(msgHdr) {
 /**
  * Convert DKIM ARHresinfo to dkimResult
  * 
- * @param {ARHresinfo} arhDKIM
+ * @param {ARHResinfo} arhDKIM
  * @return {dkimSigResultV2}
  */
 function arhDKIM_to_dkimSigResultV2(arhDKIM) {
+	/** @type {dkimSigResultV2} */
 	let dkimSigResult = {};
 	dkimSigResult.version = "2.0";
 	switch (arhDKIM.result) {
@@ -438,7 +448,7 @@ function arhDKIM_to_dkimSigResultV2(arhDKIM) {
 /**
  * Convert dkimResultV1 to dkimSigResultV2
  * 
- * @param {dkimResultV1} dkimResult
+ * @param {dkimResultV1} dkimResultV1
  * @return {dkimSigResultV2}
  */
 function dkimResultV1_to_dkimSigResultV2(dkimResultV1) {
@@ -475,6 +485,7 @@ function dkimResultV1_to_dkimSigResultV2(dkimResultV1) {
  * @throws DKIM_InternalError
  */
 function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) {
+	/** @type {IAuthVerifier.AuthResultDKIM} */
 	let authResultDKIM = dkimSigResult;
 	switch(dkimSigResult.result) {
 		case "SUCCESS":
@@ -594,6 +605,7 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) {
 	return authResultDKIM;
 }
 
+
 /**
  * Convert SavedAuthResult to AuthResult
  * 
@@ -601,6 +613,7 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) {
  * @return {Promise<AuthResult>} authResult
  */
 async function SavedAuthResult_to_AuthResult(savedAuthResult) {
+	/** @type {AuthResult} */
 	let authResult = savedAuthResult;
 	authResult.version = "2.1";
 	authResult.dkim = authResult.dkim.map(dkimSigResultV2_to_AuthResultDKIM);
@@ -663,7 +676,7 @@ function isOutgoing(msgHdr) {
 	let author = msgHdr.mime2DecodedAuthor;
 	let	identities = MailServices.accounts.
 			getIdentitiesForServer(msgHdr.folder.server);
-	for (let identity in fixIterator(identities, Ci.nsIMsgIdentity)) {
+	for (let identity of fixIterator(identities, Ci.nsIMsgIdentity)) {
 		if (author.includes(identity.email)) {
 			return true;
 		}

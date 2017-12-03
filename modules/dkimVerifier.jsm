@@ -31,14 +31,18 @@
 /* global dkimStrings, addrIsInDomain2, domainIsInDomain, exceptionToStr, stringEndsWith, stringEqual, writeStringToTmpFile, DKIM_SigError, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, Verifier */
 
+// @ts-ignore
 const module_version = "2.2.0pre1";
 
 var EXPORTED_SYMBOLS = [
 	"Verifier"
 ];
 
+// @ts-ignore
 const Cc = Components.classes;
+// @ts-ignore
 const Ci = Components.interfaces;
+// @ts-ignore
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
@@ -72,8 +76,65 @@ Services.scriptloader.loadSubScript("resource://dkim_verifier/rsasign-1.2.js",
                                     RSA, "UTF-8" /* The script's encoding */);
 
 
+// @ts-ignore
 const PREF_BRANCH = "extensions.dkim_verifier.";
 
+
+/**
+ * The result of the verification (Version 1).
+ * 
+ * @typedef {Object} dkimResultV1
+ * @property {String} version
+ *           result version ("1.0" / "1.1")
+ * @property {String} result
+ *           "none" / "SUCCESS" / "PERMFAIL" / "TEMPFAIL"
+ * @property {String} [SDID]
+ *           required if result="SUCCESS
+ * @property {String} [selector]
+ *           added in version 1.1
+ * @property {String[]} [warnings]
+ *           required if result="SUCCESS
+ * @property {String} [errorType]
+ *           if result="PERMFAIL: DKIM_SigError.errorType
+ *           if result="TEMPFAIL: DKIM_InternalError.errorType or Undefined
+ * @property {String} [shouldBeSignedBy]
+ *           added in version 1.1
+ * @property {Boolean} [hideFail]
+ *           added in  version 1.1
+ */
+
+/**
+ * The result of the verification of a single DKIM signature (Version 2).
+ * 
+ * @typedef {Object} dkimSigResultV2
+ * @property {String} version
+ *           result version ("2.0")
+ * @property {String} result
+ *           "none" / "SUCCESS" / "PERMFAIL" / "TEMPFAIL"
+ * @property {String} [sdid]
+ * @property {String} [auid]
+ * @property {String} [selector]
+ * @property {{name: String, params?: String[]}[]} [warnings]
+ *           Array of warning_objects.
+ *             warning_objects.name: strings from dkim.properties
+ *             warning_objects.params: optional params for formatted string
+ *           required if result="SUCCESS"
+ * @property {String} [errorType]
+ *           if result="PERMFAIL: DKIM_SigError.errorType
+ *           if result="TEMPFAIL: DKIM_InternalError.errorType or Undefined
+ * @property {String} [errorStrParams]
+ * @property {Boolean} [hideFail]
+ * @property {Boolean} [keySecure]
+ */
+
+/**
+ * The result of the verification (Version 2).
+ * 
+ * @typedef {Object} dkimResultV2
+ * @property {String} version
+ *           result version ("2.0")
+ * @property {dkimSigResultV2[]} signatures
+ */
 
 /*
  * DKIM Verifier module
@@ -194,8 +255,8 @@ var Verifier = (function() {
 	 * @param {String} str
 	 * @param {String} signature
 	 *        b64 encoded signature
-	 * @param[out] {String[]} warnings
-	 * @param[out] {Object} [keyInfo]
+	 * @param {String[]} warnings - out param
+	 * @param {Object} [keyInfo] - out param
 	 * @return {Boolean}
 	 * @throws DKIM_SigError
 	 */
@@ -650,13 +711,18 @@ var Verifier = (function() {
 	 */
 	function parseDKIMKeyRecord(DKIMKeyRecord) {
 		var DKIMKey = {
+			/** @type {string?} */
 			v : null, // Version
+			/** type {string?} */
 			h : null, // hash algorithms
 			h_array : null, // array hash algorithms
+			/** @type {string?} */
 			k : null, // key type
 			n : null, // notes
 			p : null, // Public-key data
+			/** @type {string?} */
 			s : null, // Service Type
+			/** @type {string?} */
 			t : null, // flags
 			t_array : [] // array of all flags
 		};
@@ -985,7 +1051,7 @@ var Verifier = (function() {
 	 * 
 	 * @param {Object} msg
 	 * @param {Object} DKIMSignature
-	 * @return {dkimSigResultV2}
+	 * @return {Promise<dkimSigResultV2>}
 	 * @throws DKIM_SigError
 	 * @throws DKIM_InternalError
 	 */
@@ -1199,62 +1265,6 @@ var Verifier = (function() {
 		}
 	}
 
-	/**
-	 * The result of the verification (Version 1).
-	 * 
-	 * @typedef {Object} dkimResultV1
-	 * @property {String} version
-	 *           result version ("1.0" / "1.1")
-	 * @property {String} result
-	 *           "none" / "SUCCESS" / "PERMFAIL" / "TEMPFAIL"
-	 * @property {String} [SDID]
-	 *           required if result="SUCCESS
-	 * @property {String} [selector]
-	 *           added in version 1.1
-	 * @property {String[]} [warnings]
-	 *           required if result="SUCCESS
-	 * @property {String} [errorType]
-	 *           if result="PERMFAIL: DKIM_SigError.errorType
-	 *           if result="TEMPFAIL: DKIM_InternalError.errorType or Undefined
-	 * @property {String} [shouldBeSignedBy]
-	 *           added in version 1.1
-	 * @property {Boolean} [hideFail]
-	 *           added in  version 1.1
-	 */
-
-	/**
-	 * The result of the verification of a single DKIM signature (Version 2).
-	 * 
-	 * @typedef {Object} dkimSigResultV2
-	 * @property {String} version
-	 *           result version ("2.0")
-	 * @property {String} result
-	 *           "none" / "SUCCESS" / "PERMFAIL" / "TEMPFAIL"
-	 * @property {String} [sdid]
-	 * @property {String} [auid]
-	 * @property {String} [selector]
-	 * @property {Object<name: String, [params]: String[]>[]} [warnings]
-	 *           Array of warning_objects.
-	 *             warning_objects.name: strings from dkim.properties
-	 *             warning_objects.params: optional params for formatted string
-	 *           required if result="SUCCESS"
-	 * @property {String} [errorType]
-	 *           if result="PERMFAIL: DKIM_SigError.errorType
-	 *           if result="TEMPFAIL: DKIM_InternalError.errorType or Undefined
-	 * @property {String} [errorStrParams]
-	 * @property {Boolean} [hideFail]
-	 * @property {Boolean} [keySecure]
-	 */
-
-	/**
-	 * The result of the verification (Version 2).
-	 * 
-	 * @typedef {Object} dkimResultV2
-	 * @property {String} version
-	 *           result version ("2.0")
-	 * @property {dkimSigResultV2[]} signatures
-	 */
-
 var that = {
 /*
  * public methods/variables
@@ -1339,6 +1349,7 @@ var that = {
 	 */
 	verify2: function Verifier_verify2(msg) {
 		var promise = (async () => {
+			/** @type {dkimResultV2} */
 			let res = {};
 			res.version = "2.0";
 			res.signatures = await processSignatures(msg);

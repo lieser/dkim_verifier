@@ -24,14 +24,18 @@
 
 "use strict";
 
+// @ts-ignore
 const module_version = "2.3.0pre1";
 
 var EXPORTED_SYMBOLS = [
 	"DNS"
 ];
 
+// @ts-ignore
 const Cc = Components.classes;
+// @ts-ignore
 const Ci = Components.interfaces;
+// @ts-ignore
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
@@ -44,34 +48,37 @@ XPCOMUtils.defineLazyModuleGetter(this, "libunbound",
 	"resource://dkim_verifier/libunbound.jsm");
 
 
+// @ts-ignore
 const PREF_BRANCH = "extensions.dkim_verifier.dns.";
 
 
+// @ts-ignore
 var prefs = Services.prefs.getBranch(PREF_BRANCH);
+// @ts-ignore
 var log = Logging.getLogger("DNSWrapper");
+
+/**
+ * The result of the query.
+ * 
+ * @typedef {Object} DNSResult
+ * @property {Object[]|Null} data Array of rdata items, or null if error or no entry in DNS
+ * @property {Number} rcode DNS error code
+ * @property {Boolean} secure true if result is secure.
+ * @property {Boolean} bogus true if a security failure happened.
+ */
+
+/**
+ * some DNS rcodes:
+ *   0  NoError   No Error [RFC1035]
+ *   1  FormErr   Format Error [RFC1035]
+ *   2  ServFail  Server Failure [RFC1035]
+ *   3  NXDomain  Non-Existent Domain [RFC1035]
+ *   4  NotImp    Not Implemented [RFC1035]
+ *   5  Refused   Query Refused [RFC1035]
+ */
 
 var DNS = {
 	get version() {return module_version; },
-
-	/**
-	 * The result of the query.
-	 * 
-	 * @typedef {Object} DNSResult
-	 * @property {Object[]|Null} data Array of rdata items, or null if error or no entry in DNS
-	 * @property {Number} rcode DNS error code
-	 * @property {Boolean} secure true if result is secure.
-	 * @property {Boolean} bogus true if a security failure happened.
-	 */
-	
-	/*
-	 * some DNS rcodes:
-	 *   0  NoError   No Error [RFC1035]
-	 *   1  FormErr   Format Error [RFC1035]
-	 *   2  ServFail  Server Failure [RFC1035]
-	 *   3  NXDomain  Non-Existent Domain [RFC1035]
-	 *   4  NotImp    Not Implemented [RFC1035]
-	 *   5  Refused   Query Refused [RFC1035]
-	 */
 
 	/**
 	 * Perform resolution of the target name.
@@ -88,6 +95,7 @@ var DNS = {
 			case 2:
 				let res = await libunbound.
 					resolve(name, libunbound.Constants["RR_TYPE_"+rrtype]);
+				/** @type {DNSResult} */
 				let result = {};
 				if (res !== null) {
 					if (res.havedata) {

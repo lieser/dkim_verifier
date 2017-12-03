@@ -20,8 +20,11 @@
 
 var EXPORTED_SYMBOLS = [ "Logging" ];
 
+// @ts-ignore
 const Cc = Components.classes;
+// @ts-ignore
 const Ci = Components.interfaces;
+// @ts-ignore
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Log.jsm");
@@ -30,11 +33,15 @@ Cu.import("resource://gre/modules/Services.jsm");
 
 // "Fatal", "Error", "Warn", "Info", "Config", "Debug", "Trace", "All"
 const LOG_LEVEL = "Error";
+// @ts-ignore
 const LOG_NAME = "DKIM_Verifier";
+// @ts-ignore
 const PREF_BRANCH = "extensions.dkim_verifier.";
 
 
+// @ts-ignore
 var prefs = Services.prefs.getBranch(PREF_BRANCH);
+// @ts-ignore
 var log;
 
 var Logging = {
@@ -90,7 +97,7 @@ var Logging = {
 /**
  * init
  * 
- * @return {Undefined}
+ * @return {void}
  */
 function init() {
 	"use strict";

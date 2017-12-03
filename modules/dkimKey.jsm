@@ -19,12 +19,14 @@
 /* global Deferred, exceptionToStr, DKIM_SigError, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, Key */
 
+// @ts-ignore
 const module_version = "1.2.0pre1";
 
 var EXPORTED_SYMBOLS = [
 	"Key"
 ];
 
+// @ts-ignore
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
@@ -39,13 +41,18 @@ Cu.import("resource://dkim_verifier/DNSWrapper.jsm");
  * @public
  */
 const KEY_DB_NAME = "dkimKey.sqlite";
+// @ts-ignore
 const PREF_BRANCH = "extensions.dkim_verifier.key.";
 
 
+// @ts-ignore
 var prefs = Services.prefs.getBranch(PREF_BRANCH);
+// @ts-ignore
 var log = Logging.getLogger("Key");
 var dbInitialized = false;
 // Deferred<boolean>
+/** @type {IDeferred<boolean>} */
+// @ts-ignore
 var dbInitializedDefer = new Deferred();
 
 var Key = {
@@ -157,6 +164,7 @@ var Key = {
 
 		log.trace("getKey Task begin");
 
+		/** @type {dkimKeyResult} */
 		var res={};
 		var tmp;
 		
@@ -204,7 +212,7 @@ var Key = {
 	 * @param {String} d_val domain of the Signer
 	 * @param {String} s_val selector
 	 * 
-	 * @return {Promise<Undefined>}
+	 * @return {Promise<void>}
 	 */
 	deleteKey: function Key_deleteKey(d_val, s_val) {
 		"use strict";
@@ -244,7 +252,7 @@ var Key = {
 	 * @param {String} d_val domain of the Signer
 	 * @param {String} s_val selector
 	 * 
-	 * @return {Promise<Undefined>}
+	 * @return {Promise<void>}
 	 */
 	markKeyAsSecure: function Key_markKeyAsSecure(d_val, s_val) {
 		"use strict";
@@ -285,7 +293,7 @@ var Key = {
  * @param {String} d_val domain of the Signer
  * @param {String} s_val selector
  * 
- * @return {Promise<Object{key, secure}>}
+ * @return {Promise<{key: string, secure: boolean}>}
  * 
  * @throws {DKIM_SigError|DKIM_InternalError}
  */
@@ -319,7 +327,7 @@ async function getKeyFromDNS(d_val, s_val) {
  * @param {String} d_val domain of the Signer
  * @param {String} s_val selector
  * 
- * @return {Promise<Object{key, secure}|Null>} The Key if it's in the DB; null otherwise
+ * @return {Promise<{key: string, secure:boolean}|Null>} The Key if it's in the DB; null otherwise
  */
 async function getKeyFromDB(d_val, s_val) {
 	"use strict";
@@ -373,7 +381,7 @@ async function getKeyFromDB(d_val, s_val) {
  * @param {String} key DKIM key
  * @param {Boolean} secure
  * 
- * @return {Promise<Undefined>}
+ * @return {Promise<void>}
  */
 function setKeyInDB(d_val, s_val, key, secure) {
 	"use strict";
