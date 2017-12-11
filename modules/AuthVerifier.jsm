@@ -284,7 +284,7 @@ function getARHResult(msgHdr, msg) {
 						dkimSigResults[i].warnings
 					);
 				} catch(exception) {
-					dkimSigResults[i] = DKIM.Verifier.handleExeption(
+					dkimSigResults[i] = DKIM.Verifier.handleException(
 						exception,
 						msg,
 						{d: dkimSigResults[i].sdid, i: dkimSigResults[i].auid}
@@ -601,7 +601,7 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 			authResultDKIM.result_str = dkimStrings.getString("NOSIG");
 			break;
 		default:
-			throw new DKIM_InternalError("unkown result: " + dkimSigResult.result);
+			throw new DKIM_InternalError("unknown result: " + dkimSigResult.result);
 	}
 
 	return authResultDKIM;

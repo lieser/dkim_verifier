@@ -256,7 +256,7 @@ var Policy = {
 	 */
 
 	 /**
-	 * Determinates if e-mail by fromAddress should be signed
+	 * Determinate if an e-mail by fromAddress should be signed
 	 * 
 	 * @param {String} fromAddress
 	 * @param {String|Null} [listID]

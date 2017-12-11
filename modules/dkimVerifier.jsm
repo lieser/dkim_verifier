@@ -1005,7 +1005,7 @@ var Verifier = (function() {
 	 * @param {Object} [DKIMSignature]
 	 * @return {dkimSigResultV2}
 	 */
-	function handleExeption(e, msg, DKIMSignature = {} ) {
+	function handleException(e, msg, DKIMSignature = {} ) {
 		if (e instanceof DKIM_SigError) {
 			// return result
 			let result = {
@@ -1223,7 +1223,7 @@ var Verifier = (function() {
 				sigRes = await verifySignature(msg, DKIMSignature);
 				log.debug("Verified DKIM-Signature " + (iDKIMSignatureIdx+1));
 			} catch(e) {
-				sigRes = handleExeption(e, msg, DKIMSignature);
+				sigRes = handleException(e, msg, DKIMSignature);
 				log.debug("Exception on DKIM-Signature " + (iDKIMSignatureIdx+1));
 			}
 
@@ -1252,7 +1252,7 @@ var Verifier = (function() {
 					result: "none",
 				};
 			} else {
-				dkimSigResultV2 = handleExeption(
+				dkimSigResultV2 = handleException(
 					new DKIM_SigError(
 						"DKIM_POLICYERROR_MISSING_SIG",
 						[msg.DKIMSignPolicy.sdid]
@@ -1516,9 +1516,10 @@ var that = {
 	log : log,
 	
 	/*
-	 * make handleExeption public
+	 * make handleException public
 	 */
-	handleExeption : handleExeption,
+	handleException : handleException,
+	handleExeption : handleException,
 
 	/*
 	 * make checkForSignatureExsistens public

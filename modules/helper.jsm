@@ -213,7 +213,7 @@ function getBaseDomainFromAddr(addr, aAdditionalParts=0) {
 			// add "invalid" subdomain to avoid error
 			var host = "invalid."+nsiURI.asciiHost;
 			res = eTLDService.getBaseDomainFromHost(host, 0);
-			// remove "invalid" sudomain from result
+			// remove "invalid" subdomain from result
 			res = res.substr(8);
 		}
 	}

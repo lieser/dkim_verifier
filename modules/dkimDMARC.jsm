@@ -201,7 +201,7 @@ async function getDMARCPolicy(fromAddress) {
 			DMARCRecord = await getDMARCRecord(baseDomain);
 			
 			if (DMARCRecord) {
-				// overrider Receiver policy if one for subdomains was specified
+				// overrides Receiver policy if one for subdomains was specified
 				DMARCRecord.p = DMARCRecord.sp || DMARCRecord.p;
 			}
 		}

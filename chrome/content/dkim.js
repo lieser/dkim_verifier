@@ -94,7 +94,7 @@ DKIM_Verifier.Display = (function() {
 	function highlightHeader(status) {
 		function highlightEmailAddresses(headerBox) {
 			if (!headerBox.emailAddresses.firstChild) {
-				log.trace("Skiped highlightEmailAddresses (!firstChild)");
+				log.trace("Skipped highlightEmailAddresses (!firstChild)");
 				return;
 			}
 			var emailValue = headerBox.emailAddresses.firstChild.
@@ -144,9 +144,9 @@ DKIM_Verifier.Display = (function() {
 	}
 
 	/*
-	 * handeles Exeption
+	 * handel Exception
 	 */
-	function handleExeption(e) {
+	function handleException(e) {
 		try {
 			// log error
 			if (e instanceof DKIM_Verifier.DKIM_InternalError) {
@@ -215,7 +215,7 @@ DKIM_Verifier.Display = (function() {
 				highlightHeader("nosig");
 				break;
 			default:
-				throw new DKIM_Verifier.DKIM_InternalError("unkown res_num: " +
+				throw new DKIM_Verifier.DKIM_InternalError("unknown res_num: " +
 					result.dkim[0].res_num);
 		}
 
@@ -401,7 +401,7 @@ var that = {
 			// register monitors for message displaying
 			gMessageListeners.push(that);
 
-			// register monitors for tabswitch
+			// register monitors for tab switch
 			var tabmail = document.getElementById("tabmail");
 			if (tabmail) {
 				that.tabMonitor = {
@@ -437,7 +437,7 @@ var that = {
 			gMessageListeners.splice(pos, 1);
 		}
 
-		// unregister monitors for tabswitch
+		// unregister monitors for tab switch
 		var tabmail = document.getElementById("tabmail");
 		if (tabmail) {
 			tabmail.unregisterTabMonitor(that.tabMonitor);
@@ -571,7 +571,7 @@ var that = {
 			log.trace("onEndHeaders Task end");
 		})();
 		promise.then(null, function onReject(exception) {
-			handleExeption(exception);
+			handleException(exception);
 		});
 	},
 	onEndAttachments: function Display_onEndAttachments() {},

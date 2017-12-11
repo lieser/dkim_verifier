@@ -1,0 +1,85 @@
+// cSpell Settings
+{
+    // Version of the setting file.  Always 0.1
+    "version": "0.1",
+    // language - current active spelling language
+    "language": "en",
+    // words - list of words to be always considered correct
+    "words": [
+        "atext",
+        "AUID",
+        "blogspot",
+        "ccontent",
+        "cfws",
+        "ctext",
+        "DKIM",
+        "DMARC",
+        "dnssec",
+        "esversion",
+        "favicons",
+        "googlecode",
+        "internalerror",
+        "libunbound",
+        "lieser",
+        "nosig",
+        "nsresult",
+        "permerror",
+        "PERMFAIL",
+        "prefs",
+        "pseudocode",
+        "qcontent",
+        "qtext",
+        "s",
+        "scriptable",
+        "SDID",
+        "SIGERROR",
+        "smtp",
+        "softfail",
+        "subdomain",
+        "subdomains",
+        "tabmail",
+        "tagspec",
+        "temperror",
+        "TEMPFAIL",
+        "tooltips",
+        "tooltiptext",
+        "vchar"
+    ],
+    // flagWords - list of words to be always considered incorrect
+    // This is useful for offensive words and common spelling errors.
+    // For example "hte" should be "the"
+    "flagWords": [],
+    "ignoreRegExpList": [
+        "_domainkey",
+        "ARHResinfo",
+        "AUTOINSERT_RULE_",
+        "USERINSERT_RULE_",
+        "collapsed[12]LfromBox",
+        "DKIMV2",
+        "DKIM_DMARCERROR_",
+        "DKIM_DMARCERROR_ILLFORMED_",
+        "DKIM_DNSERROR_",
+        "DKIM_POLICYERROR_",
+        "DKIM_POLICYERROR_KEYMISMATCH",
+        "DKIM_SIGERROR_KEY_ILLFORMED",
+        "DKIM_SIGERROR_KEY_HASHNOTINCLUDED",
+        "DKIM_SIGERROR_KEY_HASHMISMATCH",
+        "DKIM_SIGERROR_KEY_NOTEMAILKEY",
+        "DKIM_SIGERROR_BADSIG",
+        "DKIM_SIGERROR_KEYDECODE",
+        "DKIM_SIGERROR_ILLFORMED",
+        "DKIM_SIGERROR_NOKEY",
+        "DKIM_SIGERROR_KEY_TESTMODE",
+        "DKIM_SIGERROR_TIMESTAMPS",
+        "DKIM_SIGERROR_TOOLARGE_L",
+        "DKIM_SIGWARNING_",
+        "JSDNS",
+        "SDIDs",
+        // mozilla
+        "@mozilla.org/intl/scriptableunicodeconverter",
+        "nsIURI",
+        "XPCOMUtils",
+        // general
+        "IntelliSense"
+    ]
+}
