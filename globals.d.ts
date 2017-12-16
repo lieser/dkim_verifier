@@ -43,3 +43,7 @@ interface IDeferred<T> {
     reject: any;
 }
 
+interface Stringbundle {
+    getString(aName: string): string;
+    getFormattedString(key: string, strArray: string[]): string;
+}

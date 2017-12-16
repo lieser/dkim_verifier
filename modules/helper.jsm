@@ -84,19 +84,30 @@ function Deferred() {
 
 var exceptionStr = Log.exceptionStr;
 
-/**
- * DKIM stringbundle with the same access methods as XUL:stringbundle
- */
-var dkimStrings = {
-	stringbundle: Services.strings.createBundle(
-		"chrome://dkim_verifier/locale/dkim.properties"
-	),
-	getString: this.stringbundle.GetStringFromName,
-	getFormattedString: function (key, strArray) {
-		return this.stringbundle.formatStringFromName(key, strArray, strArray.length);
-	},
-}
+class Stringbundle {
+	/**
+	 * DKIM stringbundle with the same access methods as XUL:stringbundle
+	 * 
+	 * @constructor
+	 * @param {string} propertiesPath
+	 */
+	constructor(propertiesPath) {
+		this.stringbundle = Services.strings.createBundle(propertiesPath);
 
+		/** @type {nsIStringBundle["GetStringFromName"]} */
+		this.getString = this.stringbundle.GetStringFromName;
+
+		/**
+		 * @param {string} key
+		 * @param {string[]} strArray
+		 * @return {string}
+		 */
+		this.getFormattedString = function (key, strArray) {
+			return this.stringbundle.formatStringFromName(key, strArray, strArray.length);
+		}
+	}
+}
+var dkimStrings = new Stringbundle("chrome://dkim_verifier/locale/dkim.properties");
 
 /**
  * Returns true if e-mail address is from domain or a subdomain of it.
