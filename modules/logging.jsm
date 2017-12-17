@@ -47,16 +47,15 @@ var Logging = {
 	 * 
 	 * @param {String} loggerName
 	 * 
-	 * @return {Logger} Logger
+	 * @return {Log.Logger} Logger
 	 */
 	getLogger: function Logging_getLogger(loggerName){
 		"use strict";
 
 		if (loggerName) {
 			return Log.repository.getLogger(LOG_NAME + "." + loggerName);
-		} else {
-			return Log.repository.getLogger(LOG_NAME);
 		}
+		return Log.repository.getLogger(LOG_NAME);
 	},
 	
 	/**
@@ -65,7 +64,7 @@ var Logging = {
 	 * @param {String} loggerName
 	 * @param {String} subPrefBranch
 	 * 
-	 * @return {Array} [capp, dapp]
+	 * @return {Array} [consoleAppender, dumpAppender]
 	 */
 	addAppenderTo: function Logging_addAppenderTo(loggerName, subPrefBranch){
 		"use strict";
@@ -108,41 +107,18 @@ function init() {
 /**
  * SimpleFormatter
  * 
- * @extends Formatter
+ * @extends Log.Formatter
  */
-function SimpleFormatter(dateFormat) {
-		"use strict";
-	
-	if (dateFormat)
-		this.dateFormat = dateFormat;
-}
-SimpleFormatter.prototype = Object.create(Log.Formatter.prototype, {
-	dateFormat: {
-		get: function() {
-			"use strict";
-			if (!this._dateFormat)
-				this._dateFormat = "%Y-%m-%d %H:%M:%S";
-			return this._dateFormat;
-		},
-		set: function(format) {
-			"use strict";
-			this._dateFormat = format;
-		}
-	},
-
-	format: {
-		value: function SimpleFormatter_format(message) {
-			"use strict";
-			var date = new Date(message.time);
-			var formatMsg = new String(
-				date.toLocaleFormat(this.dateFormat) + "\t" +
-				message.loggerName + "\t" + message.levelDesc + "\t" +
-				message.message + "\n");
-			formatMsg.level = message.level;
-			return formatMsg;
-		}
+class SimpleFormatter extends Log.Formatter {
+	format(message) {
+		var date = new Date(message.time);
+		var formatMsg =
+			date.toLocaleString(undefined, { hour12: false }) + "\t" +
+			message.loggerName + "\t" + message.levelDesc + "\t" +
+			message.message + "\n";
+		return formatMsg;
 	}
-});
+}
 
 // https://wiki.mozilla.org/Labs/JS_Modules#Logging
 /**
@@ -150,7 +126,7 @@ SimpleFormatter.prototype = Object.create(Log.Formatter.prototype, {
  * 
  * @param {String} loggerName
  * 
- * @return {Logger}
+ * @return {Log.Logger}
  */
 function setupLogging(loggerName) {
 		"use strict";
@@ -175,9 +151,10 @@ function setupLogging(loggerName) {
 /**
  * Preference observer for a Logger, ConsoleAppender and DumpAppender
  * 
- * @param {Logger} logger
- * @param {ConsoleAppender} capp
- * @param {DumpAppender} dapp
+ * @param {Log.Logger} logger
+ * @param {Log.ConsoleAppender} capp
+ * @param {Log.DumpAppender} dapp
+ * @return {PrefObserver}
  */
 function PrefObserver(logger, capp, dapp) {
 	"use strict";
@@ -185,6 +162,8 @@ function PrefObserver(logger, capp, dapp) {
 	this.logger = logger;
 	this.capp = capp;
 	this.dapp = dapp;
+
+	return this;
 }
 PrefObserver.prototype = {
 	/*
@@ -220,6 +199,8 @@ PrefObserver.prototype = {
 					this.dapp.level = Log.Level[prefs.getCharPref("logging.dump")];
 				}
 				break;
+			default:
+				// ignore other pref changes
 		}
 	},
 };

@@ -1,9 +1,6 @@
 
 let Sqlite: any;
 
-namespace Log {
-    declare function exceptionStr(e: Error): string;
-}
 
 
 // The following is for Visual Studio Code IntelliSense only:
