@@ -453,7 +453,7 @@ function DNS_get_OS_DNSServers() {
 	} else {
 		// Try getting a nameserver from /etc/resolv.conf.
 		try {
-			var resolvconf = Components.classes["@mozilla.org/file/local;1"].createInstance(Components.interfaces.nsILocalFile);
+			var resolvconf = Components.classes["@mozilla.org/file/local;1"].createInstance(Components.interfaces.nsIFile);
 			resolvconf.initWithPath("/etc/resolv.conf");
 			
 			var stream = Components.classes["@mozilla.org/network/file-input-stream;1"].createInstance();
