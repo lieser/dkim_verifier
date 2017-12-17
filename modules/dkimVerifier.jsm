@@ -1367,7 +1367,7 @@ var that = {
 	 * Creates a message object given the msgURI.
 	 * 
 	 * @param {String} msgURI
-	 * @return {Promise<Object>}
+	 * @return {Promise<{]}>}
 	 *         .headerFields {Map}
 	 *           key: {String} <header name>
 	 *           value: {Array[String]}

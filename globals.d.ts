@@ -1,3 +1,5 @@
+///<reference path="mozilla.d.ts" />
+///<reference path="modules/AuthVerifier.d.ts" />
 
 let Sqlite: any;
 

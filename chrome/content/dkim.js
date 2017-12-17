@@ -144,7 +144,7 @@ DKIM_Verifier.Display = (function() {
 	}
 
 	/*
-	 * handel Exception
+	 * handle Exception
 	 */
 	function handleException(e) {
 		try {

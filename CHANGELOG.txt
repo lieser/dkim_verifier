@@ -1,4 +1,4 @@
-2.0.0pre1 [2017-11-14]
+2.0.0pre2 [2017-11-17]
 ------------------
  - now requires at least Thunderbird 52
  - fixed incompatibility with Thunderbird 57
