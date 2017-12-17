@@ -57,6 +57,7 @@
  *
  * 1.4.0
  * -----
+ *  - fixed incompatibility with Gecko 57
  *  - no longer needs ModuleGetter.jsm
  *
  * 1.3.0
@@ -1050,7 +1051,11 @@ function DNS_readAllFromSocket(host,port,outputData,listener)
 		var pump = Components.
 			classes["@mozilla.org/network/input-stream-pump;1"].
 			createInstance(Components.interfaces.nsIInputStreamPump);
-		pump.init(stream, -1, -1, 0, 0, false);
+		if (Services.vc.compare(Services.appinfo.platformVersion, "57.0-1") >= 0) {
+			pump.init(stream, 0, 0, false);
+		} else {
+			pump.init(stream, -1, -1, 0, 0, false);
+		}
 		pump.asyncRead(dataListener,null);
 	} catch (ex) {
 		return ex;
