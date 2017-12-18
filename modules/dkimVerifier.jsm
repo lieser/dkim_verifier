@@ -605,18 +605,23 @@ var Verifier = (function() {
 		var AUIDTag = null;
 		try {
 			AUIDTag = parseTagValue(tagMap, "i", sig_i_tag);
-		} catch (exception if exception instanceof DKIM_SigError &&
-		         exception.errorType === "DKIM_SIGERROR_ILLFORMED_I") {
-			switch (prefs.getIntPref("error.illformed_i.treatAs")) {
-				case 0: // error
-					throw exception;
-				case 1: // warning
-					DKIMSignature.warnings.push({name: "DKIM_SIGERROR_ILLFORMED_I"});
-					break;
-				case 2: // ignore
-					break;
-				default:
-					throw new DKIM_InternalError("invalid error.illformed_i.treatAs");
+		} catch (exception) {
+			if (exception instanceof DKIM_SigError &&
+				exception.errorType === "DKIM_SIGERROR_ILLFORMED_I")
+			{
+				switch (prefs.getIntPref("error.illformed_i.treatAs")) {
+					case 0: // error
+						throw exception;
+					case 1: // warning
+						DKIMSignature.warnings.push({ name: "DKIM_SIGERROR_ILLFORMED_I" });
+						break;
+					case 2: // ignore
+						break;
+					default:
+						throw new DKIM_InternalError("invalid error.illformed_i.treatAs");
+				}
+			} else {
+				throw exception;
 			}
 		}
 		if (AUIDTag === null) {
@@ -653,21 +658,26 @@ var Verifier = (function() {
 		var SelectorTag;
 		try {
 			SelectorTag = parseTagValue(tagMap, "s", sub_domain+"(?:\\."+sub_domain+")*");
-		} catch (exception if exception instanceof DKIM_SigError &&
-		         exception.errorType === "DKIM_SIGERROR_ILLFORMED_S") {
-			// try to parse selector in a more relaxed way
-			var sub_domain_ = "(?:[A-Za-z0-9_](?:[A-Za-z0-9_-]*[A-Za-z0-9_])?)";
-			SelectorTag = parseTagValue(tagMap, "s", sub_domain_+"(?:\\."+sub_domain_+")*");
-			switch (prefs.getIntPref("error.illformed_s.treatAs")) {
-				case 0: // error
-					throw exception;
-				case 1: // warning
-					DKIMSignature.warnings.push({name: "DKIM_SIGERROR_ILLFORMED_S"});
-					break;
-				case 2: // ignore
-					break;
-				default:
-					throw new DKIM_InternalError("invalid error.illformed_s.treatAs");
+		} catch (exception) {
+			if (exception instanceof DKIM_SigError &&
+				exception.errorType === "DKIM_SIGERROR_ILLFORMED_S")
+			{
+				// try to parse selector in a more relaxed way
+				var sub_domain_ = "(?:[A-Za-z0-9_](?:[A-Za-z0-9_-]*[A-Za-z0-9_])?)";
+				SelectorTag = parseTagValue(tagMap, "s", sub_domain_+"(?:\\."+sub_domain_+")*");
+				switch (prefs.getIntPref("error.illformed_s.treatAs")) {
+					case 0: // error
+						throw exception;
+					case 1: // warning
+						DKIMSignature.warnings.push({name: "DKIM_SIGERROR_ILLFORMED_S"});
+						break;
+					case 2: // ignore
+						break;
+					default:
+						throw new DKIM_InternalError("invalid error.illformed_s.treatAs");
+				}
+			} else {
+				throw exception;
 			}
 		}
 		if (SelectorTag === null) {
