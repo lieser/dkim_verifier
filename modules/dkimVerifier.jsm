@@ -26,6 +26,7 @@
 // options for JSHint
 /* jshint strict:true, esnext:true, moz:true, smarttabs:true */
 /* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
+/* eslint strict: ["warn", "function"] */
 /* global Components, Services */
 /* global Logging, Key, Policy, MsgReader */
 /* global dkimStrings, addrIsInDomain2, domainIsInDomain, exceptionToStr, stringEndsWith, stringEqual, writeStringToTmpFile, DKIM_SigError, DKIM_InternalError */
@@ -234,7 +235,7 @@ var Verifier = (function() {
 				var hash = hasher.finish(false);
 
 				// convert the binary hash data to a hex string.
-				hash = hash.split("").map(function (e, i) {
+				hash = hash.split("").map(function (e/*, i*/) {
 					return toHexString(e.charCodeAt(0));
 				}).join("");
 				return hash;
@@ -431,7 +432,7 @@ var Verifier = (function() {
 	 * parse the DKIM-Signature header field
 	 * header field is specified in Section 3.5 of RFC 6376
 	 */
-	function parseDKIMSignature(DKIMSignature) {
+	function parseDKIMSignature(DKIMSignature) { // eslint-disable-line complexity
 		var DKIMSignatureHeader = DKIMSignature.original_header;
 
 		// strip DKIM-Signatur header name
@@ -527,7 +528,7 @@ var Verifier = (function() {
 		DKIMSignature.d = SDIDTag[0];
 
 		// get Signed header fields (plain-text, but see description; REQUIRED)
-		var sig_h_tag = "("+hdr_name+")"+"(?:"+pattFWS+"?:"+pattFWS+"?"+hdr_name+")*";
+		var sig_h_tag = "("+hdr_name+")(?:"+pattFWS+"?:"+pattFWS+"?"+hdr_name+")*";
 		var signedHeadersTag = parseTagValue(tagMap, "h", sig_h_tag);
 		if (signedHeadersTag === null) {
 			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_H");
@@ -888,9 +889,8 @@ var Verifier = (function() {
 		// If only one \r\n rests, there were only emtpy lines or body was empty.
 		if (body === "\r\n") {
 			return "";
-		} else {
-			return body;
 		}
+		return body;
 	}
 
 	/*
@@ -978,7 +978,7 @@ var Verifier = (function() {
 
 		// get header fields specified by the "h=" tag
 		// and join their canonicalized form
-		for(var i = 0; i <  DKIMSignature.h_array.length; i++) {
+		for(var i = 0; i < DKIMSignature.h_array.length; i++) {
 			// if multiple instances of the same header field are signed
 			// include them in reverse order (from bottom to top)
 			headerFieldArray = headerFields.get(DKIMSignature.h_array[i]);
@@ -1251,6 +1251,7 @@ var Verifier = (function() {
 	 * 
 	 * @param {Object} msg
 	 * @param {dkimSigResultV2[]} signatures
+	 * @return {void}
 	 */
 	function checkForSignatureExsistens(msg, signatures) {
 		// check if a DKIM signature exists
@@ -1300,6 +1301,7 @@ var that = {
 	 * @deprecated Use verify2() or AuthVerifier.verify() instead.
 	 * @param {String} msgURI
 	 * @param {dkimResultCallback} dkimResultCallback
+	 * @return {void}
 	 */
 	verify: function Verifier_verify(msgURI, dkimResultCallback) {
 		let promise = (async () => {
@@ -1377,7 +1379,7 @@ var that = {
 	 * Creates a message object given the msgURI.
 	 * 
 	 * @param {String} msgURI
-	 * @return {Promise<{]}>}
+	 * @return {Promise<{}>}
 	 *         .headerFields {Map}
 	 *           key: {String} <header name>
 	 *           value: {Array[String]}
@@ -1426,6 +1428,7 @@ var that = {
 	 * 
 	 * @param {Object} msg
 	 * @param {dkimSigResultV2[]} signatures
+	 * @return {void}
 	 */
 	sortSignatures: function Verifier_sortSignatures(msg, signatures) {
 		function result_compare(sig1, sig2) {

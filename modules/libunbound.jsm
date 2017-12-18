@@ -151,6 +151,7 @@ var prefs = Services.prefs.getBranch(PREF_BRANCH);
 // @ts-ignore
 var log = Logging.getLogger("libunbound");
 
+/** @type {Worker} */
 var libunboundWorker =
 	new ChromeWorker("resource://dkim_verifier/libunboundWorker.jsm");
 var maxCallId = 0;
@@ -168,7 +169,8 @@ let libunbound = {
 	 * @return {Promise<ub_result>}
 	 */
 	resolve: function libunbound_resolve(name, rrtype=Constants.RR_TYPE_A) {
-		let defer = new Deferred();		
+		/** @type {IDeferred<ub_result>} */
+		let defer = new Deferred();
 		openCalls.set(++maxCallId, defer);
 		
 		libunboundWorker.postMessage({
@@ -244,9 +246,8 @@ function update_ctx() {
 	nameservers = nameservers.filter(function(element /*, index, array*/) {
 		if (element !== "") {
 			return true;
-		} else {
-			return false;
 		}
+		return false;
 	});
 	
 	// add root trust anchor
@@ -265,6 +266,8 @@ function update_ctx() {
 
 /**
  * Handle the callbacks from the ChromeWorker
+ * @param {MessageEvent} msg
+ * @return {void}
  */
 libunboundWorker.onmessage = function(msg) {
 	try {
@@ -350,6 +353,8 @@ var prefObserver = {
 			case "dnssec.trustAnchor":
 				update_ctx();
 				break;
+			default:
+				// ignore other options
 		}
 	},
 };

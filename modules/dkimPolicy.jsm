@@ -133,6 +133,8 @@ var Policy = {
 						case "DataSignersDefault":
 							versionDataSignersDefault = element.getResultByName("version");
 							break;
+						default:
+							log.warn("Version table contains unknown entry: " + element.getResultByName("name"))
 					}
 				});
 				log.trace("versionTableSigners: "+versionTableSigners+
@@ -363,7 +365,7 @@ var Policy = {
 		});
 		return promise;
 	},
-	
+
 	/**
 	 * Checks the SDID and AUID of a DKIM signatures.
 	 * 
@@ -371,7 +373,7 @@ var Policy = {
 	 * @param {String} from
 	 * @param {String} sdid
 	 * @param {String} auid
-	 * @param {{name: String, params?: any[]}[]} warnings
+	 * @param {{name: String, params: (string[] | undefined)}[]} warnings
 	 * @return {void}
 	 * @throws DKIM_SigError
 	 */
@@ -384,9 +386,8 @@ var Policy = {
 		    !allowedSDIDs.some(function (element/*, index, array*/) {
 		      if (prefs.getBoolPref("signRules.sdid.allowSubDomains")) {
 		        return stringEndsWith(sdid, element);
-		      } else {
-		        return stringEqual(sdid, element);
 		      }
+		      return stringEqual(sdid, element);
 		    })) {
 			if (error_prefs.getBoolPref("policy.wrong_sdid.asWarning")) {
 				warnings.push(

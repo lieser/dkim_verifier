@@ -582,6 +582,8 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 					case "DKIM_SIGERROR_KEY_REVOKED":
 					case "DKIM_SIGERROR_KEY_TESTMODE":
 						break;
+					default:
+						log.warn("unknown errorType: " + errorType);
 				}
 			}
 			let errorMsg =

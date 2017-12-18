@@ -205,6 +205,8 @@ function resolve(name, rrtype=Constants.RR_TYPE_A) {
 					data.push(str);
 					break;
 				}
+				default:
+					log.warn("skipped converting of unknown rdata type: " + rrtype)
 			}
 
 			dataPtr = dataPtr.increment();
@@ -413,6 +415,8 @@ function update_ctx(conf, debuglevel, getNameserversFromOS, nameservers, trustAn
 
 /**
  * Handle the requests from libunbound.jsm
+ * @param {MessageEvent} msg
+ * @return {void}
  */
 onmessage = function(msg) {
 	log.trace("Message received from main script: " + msg.data.toSource());

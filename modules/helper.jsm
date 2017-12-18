@@ -328,7 +328,7 @@ function tryGetString(stringbundle, name) {
  * 
  * @param {XUL_stringbundle} stringbundle
  * @param {String} name
- * @param {String[]|(String[][]} [params]
+ * @param {String[]|(String[])[]} [params]
  * 
  * @return {String|null}
  */

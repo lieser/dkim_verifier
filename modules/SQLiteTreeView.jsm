@@ -85,9 +85,9 @@ SQLiteTreeView.prototype = {
 	 * Executes sql an returns the result
 	 * 
 	 * @param {String} sql
-	 * @param {Object} params named params
+	 * @param {Object} [params] named params
 	 * 
-	 * @return {String[][]}
+	 * @return {(String[])[]}
 	 */
 	_doSQL: function SQLiteTreeView__doSQL(sql, params) {
 		"use strict";
@@ -97,7 +97,7 @@ SQLiteTreeView.prototype = {
 		try {
 			statement = this.conn.createStatement(sql);
 			// Named params.
-			if (params && typeof(params) == "object") {
+			if (params && typeof params === "object") {
 				for (let k in params) {
 					statement.bindByName(k, params[k]);
 				}

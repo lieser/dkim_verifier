@@ -190,7 +190,11 @@ function parseResinfo(str) {
 	let methodspec_p = ";" + CFWS_op + method_p + CFWS_op + result_p;
 	reg_match = match(str, methodspec_p);
 	res.method = reg_match[1];
-	res.method_version = reg_match[2];
+	if (reg_match[2]) {
+		res.method_version = parseInt(reg_match[2], 10);
+	} else {
+		res.method_version = 1
+	}
 	res.result = reg_match[3];
 
 	// get reasonspec (optional)

@@ -391,9 +391,13 @@ var that = {
 
 			// load preferences
 			if (prefs.getIntPref("statusbarpanel.result.style") === 1) {
-				statusbarpanel["useIcons"] = false;
+				if (statusbarpanel) {
+					statusbarpanel["useIcons"] = false;
+				}
 			} else {
-				statusbarpanel["useIcons"] = true;
+				if (statusbarpanel) {
+					statusbarpanel["useIcons"] = true;
+				}
 			}
 
 			that.initHeaderEntry();
@@ -464,6 +468,8 @@ var that = {
 						statusbarpanel.useIcons = true;
 					}
 					break;
+				default:
+					// ignore other options
 			}
 		} catch (e) {
 			log.fatal(DKIM_Verifier.exceptionToStr(e));

@@ -139,6 +139,9 @@
 /* jshint strict:true, moz:true */
 /* jshint -W064 */ //"Missing 'new' prefix when invoking a constructor."
 /* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
+/* eslint strict: ["warn", "function"] */
+/* eslint complexity: "off" */
+/* eslint no-magic-numbers: "off" */
 /* global Components, Log, Services */
 /* exported EXPORTED_SYMBOLS, JSDNS */
 
@@ -186,6 +189,7 @@ var timeout_read_write;
 
 /**
  * init
+ * @return {void}
  */
 function init() {
 	"use strict";
@@ -240,6 +244,8 @@ var prefObserver = {
 					// log.trace("timeout_read_write disabled");
 				}
 				break;
+			default:
+				// ignore other options
 		}
 	},
 };
@@ -1018,8 +1024,8 @@ function DNS_readAllFromSocket(host,port,outputData,listener)
 		outstream.write(outputData,outputData.length);
 
 		var stream = transport.openInputStream(0,0,0);
-		var instream = Components.classes["@mozilla.org/binaryinputstream;1"]
-			.createInstance(Components.interfaces.nsIBinaryInputStream);
+		var instream = Components.classes["@mozilla.org/binaryinputstream;1"].
+			createInstance(Components.interfaces.nsIBinaryInputStream);
 		instream.setInputStream(stream);
 
 		var dataListener = {
