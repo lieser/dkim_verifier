@@ -77,9 +77,7 @@ var error_prefs = Services.prefs.getBranch(ERROR_PREF_BRANCH);
 var log = Logging.getLogger("Policy");
 var dbInitialized = false;
 /** @type {IDeferred<boolean>} */
-// @ts-ignore
 var dbInitializedDefer = new Deferred();
-
 
 
 var favicons;

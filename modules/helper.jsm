@@ -58,7 +58,8 @@ var eTLDService = Components.classes["@mozilla.org/network/effective-tld-service
 
 
 /**
- * @typedef {Object} Deferred
+ * Deferred Promise
+ * @class
  * @template T
  * @property {Promise<T>} promise
  * @property {Function} resolve
@@ -66,20 +67,14 @@ var eTLDService = Components.classes["@mozilla.org/network/effective-tld-service
  * @property {Function} reject
  *           Function to call to reject promise
  */
-
- /**
- * Deferred Promise
- * 
- * @constructor
- *  
- * @return {Deferred}
- */
-function Deferred() {
-	this.promise = new Promise((resolve, reject) => {
-		this.resolve = resolve;
-		this.reject = reject;
-	});
-	return this;
+class Deferred {
+	constructor() {
+		this.promise = new Promise((resolve, reject) => {
+			this.resolve = resolve;
+			this.reject = reject;
+		});
+		return this;
+	}
 }
 
 var exceptionStr = Log.exceptionStr;

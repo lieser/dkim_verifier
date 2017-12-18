@@ -53,7 +53,6 @@ var log = Logging.getLogger("Key");
 var dbInitialized = false;
 // Deferred<boolean>
 /** @type {IDeferred<boolean>} */
-// @ts-ignore
 var dbInitializedDefer = new Deferred();
 
 var Key = {
