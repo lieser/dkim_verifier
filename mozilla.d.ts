@@ -1,5 +1,12 @@
+////////////////////////////////////////////////////////////////////////////////
+//// Mozilla specific JS extensions
 
 declare function fixIterator<T>(obj: any, type: T): T[]
+
+interface Object extends Object {
+    toSource(): string;
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 //// Mozilla specific modules
@@ -25,6 +32,11 @@ declare module Components {
     interface ComponentsUtils {
         import(url: string, scope?: object): object;
     }
+}
+
+/** JavaScript code module "resource://gre/modules/FileUtils.jsm" */
+declare module FileUtils {
+    function openSafeFileOutputStream(file: nsIFile, modeFlags?: number): nsIFileOutputStream;
 }
 
 /** JavaScript code module "resource://gre/modules/Log.jsm" */
@@ -75,6 +87,7 @@ declare module Log {
 
 /** JavaScript code module "resource://gre/modules/NetUtil.jsm" */
 declare module NetUtil {
+    function asyncCopy(aSource: nsIInputStream, aSink: nsIOutputStream, aCallback?: (status: nsresult) => void): nsIAsyncStreamCopier;
     function asyncFetch(aSource: aWhatToLoad|nsIChannel|nsIInputStream, aCallback: asyncFetchCallback): void
     function newURI(aTarget: string|nsIFile, aOriginCharset?, aBaseURI?: nsIURI): nsIURI;
     function readInputStreamToString(aInputStream: nsIInputStream, aCount: number, aOptions?): string;
@@ -94,6 +107,7 @@ declare module NetUtil {
 
 /** JavaScript code module "resource://gre/modules/Services.jsm" */
 declare module Services {
+    let io: nsIIOService;
     let prefs: nsIPrefService;
     let scriptloader: mozIJSSubScriptLoader;
     let strings: nsIStringBundleService;
@@ -115,6 +129,7 @@ declare module MailServices {
 ////////////////////////////////////////////////////////////////////////////////
 //// Mozilla specific interfaces/types
 
+interface nsIAsyncStreamCopier {nsIAsyncStreamCopier: never}
 interface nsIChannel {nsIChannel: never}
 
 interface nsIInputStream {
@@ -124,6 +139,10 @@ interface nsIInputStream {
 }
 
 interface nsIFile {nsIFile: never}
+
+interface nsIFileOutputStream extends nsIOutputStream {nsIFileOutputStream: never}
+
+interface nsIOutputStream {nsIOutputStream: never}
 
 interface nsIPrefService {
     getBranch(aPrefRoot: string): nsIPrefBranch;
@@ -147,6 +166,10 @@ interface nsIPrefBranch {
 
 type nsIObserver = object;
 
+interface nsIIOService {
+    newURI(aSpec: string, aOriginCharset: string|null, aBaseURI: nsIURI|null): nsIURI;
+}
+
 interface nsIStringBundleService {
     createBundle(aURLSpec: string): nsIStringBundle;
 }
@@ -156,7 +179,9 @@ interface nsIStringBundle {
     GetStringFromName(aName: string): string;
 }
 
-interface nsIURI {nsIURI: never}
+interface nsIURI {
+    readonly asciiHost: string;
+}
 
 interface nsresult {nsresult: never};
 

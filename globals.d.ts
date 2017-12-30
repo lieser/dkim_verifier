@@ -41,8 +41,3 @@ interface IDeferred<T> {
     resolve(reason: T): void;
     reject(reason: Error): void;
 }
-
-interface Stringbundle {
-    getString(aName: string): string;
-    getFormattedString(key: string, strArray: string[]): string;
-}

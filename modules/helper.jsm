@@ -304,7 +304,7 @@ function stringEqual(str1, str2) {
 /**
  * try to get string from stringbundle
  * 
- * @param {XUL_stringbundle} stringbundle
+ * @param {Stringbundle} stringbundle
  * @param {String} name
  * 
  * @return {String|null}
@@ -325,9 +325,9 @@ function tryGetString(stringbundle, name) {
 /**
  * try to get formatted string from stringbundle
  * 
- * @param {XUL_stringbundle} stringbundle
+ * @param {Stringbundle} stringbundle
  * @param {String} name
- * @param {String[]|(String[])[]} [params]
+ * @param {String[]} [params]
  * 
  * @return {String|null}
  */
