@@ -36,6 +36,7 @@
         "SIGERROR",
         "smtp",
         "softfail",
+        "stringbundle",
         "subdomain",
         "subdomains",
         "tabmail",

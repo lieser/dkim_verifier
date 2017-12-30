@@ -363,15 +363,15 @@ function writeStringToTmpFile(string, fileName) {
 
 	// You can also optionally pass a flags parameter here. It defaults to
 	// FileUtils.MODE_WRONLY | FileUtils.MODE_CREATE | FileUtils.MODE_TRUNCATE;
-	var ostream = FileUtils.openSafeFileOutputStream(file);
+	var oStream = FileUtils.openSafeFileOutputStream(file);
 
 	var converter = Components.classes["@mozilla.org/intl/scriptableunicodeconverter"].
 					createInstance(Components.interfaces.nsIScriptableUnicodeConverter);
 	converter.charset = "UTF-8";
-	var istream = converter.convertToInputStream(string);
+	var iStream = converter.convertToInputStream(string);
 
 	// The last argument (the callback) is optional.
-	NetUtil.asyncCopy(istream, ostream, function(status) {
+	NetUtil.asyncCopy(iStream, oStream, function(status) {
 		if (!Components.isSuccessCode(status)) {
 			// Handle error!
 			log.debug("writeStringToTmpFile nsresult: "+status);
