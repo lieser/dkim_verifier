@@ -1,4 +1,4 @@
-declare let Cu: Components_utils;
+declare let Cu: ComponentsUtils;
 
 declare let createHeaderEntry: any;
 declare let currentHeaderData: any;

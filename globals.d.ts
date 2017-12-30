@@ -38,8 +38,8 @@ namespace DKIM {
 
 interface IDeferred<T> {
     promise: Promise<T>;
-    resolve: any;
-    reject: any;
+    resolve(reason: T): void;
+    reject(reason: Error): void;
 }
 
 interface Stringbundle {

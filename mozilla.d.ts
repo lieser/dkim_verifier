@@ -1,102 +1,33 @@
-declare module Components {
-    let classes: Array;
-    let interfaces: Components_interfaces;
-    let results: Components_results;
-    let utils: Components_utils;
-}
-
-declare module Services {
-    let prefs: nsIPrefService;
-    let scriptloader: mozIJSSubScriptLoader;
-    let strings: nsIStringBundleService;
-}
-
-declare module MailServices {
-    let accounts: nsIMsgAccountManager
-}
-
-interface Components_interfaces {
-    [key: string]: object;
-    readonly nsMsgFolderFlags: nsMsgFolderFlags;
-    readonly nsIMsgIdentity: nsIMsgIdentity;
-}
-
-interface Components_results {
-    [key: string]: number;
-}
-
-interface Components_utils {
-    import(url: string, scope?: object): object;
-}
-
-interface mozIJSSubScriptLoader {
-    loadSubScript(url: string, targetObj?: object , charset?: string): any;
-}
-
-interface nsIPrefService {
-    getBranch(aPrefRoot: string): nsIPrefBranch;
-}
-
-interface nsIPrefBranch {
-    addObserver(aDomain: string, aObserver: nsIObserver, aHoldWeak: boolean);
-    clearUserPref(aPrefName: string);
-    getBoolPref(aPrefName: string, aDefaultValue?: boolean): boolean;
-    getCharPref(aPrefName: string, aDefaultValue?: string): string;
-    getIntPref(aPrefName: string, aDefaultValue?: number): number;
-    getPrefType(aPrefName: string): number;
-    prefHasUserValue(aPrefName: string): boolean;
-    setIntPref(aPrefName: string, aValue: number);
-    removeObserver(aDomain: string, aObserver: nsIObserver);
-    readonly PREF_INVALID: number;
-    readonly PREF_STRING: number;
-    readonly PREF_INT: number;
-    readonly PREF_BOOL: number;
-}
-
-type nsIObserver = object;
-
-interface nsIStringBundleService {
-    createBundle(aURLSpec: string): nsIStringBundle;
-}
-
-interface nsIStringBundle {
-    formatStringFromName(aName: string, params: string[], length: number): string;
-    GetStringFromName(aName: string): string;
-}
-
-interface nsIMsgDBHdr {
-    getStringProperty(propertyName: string): string;
-    setStringProperty(propertyName: string, propertyValue: string);
-    readonly folder: nsIMsgFolder;
-    readonly mime2DecodedAuthor: string;
-}
-
-interface nsIMsgFolder {
-    getFlag(flag: number): boolean;
-    getUriForMsg(msgHdr: nsIMsgDBHdr): string;
-    readonly server: nsIMsgIncomingServer;
-}
-
-interface nsMsgFolderFlags {
-    readonly SentMail: number;
-}
-
-interface nsIMsgIncomingServer {
-    getCharValue(attr: string): string;
-    getIntValue(attr: string): number;
-}
-
-interface nsIMsgAccountManager {
-    getIdentitiesForServer(server: nsIMsgIncomingServer): nsIMsgIdentity[];
-}
-
-interface nsIMsgIdentity {
-    email: string;
-}
 
 declare function fixIterator<T>(obj: any, type: T): T[]
 
+////////////////////////////////////////////////////////////////////////////////
+//// Mozilla specific modules
 
+declare module Components {
+    let classes: Array;
+    let interfaces: ComponentsInterfaces;
+    let results: ComponentsResults;
+    let utils: ComponentsUtils;
+
+    function isSuccessCode(returnCode: nsresult): boolean;
+
+    interface ComponentsInterfaces {
+        [key: string]: object;
+        readonly nsMsgFolderFlags: nsMsgFolderFlags;
+        readonly nsIMsgIdentity: nsIMsgIdentity;
+    }
+
+    interface ComponentsResults {
+        [key: string]: number;
+    }
+
+    interface ComponentsUtils {
+        import(url: string, scope?: object): object;
+    }
+}
+
+/** JavaScript code module "resource://gre/modules/Log.jsm" */
 declare module Log {
     function exceptionStr(e: Error): string;
 
@@ -140,4 +71,124 @@ declare module Log {
 
         level: number;
     }
+}
+
+/** JavaScript code module "resource://gre/modules/NetUtil.jsm" */
+declare module NetUtil {
+    function asyncFetch(aSource: aWhatToLoad|nsIChannel|nsIInputStream, aCallback: asyncFetchCallback): void
+    function newURI(aTarget: string|nsIFile, aOriginCharset?, aBaseURI?: nsIURI): nsIURI;
+    function readInputStreamToString(aInputStream: nsIInputStream, aCount: number, aOptions?): string;
+
+    interface asyncFetchCallback { (inputStream: nsIInputStream, status: nsresult, request: nsIRequest): void }
+
+    interface aWhatToLoad {
+        uri: string | nsIURI | nsIFile;
+        loadingNode?;
+        loadingPrincipal?;
+        triggeringPrincipal?;
+        securityFlags?;
+        contentPolicyType?;
+        loadUsingSystemPrincipal?: boolean;
+    };
+}
+
+/** JavaScript code module "resource://gre/modules/Services.jsm" */
+declare module Services {
+    let prefs: nsIPrefService;
+    let scriptloader: mozIJSSubScriptLoader;
+    let strings: nsIStringBundleService;
+
+    interface mozIJSSubScriptLoader {
+        loadSubScript(url: string, targetObj?: object , charset?: string): any;
+    }
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+//// Thunderbird specific modules
+
+declare module MailServices {
+    let accounts: nsIMsgAccountManager
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+//// Mozilla specific interfaces/types
+
+interface nsIChannel {nsIChannel: never}
+
+interface nsIInputStream {
+    available(): number;
+    close(): void;
+    isNonBlocking(): boolean;
+}
+
+interface nsIFile {nsIFile: never}
+
+interface nsIPrefService {
+    getBranch(aPrefRoot: string): nsIPrefBranch;
+}
+
+interface nsIPrefBranch {
+    addObserver(aDomain: string, aObserver: nsIObserver, aHoldWeak: boolean);
+    clearUserPref(aPrefName: string);
+    getBoolPref(aPrefName: string, aDefaultValue?: boolean): boolean;
+    getCharPref(aPrefName: string, aDefaultValue?: string): string;
+    getIntPref(aPrefName: string, aDefaultValue?: number): number;
+    getPrefType(aPrefName: string): number;
+    prefHasUserValue(aPrefName: string): boolean;
+    setIntPref(aPrefName: string, aValue: number);
+    removeObserver(aDomain: string, aObserver: nsIObserver);
+    readonly PREF_INVALID: number;
+    readonly PREF_STRING: number;
+    readonly PREF_INT: number;
+    readonly PREF_BOOL: number;
+}
+
+type nsIObserver = object;
+
+interface nsIStringBundleService {
+    createBundle(aURLSpec: string): nsIStringBundle;
+}
+
+interface nsIStringBundle {
+    formatStringFromName(aName: string, params: string[], length: number): string;
+    GetStringFromName(aName: string): string;
+}
+
+interface nsIURI {nsIURI: never}
+
+interface nsresult {nsresult: never};
+
+////////////////////////////////////////////////////////////////////////////////
+//// Thunderbird specific interfaces
+
+interface nsIMsgDBHdr {
+    getStringProperty(propertyName: string): string;
+    setStringProperty(propertyName: string, propertyValue: string);
+    readonly folder: nsIMsgFolder;
+    readonly mime2DecodedAuthor: string;
+}
+
+interface nsIMsgFolder {
+    getFlag(flag: number): boolean;
+    getUriForMsg(msgHdr: nsIMsgDBHdr): string;
+    readonly server: nsIMsgIncomingServer;
+}
+
+interface nsMsgFolderFlags {
+    readonly SentMail: number;
+}
+
+interface nsIMsgIncomingServer {
+    getCharValue(attr: string): string;
+    getIntValue(attr: string): number;
+}
+
+interface nsIMsgAccountManager {
+    getIdentitiesForServer(server: nsIMsgIncomingServer): nsIMsgIdentity[];
+}
+
+interface nsIMsgIdentity {
+    email: string;
 }
