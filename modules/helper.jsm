@@ -385,57 +385,48 @@ function writeStringToTmpFile(string, fileName) {
 
 /**
  * DKIM signature error.
- * 
- * @constructor
- * 
- * @param {String} errorType
- * @param {any[]} [errorStrParams]
- * 
- * @return {DKIM_SigError}
  */
-function DKIM_SigError(errorType, errorStrParams = []) {
-	this.name = dkimStrings.getString("DKIM_SIGERROR");
-	this.errorType = errorType;
-	this.errorStrParams = errorStrParams;
-	this.message =
-		tryGetFormattedString(dkimStrings, errorType, errorStrParams) ||
-		errorType ||
-		dkimStrings.getString("DKIM_SIGERROR_DEFAULT");
-
-	// modify stack and lineNumber, to show where this object was created,
-	// not where Error() was
-	var err = new Error();
-	this.stack = err.stack.substring(err.stack.indexOf('\n')+1);
-	this.lineNumber = parseInt(this.stack.match(/[^:]*$/m), 10);
-	return this;
+class DKIM_SigError extends Error {
+	/**
+	 * DKIM signature error.
+	 * 
+	 * @constructor
+	 * 
+	 * @param {String} errorType
+	 * @param {any[]} [errorStrParams]
+	 * 
+	 * @return {DKIM_SigError}
+	 */
+	constructor(errorType, errorStrParams = []) {
+		super(tryGetFormattedString(dkimStrings, errorType, errorStrParams) ||
+			errorType ||
+			dkimStrings.getString("DKIM_SIGERROR_DEFAULT"));
+		this.name = dkimStrings.getString("DKIM_SIGERROR");
+		this.errorType = errorType;
+		this.errorStrParams = errorStrParams;
+	}
 }
-DKIM_SigError.prototype = new Error();
-DKIM_SigError.prototype.constructor = DKIM_SigError;
 
 /**
  * DKIM internal error
- * 
- * @constructor
- * 
- * @param {String|null} [message]
- * @param {String} [errorType]
- * 
- * @return {DKIM_InternalError}
  */
-function DKIM_InternalError(message, errorType) {
-	this.name = dkimStrings.getString("DKIM_INTERNALERROR");
-	this.errorType = errorType;
-	this.message = message ||
-		tryGetString(dkimStrings, errorType) ||
-		errorType ||
-		dkimStrings.getString("DKIM_INTERNALERROR_DEFAULT");
-	
-	// modify stack and lineNumber, to show where this object was created,
-	// not where Error() was
-	var err = new Error();
-	this.stack = err.stack.substring(err.stack.indexOf('\n')+1);
-	this.lineNumber = parseInt(this.stack.match(/[^:]*$/m), 10);
-	return this;
+class DKIM_InternalError extends Error {
+	/**
+	 * DKIM internal error
+	 * 
+	 * @constructor
+	 * 
+	 * @param {String|null} [message]
+	 * @param {String} [errorType]
+	 * 
+	 * @return {DKIM_InternalError}
+	 */
+	constructor(message, errorType) {
+		super(message ||
+			tryGetString(dkimStrings, errorType) ||
+			errorType ||
+			dkimStrings.getString("DKIM_INTERNALERROR_DEFAULT"));
+		this.name = dkimStrings.getString("DKIM_INTERNALERROR");
+		this.errorType = errorType;
+	}
 }
-DKIM_InternalError.prototype = new Error();
-DKIM_InternalError.prototype.constructor = DKIM_InternalError;
