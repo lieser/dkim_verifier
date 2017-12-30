@@ -1,7 +1,7 @@
 /*
  * helper.jsm
  *
- * Version: 1.5.0pre1 (14 November 2017)
+ * Version: 2.0.0pre1 (30 December 2017)
  * 
  * Copyright (c) 2013-2017 Philippe Lieser
  * 
@@ -242,19 +242,23 @@ function getDomainFromAddr(addr) {
  * 
  * Based on https://developer.mozilla.org/en-US/docs/Code_snippets/File_I_O#Asynchronously
  * 
- * @param {String|nsIURI|nsIFile|nsIChannel|nsIInputStream} aSource The source to read from.
+ * @param {String} aSource The source to read from.
  * 
  * @return {Promise<String>}
  */
 function readStringFrom(aSource) {
 	log.trace("readStringFrom begin");
 
+	/** @type {IDeferred<string>} */
 	var defer = new Deferred();
 
-	NetUtil.asyncFetch(aSource, function(inputStream, status) {
+	NetUtil.asyncFetch({
+		uri: aSource,
+		loadUsingSystemPrincipal: true
+	}, function(inputStream, status) {
 		if (!Components.isSuccessCode(status)) {
 			// Handle error!
-			defer.reject("readStringFrom: nsresult: "+status);
+			defer.reject(new Error("readStringFrom: nsresult: "+status));
 			// defer.reject(Object.keys(Components.results).find(o=>o[status] === value));
 			log.trace("readStringFrom nsresult: "+status);
 			return;
