@@ -132,7 +132,7 @@ var Policy = {
 							versionDataSignersDefault = element.getResultByName("version");
 							break;
 						default:
-							log.warn("Version table contains unknown entry: " + element.getResultByName("name"))
+							log.warn("Version table contains unknown entry: " + element.getResultByName("name"));
 					}
 				});
 				log.trace("versionTableSigners: "+versionTableSigners+

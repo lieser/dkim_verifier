@@ -398,7 +398,7 @@ function DNS_get_OS_DNSServers() {
 					reg = registryDevInterfaces.openChild(interfaceID_ + "\\#\\Control",
 						registry.ACCESS_READ);
 					if (reg.hasValue("Linked")) {
-						linked = reg.readIntValue("Linked")
+						linked = reg.readIntValue("Linked");
 					}
 					reg.close();
 				}

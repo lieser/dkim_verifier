@@ -193,7 +193,7 @@ function parseResinfo(str) {
 	if (reg_match[2]) {
 		res.method_version = parseInt(reg_match[2], 10);
 	} else {
-		res.method_version = 1
+		res.method_version = 1;
 	}
 	res.result = reg_match[3];
 
@@ -219,7 +219,7 @@ function parseResinfo(str) {
 		if (!res.propertys[reg_match[1]]) {
 			res.propertys[reg_match[1]] = {};
 		}
-		res.propertys[reg_match[1]][reg_match[2]] = reg_match[3]
+		res.propertys[reg_match[1]][reg_match[2]] = reg_match[3];
 	}
 
 	log.trace(res.toSource());

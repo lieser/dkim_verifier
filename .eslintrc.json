@@ -84,6 +84,7 @@
         "no-unused-vars": "error",
         // Stylistic Issues
         "no-mixed-spaces-and-tabs": ["warn", "smart-tabs"],
+        "semi": "warn",
         // ECMAScript 6
         "constructor-super": "error",
         "no-const-assign": "warn",

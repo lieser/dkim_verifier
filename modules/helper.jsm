@@ -13,7 +13,7 @@
 
 // options for JSHint
 /* jshint strict:true, moz:true, smarttabs:true */
-/* global Components, FileUtils, Log, NetUtil, Services */
+/* global Components, FileUtils, NetUtil, Services */
 /* global Logging */
 /* exported EXPORTED_SYMBOLS, addrIsInDomain, addrIsInDomain2, domainIsInDomain, getBaseDomainFromAddr, getDomainFromAddr, readStringFrom, stringEndsWith, stringEqual, tryGetString, tryGetFormattedString, writeStringToTmpFile, DKIM_SigError, DKIM_InternalError */
 
@@ -76,8 +76,6 @@ class Deferred {
 	}
 }
 
-var exceptionStr = Log.exceptionStr;
-
 class Stringbundle {
 	/**
 	 * DKIM stringbundle with the same access methods as XUL:stringbundle
@@ -98,7 +96,7 @@ class Stringbundle {
 		 */
 		this.getFormattedString = function (key, strArray) {
 			return this.stringbundle.formatStringFromName(key, strArray, strArray.length);
-		}
+		};
 	}
 }
 var dkimStrings = new Stringbundle("chrome://dkim_verifier/locale/dkim.properties");

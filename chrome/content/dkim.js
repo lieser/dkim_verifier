@@ -633,7 +633,7 @@ var that = {
 	 */
 	markKeyAsSecure : function Display_markKeyAsSecure() {
 		let promise = (async () => {
-			log.trace("markKeyAsSecure Task")
+			log.trace("markKeyAsSecure Task");
 			await DKIM_Verifier.Key.markKeyAsSecure(
 				header.dkimResult.sdid, header.dkimResult.selector);
 			
@@ -649,7 +649,7 @@ var that = {
 	 */
 	updateKey : function Display_updateKey() {
 		let promise = (async () => {
-			log.trace("updateKey Task")
+			log.trace("updateKey Task");
 			await DKIM_Verifier.Key.deleteKey(
 				header.dkimResult.sdid, header.dkimResult.selector);
 			

@@ -206,7 +206,7 @@ function resolve(name, rrtype=Constants.RR_TYPE_A) {
 					break;
 				}
 				default:
-					log.warn("skipped converting of unknown rdata type: " + rrtype)
+					log.warn("skipped converting of unknown rdata type: " + rrtype);
 			}
 
 			dataPtr = dataPtr.increment();
