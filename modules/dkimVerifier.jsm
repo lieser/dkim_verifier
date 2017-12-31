@@ -29,7 +29,7 @@
 /* eslint strict: ["warn", "function"] */
 /* global Components, Services */
 /* global Logging, Key, Policy, MsgReader */
-/* global dkimStrings, addrIsInDomain2, domainIsInDomain, exceptionToStr, stringEndsWith, stringEqual, writeStringToTmpFile, DKIM_SigError, DKIM_InternalError */
+/* global dkimStrings, addrIsInDomain2, domainIsInDomain, stringEndsWith, stringEqual, writeStringToTmpFile, DKIM_SigError, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, Verifier */
 
 // @ts-ignore
@@ -1032,7 +1032,7 @@ var Verifier = (function() {
 					DKIMSignature.keyQueryResult.secure,
 			};
 
-			log.warn(exceptionToStr(e));
+			log.warn(e);
 			
 			return result;
 		}
@@ -1335,13 +1335,13 @@ var that = {
 					result : "TEMPFAIL",
 					errorType : exception.errorType
 				};
-				log.warn(exceptionToStr(exception));
+				log.warn(exception);
 			}
 
 			dkimResultCallback(msg.msgURI, result);
 		})();
 		promise.then(null, function onReject(exception) {
-			log.fatal("verify: " + exceptionToStr(exception));
+			log.fatal("verify failed", exception);
 		});
 	},
 
@@ -1369,7 +1369,7 @@ var that = {
 			return res;
 		})();
 		promise.then(null, function onReject(exception) {
-			log.warn("verify2: " + exceptionToStr(exception));
+			log.warn("verify2 failed", exception);
 		});
 		return promise;
 	},
@@ -1417,7 +1417,7 @@ var that = {
 			return msg;
 		})();
 		promise.then(null, function onReject(exception) {
-			log.warn("createMsg: " + exceptionToStr(exception));
+			log.warn("createMsg failed", exception);
 		});
 		return promise;
 	},

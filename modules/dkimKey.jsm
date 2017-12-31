@@ -17,7 +17,7 @@
 /* eslint strict: ["warn", "function"] */
 /* global Components, Services, Sqlite */
 /* global Logging, DNS */
-/* global Deferred, exceptionToStr, DKIM_SigError, DKIM_InternalError */
+/* global Deferred, DKIM_SigError, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, Key */
 
 // @ts-ignore
@@ -136,7 +136,7 @@ var Key = {
 		})();
 		promise.then(null, function onReject(exception) {
 			// Failure!  We can inspect or report the exception.
-			log.fatal(exceptionToStr(exception));
+			log.fatal(exception);
 			dbInitializedDefer.reject(exception);
 		});
 		return dbInitializedDefer.promise;
@@ -242,7 +242,7 @@ var Key = {
 		})();
 		promise.then(null, function onReject(exception) {
 			// Failure!  We can inspect or report the exception.
-			log.fatal(exceptionToStr(exception));
+			log.fatal(exception);
 		});
 		
 		return promise;
@@ -282,7 +282,7 @@ var Key = {
 		})();
 		promise.then(null, function onReject(exception) {
 			// Failure!  We can inspect or report the exception.
-			log.fatal(exceptionToStr(exception));
+			log.fatal(exception);
 		});
 		
 		return promise;
@@ -411,7 +411,7 @@ function setKeyInDB(d_val, s_val, key, secure) {
 	})();
 	promise.then(null, function onReject(exception) {
 		// Failure!  We can inspect or report the exception.
-		log.fatal(exceptionToStr(exception));
+		log.fatal(exception);
 	});
 	
 	return promise;

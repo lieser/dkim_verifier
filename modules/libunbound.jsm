@@ -18,7 +18,7 @@
 /* jshint strict:true, moz:true */
 /* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
 /* global Components, OS, Services, ChromeWorker */
-/* global Logging, Deferred, exceptionToStr, DKIM_InternalError */
+/* global Logging, Deferred, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, libunbound */
 
 "use strict";
@@ -311,7 +311,7 @@ libunboundWorker.onmessage = function(msg) {
 		let defer = openCalls.get(msg.data.callId);
 		if (defer === undefined) {
 			if (exception) {
-				log.fatal(exceptionToStr(exception));
+				log.fatal("Exception in libunboundWorker", exception);
 			} else {
 				log.error("Got unexpected callback: " + msg.data);
 			}
@@ -324,7 +324,7 @@ libunboundWorker.onmessage = function(msg) {
 		}
 		defer.resolve(msg.data.result);
 	} catch (e) {
-		log.fatal(exceptionToStr(e));
+		log.fatal(e);
 	}
 };
 

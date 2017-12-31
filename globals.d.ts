@@ -15,7 +15,6 @@ namespace _DKIM_Verifier {
     let _Verifier = Verifier;
     // helper.jsm
     let _DKIM_InternalError = DKIM_InternalError;
-    let _exceptionToStr = exceptionToStr;
 }
 
 namespace DKIM_Verifier {
@@ -26,8 +25,6 @@ namespace DKIM_Verifier {
     let Policy = _DKIM_Verifier._Policy;
     // helper.jsm
     let DKIM_InternalError = _DKIM_Verifier._DKIM_InternalError;
-    let exceptionToStr = _DKIM_Verifier._exceptionToStr;
-    let XexceptionToStr = _DKIM_Verifier._exceptionToStr;
 };
 
 namespace DKIM {

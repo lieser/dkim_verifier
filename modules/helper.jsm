@@ -15,7 +15,7 @@
 /* jshint strict:true, moz:true, smarttabs:true */
 /* global Components, FileUtils, Log, NetUtil, Services */
 /* global Logging */
-/* exported EXPORTED_SYMBOLS, addrIsInDomain, addrIsInDomain2, domainIsInDomain, exceptionToStr, getBaseDomainFromAddr, getDomainFromAddr, readStringFrom, stringEndsWith, stringEqual, tryGetString, tryGetFormattedString, writeStringToTmpFile, DKIM_SigError, DKIM_InternalError */
+/* exported EXPORTED_SYMBOLS, addrIsInDomain, addrIsInDomain2, domainIsInDomain, getBaseDomainFromAddr, getDomainFromAddr, readStringFrom, stringEndsWith, stringEqual, tryGetString, tryGetFormattedString, writeStringToTmpFile, DKIM_SigError, DKIM_InternalError */
 
 "use strict";
 
@@ -25,7 +25,6 @@ var EXPORTED_SYMBOLS = [
 	"addrIsInDomain",
 	"addrIsInDomain2",
 	"domainIsInDomain",
-	"exceptionToStr",
 	"getBaseDomainFromAddr",
 	"getDomainFromAddr",
 	"readStringFrom",
@@ -143,57 +142,6 @@ function addrIsInDomain2(addr, domain) {
 function domainIsInDomain(domain1, domain2) {
 	return stringEqual(domain1, domain2) ||
 		stringEndsWith(domain1, "." + domain2);
-}
-
-/**
- * @param {Error} exception
- * 
- * @return {String} formatted error message
- */
-function exceptionToStr(exception) {
-	log.trace("exceptionToStr begin");
-	log.debug(exception.toSource());
-
-	if(!exception) {
-		log.fatal("exceptionToStr: exception undefined or null");
-		exception = new Error();
-	}
-
-	var str = exceptionStr(exception);
-	log.trace(str);
-	log.debug(str);
-	
-	// cut stack trace from Sqlite.jsm, promise.js, Promise.jsm, Task.jsm calls
-	var posStackTrace = str.lastIndexOf("Stack trace: ");
-	if (posStackTrace !== -1) {
-		var tmp = str.substr(posStackTrace+13);
-		tmp = tmp.replace(
-			/ < (?:[^ ]| (?!< ))*(?:Sqlite\.jsm|promise\.js|Promise\.jsm|Promise-backend\.js|Task\.jsm)(?:[^ ]| (?!< ))*/g,
-			""
-		);
-		str = str.substr(0, posStackTrace+13) + tmp;
-	}
-	
-	// Sqlite.jsm errors
-	if (exception.errors) {
-		// exception.errors is an array of mozIStorageError
-		str += "\n" + exception.errors.map(function (e) {
-				return e.message;
-			}).join("\n");
-		str += "\nreported at: ";
-		str += new Error().stack.split("\n")[1];
-	}
-	
-	// DKIM_SigError or DKIM_InternalError errors
-	if (exception instanceof DKIM_SigError ||
-	    exception instanceof DKIM_InternalError) {
-		if (exception.errorType) {
-			str = exception.errorType+": "+str;
-		}
-	}
-
-	log.trace("exceptionToStr end");
-	return str;
 }
 
 /**
@@ -317,7 +265,7 @@ function tryGetString(stringbundle, name) {
 	try {
 		return stringbundle.getString(name);
 	} catch (ex) {
-		log.warn(exceptionToStr(ex));
+		log.warn(ex);
 		return null;
 	}
 }
@@ -339,7 +287,7 @@ function tryGetFormattedString(stringbundle, name, params = []) {
 	try {
 		return stringbundle.getFormattedString(name, params);
 	} catch (ex) {
-		log.warn(exceptionToStr(ex));
+		log.warn(ex);
 		return null;
 	}
 }

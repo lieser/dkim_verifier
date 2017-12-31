@@ -17,7 +17,7 @@
 /* jshint strict:true, moz:true, esversion:6, smarttabs:true, unused:true */
 /* global Components, Services, MailServices, fixIterator */
 /* global Logging, ARHParser */
-/* global dkimStrings, domainIsInDomain, exceptionToStr, getDomainFromAddr, tryGetFormattedString, DKIM_InternalError */
+/* global dkimStrings, domainIsInDomain, getDomainFromAddr, tryGetFormattedString, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, AuthVerifier */
 
 "use strict";
@@ -179,7 +179,7 @@ var AuthVerifier = {
 			return authResult;
 		})();
 		promise.then(null, function onReject(exception) {
-			log.warn(exceptionToStr(exception));
+			log.warn(exception);
 		});
 		return promise;
 	},
@@ -195,7 +195,7 @@ var AuthVerifier = {
 			saveAuthResult(msgHdr, null);
 		})();
 		promise.then(null, function onReject(exception) {
-			log.warn(exceptionToStr(exception));
+			log.warn(exception);
 		});
 		return promise;
 	},
@@ -237,7 +237,7 @@ function getARHResult(msgHdr, msg) {
 		try {
 			arh = ARHParser.parse(msg.headerFields.get("authentication-results")[i]);
 		} catch (exception) {
-			log.error(exceptionToStr(exception));
+			log.error("Ignoring error in parsing of ARH", exception);
 			continue;
 		}
 

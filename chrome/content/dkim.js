@@ -150,9 +150,9 @@ DKIM_Verifier.Display = (function() {
 		try {
 			// log error
 			if (e instanceof DKIM_Verifier.DKIM_InternalError) {
-				log.error(DKIM_Verifier.exceptionToStr(e));
+				log.error(e);
 			} else {
-				log.fatal(DKIM_Verifier.exceptionToStr(e));
+				log.fatal(e);
 			}
 
 			// show error
@@ -169,7 +169,7 @@ DKIM_Verifier.Display = (function() {
 			};
 			displayResult(authResult);
 		} catch (e) {
-			log.fatal(DKIM_Verifier.exceptionToStr(e));
+			log.fatal(e);
 		}
 	}
 		
@@ -424,7 +424,7 @@ var that = {
 			}
 			log.trace("startup end");
 		} catch (e) {
-			log.fatal(DKIM_Verifier.exceptionToStr(e));
+			log.fatal(e);
 		}
 	},
 
@@ -472,7 +472,7 @@ var that = {
 					// ignore other options
 			}
 		} catch (e) {
-			log.fatal(DKIM_Verifier.exceptionToStr(e));
+			log.fatal(e);
 		}
 	},
 	
@@ -512,7 +512,7 @@ var that = {
 			}
 			log.trace("onBeforeShowHeaderPane end");
 		} catch (e) {
-			log.fatal(DKIM_Verifier.exceptionToStr(e));
+			log.fatal(e);
 		}
 	},
 
@@ -544,7 +544,7 @@ var that = {
 			}
 			log.trace("onStartHeaders end");
 		} catch (e) {
-			log.fatal(DKIM_Verifier.exceptionToStr(e));
+			log.fatal(e);
 		}
 	},
 
@@ -603,7 +603,7 @@ var that = {
 		DKIM_Verifier.AuthVerifier.resetResult(msgHdr).then(function () {
 			that.onEndHeaders();
 		}, function (exception) {
-			log.fatal(DKIM_Verifier.exceptionToStr(exception));
+			log.fatal(exception);
 		});
 	},
 
@@ -624,7 +624,7 @@ var that = {
 			that.reverify();
 		})();
 		promise.then(null, function onReject(exception) {
-			log.fatal(DKIM_Verifier.exceptionToStr(exception));
+			log.fatal(exception);
 		});
 	},
 
@@ -640,7 +640,7 @@ var that = {
 			that.reverify();
 		})();
 		promise.then(null, function onReject(exception) {
-			log.fatal(DKIM_Verifier.exceptionToStr(exception));
+			log.fatal(exception);
 		});
 	},
 
@@ -656,7 +656,7 @@ var that = {
 			that.reverify();
 		})();
 		promise.then(null, function onReject(exception) {
-			log.fatal(DKIM_Verifier.exceptionToStr(exception));
+			log.fatal(exception);
 		});
 	},
 };

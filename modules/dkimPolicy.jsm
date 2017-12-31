@@ -17,7 +17,7 @@
 /* eslint strict: ["warn", "function"] */
 /* global Components, Services, Sqlite */
 /* global Logging, DMARC */
-/* global addrIsInDomain, Deferred, exceptionToStr, getBaseDomainFromAddr, readStringFrom, stringEndsWith, stringEqual, DKIM_SigError, DKIM_InternalError */
+/* global addrIsInDomain, Deferred, getBaseDomainFromAddr, readStringFrom, stringEndsWith, stringEqual, DKIM_SigError, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, Policy */
 
 // @ts-ignore
@@ -235,7 +235,7 @@ var Policy = {
 		})();
 		promise.then(null, function onReject(exception) {
 			// Failure!  We can inspect or report the exception.
-			log.fatal(exceptionToStr(exception));
+			log.fatal(exception);
 			dbInitializedDefer.reject(exception);
 		});
 		return dbInitializedDefer.promise;
@@ -359,7 +359,7 @@ var Policy = {
 		})();
 		promise.then(null, function onReject(exception) {
 			// Failure!  We can inspect or report the exception.
-			log.warn(exceptionToStr(exception));
+			log.warn(exception);
 		});
 		return promise;
 	},
@@ -437,7 +437,7 @@ var Policy = {
 		})();
 		promise.then(null, function onReject(exception) {
 			// Failure!  We can inspect or report the exception.
-			log.warn(exceptionToStr(exception));
+			log.warn(exception);
 		});
 		return promise;
 	},
@@ -496,7 +496,7 @@ var Policy = {
 		})();
 		promise.then(null, function onReject(exception) {
 			// Failure!  We can inspect or report the exception.
-			log.fatal(exceptionToStr(exception));
+			log.fatal(exception);
 		});
 		return promise;
 	},
@@ -547,7 +547,7 @@ var Policy = {
 		})();
 		promise.then(null, function onReject(exception) {
 			// Failure!  We can inspect or report the exception.
-			log.fatal(exceptionToStr(exception));
+			log.fatal(exception);
 		});
 		return promise;
 	},

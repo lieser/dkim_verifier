@@ -22,7 +22,7 @@
 /* eslint strict: ["warn", "function"] */
 /* global Components, Services, XPCOMUtils */
 /* global Logging, Verifier, DNS */
-/* global exceptionToStr, getBaseDomainFromAddr, getDomainFromAddr, DKIM_InternalError */
+/* global getBaseDomainFromAddr, getDomainFromAddr, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, DMARC */
 
 // @ts-ignore
@@ -95,7 +95,7 @@ var DMARC = {
 			DMARCPolicy = await getDMARCPolicy(fromAddress);
 		} catch (e) {
 			// ignore errors on getting the DMARC policy
-			log.error(exceptionToStr(e));
+			log.error("Ignored error on getting the DMARC policy", e);
 			return res;
 		}
 		let neededPolicy = prefs.getCharPref("shouldBeSigned.neededPolicy");
@@ -278,7 +278,7 @@ async function getDMARCRecord(domain) {
 		try {
 			DMARCRecord = parseDMARCRecord(result.data[0]);
 		} catch (e) {
-			log.error(exceptionToStr(e));
+			log.error("Ignored error in parsing of DMARC record", e);
 		}
 	}
 	
