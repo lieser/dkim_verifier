@@ -145,7 +145,6 @@ class SimpleConsoleAppender extends Log.ConsoleAppender {
 	 */
 	append(message) {
 		if (message) {
-			let m = this._formatter.format(message);
 			let level = "";
 			if (message.level >= Log.Level.Error) {
 				level = "error";
@@ -161,13 +160,20 @@ class SimpleConsoleAppender extends Log.ConsoleAppender {
 				level = "trace";
 			}
 
+			/** @type {any[]} */
+			let args = [this._formatter.format(message)];
 			if (!message.message && this.isError(message.params)) {
 				// @ts-ignore
 				let trace = this.parseStack(message.params.stack);
-				this.sendConsoleAPIMessage(level, trace[0], [m], {stacktrace: trace, timeStamp: message.time});
+				if (this.level <= Log.Level.Trace) {
+					let logTrace = this.getStack(Components.stack.caller).slice(2);
+					args.push("Logged in");
+					args.push(logTrace);
+				}
+				this.sendConsoleAPIMessage(level, trace[0], args, {stacktrace: trace, timeStamp: message.time});
 			} else {
 				let frame = this.getStack(Components.stack.caller, 3)[2];
-				this.sendConsoleAPIMessage(level, frame, [m], {timeStamp: message.time});
+				this.sendConsoleAPIMessage(level, frame, args, {timeStamp: message.time});
 			}
 		}
 	}
