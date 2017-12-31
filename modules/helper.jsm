@@ -401,9 +401,10 @@ class DKIM_SigError extends Error {
 		super(tryGetFormattedString(dkimStrings, errorType, errorStrParams) ||
 			errorType ||
 			dkimStrings.getString("DKIM_SIGERROR_DEFAULT"));
-		this.name = dkimStrings.getString("DKIM_SIGERROR");
+		this.name = dkimStrings.getString("DKIM_SIGERROR") + " (" + errorType + ")";
 		this.errorType = errorType;
 		this.errorStrParams = errorStrParams;
+		this.stack = this.stack.substring(this.stack.indexOf('\n')+1);
 	}
 }
 
@@ -426,7 +427,8 @@ class DKIM_InternalError extends Error {
 			tryGetString(dkimStrings, errorType) ||
 			errorType ||
 			dkimStrings.getString("DKIM_INTERNALERROR_DEFAULT"));
-		this.name = dkimStrings.getString("DKIM_INTERNALERROR");
+		this.name = dkimStrings.getString("DKIM_INTERNALERROR") + " (" + errorType + ")";
 		this.errorType = errorType;
+		this.stack = this.stack.substring(this.stack.indexOf('\n')+1);
 	}
 }

@@ -15,6 +15,7 @@ declare module Components {
     let classes: Array;
     let interfaces: ComponentsInterfaces;
     let results: ComponentsResults;
+    let stack: nsIStackFrame;
     let utils: ComponentsUtils;
 
     function isSuccessCode(returnCode: nsresult): boolean;
@@ -43,27 +44,57 @@ declare module FileUtils {
 declare module Log {
     function exceptionStr(e: Error): string;
 
-    class Appender {
+    abstract class Appender {
         constructor(formatter: Formatter);
+        append(message: LogMessage): void;
+        abstract doAppend(formatted: string): void;
+
+        readonly _formatter: Formatter;
+        readonly _name: string;
         level: number;
     }
-    class ConsoleAppender extends Appender {};
+    class ConsoleAppender extends Appender {
+        doAppend(formatted: string): void;
+    };
     class DumpAppender extends Appender {};
 
-    class Formatter {}
+    abstract class Formatter {
+        abstract format(LogMessage): string;
+    }
+    class BasicFormatter extends Formatter {
+        formatText(message: LogMessage): string
+    }
 
     let repository: LoggerRepository;
     let Level: {
-        All: 0,
+        Fatal: 70,
+        Error: 60,
+        Warn: 50,
+        Info: 40,
         Config:	30,
         Debug: 20,
-        // Desc 	{ 0: "ALL", 10: "TRACE", 20: "DEBUG", 30: "CONFIG", 40: "INFO", 50: "WARN", 60: "ERROR", 70: "FATAL" }
-        Error: 30,
-        Fatal: 70,
-        Info: 40,
-        // Numbers 	{ "ALL": 0, "TRACE": 10, "DEBUG": 20, "CONFIG": 30, "INFO": 40, "WARN": 50, "ERROR": 60, "FATAL": 70 }
         Trace: 10,
-        Warn: 50
+        All: -1,
+        Desc: {
+            70: "FATAL",
+            60: "ERROR",
+            50: "WARN",
+            40: "INFO",
+            30: "CONFIG",
+            20: "DEBUG",
+            10: "TRACE",
+            "-1":  "ALL",
+        },
+        Numbers: {
+            "FATAL": 70,
+            "ERROR": 60,
+            "WARN": 50,
+            "INFO": 40,
+            "CONFIG": 30,
+            "DEBUG": 20,
+            "TRACE": 10,
+            "ALL": -1,
+        }
     }
 
     interface LoggerRepository {
@@ -74,14 +105,27 @@ declare module Log {
         addAppender(appender: Appender);
 
         fatal(text: string, params?: Object): void;
+        fatal(error: Error): void;
         error(text: string, params?: Object): void;
+        error(error: Error): void;
         warn(text: string, params?: Object): void;
+        warn(error: Error): void;
         info(text: string, params?: Object): void;
         config(text: string, params?: Object): void;
         debug(text: string, params?: Object): void;
+        debug(error: Error): void;
         trace(text: string, params?: Object): void;
 
         level: number;
+    }
+
+    interface LogMessage {
+        loggerName: string;
+        level: number;
+        levelDesc: string;
+        time: number;
+        message: string|null;
+        params?: Object;
     }
 }
 
@@ -168,6 +212,16 @@ type nsIObserver = object;
 
 interface nsIIOService {
     newURI(aSpec: string, aOriginCharset: string|null, aBaseURI: nsIURI|null): nsIURI;
+}
+
+interface nsIStackFrame {
+    readonly caller: nsIStackFrame;
+    readonly filename: string;
+    readonly language: number;
+    readonly languageName: string;
+    readonly lineNumber: number;
+    readonly name: string;
+    readonly sourceLine: string;
 }
 
 interface nsIStringBundleService {

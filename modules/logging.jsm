@@ -75,7 +75,7 @@ var Logging = {
 		var dappender;
 		if (prefs.getPrefType(subPrefBranch+"logging.console") === prefs.PREF_STRING) {
 			// A console appender outputs to the JS Error Console
-			cappender = new Log.ConsoleAppender(formatter);
+			cappender = new SimpleConsoleAppender(formatter);
 			cappender.level = Log.Level[prefs.getCharPref(subPrefBranch+"logging.console")];
 			logger.addAppender(cappender);
 		}
@@ -106,17 +106,201 @@ function init() {
 
 /**
  * SimpleFormatter
- * 
- * @extends Log.Formatter
  */
-class SimpleFormatter extends Log.Formatter {
+class SimpleFormatter extends Log.BasicFormatter {
+	/**
+	 * @param {Log.LogMessage} message
+	 * @return {string}
+	 */
 	format(message) {
 		var date = new Date(message.time);
 		var formatMsg =
 			date.toLocaleString(undefined, { hour12: false }) + "\t" +
-			message.loggerName + "\t" + message.levelDesc + "\t" +
-			message.message + "\n";
+			message.loggerName + "\t" +
+			message.levelDesc + "\t" +
+			this.formatText(message) + "\n";
 		return formatMsg;
+	}
+}
+
+/**
+ * SimpleConsoleAppender
+ * 
+ * An improved version of Mozilla's ConsoleAppender, using the nsIConsoleAPIStorage interface.
+ */
+class SimpleConsoleAppender extends Log.ConsoleAppender {
+	constructor(formatter) {
+		super(formatter);
+		this._name = "SimpleConsoleAppender";
+		this.consoleAPIStorage = Components.classes["@mozilla.org/consoleAPI-storage;1"].
+			getService(Components.interfaces.nsIConsoleAPIStorage);
+		if (!this.consoleAPIStorage) {
+			throw new Error("Failed to get nsIConsoleAPIStorage");
+		}
+	}
+
+	/**
+	 * @param {Log.LogMessage} message
+	 * @return {void}
+	 */
+	append(message) {
+		if (message) {
+			let m = this._formatter.format(message);
+			let level = "";
+			if (message.level >= Log.Level.Error) {
+				level = "error";
+			} else if (message.level >= Log.Level.Warn) {
+				level = "warn";
+			} else if (message.level >= Log.Level.Info) {
+				level = "info";
+			} else if(message.level >= Log.Level.Config) {
+				level = "log";
+			} else if(message.level >= Log.Level.Debug) {
+				level = "debug";
+			} else {
+				level = "trace";
+			}
+
+			if (!message.message && this.isError(message.params)) {
+				// @ts-ignore
+				let trace = this.parseStack(message.params.stack);
+				this.sendConsoleAPIMessage(level, trace[0], [m], {stacktrace: trace, timeStamp: message.time});
+			} else {
+				let frame = this.getStack(Components.stack.caller, 3)[2];
+				this.sendConsoleAPIMessage(level, frame, [m], {timeStamp: message.time});
+			}
+		}
+	}
+	
+	/**
+	 * A stack frame in the format used by the Browser Console,
+	 * via console-api-log-event notifications.
+	 * @typedef StackFrame
+	 * @property {string} filename
+	 * @property {number} lineNumber
+	 * @property {number} [columnNumber]
+	 * @property {string} functionName
+	 * @property {number} [language]
+	 */
+	
+	/**
+	 * @typedef MessageOptions
+	 * @property {StackFrame[]} [stacktrace]
+	 * @property {number} [timeStamp]
+	 */
+
+	/**
+	 * Send a Console API message. This function will send a console-api-log-event
+	 * notification through the nsIObserverService.
+	 * 
+	 * Based on the one from Mozilla's https://dxr.mozilla.org/mozilla-central/source/toolkit/modules/Console.jsm
+	 * @param {string} aLevel Level of the message ("error", "exception", "warn", "info", "log", "debug", "trace", ...)
+	 * @param {StackFrame} aFrame The youngest stack frame coming from Components.stack, as formatted by getStack().
+	 * @param {any[]} aArgs The arguments given to the console method.
+	 * @param {MessageOptions} [aOptions]
+	 * @return {void}
+	 */
+	sendConsoleAPIMessage(aLevel, aFrame, aArgs, aOptions = {}) {
+		let aConsole = {
+			innerID: null,
+			consoleID: "",
+			prefix: ""
+		};
+		let consoleEvent = {
+			ID: "jsm",
+			innerID: aConsole.innerID || aFrame.filename,
+			consoleID: aConsole.consoleID,
+			category: "JS",
+			level: aLevel,
+			filename: aFrame.filename,
+			lineNumber: aFrame.lineNumber,
+			columnNumber: aFrame.columnNumber,
+			functionName: aFrame.functionName,
+			timeStamp: aOptions.timeStamp || Date.now(),
+			arguments: aArgs,
+			prefix: aConsole.prefix,
+		};
+	  
+		consoleEvent.wrappedJSObject = consoleEvent;
+	  
+		consoleEvent.stacktrace = aOptions.stacktrace;
+
+		this.consoleAPIStorage.recordEvent("jsm", null, consoleEvent);
+	}
+	
+	/**
+	 * Format a frame coming from Components.stack.
+	 *
+	 * Based on the one from Mozilla's https://dxr.mozilla.org/mozilla-central/source/toolkit/modules/Console.jsm
+	 * @param {nsIStackFrame} [aFrame]
+	 *        The stack frame from which to begin the walk.
+	 * @param {number} [aMaxDepth]
+	 *        Maximum stack trace depth. Default is 0 - no depth limit.
+	 * @return {StackFrame[]}
+	 */
+	getStack(aFrame, aMaxDepth = 0) {
+		if (!aFrame) {
+			aFrame = Components.stack.caller;
+		}
+		/** @type {StackFrame[]} */
+		let trace = [];
+		while (aFrame) {
+			trace.push({
+				filename: aFrame.filename,
+				lineNumber: aFrame.lineNumber,
+				functionName: aFrame.name,
+				language: aFrame.language,
+			});
+			if (aMaxDepth === trace.length) {
+				break;
+			}
+			aFrame = aFrame.caller;
+		}
+		return trace;
+	}
+
+	/**
+	 * Parse Error.prototype.stack
+	 * 
+	 * Based on the one from Mozilla's https://dxr.mozilla.org/mozilla-central/source/toolkit/modules/Console.jsm
+	 * @param {string} aStack
+	 * @return {StackFrame[]}
+	 */
+	parseStack(aStack) {
+		let trace = [];
+		aStack.split("\n").forEach(function (line) {
+			if (!line) {
+				return;
+			}
+			let at = line.lastIndexOf("@");
+			let functionPosition = line.substring(at + 1).split(":");
+			trace.push({
+				columnNumber: parseInt(functionPosition.pop() || "", 10),
+				lineNumber: parseInt(functionPosition.pop() || "", 10),
+				filename: functionPosition.join(":"),
+				functionName: line.substring(0, at)
+			});
+		});
+		return trace;
+	}
+
+	/**
+	 * Test an object to see if it is a Mozilla JS Error.
+	 * 
+	 * From Mozilla's https://dxr.mozilla.org/mozilla-central/source/toolkit/modules/Log.jsm
+	 * @param {Object} aObj
+	 * @return {boolean}
+	 */
+	isError(aObj) {
+		return (
+			aObj &&
+			typeof aObj === "object" &&
+			"name" in aObj &&
+			"message" in aObj &&
+			"fileName" in aObj &&
+			"lineNumber" in aObj &&
+			"stack" in aObj
+		);
 	}
 }
 

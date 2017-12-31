@@ -1035,25 +1035,24 @@ var Verifier = (function() {
 			log.warn(exceptionToStr(e));
 			
 			return result;
-		} else {
-			// return result
-			let result = {
-				version : "2.0",
-				result : "TEMPFAIL",
-				sdid : DKIMSignature.d,
-				auid : DKIMSignature.i,
-				selector : DKIMSignature.s,
-				errorType : e.errorType
-			};
-
-			if (e instanceof DKIM_InternalError) {
-				log.error(exceptionToStr(e));
-			} else {
-				log.fatal(exceptionToStr(e));
-			}
-
-			return result;
 		}
+		// return result
+		let result = {
+			version : "2.0",
+			result : "TEMPFAIL",
+			sdid : DKIMSignature.d,
+			auid : DKIMSignature.i,
+			selector : DKIMSignature.s,
+		};
+
+		if (e instanceof DKIM_InternalError) {
+			result.errorType = e.errorType;
+			log.error(e);
+		} else {
+			log.fatal(e);
+		}
+
+		return result;
 	}
 
 	/**
