@@ -19,7 +19,7 @@
 /* jshint strict:true, moz:true */
 /* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
 /* global Components, Services, XPCOMUtils */
-/* global Logging, JSDNS, libunbound */
+/* global Logging, PREF, JSDNS, libunbound */
 /* exported EXPORTED_SYMBOLS, DNS */
 
 "use strict";
@@ -38,9 +38,10 @@ Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 
 Cu.import("resource://dkim_verifier/logging.jsm");
-XPCOMUtils.defineLazyModuleGetter(this, "JSDNS",
+Cu.import("resource://dkim_verifier/helper.jsm");
+XPCOMUtils.defineLazyModuleGetter(this, "JSDNS", // eslint-disable-line no-invalid-this
 	"resource://dkim_verifier/JSDNS.jsm");
-XPCOMUtils.defineLazyModuleGetter(this, "libunbound",
+XPCOMUtils.defineLazyModuleGetter(this, "libunbound", // eslint-disable-line no-invalid-this
 	"resource://dkim_verifier/libunbound.jsm");
 
 
@@ -86,9 +87,9 @@ var DNS = {
 	 */
 	resolve: async function DNS_resolve(name, rrtype="A") {
 		switch (prefs.getIntPref("resolver")) {
-			case 1:
+			case PREF.DNS.RESOLVER.JSDNS:
 				return asyncJSDNS_QueryDNS(name, rrtype);
-			case 2: {
+			case PREF.DNS.RESOLVER.LIBUNBOUND: {
 				let res = await libunbound.
 					resolve(name, libunbound.Constants["RR_TYPE_"+rrtype]);
 				/** @type {DNSResult} */

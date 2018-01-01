@@ -17,7 +17,7 @@
 /* eslint strict: ["warn", "function"] */
 /* global Components, Services, Sqlite */
 /* global Logging, DMARC */
-/* global addrIsInDomain, Deferred, getBaseDomainFromAddr, readStringFrom, stringEndsWith, stringEqual, DKIM_SigError, DKIM_InternalError */
+/* global addrIsInDomain, Deferred, getBaseDomainFromAddr, PREF, readStringFrom, stringEndsWith, stringEqual, DKIM_SigError, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, Policy */
 
 // @ts-ignore
@@ -42,6 +42,20 @@ const DB_POLICY_NAME = "dkimPolicy.sqlite";
 // @ts-ignore
 const PREF_BRANCH = "extensions.dkim_verifier.policy.";
 const ERROR_PREF_BRANCH = "extensions.dkim_verifier.error.";
+
+/**
+ * DKIM signing policy for a message.
+ * 
+ * @typedef {Object} DKIMSignPolicy
+ * @property {Boolean} shouldBeSigned
+ *           true if message should be signed
+ * @property {String[]} sdid
+ *           Signing Domain Identifier
+ * @property {Boolean} foundRule
+ *           true if enabled rule for message was found
+ * @property {Boolean} hideFail
+ *           true if HIDEFAIL rule was found
+ */
 
 /**
  * rule types
@@ -117,7 +131,9 @@ var Policy = {
 				var sqlRes = await conn.execute(
 					"SELECT * FROM version;"
 				);
+				const TABLE_SIGNERS_VERSION_CURRENT = 1;
 				var versionTableSigners = 0;
+				const TABLE_SIGNERS_DEFAULT_VERSION_CURRENT = 1;
 				var versionTableSignersDefault = 0;
 				var versionDataSignersDefault = 0;
 				sqlRes.forEach(function(element/*, index, array*/){
@@ -141,7 +157,7 @@ var Policy = {
 				);
 
 				// table signers
-				if (versionTableSigners < 1) {
+				if (versionTableSigners < TABLE_SIGNERS_VERSION_CURRENT) {
 					log.trace("create table signers");
 					// create table
 					await conn.execute(
@@ -161,12 +177,12 @@ var Policy = {
 						"VALUES ('TableSigners', 1);"
 					);
 					versionTableSigners = 1;
-				} else if (versionTableSigners !== 1) {
+				} else if (versionTableSigners !== TABLE_SIGNERS_VERSION_CURRENT) {
 						throw new DKIM_InternalError("unsupported versionTableSigners");
 				}
 				
 				// table signersDefault
-				if (versionTableSignersDefault < 1) {
+				if (versionTableSignersDefault < TABLE_SIGNERS_DEFAULT_VERSION_CURRENT) {
 					log.trace("create table signersDefault");
 					// create table
 					await conn.execute(
@@ -184,7 +200,7 @@ var Policy = {
 						"VALUES ('TableSignersDefault', 1);"
 					);
 					versionTableSignersDefault = 1;
-				} else if (versionTableSignersDefault !== 1) {
+				} else if (versionTableSignersDefault !== TABLE_SIGNERS_DEFAULT_VERSION_CURRENT) {
 						throw new DKIM_InternalError("unsupported versionTableSignersDefault");
 				}
 				
@@ -216,13 +232,12 @@ var Policy = {
 							};
 						})
 					);
-					// update version number
+					// update data version number
 					await conn.execute(
 						"INSERT OR REPLACE INTO version (name, version)\n" +
 						"VALUES ('DataSignersDefault', :version);",
 						{"version": signersDefault.versionData}
 					);
-					versionTableSignersDefault = 1;
 				}
 			} finally {
 				await conn.close();
@@ -240,20 +255,6 @@ var Policy = {
 		});
 		return dbInitializedDefer.promise;
 	},
-
-	/**
-	 * DKIM signing policy for a message.
-	 * 
-	 * @typedef {Object} DKIMSignPolicy
-	 * @property {Boolean} shouldBeSigned
-	 *           true if message should be signed
-	 * @property {String[]} sdid
-	 *           Signing Domain Identifier
-	 * @property {Boolean} foundRule
-	 *           true if enabled rule for message was found
-	 * @property {Boolean} hideFail
-	 *           true if HIDEFAIL rule was found
-	 */
 
 	 /**
 	 * Determinate if an e-mail by fromAddress should be signed
@@ -371,7 +372,7 @@ var Policy = {
 	 * @param {String} from
 	 * @param {String} sdid
 	 * @param {String} auid
-	 * @param {{name: String, params: (string[] | undefined)}[]} warnings
+	 * @param {{name: String, params: (string[] | undefined)}[]} warnings - in/out paramter
 	 * @return {void}
 	 * @throws DKIM_SigError
 	 */
@@ -476,13 +477,13 @@ var Policy = {
 				var domain;
 				var fromAddressToAdd;
 				switch (prefs.getIntPref("signRules.autoAddRule.for")) {
-					case 0: // from address
+					case PREF.POLICY.SIGN_RULES.AUTO_ADD_RULE.FOR.FROM:
 						fromAddressToAdd = fromAddress;
 						break;
-					case 1: // subdomain
+					case PREF.POLICY.SIGN_RULES.AUTO_ADD_RULE.FOR.SUBDOMAIN:
 						fromAddressToAdd = "*"+fromAddress.substr(fromAddress.lastIndexOf("@"));
 						break;
-					case 2: // base domain
+					case PREF.POLICY.SIGN_RULES.AUTO_ADD_RULE.FOR.BASE_DOMAIN:
 						domain = getBaseDomainFromAddr(fromAddress);
 						fromAddressToAdd = "*";
 						break;

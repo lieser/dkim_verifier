@@ -99,7 +99,9 @@ SQLiteTreeView.prototype = {
 			// Named params.
 			if (params && typeof params === "object") {
 				for (let k in params) {
-					statement.bindByName(k, params[k]);
+					if (Object.prototype.hasOwnProperty.call(params, k)) {
+						statement.bindByName(k, params[k]);
+					}
 				}
 			}
 
@@ -130,7 +132,7 @@ SQLiteTreeView.prototype = {
 	 * 
 	 * @param {Number[]} rows
 	 * 
-	 * @return {Number[]} rowids
+	 * @return {string[]} rowids
 	 */
 	_getRowids: function SQLiteTreeView__getRowids(rows) {
 		"use strict";
@@ -249,7 +251,7 @@ SQLiteTreeView.prototype = {
 		// this.cacheRowNum = -1; // Invalidate cache		
 	},
 	
-	getCellProperties: function SQLiteTreeView_getCellProperties(/*row,col,props*/) {},
+	getCellProperties: function SQLiteTreeView_getCellProperties(/*row,col,props*/) {}, // eslint-disable-line strict, no-empty-function
 	
 	getCellText : function SQLiteTreeView_getCellText(row, column) {
 		"use strict";
@@ -264,7 +266,7 @@ SQLiteTreeView.prototype = {
 	
 	// getCellValue
 	
-	getColumnProperties: function SQLiteTreeView_getColumnProperties(/*colid,col,props*/) {},
+	getColumnProperties: function SQLiteTreeView_getColumnProperties(/*colid,col,props*/) {}, // eslint-disable-line strict, no-empty-function
 	getImageSrc: function SQLiteTreeView_getImageSrc(/*row,col*/){
 		"use strict";
 
@@ -275,7 +277,7 @@ SQLiteTreeView.prototype = {
 
 		return 0;
 	},
-	getRowProperties: function SQLiteTreeView_getRowProperties(/*row,props*/){},
+	getRowProperties: function SQLiteTreeView_getRowProperties(/*row,props*/){}, // eslint-disable-line strict, no-empty-function
 	isContainer: function SQLiteTreeView_isContainer(/*row*/){
 		"use strict";
 

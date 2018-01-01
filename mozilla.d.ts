@@ -37,6 +37,8 @@ declare module Components {
 
 /** JavaScript code module "resource://gre/modules/FileUtils.jsm" */
 declare module FileUtils {
+    function File(path: string): nsIFile;
+
     function openSafeFileOutputStream(file: nsIFile, modeFlags?: number): nsIFileOutputStream;
 }
 
@@ -149,18 +151,36 @@ declare module NetUtil {
     };
 }
 
+/** JavaScript code module "resource://gre/modules/osfile.jsm" */
+declare module OS {
+    declare module Path {
+        function join(path1: string, path2: string, ...paths: string[]): string;
+    }
+
+    const Constants: {
+        Path: {
+            profileDir: string;
+        }
+    }
+}
+
 /** JavaScript code module "resource://gre/modules/Services.jsm" */
 declare module Services {
-    let io: nsIIOService;
-    let prefs: nsIPrefService;
-    let scriptloader: mozIJSSubScriptLoader;
-    let strings: nsIStringBundleService;
+    const io: nsIIOService;
+    const prefs: nsIPrefService;
+    const scriptloader: mozIJSSubScriptLoader;
+    const storage: mozIStorageService;
+    const strings: nsIStringBundleService;
 
     interface mozIJSSubScriptLoader {
         loadSubScript(url: string, targetObj?: object , charset?: string): any;
     }
 }
 
+/** JavaScript code module "resource://gre/modules/XPCOMUtils.jsm" */
+declare module XPCOMUtils {
+    function defineLazyModuleGetter(aObject: Object, aName: string, aResource: string, aSymbol?: string): void;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 //// Thunderbird specific modules
@@ -172,6 +192,11 @@ declare module MailServices {
 
 ////////////////////////////////////////////////////////////////////////////////
 //// Mozilla specific interfaces/types
+
+interface mozIStorageConnection {mozIStorageConnection: never}
+interface mozIStorageService {
+    readonly openDatabase: (aDatabaseFile: nsIFile) => mozIStorageConnection;
+}
 
 interface nsIAsyncStreamCopier {nsIAsyncStreamCopier: never}
 interface nsIChannel {nsIChannel: never}

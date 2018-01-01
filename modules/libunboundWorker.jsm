@@ -216,9 +216,13 @@ function resolve(name, rrtype=Constants.RR_TYPE_A) {
 		log.debug("data: " + data);
 	}
 
+	/** @type {ub_result} */
 	let result = {};
 	if (!_result.contents.qname.isNull()) {
 		result.qname = _result.contents.qname.readString();
+	} else {
+		log.warn("qname missing");
+		result.qname = "";
 	}
 	result.qtype = _result.contents.qtype;
 	result.qclass = _result.contents.qclass;
@@ -226,6 +230,8 @@ function resolve(name, rrtype=Constants.RR_TYPE_A) {
 	result.data_raw = data_raw;
 	if (!_result.contents.canonname.isNull()) {
 		result.canonname = _result.contents.canonname.readString();
+	} else {
+		result.canonname = "";
 	}
 	result.rcode = _result.contents.rcode;
 	result.havedata = _result.contents.havedata === 1;
@@ -344,8 +350,8 @@ function load(path) {
 /**
  * updates ctx by deleting old an creating new
  *
- * @param {String} conf
- * @param {Number} debuglevel
+ * @param {String|undefined} [conf]
+ * @param {Number|undefined} [debuglevel]
  * @param {Boolean} getNameserversFromOS
  * @param {String[]} nameservers
  * @param {String[]} trustAnchors
@@ -415,7 +421,7 @@ function update_ctx(conf, debuglevel, getNameserversFromOS, nameservers, trustAn
 
 /**
  * Handle the requests from libunbound.jsm
- * @param {MessageEvent} msg
+ * @param {Libunbound.WorkerRequest} msg
  * @return {void}
  */
 onmessage = function(msg) {
@@ -426,17 +432,29 @@ onmessage = function(msg) {
 
 			// call requested method
 			switch (msg.data.method) {
-				case "resolve":
-					res = resolve(msg.data.name, msg.data.rrtype);
+				case "resolve": {
+					/** @type {Libunbound.ResolveRequest} */
+					// @ts-ignore
+					let req = msg.data;
+					res = resolve(req.name, req.rrtype);
 					break;
-				case "load":
-					load(msg.data.path);
+				}
+				case "load": {
+					/** @type {Libunbound.LoadRequest} */
+					// @ts-ignore
+					let req = msg.data;
+					load(req.path);
 					break;
-				case "update_ctx":
-					update_ctx(msg.data.conf, msg.data.debuglevel,
-						msg.data.getNameserversFromOS, msg.data.nameservers,
-						msg.data.trustAnchors);
+				}
+				case "update_ctx": {
+					/** @type {Libunbound.UpdateCtxRequest} */
+					// @ts-ignore
+					let req = msg.data;
+					update_ctx(req.conf, req.debuglevel,
+						req.getNameserversFromOS, req.nameservers,
+						req.trustAnchors);
 					break;
+				}
 				default:
 					throw new Error("unknown method " + msg.data.method);
 			}

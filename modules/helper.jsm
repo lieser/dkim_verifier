@@ -15,7 +15,7 @@
 /* jshint strict:true, moz:true, smarttabs:true */
 /* global Components, FileUtils, NetUtil, Services */
 /* global Logging */
-/* exported EXPORTED_SYMBOLS, addrIsInDomain, addrIsInDomain2, domainIsInDomain, getBaseDomainFromAddr, getDomainFromAddr, readStringFrom, stringEndsWith, stringEqual, tryGetString, tryGetFormattedString, writeStringToTmpFile, DKIM_SigError, DKIM_InternalError */
+/* exported EXPORTED_SYMBOLS, addrIsInDomain, addrIsInDomain2, domainIsInDomain, getBaseDomainFromAddr, getDomainFromAddr, PREF, readStringFrom, stringEndsWith, stringEqual, tryGetString, tryGetFormattedString, writeStringToTmpFile, DKIM_SigError, DKIM_InternalError */
 
 "use strict";
 
@@ -27,6 +27,7 @@ var EXPORTED_SYMBOLS = [
 	"domainIsInDomain",
 	"getBaseDomainFromAddr",
 	"getDomainFromAddr",
+	"PREF",
 	"readStringFrom",
 	"stringEndsWith",
 	"stringEqual",
@@ -55,6 +56,49 @@ var log = Logging.getLogger("Helper");
 var eTLDService = Components.classes["@mozilla.org/network/effective-tld-service;1"].
 	getService(Components.interfaces.nsIEffectiveTLDService);
 
+
+const PREF = {
+	DNS: {
+		RESOLVER: {
+			JSDNS: 1,
+			LIBUNBOUND: 2,
+		}
+	},
+	KEY: {
+		STORING: {
+			DISABLED: 0,
+			STORE: 1,
+			COMPARE: 2,
+		}
+	},
+	POLICY: {
+		SIGN_RULES: {
+			AUTO_ADD_RULE: {
+				FOR: {
+					FROM: 0,
+					SUBDOMAIN: 1,
+					BASE_DOMAIN: 2,
+				}
+			}
+		}
+	},
+	SHOW: {
+		NEVER: 0,
+		DKIM_VALID: 10,
+		DKIM_VALID_ALL: 20,
+		DKIM_SIGNED: 30,
+		EMAIL: 40,
+		MSG: 50,
+	},
+	STATUSBARPANEL: {
+		RESULT: {
+			STYLE: {
+				TEST: 1,
+				ICON: 2,
+			}
+		}
+	}
+};
 
 /**
  * Deferred Promise
@@ -163,10 +207,11 @@ function getBaseDomainFromAddr(addr, aAdditionalParts=0) {
 		// because e-mails may be send from them
 		if (e.result === Cr.NS_ERROR_INSUFFICIENT_DOMAIN_LEVELS && aAdditionalParts === 0) {
 			// add "invalid" subdomain to avoid error
-			var host = "invalid."+nsiURI.asciiHost;
+			let invalidSub = "invalid.";
+			var host = invalidSub + nsiURI.asciiHost;
 			res = eTLDService.getBaseDomainFromHost(host, 0);
 			// remove "invalid" subdomain from result
-			res = res.substr(8);
+			res = res.substr(invalidSub.length);
 		}
 	}
 	return res;

@@ -123,7 +123,7 @@ const PREF_BRANCH = "extensions.dkim_verifier.";
  * @property {String} [errorType]
  *           if result="PERMFAIL: DKIM_SigError.errorType
  *           if result="TEMPFAIL: DKIM_InternalError.errorType or Undefined
- * @property {String} [errorStrParams]
+ * @property {String[]} [errorStrParams]
  * @property {Boolean} [hideFail]
  * @property {Boolean} [keySecure]
  */
@@ -372,7 +372,7 @@ var Verifier = (function() {
 	 * @param {Map} map
 	 * @param {String} tag_name name of the tag
 	 * @param {String} pattern_tag_value Pattern for the tag-value
-	 * @param {Number} [expType=1] Type of exception to throw. 1 for DKIM header, 2 for DKIM key.
+	 * @param {Number} [expType=1] Type of exception to throw. 1 for DKIM header, 2 for DKIM key, 3 for general.
 	 * 
 	 * @return {Array|Null} The match from the RegExp if tag_name exists, otherwise null
 	 * 
@@ -446,7 +446,10 @@ var Verifier = (function() {
 		} else if (tagMap === -2) {
 			throw new DKIM_SigError("DKIM_SIGERROR_DUPLICATE_TAG");
 		}
-		
+		if (!(tagMap instanceof Map)) {
+			throw new DKIM_InternalError("unexpected return value from parseTagValueList: " + tagMap);
+		}
+
 		// get Version (plain-text; REQUIRED)
 		// must be "1"
 		var versionTag = parseTagValue(tagMap, "v", "[0-9]+");
@@ -735,6 +738,7 @@ var Verifier = (function() {
 			s : null, // Service Type
 			/** @type {string?} */
 			t : null, // flags
+			/** @type {string[]?} */
 			t_array : [] // array of all flags
 		};
 		
@@ -744,6 +748,9 @@ var Verifier = (function() {
 			throw new DKIM_SigError("DKIM_SIGERROR_KEY_ILLFORMED_TAGSPEC");
 		} else if (tagMap === -2) {
 			throw new DKIM_SigError("DKIM_SIGERROR_KEY_DUPLICATE_TAG");
+		}
+		if (!(tagMap instanceof Map)) {
+			throw new DKIM_InternalError("unexpected return value from parseTagValueList: " + tagMap);
 		}
 
 		// get version (plain-text; RECOMMENDED, default is "DKIM1")
@@ -1012,24 +1019,24 @@ var Verifier = (function() {
 	 * 
 	 * @param {Error} e
 	 * @param {Object} msg
-	 * @param {Object} [DKIMSignature]
+	 * @param {Object} [dkimSignature]
 	 * @return {dkimSigResultV2}
 	 */
-	function handleException(e, msg, DKIMSignature = {} ) {
+	function handleException(e, msg, dkimSignature = {} ) {
 		if (e instanceof DKIM_SigError) {
 			// return result
 			let result = {
 				version : "2.0",
 				result : "PERMFAIL",
-				sdid : DKIMSignature.d,
-				auid : DKIMSignature.i,
-				selector : DKIMSignature.s,
+				sdid : dkimSignature.d,
+				auid : dkimSignature.i,
+				selector : dkimSignature.s,
 				errorType : e.errorType,
 				errorStrParams : e.errorStrParams,
 				hideFail : e.errorType === "DKIM_SIGERROR_KEY_TESTMODE" ||
 					msg.DKIMSignPolicy.hideFail,
-				keySecure : DKIMSignature.keyQueryResult &&
-					DKIMSignature.keyQueryResult.secure,
+				keySecure : dkimSignature.keyQueryResult &&
+					dkimSignature.keyQueryResult.secure,
 			};
 
 			log.warn(e);
@@ -1040,9 +1047,9 @@ var Verifier = (function() {
 		let result = {
 			version : "2.0",
 			result : "TEMPFAIL",
-			sdid : DKIMSignature.d,
-			auid : DKIMSignature.i,
-			selector : DKIMSignature.s,
+			sdid : dkimSignature.d,
+			auid : dkimSignature.i,
+			selector : dkimSignature.s,
 		};
 
 		if (e instanceof DKIM_InternalError) {
@@ -1198,7 +1205,7 @@ var Verifier = (function() {
 	 * processes signatures
 	 * 
 	 * @param {Object} msg
-	 * @return {dkimSigResultV2[]}
+	 * @return {Promise<dkimSigResultV2[]>}
 	 */
 	async function processSignatures(msg) {
 		let iDKIMSignatureIdx = 0;
@@ -1283,8 +1290,7 @@ var that = {
 	/*
 	 * init
 	 */
-	init : function Verifier_init() {
-	},
+	init : function Verifier_init() {}, // eslint-disable-line no-empty-function
 
 	/**
 	 * Callback for the result of the verification.
@@ -1323,7 +1329,7 @@ var that = {
 					warnings : sigResults[0].warnings &&
 						sigResults[0].warnings.map(function (e) {return e.name;}),
 					errorType : sigResults[0].errorType,
-					shouldBeSignedBy : msg.DKIMSignPolicy.sdid,
+					shouldBeSignedBy : msg.DKIMSignPolicy.sdid[0],
 					hideFail : sigResults[0].hideFail,
 				};
 			} catch (exception) {
@@ -1346,24 +1352,28 @@ var that = {
 	},
 
 	/**
+	 * @typedef {Object} Msg
+	 * @property {String} msgURI
+	 * @property {Map<String, String[]>} headerFields
+	 * @property {String} headerPlain
+	 * @property {String} bodyPlain
+	 * @property {String} from
+	 * @property {String} listId
+	 * @property {DKIMSignPolicy} DKIMSignPolicy
+	 */
+
+	/**
 	 * Verifies the message given message.
 	 * 
-	 * @param {Object} msg
-	 *        .headerFields {Map}
-	 *          key: {String} <header name>
-	 *          value: {Array[String]}
-	 *        .bodyPlain {String}
-	 *        .from {String}
-	 *        .listId {String}
-	 *        .DKIMSignPolicy {DKIMSignPolicy}
+	 * @param {Msg} msg
 	 * @return {Promise<dkimResultV2>}
 	 */
 	verify2: function Verifier_verify2(msg) {
 		var promise = (async () => {
-			/** @type {dkimResultV2} */
-			let res = {};
-			res.version = "2.0";
-			res.signatures = await processSignatures(msg);
+			let res = {
+				version: "2.0",
+				signatures: await processSignatures(msg),
+			};
 			checkForSignatureExsistens(msg, res.signatures);
 			that.sortSignatures(msg, res.signatures);
 			return res;
@@ -1378,18 +1388,12 @@ var that = {
 	 * Creates a message object given the msgURI.
 	 * 
 	 * @param {String} msgURI
-	 * @return {Promise<{}>}
-	 *         .headerFields {Map}
-	 *           key: {String} <header name>
-	 *           value: {Array[String]}
-	 *         .bodyPlain {String}
-	 *         .from {String}
-	 *         .listId {String}
-	 *         .DKIMSignPolicy {DKIMSignPolicy}
+	 * @return {Promise<Msg>}
 	 */
 	createMsg: function Verifier_createMsg(msgURI) {
 		var promise = (async () => {
 			// read msg
+			/** @type {Msg} */
 			let msg = await MsgReader.read(msgURI);
 			msg.msgURI = msgURI;
 
@@ -1399,14 +1403,21 @@ var that = {
 			let msgHeaderParser = Cc["@mozilla.org/messenger/headerparser;1"].
 				createInstance(Ci.nsIMsgHeaderParser);
 
-			// get from address
-			let author = msg.headerFields.
-				get("from")[msg.headerFields.get("from").length-1];
-			author = author.replace(/^From[ \t]*:/i,"");
-			msg.from = msgHeaderParser.extractHeaderAddressMailboxes(author);
+			// get last from address
+			if (msg.headerFields.has("from")) {
+				// @ts-ignore
+				let numFrom = msg.headerFields.get("from").length;
+				// @ts-ignore
+				let author = msg.headerFields.get("from")[numFrom-1];
+				author = author.replace(/^From[ \t]*:/i,"");
+				msg.from = msgHeaderParser.extractHeaderAddressMailboxes(author);
+			} else {
+				throw new DKIM_InternalError("E-Mail has no from address");
+			}
 
 			// get list-id
 			if (msg.headerFields.has("list-id")) {
+				// @ts-ignore
 				msg.listId = msg.headerFields.get("list-id")[0];
 				msg.listId = msgHeaderParser.extractHeaderAddressMailboxes(msg.listId);
 			}

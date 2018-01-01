@@ -171,7 +171,7 @@ async function getDMARCPolicy(fromAddress) {
 
 	log.trace("getDMARCPolicy Task begin");
 	
-	let DMARCRecord;
+	let dmarcRecord;
 	let domain = getDomainFromAddr(fromAddress);
 	let baseDomain;
 	
@@ -180,7 +180,7 @@ async function getDMARCPolicy(fromAddress) {
 	//     the message.  A possibly empty set of records is returned
 	
 	// get the DMARC Record
-	DMARCRecord = await getDMARCRecord(domain);
+	dmarcRecord = await getDMARCRecord(domain);
 	
 	// 2.  Records that do not start with a "v=" tag that identifies the
 	// current version of DMARC are discarded.
@@ -194,15 +194,15 @@ async function getDMARCPolicy(fromAddress) {
 	//     subdomains of the Organizational Domain.  A possibly empty set of
 	//     records is returned.
 	
-	if (!DMARCRecord) {
+	if (!dmarcRecord) {
 		// get the DMARC Record of the base domain
 		baseDomain = getBaseDomainFromAddr(fromAddress);
 		if (domain !== baseDomain) {
-			DMARCRecord = await getDMARCRecord(baseDomain);
+			dmarcRecord = await getDMARCRecord(baseDomain);
 			
-			if (DMARCRecord) {
+			if (dmarcRecord) {
 				// overrides Receiver policy if one for subdomains was specified
-				DMARCRecord.p = DMARCRecord.sp || DMARCRecord.p;
+				dmarcRecord.p = dmarcRecord.sp || dmarcRecord.p;
 			}
 		}
 	}
@@ -229,21 +229,21 @@ async function getDMARCPolicy(fromAddress) {
 	
 	// NOTE: records with invalid "p" or "sp" tag are not parsed
 	
-	let DMARCPolicy = {};
-	if (DMARCRecord) {
-		DMARCPolicy.adkim = DMARCRecord.adkim;
-		DMARCPolicy.pct = DMARCRecord.pct;
-		DMARCPolicy.p = DMARCRecord.p;
-		DMARCPolicy.domain = domain;
-		DMARCPolicy.source = baseDomain || domain;
-		
-		log.debug("DMARCPolicy: "+DMARCPolicy.toSource());
-	} else {
-		DMARCPolicy = null;
+	if (!dmarcRecord) {
+		log.trace("getDMARCPolicy Task end");
+		return null;
 	}
+	let dmarcPolicy = {
+		adkim: dmarcRecord.adkim,
+		pct: dmarcRecord.pct,
+		p: dmarcRecord.p,
+		domain: domain,
+		source: baseDomain || domain,
+	};
+	log.debug("DMARCPolicy: "+dmarcPolicy.toSource());
 
 	log.trace("getDMARCPolicy Task end");
-	return DMARCPolicy;
+	return dmarcPolicy;
 }
 
 /**
@@ -260,7 +260,7 @@ async function getDMARCRecord(domain) {
 
 	log.trace("getDMARCRecord Task begin");
 	
-	let DMARCRecord = null;
+	let dmarcRecord = null;
 	
 	// get the DMARC Record
 	let result = await DNS.resolve("_dmarc."+domain, "TXT");
@@ -276,14 +276,14 @@ async function getDMARCRecord(domain) {
 	// try to parse DMARC Record if record was found in DNS Server
 	if (result.data !== null) {
 		try {
-			DMARCRecord = parseDMARCRecord(result.data[0]);
+			dmarcRecord = parseDMARCRecord(result.data[0]);
 		} catch (e) {
 			log.error("Ignored error in parsing of DMARC record", e);
 		}
 	}
 	
 	log.trace("getDMARCRecord Task end");
-	return DMARCRecord;
+	return dmarcRecord;
 }
 
 /**
@@ -291,7 +291,7 @@ async function getDMARCRecord(domain) {
  * 
  * @param {String} DMARCRecordStr
  * 
- * @return {Object} DMARCRecord
+ * @return {DMARCRecord}
  * 
  * @throws {DKIM_InternalError}
  */
@@ -300,7 +300,8 @@ function parseDMARCRecord(DMARCRecordStr) {
 
 	log.trace("parseDMARCRecord begin");
 
-	let DMARCRecord = {
+	/** @type {DMARCRecord} */
+	let dmarcRecord = {
 		adkim : null, // DKIM identifier alignment mode
 		// aspf : null, // SPF identifier alignment mode
 		// fo : null, // Failure reporting options
@@ -323,6 +324,9 @@ function parseDMARCRecord(DMARCRecordStr) {
 	} else if (tagMap === -2) {
 		throw new DKIM_InternalError("DKIM_DMARCERROR_DUPLICATE_TAG");
 	}
+	if (!(tagMap instanceof Map)) {
+		throw new DKIM_InternalError("unexpected return value from Verifier.parseTagValueList: " + tagMap);
+	}
 
 	// v: Version (plain-text; REQUIRED).  Identifies the record retrieved
 	// as a DMARC record.  It MUST have the value of "DMARC1".  The value
@@ -333,7 +337,7 @@ function parseDMARCRecord(DMARCRecordStr) {
 	if (versionTag === null) {
 		throw new DKIM_InternalError("DKIM_DMARCERROR_MISSING_V");
 	} else {
-		DMARCRecord.v = "DMARC1";
+		dmarcRecord.v = "DMARC1";
 	}
 	
 	// adkim:  (plain-text; OPTIONAL, default is "r".)  Indicates whether
@@ -341,9 +345,9 @@ function parseDMARCRecord(DMARCRecordStr) {
 	// the Domain Owner.
 	let adkimTag = Verifier.parseTagValue(tagMap, "adkim", "[rs]", 3);
 	if (adkimTag === null || versionTag[0] === "DMARC1") {
-		DMARCRecord.adkim = "r";
+		dmarcRecord.adkim = "r";
 	} else {
-		DMARCRecord.adkim = adkimTag[0];
+		dmarcRecord.adkim = adkimTag[0];
 	}
 	
 	// p: Requested Mail Receiver policy (plain-text; REQUIRED for policy
@@ -368,7 +372,7 @@ function parseDMARCRecord(DMARCRecordStr) {
 	if (pTag === null) {
 		throw new DKIM_InternalError("DKIM_DMARCERROR_MISSING_P");
 	} else {
-		DMARCRecord.p = pTag[0];
+		dmarcRecord.p = pTag[0];
 	}
 	
 	// pct:  (plain-text integer between 0 and 100, inclusive; OPTIONAL;
@@ -389,10 +393,10 @@ function parseDMARCRecord(DMARCRecordStr) {
 	//    selected = false
 	let pctTag = Verifier.parseTagValue(tagMap, "pct", "[0-9]{1,3}", 3);
 	if (pctTag === null) {
-		DMARCRecord.pct = 100;
+		dmarcRecord.pct = 100;
 	} else {
-		DMARCRecord.pct = parseInt(pctTag[0], 10);
-		if (DMARCRecord.pct < 0 || DMARCRecord.pct > 100) {
+		dmarcRecord.pct = parseInt(pctTag[0], 10);
+		if (dmarcRecord.pct < 0 || dmarcRecord.pct > 100) {
 			throw new DKIM_InternalError("DKIM_DMARCERROR_INVALID_PCT");
 		}
 	}
@@ -408,9 +412,9 @@ function parseDMARCRecord(DMARCRecordStr) {
 	// Policy Discovery mechanism described in Section 8.
 	let spTag = Verifier.parseTagValue(tagMap, "sp", "(?:none|quarantine|reject)", 3);
 	if (spTag !== null) {
-		DMARCRecord.sp = spTag[0];
+		dmarcRecord.sp = spTag[0];
 	}
 	
 	log.trace("parseDMARCRecord end");
-	return DMARCRecord;
+	return dmarcRecord;
 }

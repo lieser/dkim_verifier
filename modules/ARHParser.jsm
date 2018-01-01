@@ -3,7 +3,7 @@
  * 
  * Parser for the Authentication-Results header as specified in RFC 7601.
  *
- * Version: 1.1.0 (27 January 2016)
+ * Version: 1.1.1pre1 (01 January 2018)
  * 
  * Copyright (c) 2014-2016 Philippe Lieser
  * 
@@ -22,7 +22,7 @@
 "use strict";
 
 // @ts-ignore
-const module_version = "1.1.0";
+const module_version = "1.1.1";
 
 var EXPORTED_SYMBOLS = [
 	"ARHParser"
@@ -227,22 +227,27 @@ function parseResinfo(str) {
 }
 
 /**
- *  Object wrapper around a string.
- * @constructor
- * @param {string} s
+ * Object wrapper around a string.
  */
-function RefString(s) {
-    this.value = s;
+class RefString {
+	/**
+	 * Object wrapper around a string.
+	 * @constructor
+	 * @param {string} s
+	 */
+	constructor(s) {
+		this.value = s;
+	}
+	match() {
+		return this.value.match.apply(this.value, arguments);
+	}
+	substr() {
+		return this.value.substr.apply(this.value, arguments);
+	}
+	toSource() {
+		return this.value.toSource.apply(this.value, arguments);
+	}
 }
-RefString.prototype.match = function() {
-	return this.value.match.apply(this.value, arguments);
-};
-RefString.prototype.substr = function() {
-	return this.value.substr.apply(this.value, arguments);
-};
-RefString.prototype.toSource = function() {
-	return this.value.toSource.apply(this.value, arguments);
-};
 
 /**
  *  Matches a pattern to the beginning of str.

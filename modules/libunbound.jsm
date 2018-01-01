@@ -129,7 +129,7 @@ var Constants = {
  * @property {Number[][]} data_raw
  *           Array of rdata items as byte array
  * @property {String} canonname
- *           canonical name of result
+ *           canonical name of result (empty string if missing in response)
  * @property {Number} rcode
  *           additional error code in case of no data
  * @property {Boolean} havedata
@@ -151,10 +151,11 @@ var prefs = Services.prefs.getBranch(PREF_BRANCH);
 // @ts-ignore
 var log = Logging.getLogger("libunbound");
 
-/** @type {Worker} */
+/** @type {Libunbound.LibunboundWorker} */
 var libunboundWorker =
 	new ChromeWorker("resource://dkim_verifier/libunboundWorker.jsm");
 var maxCallId = 0;
+/** @type {Map<number, IDeferred<ub_result>>} */
 var openCalls = new Map();
 
 let libunbound = {
@@ -266,7 +267,7 @@ function update_ctx() {
 
 /**
  * Handle the callbacks from the ChromeWorker
- * @param {MessageEvent} msg
+ * @param {Libunbound.WorkerResponse} msg
  * @return {void}
  */
 libunboundWorker.onmessage = function(msg) {
@@ -274,55 +275,67 @@ libunboundWorker.onmessage = function(msg) {
 		log.trace("Message received from worker: " + msg.data.toSource());
 
 		// handle log messages
-		if (msg.data.type === "log") {
-			switch (msg.data.subType) {
+		if (msg.data.type && msg.data.type === "log") {
+			/** @type {Libunbound.Log} */
+			// @ts-ignore
+			let logMsg = msg.data;
+			switch (logMsg.subType) {
 				case "fatal":
-					log.fatal(msg.data.message);
+					log.fatal(logMsg.message);
 					break;
 				case "error":
-					log.error(msg.data.message);
+					log.error(logMsg.message);
 					break;
 				case "warn":
-					log.warn(msg.data.message);
+					log.warn(logMsg.message);
 					break;
 				case "info":
-					log.info(msg.data.message);
+					log.info(logMsg.message);
 					break;
 				case "config":
-					log.config(msg.data.message);
+					log.config(logMsg.message);
 					break;
 				case "debug":
-					log.debug(msg.data.message);
+					log.debug(logMsg.message);
 					break;
 				case "trace":
-					log.trace(msg.data.message);
+					log.trace(logMsg.message);
 					break;
 				default:
-					throw new Error("Unknown log type: " + msg.data.subType);
+					throw new Error("Unknown log type: " + logMsg.subType);
 			}
 			return;
 		}
+		/** @type {Libunbound.Response} */
+		// @ts-ignore
+		let response = msg.data;
 
 		let exception;
-		if (msg.data.type === "error") {
-			exception = new DKIM_InternalError(msg.data.message, msg.data.subType);
+		if (response.type && response.type === "error") {
+			/** @type {Libunbound.Exception} */
+			// @ts-ignore
+			let ex = response;
+			exception = new DKIM_InternalError(ex.message, ex.subType);
 		}
 
-		let defer = openCalls.get(msg.data.callId);
+		let defer = openCalls.get(response.callId);
 		if (defer === undefined) {
 			if (exception) {
 				log.fatal("Exception in libunboundWorker", exception);
 			} else {
-				log.error("Got unexpected callback: " + msg.data);
+				log.error("Got unexpected callback: " + response);
 			}
 			return;
 		}
-		openCalls.delete(msg.data.callId);
+		openCalls.delete(response.callId);
 		if (exception) {
 			defer.reject(exception);
 			return;
 		}
-		defer.resolve(msg.data.result);
+		/** @type {Libunbound.Result} */
+		// @ts-ignore
+		let res = response;
+		defer.resolve(res.result);
 	} catch (e) {
 		log.fatal(e);
 	}

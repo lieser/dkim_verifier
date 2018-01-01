@@ -4,7 +4,7 @@
  * Verifies the DKIM signature if a new message is viewed,
  * and displays the result.
  *
- * Copyright (c) 2013-2016 Philippe Lieser
+ * Copyright (c) 2013-2018 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -52,8 +52,8 @@ DKIM_Verifier.Display = (function() {
 	var header;
 	var row;
 	var headerTooltips;
-	var statusbarpanel;
-	var expandedfromBox;
+	var statusbarPanel;
+	var expandedFromBox;
 	var collapsed1LfromBox; // for CompactHeader addon
 	var collapsed2LfromBox; // for CompactHeader addon
 	var policyAddUserExceptionButton;
@@ -66,18 +66,18 @@ DKIM_Verifier.Display = (function() {
  */
 
 	/**
-	 * Sets the result value for headerTooltips and statusbarpanel.
+	 * Sets the result value for headerTooltips and statusbar panel.
 	 * 
 	 * @param {String} value
 	 * @return {void}
 	 */
 	function setValue(value) {
 		headerTooltips.value = value;
-		statusbarpanel.value = value;
+		statusbarPanel.value = value;
 	}
 	
 	/**
-	 * Sets the warnings for header, headerTooltips and statusbarpanel.
+	 * Sets the warnings for header, headerTooltips and statusbar panel.
 	 * 
 	 * @param {String[]} warnings
 	 * @return {void}
@@ -85,7 +85,7 @@ DKIM_Verifier.Display = (function() {
 	function setWarnings(warnings) {
 		header.warnings = warnings;
 		headerTooltips.warnings = warnings;
-		statusbarpanel.warnings = warnings;
+		statusbarPanel.warnings = warnings;
 	}
 	
 	/*
@@ -113,7 +113,7 @@ DKIM_Verifier.Display = (function() {
 		
 		// highlight or reset header
 		if (prefs.getBoolPref("colorFrom") || status === "clearHeader") {
-			highlightEmailAddresses(expandedfromBox);
+			highlightEmailAddresses(expandedFromBox);
 
 			// for CompactHeader addon
 			if (collapsed1LfromBox) {
@@ -132,7 +132,7 @@ DKIM_Verifier.Display = (function() {
 	 * @return {void}
 	 */
 	function setFaviconUrl(faviconUrl) {
-		expandedfromBox.dkimFaviconUrl = faviconUrl;
+		expandedFromBox.dkimFaviconUrl = faviconUrl;
 
 		// for CompactHeader addon
 		if (collapsed1LfromBox) {
@@ -182,36 +182,39 @@ DKIM_Verifier.Display = (function() {
 	function displayResult(result) {
 		log.trace("displayResult begin");
 		header.dkimResult = result.dkim[0];
-		statusbarpanel.dkimStatus = result.dkim[0].result;
+		statusbarPanel.dkimStatus = result.dkim[0].result;
 		that.setCollapsed(result.dkim[0].res_num);
 		header.value = result.dkim[0].result_str;
 		setValue(result.dkim[0].result_str);
 
 		switch(result.dkim[0].res_num) {
-			case 10:
-				if (!result.dkim[0].warnings_str ||
-				    result.dkim[0].warnings_str.length === 0)
+			case DKIM_Verifier.AuthVerifier.DKIM_RES.SUCCESS: {
+				let dkim = result.dkim[0];
+				if (!dkim.warnings_str ||
+					dkim.warnings_str.length === 0)
 				{
 					highlightHeader("success");
 				} else {
-					setWarnings(result.dkim[0].warnings_str);
+					setWarnings(dkim.warnings_str);
 					highlightHeader("warning");
 				}
 
 				// if enabled and available, set url to favicon
 				if (prefs.getBoolPref("display.favicon.show") &&
-				    result.dkim[0].favicon) {
-					setFaviconUrl(result.dkim[0].favicon);
+					dkim.favicon)
+				{
+					setFaviconUrl(dkim.favicon);
 				}
 				break;
-			case 20:
+			}
+			case DKIM_Verifier.AuthVerifier.DKIM_RES.TEMPFAIL:
 				highlightHeader("tempfail");
 				break;
-			case 30:
+			case DKIM_Verifier.AuthVerifier.DKIM_RES.PERMFAIL:
 				highlightHeader("permfail");
 				break;
-			case 35:
-			case 40:
+			case DKIM_Verifier.AuthVerifier.DKIM_RES.PERMFAIL_NOSIG:
+			case DKIM_Verifier.AuthVerifier.DKIM_RES.NOSIG:
 				highlightHeader("nosig");
 				break;
 			default:
@@ -234,7 +237,7 @@ DKIM_Verifier.Display = (function() {
 		}
 
 		// markKeyAsSecureButton / updateKeyButton
-		if (prefs.getIntPref("key.storing") !== 0 &&
+		if (prefs.getIntPref("key.storing") !== DKIM_Verifier.PREF.KEY.STORING.DISABLED &&
 		    result.dkim[0].sdid && result.dkim[0].selector) {
 			if (updateKeyButton) {
 				updateKeyButton.disabled = false;
@@ -283,7 +286,7 @@ var that = {
 	},
 	
 	/*
-	 * Sets visibility of DKIM header, DKIM statusbarpanel and DKIM tooltip
+	 * Sets visibility of DKIM header, DKIM statusbar panel and DKIM tooltip
 	 * based on current state and preferences.
 	 *
 	 * Gets called every time the current state changes.
@@ -328,21 +331,21 @@ var that = {
 			}
 		}
 		
-		// DKIM statusbarpanel
+		// DKIM statusbar panel
 		if (prefs.getIntPref("showDKIMStatusbarpanel") >= state ) {
-			// show DKIM statusbarpanel
+			// show DKIM statusbar panel
 			
-			statusbarpanel.hidden = false;
+			statusbarPanel.hidden = false;
 		} else {
-			// don't show DKIM statusbarpanel
+			// don't show DKIM statusbar panel
 			
-			statusbarpanel.hidden = true;
+			statusbarPanel.hidden = true;
 		}
 
 		// DKIM tooltip for From header
 		if (prefs.getIntPref("showDKIMFromTooltip") >= state ) {
 			// show tooltip for From header
-			setDKIMFromTooltip(expandedfromBox);
+			setDKIMFromTooltip(expandedFromBox);
 			// for CompactHeader addon
 			if (collapsed1LfromBox) {
 				setDKIMFromTooltip(collapsed1LfromBox);
@@ -352,7 +355,7 @@ var that = {
 			}
 		} else {
 			// don't show tooltip for From header
-			removeDKIMFromTooltip(expandedfromBox);
+			removeDKIMFromTooltip(expandedFromBox);
 			// for CompactHeader addon
 			if (collapsed1LfromBox) {
 				removeDKIMFromTooltip(collapsed1LfromBox);
@@ -371,8 +374,8 @@ var that = {
 			log.trace("startup begin");
 			// get xul elements
 			headerTooltips = document.getElementById("dkim-verifier-header-tooltips");
-			statusbarpanel = document.getElementById("dkim-verifier-statusbarpanel");
-			expandedfromBox = document.getElementById("expandedfromBox");
+			statusbarPanel = document.getElementById("dkim-verifier-statusbarpanel");
+			expandedFromBox = document.getElementById("expandedfromBox");
 			collapsed1LfromBox = document.getElementById("CompactHeader_collapsed1LfromBox");
 			collapsed2LfromBox = document.getElementById("CompactHeader_collapsed2LfromBox");
 			policyAddUserExceptionButton = document.
@@ -389,18 +392,20 @@ var that = {
 			if (prefs.prefHasUserValue("alwaysShowDKIMHeader")) {
 				prefs.clearUserPref("alwaysShowDKIMHeader");
 				if (!prefs.prefHasUserValue("showDKIMHeader")) {
-					prefs.setIntPref("showDKIMHeader", 50);
+					prefs.setIntPref("showDKIMHeader", DKIM_Verifier.PREF.SHOW.MSG);
 				}
 			}
 
 			// load preferences
-			if (prefs.getIntPref("statusbarpanel.result.style") === 1) {
-				if (statusbarpanel) {
-					statusbarpanel["useIcons"] = false;
+			if (prefs.getIntPref("statusbarpanel.result.style") ===
+				DKIM_Verifier.PREF.STATUSBARPANEL.RESULT.STYLE.TEST)
+			{
+				if (statusbarPanel) {
+					statusbarPanel["useIcons"] = false;
 				}
 			} else {
-				if (statusbarpanel) {
-					statusbarpanel["useIcons"] = true;
+				if (statusbarPanel) {
+					statusbarPanel["useIcons"] = true;
 				}
 			}
 
@@ -414,16 +419,17 @@ var that = {
 			if (tabmail) {
 				that.tabMonitor = {
 					onTabTitleChanged: function(/* aTab */) {
-						if (statusbarpanel) {
-							statusbarpanel.hidden = true;
+						if (statusbarPanel) {
+							statusbarPanel.hidden = true;
 						}
 					},
 					onTabSwitched: function(/* aTab, aOldTab */) {
-						if (statusbarpanel) {
-							statusbarpanel.hidden = true;
+						if (statusbarPanel) {
+							statusbarPanel.hidden = true;
 						}
 					}
 				};
+				// @ts-ignore
 				tabmail.registerTabMonitor(that.tabMonitor);
 			}
 			log.trace("startup end");
@@ -448,6 +454,7 @@ var that = {
 		// unregister monitors for tab switch
 		var tabmail = document.getElementById("tabmail");
 		if (tabmail) {
+			// @ts-ignore
 			tabmail.unregisterTabMonitor(that.tabMonitor);
 		}
 	},
@@ -466,10 +473,12 @@ var that = {
 
 			switch(data) {
 				case "statusbarpanel.result.style":
-					if (prefs.getIntPref("statusbarpanel.result.style") === 1) {
-						statusbarpanel.useIcons = false;
+					if (prefs.getIntPref("statusbarpanel.result.style") ===
+						DKIM_Verifier.PREF.STATUSBARPANEL.RESULT.STYLE.TEST)
+					{
+						statusbarPanel.useIcons = false;
 					} else {
-						statusbarpanel.useIcons = true;
+						statusbarPanel.useIcons = true;
 					}
 					break;
 				default:
@@ -499,7 +508,7 @@ var that = {
 					headerValue: dkimStrings.getString("NOT_EMAIL")
 				};
 				setValue(dkimStrings.getString("NOT_EMAIL"));
-				statusbarpanel.dkimStatus = "none";
+				statusbarPanel.dkimStatus = "none";
 				if (reverifyDKIMSignature) {
 					reverifyDKIMSignature["disabled"] = true;
 				}
@@ -509,7 +518,7 @@ var that = {
 					headerValue: dkimStrings.getString("loading")
 				};
 				setValue(dkimStrings.getString("loading"));
-				statusbarpanel.dkimStatus = "loading";
+				statusbarPanel.dkimStatus = "loading";
 				if (reverifyDKIMSignature) {
 					reverifyDKIMSignature["disabled"] = false;
 				}
@@ -560,10 +569,10 @@ var that = {
 			log.trace("onEndHeaders Task begin");
 			// return if msg is RSS feed or news
 			if (gFolderDisplay.selectedMessageIsFeed || gFolderDisplay.selectedMessageIsNews) {
-				that.setCollapsed(50);
+				that.setCollapsed(DKIM_Verifier.PREF.SHOW.MSG);
 				return;
 			}
-			that.setCollapsed(10);
+			that.setCollapsed(DKIM_Verifier.PREF.SHOW.DKIM_VALID);
 			
 			// get msg uri
 			var msgURI = gFolderDisplay.selectedMessageUris[0];
@@ -584,7 +593,7 @@ var that = {
 			handleException(exception);
 		});
 	},
-	onEndAttachments: function Display_onEndAttachments() {},
+	onEndAttachments: function Display_onEndAttachments() {}, // eslint-disable-line no-empty-function
 
 	/*
 	 * outputFunction for DKIM header (sets the DKIM header value)

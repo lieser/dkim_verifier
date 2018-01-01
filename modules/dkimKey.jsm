@@ -17,7 +17,7 @@
 /* eslint strict: ["warn", "function"] */
 /* global Components, Services, Sqlite */
 /* global Logging, DNS */
-/* global Deferred, DKIM_SigError, DKIM_InternalError */
+/* global Deferred, DKIM_SigError, DKIM_InternalError, PREF */
 /* exported EXPORTED_SYMBOLS, Key */
 
 // @ts-ignore
@@ -90,6 +90,7 @@ var Key = {
 				var sqlRes = await conn.execute(
 					"SELECT * FROM version;"
 				);
+				const TABLE_KEYS_VERSION_CURRENT = 1;
 				var versionTableKeys = 0;
 				sqlRes.forEach(function(element/*, index, array*/){
 					switch(element.getResultByName("name")) {
@@ -103,7 +104,7 @@ var Key = {
 				log.trace("versionTableKeys: "+versionTableKeys);
 
 				// table keys
-				if (versionTableKeys < 1) {
+				if (versionTableKeys < TABLE_KEYS_VERSION_CURRENT) {
 					log.trace("create table keys");
 					// create table
 					await conn.execute(
@@ -122,7 +123,7 @@ var Key = {
 						"VALUES ('TableKeys', 1);"
 					);
 					versionTableKeys = 1;
-				} else if (versionTableKeys !== 1) {
+				} else if (versionTableKeys !== TABLE_KEYS_VERSION_CURRENT) {
 						throw new DKIM_InternalError("unsupported versionTableKeys");
 				}
 			} finally {
@@ -171,11 +172,11 @@ var Key = {
 		var tmp;
 		
 		switch (prefs.getIntPref("storing")) {
-			case 0: // don't store DKIM keys
+			case PREF.KEY.STORING.DISABLED: // don't store DKIM keys
 				tmp = await getKeyFromDNS(d_val, s_val);
 				res.gotFrom = "DNS";
 				break;
-			case 1: // store DKIM keys
+			case PREF.KEY.STORING.STORE: // store DKIM keys
 				tmp = await getKeyFromDB(d_val, s_val);
 				if (tmp) {
 					res.gotFrom = "Storage";
@@ -185,7 +186,7 @@ var Key = {
 					setKeyInDB(d_val, s_val, tmp.key, tmp.secure);
 				}
 				break;
-			case 2: // store DKIM keys and compare with current key
+			case PREF.KEY.STORING.COMPARE: // store DKIM keys and compare with current key
 				var keyDB = await getKeyFromDB(d_val, s_val);
 				tmp = await getKeyFromDNS(d_val, s_val);
 				res.gotFrom = "DNS";
@@ -226,9 +227,8 @@ var Key = {
 			await Key.initDB();
 			var conn = await Sqlite.openConnection({path: KEY_DB_NAME});
 			
-			var sqlRes;
 			try {
-				sqlRes = await conn.executeCached(
+				await conn.executeCached(
 					"DELETE FROM keys\n" +
 					"WHERE SDID = :SDID AND  selector = :selector;",
 					{SDID:d_val, selector: s_val}
@@ -266,9 +266,8 @@ var Key = {
 			await Key.initDB();
 			var conn = await Sqlite.openConnection({path: KEY_DB_NAME});
 			
-			var sqlRes;
 			try {
-				sqlRes = await conn.executeCached(
+				await conn.executeCached(
 					"UPDATE keys SET secure = 1\n" +
 					"WHERE SDID = :SDID AND  selector = :selector;",
 					{SDID:d_val, selector: s_val}
@@ -354,9 +353,10 @@ async function getKeyFromDB(d_val, s_val) {
 		);
 
 		if (sqlRes.length > 0) {
-			res = {};
-			res.key = sqlRes[0].getResultByName("key");
-			res.secure = sqlRes[0].getResultByName("secure") === 1;
+			res = {
+				key: sqlRes[0].getResultByName("key"),
+				secure: sqlRes[0].getResultByName("secure") === 1,
+			};
 			await conn.executeCached(
 				"UPDATE keys\n" +
 				"SET lastUsedAt = DATE('now') WHERE\n" +
@@ -395,9 +395,8 @@ function setKeyInDB(d_val, s_val, key, secure) {
 		await Key.initDB();
 		var conn = await Sqlite.openConnection({path: KEY_DB_NAME});
 		
-		var sqlRes;
 		try {
-			sqlRes = await conn.executeCached(
+			await conn.executeCached(
 				"INSERT INTO keys (SDID, selector, key, insertedAt, lastUsedAt, secure)" +
 				"VALUES (:SDID, :selector, :key, DATE('now'), DATE('now'),:secure);",
 				{SDID:d_val, selector: s_val, key: key, secure: secure}

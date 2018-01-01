@@ -98,6 +98,14 @@ let prefs = Services.prefs.getBranch(PREF_BRANCH);
 var AuthVerifier = {
 	get version() { return module_version; },
 
+	DKIM_RES: {
+		SUCCESS: 10,
+		TEMPFAIL: 20,
+		PERMFAIL: 30,
+		PERMFAIL_NOSIG: 35,
+		NOSIG: 40,
+	},
+
 	/**
 	 * Verifies the authentication of the msg.
 	 *
@@ -357,26 +365,33 @@ function loadAuthResult(msgHdr) {
 			/** @type {SavedAuthResult} */
 			let savedAuthResult = JSON.parse(savedAuthResultJSON);
 
-			if (savedAuthResult.version.match(/^[0-9]+/)[0] === "1") {
+			let majorVersion = savedAuthResult.version.match(/^[0-9]+/)[0];
+			if (majorVersion === "1") {
 				// old dkimResultV1 (AuthResult version 1)
+				/** @type {dkimResultV1} */
+				// @ts-ignore
+				let resultV1 = savedAuthResult;
 				let res = {
 					version: "3.0",
-					dkim: [dkimResultV1_to_dkimSigResultV2(savedAuthResult)],
+					dkim: [dkimResultV1_to_dkimSigResultV2(resultV1)],
 				};
 				return res;
 			}
-			if (savedAuthResult.version.match(/^[0-9]+/)[0] === "2") {
+			if (majorVersion === "2") {
 				// AuthResult version 2
+				/** @type {AuthResultV2} */
+				// @ts-ignore
+				let resultV2 = savedAuthResult;
 				savedAuthResult.version = "3.0";
-				savedAuthResult.dkim = savedAuthResult.dkim.map(
+				savedAuthResult.dkim = resultV2.dkim.map(
 					AuthResultDKIMV2_to_dkimSigResultV2);
-				if (savedAuthResult.arh && savedAuthResult.arh.dkim) {
-					savedAuthResult.arh.dkim = savedAuthResult.arh.dkim.map(
+				if (resultV2.arh && resultV2.arh.dkim) {
+					savedAuthResult.arh.dkim = resultV2.arh.dkim.map(
 						AuthResultDKIMV2_to_dkimSigResultV2);
 				}
 				return savedAuthResult;
 			}
-			if (savedAuthResult.version.match(/^[0-9]+/)[0] === "3") {
+			if (majorVersion === "3") {
 				// SavedAuthResult version 3
 				return savedAuthResult;
 			}
@@ -452,7 +467,8 @@ function arhDKIM_to_dkimSigResultV2(arhDKIM) {
  * @return {dkimSigResultV2}
  */
 function dkimResultV1_to_dkimSigResultV2(dkimResultV1) {
-	let dkimSigResultV2 = {
+	/** @type {dkimSigResultV2} */
+	let sigResultV2 = {
 		version: "2.0",
 		result: dkimResultV1.result,
 		sdid: dkimResultV1.SDID,
@@ -461,7 +477,7 @@ function dkimResultV1_to_dkimSigResultV2(dkimResultV1) {
 		hideFail: dkimResultV1.hideFail,
 	};
 	if (dkimResultV1.warnings) {
-		dkimSigResultV2.warnings = dkimResultV1.warnings.map(
+		sigResultV2.warnings = dkimResultV1.warnings.map(
 			function (w) {
 				if (w === "DKIM_POLICYERROR_WRONG_SDID") {
 					return {name: w, params: [dkimResultV1.shouldBeSignedBy]};
@@ -472,9 +488,9 @@ function dkimResultV1_to_dkimSigResultV2(dkimResultV1) {
 	}
 	if (dkimResultV1.errorType === "DKIM_POLICYERROR_WRONG_SDID" ||
 	    dkimResultV1.errorType === "DKIM_POLICYERROR_MISSING_SIG") {
-		dkimSigResultV2.errorStrParams = [dkimResultV1.shouldBeSignedBy];
+		sigResultV2.errorStrParams = [dkimResultV1.shouldBeSignedBy];
 	}
-	return dkimSigResultV2;
+	return sigResultV2;
 }
 
 /**
@@ -616,7 +632,7 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
  * @param {SavedAuthResult} savedAuthResult
  * @return {Promise<AuthResult>} authResult
  */
-async function SavedAuthResult_to_AuthResult(savedAuthResult) {
+async function SavedAuthResult_to_AuthResult(savedAuthResult) { // eslint-disable-line require-await
 	/** @type {AuthResult} */
 	let authResult = savedAuthResult;
 	authResult.version = "2.1";
@@ -632,7 +648,7 @@ async function SavedAuthResult_to_AuthResult(savedAuthResult) {
  * Convert AuthResultV2 to dkimSigResultV2
  * 
  * @param {AuthResultDKIMV2} authResultDKIM
- * @return {Promise<dkimSigResultV2>} dkimSigResultV2
+ * @return {dkimSigResultV2} dkimSigResultV2
  */
 function AuthResultDKIMV2_to_dkimSigResultV2(authResultDKIM) {
 	let dkimSigResult = authResultDKIM;

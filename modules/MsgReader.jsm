@@ -50,16 +50,16 @@ var MsgReader = {
 	 * Reads the message and parse it into header and body
 	 *
 	 * @param {String} msgURI
-	 * @return {Promise<Object>}
-	 *         .headerPlain {String}
-	 *         .bodyPlain {String}
+	 * @return {Promise<{headerPlain: string, bodyPlain: string}>}
 	 * @throws DKIM_InternalError
 	 */
 	read: function _MsgReader_read(msgURI) {
+		/** @type {IDeferred<{headerPlain: string, bodyPlain: string}>} */
 		let res_defer = new Deferred();
-		let res = {};
-		res.headerPlain = "";
-		res.bodyPlain = "";
+		let res = {
+			headerPlain: "",
+			bodyPlain: "",
+		};
 
 		let StreamListener =
 		{
@@ -125,8 +125,7 @@ var MsgReader = {
 				}
 			},
 
-			onStartRequest: function (/* request , context */) {
-			},
+			onStartRequest: function (/* request , context */) {}, // eslint-disable-line no-empty-function
 
 			onStopRequest: function (/* aRequest , aContext , aStatusCode */) {
 				try {
