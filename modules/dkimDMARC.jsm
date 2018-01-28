@@ -269,8 +269,9 @@ async function getDMARCRecord(domain) {
 	if (result.bogus) {
 		throw new DKIM_InternalError(null, "DKIM_DNSERROR_DNSSEC_BOGUS");
 	}
-	if (result.rcode !== 0 && result.rcode !== 3 /* NXDomain */) {
-		throw new DKIM_InternalError(result.error, "DKIM_DNSERROR_SERVER_ERROR");
+	if (result.rcode !== DNS.RCODE.NoError && result.rcode !== DNS.RCODE.NXDomain) {
+		throw new DKIM_InternalError(
+			"rcode: " + result.rcode, "DKIM_DNSERROR_SERVER_ERROR");
 	}
 	
 	// try to parse DMARC Record if record was found in DNS Server

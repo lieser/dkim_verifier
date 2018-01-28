@@ -309,7 +309,7 @@ async function getKeyFromDNS(d_val, s_val) {
 	if (result.bogus) {
 		throw new DKIM_InternalError(null, "DKIM_DNSERROR_DNSSEC_BOGUS");
 	}
-	if (result.rcode !== 0 && result.rcode !== 3 /* NXDomain */) {
+	if (result.rcode !== DNS.RCODE.NoError && result.rcode !== DNS.RCODE.NXDomain) {
 		log.info("DNS query failed with result: " + result.toSource());
 		throw new DKIM_InternalError("rcode: " + result.rcode,
 			"DKIM_DNSERROR_SERVER_ERROR");
@@ -423,7 +423,7 @@ function setKeyInDB(d_val, s_val, key, secure) {
 function init() {
 	"use strict";
 
-	if (prefs.getIntPref("storing")>0) {
+	if (prefs.getIntPref("storing") > PREF.KEY.STORING.DISABLED) {
 		Key.initDB();
 	}
 }

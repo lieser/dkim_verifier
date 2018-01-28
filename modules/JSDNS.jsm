@@ -4,9 +4,9 @@
  * Based on Joshua Tauberer's DNS LIBRARY IN JAVASCRIPT
  * from "Sender Verification Extension" version 0.9.0.6
  * 
- * Version: 1.4.0pre1 (19 November 2017)
+ * Version: 1.4.0pre1 (28 January 2018)
  * 
- * Copyright (c) 2013-2016 Philippe Lieser
+ * Copyright (c) 2013-2018 Philippe Lieser
  * 
  * This software is licensed under the terms of the MIT License.
  * 
@@ -59,6 +59,7 @@
  * -----
  *  - fixed incompatibility with Gecko 57
  *  - no longer needs ModuleGetter.jsm
+ *  - fixed jshint warnings
  *
  * 1.3.0
  * -----
@@ -150,20 +151,27 @@ var EXPORTED_SYMBOLS = [
 	"JSDNS"
 ];
 
+// @ts-ignore
 const Cc = Components.classes;
+// @ts-ignore
 const Ci = Components.interfaces;
+// @ts-ignore
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Log.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
 
 
+// @ts-ignore
 const LOG_NAME = "DKIM_Verifier.JSDNS";
+// @ts-ignore
 const PREF_BRANCH = "extensions.dkim_verifier.dns.";
 
 
 var JSDNS = {};
+// @ts-ignore
 var prefs = Services.prefs.getBranch(PREF_BRANCH);
+// @ts-ignore
 var log = Log.repository.getLogger(LOG_NAME);
 var DNS_STRINGS = Services.strings.createBundle(
 	"chrome://dkim_verifier/locale/JSDNS.properties"
@@ -250,11 +258,11 @@ var prefObserver = {
 	},
 };
 
-/*
+/**
  * Changes preference getNameserversFromOS and updates DNS Servers
  *
  * @param {Boolean} bool
- * @return {Undefined}
+ * @return {void}
  */
 function dnsChangeGetNameserversFromOS(bool) {
 	"use strict";
@@ -274,12 +282,12 @@ function dnsChangeGetNameserversFromOS(bool) {
 	log.config("changed DNS Servers to : " + DNS_ROOT_NAME_SERVERS.toSource());
 }
 
-/*
+/**
  * Changes preference DNS Servers and updates DNS Servers
  *
  * @param {String} nameserver
  *        ";" separated list of DNS Nameservers
- * @return {Undefined}
+ * @return {void}
  */
 function dnsChangeNameserver(nameserver) {
 	"use strict";
@@ -309,12 +317,12 @@ function dnsChangeNameserver(nameserver) {
 	log.config("changed DNS Servers to : " + DNS_ROOT_NAME_SERVERS.toSource());
 }
 
-/*
+/**
  * Changes preference timeout_connect
  *
  * @param {Number} timeout
  *        Timeout in seconds
- * @return {Undefined}
+ * @return {void}
  */
 function dnsChangeTimeoutConnect(timeout) {
 	"use strict";
@@ -322,29 +330,34 @@ function dnsChangeTimeoutConnect(timeout) {
 	timeout_connect = timeout;
 }
 
-/*
+/**
  * Remove Duplicates from Array
  *
  * from http://stackoverflow.com/questions/9229645/remove-duplicates-from-javascript-array/9229821#9229821
  *
- * @param {Array} ary
+ * @param {any[]} ary
  * @param {Function} key
  *        Function to generate key from element
+ * @return {any[]}
  */
 function arrayUniqBy(ary, key) {
 	"use strict";
-	
-    var seen = {};
-    return ary.filter(function(elem) {
-        var k = key(elem);
-        return (seen[k] === 1) ? 0 : seen[k] = 1;
-    });
+
+	var seen = {};
+	return ary.filter(function (elem) {
+		var k = key(elem);
+		if (seen[k] === 1) {
+			return false;
+		}
+		seen[k] = 1;
+		return true;
+	});
 }
 
-/*
+/**
  * get DNS Servers from OS configuration
  *
- * @return {Undefined}
+ * @return {void}
  */
 function DNS_get_OS_DNSServers() {
 	"use strict";
@@ -354,18 +367,21 @@ function DNS_get_OS_DNSServers() {
 	if ("@mozilla.org/windows-registry-key;1" in Components.classes) {
 		// Firefox 1.5 or newer on Windows
 		// Try getting a nameserver from the windows registry
+		var reg;
+		var registry;
+		var registryLinkage;
+		var registryInterfaces;
 		try {
 			var registry_class = Components.classes["@mozilla.org/windows-registry-key;1"];
 			var registry_object = registry_class.createInstance();
-			var registry = registry_object.QueryInterface(Components.interfaces.nsIWindowsRegKey);
-			var reg;
+			registry = registry_object.QueryInterface(Components.interfaces.nsIWindowsRegKey);
 			
 			registry.open(registry.ROOT_KEY_LOCAL_MACHINE,
 				"SYSTEM\\CurrentControlSet",
 				registry.ACCESS_QUERY_VALUE);
 			
 			// get interfaces in routing order
-			var registryLinkage = registry.openChild("Services\\Tcpip\\Linkage",
+			registryLinkage = registry.openChild("Services\\Tcpip\\Linkage",
 				registry.ACCESS_READ);
 			// nsIWindowsRegKey doesn't support REG_MULTI_SZ type out of the box
 			// from http://mxr.mozilla.org/comm-central/source/mozilla/browser/components/migration/src/IEProfileMigrator.js#129
@@ -405,14 +421,13 @@ function DNS_get_OS_DNSServers() {
 				if (linked === 1) {
 					log.trace("Interface activated: " + interfaceID);
 					return true;
-				} else {
-					log.debug("Interface deactivated: " + interfaceID);
-					return false;
 				}
+				log.debug("Interface deactivated: " + interfaceID);
+				return false;
 			});
 			
 			// get NameServer and DhcpNameServer of all interfaces
-			var registryInterfaces = registry.openChild(
+			registryInterfaces = registry.openChild(
 				"Services\\Tcpip\\Parameters\\Interfaces",
 				registry.ACCESS_READ);
 			var ns = "";
@@ -458,12 +473,15 @@ function DNS_get_OS_DNSServers() {
 		}
 	} else {
 		// Try getting a nameserver from /etc/resolv.conf.
+		/** @type {nsIFileInputStream} */
+		var stream_filestream;
 		try {
+			/** @type {nsIFile} */
 			var resolvconf = Components.classes["@mozilla.org/file/local;1"].createInstance(Components.interfaces.nsIFile);
 			resolvconf.initWithPath("/etc/resolv.conf");
 			
 			var stream = Components.classes["@mozilla.org/network/file-input-stream;1"].createInstance();
-			var stream_filestream = stream.QueryInterface(Components.interfaces.nsIFileInputStream);
+			stream_filestream = stream.QueryInterface(Components.interfaces.nsIFileInputStream);
 			stream_filestream.init(resolvconf, 0, 0, 0); // don't know what the flags are...
 			
 			var stream_reader = stream.QueryInterface(Components.interfaces.nsILineInputStream);
@@ -486,6 +504,7 @@ function DNS_get_OS_DNSServers() {
 		} catch (e) {
 			log.error("Error reading resolv.conf: " + e + "\n" + e.stack);
 			
+			// @ts-ignore
 			if (stream_filestream) {
 				stream_filestream.close();
 			}

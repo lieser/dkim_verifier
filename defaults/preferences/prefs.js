@@ -1,5 +1,8 @@
 // Default preference values. These are accessible via the preferences system
 // or via the optional chrome/content/options.xul preferences dialog.
+/* eslint strict: "off", no-magic-numbers: "off" */
+/* global pref */
+// @ts-nocheck
 
 ////////////////////////////////////////////////////////////////////////////////
 // general preferences - General

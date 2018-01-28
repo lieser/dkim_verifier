@@ -64,18 +64,19 @@ var log = Logging.getLogger("DNSWrapper");
  * @property {Boolean} bogus true if a security failure happened.
  */
 
-/**
- * some DNS rcodes:
- *   0  NoError   No Error [RFC1035]
- *   1  FormErr   Format Error [RFC1035]
- *   2  ServFail  Server Failure [RFC1035]
- *   3  NXDomain  Non-Existent Domain [RFC1035]
- *   4  NotImp    Not Implemented [RFC1035]
- *   5  Refused   Query Refused [RFC1035]
- */
+const RCODE = {
+	NoError: 0, // No Error [RFC1035]
+	FormErr: 1, // Format Error [RFC1035]
+	ServFail: 2, // Server Failure [RFC1035]
+	NXDomain: 3, // Non-Existent Domain [RFC1035]
+	NotImp: 4, // Non-Existent Domain [RFC1035]
+	Refused: 5, // Query Refused [RFC1035]
+};
 
 var DNS = {
 	get version() {return module_version; },
+
+	get RCODE() {return RCODE; },
 
 	/**
 	 * Perform resolution of the target name.
@@ -106,7 +107,7 @@ var DNS = {
 				} else {
 					// error in libunbound
 					result.data = null;
-					result.rcode = 2; // ServFail
+					result.rcode = RCODE.ServFail;
 					result.secure = false;
 					result.bogus = false;
 				}
@@ -137,9 +138,9 @@ function asyncJSDNS_QueryDNS(name, rrtype) {
 			if (rcode !== undefined) {
 				result.rcode = rcode;
 			} else if (queryError !== undefined) {
-				result.rcode = 2; // ServFail
+				result.rcode = RCODE.ServFail;
 			} else {
-				result.rcode = 0; // NoError
+				result.rcode = RCODE.NoError;
 			}
 			result.secure = false;
 			result.bogus = false;

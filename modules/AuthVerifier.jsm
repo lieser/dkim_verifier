@@ -17,7 +17,7 @@
 /* jshint strict:true, moz:true, esversion:6, smarttabs:true, unused:true */
 /* global Components, Services, MailServices, fixIterator */
 /* global Logging, ARHParser */
-/* global dkimStrings, domainIsInDomain, getDomainFromAddr, tryGetFormattedString, DKIM_InternalError */
+/* global PREF, dkimStrings, domainIsInDomain, getDomainFromAddr, tryGetFormattedString, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, AuthVerifier */
 
 "use strict";
@@ -162,10 +162,10 @@ var AuthVerifier = {
 				if (!msgHdr.folder) {
 					// message is external
 					dkimEnable = prefs.getBoolPref("dkim.enable");
-				} else if (msgHdr.folder.server.getIntValue("dkim_verifier.dkim.enable") === 0) {
+				} else if (msgHdr.folder.server.getIntValue("dkim_verifier.dkim.enable") === PREF.ENABLE.DEFAULT) {
 					// account uses global default
 					dkimEnable = prefs.getBoolPref("dkim.enable");
-				} else if (msgHdr.folder.server.getIntValue("dkim_verifier.dkim.enable") === 1) {
+				} else if (msgHdr.folder.server.getIntValue("dkim_verifier.dkim.enable") === PREF.ENABLE.TRUE) {
 					// dkim enabled for account
 					dkimEnable = true;
 				}
@@ -228,11 +228,18 @@ function getARHResult(msgHdr, msg) {
 	}
 
 	if (!msg.headerFields.has("authentication-results") ||
-	    ( ( !msgHdr.folder ||
-	        msgHdr.folder.server.getIntValue("dkim_verifier.arh.read") === 0) &&
-	      !prefs.getBoolPref("arh.read")) ||
-	    ( msgHdr.folder &&
-		  msgHdr.folder.server.getIntValue("dkim_verifier.arh.read") === 2)) {
+		( // disabled via default setting
+			(
+				!msgHdr.folder ||
+				msgHdr.folder.server.getIntValue("dkim_verifier.arh.read") === PREF.ENABLE.DEFAULT
+			) &&
+			!prefs.getBoolPref("arh.read")
+		) ||
+		( // disabled for the folder
+			msgHdr.folder &&
+			msgHdr.folder.server.getIntValue("dkim_verifier.arh.read") === PREF.ENABLE.FALSE
+		))
+	{
 		return null;
 	}
 

@@ -43,7 +43,6 @@ const Cr = Components.results;
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/FileUtils.jsm");
-Cu.import("resource://gre/modules/Log.jsm");
 Cu.import("resource://gre/modules/NetUtil.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://services-common/utils.js");
@@ -63,6 +62,11 @@ const PREF = {
 			JSDNS: 1,
 			LIBUNBOUND: 2,
 		}
+	},
+	ENABLE: {
+		DEFAULT: 0,
+		TRUE: 1,
+		FALSE: 2,
 	},
 	KEY: {
 		STORING: {

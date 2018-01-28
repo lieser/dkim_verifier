@@ -166,11 +166,13 @@ declare module OS {
 
 /** JavaScript code module "resource://gre/modules/Services.jsm" */
 declare module Services {
+    const appinfo: nsIXULAppInfo;
     const io: nsIIOService;
     const prefs: nsIPrefService;
     const scriptloader: mozIJSSubScriptLoader;
     const storage: mozIStorageService;
     const strings: nsIStringBundleService;
+    const vc: nsIVersionComparator;
 
     interface mozIJSSubScriptLoader {
         loadSubScript(url: string, targetObj?: object , charset?: string): any;
@@ -207,7 +209,13 @@ interface nsIInputStream {
     isNonBlocking(): boolean;
 }
 
-interface nsIFile {nsIFile: never}
+interface nsIFile {
+    readonly initWithPath: (filePath: string) => void;
+}
+
+interface nsIFileInputStream extends nsIInputStream {
+    readonly init: (file: nsIFile, ioFlags: number, perm: number, behaviorFlags: number) => void;
+}
 
 interface nsIFileOutputStream extends nsIOutputStream {nsIFileOutputStream: never}
 
@@ -260,6 +268,14 @@ interface nsIStringBundle {
 
 interface nsIURI {
     readonly asciiHost: string;
+}
+
+interface nsIVersionComparator {
+	readonly compare: (A: string, B: string) => number;
+}
+
+interface nsIXULAppInfo {
+	readonly platformVersion: string;
 }
 
 interface nsresult {nsresult: never};

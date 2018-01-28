@@ -770,7 +770,7 @@ var Verifier = (function() {
 		var algorithmTag = parseTagValue(tagMap, "h", key_h_tag, 2);
 		if (algorithmTag !== null) {
 			DKIMKey.h = algorithmTag[0];
-			DKIMKey.h_array = DKIMKey.h.split(":").map(String.trim).filter(function (x) {return x;});
+			DKIMKey.h_array = DKIMKey.h.split(":").map(s => s.trim()).filter(function (x) {return x;});
 		} 
 		
 		// get Key type (plain-text; OPTIONAL, default is "rsa")
@@ -824,7 +824,7 @@ var Verifier = (function() {
 		if (flagsTag !== null) {
 			DKIMKey.t = flagsTag[0];
 			// get the flags and store them in an array
-			DKIMKey.t_array = DKIMKey.t.split(":").map(String.trim).filter(function (x) {return x;});
+			DKIMKey.t_array = DKIMKey.t.split(":").map(s => s.trim()).filter(function (x) {return x;});
 		} else {
 			DKIMKey.t = "";
 		}
