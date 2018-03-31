@@ -3,7 +3,7 @@
  * 
  * Implements a nsITreeView for a SQLite DB table.
  *
- * Version: 1.1.0pre1 (19 November 2017)
+ * Version: 1.1.0pre1 (31 March 2018)
  * 
  * Copyright (c) 2013-2017 Philippe Lieser
  * 
@@ -33,37 +33,57 @@ Cu.import("resource://gre/modules/Services.jsm");
 
 
 /**
+ * @typedef {Object} Observable
+ * @property {Function} subscribe - subscribe a handler, that takes number of added rows as argument 
+ * @property {Function} unsubscribe - unsubscribe a handler
+ * @property {Function} notify - notify all observers of changes
+ */
+
+/**
  * SQLiteTreeView
  * Implements nsITreeView and some additional methods.
  * 
  * based on http://www.simon-cozens.org/content/xul-mozstorage-and-sqlite
- * 
- * @constructor
- * 
- * @param {String} dbPath The database file to open. This can be an absolute or relative path. If a relative path is given, it is interpreted as relative to the current profile's directory.
- * @param {String} tableName Table to be displayed
- * @param {String[]} columns Columns to be displayed in the same order as in the tree
+ * @extends {nsITreeView}
  */
-function SQLiteTreeView(dbPath, tableName, columns) {
-	"use strict";
+class SQLiteTreeView {
+	/**
+	 * Create a new SQLiteTreeView
+	 * @constructor
+	 * 
+	 * @param {String} dbPath The database file to open. This can be an absolute or relative path. If a relative path is given, it is interpreted as relative to the current profile's directory.
+	 * @param {String} tableName Table to be displayed
+	 * @param {String[]} columns Columns to be displayed in the same order as in the tree
+	 * @param {Observable|undefined} observable Observable
+	 */
+	constructor(dbPath, tableName, columns, observable = undefined) {
+		// Retains absolute paths and normalizes relative as relative to profile.
+		var path = OS.Path.join(OS.Constants.Path.profileDir, dbPath);
+		this.file = FileUtils.File(path);
 
-	// Retains absolute paths and normalizes relative as relative to profile.
-	var path = OS.Path.join(OS.Constants.Path.profileDir, dbPath);
-	this.file = FileUtils.File(path);
-	
-	// test that db exists
-	if (!this.file.exists()) {
-		throw new Error("SQLite File "+path+" must exist");
+		// test that db exists
+		if (!this.file.exists()) {
+			throw new Error("SQLite File "+path+" must exist");
+		}
+
+		this.tableName = tableName.replace(/\W/g, "");
+		this.columns = columns.map(function (elem) {
+			return elem.replace(/\W/g, "");
+		});
+		this.columnClause = this.columns.join(", ");
+		this.insertParamsClause = ":"+this.columns.join(", :");
+
+		// init sort order
+		/** @type {{index: number, orderDesc: boolean}[]} */
+		this.sortOrder = [];
+		for (var i=0; i<this.columns.length; i++) {
+			this.sortOrder.push({"index":i, "orderDesc": false});
+		}
+		this._updateOrderClause();
+
+		this.observable = observable;
 	}
-	
-	this.tableName = tableName.replace(/\W/g, "");
-	this.columns = columns.map(function (elem) {
-		return elem.replace(/\W/g, "");
-	});
-	this.columnClause = this.columns.join(", ");
-	this.insertParamsClause = ":"+this.columns.join(", :");
-}
-SQLiteTreeView.prototype = {
+
 	/*
 	 * internal methods
 	 */
@@ -72,14 +92,12 @@ SQLiteTreeView.prototype = {
 	 * Updates orderClause. Should be called if the sort order is changed
 	 * @return {void}
 	 */
-	_updateOrderClause: function SQLiteTreeView__updateOrderClause() {
-		"use strict";
-
+	_updateOrderClause() {
 		this.orderClause = this.sortOrder.map(function (elem) {
-			return this.columns[elem.index] + (elem.orderDirection ? " DESC": "");
+			return this.columns[elem.index] + (elem.orderDesc ? " DESC": "");
 		}, this).join(", ");
 		// dump(this.orderClause+"\n");
-	},
+	}
 		
 	/**
 	 * Executes sql an returns the result
@@ -89,13 +107,15 @@ SQLiteTreeView.prototype = {
 	 * 
 	 * @return {(String[])[]}
 	 */
-	_doSQL: function SQLiteTreeView__doSQL(sql, params) {
-		"use strict";
-
+	_doSQL(sql, params) {
 		var rv = [];
 		var statement;
 		try {
-			statement = this.conn.createStatement(sql);
+			if (this.conn) {
+				statement = this.conn.createStatement(sql);
+			} else {
+				throw new Error("SQLiteTreeView not correctly initialised (no open connection). Did you use setTree()?");
+			}
 			// Named params.
 			if (params && typeof params === "object") {
 				for (let k in params) {
@@ -125,32 +145,58 @@ SQLiteTreeView.prototype = {
 			}
 		}
 		return rv;
-	},
+	}
 
 	/**
-	 * Get the rowid of the rows
+	 * Get the rowID of the rows
 	 * 
 	 * @param {Number[]} rows
 	 * 
-	 * @return {string[]} rowids
+	 * @return {string[]} rowIDs
 	 */
-	_getRowids: function SQLiteTreeView__getRowids(rows) {
-		"use strict";
-
-		var rowids = [];
+	_getRowIDs(rows) {
+		var rowIDs = [];
 		for (var i = 0; i < rows.length; i++) {
-			rowids.push(this._doSQL(
+			rowIDs.push(this._doSQL(
 				"SELECT rowid, "+this.columnClause+" FROM "+this.tableName+"\n" +
 				"ORDER BY "+this.orderClause+"\n" +
 				"LIMIT 1 OFFSET "+rows[i]+";"
 			)[0][0]);
 		}
-		return rowids;
-	},
-	
+		return rowIDs;
+	}
+
+	/**
+	 * If observable is set, notify it.
+	 * Otherwise, directly update the tree view
+	 * 
+	 * @param {Number} [rowCountChanged] Number of rows changed
+	 * @return {void}
+	 */
+	_triggerUpdate(rowCountChanged) {
+		if (this.observable) {
+			this.observable.notify(rowCountChanged);
+		} else {
+			this.update(rowCountChanged);
+		}
+	}
+
 	/*
 	 * SQLiteTreeView methods
 	 */
+
+	/**
+	 * Update the tree view
+	 * 
+	 * @param {Number} [rowCountChanged] Number of rows changed
+	 * @return {void}
+	 */
+	update(rowCountChanged) {
+		if (rowCountChanged) {
+			this.treeBox.rowCountChanged(0, rowCountChanged);
+		}
+		this.treeBox.invalidate();
+	}
 
 	/**
 	 * Adds a new row to the database
@@ -158,9 +204,7 @@ SQLiteTreeView.prototype = {
 	 * @param {Object} params Named params to insert
 	 * @return {void}
 	 */
-	addRow: function SQLiteTreeView_addRow(params) {
-		"use strict";
-
+	addRow(params) {
 		// add row
 		this._doSQL(
 			"INSERT INTO "+this.tableName+" ("+this.columnClause+")\n" +
@@ -169,21 +213,18 @@ SQLiteTreeView.prototype = {
 		);
 		
 		// update tree
-		this.treebox.rowCountChanged(0, 1);
-		this.treebox.invalidate();
-	},
+		this._triggerUpdate(1);
+	}
 	
 	/**
 	 * Delete selected rows
 	 * @return {void}
 	 */
-	deleteSelectedRows: function SQLiteTreeView_deleteSelectedRows() {
-		"use strict";
-
+	deleteSelectedRows() {
 		// get selected rows
 		var selectedRows = [];
-		var start = {};
-		var end ={};
+		var start = {value: 0};
+		var end ={value: -1};
 		var numRanges = this.selection.getRangeCount();
 
 		for (var t = 0; t < numRanges; t++) {
@@ -191,42 +232,36 @@ SQLiteTreeView.prototype = {
 			for (var v = start.value; v <= end.value; v++) {
 				selectedRows.push(v);
 			}
-			// this.treebox.rowCountChanged(start, start-end);
 		}
 
-		// get rowids
-		var rowids = this._getRowids(selectedRows);
+		// get rowIDs
+		var rowIDs = this._getRowIDs(selectedRows);
 		// delete rows
 		for (var i = 0; i < selectedRows.length; i++) {
 			this._doSQL(
 				"DELETE FROM "+this.tableName+"\n" +
-				"WHERE rowid = :rowid;",
-				{rowid: rowids[i]}
+				"WHERE rowid = :rowID;",
+				{rowID: rowIDs[i]}
 			);
 		}
 		// update tree
-		this.treebox.rowCountChanged(0, -rowids.length);
-		this.treebox.invalidate();
-	},
+		this._triggerUpdate(-rowIDs.length);
+	}
 	
 	/*
 	 * nsITreeView attributes/methods
 	 */
 	
 	get rowCount() {
-		"use strict";
-
 		return this._doSQL("SELECT count(*) FROM "+this.tableName)[0][0];
-	},
+	}
 	
 	// cycleCell
 	
-	cycleHeader: function SQLiteTreeView_cycleHeader(col) {
-		"use strict";
-
+	cycleHeader(col) {
 		if (col.index === this.sortOrder[0].index) {
 			// change sort order direction
-			this.sortOrder[0].orderDirection = !this.sortOrder[0].orderDirection ;
+			this.sortOrder[0].orderDesc = !this.sortOrder[0].orderDesc ;
 		} else {
 			// change sort order sequence
 			
@@ -247,80 +282,67 @@ SQLiteTreeView.prototype = {
 		}
 		
 		this._updateOrderClause();
-		this.treebox.invalidate();
-		// this.cacheRowNum = -1; // Invalidate cache		
-	},
+		this._triggerUpdate();
+	}
 	
-	getCellProperties: function SQLiteTreeView_getCellProperties(/*row,col,props*/) {}, // eslint-disable-line strict, no-empty-function
+	getCellProperties(/*row,col,props*/) {} // eslint-disable-line strict, no-empty-function
 	
-	getCellText : function SQLiteTreeView_getCellText(row, column) {
-		"use strict";
-
+	getCellText(row, column) {
 		var res = this._doSQL(
 			"SELECT "+this.columnClause+" FROM "+this.tableName+"\n" +
 			"ORDER BY "+this.orderClause+"\n" +
 			"LIMIT 1 OFFSET "+row+";"
 		);
 		return res[0][column.index];
-	},
+	}
 	
 	// getCellValue
 	
-	getColumnProperties: function SQLiteTreeView_getColumnProperties(/*colid,col,props*/) {}, // eslint-disable-line strict, no-empty-function
-	getImageSrc: function SQLiteTreeView_getImageSrc(/*row,col*/){
-		"use strict";
+	getColumnProperties(/*colID,col,props*/) {} // eslint-disable-line strict, no-empty-function
 
+	getImageSrc(/*row,col*/){
 		return null;
-	},
-	getLevel: function SQLiteTreeView_getLevel(/*row*/){
-		"use strict";
+	}
 
+	getLevel(/*row*/){
 		return 0;
-	},
-	getRowProperties: function SQLiteTreeView_getRowProperties(/*row,props*/){}, // eslint-disable-line strict, no-empty-function
-	isContainer: function SQLiteTreeView_isContainer(/*row*/){
-		"use strict";
+	}
 
+	getRowProperties(/*row,props*/){} // eslint-disable-line strict, no-empty-function
+
+	isContainer(/*row*/){
 		return false;
-	},
+	}
 	
-	isEditable: function SQLiteTreeView_isEditable(row, col) {
-		"use strict";
-
+	isEditable(row, col) {
 		return col.editable;
-	},
+	}
 	
-	isSeparator: function SQLiteTreeView_isSeparator(/*row*/){
-		"use strict";
-
+	isSeparator(/*row*/){
 		return false;
-	},
-	isSorted: function SQLiteTreeView_isSorted(){
-		"use strict";
+	}
 
+	isSorted(){
 		return true;
-	},
+	}
 	
-	setCellText: function SQLiteTreeView_setCellText(row, col, value) {
-		"use strict";
-
-		var rowid = this._getRowids([row])[0];
+	setCellText(row, col, value) {
+		var rowID = this._getRowIDs([row])[0];
 		this._doSQL(
 			"UPDATE "+this.tableName+"\n" +
 			"SET "+this.columns[col.index]+" = :value\n" +
-			"WHERE rowid = :rowid;",
-			{"value":value, "rowid":rowid}
+			"WHERE rowid = :rowID;",
+			{"value":value, "rowID":rowID}
 		);
-	},
+		this._triggerUpdate();
+	}
 	
 	// setCellValue
 	
-	setTree: function SQLiteTreeView_setTree(treebox) {
-		"use strict";
-
-		this.treebox = treebox;
+	setTree(treeBox) {
+		this.treeBox = treeBox;
 		
-		if (treebox) {
+		if (treeBox) {
 			// open connection
 			this.conn = Services.storage.openDatabase(this.file);
 			
@@ -329,18 +351,26 @@ SQLiteTreeView.prototype = {
 				throw new Error("Table "+this.tableName+" must exist");
 			}
 	
-			// init sort order
-			this.sortOrder = [];
-			for (var i=0; i<treebox.columns.count; i++) {
-				this.sortOrder.push({"index":i, "orderDirection ": 0});
+			if ( treeBox.columns.count !== this.columns.length) {
+				throw new Error("Number of columns to be displayed must be the same as in the tree");
 			}
-			this._updateOrderClause();
+
+			if (this.observable) {
+				var self = this;
+				this.updateHandler = x => self.update(x);
+				this.observable.subscribe(this.updateHandler);
+			}
 		} else {
-			if (this.conn && this.connectionReady) {
+			if (this.conn && this.conn.connectionReady) {
 				// close connection
 				this.conn.close();
 				// this.conn = null;
 			}
+
+			if (this.observable) {
+				this.observable.unsubscribe(this.updateHandler);
+				this.observable = null;
+			}
 		}
-	},
-};
+	}
+}

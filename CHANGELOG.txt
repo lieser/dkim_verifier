@@ -1,6 +1,7 @@
 2.0.0pre3 [2018-01-01]
 ------------------
  - now requires at least Thunderbird 52
+ - added toolbar button and menuitem for sign rules
  - fixed incompatibility with Thunderbird 57/59
  - fixed "Add must be signed exception" button being disabled if wrong signer is only a warning
  - updated default rules and favicons

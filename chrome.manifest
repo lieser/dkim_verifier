@@ -16,6 +16,10 @@ locale		dkim_verifier ja-JP		chrome/locale/ja-JP/
 
 overlay		chrome://messenger/content/msgHdrViewOverlay.xul  chrome://dkim_verifier/content/msgHdrViewOverlay.xul
 overlay		chrome://messenger/content/mailWindowOverlay.xul  chrome://dkim_verifier/content/statusbarOverlay.xul
+overlay		chrome://messenger/content/messenger.xul  chrome://dkim_verifier/content/toolbarbutton.xul
+
+style		chrome://global/content/customizeToolbar.xul	chrome://dkim_verifier/skin/toolbarbutton.css
+
 
 # Account preference service
 component {850258f2-ae8b-421a-8a9c-bd99fdcc8097} components/accountManagerExtension.js

@@ -95,6 +95,7 @@ var dbInitializedDefer = new Deferred();
 
 
 var favicons;
+var rulesUpdatedObservers = [];
 
 var Policy = {
 	get version() { "use strict"; return module_version; },
@@ -552,6 +553,54 @@ var Policy = {
 		});
 		return promise;
 	},
+
+	/**
+	 * Adds a function, which is called if sign rules changed.
+	 * The handler function is called with the number of added rules
+	 * (negative if rules where removed) as an argument.
+	 * 
+	 * @param {Function} handler
+	 * @return {void}
+	 */
+	addRulesUpdatedObserver: function Policy_addRulesUpdatedListener(handler) {
+		"use strict";
+
+		rulesUpdatedObservers.push(handler);
+	},
+
+	/**
+	 * Removes the sign rules changed observer.
+	 * @param {Function} handler
+	 * @return {void}
+	 */
+	removeRulesUpdatedObserver: function Policy_addRulesUpdatedListener(handler) {
+		"use strict";
+
+		rulesUpdatedObservers = rulesUpdatedObservers.filter(function(item) {
+			if (item === handler) {
+				return false;
+			}
+			return true;
+		});
+	},
+
+	/**
+	 * Notify the sign rules changed observer.
+	 * 
+	 * @param {Number} count Number of rules added
+	 * @return {void}
+	 */
+	rulesUpdated: function Policy_rulesUpdated(count) {
+		"use strict";
+
+		rulesUpdatedObservers.forEach(function(observer) {
+			if (observer) {
+				observer(count);
+			} else {
+				log.error("observer undefined/null");
+			}
+		});
+	},
 };
 
 /**
@@ -596,6 +645,7 @@ async function addRule(domain, addr, sdid, ruletype, priority) {
 	} finally {
 		await conn.close();
 	}
+	Policy.rulesUpdated(1);
 
 	log.trace("addRule end");
 }

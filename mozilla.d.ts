@@ -195,9 +195,31 @@ declare module MailServices {
 ////////////////////////////////////////////////////////////////////////////////
 //// Mozilla specific interfaces/types
 
-interface mozIStorageConnection {mozIStorageConnection: never}
+interface mozIStorageBaseStatement extends mozIStorageBindingParams {
+    readonly finalize: () => void;
+}
+
+interface mozIStorageBindingParams {
+    readonly bindByName: (aName: string, aValue: any) => void;
+}
+
+interface mozIStorageConnection {
+    readonly close: () => void;
+    readonly createStatement: (aSQLStatement: string) => mozIStorageStatement;
+    readonly tableExists: (aTableName: string) => boolean;
+
+    readonly connectionReady: boolean;
+}
+
 interface mozIStorageService {
     readonly openDatabase: (aDatabaseFile: nsIFile) => mozIStorageConnection;
+}
+
+interface mozIStorageStatement extends mozIStorageBaseStatement {
+    readonly executeStep: () => boolean;
+    readonly getString: (aIndex: number) => string;
+
+    readonly numEntries: number;
 }
 
 interface nsIAsyncStreamCopier {nsIAsyncStreamCopier: never}
@@ -210,6 +232,7 @@ interface nsIInputStream {
 }
 
 interface nsIFile {
+    readonly exists: () => boolean;
     readonly initWithPath: (filePath: string) => void;
 }
 
@@ -245,6 +268,19 @@ type nsIObserver = object;
 
 interface nsIIOService {
     newURI(aSpec: string, aOriginCharset: string|null, aBaseURI: nsIURI|null): nsIURI;
+}
+
+interface nsITreeSelection {
+    readonly getRangeAt: (i: number, /*out*/ min: nsITreeSelection_out_number, /*out*/max: nsITreeSelection_out_number) => void;
+    readonly getRangeCount: () => number;
+}
+
+interface nsITreeSelection_out_number {
+    value: number;
+}
+
+declare class nsITreeView {
+    selection: nsITreeSelection;
 }
 
 interface nsIStackFrame {

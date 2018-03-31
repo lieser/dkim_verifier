@@ -80,6 +80,7 @@
         // mozilla
         "@mozilla.org/intl/scriptableunicodeconverter",
         "nsIURI",
+        "osfile.jsm",
         "XPCOMUtils",
         // general
         "IntelliSense"

@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://dkim_verifier/skin/toolbarbutton.css" type="text/css"?>
+<!DOCTYPE overlay SYSTEM "chrome://dkim_verifier/locale/xulstrings.dtd">
+<overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+	<toolbarpalette id="MailToolbarPalette">
+	  <toolbarbutton id="dkim_verifier-button" class="toolbarbutton-1"
+		label="&treeviewSigners.title;"
+		oncommand="toOpenWindowByType('dkim_verifier:treeviewSigners', 'chrome://dkim_verifier/content/treeviewSigners.xul');"/>
+	</toolbarpalette>
+</overlay>
