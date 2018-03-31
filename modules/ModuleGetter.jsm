@@ -1,9 +1,9 @@
 /*
  * ModuleGetter.jsm
  *
- * Version: 1.0.1 (10 November 2016)
+ * Version: 1.0.2 (31 March 2018)
  *
- * Copyright (c) 2013-2016 Philippe Lieser
+ * Copyright (c) 2013-2018 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -44,7 +44,9 @@ var ModuleGetter = {
 			try {
 				var temp = {};
 				
-				if (Services.vc.compare(Services.appinfo.platformVersion, "24.0-1") >= 0) {
+				if (Services.vc.compare(Services.appinfo.platformVersion, "24.0-1") >= 0 ||
+					Services.appinfo.name == "FossaMail")
+				{
 					Cu.import("resource://services-common/utils.js", temp);
 				} else {
 					Cu.import("resource://dkim_verifier/mozilla/utils.js", temp);
@@ -72,7 +74,9 @@ var ModuleGetter = {
 			try {
 				var temp = {};
 				
-				if (Services.vc.compare(Services.appinfo.platformVersion, "27.0-1") >= 0) {
+				if (Services.vc.compare(Services.appinfo.platformVersion, "27.0-1") >= 0 ||
+					Services.appinfo.name == "FossaMail")
+				{
 					Cu.import("resource://gre/modules/Log.jsm", temp);
 				} else if (Services.vc.compare(Services.appinfo.platformVersion, "24.0-1") >= 0) {
 					Cu.import("resource://services-common/log4moz.js", temp);
@@ -109,7 +113,9 @@ var ModuleGetter = {
 			try {
 				var temp = {};
 				
-				if (Services.vc.compare(Services.appinfo.platformVersion, "24.0-1") >= 0) {
+				if (Services.vc.compare(Services.appinfo.platformVersion, "24.0-1") >= 0 ||
+					Services.appinfo.name == "FossaMail")
+				{
 					Cu.import("resource://gre/modules/osfile.jsm", temp);
 				} else {
 					if (Services.appinfo.OS === "WINNT") {
@@ -143,7 +149,9 @@ var ModuleGetter = {
 			try {
 				var temp = {};
 				
-				if (Services.vc.compare(Services.appinfo.platformVersion, "24.0-1") >= 0) {
+				if (Services.vc.compare(Services.appinfo.platformVersion, "24.0-1") >= 0 ||
+					Services.appinfo.name == "FossaMail")
+				{
 					Cu.import("resource://gre/modules/Promise.jsm", temp);
 				} else {
 					Cu.import("resource://gre/modules/commonjs/promise/core.js", temp);
@@ -170,7 +178,9 @@ var ModuleGetter = {
 			try {
 				var temp = {};
 				
-				if (Services.vc.compare(Services.appinfo.platformVersion, "20.0-1") >= 0) {
+				if (Services.vc.compare(Services.appinfo.platformVersion, "20.0-1") >= 0 ||
+					Services.appinfo.name == "FossaMail")
+				{
 					Cu.import("resource://gre/modules/Sqlite.jsm", temp);
 				} else {
 					Cu.import("resource://dkim_verifier/mozilla/Sqlite.jsm", temp);
