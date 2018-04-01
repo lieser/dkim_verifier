@@ -1,7 +1,7 @@
 /*
  * dkimPolicy.jsm
  * 
- * Version: 1.4.0pre1 (14 November 2017)
+ * Version: 1.4.0pre1 (31 March 2018)
  * 
  * Copyright (c) 2013-2017 Philippe Lieser
  * 
@@ -11,9 +11,7 @@
  * included in all copies or substantial portions of the Software.
  */
 
-// options for JSHint
-/* jshint strict:true, moz:true, smarttabs:true */
-/* jshint -W069 */ // "['{a}'] is better written in dot notation."
+// options for ESLint
 /* eslint strict: ["warn", "function"] */
 /* global Components, Services, Sqlite */
 /* global Logging, DMARC */

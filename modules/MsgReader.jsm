@@ -13,8 +13,7 @@
  * included in all copies or substantial portions of the Software.
  */
 
-// options for JSHint
-/* jshint strict:true, globalstrict:true, esnext:true, moz:true, smarttabs:true, unused:true */
+// options for ESLint
 /* global Components */
 /* global Logging */
 /* global Deferred, DKIM_InternalError */

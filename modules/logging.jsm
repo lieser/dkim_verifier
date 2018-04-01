@@ -11,10 +11,7 @@
  * included in all copies or substantial portions of the Software.
  */
  
-// options for JSHint
-/* jshint strict:true, esnext:true */
-/* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
-/* jshint -W069 */ // "['{a}'] is better written in dot notation."
+// options for ESLint
 /* eslint strict: ["warn", "function"] */
 /* global Components, Services, Log */
 /* exported EXPORTED_SYMBOLS, Logging */

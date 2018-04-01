@@ -13,8 +13,7 @@
  * included in all copies or substantial portions of the Software.
  */
 
-// options for JSHint
-/* jshint strict:true, moz:true, esversion:6, smarttabs:true, unused:true */
+// options for ESLint
 /* global Components, Services, MailServices, fixIterator */
 /* global Logging, ARHParser */
 /* global PREF, dkimStrings, domainIsInDomain, getDomainFromAddr, tryGetFormattedString, DKIM_InternalError */

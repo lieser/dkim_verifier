@@ -13,9 +13,7 @@
  * included in all copies or substantial portions of the Software.
  */
 
-// options for JSHint
-/* jshint strict:true, moz:true */
-/* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
+// options for ESLint
 /* eslint strict: ["warn", "function"] */
 /* global Components, OS, FileUtils, Services */
 /* exported EXPORTED_SYMBOLS, SQLiteTreeView */

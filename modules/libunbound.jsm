@@ -14,9 +14,7 @@
  * included in all copies or substantial portions of the Software.
  */
 
-// options for JSHint
-/* jshint strict:true, moz:true */
-/* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
+// options for ESLint
 /* global Components, OS, Services, ChromeWorker */
 /* global Logging, Deferred, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, libunbound */

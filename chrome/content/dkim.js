@@ -12,10 +12,7 @@
  * included in all copies or substantial portions of the Software.
  */
 
-// options for JSHint
-/* jshint strict:true, moz:true, esversion:6 */
-/* jshint expr:true */
-/* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
+// options for ESLint
 /* eslint-env browser */
 /* eslint strict: ["warn", "function"] */
 /* global Components, Cu, Services, gMessageListeners, gFolderDisplay, gExpandedHeaderView, createHeaderEntry, syncGridColumnWidths, currentHeaderData, gMessageDisplay */
@@ -278,9 +275,7 @@ var that = {
 			name: entry,
 			outputFunction: that.onOutput.bind(that)
 		};
-		/* jshint -W055 */
 		var view = gExpandedHeaderView[entry] = new createHeaderEntry("expanded", e);
-		/* jshint -W055 */
 		header = view.enclosingBox;
 		row = view.enclosingRow;
 	},

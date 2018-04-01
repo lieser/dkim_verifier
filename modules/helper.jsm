@@ -11,8 +11,7 @@
  * included in all copies or substantial portions of the Software.
  */
 
-// options for JSHint
-/* jshint strict:true, moz:true, smarttabs:true */
+// options for ESLint
 /* global Components, FileUtils, NetUtil, Services */
 /* global Logging */
 /* exported EXPORTED_SYMBOLS, addrIsInDomain, addrIsInDomain2, domainIsInDomain, getBaseDomainFromAddr, getDomainFromAddr, PREF, readStringFrom, stringEndsWith, stringEqual, tryGetString, tryGetFormattedString, writeStringToTmpFile, DKIM_SigError, DKIM_InternalError */

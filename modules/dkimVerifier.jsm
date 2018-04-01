@@ -23,9 +23,7 @@
  *
  */
 
-// options for JSHint
-/* jshint strict:true, esnext:true, moz:true, smarttabs:true */
-/* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
+// options for ESLint
 /* eslint strict: ["warn", "function"] */
 /* global Components, Services */
 /* global Logging, Key, Policy, MsgReader */
@@ -198,9 +196,7 @@ var Verifier = (function() {
 		function rstr2byteArray(str) {
 			var res = new Array(str.length);
 			for (var i = 0; i < str.length; i++) {
-				/* jshint -W016 */
 				res[i] = str.charCodeAt(i) & 0xFF;
-				/* jshint +W016 */
 			}
 			
 			return res;

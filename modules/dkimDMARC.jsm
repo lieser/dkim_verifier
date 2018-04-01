@@ -16,9 +16,7 @@
  * included in all copies or substantial portions of the Software.
  */
 
-// options for JSHint
-/* jshint strict:true, moz:true, smarttabs:true */
-/* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
+// options for ESLint
 /* eslint strict: ["warn", "function"] */
 /* global Components, Services, XPCOMUtils */
 /* global Logging, Verifier, DNS */

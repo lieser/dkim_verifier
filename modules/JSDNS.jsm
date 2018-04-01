@@ -59,7 +59,7 @@
  * -----
  *  - fixed incompatibility with Gecko 57
  *  - no longer needs ModuleGetter.jsm
- *  - fixed jshint warnings
+ *  - fixed ESLint warnings, removed options for JSHint
  *
  * 1.3.0
  * -----
@@ -136,10 +136,7 @@
  *  from "Sender Verification Extension" version 0.9.0.6
  */
 
-// options for JSHint
-/* jshint strict:true, moz:true */
-/* jshint -W064 */ //"Missing 'new' prefix when invoking a constructor."
-/* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
+// options for ESLint
 /* eslint strict: ["warn", "function"] */
 /* eslint complexity: "off" */
 /* eslint no-magic-numbers: "off" */
@@ -793,7 +790,6 @@ function DNS_readDomain(ctx) {
 			domainname += ".";
 		}
 		
-		/* jshint -W016 */ // "Unexpected use of '{a}'."
 		if ((l >> 6) === 3) {
 			// Pointer
 			var ptr = ((l & 63) << 8) + ctx.str.charCodeAt(ctx.idx++);
@@ -804,7 +800,6 @@ function DNS_readDomain(ctx) {
 			domainname += ctx.str.substr(ctx.idx, l);
 			ctx.idx += l;
 		}
-		/* jshint +W016 */
 	}
 	return domainname;
 }
@@ -980,9 +975,7 @@ function DNS_getRDData(str, server, host, recordtype, callback, callbackdata, ho
 function DNS_strToWord(str) {
 	"use strict";
 	
-	/* jshint -W016 */ // "Unexpected use of '{a}'."
 	var res = str.charCodeAt(1) + (str.charCodeAt(0) << 8);
-	/* jshint +W016 */
 	return res;
 }
 
@@ -995,9 +988,7 @@ function DNS_strToOctet(str) {
 function DNS_wordToStr(word) {
 	"use strict";
 	
-	/* jshint -W016 */ // "Unexpected use of '{a}'."
 	var res = DNS_octetToStr((word >> 8) % 256) + DNS_octetToStr(word % 256);
-	/* jshint +W016 */
 	return res;
 }
 

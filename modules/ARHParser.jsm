@@ -13,8 +13,7 @@
  * included in all copies or substantial portions of the Software.
  */
 
-// options for JSHint
-/* jshint strict:true, moz:true, smarttabs:true, unused:true */
+// options for ESLint
 /* global Components, Services */
 /* global Logging */
 /* exported EXPORTED_SYMBOLS, ARHParser */

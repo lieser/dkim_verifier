@@ -15,9 +15,7 @@
  * included in all copies or substantial portions of the Software.
  */
 
-// options for JSHint
-/* jshint strict:true, moz:true */
-/* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
+// options for ESLint
 /* global Components, Services, XPCOMUtils */
 /* global Logging, PREF, JSDNS, libunbound */
 /* exported EXPORTED_SYMBOLS, DNS */
