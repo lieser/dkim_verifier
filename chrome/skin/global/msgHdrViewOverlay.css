@@ -27,7 +27,7 @@
 }
 
 mail-multi-emailHeaderField {
-  -moz-binding: url("chrome://dkim_verifier/content/bindings.xml#dkim-mail-multi-emailHeaderField");
+  -moz-binding: url("chrome://dkim_verifier/content/bindings.xml#dkim-mail-multi-emailHeaderField") !important;
 }
 
 mail-multi-emailHeaderField:not([dkimFavicon="true"]) [anonid="dkimFavicon"] {
