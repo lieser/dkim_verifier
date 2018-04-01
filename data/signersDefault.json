@@ -1,6 +1,6 @@
 {
 	"versionTable": 1,
-	"versionData": 17,
+	"versionData": 19,
 	"rules": [
 		{
 			"domain": "1und1.de",
@@ -274,6 +274,12 @@
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
 			"domain": "gmxnet.de",
+			"addr": "*@fmp.gmxnet.de",
+			"sdid": "gmxnet.de fmp.gmxnet.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
+			"domain": "gmxnet.de",
 			"addr": "mailings@gmxnet.de",
 			"sdid": "gmxnet.de mailings.gmx.net",
 			"ruletype": "NEUTRAL",
@@ -387,6 +393,18 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "microsoft.com",
+			"addr": "*@communication.microsoft.com",
+			"sdid": "microsoft.com communication.microsoft.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
+			"domain": "mozilla.org",
+			"addr": "*@e.mozilla.org",
+			"sdid": "mozilla.org e.mozilla.org",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "mozilla-community.org",
 			"addr": "*",
 			"sdid": "mozilla-community.org",
@@ -408,6 +426,12 @@
 			"domain": "o2.de",
 			"addr": "*@news.o2.de",
 			"sdid": "news.o2.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "opavote.com",
+			"addr": "*",
+			"sdid": "opavote.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -452,6 +476,12 @@
 			"sdid": "perdue.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "posteo.de",
+			"addr": "*",
+			"sdid": "posteo.de",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_NEUTRAL"
 		}, {
 			"domain": "postpro.net",
 			"addr": "*",

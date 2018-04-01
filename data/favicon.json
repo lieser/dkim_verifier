@@ -43,6 +43,8 @@
 	"forschungsgruppe.de": "forschungsgruppe.de.ico",
 	"germanwings.com": "germanwings.com.ico",
 	"github.com": "github.com.ico",
+	"haazen.xyz": "haazen.xyz.ico",
+	"heise.de": "heise.de.ico",
 	"mailings.gmx.net": "gmx.net.ico",
 	"e.mozilla.org": "mozilla.org.png",
 	"sicher.gmx.net": "gmx.net.ico",
@@ -66,11 +68,13 @@
 	"nvidia.com": "nvidia.com.ico",
 	"no-ip.com": "no-ip.com.png",
 	"o2.de": "o2.de.png",
+	"opavote.com": "opavote.com.png",
 	"openpetition.de": "openpetition.de.ico",
 	"payleven.de": "payleven.de.ico",
 	"paypal.de": "paypal.com.ico",
 	"paypal.com": "paypal.com.ico",
 	"perdue.com": "perdue.com.ico",
+	"portsgroup.com": "portsgroup.com.ico",
 	"qantas.com.au": "qantas.com.au.ico",
 	"sbroker.de": "sbroker.de.ico",
 	"sbroker.info": "sbroker.de.ico",
@@ -89,7 +93,5 @@
 	"uslowrates.com": "uslowrates.com.png",
 	"wikimedia.org": "wikimedia.org.ico",
 	"youtube.com": "youtube.com.ico",
-	"zendesk.com": "zendesk.com.ico",
-	"haazen.xyz": "haazen.xyz.ico",
-	"portsgroup.com": "portsgroup.com.ico"
+	"zendesk.com": "zendesk.com.ico"
 }
