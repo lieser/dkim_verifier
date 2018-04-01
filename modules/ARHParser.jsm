@@ -3,9 +3,9 @@
  * 
  * Parser for the Authentication-Results header as specified in RFC 7601.
  *
- * Version: 1.1.1pre1 (01 January 2018)
+ * Version: 1.2.0pre1 (31 March 2018)
  * 
- * Copyright (c) 2014-2016 Philippe Lieser
+ * Copyright (c) 2014-2018 Philippe Lieser
  * 
  * This software is licensed under the terms of the MIT License.
  * 
@@ -15,7 +15,7 @@
 
 // options for JSHint
 /* jshint strict:true, moz:true, smarttabs:true, unused:true */
-/* global Components */
+/* global Components, Services */
 /* global Logging */
 /* exported EXPORTED_SYMBOLS, ARHParser */
 
@@ -29,11 +29,18 @@ var EXPORTED_SYMBOLS = [
 ];
 
 // @ts-ignore
+const PREF_BRANCH = "extensions.dkim_verifier.arh.";
+
+// @ts-ignore
 const Cu = Components.utils;
+
+Cu.import("resource://gre/modules/Services.jsm");
 
 Cu.import("resource://dkim_verifier/logging.jsm");
 
 
+// @ts-ignore
+var prefs = Services.prefs.getBranch(PREF_BRANCH);
 // @ts-ignore
 let log = Logging.getLogger("ARHParser");
 
@@ -161,7 +168,10 @@ let ARHParser = {
 
 		// get the resinfos
 		while (authresHeaderRef.value !== "") {
-			res.resinfo.push(parseResinfo(authresHeaderRef));
+			let arhResInfo = parseResinfo(authresHeaderRef);
+			if (arhResInfo) {
+				res.resinfo.push(arhResInfo);
+			}
 		}
 
 		log.debug(res.toSource());
@@ -173,7 +183,7 @@ let ARHParser = {
  *  Parses the next resinfo in str. The parsed part of str is removed from str.
  *  
  *  @param {RefString} str
- *  @return {ARHResinfo} Parsed resinfo
+ *  @return {ARHResinfo|null} Parsed resinfo
  */
 function parseResinfo(str) {
 	log.trace("parse str: " + str.toSource());
@@ -188,7 +198,19 @@ function parseResinfo(str) {
 	let Keyword_result_p = "none|pass|fail|softfail|policy|neutral|temperror|permerror";
 	let result_p = "=" + CFWS_op + "(" + Keyword_result_p + ")";
 	let methodspec_p = ";" + CFWS_op + method_p + CFWS_op + result_p;
-	reg_match = match(str, methodspec_p);
+	try {
+		reg_match = match(str, methodspec_p);
+	} catch (exception) {
+		if (prefs.getBoolPref("relaxedParsing"))
+		{
+			// allow trailing ";" at the end
+			if (str.value.trim() === ";") {
+				str.value = "";
+				return null;
+			}
+		}
+		throw exception;
+	}
 	res.method = reg_match[1];
 	if (reg_match[2]) {
 		res.method_version = parseInt(reg_match[2], 10);
@@ -206,6 +228,10 @@ function parseResinfo(str) {
 
 	// get propspec (optional)
 	let pvalue_p = value_p + "|(?:(?:" + local_part_p + "?@)?" + domain_name_p + ")";
+	if (prefs.getBoolPref("relaxedParsing")) {
+		// allow "/" in the header.b (or other) property, even if it is not in a quoted-string
+		pvalue_p += "|[^ \\x00-\\x1F\\x7F()<>@,;:\\\\\"[\\]?=]+";
+	}
 	let special_smtp_verb_p = "mailfrom|rcptto";
 	let property_p = special_smtp_verb_p + "|" + Keyword_p;
 	let propspec_p = "(" + Keyword_p + ")" + CFWS_op + "\\." + CFWS_op +

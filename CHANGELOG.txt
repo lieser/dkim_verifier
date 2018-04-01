@@ -2,6 +2,7 @@
 ------------------
  - now requires at least Thunderbird 52
  - added toolbar button and menuitem for sign rules
+ - added option to try to read non RFC compliant Authentication-Results header
  - fixed incompatibility with Thunderbird 57/59
  - fixed "Add must be signed exception" button being disabled if wrong signer is only a warning
  - updated default rules and favicons

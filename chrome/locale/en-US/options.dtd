@@ -86,6 +86,7 @@
 
 <!ENTITY arh.read.label "Read Authentication-Results header">
 <!ENTITY arh.replaceAddonResult.label "Reading the Authentication-Results header replaces the add-ons verification">
+<!ENTITY arh.relaxedParsing.label "Try to read non RFC compliant Authentication-Results header">
 
 <!ENTITY acc.dkim.enable.label "Verify DKIM signatures:">
 <!ENTITY acc.arh.read.label "Read Authentication-Results header:">

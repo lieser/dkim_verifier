@@ -86,6 +86,7 @@
 
 <!ENTITY arh.read.label "Authentication-Results ヘッダを確認">
 <!ENTITY arh.replaceAddonResult.label "Authentication-Results の確認をアドオンによる検証に置き換え">
+<!ENTITY arh.relaxedParsing.label "Try to read non RFC compliant Authentication-Results header">
 
 <!ENTITY acc.dkim.enable.label "DKIM 署名の検証:">
 <!ENTITY acc.arh.read.label "Authentication-Results ヘッダ確認:">
