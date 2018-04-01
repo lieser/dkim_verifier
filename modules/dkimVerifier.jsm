@@ -103,6 +103,12 @@ const PREF_BRANCH = "extensions.dkim_verifier.";
  */
 
 /**
+ * @typedef {Object} dkimSigWarningV2
+ * @property {string} name - Name of the warning (strings from dkim.properties)
+ * @property {(string|string[])[]|undefined} [params] - optional params for formatted string
+ */
+
+/**
  * The result of the verification of a single DKIM signature (Version 2).
  * 
  * @typedef {Object} dkimSigResultV2
@@ -113,10 +119,8 @@ const PREF_BRANCH = "extensions.dkim_verifier.";
  * @property {String} [sdid]
  * @property {String} [auid]
  * @property {String} [selector]
- * @property {{name: String, params?: String[]}[]} [warnings]
+ * @property {dkimSigWarningV2[]} [warnings]
  *           Array of warning_objects.
- *             warning_objects.name: strings from dkim.properties
- *             warning_objects.params: optional params for formatted string
  *           required if result="SUCCESS"
  * @property {String} [errorType]
  *           if result="PERMFAIL: DKIM_SigError.errorType
@@ -133,6 +137,10 @@ const PREF_BRANCH = "extensions.dkim_verifier.";
  * @property {String} version
  *           result version ("2.0")
  * @property {dkimSigResultV2[]} signatures
+ */
+
+/**
+ * @typedef {dkimSigWarningV2} dkimSigWarning
  */
 
 /*
@@ -252,7 +260,7 @@ var Verifier = (function() {
 	 * @param {String} str
 	 * @param {String} signature
 	 *        b64 encoded signature
-	 * @param {String[]} warnings - out param
+	 * @param {dkimSigWarning[]} warnings - out param
 	 * @param {Object} [keyInfo] - out param
 	 * @return {Boolean}
 	 * @throws DKIM_SigError

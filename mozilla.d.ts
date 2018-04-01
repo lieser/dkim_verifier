@@ -298,7 +298,7 @@ interface nsIStringBundleService {
 }
 
 interface nsIStringBundle {
-    formatStringFromName(aName: string, params: string[], length: number): string;
+    formatStringFromName(aName: string, params: (string|string[])[], length: number): string;
     GetStringFromName(aName: string): string;
 }
 

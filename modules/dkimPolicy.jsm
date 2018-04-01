@@ -371,7 +371,7 @@ var Policy = {
 	 * @param {String} from
 	 * @param {String} sdid
 	 * @param {String} auid
-	 * @param {{name: String, params: (string[] | undefined)}[]} warnings - in/out paramter
+	 * @param {dkimSigWarning[]} warnings - in/out paramter
 	 * @return {void}
 	 * @throws DKIM_SigError
 	 */

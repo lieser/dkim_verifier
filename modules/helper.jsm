@@ -138,7 +138,7 @@ class Stringbundle {
 
 		/**
 		 * @param {string} key
-		 * @param {string[]} strArray
+		 * @param {(string|string[])[]} strArray
 		 * @return {string}
 		 */
 		this.getFormattedString = function (key, strArray) {
@@ -321,7 +321,7 @@ function tryGetString(stringbundle, name) {
  * 
  * @param {Stringbundle} stringbundle
  * @param {String} name
- * @param {String[]} [params]
+ * @param {(string|string[])[]} [params]
  * 
  * @return {String|null}
  */
