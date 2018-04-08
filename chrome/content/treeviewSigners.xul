@@ -3,25 +3,41 @@
 
 <!DOCTYPE overlay SYSTEM "chrome://dkim_verifier/locale/xulstrings.dtd">
 
-<window title="&treeviewSigners.title;" id="tree-window"
-   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-   onload="setView();">
+<window
+	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+	id="dkim_verifier-treeviewSigners"
+	windowtype="dkim_verifier:treeviewSigners"
+	title="&treeviewSigners.title;"
+	drawtitle="true"
+	height="300"
+	width="600"
+	persist="width height screenX screenY sizemode"
+	onload="setView();"
+	onunload="unsetView();">
 
 <script type="text/javascript">
-Components.utils.import("resource://gre/modules/Task.jsm");
-
 Components.utils.import("resource://dkim_verifier/SQLiteTreeView.jsm");
 Components.utils.import("resource://dkim_verifier/dkimPolicy.jsm");
 
 var treeView;
 
 function setView(){
-	Task.spawn(function () {
-		yield Policy.initDB();
-		treeView = new SQLiteTreeView("dkimPolicy.sqlite","signers",["domain","listID","addr","sdid","ruletype","priority","enabled"]);
+	(async () => {
+		await Policy.initDB();
+		let observable = {
+			subscribe: Policy.addRulesUpdatedObserver,
+			unsubscribe: Policy.removeRulesUpdatedObserver,
+			notify: Policy.rulesUpdated,
+		}
+		treeView = new SQLiteTreeView("dkimPolicy.sqlite","signers",["domain","listID","addr","sdid","ruletype","priority","enabled"], observable);
 		document.getElementById('my-tree').view = treeView;
-	});
+	})();
 }
+
+function unsetView() {
+	treeView.setTree();
+}
+
 </script>
 
 <tree id="my-tree" editable="true" enableColumnDrag="true" flex="1">

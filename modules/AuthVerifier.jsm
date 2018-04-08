@@ -3,7 +3,7 @@
  * 
  * Authentication Verifier.
  *
- * Version: 1.3.2 (29 January 2017)
+ * Version: 1.4.0pre1 (14 November 2017)
  * 
  * Copyright (c) 2014-2017 Philippe Lieser
  * 
@@ -13,27 +13,27 @@
  * included in all copies or substantial portions of the Software.
  */
 
-// options for JSHint
-/* jshint strict:true, moz:true, smarttabs:true, unused:true */
-/* global Components, Services, Task, MailServices, fixIterator */
+// options for ESLint
+/* global Components, Services, MailServices, fixIterator */
 /* global Logging, ARHParser */
-/* global dkimStrings, domainIsInDomain, exceptionToStr, getDomainFromAddr, tryGetFormattedString, DKIM_InternalError */
+/* global PREF, dkimStrings, domainIsInDomain, getDomainFromAddr, tryGetFormattedString, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, AuthVerifier */
 
 "use strict";
 
-const module_version = "1.3.2";
+// @ts-ignore
+const module_version = "1.4.0pre1";
 
 var EXPORTED_SYMBOLS = [
 	"AuthVerifier"
 ];
 
-const Cc = Components.classes;
+// @ts-ignore
 const Ci = Components.interfaces;
+// @ts-ignore
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
-Cu.import("resource://gre/modules/Task.jsm");
 Cu.import("resource:///modules/mailServices.js");
 Cu.import("resource:///modules/iteratorUtils.jsm");
 
@@ -41,59 +41,69 @@ Cu.import("resource://dkim_verifier/logging.jsm");
 Cu.import("resource://dkim_verifier/helper.jsm");
 Cu.import("resource://dkim_verifier/MsgReader.jsm");
 Cu.import("resource://dkim_verifier/ARHParser.jsm");
+// @ts-ignore
 let DKIM = {};
 Cu.import("resource://dkim_verifier/dkimPolicy.jsm", DKIM);
 Cu.import("resource://dkim_verifier/dkimVerifier.jsm", DKIM);
 
+// @ts-ignore
 const PREF_BRANCH = "extensions.dkim_verifier.";
 
+// @ts-ignore
 let log = Logging.getLogger("AuthVerifier");
+// @ts-ignore
 let prefs = Services.prefs.getBranch(PREF_BRANCH);
 
+/**
+ * @typedef {Object} AuthResult|AuthResultV2
+ * @property {String} version
+ *           result version ("2.1")
+ * @property {AuthResultDKIM[]} dkim
+ * @property {ARHResinfo[]} [spf]
+ * @property {ARHResinfo[]} [dmarc]
+ * @property {{dkim?: AuthResultDKIM[]}} [arh]
+ *           added in version 2.1
+ */
+
+/**
+ * @typedef {Object} SavedAuthResult|SavedAuthResultV3
+ * @property {String} version
+ *           result version ("3.0")
+ * @property {dkimSigResultV2[]} dkim
+ * @property {ARHResinfo[]} [spf]
+ * @property {ARHResinfo[]} [dmarc]
+ * @property {Object} [arh]
+ * @property {dkimSigResultV2[]} [arh.dkim]
+ */
+
+/**
+ * @typedef {Object} AuthResultDKIM|AuthResultDKIMV2
+ * @extends dkimSigResultV2
+ * @property {Number} res_num
+ *           10: SUCCESS
+ *           20: TEMPFAIL
+ *           30: PERMFAIL
+ *           35: PERMFAIL treat as no sig
+ *           40: no sig
+ * @property {String} result_str
+ *           localized result string
+ * @property {String[]} [warnings_str]
+ *           localized warnings
+ * @property {String} [favicon]
+ *           url to the favicon of the sdid
+ */
+// @ts-ignore
 
 var AuthVerifier = {
 	get version() { return module_version; },
 
-	/**
-	 * @typedef {Object} AuthResult|AuthResultV2
-	 * @property {String} version
-	 *           result version ("2.1")
-	 * @property {AuthResultDKIM[]} dkim
-	 * @property {ARHResinfo[]} [spf]
-	 * @property {ARHResinfo[]} [dmarc]
-	 * @property {Object} [arh]
-	 *           added in version 2.1
-	 * @property {AuthResultDKIM[]} [arh.dkim]
-	 *           added in version 2.1
-	 */
-
-	/**
-	 * @typedef {Object} SavedAuthResult|SavedAuthResultV3
-	 * @property {String} version
-	 *           result version ("3.0")
-	 * @property {dkimSigResultV2[]} dkim
-	 * @property {ARHResinfo[]} [spf]
-	 * @property {ARHResinfo[]} [dmarc]
-	 * @property {Object} [arh]
-	 * @property {dkimSigResultV2[]} [arh.dkim]
-	 */
-
-	/**
-	 * @typedef {Object} AuthResultDKIM|AuthResultDKIMV2
-	 * @extends dkimSigResultV2
-	 * @property {Number} res_num
-	 *           10: SUCCESS
-	 *           20: TEMPFAIL
-	 *           30: PERMFAIL
-	 *           35: PERMFAIL treat as no sig
-	 *           40: no sig
-	 * @property {String} result_str
-	 *           localized result string
-	 * @property {String[]} [warnings_str]
-	 *           localized warnings
-	 * @property {String} [favicon]
-	 *           url to the favicon of the sdid
-	 */
+	DKIM_RES: {
+		SUCCESS: 10,
+		TEMPFAIL: 20,
+		PERMFAIL: 30,
+		PERMFAIL_NOSIG: 35,
+		NOSIG: 40,
+	},
 
 	/**
 	 * Verifies the authentication of the msg.
@@ -103,12 +113,11 @@ var AuthVerifier = {
 	 * @return {Promise<AuthResult>}
 	 */
 	verify: function _authVerifier_verify(msgHdr, msgURI) {
-		var promise = Task.spawn(function () {
+		let promise = (async () => {
 			// check for saved AuthResult
 			let savedAuthResult = loadAuthResult(msgHdr);
 			if (savedAuthResult) {
-				throw new Task.Result(
-					yield SavedAuthResult_to_AuthResult(savedAuthResult));
+				return SavedAuthResult_to_AuthResult(savedAuthResult);
 			}
 
 			// get msgURI if not specified
@@ -117,7 +126,7 @@ var AuthVerifier = {
 			}
 
 			// create msg object
-			let msg = yield DKIM.Verifier.createMsg(msgURI);
+			let msg = await DKIM.Verifier.createMsg(msgURI);
 
 			// ignore must be signed for outgoing messages
 			if (msg.DKIMSignPolicy.shouldBeSigned && isOutgoing(msgHdr)) {
@@ -152,16 +161,16 @@ var AuthVerifier = {
 				if (!msgHdr.folder) {
 					// message is external
 					dkimEnable = prefs.getBoolPref("dkim.enable");
-				} else if (msgHdr.folder.server.getIntValue("dkim_verifier.dkim.enable") === 0) {
+				} else if (msgHdr.folder.server.getIntValue("dkim_verifier.dkim.enable") === PREF.ENABLE.DEFAULT) {
 					// account uses global default
 					dkimEnable = prefs.getBoolPref("dkim.enable");
-				} else if (msgHdr.folder.server.getIntValue("dkim_verifier.dkim.enable") === 1) {
+				} else if (msgHdr.folder.server.getIntValue("dkim_verifier.dkim.enable") === PREF.ENABLE.TRUE) {
 					// dkim enabled for account
 					dkimEnable = true;
 				}
 				if (dkimEnable) {
 					// verify DKIM signatures
-					let dkimResultV2 = yield DKIM.Verifier.verify2(msg);
+					let dkimResultV2 = await DKIM.Verifier.verify2(msg);
 					savedAuthResult.dkim = dkimResultV2.signatures;
 				} else {
 					savedAuthResult.dkim = [{version: "2.0", result: "none"}];
@@ -171,12 +180,13 @@ var AuthVerifier = {
 			// save AuthResult
 			saveAuthResult(msgHdr, savedAuthResult);
 
-			let authResult = yield SavedAuthResult_to_AuthResult(savedAuthResult)
+			let authResult = await SavedAuthResult_to_AuthResult(savedAuthResult);
+			// @ts-ignore
 			log.debug("authResult: " + authResult.toSource());
-			throw new Task.Result(authResult);
-		});
+			return authResult;
+		})();
 		promise.then(null, function onReject(exception) {
-			log.warn(exceptionToStr(exception));
+			log.warn(exception);
 		});
 		return promise;
 	},
@@ -185,14 +195,14 @@ var AuthVerifier = {
 	 * Resets the stored authentication result of the msg.
 	 *
 	 * @param {nsIMsgDBHdr} msgHdr
-	 * @return {Promise<Undefined>}
+	 * @return {Promise<void>}
 	 */
 	resetResult: function _authVerifier_resetResult(msgHdr) {
-		var promise = Task.spawn(function () {
-			saveAuthResult(msgHdr, "");
-		});
+		var promise = (async () => {
+			saveAuthResult(msgHdr, null);
+		})();
 		promise.then(null, function onReject(exception) {
-			log.warn(exceptionToStr(exception));
+			log.warn(exception);
 		});
 		return promise;
 	},
@@ -201,6 +211,7 @@ var AuthVerifier = {
 /**
  * Get the Authentication-Results header as an SavedAuthResult.
  * 
+ * @param {nsIMsgDBHdr} msgHdr
  * @param {Object} msg
  * @return {SavedAuthResult|Null}
  */
@@ -216,11 +227,18 @@ function getARHResult(msgHdr, msg) {
 	}
 
 	if (!msg.headerFields.has("authentication-results") ||
-	    ( ( !msgHdr.folder ||
-	        msgHdr.folder.server.getIntValue("dkim_verifier.arh.read") === 0) &&
-	      !prefs.getBoolPref("arh.read")) ||
-	    ( msgHdr.folder &&
-		  msgHdr.folder.server.getIntValue("dkim_verifier.arh.read") === 2)) {
+		( // disabled via default setting
+			(
+				!msgHdr.folder ||
+				msgHdr.folder.server.getIntValue("dkim_verifier.arh.read") === PREF.ENABLE.DEFAULT
+			) &&
+			!prefs.getBoolPref("arh.read")
+		) ||
+		( // disabled for the folder
+			msgHdr.folder &&
+			msgHdr.folder.server.getIntValue("dkim_verifier.arh.read") === PREF.ENABLE.FALSE
+		))
+	{
 		return null;
 	}
 
@@ -233,7 +251,7 @@ function getARHResult(msgHdr, msg) {
 		try {
 			arh = ARHParser.parse(msg.headerFields.get("authentication-results")[i]);
 		} catch (exception) {
-			log.error(exceptionToStr(exception));
+			log.error("Ignoring error in parsing of ARH", exception);
 			continue;
 		}
 
@@ -280,7 +298,7 @@ function getARHResult(msgHdr, msg) {
 						dkimSigResults[i].warnings
 					);
 				} catch(exception) {
-					dkimSigResults[i] = DKIM.Verifier.handleExeption(
+					dkimSigResults[i] = DKIM.Verifier.handleException(
 						exception,
 						msg,
 						{d: dkimSigResults[i].sdid, i: dkimSigResults[i].auid}
@@ -306,7 +324,8 @@ function getARHResult(msgHdr, msg) {
  * Save authentication result
  * 
  * @param {nsIMsgDBHdr} msgHdr
- * @param {SavedAuthResult} savedAuthResult
+ * @param {SavedAuthResult|Null} savedAuthResult
+ * @return {void}
  */
 function saveAuthResult(msgHdr, savedAuthResult) {
 	if (prefs.getBoolPref("saveResult")) {
@@ -316,7 +335,7 @@ function saveAuthResult(msgHdr, savedAuthResult) {
 			return;
 		}
 
-		if (savedAuthResult === "") {
+		if (savedAuthResult === null) {
 			// reset result
 			log.debug("reset AuthResult result");
 			msgHdr.setStringProperty("dkim_verifier@pl-result", "");
@@ -344,33 +363,41 @@ function loadAuthResult(msgHdr) {
 			return null;
 		}
 
-		let savedAuthResult = msgHdr.getStringProperty("dkim_verifier@pl-result");
+		let savedAuthResultJSON = msgHdr.getStringProperty("dkim_verifier@pl-result");
 
-		if (savedAuthResult !== "") {
-			log.debug("AuthResult result found: " + savedAuthResult);
+		if (savedAuthResultJSON !== "") {
+			log.debug("AuthResult result found: " + savedAuthResultJSON);
 
-			savedAuthResult = JSON.parse(savedAuthResult);
+			/** @type {SavedAuthResult} */
+			let savedAuthResult = JSON.parse(savedAuthResultJSON);
 
-			if (savedAuthResult.version.match(/^[0-9]+/)[0] === "1") {
+			let majorVersion = savedAuthResult.version.match(/^[0-9]+/)[0];
+			if (majorVersion === "1") {
 				// old dkimResultV1 (AuthResult version 1)
+				/** @type {dkimResultV1} */
+				// @ts-ignore
+				let resultV1 = savedAuthResult;
 				let res = {
 					version: "3.0",
-					dkim: [dkimResultV1_to_dkimSigResultV2(savedAuthResult)],
+					dkim: [dkimResultV1_to_dkimSigResultV2(resultV1)],
 				};
 				return res;
 			}
-			if (savedAuthResult.version.match(/^[0-9]+/)[0] === "2") {
+			if (majorVersion === "2") {
 				// AuthResult version 2
+				/** @type {AuthResultV2} */
+				// @ts-ignore
+				let resultV2 = savedAuthResult;
 				savedAuthResult.version = "3.0";
-				savedAuthResult.dkim = savedAuthResult.dkim.map(
+				savedAuthResult.dkim = resultV2.dkim.map(
 					AuthResultDKIMV2_to_dkimSigResultV2);
-				if (savedAuthResult.arh && savedAuthResult.arh.dkim) {
-					savedAuthResult.arh.dkim = savedAuthResult.arh.dkim.map(
+				if (resultV2.arh && resultV2.arh.dkim) {
+					savedAuthResult.arh.dkim = resultV2.arh.dkim.map(
 						AuthResultDKIMV2_to_dkimSigResultV2);
 				}
 				return savedAuthResult;
 			}
-			if (savedAuthResult.version.match(/^[0-9]+/)[0] === "3") {
+			if (majorVersion === "3") {
 				// SavedAuthResult version 3
 				return savedAuthResult;
 			}
@@ -386,17 +413,18 @@ function loadAuthResult(msgHdr) {
 /**
  * Convert DKIM ARHresinfo to dkimResult
  * 
- * @param {ARHresinfo} arhDKIM
+ * @param {ARHResinfo} arhDKIM
  * @return {dkimSigResultV2}
  */
 function arhDKIM_to_dkimSigResultV2(arhDKIM) {
+	/** @type {dkimSigResultV2} */
 	let dkimSigResult = {};
 	dkimSigResult.version = "2.0";
 	switch (arhDKIM.result) {
 		case "none":
 			dkimSigResult.result = "none";
 			break;
-		case "pass":
+		case "pass": {
 			dkimSigResult.result = "SUCCESS";
 			dkimSigResult.warnings = [];
 			let sdid = arhDKIM.propertys.header.d;
@@ -411,6 +439,7 @@ function arhDKIM_to_dkimSigResultV2(arhDKIM) {
 				dkimSigResult.auid = auid;
 			}
 			break;
+		}
 		case "fail":
 		case "policy":
 		case "neutral":
@@ -440,11 +469,12 @@ function arhDKIM_to_dkimSigResultV2(arhDKIM) {
 /**
  * Convert dkimResultV1 to dkimSigResultV2
  * 
- * @param {dkimResultV1} dkimResult
+ * @param {dkimResultV1} dkimResultV1
  * @return {dkimSigResultV2}
  */
 function dkimResultV1_to_dkimSigResultV2(dkimResultV1) {
-	let dkimSigResultV2 = {
+	/** @type {dkimSigResultV2} */
+	let sigResultV2 = {
 		version: "2.0",
 		result: dkimResultV1.result,
 		sdid: dkimResultV1.SDID,
@@ -453,7 +483,7 @@ function dkimResultV1_to_dkimSigResultV2(dkimResultV1) {
 		hideFail: dkimResultV1.hideFail,
 	};
 	if (dkimResultV1.warnings) {
-		dkimSigResultV2.warnings = dkimResultV1.warnings.map(
+		sigResultV2.warnings = dkimResultV1.warnings.map(
 			function (w) {
 				if (w === "DKIM_POLICYERROR_WRONG_SDID") {
 					return {name: w, params: [dkimResultV1.shouldBeSignedBy]};
@@ -464,9 +494,9 @@ function dkimResultV1_to_dkimSigResultV2(dkimResultV1) {
 	}
 	if (dkimResultV1.errorType === "DKIM_POLICYERROR_WRONG_SDID" ||
 	    dkimResultV1.errorType === "DKIM_POLICYERROR_MISSING_SIG") {
-		dkimSigResultV2.errorStrParams = [dkimResultV1.shouldBeSignedBy];
+		sigResultV2.errorStrParams = [dkimResultV1.shouldBeSignedBy];
 	}
-	return dkimSigResultV2;
+	return sigResultV2;
 }
 
 /**
@@ -476,10 +506,11 @@ function dkimResultV1_to_dkimSigResultV2(dkimResultV1) {
  * @return {AuthResultDKIM}
  * @throws DKIM_InternalError
  */
-function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) {
+function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-line complexity
+	/** @type {IAuthVerifier.AuthResultDKIM} */
 	let authResultDKIM = dkimSigResult;
 	switch(dkimSigResult.result) {
-		case "SUCCESS":
+		case "SUCCESS": {
 			authResultDKIM.res_num = 10;
 			let keySecureStr = "";
 			if (dkimSigResult.keySecure &&
@@ -492,6 +523,7 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) {
 				return tryGetFormattedString(dkimStrings, e.name, e.params) || e.name;
 			});
 			break;
+		}
 		case "TEMPFAIL":
 			authResultDKIM.res_num = 20;
 			authResultDKIM.result_str =
@@ -500,7 +532,7 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) {
 				dkimSigResult.errorType ||
 				dkimStrings.getString("DKIM_INTERNALERROR_NAME");
 			break;
-		case "PERMFAIL":
+		case "PERMFAIL": {
 			if (dkimSigResult.hideFail) {
 				authResultDKIM.res_num = 35;
 			} else {
@@ -572,6 +604,8 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) {
 					case "DKIM_SIGERROR_KEY_REVOKED":
 					case "DKIM_SIGERROR_KEY_TESTMODE":
 						break;
+					default:
+						log.warn("unknown errorType: " + errorType);
 				}
 			}
 			let errorMsg =
@@ -585,26 +619,27 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) {
 				authResultDKIM.result_str = dkimStrings.getString("PERMFAIL_NO_REASON");
 			}
 			break;
+		}
 		case "none":
 			authResultDKIM.res_num = 40;
 			authResultDKIM.result_str = dkimStrings.getString("NOSIG");
 			break;
 		default:
-			throw new DKIM_InternalError("unkown result: " + dkimSigResult.result);
+			throw new DKIM_InternalError("unknown result: " + dkimSigResult.result);
 	}
 
 	return authResultDKIM;
 }
 
+
 /**
  * Convert SavedAuthResult to AuthResult
- * 
- * Generator function.
  * 
  * @param {SavedAuthResult} savedAuthResult
  * @return {Promise<AuthResult>} authResult
  */
-function SavedAuthResult_to_AuthResult(savedAuthResult) {
+async function SavedAuthResult_to_AuthResult(savedAuthResult) { // eslint-disable-line require-await
+	/** @type {AuthResult} */
 	let authResult = savedAuthResult;
 	authResult.version = "2.1";
 	authResult.dkim = authResult.dkim.map(dkimSigResultV2_to_AuthResultDKIM);
@@ -612,15 +647,14 @@ function SavedAuthResult_to_AuthResult(savedAuthResult) {
 		authResult.arh.dkim = authResult.arh.dkim.map(
 			dkimSigResultV2_to_AuthResultDKIM);
 	}
-	authResult = yield addFavicons(authResult);
-	throw new Task.Result(authResult);
+	return addFavicons(authResult);
 }
 
 /**
  * Convert AuthResultV2 to dkimSigResultV2
  * 
  * @param {AuthResultDKIMV2} authResultDKIM
- * @return {Promise<dkimSigResultV2>} dkimSigResultV2
+ * @return {dkimSigResultV2} dkimSigResultV2
  */
 function AuthResultDKIMV2_to_dkimSigResultV2(authResultDKIM) {
 	let dkimSigResult = authResultDKIM;
@@ -634,27 +668,25 @@ function AuthResultDKIMV2_to_dkimSigResultV2(authResultDKIM) {
 /**
  * Add favicons to the DKIM results.
  * 
- * Generator function.
- * 
  * @param {AuthResult} authResult
  * @return {Promise<AuthResult>} authResult
  */
-function addFavicons(authResult) {
+async function addFavicons(authResult) {
 	if (!prefs.getBoolPref("display.favicon.show")) {
-		throw new Task.Result(authResult);
+		return authResult;
 	}
 	for (let i = 0; i < authResult.dkim.length; i++) {
 		authResult.dkim[i].favicon =
-			yield DKIM.Policy.getFavicon(authResult.dkim[i].sdid);
+			await DKIM.Policy.getFavicon(authResult.dkim[i].sdid);
 	}
-	throw new Task.Result(authResult);
+	return authResult;
 }
 
 /**
  * Checks if a message is outgoing
  * 
  * @param {nsIMsgDBHdr} msgHdr
- * @return Boolean
+ * @return {boolean}
  */
 function isOutgoing(msgHdr) {
 	if (!msgHdr.folder) {
@@ -668,22 +700,10 @@ function isOutgoing(msgHdr) {
 
 	// return true if one of the servers identities contain the from address
 	let author = msgHdr.mime2DecodedAuthor;
-	let identities;
-	if (MailServices.accounts.getIdentitiesForServer) {
-		identities = MailServices.accounts.
+	let	identities = MailServices.accounts.
 			getIdentitiesForServer(msgHdr.folder.server);
-	} else {
-		// for older versions of Thunderbird
-		identities = MailServices.accounts.
-			GetIdentitiesForServer(msgHdr.folder.server);
-	}
-	for (let identity in fixIterator(identities, Ci.nsIMsgIdentity)) {
-		if (author.includes) {
-			if (author.includes(identity.email)) {
-				return true;
-			}
-		} else if (author.search(identity.email) !== -1){
-			// for older versions of Thunderbird
+	for (let identity of fixIterator(identities, Ci.nsIMsgIdentity)) {
+		if (author.includes(identity.email)) {
 			return true;
 		}
 	}

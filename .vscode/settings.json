@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "*.jsm": "javascript",
+        ".eslintrc.json": "jsonc"
+    }
+}

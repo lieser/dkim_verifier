@@ -8,19 +8,17 @@
    onload="setView();">
 
 <script type="text/javascript">
-Components.utils.import("resource://gre/modules/Task.jsm");
-
 Components.utils.import("resource://dkim_verifier/SQLiteTreeView.jsm");
 Components.utils.import("resource://dkim_verifier/dkimKey.jsm");
 
 var treeView;
 
 function setView(){
-	Task.spawn(function () {
-		yield Key.initDB();
+	(async () => {
+		await Key.initDB();
 		treeView = new SQLiteTreeView(Key.KEY_DB_NAME,"keys",["SDID","selector","key","insertedAt","lastUsedAt","secure"]);
 		document.getElementById('my-tree').view = treeView;
-	});
+	})();
 }
 </script>
 

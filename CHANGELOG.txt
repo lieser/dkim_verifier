@@ -1,5 +1,22 @@
-1.6.5pre1 [2017-03-13]
+2.0.0pre4 [2018-04-01]
 ------------------
+ - now requires at least Thunderbird 52
+ - added toolbar button and menuitem for sign rules
+ - added option to try to read non RFC compliant Authentication-Results header
+ - fixed incompatibility with Thunderbird 57/59/60
+ - fixed favicons not being shown if the CardBook add-on is installed
+ - fixed "Add must be signed exception" button being disabled if wrong signer is only a warning
+ - updated default rules and favicons
+
+1.7.0 [2017-07-22]
+------------------
+ - libunbound resolver: added ability to specify multiple trust anchors
+ - libunbound resolver: added new root trust anchor (key tag 20326)
+ - updated default rules and favicons
+
+1.6.5 [2017-05-14]
+------------------
+ - added Japanese translation (by SAKURAI Kenichi)
  - updated default rules
 
 1.6.4 [2017-02-09]

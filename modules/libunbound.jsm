@@ -4,9 +4,9 @@
  * Wrapper for the libunbound DNS library. The actual work is done in the
  * ChromeWorker libunboundWorker.jsm.
  *
- * Version: 2.0.1 (10 November 2016)
+ * Version: 2.2.0pre1 (14 November 2017)
  * 
- * Copyright (c) 2013-2016 Philippe Lieser
+ * Copyright (c) 2013-2017 Philippe Lieser
  * 
  * This software is licensed under the terms of the MIT License.
  * 
@@ -14,35 +14,31 @@
  * included in all copies or substantial portions of the Software.
  */
 
-// options for JSHint
-/* jshint strict:true, moz:true */
-/* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
+// options for ESLint
 /* global Components, OS, Services, ChromeWorker */
-/* global ModuleGetter, Logging, exceptionToStr, DKIM_InternalError */
+/* global Logging, Deferred, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, libunbound */
 
 "use strict";
 
-const module_version = "2.0.1";
+// @ts-ignore
+const module_version = "2.2.0pre1";
 
 var EXPORTED_SYMBOLS = [
 	"libunbound"
 ];
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
+// @ts-ignore
 const Cu = Components.utils;
 
+Cu.import("resource://gre/modules/osfile.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
-
-Cu.import("resource://dkim_verifier/ModuleGetter.jsm");
-ModuleGetter.getosfile(this);
-ModuleGetter.getPromise(this);
 
 Cu.import("resource://dkim_verifier/logging.jsm");
 Cu.import("resource://dkim_verifier/helper.jsm");
 
 
+// @ts-ignore
 const PREF_BRANCH = "extensions.dkim_verifier.dns.";
 
 
@@ -114,50 +110,54 @@ var Constants = {
 	RR_TYPE_X25: 19,
 };
 
+/**
+ * The result of the query.
+ * Does differ from the original ub_result a bit.
+ * 
+ * @typedef {Object} ub_result
+ * @property {String} qname
+ *           text string, original question
+ * @property {Number} qtype
+ *           type code asked for
+ * @property {Number} qclass
+ *           class code (CLASS IN (internet))
+ * @property {Object[]} data
+ *           Array of converted rdata items. Empty for unsupported RR types.
+ *           Currently supported types: TXT
+ * @property {Number[][]} data_raw
+ *           Array of rdata items as byte array
+ * @property {String} canonname
+ *           canonical name of result (empty string if missing in response)
+ * @property {Number} rcode
+ *           additional error code in case of no data
+ * @property {Boolean} havedata
+ *           true if there is data
+ * @property {Boolean} nxdomain
+ *           true if nodata because name does not exist
+ * @property {Boolean} secure
+ *           true if result is secure.
+ * @property {Boolean} bogus
+ *           true if a security failure happened.
+ * @property {String} why_bogus
+ *           string with error if bogus
+ * @property {Number} ttl
+ *           number of seconds the result is valid
+ */
+
+// @ts-ignore
 var prefs = Services.prefs.getBranch(PREF_BRANCH);
+// @ts-ignore
 var log = Logging.getLogger("libunbound");
 
+/** @type {Libunbound.LibunboundWorker} */
 var libunboundWorker =
 	new ChromeWorker("resource://dkim_verifier/libunboundWorker.jsm");
 var maxCallId = 0;
+/** @type {Map<number, IDeferred<ub_result>>} */
 var openCalls = new Map();
 
 let libunbound = {
 	get version() {return module_version; },
-
-	/**
-	 * The result of the query.
-	 * Does differ from the original ub_result a bit.
-	 * 
-	 * @typedef {Object} ub_result
-	 * @property {String} qname
-	 *           text string, original question
-	 * @property {Number} qtype
-	 *           type code asked for
-	 * @property {Number} qclass
-	 *           class code (CLASS IN (internet))
-	 * @property {Object[]} data
-	 *           Array of converted rdata items. Empty for unsupported RR types.
-	 *           Currently supported types: TXT
-	 * @property {Number[][]} data_raw
-	 *           Array of rdata items as byte array
-	 * @property {String} canonname
-	 *           canonical name of result
-	 * @property {Number} rcode
-	 *           additional error code in case of no data
-	 * @property {Boolean} havedata
-	 *           true if there is data
-	 * @property {Boolean} nxdomain
-	 *           true if nodata because name does not exist
-	 * @property {Boolean} secure
-	 *           true if result is secure.
-	 * @property {Boolean} bogus
-	 *           true if a security failure happened.
-	 * @property {String} why_bogus
-	 *           string with error if bogus
-	 * @property {Number} ttl
-	 *           number of seconds the result is valid
-	 */
 
 	/**
 	 * Perform resolution of the target name.
@@ -168,7 +168,8 @@ let libunbound = {
 	 * @return {Promise<ub_result>}
 	 */
 	resolve: function libunbound_resolve(name, rrtype=Constants.RR_TYPE_A) {
-		let defer = Promise.defer();
+		/** @type {IDeferred<ub_result>} */
+		let defer = new Deferred();
 		openCalls.set(++maxCallId, defer);
 		
 		libunboundWorker.postMessage({
@@ -184,6 +185,7 @@ let libunbound = {
 
 /**
  * init
+ * @return {void}
  */
 function init() {
 	load();
@@ -197,6 +199,7 @@ function init() {
 
 /**
  * load library
+ * @return {void}
  */
 function load() {
 	let path;
@@ -216,6 +219,7 @@ function load() {
 
 /**
  * updates ctx by deleting old an creating new
+ * @return {void}
  */
 function update_ctx() {
 	// read config file if specified
@@ -241,13 +245,12 @@ function update_ctx() {
 	nameservers = nameservers.filter(function(element /*, index, array*/) {
 		if (element !== "") {
 			return true;
-		} else {
-			return false;
 		}
+		return false;
 	});
 	
 	// add root trust anchor
-	let trustAnchor = prefs.getCharPref("dnssec.trustAnchor");
+	let trustAnchors = prefs.getCharPref("dnssec.trustAnchor").split(";");
 
 	libunboundWorker.postMessage({
 		callId: ++maxCallId,
@@ -256,69 +259,83 @@ function update_ctx() {
 		debuglevel: debuglevel,
 		getNameserversFromOS: getNameserversFromOS,
 		nameservers: nameservers,
-		trustAnchor: trustAnchor,
+		trustAnchors: trustAnchors,
 	});
 }
 
 /**
  * Handle the callbacks from the ChromeWorker
+ * @param {Libunbound.WorkerResponse} msg
+ * @return {void}
  */
 libunboundWorker.onmessage = function(msg) {
 	try {
 		log.trace("Message received from worker: " + msg.data.toSource());
 
 		// handle log messages
-		if (msg.data.type === "log") {
-			switch (msg.data.subType) {
+		if (msg.data.type && msg.data.type === "log") {
+			/** @type {Libunbound.Log} */
+			// @ts-ignore
+			let logMsg = msg.data;
+			switch (logMsg.subType) {
 				case "fatal":
-					log.fatal(msg.data.message);
+					log.fatal(logMsg.message);
 					break;
 				case "error":
-					log.error(msg.data.message);
+					log.error(logMsg.message);
 					break;
 				case "warn":
-					log.warn(msg.data.message);
+					log.warn(logMsg.message);
 					break;
 				case "info":
-					log.info(msg.data.message);
+					log.info(logMsg.message);
 					break;
 				case "config":
-					log.config(msg.data.message);
+					log.config(logMsg.message);
 					break;
 				case "debug":
-					log.debug(msg.data.message);
+					log.debug(logMsg.message);
 					break;
 				case "trace":
-					log.trace(msg.data.message);
+					log.trace(logMsg.message);
 					break;
 				default:
-					throw new Error("Unknown log type: " + msg.data.subType);
+					throw new Error("Unknown log type: " + logMsg.subType);
 			}
 			return;
 		}
+		/** @type {Libunbound.Response} */
+		// @ts-ignore
+		let response = msg.data;
 
 		let exception;
-		if (msg.data.type === "error") {
-			exception = new DKIM_InternalError(msg.data.message, msg.data.subType);
+		if (response.type && response.type === "error") {
+			/** @type {Libunbound.Exception} */
+			// @ts-ignore
+			let ex = response;
+			exception = new DKIM_InternalError(ex.message, ex.subType);
 		}
 
-		let defer = openCalls.get(msg.data.callId);
+		let defer = openCalls.get(response.callId);
 		if (defer === undefined) {
 			if (exception) {
-				log.fatal(exceptionToStr(exception));
+				log.fatal("Exception in libunboundWorker", exception);
 			} else {
-				log.error("Got unexpected callback: " + msg.data);
+				log.error("Got unexpected callback: " + response);
 			}
 			return;
 		}
-		openCalls.delete(msg.data.callId);
+		openCalls.delete(response.callId);
 		if (exception) {
 			defer.reject(exception);
 			return;
 		}
-		defer.resolve(msg.data.result);
+		/** @type {Libunbound.Result} */
+		// @ts-ignore
+		let res = response;
+		defer.resolve(res.result);
 	} catch (e) {
-		log.fatal(exceptionToStr(e));
+		log.fatal(e);
 	}
 };
 
@@ -347,6 +364,8 @@ var prefObserver = {
 			case "dnssec.trustAnchor":
 				update_ctx();
 				break;
+			default:
+				// ignore other options
 		}
 	},
 };

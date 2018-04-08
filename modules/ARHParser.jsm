@@ -3,9 +3,9 @@
  * 
  * Parser for the Authentication-Results header as specified in RFC 7601.
  *
- * Version: 1.1.0 (27 January 2016)
+ * Version: 1.2.0pre1 (31 March 2018)
  * 
- * Copyright (c) 2014-2016 Philippe Lieser
+ * Copyright (c) 2014-2018 Philippe Lieser
  * 
  * This software is licensed under the terms of the MIT License.
  * 
@@ -13,27 +13,34 @@
  * included in all copies or substantial portions of the Software.
  */
 
-// options for JSHint
-/* jshint strict:true, moz:true, smarttabs:true, unused:true */
-/* global Components */
+// options for ESLint
+/* global Components, Services */
 /* global Logging */
 /* exported EXPORTED_SYMBOLS, ARHParser */
 
 "use strict";
 
-const module_version = "1.1.0";
+// @ts-ignore
+const module_version = "1.1.1";
 
 var EXPORTED_SYMBOLS = [
 	"ARHParser"
 ];
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
+// @ts-ignore
+const PREF_BRANCH = "extensions.dkim_verifier.arh.";
+
+// @ts-ignore
 const Cu = Components.utils;
+
+Cu.import("resource://gre/modules/Services.jsm");
 
 Cu.import("resource://dkim_verifier/logging.jsm");
 
 
+// @ts-ignore
+var prefs = Services.prefs.getBranch(PREF_BRANCH);
+// @ts-ignore
 let log = Logging.getLogger("ARHParser");
 
 
@@ -98,31 +105,31 @@ let value_cp = "(?:(" + token_p + ")|" + quoted_string_cp + ")";
 let domain_name_p = "(?:" + sub_domain_p + "(?:\\." + sub_domain_p + ")+)";
 
 
+/**
+ * @typedef {Object} ARHHeader
+ * @property {String} authserv_id
+ * @property {Number} [authres_version]
+ * @property {ARHResinfo[]} resinfo
+ */
+
+/**
+ * @typedef {Object} ARHResinfo
+ * @property {String} method
+ * @property {Number} [method_version]
+ * @property {String} result
+ *           none|pass|fail|softfail|policy|neutral|temperror|permerror
+ * @property {String} [reason]
+ * @property {Object} propertys
+ * @property {Object} propertys.smtp
+ * @property {Object} propertys.header
+ * @property {Object} propertys.body
+ * @property {Object} propertys.policy
+ * @property {Object} [propertys._Keyword_]
+ *           ARHResinfo can also include other propertys besides the aboves.
+ */
+
 let ARHParser = {
 	get version() { return module_version; },
-
-	/**
-	 * @typedef {Object} ARHHeader
-	 * @property {String} authserv_id
-	 * @property {Number} [authres_version]
-	 * @property {ARHResinfo[]} resinfo
-	 */
-
-	/**
-	 * @typedef {Object} ARHResinfo
-	 * @property {String} method
-	 * @property {Number} [method_version]
-	 * @property {String} result
-	 *           none|pass|fail|softfail|policy|neutral|temperror|permerror
-	 * @property {String} [reason]
-	 * @property {Object} propertys
-	 * @property {Object} propertys.smtp
-	 * @property {Object} propertys.header
-	 * @property {Object} propertys.body
-	 * @property {Object} propertys.policy
-	 * @property {Object} [propertys.<Keyword>]
-	 *           ARHResinfo can also include other propertys besides the aboves.
-	 */
 
 	/**
 	 *  Parses an Authentication-Results header.
@@ -134,14 +141,15 @@ let ARHParser = {
 		// remove header name
 		authresHeader = authresHeader.replace(
 			new RegExp("^Authentication-Results:"+CFWS_op, "i"), "");
-		authresHeader = new RefString(authresHeader);
+		let authresHeaderRef = new RefString(authresHeader);
 
+		/** @type {ARHHeader} */
 		let res = {};
 		res.resinfo = [];
 		let reg_match;
 
 		// get authserv-id and authres-version
-		reg_match = match(authresHeader,
+		reg_match = match(authresHeaderRef,
 			value_cp + "(?:" + CFWS_p + "([0-9]+)" + CFWS_op +" )?");
 		res.authserv_id = reg_match[1] || reg_match[2];
 		if (reg_match[3]) {
@@ -151,15 +159,18 @@ let ARHParser = {
 		}
 
 		// check if message authentication was performed
-		reg_match = match_o(authresHeader, ";" + CFWS_op+"?none");
+		reg_match = match_o(authresHeaderRef, ";" + CFWS_op+"?none");
 		if (reg_match !== null) {
 			log.debug("no-result");
 			return res;
 		}
 
 		// get the resinfos
-		while (authresHeader.value !== "") {
-			res.resinfo.push(parseResinfo(authresHeader));
+		while (authresHeaderRef.value !== "") {
+			let arhResInfo = parseResinfo(authresHeaderRef);
+			if (arhResInfo) {
+				res.resinfo.push(arhResInfo);
+			}
 		}
 
 		log.debug(res.toSource());
@@ -171,23 +182,40 @@ let ARHParser = {
  *  Parses the next resinfo in str. The parsed part of str is removed from str.
  *  
  *  @param {RefString} str
- *  @return {ARHResinfo} Parsed resinfo
+ *  @return {ARHResinfo|null} Parsed resinfo
  */
 function parseResinfo(str) {
 	log.trace("parse str: " + str.toSource());
 
 	let reg_match;
+	/** @type {ARHResinfo} */
 	let res = {};
-
+	
 	// get methodspec
 	let method_version_p = CFWS_op + "/" + CFWS_op + "([0-9]+)";
 	let method_p = "(" + Keyword_p + ")(?:" + method_version_p + ")?";
 	let Keyword_result_p = "none|pass|fail|softfail|policy|neutral|temperror|permerror";
 	let result_p = "=" + CFWS_op + "(" + Keyword_result_p + ")";
 	let methodspec_p = ";" + CFWS_op + method_p + CFWS_op + result_p;
-	reg_match = match(str, methodspec_p);
+	try {
+		reg_match = match(str, methodspec_p);
+	} catch (exception) {
+		if (prefs.getBoolPref("relaxedParsing"))
+		{
+			// allow trailing ";" at the end
+			if (str.value.trim() === ";") {
+				str.value = "";
+				return null;
+			}
+		}
+		throw exception;
+	}
 	res.method = reg_match[1];
-	res.method_version = reg_match[2];
+	if (reg_match[2]) {
+		res.method_version = parseInt(reg_match[2], 10);
+	} else {
+		res.method_version = 1;
+	}
 	res.result = reg_match[3];
 
 	// get reasonspec (optional)
@@ -199,6 +227,10 @@ function parseResinfo(str) {
 
 	// get propspec (optional)
 	let pvalue_p = value_p + "|(?:(?:" + local_part_p + "?@)?" + domain_name_p + ")";
+	if (prefs.getBoolPref("relaxedParsing")) {
+		// allow "/" in the header.b (or other) property, even if it is not in a quoted-string
+		pvalue_p += "|[^ \\x00-\\x1F\\x7F()<>@,;:\\\\\"[\\]?=]+";
+	}
 	let special_smtp_verb_p = "mailfrom|rcptto";
 	let property_p = special_smtp_verb_p + "|" + Keyword_p;
 	let propspec_p = "(" + Keyword_p + ")" + CFWS_op + "\\." + CFWS_op +
@@ -212,7 +244,7 @@ function parseResinfo(str) {
 		if (!res.propertys[reg_match[1]]) {
 			res.propertys[reg_match[1]] = {};
 		}
-		res.propertys[reg_match[1]][reg_match[2]] = reg_match[3]
+		res.propertys[reg_match[1]][reg_match[2]] = reg_match[3];
 	}
 
 	log.trace(res.toSource());
@@ -220,20 +252,27 @@ function parseResinfo(str) {
 }
 
 /**
- *  Object wrapper around a string.
+ * Object wrapper around a string.
  */
-function RefString(s) {
-    this.value = s;
+class RefString {
+	/**
+	 * Object wrapper around a string.
+	 * @constructor
+	 * @param {string} s
+	 */
+	constructor(s) {
+		this.value = s;
+	}
+	match() {
+		return this.value.match.apply(this.value, arguments);
+	}
+	substr() {
+		return this.value.substr.apply(this.value, arguments);
+	}
+	toSource() {
+		return this.value.toSource.apply(this.value, arguments);
+	}
 }
-RefString.prototype.match = function() {
-	return this.value.match.apply(this.value, arguments);
-};
-RefString.prototype.substr = function() {
-	return this.value.substr.apply(this.value, arguments);
-};
-RefString.prototype.toSource = function() {
-	return this.value.toSource.apply(this.value, arguments);
-};
 
 /**
  *  Matches a pattern to the beginning of str.

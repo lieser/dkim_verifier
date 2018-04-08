@@ -1,5 +1,8 @@
 // Default preference values. These are accessible via the preferences system
 // or via the optional chrome/content/options.xul preferences dialog.
+/* eslint strict: "off", no-magic-numbers: "off" */
+/* global pref */
+// @ts-nocheck
 
 ////////////////////////////////////////////////////////////////////////////////
 // general preferences - General
@@ -27,7 +30,7 @@ pref("extensions.dkim_verifier.dns.resolver", 1);
 pref("extensions.dkim_verifier.dns.getNameserversFromOS", true);
 pref("extensions.dkim_verifier.dns.nameserver", "8.8.8.8");
 pref("extensions.dkim_verifier.dns.timeout_connect", 10);
-pref("extensions.dkim_verifier.dns.dnssec.trustAnchor", ". IN DS 19036 8 2 49AAC11D7B6F6446702E54A1607371607A1A41855200FD2CE1CDDE32F24E8FB5");
+pref("extensions.dkim_verifier.dns.dnssec.trustAnchor", ". IN DS 19036 8 2 49AAC11D7B6F6446702E54A1607371607A1A41855200FD2CE1CDDE32F24E8FB5;. IN DS 20326 8 2 E06D44B80B8F1D39A95C0B0D7C65D08458E880409BBC683457104237C7F8EC8D");
 pref("extensions.dkim_verifier.dns.proxy.enable", false);
 // "socks", "socks4"
 pref("extensions.dkim_verifier.dns.proxy.type", "socks");
@@ -123,6 +126,7 @@ pref("extensions.dkim_verifier.debugLevel", 0);
 pref("extensions.dkim_verifier.error.detailedReasons", false);
 pref("extensions.dkim_verifier.display.keySecure", true);
 pref("extensions.dkim_verifier.arh.replaceAddonResult", true);
+pref("extensions.dkim_verifier.arh.relaxedParsing", false);
 // 0: error, 1: warning, 2: ignore
 pref("extensions.dkim_verifier.error.illformed_i.treatAs", 1);
 pref("extensions.dkim_verifier.error.illformed_s.treatAs", 1);

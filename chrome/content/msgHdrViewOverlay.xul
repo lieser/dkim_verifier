@@ -30,6 +30,9 @@
 		<menuitem id="dkim_verifier.updateKey"
 		          label="&dkim_verifier.updateKey.label;"
 		          oncommand="DKIM_Verifier.Display.updateKey();"/>
+		<menuitem id="dkim_verifier.viewSigners"
+		          label="&treeviewSigners.title;"
+		          oncommand="toOpenWindowByType('dkim_verifier:treeviewSigners', 'chrome://dkim_verifier/content/treeviewSigners.xul');"/>
 	</menupopup>
 	
 	<hbox id="msgHeaderView">

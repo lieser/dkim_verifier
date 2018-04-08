@@ -1,6 +1,6 @@
 {
 	"versionTable": 1,
-	"versionData": 15,
+	"versionData": 19,
 	"rules": [
 		{
 			"domain": "1und1.de",
@@ -14,6 +14,12 @@
 			"sdid": "adlice.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "airberlin.com",
+			"addr": "*",
+			"sdid": "airberlin.com news.airberlin.com service.airberlin.com plusgrade.airberlin.com",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_NEUTRAL"
 		}, {
 			"domain": "airbnb.com",
 			"addr": "*",
@@ -155,9 +161,9 @@
 		}, {
 			"domain": "dhl.de",
 			"addr": "*",
-			"sdid": "dhl.de",
-			"ruletype": "ALL",
-			"priority": "DEFAULT_RULE_ALL"
+			"sdid": "dhl.de info.dhl.de",
+			"ruletype": "NEUTRAL",
+			"priority": "USERINSERT_RULE_NEUTRAL"
 		}, {
 			"domain": "dropbox.com",
 			"addr": "*",
@@ -268,6 +274,12 @@
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
 			"domain": "gmxnet.de",
+			"addr": "*@fmp.gmxnet.de",
+			"sdid": "gmxnet.de fmp.gmxnet.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
+			"domain": "gmxnet.de",
 			"addr": "mailings@gmxnet.de",
 			"sdid": "gmxnet.de mailings.gmx.net",
 			"ruletype": "NEUTRAL",
@@ -278,6 +290,12 @@
 			"sdid": "gmxnet.de",
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_NEUTRAL"
+		}, {
+			"domain": "gog.com",
+			"addr": "*",
+			"sdid": "gog.com email.gog.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
 		}, {
 			"domain": "google.com",
 			"addr": "*",
@@ -375,6 +393,18 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "microsoft.com",
+			"addr": "*@communication.microsoft.com",
+			"sdid": "microsoft.com communication.microsoft.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
+			"domain": "mozilla.org",
+			"addr": "*@e.mozilla.org",
+			"sdid": "mozilla.org e.mozilla.org",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "mozilla-community.org",
 			"addr": "*",
 			"sdid": "mozilla-community.org",
@@ -396,6 +426,12 @@
 			"domain": "o2.de",
 			"addr": "*@news.o2.de",
 			"sdid": "news.o2.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "opavote.com",
+			"addr": "*",
+			"sdid": "opavote.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -441,6 +477,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "posteo.de",
+			"addr": "*",
+			"sdid": "posteo.de",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_NEUTRAL"
+		}, {
 			"domain": "postpro.net",
 			"addr": "*",
 			"sdid": "postpro.net",
@@ -453,6 +495,18 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "sbroker.de",
+			"addr": "*",
+			"sdid": "sbroker.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "sbroker.info",
+			"addr": "*",
+			"sdid": "sbroker.info reply.sbroker.info",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "sent.com",
 			"addr": "*",
 			"sdid": "sent.com",
@@ -462,6 +516,12 @@
 			"domain": "shore.com",
 			"addr": "*",
 			"sdid": "shore.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "sky.de",
+			"addr": "*",
+			"sdid": "sky.de infoservice.sky.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -486,6 +546,12 @@
 			"domain": "stackoverflow.com",
 			"addr": "*",
 			"sdid": "stackoverflow.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "stackoverflow.email",
+			"addr": "*",
+			"sdid": "stackoverflow.email",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {

@@ -1,9 +1,9 @@
 /*
  * helper.jsm
  *
- * Version: 1.4.2 (13 November 2016)
+ * Version: 2.0.0pre1 (30 December 2017)
  * 
- * Copyright (c) 2013-2016 Philippe Lieser
+ * Copyright (c) 2013-2017 Philippe Lieser
  * 
  * This software is licensed under the terms of the MIT License.
  * 
@@ -11,22 +11,22 @@
  * included in all copies or substantial portions of the Software.
  */
 
-// options for JSHint
-/* jshint strict:true, moz:true, smarttabs:true */
-/* global Components, FileUtils, NetUtil, Promise, Services, CommonUtils */
-/* global ModuleGetter, Logging */
-/* exported EXPORTED_SYMBOLS, addrIsInDomain, addrIsInDomain2, domainIsInDomain, exceptionToStr, getBaseDomainFromAddr, getDomainFromAddr, readStringFrom, stringEndsWith, stringEqual, tryGetString, tryGetFormattedString, writeStringToTmpFile, DKIM_SigError, DKIM_InternalError */
+// options for ESLint
+/* global Components, FileUtils, NetUtil, Services */
+/* global Logging */
+/* exported EXPORTED_SYMBOLS, addrIsInDomain, addrIsInDomain2, domainIsInDomain, getBaseDomainFromAddr, getDomainFromAddr, PREF, readStringFrom, stringEndsWith, stringEqual, tryGetString, tryGetFormattedString, writeStringToTmpFile, DKIM_SigError, DKIM_InternalError */
 
 "use strict";
 
 var EXPORTED_SYMBOLS = [
+	"Deferred",
 	"dkimStrings",
 	"addrIsInDomain",
 	"addrIsInDomain2",
 	"domainIsInDomain",
-	"exceptionToStr",
 	"getBaseDomainFromAddr",
 	"getDomainFromAddr",
+	"PREF",
 	"readStringFrom",
 	"stringEndsWith",
 	"stringEqual",
@@ -37,47 +37,116 @@ var EXPORTED_SYMBOLS = [
 	"DKIM_InternalError"
 ];
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
 const Cr = Components.results;
+// @ts-ignore
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/FileUtils.jsm");
 Cu.import("resource://gre/modules/NetUtil.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
-
-Cu.import("resource://dkim_verifier/ModuleGetter.jsm");
-ModuleGetter.getCommonUtils(this);
-ModuleGetter.getLog(this);
-ModuleGetter.getPromise(this);
+Cu.import("resource://services-common/utils.js");
 
 Cu.import("resource://dkim_verifier/logging.jsm");
 
 
+// @ts-ignore
 var log = Logging.getLogger("Helper");
-var eTLDService = Components.classes["@mozilla.org/network/effective-tld-service;1"]
-	.getService(Components.interfaces.nsIEffectiveTLDService);
+var eTLDService = Components.classes["@mozilla.org/network/effective-tld-service;1"].
+	getService(Components.interfaces.nsIEffectiveTLDService);
 
 
-var exceptionStr;
-if (Services.vc.compare(Services.appinfo.platformVersion, "46.0-1") >= 0) {
-	exceptionStr = Log.exceptionStr;
-} else {
-	exceptionStr = CommonUtils.exceptionStr;
-}
-
-/**
- * DKIM stringbundle with the same access methods as XUL:stringbundle
- */
-var dkimStrings = {};
-dkimStrings.stringbundle = Services.strings.createBundle(
-	"chrome://dkim_verifier/locale/dkim.properties"
-);
-dkimStrings.getString = dkimStrings.stringbundle.GetStringFromName;
-dkimStrings.getFormattedString = function (key, strArray) {
-	return dkimStrings.stringbundle.formatStringFromName(key, strArray, strArray.length);
+const PREF = {
+	DNS: {
+		RESOLVER: {
+			JSDNS: 1,
+			LIBUNBOUND: 2,
+		}
+	},
+	ENABLE: {
+		DEFAULT: 0,
+		TRUE: 1,
+		FALSE: 2,
+	},
+	KEY: {
+		STORING: {
+			DISABLED: 0,
+			STORE: 1,
+			COMPARE: 2,
+		}
+	},
+	POLICY: {
+		SIGN_RULES: {
+			AUTO_ADD_RULE: {
+				FOR: {
+					FROM: 0,
+					SUBDOMAIN: 1,
+					BASE_DOMAIN: 2,
+				}
+			}
+		}
+	},
+	SHOW: {
+		NEVER: 0,
+		DKIM_VALID: 10,
+		DKIM_VALID_ALL: 20,
+		DKIM_SIGNED: 30,
+		EMAIL: 40,
+		MSG: 50,
+	},
+	STATUSBARPANEL: {
+		RESULT: {
+			STYLE: {
+				TEST: 1,
+				ICON: 2,
+			}
+		}
+	}
 };
 
+/**
+ * Deferred Promise
+ * @class
+ * @template T
+ * @property {Promise<T>} promise
+ * @property {Function} resolve
+ *           Function to call to resolve promise
+ * @property {Function} reject
+ *           Function to call to reject promise
+ */
+class Deferred {
+	constructor() {
+		this.promise = new Promise((resolve, reject) => {
+			this.resolve = resolve;
+			this.reject = reject;
+		});
+		return this;
+	}
+}
+
+class Stringbundle {
+	/**
+	 * DKIM stringbundle with the same access methods as XUL:stringbundle
+	 * 
+	 * @constructor
+	 * @param {string} propertiesPath
+	 */
+	constructor(propertiesPath) {
+		this.stringbundle = Services.strings.createBundle(propertiesPath);
+
+		/** @type {nsIStringBundle["GetStringFromName"]} */
+		this.getString = this.stringbundle.GetStringFromName;
+
+		/**
+		 * @param {string} key
+		 * @param {(string|string[])[]} strArray
+		 * @return {string}
+		 */
+		this.getFormattedString = function (key, strArray) {
+			return this.stringbundle.formatStringFromName(key, strArray, strArray.length);
+		};
+	}
+}
+var dkimStrings = new Stringbundle("chrome://dkim_verifier/locale/dkim.properties");
 
 /**
  * Returns true if e-mail address is from domain or a subdomain of it.
@@ -121,55 +190,6 @@ function domainIsInDomain(domain1, domain2) {
 }
 
 /**
- * @param {Error} exception
- * 
- * @return {String} formatted error message
- */
-function exceptionToStr(exception) {
-	log.trace("exceptionToStr begin");
-	
-	if(!exception) {
-		log.fatal("exceptionToStr: exception undefined or null");
-		exception = new Error();
-	}
-
-	var str = exceptionStr(exception);
-	log.trace(str);
-	
-	// cut stack trace from Sqlite.jsm, promise.js, Promise.jsm, Task.jsm calls
-	var posStackTrace = str.lastIndexOf("Stack trace: ");
-	if (posStackTrace !== -1) {
-		var tmp = str.substr(posStackTrace+13);
-		tmp = tmp.replace(
-			/ < (?:[^ ]| (?!< ))*(?:Sqlite\.jsm|promise\.js|Promise\.jsm|Promise-backend\.js|Task\.jsm)(?:[^ ]| (?!< ))*/g,
-			""
-		);
-		str = str.substr(0, posStackTrace+13) + tmp;
-	}
-	
-	// Sqlite.jsm errors
-	if (exception.errors) {
-		// exception.errors is an array of mozIStorageError
-		str += "\n" + exception.errors.map(function (e) {
-				return e.message;
-			}).join("\n");
-		str += "\nreported at: ";
-		str += new Error().stack.split("\n")[1];
-	}
-	
-	// DKIM_SigError or DKIM_InternalError errors
-	if (exception instanceof DKIM_SigError ||
-	    exception instanceof DKIM_InternalError) {
-		if (exception.errorType) {
-			str = exception.errorType+": "+str;
-		}
-	}
-
-	log.trace("exceptionToStr end");
-	return str;
-}
-
-/**
  * Returns the base domain for an e-mail address; that is, the public suffix
  * with a given number of additional domain name parts.
  * 
@@ -190,10 +210,11 @@ function getBaseDomainFromAddr(addr, aAdditionalParts=0) {
 		// because e-mails may be send from them
 		if (e.result === Cr.NS_ERROR_INSUFFICIENT_DOMAIN_LEVELS && aAdditionalParts === 0) {
 			// add "invalid" subdomain to avoid error
-			var host = "invalid."+nsiURI.asciiHost;
+			let invalidSub = "invalid.";
+			var host = invalidSub + nsiURI.asciiHost;
 			res = eTLDService.getBaseDomainFromHost(host, 0);
-			// remove "invalid" sudomain from result
-			res = res.substr(8);
+			// remove "invalid" subdomain from result
+			res = res.substr(invalidSub.length);
 		}
 	}
 	return res;
@@ -215,19 +236,23 @@ function getDomainFromAddr(addr) {
  * 
  * Based on https://developer.mozilla.org/en-US/docs/Code_snippets/File_I_O#Asynchronously
  * 
- * @param {String|nsIURI|nsIFile|nsIChannel|nsIInputStream} aSource The source to read from.
+ * @param {String} aSource The source to read from.
  * 
  * @return {Promise<String>}
  */
 function readStringFrom(aSource) {
 	log.trace("readStringFrom begin");
 
-	var defer = Promise.defer();
+	/** @type {IDeferred<string>} */
+	var defer = new Deferred();
 
-	NetUtil.asyncFetch(aSource, function(inputStream, status) {
+	NetUtil.asyncFetch({
+		uri: aSource,
+		loadUsingSystemPrincipal: true
+	}, function(inputStream, status) {
 		if (!Components.isSuccessCode(status)) {
 			// Handle error!
-			defer.reject("readStringFrom: nsresult: "+status);
+			defer.reject(new Error("readStringFrom: nsresult: "+status));
 			// defer.reject(Object.keys(Components.results).find(o=>o[status] === value));
 			log.trace("readStringFrom nsresult: "+status);
 			return;
@@ -248,7 +273,7 @@ function readStringFrom(aSource) {
  * Comparison is done case insensitive.
  * 
  * @param {String} str
- * @param {String} strEnd
+ * @param {String} x
  * 
  * @return {Boolean}
  */
@@ -273,7 +298,7 @@ function stringEqual(str1, str2) {
 /**
  * try to get string from stringbundle
  * 
- * @param stringbundle
+ * @param {Stringbundle} stringbundle
  * @param {String} name
  * 
  * @return {String|null}
@@ -286,7 +311,7 @@ function tryGetString(stringbundle, name) {
 	try {
 		return stringbundle.getString(name);
 	} catch (ex) {
-		log.warn(exceptionToStr(ex));
+		log.warn(ex);
 		return null;
 	}
 }
@@ -294,9 +319,9 @@ function tryGetString(stringbundle, name) {
 /**
  * try to get formatted string from stringbundle
  * 
- * @param stringbundle
+ * @param {Stringbundle} stringbundle
  * @param {String} name
- * @param {String[]} [params]
+ * @param {(string|string[])[]} [params]
  * 
  * @return {String|null}
  */
@@ -308,7 +333,7 @@ function tryGetFormattedString(stringbundle, name, params = []) {
 	try {
 		return stringbundle.getFormattedString(name, params);
 	} catch (ex) {
-		log.warn(exceptionToStr(ex));
+		log.warn(ex);
 		return null;
 	}
 }
@@ -320,26 +345,27 @@ function tryGetFormattedString(stringbundle, name, params = []) {
  * 
  * @param {String} string
  * @param {String} fileName
+ * @return {void}
  */
 function writeStringToTmpFile(string, fileName) {
-	var file = Components.classes["@mozilla.org/file/directory_service;1"]
-					.getService(Components.interfaces.nsIProperties)
-					.get("TmpD", Components.interfaces.nsIFile);
+	var file = Components.classes["@mozilla.org/file/directory_service;1"].
+					getService(Components.interfaces.nsIProperties).
+					get("TmpD", Components.interfaces.nsIFile);
 	file.append(fileName);
 	
 	// file is nsIFile, data is a string
 
 	// You can also optionally pass a flags parameter here. It defaults to
 	// FileUtils.MODE_WRONLY | FileUtils.MODE_CREATE | FileUtils.MODE_TRUNCATE;
-	var ostream = FileUtils.openSafeFileOutputStream(file);
+	var oStream = FileUtils.openSafeFileOutputStream(file);
 
 	var converter = Components.classes["@mozilla.org/intl/scriptableunicodeconverter"].
 					createInstance(Components.interfaces.nsIScriptableUnicodeConverter);
 	converter.charset = "UTF-8";
-	var istream = converter.convertToInputStream(string);
+	var iStream = converter.convertToInputStream(string);
 
 	// The last argument (the callback) is optional.
-	NetUtil.asyncCopy(istream, ostream, function(status) {
+	NetUtil.asyncCopy(iStream, oStream, function(status) {
 		if (!Components.isSuccessCode(status)) {
 			// Handle error!
 			log.debug("writeStringToTmpFile nsresult: "+status);
@@ -353,55 +379,50 @@ function writeStringToTmpFile(string, fileName) {
 
 /**
  * DKIM signature error.
- * 
- * @constructor
- * 
- * @param {String} errorType
- * @param {String[]} [errorStrParams]
- * 
- * @return {DKIM_SigError}
  */
-function DKIM_SigError(errorType, errorStrParams = []) {
-	this.name = dkimStrings.getString("DKIM_SIGERROR");
-	this.errorType = errorType;
-	this.errorStrParams = errorStrParams;
-	this.message =
-		tryGetFormattedString(dkimStrings, errorType, errorStrParams) ||
-		errorType ||
-		dkimStrings.getString("DKIM_SIGERROR_DEFAULT");
-
-	// modify stack and lineNumber, to show where this object was created,
-	// not where Error() was
-	var err = new Error();
-	this.stack = err.stack.substring(err.stack.indexOf('\n')+1);
-	this.lineNumber = parseInt(this.stack.match(/[^:]*$/m), 10);
+class DKIM_SigError extends Error {
+	/**
+	 * DKIM signature error.
+	 * 
+	 * @constructor
+	 * 
+	 * @param {String} errorType
+	 * @param {any[]} [errorStrParams]
+	 * 
+	 * @return {DKIM_SigError}
+	 */
+	constructor(errorType, errorStrParams = []) {
+		super(tryGetFormattedString(dkimStrings, errorType, errorStrParams) ||
+			errorType ||
+			dkimStrings.getString("DKIM_SIGERROR_DEFAULT"));
+		this.name = dkimStrings.getString("DKIM_SIGERROR") + " (" + errorType + ")";
+		this.errorType = errorType;
+		this.errorStrParams = errorStrParams;
+		this.stack = this.stack.substring(this.stack.indexOf('\n')+1);
+	}
 }
-DKIM_SigError.prototype = new Error();
-DKIM_SigError.prototype.constructor = DKIM_SigError;
 
 /**
  * DKIM internal error
- * 
- * @constructor
- * 
- * @param {String} message
- * @param {String} [errorType]
- * 
- * @return {DKIM_InternalError}
  */
-function DKIM_InternalError(message, errorType) {
-	this.name = dkimStrings.getString("DKIM_INTERNALERROR");
-	this.errorType = errorType;
-	this.message = message ||
-		tryGetString(dkimStrings, errorType) ||
-		errorType ||
-		dkimStrings.getString("DKIM_INTERNALERROR_DEFAULT");
-	
-	// modify stack and lineNumber, to show where this object was created,
-	// not where Error() was
-	var err = new Error();
-	this.stack = err.stack.substring(err.stack.indexOf('\n')+1);
-	this.lineNumber = parseInt(this.stack.match(/[^:]*$/m), 10);
+class DKIM_InternalError extends Error {
+	/**
+	 * DKIM internal error
+	 * 
+	 * @constructor
+	 * 
+	 * @param {String|null} [message]
+	 * @param {String} [errorType]
+	 * 
+	 * @return {DKIM_InternalError}
+	 */
+	constructor(message, errorType) {
+		super(message ||
+			tryGetString(dkimStrings, errorType) ||
+			errorType ||
+			dkimStrings.getString("DKIM_INTERNALERROR_DEFAULT"));
+		this.name = dkimStrings.getString("DKIM_INTERNALERROR") + " (" + errorType + ")";
+		this.errorType = errorType;
+		this.stack = this.stack.substring(this.stack.indexOf('\n')+1);
+	}
 }
-DKIM_InternalError.prototype = new Error();
-DKIM_InternalError.prototype.constructor = DKIM_InternalError;

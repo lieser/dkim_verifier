@@ -4,7 +4,7 @@
  * A ChromeWorker wrapper for the libunbound DNS library.
  * Currently only the TXT resource record is completely supported.
  *
- * Version: 1.0.1 (03 February 2017)
+ * Version: 2.0.1pre1 (03 December 2017)
  * 
  * Copyright (c) 2016-2017 Philippe Lieser
  * 
@@ -14,15 +14,16 @@
  * included in all copies or substantial portions of the Software.
  */
 
-// options for JSHint
-/* jshint strict:true, moz:true */
-/* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
+// options for ESLint
+/* eslint no-global-assign: ["error", {"exceptions": ["onmessage"]}] */
 /* global ctypes, onmessage, postMessage, dump */
+/* exported onmessage */
 
 "use strict";
 
 
 const log_prefix = "libunboundWorker: ";
+// @ts-ignore
 var log = {
 	fatal : function (msg) {
 		let toSend = {type: "log", subType: "fatal", message: log_prefix + msg};
@@ -161,7 +162,7 @@ function resolve(name, rrtype=Constants.RR_TYPE_A) {
 	);
 	if (retval !== 0) {
 		log.debug("resolve error: "+ub_strerror(retval).readString()+"\n");
-		return null;
+		throw new Error("resolve error: "+ub_strerror(retval).readString());
 	}
 
 	// array of converted rdata
@@ -185,7 +186,7 @@ function resolve(name, rrtype=Constants.RR_TYPE_A) {
 
 			// convert rdata for known RR types
 			switch (rrtype) {
-				case Constants.RR_TYPE_TXT:
+				case Constants.RR_TYPE_TXT: {
 					// http://tools.ietf.org/html/rfc1035#page-20
 					let str = "";
 					let i=0;
@@ -201,6 +202,9 @@ function resolve(name, rrtype=Constants.RR_TYPE_A) {
 					}
 					data.push(str);
 					break;
+				}
+				default:
+					log.warn("skipped converting of unknown rdata type: " + rrtype);
 			}
 
 			dataPtr = dataPtr.increment();
@@ -210,9 +214,13 @@ function resolve(name, rrtype=Constants.RR_TYPE_A) {
 		log.debug("data: " + data);
 	}
 
+	/** @type {ub_result} */
 	let result = {};
 	if (!_result.contents.qname.isNull()) {
 		result.qname = _result.contents.qname.readString();
+	} else {
+		log.warn("qname missing");
+		result.qname = "";
 	}
 	result.qtype = _result.contents.qtype;
 	result.qclass = _result.contents.qclass;
@@ -220,6 +228,8 @@ function resolve(name, rrtype=Constants.RR_TYPE_A) {
 	result.data_raw = data_raw;
 	if (!_result.contents.canonname.isNull()) {
 		result.canonname = _result.contents.canonname.readString();
+	} else {
+		result.canonname = "";
 	}
 	result.rcode = _result.contents.rcode;
 	result.havedata = _result.contents.havedata === 1;
@@ -242,6 +252,7 @@ function resolve(name, rrtype=Constants.RR_TYPE_A) {
  * Load library
  *
  * @param {String} path
+ * @return {void}
 */
 function load(path) {
 	// if library was already loaded, do a cleanup first before reloading it
@@ -337,13 +348,14 @@ function load(path) {
 /**
  * updates ctx by deleting old an creating new
  *
- * @param {String} conf
- * @param {Number} debuglevel
+ * @param {String|undefined} [conf]
+ * @param {Number|undefined} [debuglevel]
  * @param {Boolean} getNameserversFromOS
  * @param {String[]} nameservers
- * @param {String} trustAnchor
+ * @param {String[]} trustAnchors
+ * @return {void}
  */
-function update_ctx(conf, debuglevel, getNameserversFromOS, nameservers, trustAnchor) {
+function update_ctx(conf, debuglevel, getNameserversFromOS, nameservers, trustAnchors) {
 	if (!ub_ctx_create) {
 		throw new Error("libunbound not correctly initialized (ub_ctx_create missing)");
 	}
@@ -394,44 +406,61 @@ function update_ctx(conf, debuglevel, getNameserversFromOS, nameservers, trustAn
 		}
 	});
 
-	// add root trust anchor
-	if((retval=ub_ctx_add_ta(ctx, trustAnchor)) !== 0) {
-		throw new Error("error in ub_ctx_add_ta: " +
-			ub_strerror(retval).readString() + ". errno: " + ctypes.errno);
-	}
+	// add root trust anchors
+	trustAnchors.forEach(function(element /*, index, array*/) {
+		if((retval=ub_ctx_add_ta(ctx, element.trim())) !== 0) {
+			throw new Error("error in ub_ctx_add_ta: " +
+				ub_strerror(retval).readString() + ". errno: " + ctypes.errno);
+		}
+	});
 
 	log.debug("context created");
 }
 
 /**
  * Handle the requests from libunbound.jsm
+ * @param {Libunbound.WorkerRequest} msg
+ * @return {void}
  */
 onmessage = function(msg) {
-  log.trace("Message received from main script: " + msg.data.toSource());
+	log.trace("Message received from main script: " + msg.data.toSource());
 	try {
 		try {
 			let res;
 
 			// call requested method
 			switch (msg.data.method) {
-				case "resolve":
-					res = resolve(msg.data.name, msg.data.rrtype);
+				case "resolve": {
+					/** @type {Libunbound.ResolveRequest} */
+					// @ts-ignore
+					let req = msg.data;
+					res = resolve(req.name, req.rrtype);
 					break;
-				case "load":
-					load(msg.data.path);
+				}
+				case "load": {
+					/** @type {Libunbound.LoadRequest} */
+					// @ts-ignore
+					let req = msg.data;
+					load(req.path);
 					break;
-				case "update_ctx":
-					update_ctx(msg.data.conf, msg.data.debuglevel,
-						msg.data.getNameserversFromOS, msg.data.nameservers,
-						msg.data.trustAnchor);
+				}
+				case "update_ctx": {
+					/** @type {Libunbound.UpdateCtxRequest} */
+					// @ts-ignore
+					let req = msg.data;
+					update_ctx(req.conf, req.debuglevel,
+						req.getNameserversFromOS, req.nameservers,
+						req.trustAnchors);
 					break;
+				}
 				default:
 					throw new Error("unknown method " + msg.data.method);
 			}
 
 			// return result if available
 			if (res !== undefined) {
-				log.trace("Posting result back to main script: " + res.toSource());
+				log.trace("Posting result back to main script: " +
+					(res ? res.toSource() : res));
 				postMessage({
 					callId: msg.data.callId,
 					result: res,

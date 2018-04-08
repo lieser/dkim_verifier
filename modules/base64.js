@@ -1,5 +1,5 @@
 var b64map="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-var b64pad="=";
+var b64padchar="=";
 
 function hex2b64(h) {
   var i;
@@ -17,7 +17,7 @@ function hex2b64(h) {
     c = parseInt(h.substring(i,i+2),16);
     ret += b64map.charAt(c >> 2) + b64map.charAt((c & 3) << 4);
   }
-  while((ret.length & 3) > 0) ret += b64pad;
+  while((ret.length & 3) > 0) ret += b64padchar;
   return ret;
 }
 
@@ -28,7 +28,7 @@ function b64tohex(s) {
   var k = 0; // b64 state, 0-3
   var slop;
   for(i = 0; i < s.length; ++i) {
-    if(s.charAt(i) == b64pad) break;
+    if(s.charAt(i) == b64padchar) break;
     var v = b64map.indexOf(s.charAt(i));
     if(v < 0) continue;
     if(k == 0) {

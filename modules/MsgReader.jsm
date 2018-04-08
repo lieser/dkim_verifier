@@ -3,9 +3,9 @@
  * 
  * Reads and parses a message.
  *
- * Version: 2.0.1 (11 July 2015)
+ * Version: 2.1.0pre1 (14 November 2017)
  * 
- * Copyright (c) 2014-2015 Philippe Lieser
+ * Copyright (c) 2014-2017 Philippe Lieser
  * 
  * This software is licensed under the terms of the MIT License.
  * 
@@ -13,31 +13,32 @@
  * included in all copies or substantial portions of the Software.
  */
 
-// options for JSHint
-/* jshint strict:true, globalstrict:true, esnext:true, moz:true, smarttabs:true, unused:true */
-/* global Components, Promise */
-/* global ModuleGetter, Logging */
-/* global DKIM_InternalError */
+// options for ESLint
+/* global Components */
+/* global Logging */
+/* global Deferred, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, MsgReader */
 
 "use strict";
 
-const module_version = "2.0.1";
+// @ts-ignore
+const module_version = "2.1.0pre1";
 
 var EXPORTED_SYMBOLS = [
 	"MsgReader"
 ];
 
+// @ts-ignore
 const Cc = Components.classes;
+// @ts-ignore
 const Ci = Components.interfaces;
+// @ts-ignore
 const Cu = Components.utils;
-
-Cu.import("resource://dkim_verifier/ModuleGetter.jsm");
-ModuleGetter.getPromise(this);
 
 Cu.import("resource://dkim_verifier/logging.jsm");
 Cu.import("resource://dkim_verifier/helper.jsm");
 
+// @ts-ignore
 let log = Logging.getLogger("MsgReader");
 
 
@@ -48,22 +49,22 @@ var MsgReader = {
 	 * Reads the message and parse it into header and body
 	 *
 	 * @param {String} msgURI
-	 * @return {Promise<Object>}
-	 *         .headerPlain {String}
-	 *         .bodyPlain {String}
+	 * @return {Promise<{headerPlain: string, bodyPlain: string}>}
 	 * @throws DKIM_InternalError
 	 */
 	read: function _MsgReader_read(msgURI) {
-		let res_defer = Promise.defer();
-		let res = {};
-		res.headerPlain = "";
-		res.bodyPlain = "";
+		/** @type {IDeferred<{headerPlain: string, bodyPlain: string}>} */
+		let res_defer = new Deferred();
+		let res = {
+			headerPlain: "",
+			bodyPlain: "",
+		};
 
 		let StreamListener =
 		{
 			headerFinished: false,
 
-			QueryInterface : function(iid)  {
+			QueryInterface : function(iid) {
 						if (iid.equals(Components.interfaces.nsIStreamListener) ||
 							iid.equals(Components.interfaces.nsISupports)) {
 							return this;
@@ -123,8 +124,7 @@ var MsgReader = {
 				}
 			},
 
-			onStartRequest: function (/* request , context */) {
-			},
+			onStartRequest: function (/* request , context */) {}, // eslint-disable-line no-empty-function
 
 			onStopRequest: function (/* aRequest , aContext , aStatusCode */) {
 				try {

@@ -1,9 +1,9 @@
 /*
  * dkimPolicy.jsm
  * 
- * Version: 1.3.0 (07 August 2016)
+ * Version: 1.4.0pre1 (31 March 2018)
  * 
- * Copyright (c) 2013-2016 Philippe Lieser
+ * Copyright (c) 2013-2017 Philippe Lieser
  * 
  * This software is licensed under the terms of the MIT License.
  * 
@@ -11,30 +11,25 @@
  * included in all copies or substantial portions of the Software.
  */
 
-// options for JSHint
-/* jshint strict:true, moz:true, smarttabs:true */
-/* jshint -W069 */ // "['{a}'] is better written in dot notation."
-/* global Components, Services, Sqlite, Task, Promise */
-/* global ModuleGetter, Logging, DMARC */
-/* global addrIsInDomain, exceptionToStr, getBaseDomainFromAddr, readStringFrom, stringEndsWith, stringEqual, DKIM_SigError, DKIM_InternalError */
+// options for ESLint
+/* eslint strict: ["warn", "function"] */
+/* global Components, Services, Sqlite */
+/* global Logging, DMARC */
+/* global addrIsInDomain, Deferred, getBaseDomainFromAddr, PREF, readStringFrom, stringEndsWith, stringEqual, DKIM_SigError, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, Policy */
 
-const module_version = "1.3.0";
+// @ts-ignore
+const module_version = "1.4.0pre1";
 
 var EXPORTED_SYMBOLS = [
 	"Policy"
 ];
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
+// @ts-ignore
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
-Cu.import("resource://gre/modules/Task.jsm"); // Requires Gecko 17.0
-
-Cu.import("resource://dkim_verifier/ModuleGetter.jsm");
-ModuleGetter.getPromise(this);
-ModuleGetter.getSqlite(this);
+Cu.import("resource://gre/modules/Sqlite.jsm");
 
 Cu.import("resource://dkim_verifier/logging.jsm");
 Cu.import("resource://dkim_verifier/helper.jsm");
@@ -42,8 +37,23 @@ Cu.import("resource://dkim_verifier/dkimDMARC.jsm");
 
 
 const DB_POLICY_NAME = "dkimPolicy.sqlite";
+// @ts-ignore
 const PREF_BRANCH = "extensions.dkim_verifier.policy.";
 const ERROR_PREF_BRANCH = "extensions.dkim_verifier.error.";
+
+/**
+ * DKIM signing policy for a message.
+ * 
+ * @typedef {Object} DKIMSignPolicy
+ * @property {Boolean} shouldBeSigned
+ *           true if message should be signed
+ * @property {String[]} sdid
+ *           Signing Domain Identifier
+ * @property {Boolean} foundRule
+ *           true if enabled rule for message was found
+ * @property {Boolean} hideFail
+ *           true if HIDEFAIL rule was found
+ */
 
 /**
  * rule types
@@ -72,14 +82,18 @@ const PRIORITY = {
 };
 
 
+// @ts-ignore
 var prefs = Services.prefs.getBranch(PREF_BRANCH);
 var error_prefs = Services.prefs.getBranch(ERROR_PREF_BRANCH);
+// @ts-ignore
 var log = Logging.getLogger("Policy");
 var dbInitialized = false;
-// Deferred<boolean>
-var dbInitializedDefer = Promise.defer();
+/** @type {IDeferred<boolean>} */
+var dbInitializedDefer = new Deferred();
+
 
 var favicons;
+var rulesUpdatedObservers = [];
 
 var Policy = {
 	get version() { "use strict"; return module_version; },
@@ -98,25 +112,27 @@ var Policy = {
 		}
 		dbInitialized = true;
 
-		var promise = Task.spawn(function () {
+		var promise = (async () => {
 			log.trace("initDB Task begin");
 			
 			Logging.addAppenderTo("Sqlite.Connection."+DB_POLICY_NAME, "sql.");
 			
-			var conn = yield Sqlite.openConnection({path: DB_POLICY_NAME});
+			var conn = await Sqlite.openConnection({path: DB_POLICY_NAME});
 
 			try {
 				// get version numbers
-				yield conn.execute(
+				await conn.execute(
 					"CREATE TABLE IF NOT EXISTS version (\n" +
 					"  name TEXT PRIMARY KEY NOT NULL,\n" +
 					"  version INTEGER NOT NULL\n" +
 					");"
 				);
-				var sqlRes = yield conn.execute(
+				var sqlRes = await conn.execute(
 					"SELECT * FROM version;"
 				);
+				const TABLE_SIGNERS_VERSION_CURRENT = 1;
 				var versionTableSigners = 0;
+				const TABLE_SIGNERS_DEFAULT_VERSION_CURRENT = 1;
 				var versionTableSignersDefault = 0;
 				var versionDataSignersDefault = 0;
 				sqlRes.forEach(function(element/*, index, array*/){
@@ -130,6 +146,8 @@ var Policy = {
 						case "DataSignersDefault":
 							versionDataSignersDefault = element.getResultByName("version");
 							break;
+						default:
+							log.warn("Version table contains unknown entry: " + element.getResultByName("name"));
 					}
 				});
 				log.trace("versionTableSigners: "+versionTableSigners+
@@ -138,10 +156,10 @@ var Policy = {
 				);
 
 				// table signers
-				if (versionTableSigners < 1) {
+				if (versionTableSigners < TABLE_SIGNERS_VERSION_CURRENT) {
 					log.trace("create table signers");
 					// create table
-					yield conn.execute(
+					await conn.execute(
 						"CREATE TABLE IF NOT EXISTS signers (\n" +
 						"  domain TEXT,\n" +
 						"  listID TEXT,\n" +
@@ -153,20 +171,20 @@ var Policy = {
 						");"
 					);
 					// add version number
-					yield conn.execute(
+					await conn.execute(
 						"INSERT INTO version (name, version)" +
 						"VALUES ('TableSigners', 1);"
 					);
 					versionTableSigners = 1;
-				} else if (versionTableSigners !== 1) {
+				} else if (versionTableSigners !== TABLE_SIGNERS_VERSION_CURRENT) {
 						throw new DKIM_InternalError("unsupported versionTableSigners");
 				}
 				
 				// table signersDefault
-				if (versionTableSignersDefault < 1) {
+				if (versionTableSignersDefault < TABLE_SIGNERS_DEFAULT_VERSION_CURRENT) {
 					log.trace("create table signersDefault");
 					// create table
-					yield conn.execute(
+					await conn.execute(
 						"CREATE TABLE IF NOT EXISTS signersDefault (\n" +
 						"  domain TEXT NOT NULL,\n" +
 						"  addr TEXT NOT NULL,\n" +
@@ -176,18 +194,18 @@ var Policy = {
 						");"
 					);
 					// add version number
-					yield conn.execute(
+					await conn.execute(
 						"INSERT INTO version (name, version)\n" +
 						"VALUES ('TableSignersDefault', 1);"
 					);
 					versionTableSignersDefault = 1;
-				} else if (versionTableSignersDefault !== 1) {
+				} else if (versionTableSignersDefault !== TABLE_SIGNERS_DEFAULT_VERSION_CURRENT) {
 						throw new DKIM_InternalError("unsupported versionTableSignersDefault");
 				}
 				
 				// data signersDefault
 				// read rules from file
-				var jsonStr = yield readStringFrom("resource://dkim_verifier_data/signersDefault.json");
+				var jsonStr = await readStringFrom("resource://dkim_verifier_data/signersDefault.json");
 				var signersDefault = JSON.parse(jsonStr);
 				// check data version
 				if (versionDataSignersDefault < signersDefault.versionData) {
@@ -196,11 +214,11 @@ var Policy = {
 						throw new DKIM_InternalError("different versionTableSignersDefault in .json file");
 					}
 					// delete old rules
-					yield conn.execute(
+					await conn.execute(
 						"DELETE FROM signersDefault;"
 					);
 					// insert new default rules
-					yield conn.executeCached(
+					await conn.executeCached(
 						"INSERT INTO signersDefault (domain, addr, sdid, ruletype, priority)\n" +
 						"VALUES (:domain, :addr, :sdid, :ruletype, :priority);",
 						signersDefault.rules.map(function (v) {
@@ -213,59 +231,45 @@ var Policy = {
 							};
 						})
 					);
-					// update version number
-					yield conn.execute(
+					// update data version number
+					await conn.execute(
 						"INSERT OR REPLACE INTO version (name, version)\n" +
 						"VALUES ('DataSignersDefault', :version);",
 						{"version": signersDefault.versionData}
 					);
-					versionTableSignersDefault = 1;
 				}
 			} finally {
-				yield conn.close();
+				await conn.close();
 			}
 			
 			dbInitializedDefer.resolve(true);
 			log.debug("DB initialized");
 			log.trace("initDB Task end");
-			throw new Task.Result(true);
-		});
+			return true;
+		})();
 		promise.then(null, function onReject(exception) {
 			// Failure!  We can inspect or report the exception.
-			log.fatal(exceptionToStr(exception));
+			log.fatal(exception);
 			dbInitializedDefer.reject(exception);
 		});
 		return dbInitializedDefer.promise;
 	},
 
-	/**
-	 * DKIM signing policy for a message.
-	 * 
-	 * @typedef {Object} DKIMSignPolicy
-	 * @property {Boolean} shouldBeSigned
-	 *           true if message should be signed
-	 * @property {String[]} sdid
-	 *           Signing Domain Identifier
-	 * @property {Boolean} foundRule
-	 *           true if enabled rule for message was found
-	 * @property {Boolean} hideFail
-	 *           true if HIDEFAIL rule was found
-	 */
-
 	 /**
-	 * Determinates if e-mail by fromAddress should be signed
+	 * Determinate if an e-mail by fromAddress should be signed
 	 * 
 	 * @param {String} fromAddress
-	 * @param {String} [listID]
+	 * @param {String|Null} [listID]
 	 * 
 	 * @return {Promise<DKIMSignPolicy>}
 	 */
 	shouldBeSigned: function Policy_shouldBeSigned(fromAddress, listID) {
 		"use strict";
 
-		var promise = Task.spawn(function () {
+		var promise = (async () => {
 			log.trace("shouldBeSigned Task begin");
 			
+			/** @type {DKIMSignPolicy} */
 			var result = {};
 
 			// return false if signRules is disabled
@@ -275,7 +279,7 @@ var Policy = {
 				result.foundRule = false;
 				result.hideFail = false;
 				log.trace("shouldBeSigned Task end");
-				throw new Task.Result(result);
+				return result;
 			}
 
 			var domain = getBaseDomainFromAddr(fromAddress);
@@ -284,8 +288,8 @@ var Policy = {
 			}
 			
 			// wait for DB init
-			yield Policy.initDB();
-			var conn = yield Sqlite.openConnection({path: DB_POLICY_NAME});
+			await Policy.initDB();
+			var conn = await Sqlite.openConnection({path: DB_POLICY_NAME});
 			
 			var sqlRes;
 			try {
@@ -310,12 +314,12 @@ var Policy = {
 				sql +=
 						"ORDER BY priority DESC\n" +
 						"LIMIT 1;";
-				sqlRes = yield conn.executeCached(
+				sqlRes = await conn.executeCached(
 					sql,
 					{domain:domain, listID: listID, from: fromAddress}
 				);
 			} finally {
-				yield conn.close();
+				await conn.close();
 			}
 			
 			if (sqlRes.length > 0) {
@@ -340,7 +344,7 @@ var Policy = {
 						throw new DKIM_InternalError("unknown rule type");
 				}
 			} else {
-				var dmarcRes = yield DMARC.shouldBeSigned(fromAddress);
+				var dmarcRes = await DMARC.shouldBeSigned(fromAddress);
 				result.shouldBeSigned = dmarcRes.shouldBeSigned;
 				result.sdid = dmarcRes.sdid;
 				result.foundRule = false;
@@ -351,15 +355,15 @@ var Policy = {
 				"; hideFail: "+result.hideFail+"; foundRule: "+result.foundRule
 			);
 			log.trace("shouldBeSigned Task end");
-			throw new Task.Result(result);
-		});
+			return result;
+		})();
 		promise.then(null, function onReject(exception) {
 			// Failure!  We can inspect or report the exception.
-			log.warn(exceptionToStr(exception));
+			log.warn(exception);
 		});
 		return promise;
 	},
-	
+
 	/**
 	 * Checks the SDID and AUID of a DKIM signatures.
 	 * 
@@ -367,7 +371,8 @@ var Policy = {
 	 * @param {String} from
 	 * @param {String} sdid
 	 * @param {String} auid
-	 * @param {String[]} warnings
+	 * @param {dkimSigWarning[]} warnings - in/out paramter
+	 * @return {void}
 	 * @throws DKIM_SigError
 	 */
 	checkSDID: function Policy_checkSDID(allowedSDIDs, from, sdid, auid, warnings) {
@@ -379,13 +384,12 @@ var Policy = {
 		    !allowedSDIDs.some(function (element/*, index, array*/) {
 		      if (prefs.getBoolPref("signRules.sdid.allowSubDomains")) {
 		        return stringEndsWith(sdid, element);
-		      } else {
-		        return stringEqual(sdid, element);
 		      }
+		      return stringEqual(sdid, element);
 		    })) {
 			if (error_prefs.getBoolPref("policy.wrong_sdid.asWarning")) {
 				warnings.push(
-					{name: "DKIM_POLICYERROR_WRONG_SDID",	params: [allowedSDIDs]});
+					{name: "DKIM_POLICYERROR_WRONG_SDID", params: [allowedSDIDs]});
 				log.debug("Warning: DKIM_POLICYERROR_WRONG_SDID");
 			} else {
 				throw new DKIM_SigError("DKIM_POLICYERROR_WRONG_SDID", [allowedSDIDs]);
@@ -415,9 +419,9 @@ var Policy = {
 	getFavicon: function Policy_getFavicon(sdid) {
 		"use strict";
 
-		var promise = Task.spawn(function () {
+		var promise = (async () => {
 			if (!favicons) {
-				var faviconsStr = yield readStringFrom("resource://dkim_verifier_data/favicon.json");
+				var faviconsStr = await readStringFrom("resource://dkim_verifier_data/favicon.json");
 				favicons = JSON.parse(faviconsStr);
 			}
 
@@ -429,11 +433,11 @@ var Policy = {
 				url = "resource://dkim_verifier_data/favicon/" + url;
 			}
 
-			throw new Task.Result(url);
-		});
+			return url;
+		})();
 		promise.then(null, function onReject(exception) {
 			// Failure!  We can inspect or report the exception.
-			log.warn(exceptionToStr(exception));
+			log.warn(exception);
 		});
 		return promise;
 	},
@@ -444,12 +448,12 @@ var Policy = {
 	 * @param {String} fromAddress
 	 * @param {String} sdid
 	 * 
-	 * @return {Promise<Undefined>}
+	 * @return {Promise<void>}
 	 */
 	signedBy: function Policy_signedBy(fromAddress, sdid) {
 		"use strict";
 
-		var promise = Task.spawn(function () {
+		var promise = (async () => {
 			log.trace("signedBy Task begin");
 			
 			// return if signRules or autoAddRule is disabled
@@ -467,32 +471,32 @@ var Policy = {
 				return;
 			}
 
-			var shouldBeSignedRes = yield Policy.shouldBeSigned(fromAddress);
+			var shouldBeSignedRes = await Policy.shouldBeSigned(fromAddress);
 			if (!shouldBeSignedRes.foundRule) {
 				var domain;
 				var fromAddressToAdd;
 				switch (prefs.getIntPref("signRules.autoAddRule.for")) {
-					case 0: // from address
+					case PREF.POLICY.SIGN_RULES.AUTO_ADD_RULE.FOR.FROM:
 						fromAddressToAdd = fromAddress;
 						break;
-					case 1: // subdomain
+					case PREF.POLICY.SIGN_RULES.AUTO_ADD_RULE.FOR.SUBDOMAIN:
 						fromAddressToAdd = "*"+fromAddress.substr(fromAddress.lastIndexOf("@"));
 						break;
-					case 2: // base domain
+					case PREF.POLICY.SIGN_RULES.AUTO_ADD_RULE.FOR.BASE_DOMAIN:
 						domain = getBaseDomainFromAddr(fromAddress);
 						fromAddressToAdd = "*";
 						break;
 					default:
 						throw new DKIM_InternalError("invalid signRules.autoAddRule.for");
 				}
-				yield addRule(domain, fromAddressToAdd, sdid, "ALL", "AUTOINSERT_RULE_ALL");
+				await addRule(domain, fromAddressToAdd, sdid, "ALL", "AUTOINSERT_RULE_ALL");
 			}
 			
 			log.trace("signedBy Task end");
-		});
+		})();
 		promise.then(null, function onReject(exception) {
 			// Failure!  We can inspect or report the exception.
-			log.fatal(exceptionToStr(exception));
+			log.fatal(exception);
 		});
 		return promise;
 	},
@@ -502,22 +506,22 @@ var Policy = {
 	 * 
 	 * @param {String} fromAddress
 	 * 
-	 * @return {Promise<Undefined>}
+	 * @return {Promise<void>}
 	 */
 	addUserException: function Policy_addUserException(fromAddress) {
 		"use strict";
 
-		var promise = Task.spawn(function () {
+		var promise = (async () => {
 			log.trace("addUserException Task begin");
 			
 			var domain = getBaseDomainFromAddr(fromAddress);
 			
 			// wait for DB init
-			yield Policy.initDB();
-			var conn = yield Sqlite.openConnection({path: DB_POLICY_NAME});
+			await Policy.initDB();
+			var conn = await Sqlite.openConnection({path: DB_POLICY_NAME});
 
 			try {
-				var sqlRes = yield conn.executeCached(
+				var sqlRes = await conn.executeCached(
 					"SELECT addr, sdid, ruletype, priority, enabled\n" +
 					"FROM signers WHERE\n" +
 					"  lower(domain) = lower(:domain) AND\n" +
@@ -534,34 +538,81 @@ var Policy = {
 					}
 				);
 				if (sqlRes.length === 0) {
-					yield addRule(null, fromAddress, "", "NEUTRAL", "USERINSERT_RULE_NEUTRAL");
+					await addRule(null, fromAddress, "", "NEUTRAL", "USERINSERT_RULE_NEUTRAL");
 				}
 			} finally {
-				yield conn.close();
+				await conn.close();
 			}
 			log.trace("addUserException Task end");
-		});
+		})();
 		promise.then(null, function onReject(exception) {
 			// Failure!  We can inspect or report the exception.
-			log.fatal(exceptionToStr(exception));
+			log.fatal(exception);
 		});
 		return promise;
+	},
+
+	/**
+	 * Adds a function, which is called if sign rules changed.
+	 * The handler function is called with the number of added rules
+	 * (negative if rules where removed) as an argument.
+	 * 
+	 * @param {Function} handler
+	 * @return {void}
+	 */
+	addRulesUpdatedObserver: function Policy_addRulesUpdatedListener(handler) {
+		"use strict";
+
+		rulesUpdatedObservers.push(handler);
+	},
+
+	/**
+	 * Removes the sign rules changed observer.
+	 * @param {Function} handler
+	 * @return {void}
+	 */
+	removeRulesUpdatedObserver: function Policy_addRulesUpdatedListener(handler) {
+		"use strict";
+
+		rulesUpdatedObservers = rulesUpdatedObservers.filter(function(item) {
+			if (item === handler) {
+				return false;
+			}
+			return true;
+		});
+	},
+
+	/**
+	 * Notify the sign rules changed observer.
+	 * 
+	 * @param {Number} count Number of rules added
+	 * @return {void}
+	 */
+	rulesUpdated: function Policy_rulesUpdated(count) {
+		"use strict";
+
+		rulesUpdatedObservers.forEach(function(observer) {
+			if (observer) {
+				observer(count);
+			} else {
+				log.error("observer undefined/null");
+			}
+		});
 	},
 };
 
 /**
  * Adds rule.
- * Generator function.
  * 
- * @param {String|Null} domain
+ * @param {String|null|undefined} domain
  * @param {String} addr
  * @param {String} sdid
  * @param {String} ruletype
  * @param {String} priority
  * 
- * @return {Promise<Undefined>}
+ * @return {Promise<void>}
  */
-function addRule(domain, addr, sdid, ruletype, priority) {
+async function addRule(domain, addr, sdid, ruletype, priority) {
 	"use strict";
 
 	log.trace("addRule begin");
@@ -571,14 +622,14 @@ function addRule(domain, addr, sdid, ruletype, priority) {
 	}
 
 	// wait for DB init
-	yield Policy.initDB();
-	var conn = yield Sqlite.openConnection({path: DB_POLICY_NAME});
+	await Policy.initDB();
+	var conn = await Sqlite.openConnection({path: DB_POLICY_NAME});
 	
 	try {
 		log.debug("add rule (domain: "+domain+", addr: "+addr+", sdid: "+sdid+
 			", ruletype: "+ruletype+", priority: "+priority+", enabled: 1)"
 		);
-		yield conn.executeCached(
+		await conn.executeCached(
 			"INSERT INTO signers (domain, addr, sdid, ruletype, priority, enabled)\n" +
 			"VALUES (:domain, :addr, :sdid, :ruletype, :priority, 1);",
 			{
@@ -590,14 +641,16 @@ function addRule(domain, addr, sdid, ruletype, priority) {
 			}
 		);
 	} finally {
-		yield conn.close();
+		await conn.close();
 	}
+	Policy.rulesUpdated(1);
 
 	log.trace("addRule end");
 }
 
 /**
  * init module
+ * @return {void}
  */
 function init() {
 	"use strict";

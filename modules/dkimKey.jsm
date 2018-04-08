@@ -1,9 +1,9 @@
 /*
  * dkimKey.jsm
  * 
- * Version: 1.1.0 (17 May 2016)
+ * Version: 1.2.0pre1 (14 November 2017)
  * 
- * Copyright (c) 2013-2016 Philippe Lieser
+ * Copyright (c) 2013-2017 Philippe Lieser
  * 
  * This software is licensed under the terms of the MIT License.
  * 
@@ -11,30 +11,25 @@
  * included in all copies or substantial portions of the Software.
  */
 
-// options for JSHint
-/* jshint strict:true, moz:true */
-/* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
-/* global Components, Services, Sqlite, Task, Promise */
-/* global ModuleGetter, Logging, DNS */
-/* global exceptionToStr, DKIM_SigError, DKIM_InternalError */
+// options for ESLint
+/* eslint strict: ["warn", "function"] */
+/* global Components, Services, Sqlite */
+/* global Logging, DNS */
+/* global Deferred, DKIM_SigError, DKIM_InternalError, PREF */
 /* exported EXPORTED_SYMBOLS, Key */
 
-const module_version = "1.1.0";
+// @ts-ignore
+const module_version = "1.2.0pre1";
 
 var EXPORTED_SYMBOLS = [
 	"Key"
 ];
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
+// @ts-ignore
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
-Cu.import("resource://gre/modules/Task.jsm"); // Requires Gecko 17.0
-
-Cu.import("resource://dkim_verifier/ModuleGetter.jsm");
-ModuleGetter.getPromise(this);
-ModuleGetter.getSqlite(this);
+Cu.import("resource://gre/modules/Sqlite.jsm");
 
 Cu.import("resource://dkim_verifier/logging.jsm");
 Cu.import("resource://dkim_verifier/helper.jsm");
@@ -45,14 +40,18 @@ Cu.import("resource://dkim_verifier/DNSWrapper.jsm");
  * @public
  */
 const KEY_DB_NAME = "dkimKey.sqlite";
+// @ts-ignore
 const PREF_BRANCH = "extensions.dkim_verifier.key.";
 
 
+// @ts-ignore
 var prefs = Services.prefs.getBranch(PREF_BRANCH);
+// @ts-ignore
 var log = Logging.getLogger("Key");
 var dbInitialized = false;
 // Deferred<boolean>
-var dbInitializedDefer = Promise.defer();
+/** @type {IDeferred<boolean>} */
+var dbInitializedDefer = new Deferred();
 
 var Key = {
 	get version() { "use strict"; return module_version; },
@@ -71,39 +70,42 @@ var Key = {
 		}
 		dbInitialized = true;
 
-		var promise = Task.spawn(function () {
+		var promise = (async () => {
 			log.trace("initDB Task begin");
-			
+
 			Logging.addAppenderTo("Sqlite.Connection."+KEY_DB_NAME, "sql.");
 			
-			var conn = yield Sqlite.openConnection({path: KEY_DB_NAME});
+			var conn = await Sqlite.openConnection({path: KEY_DB_NAME});
 
 			try {
 				// get version numbers
-				yield conn.execute(
+				await conn.execute(
 					"CREATE TABLE IF NOT EXISTS version (\n" +
 					"  name TEXT PRIMARY KEY NOT NULL,\n" +
 					"  version INTEGER NOT NULL\n" +
 					");"
 				);
-				var sqlRes = yield conn.execute(
+				var sqlRes = await conn.execute(
 					"SELECT * FROM version;"
 				);
+				const TABLE_KEYS_VERSION_CURRENT = 1;
 				var versionTableKeys = 0;
 				sqlRes.forEach(function(element/*, index, array*/){
 					switch(element.getResultByName("name")) {
 						case "TableKeys":
 							versionTableKeys = element.getResultByName("version");
 							break;
+						default:
+							log.warn("Version table contains unknown entry: " + element.getResultByName("name"));
 					}
 				});
 				log.trace("versionTableKeys: "+versionTableKeys);
 
 				// table keys
-				if (versionTableKeys < 1) {
+				if (versionTableKeys < TABLE_KEYS_VERSION_CURRENT) {
 					log.trace("create table keys");
 					// create table
-					yield conn.execute(
+					await conn.execute(
 						"CREATE TABLE IF NOT EXISTS keys (\n" +
 						"  SDID TEXT NOT NULL,\n" +
 						"  selector TEXT NOT NULL,\n" +
@@ -114,26 +116,26 @@ var Key = {
 						");"
 					);
 					// add version number
-					yield conn.execute(
+					await conn.execute(
 						"INSERT INTO version (name, version)" +
 						"VALUES ('TableKeys', 1);"
 					);
 					versionTableKeys = 1;
-				} else if (versionTableKeys !== 1) {
+				} else if (versionTableKeys !== TABLE_KEYS_VERSION_CURRENT) {
 						throw new DKIM_InternalError("unsupported versionTableKeys");
 				}
 			} finally {
-				yield conn.close();
+				await conn.close();
 			}
 			
 			dbInitializedDefer.resolve(true);
 			log.debug("DB initialized");
 			log.trace("initDB Task end");
-			throw new Task.Result(true);
-		});
+			return true;
+		})();
 		promise.then(null, function onReject(exception) {
 			// Failure!  We can inspect or report the exception.
-			log.fatal(exceptionToStr(exception));
+			log.fatal(exception);
 			dbInitializedDefer.reject(exception);
 		});
 		return dbInitializedDefer.promise;
@@ -158,54 +160,51 @@ var Key = {
 	 * 
 	 * @throws {DKIM_SigError|DKIM_InternalError}
 	 */
-	getKey: function Key_getKey(d_val, s_val) {
+	getKey: async function Key_getKey(d_val, s_val) {
 		"use strict";
 
-		var promise = Task.spawn(function () {
-			log.trace("getKey Task begin");
+		log.trace("getKey Task begin");
 
-			var res={};
-			var tmp;
-			
-			switch (prefs.getIntPref("storing")) {
-				case 0: // don't store DKIM keys
-					tmp = yield getKeyFromDNS(d_val, s_val);
-					res.gotFrom = "DNS";
-					break;
-				case 1: // store DKIM keys
-					tmp = yield getKeyFromDB(d_val, s_val);
-					if (tmp) {
-						res.gotFrom = "Storage";
-					} else {
-						tmp =  yield getKeyFromDNS(d_val, s_val);
-						res.gotFrom = "DNS";
-						setKeyInDB(d_val, s_val, tmp.key, tmp.secure);
-					}
-					break;
-				case 2: // store DKIM keys and compare with current key
-					var keyDB = yield getKeyFromDB(d_val, s_val);
-					tmp = yield getKeyFromDNS(d_val, s_val);
-					res.gotFrom = "DNS";
-					if (keyDB) {
-						if (keyDB.key !== tmp.key) {
-							throw new DKIM_SigError("DKIM_POLICYERROR_KEYMISMATCH");
-						}
-						tmp.secure = tmp.secure || keyDB.secure;
-					} else {
-						setKeyInDB(d_val, s_val, tmp.key, tmp.secure);
-					}
-					break;
-				default:
-					throw new DKIM_InternalError("invalid key.storing setting");
-			}
-			res.key = tmp.key;
-			res.secure = tmp.secure;
-
-			log.trace("getKey Task begin");
-			throw new Task.Result(res);
-		});
+		/** @type {dkimKeyResult} */
+		var res={};
+		var tmp;
 		
-		return promise;
+		switch (prefs.getIntPref("storing")) {
+			case PREF.KEY.STORING.DISABLED: // don't store DKIM keys
+				tmp = await getKeyFromDNS(d_val, s_val);
+				res.gotFrom = "DNS";
+				break;
+			case PREF.KEY.STORING.STORE: // store DKIM keys
+				tmp = await getKeyFromDB(d_val, s_val);
+				if (tmp) {
+					res.gotFrom = "Storage";
+				} else {
+					tmp = await getKeyFromDNS(d_val, s_val);
+					res.gotFrom = "DNS";
+					setKeyInDB(d_val, s_val, tmp.key, tmp.secure);
+				}
+				break;
+			case PREF.KEY.STORING.COMPARE: // store DKIM keys and compare with current key
+				var keyDB = await getKeyFromDB(d_val, s_val);
+				tmp = await getKeyFromDNS(d_val, s_val);
+				res.gotFrom = "DNS";
+				if (keyDB) {
+					if (keyDB.key !== tmp.key) {
+						throw new DKIM_SigError("DKIM_POLICYERROR_KEYMISMATCH");
+					}
+					tmp.secure = tmp.secure || keyDB.secure;
+				} else {
+					setKeyInDB(d_val, s_val, tmp.key, tmp.secure);
+				}
+				break;
+			default:
+				throw new DKIM_InternalError("invalid key.storing setting");
+		}
+		res.key = tmp.key;
+		res.secure = tmp.secure;
+
+		log.trace("getKey Task begin");
+		return res;
 	},
 	
 	/**
@@ -214,35 +213,34 @@ var Key = {
 	 * @param {String} d_val domain of the Signer
 	 * @param {String} s_val selector
 	 * 
-	 * @return {Promise<Undefined>}
+	 * @return {Promise<void>}
 	 */
 	deleteKey: function Key_deleteKey(d_val, s_val) {
 		"use strict";
 
-		var promise = Task.spawn(function () {
+		var promise = (async () => {
 			log.trace("deleteKey Task begin");
 			
 			// wait for DB init
-			yield Key.initDB();
-			var conn = yield Sqlite.openConnection({path: KEY_DB_NAME});
+			await Key.initDB();
+			var conn = await Sqlite.openConnection({path: KEY_DB_NAME});
 			
-			var sqlRes;
 			try {
-				sqlRes = yield conn.executeCached(
+				await conn.executeCached(
 					"DELETE FROM keys\n" +
 					"WHERE SDID = :SDID AND  selector = :selector;",
 					{SDID:d_val, selector: s_val}
 				);
 				log.debug("deleted key ("+d_val+", "+s_val+")");
 			} finally {
-				yield conn.close();
+				await conn.close();
 			}
 			
 			log.trace("deleteKey Task end");
-		});
+		})();
 		promise.then(null, function onReject(exception) {
 			// Failure!  We can inspect or report the exception.
-			log.fatal(exceptionToStr(exception));
+			log.fatal(exception);
 		});
 		
 		return promise;
@@ -254,35 +252,34 @@ var Key = {
 	 * @param {String} d_val domain of the Signer
 	 * @param {String} s_val selector
 	 * 
-	 * @return {Promise<Undefined>}
+	 * @return {Promise<void>}
 	 */
 	markKeyAsSecure: function Key_markKeyAsSecure(d_val, s_val) {
 		"use strict";
 
-		var promise = Task.spawn(function () {
+		var promise = (async () => {
 			log.trace("markKeyAsSecure Task begin");
 			
 			// wait for DB init
-			yield Key.initDB();
-			var conn = yield Sqlite.openConnection({path: KEY_DB_NAME});
+			await Key.initDB();
+			var conn = await Sqlite.openConnection({path: KEY_DB_NAME});
 			
-			var sqlRes;
 			try {
-				sqlRes = yield conn.executeCached(
+				await conn.executeCached(
 					"UPDATE keys SET secure = 1\n" +
 					"WHERE SDID = :SDID AND  selector = :selector;",
 					{SDID:d_val, selector: s_val}
 				);
 				log.debug("updated key ("+d_val+", "+s_val+") to secure");
 			} finally {
-				yield conn.close();
+				await conn.close();
 			}
 			
 			log.trace("markKeyAsSecure Task end");
-		});
+		})();
 		promise.then(null, function onReject(exception) {
 			// Failure!  We can inspect or report the exception.
-			log.fatal(exceptionToStr(exception));
+			log.fatal(exception);
 		});
 		
 		return promise;
@@ -295,34 +292,32 @@ var Key = {
  * @param {String} d_val domain of the Signer
  * @param {String} s_val selector
  * 
- * @return {Promise<Object{key, secure}>}
+ * @return {Promise<{key: string, secure: boolean}>}
  * 
  * @throws {DKIM_SigError|DKIM_InternalError}
  */
-function getKeyFromDNS(d_val, s_val) {
+async function getKeyFromDNS(d_val, s_val) {
 	"use strict";
 
-	var promise = Task.spawn(function () {
-		log.trace("getKeyFromDNS Task begin");
-		
-		// get the DKIM key
-		var result = yield DNS.resolve(s_val+"._domainkey."+d_val, "TXT");
-		
-		if (result.bogus) {
-			throw new DKIM_InternalError(null, "DKIM_DNSERROR_DNSSEC_BOGUS");
-		}
-		if (result.rcode !== 0 && result.rcode !== 3 /* NXDomain */) {
-			throw new DKIM_InternalError(result.error, "DKIM_DNSERROR_SERVER_ERROR");
-		}
-		if (result.data === null || result.data[0] === "") {
-			throw new DKIM_SigError("DKIM_SIGERROR_NOKEY");
-		}
-
-		log.trace("getKeyFromDNS Task end");
-		throw new Task.Result({key: result.data[0], secure: result.secure});
-	});
+	log.trace("getKeyFromDNS Task begin");
 	
-	return promise;
+	// get the DKIM key
+	var result = await DNS.resolve(s_val+"._domainkey."+d_val, "TXT");
+	
+	if (result.bogus) {
+		throw new DKIM_InternalError(null, "DKIM_DNSERROR_DNSSEC_BOGUS");
+	}
+	if (result.rcode !== DNS.RCODE.NoError && result.rcode !== DNS.RCODE.NXDomain) {
+		log.info("DNS query failed with result: " + result.toSource());
+		throw new DKIM_InternalError("rcode: " + result.rcode,
+			"DKIM_DNSERROR_SERVER_ERROR");
+	}
+	if (result.data === null || result.data[0] === "") {
+		throw new DKIM_SigError("DKIM_SIGERROR_NOKEY");
+	}
+
+	log.trace("getKeyFromDNS Task end");
+	return {key: result.data[0], secure: result.secure};
 }
 
 /**
@@ -331,54 +326,51 @@ function getKeyFromDNS(d_val, s_val) {
  * @param {String} d_val domain of the Signer
  * @param {String} s_val selector
  * 
- * @return {Promise<Object{key, secure}|Null>} The Key if it's in the DB; null otherwise
+ * @return {Promise<{key: string, secure:boolean}|Null>} The Key if it's in the DB; null otherwise
  */
-function getKeyFromDB(d_val, s_val) {
+async function getKeyFromDB(d_val, s_val) {
 	"use strict";
 
-	var promise = Task.spawn(function () {
-		log.trace("getKeyFromDB Task begin");
-		
-		// wait for DB init
-		yield Key.initDB();
-		var conn = yield Sqlite.openConnection({path: KEY_DB_NAME});
-		
-		var sqlRes;
-		var res = null;
-		try {
-			sqlRes = yield conn.executeCached(
-				"SELECT key, secure\n" +
-				"FROM keys WHERE\n" +
+	log.trace("getKeyFromDB Task begin");
+	
+	// wait for DB init
+	await Key.initDB();
+	var conn = await Sqlite.openConnection({path: KEY_DB_NAME});
+	
+	var sqlRes;
+	var res = null;
+	try {
+		sqlRes = await conn.executeCached(
+			"SELECT key, secure\n" +
+			"FROM keys WHERE\n" +
+			"  SDID = :SDID AND\n" +
+			"  selector = :selector\n" +
+			"ORDER BY insertedAt DESC\n" +
+			"LIMIT 1;",
+			{SDID:d_val, selector: s_val}
+		);
+
+		if (sqlRes.length > 0) {
+			res = {
+				key: sqlRes[0].getResultByName("key"),
+				secure: sqlRes[0].getResultByName("secure") === 1,
+			};
+			await conn.executeCached(
+				"UPDATE keys\n" +
+				"SET lastUsedAt = DATE('now') WHERE\n" +
 				"  SDID = :SDID AND\n" +
 				"  selector = :selector\n" +
-				"ORDER BY insertedAt DESC\n" +
-				"LIMIT 1;",
+				";",
 				{SDID:d_val, selector: s_val}
 			);
-
-			if (sqlRes.length > 0) {
-				res = {};
-				res.key = sqlRes[0].getResultByName("key");
-				res.secure = (sqlRes[0].getResultByName("secure") === 1);
-				conn.executeCached(
-					"UPDATE keys\n" +
-					"SET lastUsedAt = DATE('now') WHERE\n" +
-					"  SDID = :SDID AND\n" +
-					"  selector = :selector\n" +
-					";",
-					{SDID:d_val, selector: s_val}
-				);
-				log.debug("got key from DB");
-			}
-		} finally {
-			yield conn.close();
+			log.debug("got key from DB");
 		}
-		
-		log.trace("getKeyFromDB Task end");
-		throw new Task.Result(res);
-	});
+	} finally {
+		await conn.close();
+	}
 	
-	return promise;
+	log.trace("getKeyFromDB Task end");
+	return res;
 }
 
 /**
@@ -389,35 +381,34 @@ function getKeyFromDB(d_val, s_val) {
  * @param {String} key DKIM key
  * @param {Boolean} secure
  * 
- * @return {Promise<Undefined>}
+ * @return {Promise<void>}
  */
 function setKeyInDB(d_val, s_val, key, secure) {
 	"use strict";
 
-	var promise = Task.spawn(function () {
+	var promise = (async () => {
 		log.trace("setKeyInDB Task begin");
 		
 		// wait for DB init
-		yield Key.initDB();
-		var conn = yield Sqlite.openConnection({path: KEY_DB_NAME});
+		await Key.initDB();
+		var conn = await Sqlite.openConnection({path: KEY_DB_NAME});
 		
-		var sqlRes;
 		try {
-			sqlRes = yield conn.executeCached(
+			await conn.executeCached(
 				"INSERT INTO keys (SDID, selector, key, insertedAt, lastUsedAt, secure)" +
 				"VALUES (:SDID, :selector, :key, DATE('now'), DATE('now'),:secure);",
 				{SDID:d_val, selector: s_val, key: key, secure: secure}
 			);
 			log.debug("inserted key into DB");
 		} finally {
-			yield conn.close();
+			await conn.close();
 		}
 		
 		log.trace("setKeyInDB Task end");
-	});
+	})();
 	promise.then(null, function onReject(exception) {
 		// Failure!  We can inspect or report the exception.
-		log.fatal(exceptionToStr(exception));
+		log.fatal(exception);
 	});
 	
 	return promise;
@@ -425,11 +416,12 @@ function setKeyInDB(d_val, s_val, key, secure) {
 
 /**
  * init
+ * @return {void}
  */
 function init() {
 	"use strict";
 
-	if (prefs.getIntPref("storing")>0) {
+	if (prefs.getIntPref("storing") > PREF.KEY.STORING.DISABLED) {
 		Key.initDB();
 	}
 }

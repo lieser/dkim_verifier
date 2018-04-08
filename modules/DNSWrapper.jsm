@@ -5,9 +5,9 @@
  *  - JSDNS.jsm
  *  - libunbound.jsm
  * 
- * Version: 2.2.1 (10 November 2016)
+ * Version: 2.3.0pre1 (14 November 2017)
  * 
- * Copyright (c) 2013-2016 Philippe Lieser
+ * Copyright (c) 2013-2017 Philippe Lieser
  * 
  * This software is licensed under the terms of the MIT License.
  * 
@@ -15,67 +15,66 @@
  * included in all copies or substantial portions of the Software.
  */
 
-// options for JSHint
-/* jshint strict:true, moz:true */
-/* jshint unused:true */ // allow unused parameters that are followed by a used parameter.
-/* global Components, Services, Task, Promise, XPCOMUtils */
-/* global ModuleGetter, Logging, JSDNS, libunbound */
+// options for ESLint
+/* global Components, Services, XPCOMUtils */
+/* global Logging, PREF, JSDNS, libunbound */
 /* exported EXPORTED_SYMBOLS, DNS */
 
 "use strict";
 
-const module_version = "2.2.1";
+// @ts-ignore
+const module_version = "2.3.0pre1";
 
 var EXPORTED_SYMBOLS = [
 	"DNS"
 ];
 
-const Cc = Components.classes;
-const Ci = Components.interfaces;
+// @ts-ignore
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
-Cu.import("resource://gre/modules/Task.jsm"); // Requires Gecko 17.0
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 
-Cu.import("resource://dkim_verifier/ModuleGetter.jsm");
-ModuleGetter.getPromise(this);
-
 Cu.import("resource://dkim_verifier/logging.jsm");
-XPCOMUtils.defineLazyModuleGetter(this, "JSDNS",
+Cu.import("resource://dkim_verifier/helper.jsm");
+XPCOMUtils.defineLazyModuleGetter(this, "JSDNS", // eslint-disable-line no-invalid-this
 	"resource://dkim_verifier/JSDNS.jsm");
-XPCOMUtils.defineLazyModuleGetter(this, "libunbound",
+XPCOMUtils.defineLazyModuleGetter(this, "libunbound", // eslint-disable-line no-invalid-this
 	"resource://dkim_verifier/libunbound.jsm");
 
 
+// @ts-ignore
 const PREF_BRANCH = "extensions.dkim_verifier.dns.";
 
 
+// @ts-ignore
 var prefs = Services.prefs.getBranch(PREF_BRANCH);
+// @ts-ignore
 var log = Logging.getLogger("DNSWrapper");
+
+/**
+ * The result of the query.
+ * 
+ * @typedef {Object} DNSResult
+ * @property {Object[]|Null} data Array of rdata items, or null if error or no entry in DNS
+ * @property {Number} rcode DNS error code
+ * @property {Boolean} secure true if result is secure.
+ * @property {Boolean} bogus true if a security failure happened.
+ */
+
+const RCODE = {
+	NoError: 0, // No Error [RFC1035]
+	FormErr: 1, // Format Error [RFC1035]
+	ServFail: 2, // Server Failure [RFC1035]
+	NXDomain: 3, // Non-Existent Domain [RFC1035]
+	NotImp: 4, // Non-Existent Domain [RFC1035]
+	Refused: 5, // Query Refused [RFC1035]
+};
 
 var DNS = {
 	get version() {return module_version; },
 
-	/**
-	 * The result of the query.
-	 * 
-	 * @typedef {Object} DNSResult
-	 * @property {Object[]|Null} data Array of rdata items, or null if error or no entry in DNS
-	 * @property {Number} rcode DNS error code
-	 * @property {Boolean} secure true if result is secure.
-	 * @property {Boolean} bogus true if a security failure happened.
-	 */
-	
-	/*
-	 * some DNS rcodes:
-	 *   0  NoError   No Error [RFC1035]
-	 *   1  FormErr   Format Error [RFC1035]
-	 *   2  ServFail  Server Failure [RFC1035]
-	 *   3  NXDomain  Non-Existent Domain [RFC1035]
-	 *   4  NotImp    Not Implemented [RFC1035]
-	 *   5  Refused   Query Refused [RFC1035]
-	 */
+	get RCODE() {return RCODE; },
 
 	/**
 	 * Perform resolution of the target name.
@@ -85,74 +84,74 @@ var DNS = {
 	 * 
 	 * @return {Promise<DNSResult>}
 	 */
-	resolve: function DNS_resolve(name, rrtype="A") {
-		let defer = Promise.defer();
-
-		Task.spawn(function () {
-			log.trace("DNS_resolve Task begin");
-			
-			switch (prefs.getIntPref("resolver")) {
-				case 1:
-					JSDNS.queryDNS(name, rrtype, dnsCallback, defer);
-					break;
-				case 2:
-					let res = yield libunbound.
-						resolve(name, libunbound.Constants["RR_TYPE_"+rrtype]);
-					let result = {};
-					if (res !== null) {
-						if (res.havedata) {
-							result.data = res.data;
-						} else {
-							result.data = null;
-						}
-						result.rcode = res.rcode;
-						result.secure = res.secure;
-						result.bogus = res.bogus;
+	resolve: async function DNS_resolve(name, rrtype="A") {
+		switch (prefs.getIntPref("resolver")) {
+			case PREF.DNS.RESOLVER.JSDNS:
+				return asyncJSDNS_QueryDNS(name, rrtype);
+			case PREF.DNS.RESOLVER.LIBUNBOUND: {
+				let res = await libunbound.
+					resolve(name, libunbound.Constants["RR_TYPE_"+rrtype]);
+				/** @type {DNSResult} */
+				let result = {};
+				if (res !== null) {
+					if (res.havedata) {
+						result.data = res.data;
 					} else {
-						// error in libunbound
 						result.data = null;
-						result.rcode = 2; // ServFail
-						result.secure = false;
-						result.bogus = false;
 					}
+					result.rcode = res.rcode;
+					result.secure = res.secure;
+					result.bogus = res.bogus;
+				} else {
+					// error in libunbound
+					result.data = null;
+					result.rcode = RCODE.ServFail;
+					result.secure = false;
+					result.bogus = false;
+				}
 
-					log.debug("result: "+result.toSource());
-					defer.resolve(result);
-					break;
-				default:
-					throw new Error("invalid resolver preference");
+				log.debug("result: "+result.toSource());
+				return result;
 			}
-
-			log.trace("DNS_resolve Task end");
-		}).then(null, function onReject(exception) {
-			// Failure!  We can inspect or report the exception.
-			defer.reject(exception);
-		});
-		
-		return defer.promise;
+			default:
+				throw new Error("invalid resolver preference");
+		}
 	},
 };
 
+
 /**
- * callback for the dns result of JSDNS.jsm
+ * Promise wrapper for the dns result of JSDNS.jsm
+ * @param {string} name
+ * @param {string} rrtype
+ * @return {Promise<DNSResult>}
  */
-function dnsCallback(dnsResult, defer, queryError, rcode) {
-	log.trace("dnsCallback begin");
-
-	let result = {};
-	result.data = dnsResult;
-	if (rcode !== undefined) {
-		result.rcode = rcode;
-	} else if (queryError !== undefined) {
-		result.rcode = 2; // ServFail
-	} else {
-		result.rcode = 0; // NoError
+function asyncJSDNS_QueryDNS(name, rrtype) {
+	function dnsCallback(dnsResult, defer, queryError, rcode) {
+		try {
+			log.trace("dnsCallback begin");
+			
+			let result = {};
+			result.data = dnsResult;
+			if (rcode !== undefined) {
+				result.rcode = rcode;
+			} else if (queryError !== undefined) {
+				result.rcode = RCODE.ServFail;
+			} else {
+				result.rcode = RCODE.NoError;
+			}
+			result.secure = false;
+			result.bogus = false;
+			
+			log.debug("result: "+result.toSource());
+			defer.resolve(result);
+		
+			log.trace("dnsCallback end");
+		} catch (e) {
+			defer.reject(e);
+		}
 	}
-	result.secure = false;
-	result.bogus = false;
-	
-	log.debug("result: "+result.toSource());
-	defer.resolve(result);
 
-	log.trace("dnsCallback end");
+	return new Promise((resolve, reject) => JSDNS.queryDNS(
+		name, rrtype, dnsCallback, {resolve: resolve, reject: reject}));
 }

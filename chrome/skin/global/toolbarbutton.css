@@ -1,0 +1,10 @@
+@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+
+#dkim_verifier-button {
+    list-style-image: url("chrome://dkim_verifier/skin/icons/icon_32.png");
+    max-height: 24px;
+} toolbar[iconsize="small"]
+
+#dkim_verifier-button {
+    list-style-image: url("chrome://dkim_verifier/skin/icons/icon.png");
+}
