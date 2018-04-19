@@ -3,9 +3,9 @@
  * 
  * Implements a nsITreeView for a SQLite DB table.
  *
- * Version: 1.1.0pre1 (31 March 2018)
+ * Version: 1.1.0 (31 March 2018)
  * 
- * Copyright (c) 2013-2017 Philippe Lieser
+ * Copyright (c) 2013-2018 Philippe Lieser
  * 
  * This software is licensed under the terms of the MIT License.
  * 

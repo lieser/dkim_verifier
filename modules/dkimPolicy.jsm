@@ -1,9 +1,9 @@
 /*
  * dkimPolicy.jsm
  * 
- * Version: 1.4.0pre1 (31 March 2018)
+ * Version: 1.4.0 (01 April 2018)
  * 
- * Copyright (c) 2013-2017 Philippe Lieser
+ * Copyright (c) 2013-2018 Philippe Lieser
  * 
  * This software is licensed under the terms of the MIT License.
  * 
@@ -19,7 +19,7 @@
 /* exported EXPORTED_SYMBOLS, Policy */
 
 // @ts-ignore
-const module_version = "1.4.0pre1";
+const module_version = "1.4.0";
 
 var EXPORTED_SYMBOLS = [
 	"Policy"

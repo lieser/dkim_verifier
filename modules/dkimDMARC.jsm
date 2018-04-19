@@ -6,9 +6,9 @@
  *
  * This module is NOT conform to DMARC.
  *
- * Version: 1.1.0pre1 (14 November 2017)
+ * Version: 1.1.0 (28 January 2018)
  * 
- * Copyright (c) 2014-2017 Philippe Lieser
+ * Copyright (c) 2014-2018 Philippe Lieser
  * 
  * This software is licensed under the terms of the MIT License.
  * 
@@ -24,7 +24,7 @@
 /* exported EXPORTED_SYMBOLS, DMARC */
 
 // @ts-ignore
-const module_version = "1.1.0pre1";
+const module_version = "1.1.0";
 
 var EXPORTED_SYMBOLS = [
 	"DMARC"

@@ -1,9 +1,9 @@
 /*
  * helper.jsm
  *
- * Version: 2.0.0pre1 (30 December 2017)
+ * Version: 2.0.0 (01 April 2018)
  * 
- * Copyright (c) 2013-2017 Philippe Lieser
+ * Copyright (c) 2013-2018 Philippe Lieser
  * 
  * This software is licensed under the terms of the MIT License.
  * 
@@ -299,7 +299,7 @@ function stringEqual(str1, str2) {
  * try to get string from stringbundle
  * 
  * @param {Stringbundle} stringbundle
- * @param {String} name
+ * @param {string|undefined} name
  * 
  * @return {String|null}
  */
@@ -388,8 +388,6 @@ class DKIM_SigError extends Error {
 	 * 
 	 * @param {String} errorType
 	 * @param {any[]} [errorStrParams]
-	 * 
-	 * @return {DKIM_SigError}
 	 */
 	constructor(errorType, errorStrParams = []) {
 		super(tryGetFormattedString(dkimStrings, errorType, errorStrParams) ||
@@ -413,8 +411,6 @@ class DKIM_InternalError extends Error {
 	 * 
 	 * @param {String|null} [message]
 	 * @param {String} [errorType]
-	 * 
-	 * @return {DKIM_InternalError}
 	 */
 	constructor(message, errorType) {
 		super(message ||

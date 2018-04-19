@@ -1,4 +1,4 @@
-2.0.0pre4 [2018-04-01]
+2.0.0 [2018-04-19]
 ------------------
  - now requires at least Thunderbird 52
  - added toolbar button and menuitem for sign rules

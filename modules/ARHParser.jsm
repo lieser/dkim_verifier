@@ -3,7 +3,7 @@
  * 
  * Parser for the Authentication-Results header as specified in RFC 7601.
  *
- * Version: 1.2.0pre1 (31 March 2018)
+ * Version: 1.2.0 (01 April 2018)
  * 
  * Copyright (c) 2014-2018 Philippe Lieser
  * 
@@ -21,7 +21,7 @@
 "use strict";
 
 // @ts-ignore
-const module_version = "1.1.1";
+const module_version = "1.2.0";
 
 var EXPORTED_SYMBOLS = [
 	"ARHParser"
