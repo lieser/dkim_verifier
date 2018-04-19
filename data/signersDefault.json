@@ -1,6 +1,6 @@
 {
 	"versionTable": 1,
-	"versionData": 19,
+	"versionData": 20,
 	"rules": [
 		{
 			"domain": "1und1.de",
@@ -576,6 +576,12 @@
 			"domain": "tk.de",
 			"addr": "*",
 			"sdid": "tk.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "trello.com",
+			"addr": "*",
+			"sdid": "trello.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
