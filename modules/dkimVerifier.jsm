@@ -150,8 +150,20 @@ var Verifier = (function() {
 	"use strict";
 	
 	// set hash funktions used by rsasign-1.2.js
-	RSA._RSASIGN_HASHHEXFUNC.sha1 = function(s){return dkim_hash(s, "sha1", "hex");};
-	RSA._RSASIGN_HASHHEXFUNC.sha256 = function(s){return dkim_hash(s, "sha256", "hex");};
+	RSA.KJUR = {};
+	RSA.KJUR.crypto = {};
+	RSA.KJUR.crypto.Util = {};
+    RSA.KJUR.crypto.Util.DIGESTINFOHEAD = {
+		'sha1':      "3021300906052b0e03021a05000414",
+		'sha224':    "302d300d06096086480165030402040500041c",
+		'sha256':    "3031300d060960864801650304020105000420",
+		'sha384':    "3041300d060960864801650304020205000430",
+		'sha512':    "3051300d060960864801650304020305000440",
+		'md2':       "3020300c06082a864886f70d020205000410",
+		'md5':       "3020300c06082a864886f70d020505000410",
+		'ripemd160': "3021300906052b2403020105000414",
+	};
+	RSA.KJUR.crypto.Util.hashString = (s, algName) => dkim_hash(s, algName, "hex");
 
 /*
  * preferences
@@ -284,29 +296,29 @@ var Verifier = (function() {
 		let posKeyArray = null;
 
 		// check format by comparing the 1. child in the top element
-		posTopArray = RSA.ASN1HEX.getPosArrayOfChildren_AtObj(asnKey,0);
+		posTopArray = RSA.ASN1HEX.getChildIdx(asnKey,0);
 		if (posTopArray === null || posTopArray.length !== 2) {
 			throw new DKIM_SigError( "DKIM_SIGERROR_KEYDECODE" );
 		}
-		if (RSA.ASN1HEX.getHexOfTLV_AtObj(asnKey, posTopArray[0]) !==
+		if (RSA.ASN1HEX.getTLV(asnKey, posTopArray[0]) !==
 		    "300d06092a864886f70d0101010500") {
 			throw new DKIM_SigError( "DKIM_SIGERROR_KEYDECODE" );
 		}
 
 		// get pos of SEQUENCE under BIT STRING
 		// asn1hex does not support BIT STRING, so we will compute the position
-		let pos = RSA.ASN1HEX.getStartPosOfV_AtObj(asnKey, posTopArray[1]) + 2;
+		let pos = RSA.ASN1HEX.getVidx(asnKey, posTopArray[1]) + 2;
 
 		// get pos of modulus and publicExponent
-		posKeyArray = RSA.ASN1HEX.getPosArrayOfChildren_AtObj(asnKey, pos);
+		posKeyArray = RSA.ASN1HEX.getChildIdx(asnKey, pos);
 		if (posKeyArray === null || posKeyArray.length !== 2) {
 			throw new DKIM_SigError( "DKIM_SIGERROR_KEYDECODE" );
 		}
 
 		// get modulus
-		let m_hex = RSA.ASN1HEX.getHexOfV_AtObj(asnKey,posKeyArray[0]);
+		let m_hex = RSA.ASN1HEX.getV(asnKey,posKeyArray[0]);
 		// get public exponent
-		let e_hex = RSA.ASN1HEX.getHexOfV_AtObj(asnKey,posKeyArray[1]);
+		let e_hex = RSA.ASN1HEX.getV(asnKey,posKeyArray[1]);
 
 		// warning if key is short
 		if (m_hex.length * 4 < 1024) {
@@ -319,7 +331,7 @@ var Verifier = (function() {
 		rsa.setPublic(m_hex, e_hex);
 
 		// verify Signature
-		return rsa.verifyString(str, RSA.b64tohex(signature), keyInfo);
+		return rsa.verify(str, RSA.b64tohex(signature), keyInfo);
 	}
 
 	/**

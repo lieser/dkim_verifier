@@ -1,82 +1,31 @@
 /*
- * Original version 1.2.1 (08 May 2013)
  * Modified by Philippe Lieser for dkimVerifier.jsm
  *
  * Modifications:
- * since 1.0.0
- *  - _rsasign_verifyString returns algName via additional info param
- * since 0.3.3
- *  - added debug info to _rsasign_verifyString
+ *  - RSAKey.prototype.verify returns algName via additional info param
  */
 
-/*! rsasign-1.2.js (c) 2012 Kenji Urushima | kjur.github.com/jsrsasign/license
+/* rsasign-1.3.0.js (c) 2010-2017 Kenji Urushima | kjur.github.com/jsrsasign/license
  */
-//
-// rsa-sign.js - adding signing functions to RSAKey class.
-//
-//
-// version: 1.2.1 (08 May 2013)
-//
-// Copyright (c) 2010-2013 Kenji Urushima (kenji.urushima@gmail.com)
-//
-// This software is licensed under the terms of the MIT License.
-// http://kjur.github.com/jsrsasign/license/
-//
-// The above copyright and license notice shall be 
-// included in all copies or substantial portions of the Software.
-
-//
-// Depends on:
-//   function sha1.hex(s) of sha1.js
-//   jsbn.js
-//   jsbn2.js
-//   rsa.js
-//   rsa2.js
-//
-
-// keysize / pmstrlen
-//  512 /  128
-// 1024 /  256
-// 2048 /  512
-// 4096 / 1024
+/*
+ * rsa-sign.js - adding signing functions to RSAKey class.
+ *
+ * Copyright (c) 2010-2017 Kenji Urushima (kenji.urushima@gmail.com)
+ *
+ * This software is licensed under the terms of the MIT License.
+ * https://kjur.github.io/jsrsasign/license/
+ *
+ * The above copyright and license notice shall be 
+ * included in all copies or substantial portions of the Software.
+ */
 
 /**
  * @fileOverview
  * @name rsasign-1.2.js
  * @author Kenji Urushima kenji.urushima@gmail.com
- * @version 1.2.1
- * @license <a href="http://kjur.github.io/jsrsasign/license/">MIT License</a>
+ * @version jsrsasign 8.0.0 rsasign 1.3.0 (2017-Jun-28)
+ * @license <a href="https://kjur.github.io/jsrsasign/license/">MIT License</a>
  */
-
-/**
- * @property {Dictionary} _RSASIGN_DIHEAD
- * @description Array of head part of hexadecimal DigestInfo value for hash algorithms.
- * You can add any DigestInfo hash algorith for signing.
- * See PKCS#1 v2.1 spec (p38).
- */
-var _RSASIGN_DIHEAD = [];
-_RSASIGN_DIHEAD['sha1'] =      "3021300906052b0e03021a05000414";
-_RSASIGN_DIHEAD['sha256'] =    "3031300d060960864801650304020105000420";
-_RSASIGN_DIHEAD['sha384'] =    "3041300d060960864801650304020205000430";
-_RSASIGN_DIHEAD['sha512'] =    "3051300d060960864801650304020305000440";
-_RSASIGN_DIHEAD['md2'] =       "3020300c06082a864886f70d020205000410";
-_RSASIGN_DIHEAD['md5'] =       "3020300c06082a864886f70d020505000410";
-_RSASIGN_DIHEAD['ripemd160'] = "3021300906052b2403020105000414";
-
-/**
- * @property {Dictionary} _RSASIGN_HASHHEXFUNC
- * @description Array of functions which calculate hash and returns it as hexadecimal.
- * You can add any hash algorithm implementations.
- */
-var _RSASIGN_HASHHEXFUNC = [];
-_RSASIGN_HASHHEXFUNC['sha1'] =      function(s){return hex_sha1(s);};  // http://pajhome.org.uk/crypt/md5/md5.html
-_RSASIGN_HASHHEXFUNC['sha256'] =    function(s){return hex_sha256(s);} // http://pajhome.org.uk/crypt/md5/md5.html
-_RSASIGN_HASHHEXFUNC['sha512'] =    function(s){return hex_sha512(s);} // http://pajhome.org.uk/crypt/md5/md5.html
-_RSASIGN_HASHHEXFUNC['md5'] =       function(s){return hex_md5(s);};   // http://pajhome.org.uk/crypt/md5/md5.html
-_RSASIGN_HASHHEXFUNC['ripemd160'] = function(s){return hex_rmd160(s);};   // http://pajhome.org.uk/crypt/md5/md5.html
-
-//_RSASIGN_HASHHEXFUNC['sha1'] =   function(s){return sha1.hex(s);}   // http://user1.matsumoto.ne.jp/~goma/js/hash.html
-//_RSASIGN_HASHHEXFUNC['sha256'] = function(s){return sha256.hex;}    // http://user1.matsumoto.ne.jp/~goma/js/hash.html
 
 var _RE_HEXDECONLY = new RegExp("");
 _RE_HEXDECONLY.compile("[^0-9a-f]", "gi");
@@ -86,19 +35,10 @@ _RE_HEXDECONLY.compile("[^0-9a-f]", "gi");
 // ========================================================================
 
 function _rsasign_getHexPaddedDigestInfoForString(s, keySize, hashAlg) {
-    var pmStrLen = keySize / 4;
-    var hashFunc = _RSASIGN_HASHHEXFUNC[hashAlg];
+    var hashFunc = function(s) { return KJUR.crypto.Util.hashString(s, hashAlg); };
     var sHashHex = hashFunc(s);
 
-    var sHead = "0001";
-    var sTail = "00" + _RSASIGN_DIHEAD[hashAlg] + sHashHex;
-    var sMid = "";
-    var fLen = pmStrLen - sHead.length - sTail.length;
-    for (var i = 0; i < fLen; i += 2) {
-	sMid += "ff";
-    }
-    sPaddedMessageHex = sHead + sMid + sTail;
-    return sPaddedMessageHex;
+    return KJUR.crypto.Util.getPaddedDigestInfoHex(sHashHex, hashAlg, keySize);
 }
 
 function _zeroPaddingOfSignature(hex, bitLength) {
@@ -112,28 +52,36 @@ function _zeroPaddingOfSignature(hex, bitLength) {
 
 /**
  * sign for a message string with RSA private key.<br/>
- * @name signString
- * @memberOf RSAKey#
+ * @name sign
+ * @memberOf RSAKey
  * @function
  * @param {String} s message string to be signed.
  * @param {String} hashAlg hash algorithm name for signing.<br/>
  * @return returns hexadecimal string of signature value.
  */
-function _rsasign_signString(s, hashAlg) {
-    //alert("this.n.bitLength() = " + this.n.bitLength());
-    var hPM = _rsasign_getHexPaddedDigestInfoForString(s, this.n.bitLength(), hashAlg);
+RSAKey.prototype.sign = function(s, hashAlg) {
+    var hashFunc = function(s) { return KJUR.crypto.Util.hashString(s, hashAlg); };
+    var sHashHex = hashFunc(s);
+
+    return this.signWithMessageHash(sHashHex, hashAlg);
+};
+
+/**
+ * sign hash value of message to be signed with RSA private key.<br/>
+ * @name signWithMessageHash
+ * @memberOf RSAKey
+ * @function
+ * @param {String} sHashHex hexadecimal string of hash value of message to be signed.
+ * @param {String} hashAlg hash algorithm name for signing.<br/>
+ * @return returns hexadecimal string of signature value.
+ * @since rsasign 1.2.6
+ */
+RSAKey.prototype.signWithMessageHash = function(sHashHex, hashAlg) {
+    var hPM = KJUR.crypto.Util.getPaddedDigestInfoHex(sHashHex, hashAlg, this.n.bitLength());
     var biPaddedMessage = parseBigInt(hPM, 16);
     var biSign = this.doPrivate(biPaddedMessage);
     var hexSign = biSign.toString(16);
     return _zeroPaddingOfSignature(hexSign, this.n.bitLength());
-}
-
-function _rsasign_signStringWithSHA1(s) {
-    return _rsasign_signString.call(this, s, 'sha1');
-}
-
-function _rsasign_signStringWithSHA256(s) {
-    return _rsasign_signString.call(this, s, 'sha256');
 }
 
 // PKCS#1 (PSS) mask generation function
@@ -141,11 +89,11 @@ function pss_mgf1_str(seed, len, hash) {
     var mask = '', i = 0;
 
     while (mask.length < len) {
-        mask += hash(seed + String.fromCharCode.apply(String, [
+        mask += hextorstr(hash(rstrtohex(seed + String.fromCharCode.apply(String, [
                 (i & 0xff000000) >> 24,
                 (i & 0x00ff0000) >> 16,
                 (i & 0x0000ff00) >> 8,
-                i & 0x000000ff]));
+                i & 0x000000ff]))));
         i += 1;
     }
 
@@ -154,24 +102,58 @@ function pss_mgf1_str(seed, len, hash) {
 
 /**
  * sign for a message string with RSA private key by PKCS#1 PSS signing.<br/>
- * @name signStringPSS
- * @memberOf RSAKey#
+ * @name signPSS
+ * @memberOf RSAKey
  * @function
  * @param {String} s message string to be signed.
- * @param {String} hashAlg hash algorithm name for signing.<br/>
+ * @param {String} hashAlg hash algorithm name for signing.
+ * @param {Integer} sLen salt byte length from 0 to (keybytelen - hashbytelen - 2).
+ *        There are two special values:
+ *        <ul>
+ *        <li>-1: sets the salt length to the digest length</li>
+ *        <li>-2: sets the salt length to maximum permissible value
+ *           (i.e. keybytelen - hashbytelen - 2)</li>
+ *        </ul>
+ *        DEFAULT is -1. (NOTE: OpenSSL's default is -2.)
  * @return returns hexadecimal string of signature value.
  */
-function _rsasign_signStringPSS(s, hashAlg, sLen) {
-    var hashFunc = _RSASIGN_HASHRAWFUNC[hashAlg];
-    var mHash = hashFunc(s);
+RSAKey.prototype.signPSS = function(s, hashAlg, sLen) {
+    var hashFunc = function(sHex) { return KJUR.crypto.Util.hashHex(sHex, hashAlg); } 
+    var hHash = hashFunc(rstrtohex(s));
+
+    if (sLen === undefined) sLen = -1;
+    return this.signWithMessageHashPSS(hHash, hashAlg, sLen);
+};
+
+/**
+ * sign hash value of message with RSA private key by PKCS#1 PSS signing.<br/>
+ * @name signWithMessageHashPSS
+ * @memberOf RSAKey
+ * @function
+ * @param {String} hHash hexadecimal hash value of message to be signed.
+ * @param {String} hashAlg hash algorithm name for signing.
+ * @param {Integer} sLen salt byte length from 0 to (keybytelen - hashbytelen - 2).
+ *        There are two special values:
+ *        <ul>
+ *        <li>-1: sets the salt length to the digest length</li>
+ *        <li>-2: sets the salt length to maximum permissible value
+ *           (i.e. keybytelen - hashbytelen - 2)</li>
+ *        </ul>
+ *        DEFAULT is -1. (NOTE: OpenSSL's default is -2.)
+ * @return returns hexadecimal string of signature value.
+ * @since rsasign 1.2.6
+ */
+RSAKey.prototype.signWithMessageHashPSS = function(hHash, hashAlg, sLen) {
+    var mHash = hextorstr(hHash);
     var hLen = mHash.length;
     var emBits = this.n.bitLength() - 1;
     var emLen = Math.ceil(emBits / 8);
     var i;
+    var hashFunc = function(sHex) { return KJUR.crypto.Util.hashHex(sHex, hashAlg); } 
 
-    if (sLen === -1) {
-        sLen = hLen; // same has hash length
-    } else if ((sLen === -2) || (sLen === undefined)) {
+    if (sLen === -1 || sLen === undefined) {
+        sLen = hLen; // same as hash length
+    } else if (sLen === -2) {
         sLen = emLen - hLen - 2; // maximum
     } else if (sLen < -2) {
         throw "invalid salt length";
@@ -189,7 +171,7 @@ function _rsasign_signStringPSS(s, hashAlg, sLen) {
         salt = String.fromCharCode.apply(String, salt);
     }
 
-    var H = hashFunc('\x00\x00\x00\x00\x00\x00\x00\x00' + mHash + salt);
+    var H = hextorstr(hashFunc(rstrtohex('\x00\x00\x00\x00\x00\x00\x00\x00' + mHash + salt)));
     var PS = [];
 
     for (i = 0; i < emLen - sLen - hLen - 2; i += 1) {
@@ -213,9 +195,8 @@ function _rsasign_signStringPSS(s, hashAlg, sLen) {
 
     maskedDB.push(0xbc);
 
-    return _zeroPaddingOfSignature(
-            this.doPrivate(new BigInteger(maskedDB)).toString(16),
-            this.n.bitLength());
+    return _zeroPaddingOfSignature(this.doPrivate(new BigInteger(maskedDB)).toString(16),
+				   this.n.bitLength());
 }
 
 // ========================================================================
@@ -236,8 +217,8 @@ function _rsasign_getHexDigestInfoFromSig(biSig, hN, hE) {
 }
 
 function _rsasign_getAlgNameAndHashFromHexDisgestInfo(hDigestInfo) {
-    for (var algName in _RSASIGN_DIHEAD) {
-	var head = _RSASIGN_DIHEAD[algName];
+    for (var algName in KJUR.crypto.Util.DIGESTINFOHEAD) {
+	var head = KJUR.crypto.Util.DIGESTINFOHEAD[algName];
 	var len = head.length;
 	if (hDigestInfo.substring(0, len) == head) {
 	    var a = [algName, hDigestInfo.substring(len)];
@@ -247,28 +228,9 @@ function _rsasign_getAlgNameAndHashFromHexDisgestInfo(hDigestInfo) {
     return [];
 }
 
-function _rsasign_verifySignatureWithArgs(sMsg, biSig, hN, hE) {
-    var hDigestInfo = _rsasign_getHexDigestInfoFromSig(biSig, hN, hE);
-    var digestInfoAry = _rsasign_getAlgNameAndHashFromHexDisgestInfo(hDigestInfo);
-    if (digestInfoAry.length == 0) return false;
-    var algName = digestInfoAry[0];
-    var diHashValue = digestInfoAry[1];
-    var ff = _RSASIGN_HASHHEXFUNC[algName];
-    var msgHashValue = ff(sMsg);
-    return (diHashValue == msgHashValue);
-}
-
-function _rsasign_verifyHexSignatureForMessage(hSig, sMsg) {
-    var biSig = parseBigInt(hSig, 16);
-    var result = _rsasign_verifySignatureWithArgs(sMsg, biSig,
-						  this.n.toString(16),
-						  this.e.toString(16));
-    return result;
-}
-
 /**
  * verifies a sigature for a message string with RSA public key.<br/>
- * @name verifyString
+ * @name verify
  * @memberOf RSAKey#
  * @function
  * @param {String} sMsg message string to be verified.
@@ -276,62 +238,113 @@ function _rsasign_verifyHexSignatureForMessage(hSig, sMsg) {
  *                 non-hexadecimal charactors including new lines will be ignored.
  * @return returns 1 if valid, otherwise 0
  */
-function _rsasign_verifyString(sMsg, hSig, info) {
+RSAKey.prototype.verify = function(sMsg, hSig, info) {
     hSig = hSig.replace(_RE_HEXDECONLY, '');
-    // if (hSig.length != this.n.bitLength() / 4) return 0;
-    if (hSig.length != this.n.bitLength() / 4) {
-        DKIMVerifier.log.debug("rsasign: hSig has wrong length");
-        return 0;
-        // throw new Error("rsasign Error: hSig has wrong length");
-    }
     hSig = hSig.replace(/[ \n]+/g, "");
     var biSig = parseBigInt(hSig, 16);
+    if (biSig.bitLength() > this.n.bitLength()) return 0;
     var biDecryptedSig = this.doPublic(biSig);
     var hDigestInfo = biDecryptedSig.toString(16).replace(/^1f+00/, '');
     var digestInfoAry = _rsasign_getAlgNameAndHashFromHexDisgestInfo(hDigestInfo);
   
-    // if (digestInfoAry.length == 0) return false;
-    if (digestInfoAry.length == 0) {
-        DKIMVerifier.log.debug("rsasign: biDecryptedSig (hex): " + biDecryptedSig.toString(16));
-        DKIMVerifier.log.debug("rsasign: n (hex): " + this.n.toString(16));
-        DKIMVerifier.log.debug("rsasign: e: " + this.e);
-        DKIMVerifier.log.debug("rsasign: digestInfoAry.length == 0");
-        return 0;
-    }
+    if (digestInfoAry.length == 0) return false;
     var algName = digestInfoAry[0];
-    info.algName = algName;
+	info.algName = algName;
     var diHashValue = digestInfoAry[1];
-    var ff = _RSASIGN_HASHHEXFUNC[algName];
+    var ff = function(s) { return KJUR.crypto.Util.hashString(s, algName); };
     var msgHashValue = ff(sMsg);
     return (diHashValue == msgHashValue);
-}
+};
 
 /**
- * verifies a sigature for a message string with RSA public key by PKCS#1 PSS sign.<br/>
- * @name verifyStringPSS
- * @memberOf RSAKey#
+ * verifies a sigature for a message string with RSA public key.<br/>
+ * @name verifyWithMessageHash
+ * @memberOf RSAKey
  * @function
- * @param {String} sMsg message string to be verified.
+ * @param {String} sHashHex hexadecimal hash value of message to be verified.
  * @param {String} hSig hexadecimal string of siganture.<br/>
  *                 non-hexadecimal charactors including new lines will be ignored.
  * @return returns 1 if valid, otherwise 0
+ * @since rsasign 1.2.6
  */
-function _rsasign_verifyStringPSS(sMsg, hSig, hashAlg, sLen) {
-    if (hSig.length !== this.n.bitLength() / 4) {
+RSAKey.prototype.verifyWithMessageHash = function(sHashHex, hSig) {
+    hSig = hSig.replace(_RE_HEXDECONLY, '');
+    hSig = hSig.replace(/[ \n]+/g, "");
+    var biSig = parseBigInt(hSig, 16);
+    if (biSig.bitLength() > this.n.bitLength()) return 0;
+    var biDecryptedSig = this.doPublic(biSig);
+    var hDigestInfo = biDecryptedSig.toString(16).replace(/^1f+00/, '');
+    var digestInfoAry = _rsasign_getAlgNameAndHashFromHexDisgestInfo(hDigestInfo);
+  
+    if (digestInfoAry.length == 0) return false;
+    var algName = digestInfoAry[0];
+    var diHashValue = digestInfoAry[1];
+    return (diHashValue == sHashHex);
+};
+
+/**
+ * verifies a sigature for a message string with RSA public key by PKCS#1 PSS sign.<br/>
+ * @name verifyPSS
+ * @memberOf RSAKey
+ * @function
+ * @param {String} sMsg message string to be verified.
+ * @param {String} hSig hexadecimal string of signature value
+ * @param {String} hashAlg hash algorithm name
+ * @param {Integer} sLen salt byte length from 0 to (keybytelen - hashbytelen - 2).
+ *        There are two special values:
+ *        <ul>
+ *        <li>-1: sets the salt length to the digest length</li>
+ *        <li>-2: sets the salt length to maximum permissible value
+ *           (i.e. keybytelen - hashbytelen - 2)</li>
+ *        </ul>
+ *        DEFAULT is -1. (NOTE: OpenSSL's default is -2.)
+ * @return returns true if valid, otherwise false
+ */
+RSAKey.prototype.verifyPSS = function(sMsg, hSig, hashAlg, sLen) {
+    var hashFunc = function(sHex) { return KJUR.crypto.Util.hashHex(sHex, hashAlg); };
+    var hHash = hashFunc(rstrtohex(sMsg));
+
+    if (sLen === undefined) sLen = -1;
+    return this.verifyWithMessageHashPSS(hHash, hSig, hashAlg, sLen);
+}
+
+/**
+ * verifies a sigature for a hash value of message string with RSA public key by PKCS#1 PSS sign.<br/>
+ * @name verifyWithMessageHashPSS
+ * @memberOf RSAKey
+ * @function
+ * @param {String} hHash hexadecimal hash value of message string to be verified.
+ * @param {String} hSig hexadecimal string of signature value
+ * @param {String} hashAlg hash algorithm name
+ * @param {Integer} sLen salt byte length from 0 to (keybytelen - hashbytelen - 2).
+ *        There are two special values:
+ *        <ul>
+ *        <li>-1: sets the salt length to the digest length</li>
+ *        <li>-2: sets the salt length to maximum permissible value
+ *           (i.e. keybytelen - hashbytelen - 2)</li>
+ *        </ul>
+ *        DEFAULT is -1 (NOTE: OpenSSL's default is -2.)
+ * @return returns true if valid, otherwise false
+ * @since rsasign 1.2.6
+ */
+RSAKey.prototype.verifyWithMessageHashPSS = function(hHash, hSig, hashAlg, sLen) {
+    var biSig = new BigInteger(hSig, 16);
+
+    if (biSig.bitLength() > this.n.bitLength()) {
         return false;
     }
 
-    var hashFunc = _RSASIGN_HASHRAWFUNC[hashAlg];
-    var mHash = hashFunc(sMsg);
+    var hashFunc = function(sHex) { return KJUR.crypto.Util.hashHex(sHex, hashAlg); };
+    var mHash = hextorstr(hHash);
     var hLen = mHash.length;
     var emBits = this.n.bitLength() - 1;
     var emLen = Math.ceil(emBits / 8);
     var i;
 
-    if (sLen === -1) {
-        sLen = hLen; // same has hash length
-    } else if ((sLen === -2) || (sLen === undefined)) {
-        sLen = emLen - hLen - 2; // maximum
+    if (sLen === -1 || sLen === undefined) {
+        sLen = hLen; // same as hash length
+    } else if (sLen === -2) {
+        sLen = emLen - hLen - 2; // recover
     } else if (sLen < -2) {
         throw "invalid salt length";
     }
@@ -340,7 +353,7 @@ function _rsasign_verifyStringPSS(sMsg, hSig, hashAlg, sLen) {
         throw "data too long";
     }
 
-    var em = this.doPublic(parseBigInt(hSig, 16)).toByteArray();
+    var em = this.doPublic(biSig).toByteArray();
 
     for (i = 0; i < em.length; i += 1) {
         em[i] &= 0xff;
@@ -386,27 +399,12 @@ function _rsasign_verifyStringPSS(sMsg, hSig, hashAlg, sLen) {
         throw "0x01 marker not found";
     }
 
-    return H === hashFunc('\x00\x00\x00\x00\x00\x00\x00\x00' + mHash +
-                          String.fromCharCode.apply(String, DB.slice(-sLen)));
+    return H === hextorstr(hashFunc(rstrtohex('\x00\x00\x00\x00\x00\x00\x00\x00' + mHash +
+				     String.fromCharCode.apply(String, DB.slice(-sLen)))));
 }
 
-RSAKey.prototype.signString = _rsasign_signString;
-RSAKey.prototype.signStringWithSHA1 = _rsasign_signStringWithSHA1;
-RSAKey.prototype.signStringWithSHA256 = _rsasign_signStringWithSHA256;
-RSAKey.prototype.sign = _rsasign_signString;
-RSAKey.prototype.signWithSHA1 = _rsasign_signStringWithSHA1;
-RSAKey.prototype.signWithSHA256 = _rsasign_signStringWithSHA256;
-RSAKey.prototype.signStringPSS = _rsasign_signStringPSS;
-RSAKey.prototype.signPSS = _rsasign_signStringPSS;
 RSAKey.SALT_LEN_HLEN = -1;
 RSAKey.SALT_LEN_MAX = -2;
-
-RSAKey.prototype.verifyString = _rsasign_verifyString;
-RSAKey.prototype.verifyHexSignatureForMessage = _rsasign_verifyHexSignatureForMessage;
-RSAKey.prototype.verify = _rsasign_verifyString;
-RSAKey.prototype.verifyHexSignatureForByteArrayMessage = _rsasign_verifyHexSignatureForMessage;
-RSAKey.prototype.verifyStringPSS = _rsasign_verifyStringPSS;
-RSAKey.prototype.verifyPSS = _rsasign_verifyStringPSS;
 RSAKey.SALT_LEN_RECOVER = -2;
 
 /**
