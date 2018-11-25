@@ -1,3 +1,8 @@
+3.0.0pre1 [2018-11-25]
+------------------
+ - now requires at least Thunderbird 64
+ - fixed incompatibility with Thunderbird 64
+
 2.0.1pre1 [2018-04-25]
 ------------------
  - fix signature verification in case the RSA key has an odd key length
