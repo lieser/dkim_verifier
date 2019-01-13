@@ -3,6 +3,7 @@
  - fix signature verification in case the RSA key has an odd key length (#112)
  - fix DMARC heuristic (#125)
  - fixed "*" not being recognized as valid Service Type in DKIM Keys (#134)
+ - Authentication-Results header: fixed mixed case results specified by older SPF specs resulting in a parsing error (#135)
  - updated included third-party libraries
 
 2.0.0 [2018-04-19]
