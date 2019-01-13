@@ -2,6 +2,7 @@
 ------------------
  - fix signature verification in case the RSA key has an odd key length (#112)
  - fix DMARC heuristic (#125)
+ - fixed "*" not being recognized as valid Service Type in DKIM Keys (#134)
  - updated included third-party libraries
 
 2.0.0 [2018-04-19]

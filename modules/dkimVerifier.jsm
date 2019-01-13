@@ -826,7 +826,8 @@ var Verifier = (function() {
 		if (serviceTypeTag === null) {
 			DKIMKey.s = "*";
 		} else {
-			if (/email/.test(serviceTypeTag[0])) {
+			let service_types = serviceTypeTag[0].split(":").map(s => s.trim());
+			if (service_types.some(s => s === "*" || s === "email")) {
 				DKIMKey.s = serviceTypeTag[0];
 			} else {
 				throw new DKIM_SigError("DKIM_SIGERROR_KEY_NOTEMAILKEY");
