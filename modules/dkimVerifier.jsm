@@ -340,7 +340,7 @@ var Verifier = (function() {
 	 * 
 	 * @param {String} str
 	 * 
-	 * @return {Map|Number} Map
+	 * @return {Map<String, String>|Number} Map
 	 *                       -1 if a tag-spec is ill-formed
 	 *                       -2 duplicate tag names
 	 */
@@ -355,9 +355,12 @@ var Verifier = (function() {
 		}
 		
 		var array = str.split(";");
+		/** @type{Map<String, String>} */
 		var map = new Map();
 		var tmp;
+		/** @type{String} */
 		var name;
+		/** @type{String} */
 		var value;
 		for (var elem of array) {
 			// get tag name and value
@@ -385,12 +388,12 @@ var Verifier = (function() {
 	/**
 	 * Parse a tag value stored in a Map.
 	 * 
-	 * @param {Map} map
+	 * @param {Map<String, String>} map
 	 * @param {String} tag_name name of the tag
 	 * @param {String} pattern_tag_value Pattern for the tag-value
 	 * @param {Number} [expType=1] Type of exception to throw. 1 for DKIM header, 2 for DKIM key, 3 for general.
 	 * 
-	 * @return {Array|Null} The match from the RegExp if tag_name exists, otherwise null
+	 * @return {RegExpMatchArray|Null} The match from the RegExp if tag_name exists, otherwise null
 	 * 
 	 * @throws {DKIM_SigError|DKIM_InternalError} Throws if tag_value does not match.
 	 */
@@ -741,15 +744,17 @@ var Verifier = (function() {
 	 */
 	function parseDKIMKeyRecord(DKIMKeyRecord) {
 		var DKIMKey = {
+			/** @type {string} */
+			v : "", // Version
 			/** @type {string?} */
-			v : null, // Version
-			/** type {string?} */
 			h : null, // hash algorithms
+			/** @type {string[]?} */
 			h_array : null, // array hash algorithms
+			/** @type {string} */
+			k : "", // key type
 			/** @type {string?} */
-			k : null, // key type
 			n : null, // notes
-			p : null, // Public-key data
+			p : "", // Public-key data
 			/** @type {string?} */
 			s : null, // Service Type
 			/** @type {string?} */
