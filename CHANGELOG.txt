@@ -5,6 +5,7 @@
  - fixed "*" not being recognized as valid Service Type in DKIM Keys (#134)
  - Authentication-Results header: fixed mixed case results specified by older SPF specs resulting in a parsing error (#135)
  - JSDNS: fixed a problem getting the default DNS servers on Windows (#116, #120)
+ - JSDNS: reduced default DNS server timeout from 10 to 5 seconds
  - updated included third-party libraries
 
 2.0.0 [2018-04-19]
