@@ -7,6 +7,7 @@
  - JSDNS: fixed a problem getting the default DNS servers on Windows (#116, #120)
  - JSDNS: reduced default DNS server timeout from 10 to 5 seconds
  - updated included third-party libraries
+ - updated default rules and favicons
 
 2.0.0 [2018-04-19]
 ------------------
