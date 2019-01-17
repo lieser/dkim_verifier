@@ -64,6 +64,15 @@ namespace Libunbound {
 // for libunboundWorker.jsm
 declare function postMessage(WorkerResponse: Libunbound.Log|Libunbound.Result|Libunbound.Exception): void;
 
+// for chrome\content\dkim.js
+interface AuthResultElement extends HTMLElement {
+    dkimResults: IAuthVerifier.AuthResultDKIM[], // DKIM results, only the first is shown in the UI
+    value: String, // DKIM result_str
+    warnings: String[], // DKIM warnings
+    spfValue: String,
+    dmarcValue: String,
+    arhDkimValue: String,
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 //// The following is for Visual Studio Code IntelliSense only:
