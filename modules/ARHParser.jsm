@@ -3,9 +3,9 @@
  * 
  * Parser for the Authentication-Results header as specified in RFC 7601.
  *
- * Version: 1.2.0 (01 April 2018)
+ * Version: 1.2.1 (13 January 2019)
  * 
- * Copyright (c) 2014-2018 Philippe Lieser
+ * Copyright (c) 2014-2019 Philippe Lieser
  * 
  * This software is licensed under the terms of the MIT License.
  * 
@@ -21,7 +21,7 @@
 "use strict";
 
 // @ts-ignore
-const module_version = "1.2.0";
+const module_version = "1.2.1";
 
 var EXPORTED_SYMBOLS = [
 	"ARHParser"
@@ -195,6 +195,8 @@ function parseResinfo(str) {
 	let method_version_p = CFWS_op + "/" + CFWS_op + "([0-9]+)";
 	let method_p = "(" + Keyword_p + ")(?:" + method_version_p + ")?";
 	let Keyword_result_p = "none|pass|fail|softfail|policy|neutral|temperror|permerror";
+	// older SPF specs (e.g. RFC 4408) use mixed case
+	Keyword_result_p += "|None|Pass|Fail|SoftFail|Neutral|TempError|PermError";
 	let result_p = "=" + CFWS_op + "(" + Keyword_result_p + ")";
 	let methodspec_p = ";" + CFWS_op + method_p + CFWS_op + result_p;
 	try {
@@ -216,7 +218,7 @@ function parseResinfo(str) {
 	} else {
 		res.method_version = 1;
 	}
-	res.result = reg_match[3];
+	res.result = reg_match[3].toLowerCase();
 
 	// get reasonspec (optional)
 	let reasonspec_p = "reason" + CFWS_op + "=" + CFWS_op + value_cp;

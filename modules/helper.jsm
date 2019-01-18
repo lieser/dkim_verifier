@@ -1,9 +1,9 @@
 /*
  * helper.jsm
  *
- * Version: 2.0.0 (01 April 2018)
+ * Version: 2.1.0 (13 January 2019)
  * 
- * Copyright (c) 2013-2018 Philippe Lieser
+ * Copyright (c) 2013-2019 Philippe Lieser
  * 
  * This software is licensed under the terms of the MIT License.
  * 
@@ -14,7 +14,7 @@
 // options for ESLint
 /* global Components, FileUtils, NetUtil, Services */
 /* global Logging */
-/* exported EXPORTED_SYMBOLS, addrIsInDomain, addrIsInDomain2, domainIsInDomain, getBaseDomainFromAddr, getDomainFromAddr, PREF, readStringFrom, stringEndsWith, stringEqual, tryGetString, tryGetFormattedString, writeStringToTmpFile, DKIM_SigError, DKIM_InternalError */
+/* exported EXPORTED_SYMBOLS, addrIsInDomain, addrIsInDomain2, domainIsInDomain, getBaseDomainFromAddr, getDomainFromAddr, PREF, readStringFrom, stringEndsWith, stringEqual, toType, tryGetString, tryGetFormattedString, writeStringToTmpFile, DKIM_SigError, DKIM_InternalError */
 
 "use strict";
 
@@ -30,6 +30,7 @@ var EXPORTED_SYMBOLS = [
 	"readStringFrom",
 	"stringEndsWith",
 	"stringEqual",
+	"toType",
 	"tryGetString",
 	"tryGetFormattedString",
 	"writeStringToTmpFile",
@@ -293,6 +294,19 @@ function stringEndsWith(str, x) {
  */
 function stringEqual(str1, str2) {
 	return str1.toLowerCase() === str2.toLowerCase();
+}
+
+/**
+ * Get the type an object as a string.
+ * 
+ * From https://javascriptweblog.wordpress.com/2011/08/08/fixing-the-javascript-typeof-operator/
+ * 
+ * @param {any} obj
+ * 
+ * @return {String}
+ */
+function toType(obj) {
+	return Object.prototype.toString.call(obj).match(/\s([a-zA-Z]+)/)[1];
 }
 
 /**

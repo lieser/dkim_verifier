@@ -77,6 +77,7 @@
         "DKIM_SIGWARNING_",
         "JSDNS",
         "SDIDs",
+        "STATUSBARPANEL",
         // mozilla
         "@mozilla.org/intl/scriptableunicodeconverter",
         "nsIURI",

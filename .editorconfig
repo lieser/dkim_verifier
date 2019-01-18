@@ -10,3 +10,12 @@ insert_final_newline = true
 
 [*.d.ts]
 indent_style = space
+
+[*.md]
+indent_style = space
+
+[.vscode/cSpell.json]
+indent_style = space
+
+[.vscode/settings.json]
+indent_style = space
