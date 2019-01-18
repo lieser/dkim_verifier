@@ -1,7 +1,7 @@
-2.0.1pre1 [2018-04-25]
+2.0.1 [2019-01-18]
 ------------------
- - fix signature verification in case the RSA key has an odd key length (#112)
- - fix DMARC heuristic (#125)
+ - fixed signature verification in case the RSA key has an odd key length (#112)
+ - fixed DMARC heuristic (#125)
  - fixed "*" not being recognized as valid Service Type in DKIM Keys (#134)
  - changed update DKIM key button to now update the keys of all DKIM signatures in the e-mail
  - Authentication-Results header: fixed mixed case results specified by older SPF specs resulting in a parsing error (#135)
