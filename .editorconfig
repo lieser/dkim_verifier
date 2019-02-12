@@ -11,6 +11,10 @@ insert_final_newline = true
 [*.d.ts]
 indent_style = space
 
+[*.xml]
+indent_style = space
+indent_size = 2
+
 [*.md]
 indent_style = space
 

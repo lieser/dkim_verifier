@@ -109,7 +109,7 @@
   
   <binding id="dkim-verifier-statusbarpanel-box">
     <content dkimStatus="loading">
-      <xul:statusbarpanel anonid="statusbarpanel-box">
+      <statusbarpanel anonid="statusbarpanel-box">
         <xul:label anonid="title"
                    class="statusbarpanel-text"
                    value="&dkim_verifier.statusbar.title;" />
@@ -133,7 +133,7 @@
           <xul:label anonid="tooltip-status-value"/>
           <xul:vbox anonid="tooltip-status-warnings"/>
         </xul:tooltip>
-      </xul:statusbarpanel>
+      </statusbarpanel>
     </content>
     <implementation>
       <field name="statusbarpanelBox">document.getAnonymousElementByAttribute(this, "anonid", "statusbarpanel-box");</field>

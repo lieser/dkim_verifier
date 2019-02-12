@@ -96,7 +96,7 @@ DKIM_Verifier.Display = (function() {
 				return;
 			}
 			var emailValue = headerBox.emailAddresses.firstChild.
-				getPart("emailValue");
+				getElementsByClassName("emaillabel")[0];
 			if (status !== "clearHeader") {
 				emailValue.style.borderRadius = "3px";
 				emailValue.style.color = prefs.

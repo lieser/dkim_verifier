@@ -34,7 +34,7 @@ const Ci = Components.interfaces;
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
-Cu.import("resource:///modules/mailServices.js");
+Cu.import("resource:///modules/MailServices.jsm");
 Cu.import("resource:///modules/iteratorUtils.jsm");
 
 Cu.import("resource://dkim_verifier/logging.jsm");
