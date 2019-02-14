@@ -9,11 +9,6 @@
   visibility: visible;
 }
 
-#dkim-verifier-header-tooltips {
-  -moz-binding: url(chrome://dkim_verifier/content/bindings.xml#dkim-verifier-header-tooltips-box) !important;
-  -moz-box-align: center;
-}
-
 #expandeddkim-verifierBox:not([spf="true"])  [anonid="spf"] {
   display: none;
 }

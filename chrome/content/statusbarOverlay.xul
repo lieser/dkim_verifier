@@ -4,5 +4,6 @@
 <overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 	<statusbar id="status-bar">
 		<hbox insertbefore="unreadMessageCount" id="dkim-verifier-statusbarpanel"/>
+		<tooltip is="dkim-tooltip-status" id="dkim-verifier-tooltip-status"/>
 	</statusbar>
 </overlay>

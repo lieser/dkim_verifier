@@ -15,7 +15,8 @@
 // options for ESLint
 /* eslint-env browser */
 /* eslint strict: ["warn", "function"] */
-/* global Components, Cu, Services, gMessageListeners, gFolderDisplay, gExpandedHeaderView, createHeaderEntry, syncGridColumnWidths, currentHeaderData, gMessageDisplay */
+/*eslint no-console: "off"*/
+/* global Components, Cu, Services, gMessageListeners, gFolderDisplay, gExpandedHeaderView, createHeaderEntry, syncGridColumnWidths, currentHeaderData, gMessageDisplay, XULPopupElement */
 
 // namespace
 // @ts-ignore
@@ -29,6 +30,125 @@ Cu.import("resource://dkim_verifier/dkimKey.jsm", DKIM_Verifier);
 
 // @ts-ignore
 const PREF_BRANCH = "extensions.dkim_verifier.";
+
+/**
+ * Base class for DKIM tooltips
+ */
+class DKIMTooltip extends XULPopupElement {
+	constructor() {
+		super();
+
+		// whether a separator should be added before the warnings
+		this._warningsSeparator = false;
+
+		// The DKIM result
+		this._value = document.createElement("label");
+		// A box containing the warnings
+		this._warningsBox = document.createElement("vbox");
+	}
+
+	/**
+	 * Set the DKIM result
+	 *
+	 * @memberof DKIMTooltip
+	 * @param {String} val
+	 */
+	set value(val) {
+		this._value.textContent = val;
+	}
+
+	/**
+	 * Set the warnings for the tooltip
+	 *
+	 * @memberof DKIMTooltip
+	 * @param {String[]} warnings
+	 */
+	set warnings(warnings) {
+		// delete old warnings from tooltips
+		while (this._warningsBox.firstChild) {
+			this._warningsBox.removeChild(this._warningsBox.firstChild);
+		}
+
+		if (this._warningsSeparator && warnings.length > 0) {
+			let sep = document.createElement("separator");
+			sep.setAttribute("class", "thin");
+			this._warningsBox.appendChild(sep);
+		}
+
+		// add warnings to warning tooltip
+		for (let w of warnings) {
+			let des;
+			des = document.createElement("description");
+			des.textContent = w;
+			this._warningsBox.appendChild(des);
+		}
+	}
+}
+
+/**
+ * Tooltip showing the DKIM warnings.
+ *
+ * @extends {DKIMTooltip}
+ */
+class DKIMWarningsTooltip extends DKIMTooltip {
+	constructor() {
+		super();
+
+		this.appendChild(this._warningsBox);
+	}
+}
+
+/**
+ * Tooltip showing both the DKIM result and the warnings.
+ * The tooltip contains the label "DKIM:".
+ *
+ * @extends {DKIMTooltip}
+ */
+class DKIMTooltipFrom extends DKIMTooltip {
+	constructor() {
+		super();
+
+		this._warningsSeparator = true;
+
+		// Outer box and label
+		this._outerBox = document.createElement("hbox");
+		this._outerBoxLabel = document.createElement("label");
+		this._outerBoxLabel.setAttribute("value", "DKIM:");
+
+		// The inner box, containing the DKIM result and optional the warnings
+		this._innerBox = document.createElement("vbox");
+		this._innerBox.setAttribute("flex", "1");
+
+		this.appendChild(this._outerBox);
+		this._outerBox.appendChild(this._outerBoxLabel);
+		this._outerBox.appendChild(this._innerBox);
+		this._innerBox.appendChild(this._value);
+		this._innerBox.appendChild(this._warningsBox);
+	}
+}
+
+/**
+ * Tooltip showing both the DKIM result and the warnings.
+ *
+ * @extends {DKIMTooltip}
+ */
+class DKIMTooltipStatus extends DKIMTooltip {
+	constructor() {
+		super();
+
+		this._warningsSeparator = true;
+
+		// The DKIM result
+		this._value = document.createElement("label");
+
+		this.appendChild(this._value);
+		this.appendChild(this._warningsBox);
+	}
+}
+
+customElements.define("dkim-tooltip-warnings", DKIMWarningsTooltip, { extends: 'tooltip' });
+customElements.define("dkim-tooltip-from", DKIMTooltipFrom, { extends: 'tooltip' });
+customElements.define("dkim-tooltip-status", DKIMTooltipStatus, { extends: 'tooltip' });
 
 /*
  * DKIM Verifier display module
@@ -49,7 +169,12 @@ DKIM_Verifier.Display = (function() {
 	/** @type {AuthResultElement} */
 	var header;
 	var row;
-	var headerTooltips;
+	/** @type {DKIMWarningsTooltip} */
+	var headerTooltipWarnings;
+	/** @type {DKIMTooltipFrom} */
+	var headerTooltipFrom;
+	/** @type {DKIMTooltipStatus} */
+	var statusbarTooltip;
 	var statusbarPanel;
 	var expandedFromBox;
 	var collapsed1LfromBox; // for CompactHeader addon
@@ -70,7 +195,8 @@ DKIM_Verifier.Display = (function() {
 	 * @return {void}
 	 */
 	function setValue(value) {
-		headerTooltips.value = value;
+		headerTooltipFrom.value = value;
+		statusbarTooltip.value = value;
 		statusbarPanel.value = value;
 	}
 	
@@ -82,7 +208,9 @@ DKIM_Verifier.Display = (function() {
 	 */
 	function setWarnings(warnings) {
 		header.warnings = warnings;
-		headerTooltips.warnings = warnings;
+		headerTooltipWarnings.warnings = warnings;
+		headerTooltipFrom.warnings = warnings;
+		statusbarTooltip.warnings = warnings;
 		statusbarPanel.warnings = warnings;
 	}
 	
@@ -369,7 +497,15 @@ var that = {
 		try {
 			log.trace("startup begin");
 			// get xul elements
-			headerTooltips = document.getElementById("dkim-verifier-header-tooltips");
+			// @ts-ignore
+			headerTooltipWarnings = document.getElementById("dkim-verifier-header-tooltip-warnings");
+			console.assert(headerTooltipWarnings !== null, "dkim-verifier-header-tooltip-warnings not found");
+			// @ts-ignore
+			headerTooltipFrom = document.getElementById("dkim-verifier-header-tooltip-from");
+			console.assert(headerTooltipFrom !== null, "dkim-verifier-header-tooltip-from not found");
+			// @ts-ignore
+			statusbarTooltip = document.getElementById("dkim-verifier-tooltip-status");
+			console.assert(statusbarTooltip !== null, "dkim-verifier-tooltip-status not found");
 			statusbarPanel = document.getElementById("dkim-verifier-statusbarpanel");
 			expandedFromBox = document.getElementById("expandedfromBox");
 			collapsed1LfromBox = document.getElementById("CompactHeader_collapsed1LfromBox");

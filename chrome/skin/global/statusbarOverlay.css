@@ -10,7 +10,6 @@
 
 
 #dkim-verifier-statusbarpanel  image[anonid="warning-icon"] {
-  list-style-image: url("chrome://global/skin/icons/Warning.png");
   height: 16px;
   width: 16px;
   display: none;

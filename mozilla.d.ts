@@ -330,6 +330,10 @@ interface nsIXULAppInfo {
 
 interface nsresult {nsresult: never};
 
+declare class XULElement extends Element {};
+
+declare class XULPopupElement extends XULElement {};
+
 ////////////////////////////////////////////////////////////////////////////////
 //// Thunderbird specific interfaces
 
