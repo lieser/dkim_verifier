@@ -2,7 +2,7 @@
 	"manifest_version": 2,
 	"name": "DKIM Verifier",
 	"description": "Verifies the DKIM-Signature of an e-mail.",
-	"version": "3.0.0pre1",
+	"version": "3.0.0pre2",
 	"author": "Philippe Lieser",
 	"homepage_url": "https://github.com/lieser/dkim_verifier/wiki",
 	"legacy": {
@@ -14,7 +14,7 @@
 	"applications": {
 		"gecko": {
 			"id": "dkim_verifier@pl",
-			"strict_min_version": "64.0"
+			"strict_min_version": "66.0"
 		}
 	},
 	"icons": {

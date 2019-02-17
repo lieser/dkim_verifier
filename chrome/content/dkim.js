@@ -15,7 +15,7 @@
 // options for ESLint
 /* eslint-env browser */
 /* eslint strict: ["warn", "function"] */
-/*eslint no-console: "off"*/
+/* eslint no-console: "off"*/
 /* global Components, Cu, Services, gMessageListeners, gFolderDisplay, gExpandedHeaderView, createHeaderEntry, syncGridColumnWidths, currentHeaderData, gMessageDisplay, XULPopupElement */
 
 // namespace
