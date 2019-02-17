@@ -1,26 +1,368 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+
+<?xml-stylesheet type="text/css" href="chrome://global/skin/global.css"?>
 <?xml-stylesheet type="text/css" href="chrome://messenger/skin/preferences/preferences.css"?>
+<?xml-stylesheet type="text/css" href="chrome://global/skin/in-content/common.css"?>
+<?xml-stylesheet type="text/css" href="chrome://messenger/skin/preferences/aboutPreferences.css"?>
+
 <?xml-stylesheet href="chrome://dkim_verifier/skin/options.css"?>
 
-<!DOCTYPE prefwindow SYSTEM "chrome://dkim_verifier/locale/options.dtd">
+<!DOCTYPE preftab SYSTEM "chrome://dkim_verifier/locale/options.dtd">
 
-<prefwindow id="dkim_verifier-preferences"
-            xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-            title="&prefwindow.title;">
-<prefpane id="paneGeneral" label="&general.label;"
-          image="chrome://messenger/skin/preferences/general.png"
-          src="chrome://dkim_verifier/content/options_general.xul"/>
+<preftab id="MailPreferences" flex="1"
+         windowtype="Mail:Preferences"
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+         xmlns:xhtml="http://www.w3.org/1999/xhtml"
+         xmlns:html="http://www.w3.org/1999/xhtml"
+         onload="gDKIMOptionsGeneralPane.init();"
+         title="&prefwindow.title;">
 
-<prefpane id="paneDisplay" label="&display.label;"
-          image="chrome://messenger/skin/preferences/display.png"
-          src="chrome://dkim_verifier/content/options_display.xul"/>
+  <stack flex="1">
+    <hbox id="prefBox" flex="1">
+      <vbox id="pref-category-box">
+        <radiogroup id="selector" orient="vertical" class="paneSelector chromeclass-toolbar"
+                    role="listbox" flex="1"/> <!-- Expose to accessibility APIs as a listbox -->
+        <spacer flex="1"/>
+      </vbox>
+      <hbox id="preferencesContainer" flex="1">
+        <hbox class="paneDeckContainer" flex="1">
+          <deck id="paneDeck" flex="1">
 
-<prefpane id="paneAdvanced" label="&advanced.label;"
-          image="chrome://messenger/skin/preferences/advanced.png"
-          src="chrome://dkim_verifier/content/options_advanced.xul"/>
+            <prefpane id="paneGeneral" label="&general.label;">
+              <script type="application/javascript" src="chrome://dkim_verifier/content/options_general.js"/>
 
-<script type="application/javascript"
-		src="chrome://dkim_verifier/content/options.js"/>
+              <tabbox>
+                <tabs>
+                  <tab label="&general.general.label;"/>
+                  <tab label="&dns.label;"/>
+                  <tab label="&general.policy.label;"/>
+                </tabs>
 
-</prefwindow>
+                <tabpanels>
+                  <!-- general tab -->
+                  <tabpanel orient="vertical">
+                    <checkbox preference="extensions.dkim_verifier.dkim.enable" label="&dkim.enable.label;"/>
+                    <hbox align="center">
+                      <menulist id="key.storing"
+                                preference="extensions.dkim_verifier.key.storing"
+                                oncommand="gDKIMOptionsGeneralPane.update_key_storing();">
+                        <menupopup>
+                          <menuitem label="&key.storing.value.0.label;" value="0"/>
+                          <menuitem label="&key.storing.value.1.label;" value="1"/>
+                          <menuitem label="&key.storing.value.2.label;" value="2"/>
+                        </menupopup>
+                      </menulist>
+                      <button id="key.viewKeys"
+                              label="&key.viewKeys.label;"
+                              oncommand="window.open('chrome://dkim_verifier/content/treeviewKeys.xul', 'dkimKeys', 'chrome,resizable,centerscreen,width=600,height=300');"/>
+                      <spacer/>
+                    </hbox>
+                    <checkbox preference="extensions.dkim_verifier.saveResult" label="&saveResult.label;"/>
+                    <checkbox preference="extensions.dkim_verifier.arh.read" label="&arh.read.label;"/>
+                  </tabpanel>
+
+                  <!-- DNS tab -->
+                  <tabpanel orient="vertical">
+                    <hbox align="center">
+                      <label value="&dns.resolver.label;"/>
+                      <menulist id="dns.resolver.label"
+                                preference="extensions.dkim_verifier.dns.resolver"
+                                oncommand="gDKIMOptionsGeneralPane.update_dns_resolver();">
+                        <menupopup>
+                          <menuitem label="&dns.resolver.value.1.label;" value="1"/>
+                          <menuitem label="&dns.resolver.value.2.label;" value="2"/>
+                        </menupopup>
+                      </menulist>
+                    </hbox>
+
+                    <checkbox preference="extensions.dkim_verifier.dns.getNameserversFromOS"
+                              label="&dns.getNameserversFromOS.label;"/>
+                    <label control="dns.nameserver">&dns.nameserver.label;</label>
+                    <textbox id="dns.nameserver" preference="extensions.dkim_verifier.dns.nameserver"/>
+
+                    <deck id="resolverDeck">
+                      <groupbox>
+                        <caption label="&dns.resolver.value.1.label;"/>
+
+                        <hbox align="center">
+                          <label control="dns.timeout_connect">&dns.timeout_connect.label;</label>
+                          <textbox id="dns.timeout_connect" preference="extensions.dkim_verifier.dns.timeout_connect"/>
+                          <spacer/>
+                        </hbox>
+                        <checkbox id="dns.proxy.enable"
+                                  preference="extensions.dkim_verifier.dns.proxy.enable"
+                                  label="&dns.proxy.enable.label;"
+                                  oncommand="gDKIMOptionsGeneralPane.update_dns_proxy();"/>
+                        <vbox class="indent">
+                          <hbox align="center">
+                            <label class="proxyConfig" value="&dns.proxy.type.label;"/>
+                            <menulist id="dns.proxy.type"
+                                      class="proxyConfig"
+                                  preference="extensions.dkim_verifier.dns.proxy.type">
+                              <menupopup>
+                                <menuitem label="SOCKS v5" value="socks"/>
+                                <menuitem label="SOCKS v4" value="socks4"/>
+                              </menupopup>
+                            </menulist>
+                            <spacer/>
+                          </hbox>
+                          <hbox align="center">
+                            <label class="proxyConfig" value="&dns.proxy.host.label;"/>
+                            <textbox class="proxyConfig" preference="extensions.dkim_verifier.dns.proxy.host"/>
+                            <label class="proxyConfig" value="&dns.proxy.port.label;"/>
+                            <textbox class="proxyConfig" preference="extensions.dkim_verifier.dns.proxy.port" width="50"/>
+                            <spacer/>
+                          </hbox>
+                        </vbox>
+                      </groupbox>
+
+                      <groupbox>
+                        <caption label="&dns.resolver.value.2.label;"/>
+
+                        <hbox align="center">
+                          <label value="&dns.libunbound.path.label;"/>
+                          <textbox preference="extensions.dkim_verifier.dns.libunbound.path" flex ="1"/>
+                        </hbox>
+                        <checkbox preference="extensions.dkim_verifier.dns.libunbound.path.relToProfileDir"
+                                  label="&dns.libunbound.path.relToProfileDir.label;"/>
+                      </groupbox>
+                    </deck>
+                  </tabpanel>
+
+                  <!-- policy tab -->
+                  <tabpanel orient="vertical">
+                    <checkbox id="policy.signRules.enable"
+                              preference="extensions.dkim_verifier.policy.signRules.enable"
+                              label="&policy.signRules.enable.label;"
+                              oncommand="gDKIMOptionsGeneralPane.update_Policy_signRules_enable();"/>
+                    <vbox class="indent">
+                      <checkbox id="policy.signRules.checkDefaultRules"
+                                preference="extensions.dkim_verifier.policy.signRules.checkDefaultRules"
+                                label="&policy.signRules.checkDefaultRules.label;"/>
+                      <checkbox id="policy.signRules.autoAddRule"
+                                preference="extensions.dkim_verifier.policy.signRules.autoAddRule"
+                                label="&policy.signRules.autoAddRule.label;"
+                                oncommand="gDKIMOptionsGeneralPane.update_Policy_autoAddRule_enable();"/>
+                      <vbox class="indent">
+                        <checkbox id="policy.signRules.autoAddRule.onlyIfFromAddressInSDID"
+                                  preference="extensions.dkim_verifier.policy.signRules.autoAddRule.onlyIfFromAddressInSDID"
+                                  label="&policy.signRules.autoAddRule.onlyIfFromAddressInSDID.label;"/>
+                        <hbox align="center">
+                          <menulist id="policy.signRules.autoAddRule.for"
+                                preference="extensions.dkim_verifier.policy.signRules.autoAddRule.for">
+                            <menupopup>
+                              <menuitem label="&policy.signRules.autoAddRule.for.value.0.label;" value="0"/>
+                              <menuitem label="&policy.signRules.autoAddRule.for.value.1.label;" value="1"/>
+                              <menuitem label="&policy.signRules.autoAddRule.for.value.2.label;" value="2"/>
+                            </menupopup>
+                          </menulist>
+                          <spacer/>
+                        </hbox>
+                      </vbox>
+                      <checkbox id="policy.signRules.sdid.allowSubDomains"
+                                preference="extensions.dkim_verifier.policy.signRules.sdid.allowSubDomains"
+                                label="&policy.signRules.sdid.allowSubDomains.label;"/>
+                      <checkbox id="error.policy.wrong_sdid.asWarning"
+                                preference="extensions.dkim_verifier.error.policy.wrong_sdid.asWarning"
+                                label="&error.policy.wrong_sdid.asWarning.label;"/>
+                      <checkbox id="policy.DMARC.shouldBeSigned.enable"
+                                preference="extensions.dkim_verifier.policy.DMARC.shouldBeSigned.enable"
+                                label="&policy.DMARC.shouldBeSigned.enable.label;"/>
+                      <hbox>
+                        <button id="viewSigners"
+                                label="&viewSigners.label;"
+                                oncommand="window.open('chrome://dkim_verifier/content/treeviewSigners.xul', 'SignersRules', 'chrome,resizable,centerscreen,width=600,height=300');"/>
+                        <button id="viewSignerDefaults"
+                                label="&viewSignerDefaults.label;"
+                                oncommand="window.open('chrome://dkim_verifier/content/treeviewSignersDefault.xul', 'SignersDefaultRules', 'chrome,resizable,centerscreen,width=600,height=300');"/>
+                        <spacer/>
+                      </hbox>
+                    </vbox>
+                  </tabpanel>
+                </tabpanels>
+              </tabbox>
+            </prefpane>
+
+            <prefpane id="paneDisplay" label="&display.label;">
+
+              <groupbox>
+                <caption label="&color.label;"/>
+                <checkbox preference="extensions.dkim_verifier.colorFrom" label="&colorFrom.label;"/>
+
+                <grid>
+                  <columns>
+                    <column/>
+                    <column/>
+                  </columns>
+                  <rows>
+                    <row align="center">
+                      <label class="header" anonid="gridHeader">&color.success.label;</label>
+                      <hbox align="center">
+                        <label control="color.success.text">&color.text.label;</label>
+                        <textbox id="color.success.text" preference="extensions.dkim_verifier.color.success.text" width="100"/>
+                        <!-- <html:input type="color" preference="extensions.dkim_verifier.color.success.text"/> -->
+                        <label control="color.success.background">&color.background.label;</label>
+                        <textbox id="color.success.background" preference="extensions.dkim_verifier.color.success.background" width="100"/>
+                        <!-- <html:input type="color" preference="extensions.dkim_verifier.color.success.background"/> -->
+                      </hbox>
+                    </row>
+                    <row align="center">
+                      <label class="header" anonid="gridHeader">&color.warning.label;</label>
+                      <hbox align="center">
+                        <label control="color.warning.text">&color.text.label;</label>
+                        <textbox id="color.warning.text" preference="extensions.dkim_verifier.color.warning.text" width="100"/>
+                        <!-- <html:input type="color" preference="extensions.dkim_verifier.color.warning.text"/> -->
+                        <label control="color.warning.background">&color.background.label;</label>
+                        <textbox id="color.warning.background" preference="extensions.dkim_verifier.color.warning.background" width="100"/>
+                        <!-- <html:input type="color" preference="extensions.dkim_verifier.color.warning.background"/> -->
+                      </hbox>
+                    </row>
+                    <row align="center">
+                      <label class="header" anonid="gridHeader">&color.permfail.label;</label>
+                      <hbox align="center">
+                        <label control="color.permfail.text">&color.text.label;</label>
+                        <textbox id="color.permfail.text" preference="extensions.dkim_verifier.color.permfail.text" width="100"/>
+                        <!-- <html:input type="color" preference="extensions.dkim_verifier.color.permfail.text"/> -->
+                        <label control="color.permfail.background">&color.background.label;</label>
+                        <textbox id="color.permfail.background" preference="extensions.dkim_verifier.color.permfail.background" width="100"/>
+                        <!-- <html:input type="color" preference="extensions.dkim_verifier.color.permfail.background"/> -->
+                      </hbox>
+                    </row>
+                    <row align="center">
+                      <label class="header" anonid="gridHeader">&color.tempfail.label;</label>
+                      <hbox align="center">
+                        <label control="color.tempfail.text">&color.text.label;</label>
+                        <textbox id="color.tempfail.text" preference="extensions.dkim_verifier.color.tempfail.text" width="100"/>
+                        <!-- <html:input type="color" preference="extensions.dkim_verifier.color.tempfail.text"/> -->
+                        <label control="color.tempfail.background">&color.background.label;</label>
+                        <textbox id="color.tempfail.background" preference="extensions.dkim_verifier.color.tempfail.background" width="100"/>
+                        <!-- <html:input type="color" preference="extensions.dkim_verifier.color.tempfail.background"/> -->
+                      </hbox>
+                    </row>
+                    <row align="center">
+                      <label class="header" anonid="gridHeader">&color.nosig.label;</label>
+                      <hbox align="center">
+                        <label control="color.nosig.text">&color.text.label;</label>
+                        <textbox id="color.nosig.text" preference="extensions.dkim_verifier.color.nosig.text" width="100"/>
+                        <!-- <html:input type="color" preference="extensions.dkim_verifier.color.nosig.text"/> -->
+                        <label control="color.nosig.background">&color.background.label;</label>
+                        <textbox id="color.nosig.background" preference="extensions.dkim_verifier.color.nosig.background" width="100"/>
+                        <!-- <html:input type="color" preference="extensions.dkim_verifier.color.nosig.background"/> -->
+                      </hbox>
+                    </row>
+                  </rows>
+                </grid>
+              </groupbox>
+
+              <groupbox>
+                <hbox align="center">
+                  <label>&showDKIMHeader.label;</label>
+                  <menulist preference="extensions.dkim_verifier.showDKIMHeader">
+                    <menupopup>
+                      <menuitem label="&showDKIM.value.0.label;" value="0"/>
+                      <menuitem label="&showDKIM.value.10.label;" value="10"/>
+                      <menuitem label="&showDKIM.value.30.label;" value="30"/>
+                      <menuitem label="&showDKIM.value.40.label;" value="40"/>
+                      <menuitem label="&showDKIM.value.50.label;" value="50"/>
+                    </menupopup>
+                  </menulist>
+                  <spacer/>
+                </hbox>
+                <hbox align="center">
+                  <label>&showDKIMStatusbarpanel.label;</label>
+                  <menulist preference="extensions.dkim_verifier.showDKIMStatusbarpanel">
+                    <menupopup>
+                      <menuitem label="&showDKIM.value.0.label;" value="0"/>
+                      <menuitem label="&showDKIM.value.10.label;" value="10"/>
+                      <menuitem label="&showDKIM.value.30.label;" value="30"/>
+                      <menuitem label="&showDKIM.value.40.label;" value="40"/>
+                      <menuitem label="&showDKIM.value.50.label;" value="50"/>
+                    </menupopup>
+                  </menulist>
+                  <menulist preference="extensions.dkim_verifier.statusbarpanel.result.style">
+                    <menupopup>
+                      <menuitem label="&statusbarpanel.result.style.value.1.label;" value="1"/>
+                      <menuitem label="&statusbarpanel.result.style.value.2.label;" value="2"/>
+                    </menupopup>
+                  </menulist>
+                  <spacer/>
+                </hbox>
+                <hbox align="center">
+                  <label>&showDKIMFromTooltip.label;</label>
+                  <menulist preference="extensions.dkim_verifier.showDKIMFromTooltip">
+                    <menupopup>
+                      <menuitem label="&showDKIM.value.0.label;" value="0"/>
+                      <menuitem label="&showDKIM.value.10.label;" value="10"/>
+                      <menuitem label="&showDKIM.value.30.label;" value="30"/>
+                      <menuitem label="&showDKIM.value.40.label;" value="40"/>
+                      <menuitem label="&showDKIM.value.50.label;" value="50"/>
+                    </menupopup>
+                  </menulist>
+                  <spacer/>
+                </hbox>
+              </groupbox>
+
+              <checkbox preference="extensions.dkim_verifier.display.favicon.show"
+                        label="&display.favicon.show.label;"/>
+            </prefpane>
+
+            <prefpane id="paneAdvanced" label="&advanced.label;">
+
+              <checkbox preference="extensions.dkim_verifier.debug" label="&debug.label;"/>
+              <checkbox preference="extensions.dkim_verifier.error.detailedReasons" label="&error.detailedReasons.label;"/>
+              <checkbox preference="extensions.dkim_verifier.error.key_testmode.ignore"
+                        label="&error.key_testmode.ignore.label;"/>
+              <checkbox preference="extensions.dkim_verifier.display.keySecure"
+                        label="&display.keySecure.label;"/>
+              <checkbox preference="extensions.dkim_verifier.arh.replaceAddonResult"
+                        label="&arh.replaceAddonResult.label;"/>
+              <checkbox preference="extensions.dkim_verifier.arh.relaxedParsing"
+                        label="&arh.relaxedParsing.label;"/>
+              <hbox align="center">
+                <label>&error.illformed_i.treatAs.label;</label>
+                <menulist preference="extensions.dkim_verifier.error.illformed_i.treatAs">
+                  <menupopup>
+                    <menuitem label="&error.treatAs.value.0.label;" value="0"/>
+                    <menuitem label="&error.treatAs.value.1.label;" value="1"/>
+                    <menuitem label="&error.treatAs.value.2.label;" value="2"/>
+                  </menupopup>
+                </menulist>
+                <spacer/>
+              </hbox>
+              <hbox align="center">
+                <label>&error.illformed_s.treatAs.label;</label>
+                <menulist preference="extensions.dkim_verifier.error.illformed_s.treatAs">
+                  <menupopup>
+                    <menuitem label="&error.treatAs.value.0.label;" value="0"/>
+                    <menuitem label="&error.treatAs.value.1.label;" value="1"/>
+                    <menuitem label="&error.treatAs.value.2.label;" value="2"/>
+                  </menupopup>
+                </menulist>
+                <spacer/>
+              </hbox>
+              <hbox align="center">
+                <label>&error.policy.key_insecure.treatAs.label;</label>
+                <menulist preference="extensions.dkim_verifier.error.policy.key_insecure.treatAs">
+                  <menupopup>
+                    <menuitem label="&error.treatAs.value.0.label;" value="0"/>
+                    <menuitem label="&error.treatAs.value.1.label;" value="1"/>
+                    <menuitem label="&error.treatAs.value.2.label;" value="2"/>
+                  </menupopup>
+                </menulist>
+                <spacer/>
+              </hbox>
+
+            </prefpane>
+
+          </deck>
+        </hbox>
+      </hbox>
+    </hbox>
+  </stack>
+
+  <script type="application/javascript" src="chrome://global/content/preferencesBindings.js"/>
+  <script type="application/javascript" src="chrome://messenger/content/preferences/preferences.js"/>
+
+  <script type="application/javascript" src="chrome://dkim_verifier/content/options.js"/>
+
+</preftab>

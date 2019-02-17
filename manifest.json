@@ -5,7 +5,12 @@
 	"version": "3.0.0pre1",
 	"author": "Philippe Lieser",
 	"homepage_url": "https://github.com/lieser/dkim_verifier/wiki",
-	"legacy": true,
+	"legacy": {
+		"options": {
+			"page": "chrome://dkim_verifier/content/options.xul",
+			"open_in_tab": true
+		}
+	},
 	"applications": {
 		"gecko": {
 			"id": "dkim_verifier@pl",
