@@ -3,20 +3,36 @@
 
 <!DOCTYPE overlay SYSTEM "chrome://dkim_verifier/locale/xulstrings.dtd">
 
-<window title="&treeviewSignersDefault.title;" id="tree-window"
-   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-   onload="setView();">
+<window
+	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+	id="dkim_verifier-treeviewSignersDefault"
+	windowtype="dkim_verifier:treeviewSignersDefault"
+	title="&treeviewSignersDefault.title;"
+	drawtitle="true"
+	height="300"
+	width="600"
+	persist="width height screenX screenY sizemode"
+	onload="setView();"
+	onunload="unsetView();">
 
 <script type="text/javascript">
 Components.utils.import("resource://dkim_verifier/SQLiteTreeView.jsm");
 Components.utils.import("resource://dkim_verifier/dkimPolicy.jsm");
 
+var treeView;
+
 function setView(){
 	(async () => {
 		await Policy.initDB();
-		document.getElementById('my-tree').view = new SQLiteTreeView("dkimPolicy.sqlite","signersDefault",["domain","addr","sdid","ruletype","priority"]);
+		treeView = new SQLiteTreeView("dkimPolicy.sqlite","signersDefault",["domain","addr","sdid","ruletype","priority"]);
+		document.getElementById('my-tree').view = treeView;
 	})();
 }
+
+function unsetView() {
+	treeView.setTree();
+}
+
 </script>
 
 <tree id="my-tree" editable="false" enableColumnDrag="true" flex="1">

@@ -54,7 +54,7 @@
                       </menulist>
                       <button id="key.viewKeys"
                               label="&key.viewKeys.label;"
-                              oncommand="window.open('chrome://dkim_verifier/content/treeviewKeys.xul', 'dkimKeys', 'chrome,resizable,centerscreen,width=600,height=300');"/>
+                              oncommand="window.open('chrome://dkim_verifier/content/treeviewKeys.xul', 'dkimKeys', 'chrome,resizable,centerscreen,width=600,height=300,modal');"/>
                       <spacer/>
                     </hbox>
                     <checkbox preference="extensions.dkim_verifier.saveResult" label="&saveResult.label;"/>
@@ -171,10 +171,10 @@
                       <hbox>
                         <button id="viewSigners"
                                 label="&viewSigners.label;"
-                                oncommand="window.open('chrome://dkim_verifier/content/treeviewSigners.xul', 'SignersRules', 'chrome,resizable,centerscreen,width=600,height=300');"/>
+                                oncommand="toOpenWindowByType('dkim_verifier:treeviewSigners', 'chrome://dkim_verifier/content/treeviewSigners.xul');"/>
                         <button id="viewSignerDefaults"
                                 label="&viewSignerDefaults.label;"
-                                oncommand="window.open('chrome://dkim_verifier/content/treeviewSignersDefault.xul', 'SignersDefaultRules', 'chrome,resizable,centerscreen,width=600,height=300');"/>
+                                oncommand="toOpenWindowByType('dkim_verifier:treeviewSignersDefault', 'chrome://dkim_verifier/content/treeviewSignersDefault.xul');"/>
                         <spacer/>
                       </hbox>
                     </vbox>
@@ -359,6 +359,8 @@
       </hbox>
     </hbox>
   </stack>
+
+  <script type="application/javascript" src="chrome://messenger/content/mailCore.js"/>
 
   <script type="application/javascript" src="chrome://global/content/preferencesBindings.js"/>
   <script type="application/javascript" src="chrome://messenger/content/preferences/preferences.js"/>
