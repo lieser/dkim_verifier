@@ -1,7 +1,4 @@
 <!ENTITY dkim_verifier.header.title "DKIM ">
-<!ENTITY dkim_verifier.header.spf "SPF:">
-<!ENTITY dkim_verifier.header.dmarc "DMARC:">
-<!ENTITY dkim_verifier.statusbar.title "DKIM:">
 
 <!ENTITY dkim_verifier.reverifyDKIMSignature.label "Revérifier la signature DKIM">
 <!ENTITY dkim_verifier.policyAddUserException.label "Ajouter une exception doit être signé">

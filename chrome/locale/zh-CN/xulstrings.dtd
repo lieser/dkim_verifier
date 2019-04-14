@@ -1,7 +1,4 @@
 <!ENTITY dkim_verifier.header.title "DKIM">
-<!ENTITY dkim_verifier.header.spf "SPF:">
-<!ENTITY dkim_verifier.header.dmarc "DMARC:">
-<!ENTITY dkim_verifier.statusbar.title "DKIM:">
 <!ENTITY dkim_verifier.reverifyDKIMSignature.label "重新验证 DKIM 签名">
 <!ENTITY dkim_verifier.policyAddUserException.label "添加“必须被签名”例外">
 <!ENTITY dkim_verifier.markKeyAsSecure.label "标记 DKIM 密钥为安全">
