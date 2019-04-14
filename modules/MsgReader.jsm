@@ -73,11 +73,23 @@ var MsgReader = {
 						throw Components.results.NS_NOINTERFACE;
 			},
 
-			onDataAvailable: function ( request , context , inputStream , offset , count ) {
+			onDataAvailable: function ( ...args /* request, context, inputStream, offset, count */ ) {
 				let str;
 				let NewlineLength = 2;
+				let inputStream;
+				let count;
 
 				try {
+					// The new API dropped the context parameter
+					// TODO: change signature for onDataAvailable/onStartRequest/onStopRequest if droping support for pre TB 68
+					if (args[1] instanceof Ci.nsIInputStream) {
+						inputStream = args[1];
+						count = args[3];
+					} else {
+						inputStream = args[2];
+						count = args[4];
+					}
+
 					var scriptableInputStream = Components.classes["@mozilla.org/scriptableinputstream;1"].
 						createInstance(Components.interfaces.nsIScriptableInputStream);
 					scriptableInputStream.init(inputStream);

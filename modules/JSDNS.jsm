@@ -1056,13 +1056,24 @@ function DNS_readAllFromSocket(host,port,outputData,listener)
 			onStartRequest: function(/* request, context */){},
 			onStopRequest: function(request, context, status){
 				if (listener.finished !== null) {
-					listener.finished(this.data, status);
+					// The new API dropped the context parameter
+					// TODO: change signature for onStopRequest if droping support for pre TB 68
+					listener.finished(this.data, status || context);
 				}
 				outstream.close();
 				stream.close();
 				//DNS_Debug("DNS: Connection closed (" + host + ")");
 			},
-			onDataAvailable: function(request, context, inputStream, offset, count){
+			onDataAvailable: function( ...args /* request, context, inputStream, offset, count */ ){
+				// The new API dropped the context parameter
+				// TODO: change signature for onDataAvailable/onStartRequest if droping support for pre TB 68
+				let count;
+				if (args[1] instanceof Ci.nsIInputStream) {
+					count = args[3];
+				} else {
+					count = args[4];
+				}
+
 				//DNS_Debug("DNS: Got data (" + host + ")");
 				for (var i = 0; i < count; i++) {
 					this.data += String.fromCharCode(instream.read8());
