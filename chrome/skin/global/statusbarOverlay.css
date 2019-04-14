@@ -1,9 +1,5 @@
 @namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
 
-#dkim-verifier-statusbarpanel {
-  -moz-binding: url(chrome://dkim_verifier/content/bindings.xml#dkim-verifier-statusbarpanel-box) !important;
-}
-
 #dkim-verifier-statusbarpanel  [anonid="statusValue"] {
   -moz-margin-start: -2px;
 }

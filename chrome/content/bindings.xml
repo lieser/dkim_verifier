@@ -9,64 +9,6 @@
           xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
           xmlns:xbl="http://www.mozilla.org/xbl">
   
-  <binding id="dkim-verifier-statusbarpanel-box">
-    <content dkimStatus="loading">
-      <statusbarpanel anonid="statusbarpanel-box">
-        <xul:label anonid="title"
-                   class="statusbarpanel-text"
-                   value="&dkim_verifier.statusbar.title;" />
-        <xul:label anonid="statusValue"
-                   class="statusbarpanel-text"
-                   readonly="true"
-                   context="copyPopup"
-                   role="textbox"
-                   aria-readonly="true" />
-        <xul:image anonid="warning-icon"
-                   class="alert-icon"
-                   tooltip="dkim-verifier-header-tooltip-warnings"/>
-        <xul:image anonid="status-icon"
-                   class="statusbarpanel-icon"
-                   tooltip="dkim-verifier-tooltip-status"
-                   hidden="true"/>
-      </statusbarpanel>
-    </content>
-    <implementation>
-      <field name="statusbarpanelBox">document.getAnonymousElementByAttribute(this, "anonid", "statusbarpanel-box");</field>
-      <field name="statusValue">document.getAnonymousElementByAttribute(this, "anonid", "statusValue");</field>
-      <field name="warningIcon">document.getAnonymousElementByAttribute(this, "anonid", "warning-icon");</field>
-      <field name="statusIcon">document.getAnonymousElementByAttribute(this, "anonid", "status-icon");</field>
-
-      <property name="hidden">
-        <setter><![CDATA[
-          this.statusbarpanelBox.hidden = val;
-        ]]></setter>
-      </property>
-      <property name="value">
-        <setter><![CDATA[
-          this.statusValue.textContent = val;
-        ]]></setter>
-      </property>
-      <property name="warnings">
-        <setter><![CDATA[
-          // set warnings attribute
-          this.setAttribute("warnings", (val.length > 0).toString());
-        ]]></setter>
-      </property>
-      <property name="dkimStatus">
-        <setter><![CDATA[
-          this.setAttribute('dkimStatus', val);
-        ]]></setter>
-      </property>
-      <property name="useIcons">
-        <setter><![CDATA[
-          this.statusValue.setAttribute('hidden', val);
-          this.warningIcon.setAttribute('hidden', val);
-          this.statusIcon.setAttribute('hidden', !val);
-        ]]></setter>
-      </property>
-    </implementation>
-  </binding>
-  
   <binding id="dkim-mail-multi-emailHeaderField"
            extends="chrome://messenger/content/mailWidgets.xml#mail-multi-emailHeaderField">
     <content>

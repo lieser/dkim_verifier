@@ -34,7 +34,7 @@ const PREF_BRANCH = "extensions.dkim_verifier.";
 
 
 /**
- * Base class for DKIM tooltips
+ * DKIM header field
  */
 class DKIMHeaderfield extends MozXULElement {
 	constructor() {
@@ -289,6 +289,85 @@ customElements.define("dkim-tooltip-warnings", DKIMWarningsTooltip, { extends: '
 customElements.define("dkim-tooltip-from", DKIMTooltipFrom, { extends: 'tooltip' });
 customElements.define("dkim-tooltip-status", DKIMTooltipStatus, { extends: 'tooltip' });
 
+/**
+ * DKIM statusbar
+ */
+class DKIMStatusbarpanel extends MozXULElement {
+	constructor() {
+		super();
+
+		this._label = document.createElement("label");
+		this._label.classList.add("statusbarpanel-text");
+		this._label.textContent = "DKIM:";
+
+		// DKIM result
+		this._dkimValue = document.createElement("label");
+		this._dkimValue.classList.add("statusbarpanel-text");
+		this._dkimValue.setAttribute("anonid", "statusValue");
+		this._dkimValue.setAttribute("context", "copyPopup");
+
+		// DKIM warning icon
+		this._dkimWarningIcon = document.createElement("image");
+		this._dkimWarningIcon.classList.add("alert-icon");
+		this._dkimWarningIcon.setAttribute("anonid", "warning-icon");
+		this._dkimWarningIcon.setAttribute("tooltip", "dkim-verifier-header-tooltip-warnings");
+
+		// DKIM status icon
+		this._dkimStatusIcon = document.createElement("image");
+		this._dkimStatusIcon.setAttribute("anonid", "status-icon");
+		this._dkimStatusIcon.setAttribute("tooltip", "dkim-verifier-tooltip-status");
+
+		this.appendChild(this._label);
+		this.appendChild(this._dkimValue);
+		this.appendChild(this._dkimWarningIcon);
+		this.appendChild(this._dkimStatusIcon);
+	}
+
+	/**
+	 * Set the DKIM result
+	 *
+	 * @memberof DKIMStatusbarpanel
+	 * @param {String} val
+	 */
+	set value(val) {
+		this._dkimValue.textContent = val;
+	}
+
+	/**
+	 * Set the DKIM warnings
+	 *
+	 * @memberof DKIMStatusbarpanel
+	 * @param {String[]} warnings
+	 */
+	set warnings(warnings) {
+		this.setAttribute("warnings", (warnings.length > 0).toString() );
+	}
+
+	/**
+	 * Set the current status of DKIM validation
+	 *
+	 * @memberof DKIMStatusbarpanel
+	 * @param {String} status
+	 */
+	set dkimStatus(status) {
+		this.setAttribute('dkimStatus', status);
+	}
+
+	/**
+	 * Set whether to only show an icon for the DKIM result
+	 *
+	 * @memberof DKIMStatusbarpanel
+	 * @param {Boolean} useIcons
+	 */
+	set useIcons(useIcons) {
+		this._dkimValue.hidden = useIcons;
+		this._dkimWarningIcon.hidden = useIcons;
+		this._dkimStatusIcon.hidden = !useIcons;
+  }
+}
+
+customElements.define("dkim-verifier-statusbarpanel", DKIMStatusbarpanel, {extends: 'statusbarpanel'});
+
 // TODO: remove workaround for pre TB 68 (also css and xul binding for mail-multi-emailHeaderField)
 if (typeof MozMailMultiEmailheaderfield !== "undefined") {
 Object.defineProperty(MozMailMultiEmailheaderfield.prototype, "dkimFaviconUrl", {
@@ -347,6 +426,7 @@ DKIM_Verifier.Display = (function() {
 	var headerTooltipFrom;
 	/** @type {DKIMTooltipStatus} */
 	var statusbarTooltip;
+	/** @type {DKIMStatusbarpanel} */
 	var statusbarPanel;
 	var expandedFromBox;
 	var collapsed1LfromBox; // for CompactHeader addon
@@ -678,6 +758,7 @@ var that = {
 			// @ts-ignore
 			statusbarTooltip = document.getElementById("dkim-verifier-tooltip-status");
 			console.assert(statusbarTooltip !== null, "dkim-verifier-tooltip-status not found");
+			// @ts-ignore
 			statusbarPanel = document.getElementById("dkim-verifier-statusbarpanel");
 			expandedFromBox = document.getElementById("expandedfromBox");
 			collapsed1LfromBox = document.getElementById("CompactHeader_collapsed1LfromBox");
