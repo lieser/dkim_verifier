@@ -3,9 +3,9 @@
  * 
  * Reads and parses a message.
  *
- * Version: 2.1.0 (02 January 2018)
+ * Version: 2.1.1pre1 (14 April 2019)
  * 
- * Copyright (c) 2014-2018 Philippe Lieser
+ * Copyright (c) 2014-2019 Philippe Lieser
  * 
  * This software is licensed under the terms of the MIT License.
  * 
@@ -22,7 +22,7 @@
 "use strict";
 
 // @ts-ignore
-const module_version = "2.1.0";
+const module_version = "2.1.1";
 
 var EXPORTED_SYMBOLS = [
 	"MsgReader"
