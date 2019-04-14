@@ -6,8 +6,6 @@
 <dialog title="&addSignersRule.title;"
   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
   buttons="accept,cancel"
-  ondialogaccept="return onAccept();"
-  ondialogcancel="return onCancel();"
   onload="init();">
 <!--
   buttonlabelcancel="Cancel"

@@ -503,7 +503,7 @@ function dkimResultV1_to_dkimSigResultV2(dkimResultV1) {
  * Convert dkimSigResultV2 to AuthResultDKIM
  * 
  * @param {dkimSigResultV2} dkimSigResult
- * @return {AuthResultDKIM}
+ * @return {IAuthVerifier.AuthResultDKIM}
  * @throws DKIM_InternalError
  */
 function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-line complexity
@@ -653,14 +653,19 @@ async function SavedAuthResult_to_AuthResult(savedAuthResult) { // eslint-disabl
 /**
  * Convert AuthResultV2 to dkimSigResultV2
  * 
- * @param {AuthResultDKIMV2} authResultDKIM
+ * @param {IAuthVerifier.AuthResultDKIMV2} authResultDKIM
  * @return {dkimSigResultV2} dkimSigResultV2
  */
 function AuthResultDKIMV2_to_dkimSigResultV2(authResultDKIM) {
+	/** @type {dkimSigResultV2} */
 	let dkimSigResult = authResultDKIM;
+	// @ts-ignore
 	dkimSigResult.res_num = undefined;
+	// @ts-ignore
 	dkimSigResult.result_str = undefined;
+	// @ts-ignore
 	dkimSigResult.warnings_str = undefined;
+	// @ts-ignore
 	dkimSigResult.favicon = undefined;
 	return dkimSigResult;
 }

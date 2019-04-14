@@ -1,3 +1,5 @@
+"use strict";
+
 Components.utils.import("resource://dkim_verifier/logging.jsm");
 Components.utils.import("resource://dkim_verifier/dkimPolicy.jsm");
 
@@ -51,3 +53,11 @@ function updatePriorityMode() {
 function init() {
 	updatePriorityMode();
 }
+
+document.addEventListener("dialogaccept", function(event) {
+	return onAccept();
+});
+
+document.addEventListener("dialogcancel", function(event) {
+	return onCancel();
+});

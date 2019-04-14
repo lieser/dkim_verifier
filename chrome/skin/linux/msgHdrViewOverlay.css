@@ -1,6 +1,6 @@
 @namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
 
-#expandeddkim-verifierBox > image {
+#expandeddkim-verifierBox image {
   /* compare: .emailStar */
   max-width: 1.2em;
   max-height: 1.2em;

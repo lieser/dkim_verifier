@@ -16,7 +16,7 @@
 /* eslint-env browser */
 /* eslint strict: ["warn", "function"] */
 /* eslint no-console: "off"*/
-/* global Components, Cu, Services, gMessageListeners, gFolderDisplay, gExpandedHeaderView, createHeaderEntry, syncGridColumnWidths, currentHeaderData, gMessageDisplay, XULPopupElement */
+/* global Components, Cu, Services, gMessageListeners, gFolderDisplay, gExpandedHeaderView, createHeaderEntry, syncGridColumnWidths, currentHeaderData, gMessageDisplay, MozXULElement, XULPopupElement */
 
 // namespace
 // @ts-ignore
@@ -30,6 +30,144 @@ Cu.import("resource://dkim_verifier/dkimKey.jsm", DKIM_Verifier);
 
 // @ts-ignore
 const PREF_BRANCH = "extensions.dkim_verifier.";
+
+
+/**
+ * Base class for DKIM tooltips
+ */
+class DKIMHeaderfield extends MozXULElement {
+	constructor() {
+		super();
+
+		/** @type{IAuthVerifier.AuthResultDKIM[]} */
+		this.dkimResults = [];
+
+		this.setAttribute("context", "copyPopup");
+
+		this._content = document.createElement("hbox");
+
+		// DKIM result
+		this._dkimValue = document.createElement("description");
+		this._dkimValue.classList.add("headerValue");
+
+		// DKIM warning icon
+		this._dkimWarningIcon = document.createElement("image");
+		this._dkimWarningIcon.classList.add("alert-icon");
+		this._dkimWarningIcon.setAttribute("anonid", "dkimWarningIcon");
+		this._dkimWarningIcon.setAttribute("tooltip", "dkim-verifier-header-tooltip-warnings");
+
+		/**
+		 * Create element for ARH result
+		 *
+		 * @param {String} anonid
+		 * @param {String} labelValue
+		 * @returns {{box: Element, value: Element}}
+		 */
+		function createArh(anonid, labelValue) {
+			let box = document.createElement("hbox");
+			box.setAttribute("anonid", anonid);
+
+			let label = document.createElement("description");
+			label.classList.add("headerValue");
+			label.setAttribute("style", "text-align: right");
+			label.textContent = labelValue;
+
+			let value = document.createElement("description");
+			value.classList.add("headerValue");
+
+			box.appendChild(label);
+			box.appendChild(value);
+
+			return {
+				box: box,
+				value: value,
+			};
+		}
+
+		// ARH result
+		this._arhDkim = createArh("arhDkim", "DKIM:");
+		this._arhSpf = createArh("spf", "SPF:");
+		this._arhDmarc = createArh("dmarc", "DMARC:");
+
+		this._separator = document.createElement("separator");
+		this._separator.setAttribute("flex", "1");
+
+		this.appendChild(this._content);
+		this._content.appendChild(this._dkimValue);
+		this._content.appendChild(this._dkimWarningIcon);
+		this._content.appendChild(this._arhDkim.box);
+		this._content.appendChild(this._arhSpf.box);
+		this._content.appendChild(this._arhDmarc.box);
+		this._content.appendChild(this._separator);
+	}
+
+	/**
+	 * Set the DKIM result
+	 *
+	 * @memberof DKIMHeaderfield
+	 * @param {String} val
+	 */
+	set value(val) {
+		this._dkimValue.textContent = val;
+	}
+
+	/**
+	 * Set the DKIM warnings
+	 *
+	 * @memberof DKIMHeaderfield
+	 * @param {String[]} warnings
+	 */
+	set warnings(warnings) {
+		this.setAttribute("warnings", (warnings.length > 0).toString() );
+	}
+
+	/**
+	 * Set the SPF result
+	 *
+	 * @memberof DKIMHeaderfield
+	 * @param {String} val
+	 */
+	set spfValue(val) {
+		if (val) {
+			this.setAttribute("spf", "true");
+		} else {
+			this.setAttribute("spf", "false");
+		}
+		this._arhSpf.value.textContent = val;
+	}
+
+	/**
+	 * Set the DMARC result
+	 *
+	 * @memberof DKIMHeaderfield
+	 * @param {String} val
+	 */
+	set dmarcValue(val) {
+		if (val) {
+			this.setAttribute("dmarc", "true");
+		} else {
+			this.setAttribute("dmarc", "false");
+		}
+		this._arhDmarc.value.textContent = val;
+	}
+
+	/**
+	 * Set the DKIM result from the ARH
+	 *
+	 * @memberof DKIMHeaderfield
+	 * @param {String} val
+	 */
+	set arhDkimValue(val) {
+		if (val) {
+			this.setAttribute("arhDkim", "true");
+		} else {
+			this.setAttribute("arhDkim", "false");
+		}
+		this._arhDkim.value.textContent = val;
+	}
+}
+
+customElements.define("dkim-verifier-headerfield", DKIMHeaderfield);
 
 /**
  * Base class for DKIM tooltips
@@ -166,7 +304,7 @@ DKIM_Verifier.Display = (function() {
  */
 	const entry = "dkim-verifier";
 	var log = DKIM_Verifier.Logging.getLogger("Display");
-	/** @type {AuthResultElement} */
+	/** @type {DKIMHeaderfield} */
 	var header;
 	var row;
 	/** @type {DKIMWarningsTooltip} */

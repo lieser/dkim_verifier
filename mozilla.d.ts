@@ -222,6 +222,8 @@ interface mozIStorageStatement extends mozIStorageBaseStatement {
     readonly numEntries: number;
 }
 
+declare class MozXULElement extends XULElement {};
+
 interface nsIAsyncStreamCopier {nsIAsyncStreamCopier: never}
 interface nsIChannel {nsIChannel: never}
 
@@ -330,7 +332,7 @@ interface nsIXULAppInfo {
 
 interface nsresult {nsresult: never};
 
-declare class XULElement extends Element {};
+declare class XULElement extends HTMLElement {};
 
 declare class XULPopupElement extends XULElement {};
 
