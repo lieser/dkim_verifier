@@ -16,7 +16,8 @@
 /* eslint-env browser */
 /* eslint strict: ["warn", "function"] */
 /* eslint no-console: "off"*/
-/* global Components, Cu, Services, gMessageListeners, gFolderDisplay, gExpandedHeaderView, createHeaderEntry, syncGridColumnWidths, currentHeaderData, gMessageDisplay, MozXULElement, XULPopupElement */
+/* global Components, Cu, Services, gMessageListeners, gFolderDisplay, gExpandedHeaderView, createHeaderEntry, syncGridColumnWidths, currentHeaderData, gMessageDisplay */
+/* global MozMailMultiEmailheaderfield, MozXULElement, XULPopupElement */
 
 // namespace
 // @ts-ignore
@@ -287,6 +288,39 @@ class DKIMTooltipStatus extends DKIMTooltip {
 customElements.define("dkim-tooltip-warnings", DKIMWarningsTooltip, { extends: 'tooltip' });
 customElements.define("dkim-tooltip-from", DKIMTooltipFrom, { extends: 'tooltip' });
 customElements.define("dkim-tooltip-status", DKIMTooltipStatus, { extends: 'tooltip' });
+
+// TODO: remove workaround for pre TB 68 (also css and xul binding for mail-multi-emailHeaderField)
+if (typeof MozMailMultiEmailheaderfield !== "undefined") {
+Object.defineProperty(MozMailMultiEmailheaderfield.prototype, "dkimFaviconUrl", {
+	/**
+	 * Set the favicon icon to show before the email address
+	 *
+	 * @memberof MozMailMultiEmailheaderfield
+	 * @param {String} url
+	 * @return {Void}
+	 */
+	set: function dkimFaviconUrl(url) {
+		"use strict";
+
+		if (!this._dkimFavicon) {
+			this._dkimFavicon = document.createElement("description");
+			this._dkimFavicon.classList.add("headerValue");
+			this._dkimFavicon.setAttribute("anonid", "dkimFavicon");
+			this._dkimFavicon.setAttribute("tooltip", "dkim-verifier-header-tooltip-from");
+			// dummy text for align baseline
+			this._dkimFavicon.textContent = "";
+			this.longEmailAddresses.prepend(this._dkimFavicon);
+		}
+
+		this._dkimFavicon.style.backgroundImage = "url('" + url + "')";
+		if (url) {
+		  this.setAttribute("dkimFavicon", true);
+		} else {
+		  this.setAttribute("dkimFavicon", false);
+		}
+	}
+});
+}
 
 /*
  * DKIM Verifier display module

@@ -28,9 +28,22 @@ mail-multi-emailHeaderField:not([dkimFavicon="true"]) [anonid="dkimFavicon"] {
   display: none;
 }
 
+mail-multi-emailheaderfield:not([dkimFavicon="true"]) [anonid="dkimFavicon"] {
+  display: none;
+}
+
 mail-multi-emailHeaderField [anonid="dkimFavicon"] {
   min-width: 0px !important;
   width: 1.5em;
   height: 1.5em;
   background-size: contain;
+}
+
+mail-multi-emailheaderfield [anonid="dkimFavicon"] {
+  min-width: 0px !important;
+  width: 1.5em;
+  height: 1.5em;
+  background-size: contain;
+  background-position: center center;
+  background-repeat: no-repeat;
 }

@@ -339,6 +339,8 @@ declare class XULPopupElement extends XULElement {};
 ////////////////////////////////////////////////////////////////////////////////
 //// Thunderbird specific interfaces
 
+declare class MozMailMultiEmailheaderfield extends MozXULElement {};
+
 interface nsIMsgDBHdr {
     getStringProperty(propertyName: string): string;
     setStringProperty(propertyName: string, propertyValue: string);
