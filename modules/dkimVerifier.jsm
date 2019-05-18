@@ -3,10 +3,11 @@
  *
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
+ * Update done by RFC 8301 included https://tools.ietf.org/html/rfc8301
  * 
- * Version: 2.2.0 (01 April 2018)
+ * Version: 2.3.0 (18 Mai 2019)
  * 
- * Copyright (c) 2013-2018 Philippe Lieser
+ * Copyright (c) 2013-2019 Philippe Lieser
  * 
  * This software is licensed under the terms of the MIT License.
  * 
@@ -31,7 +32,7 @@
 /* exported EXPORTED_SYMBOLS, Verifier */
 
 // @ts-ignore
-const module_version = "2.2.0";
+const module_version = "2.3.0";
 
 var EXPORTED_SYMBOLS = [
 	"Verifier"
@@ -320,8 +321,13 @@ var Verifier = (function() {
 		// get public exponent
 		let e_hex = RSA.ASN1HEX.getV(asnKey,posKeyArray[1]);
 
-		// warning if key is short
 		if (m_hex.length * 4 < 1024) {
+			// error if key is too short
+			log.debug("rsa key size: " + m_hex.length * 4);
+			throw new DKIM_SigError( "DKIM_SIGWARNING_KEYSMALL" );
+		} else if (m_hex.length * 4 < 2048) {
+			// warning if key is short
+			log.debug("rsa key size: " + m_hex.length * 4);
 			warnings.push({name: "DKIM_SIGWARNING_KEYSMALL"});
 			log.debug("Warning: DKIM_SIGWARNING_KEYSMALL");
 		}
@@ -490,7 +496,21 @@ var Verifier = (function() {
 		if (algorithmTag === null) {
 			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_A");
 		}
-		if (algorithmTag[0] === "rsa-sha1" || algorithmTag[0] === "rsa-sha256") {
+		if (algorithmTag[0] === "rsa-sha256") {
+			DKIMSignature.a_sig = algorithmTag[1];
+			DKIMSignature.a_hash = algorithmTag[2];
+		} else if (algorithmTag[0] === "rsa-sha1") {
+			switch (prefs.getIntPref("error.algorithm.sign.rsa-sha1.treatAs")) {
+				case 0: // error
+					throw new DKIM_SigError("DKIM_SIGERROR_INSECURE_A");
+				case 1: // warning
+					DKIMSignature.warnings.push({ name: "DKIM_SIGERROR_INSECURE_A" });
+					break;
+				case 2: // ignore
+					break;
+				default:
+					throw new DKIM_InternalError("invalid error.algorithm.sign.rsa-sha1.treatAs");
+			}
 			DKIMSignature.a_sig = algorithmTag[1];
 			DKIMSignature.a_hash = algorithmTag[2];
 		} else {

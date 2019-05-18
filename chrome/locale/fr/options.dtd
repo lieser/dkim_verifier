@@ -77,6 +77,7 @@
 <!ENTITY error.illformed_i.treatAs.label "Traiter l'étiquette AUID malformée comme">
 <!ENTITY error.illformed_s.treatAs.label "Traiter l'étiquette du sélecteur malformée comme">
 <!ENTITY error.policy.key_insecure.treatAs.label "Traiter un clé DKIM qui nest pas signé par DNSSEC">
+<!ENTITY error.algorithm.sign.rsa-sha1.treatAs.label "Treat rsa-sha1 sign algorithm as">
 
 <!ENTITY error.treatAs.value.0.label "erreur">
 <!ENTITY error.treatAs.value.1.label "avertissement">
