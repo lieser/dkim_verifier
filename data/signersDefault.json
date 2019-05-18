@@ -1,7 +1,7 @@
 {
 	"$schema": "./signersDefault-schema.json",
 	"versionTable": 1,
-	"versionData": 21,
+	"versionData": 22,
 	"rules": [
 		{
 			"domain": "1und1.de",
@@ -58,6 +58,18 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "amazon.fr",
+			"addr": "*",
+			"sdid": "amazon.fr",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "amazon.it",
+			"addr": "*",
+			"sdid": "amazon.it",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "amazonses.com",
 			"addr": "*",
 			"sdid": "amazonses.com",
@@ -79,6 +91,12 @@
 			"domain": "apple.com",
 			"addr": "*@insideapple.apple.com",
 			"sdid": "insideapple.apple.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "arubapec.it",
+			"addr": "*",
+			"sdid": "arubapec.it aruba.it",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -115,6 +133,12 @@
 			"domain": "billpay.de",
 			"addr": "*",
 			"sdid": "billpay.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "bingads.com",
+			"addr": "*",
+			"sdid": "bingads.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -187,6 +211,12 @@
 			"domain": "chocolatey.io",
 			"addr": "*",
 			"sdid": "chocolatey.io",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "cisco.com",
+			"addr": "*",
+			"sdid": "cisco.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -274,15 +304,39 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "envato.com",
+			"addr": "*",
+			"sdid": "envato.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "europcar-news.com",
 			"addr": "*",
 			"sdid": "europcar-news.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "f-secure.com",
+			"addr": "*",
+			"sdid": "f-secure.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "facebook.com",
+			"addr": "*@support.facebook.com",
+			"sdid": "facebook.com support.facebook.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "facebookmail.com",
 			"addr": "*",
 			"sdid": "facebookmail.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "fbworkmail.com",
+			"addr": "*",
+			"sdid": "fbworkmail.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -400,6 +454,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL0"
 		}, {
+			"domain": "grandstream.com",
+			"addr": "*",
+			"sdid": "grandstream.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "guildwars2.com",
 			"addr": "*",
 			"sdid": "guildwars2.com",
@@ -439,6 +499,12 @@
 			"domain": "immobilienscout24.de",
 			"addr": "*",
 			"sdid": "immobilienscout24.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "instagram.com",
+			"addr": "*",
+			"sdid": "instagram.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -597,6 +663,12 @@
 			"sdid": "paypal.de mail.paypal.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
+			"domain": "pec.it",
+			"addr": "*",
+			"sdid": "pec.it aruba.it",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
 		}, {
 			"domain": "perdue.com",
 			"addr": "*",
@@ -760,6 +832,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "wordpress.org",
+			"addr": "*",
+			"sdid": "wordpress.org",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "yahoo.com",
 			"addr": "*",
 			"sdid": "yahoo.com",
@@ -783,6 +861,12 @@
 			"sdid": "yandex.ru",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL0"
+		}, {
+			"domain": "yandex-team.ru",
+			"addr": "*",
+			"sdid": "yandex-team.ru",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
 		}, {
 			"domain": "ymail.com",
 			"addr": "*",
