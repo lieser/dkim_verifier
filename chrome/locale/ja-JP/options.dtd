@@ -77,7 +77,7 @@
 <!ENTITY error.illformed_i.treatAs.label "不正な形式の AUID タグを">
 <!ENTITY error.illformed_s.treatAs.label "不正な形式のセレクタタグを">
 <!ENTITY error.policy.key_insecure.treatAs.label "DNSSEC によりセキュアにされていない DKIM キーを">
-<!ENTITY error.algorithm.sign.rsa-sha1.treatAs.label "Treat rsa-sha1 sign algorithm as">
+<!ENTITY error.algorithm.sign.rsa-sha1.treatAs.label "rsa-sha1 署名アルゴリズムを">
 
 <!ENTITY error.treatAs.value.0.label "エラーとする">
 <!ENTITY error.treatAs.value.1.label "警告とする">
