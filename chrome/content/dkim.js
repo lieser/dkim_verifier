@@ -46,6 +46,7 @@ DKIM_Verifier.Display = (function() {
  */
 	const entry = "dkim-verifier";
 	var log = DKIM_Verifier.Logging.getLogger("Display");
+	/** @type {AuthResultElement} */
 	var header;
 	var row;
 	var headerTooltips;
@@ -178,7 +179,7 @@ DKIM_Verifier.Display = (function() {
 	 */
 	function displayResult(result) {
 		log.trace("displayResult begin");
-		header.dkimResult = result.dkim[0];
+		header.dkimResults = result.dkim;
 		statusbarPanel.dkimStatus = result.dkim[0].result;
 		that.setCollapsed(result.dkim[0].res_num);
 		header.value = result.dkim[0].result_str;
@@ -637,13 +638,13 @@ var that = {
 	},
 
 	/*
-	 * mark stored DKIM key as secure
+	 * mark the stored DKIM key of the shown DKIM signature as secure
 	 */
 	markKeyAsSecure : function Display_markKeyAsSecure() {
 		let promise = (async () => {
 			log.trace("markKeyAsSecure Task");
 			await DKIM_Verifier.Key.markKeyAsSecure(
-				header.dkimResult.sdid, header.dkimResult.selector);
+				header.dkimResults[0].sdid, header.dkimResults[0].selector);
 			
 			that.reverify();
 		})();
@@ -653,13 +654,15 @@ var that = {
 	},
 
 	/*
-	 * update stored DKIM key
+	 * update the stored DKIM key of all DKIM signatures
 	 */
 	updateKey : function Display_updateKey() {
 		let promise = (async () => {
 			log.trace("updateKey Task");
-			await DKIM_Verifier.Key.deleteKey(
-				header.dkimResult.sdid, header.dkimResult.selector);
+			for (let dkimResult of header.dkimResults) {
+				await DKIM_Verifier.Key.deleteKey(
+					dkimResult.sdid, dkimResult.selector);
+			}
 			
 			that.reverify();
 		})();

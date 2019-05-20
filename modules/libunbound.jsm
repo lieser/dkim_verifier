@@ -4,9 +4,9 @@
  * Wrapper for the libunbound DNS library. The actual work is done in the
  * ChromeWorker libunboundWorker.jsm.
  *
- * Version: 2.2.0pre1 (14 November 2017)
+ * Version: 2.2.0 (02 January 2018)
  * 
- * Copyright (c) 2013-2017 Philippe Lieser
+ * Copyright (c) 2013-2018 Philippe Lieser
  * 
  * This software is licensed under the terms of the MIT License.
  * 
@@ -22,7 +22,7 @@
 "use strict";
 
 // @ts-ignore
-const module_version = "2.2.0pre1";
+const module_version = "2.2.0";
 
 var EXPORTED_SYMBOLS = [
 	"libunbound"

@@ -4,9 +4,9 @@
  * Based on Joshua Tauberer's DNS LIBRARY IN JAVASCRIPT
  * from "Sender Verification Extension" version 0.9.0.6
  * 
- * Version: 1.4.0pre1 (28 January 2018)
+ * Version: 1.4.1 (13 January 2019)
  * 
- * Copyright (c) 2013-2018 Philippe Lieser
+ * Copyright (c) 2013-2019 Philippe Lieser
  * 
  * This software is licensed under the terms of the MIT License.
  * 
@@ -54,6 +54,10 @@
 /*
  * Changelog:
  * ==========
+ *
+ * 1.4.1
+ * -----
+ *  - fixed a problem getting the default DNS servers on Windows
  *
  * 1.4.0
  * -----
@@ -365,6 +369,7 @@ function DNS_get_OS_DNSServers() {
 		// Firefox 1.5 or newer on Windows
 		// Try getting a nameserver from the windows registry
 		var reg;
+		/** @type {nsIWindowsRegKey} */
 		var registry;
 		var registryLinkage;
 		var registryInterfaces;
@@ -398,9 +403,13 @@ function DNS_get_OS_DNSServers() {
 			var registryDevInterfaces = registry.openChild(
 				"Control\\DeviceClasses\\{cac88484-7515-4c03-82e6-71a87abac361}",
 				registry.ACCESS_QUERY_VALUE);
-			interfaces = interfaces.filter(function (element /*, index, array*/) {
+			var interfacesOnline = interfaces.filter(function (element /*, index, array*/) {
 				reg = registryNetworkAdapters.openChild(element + "\\Connection",
 					registry.ACCESS_READ);
+				if (!reg.hasValue("PnpInstanceID")) {
+					log.debug("Network Adapter has no PnpInstanceID: " + element);
+					return false;
+				}
 				var interfaceID = reg.readStringValue("PnpInstanceID");
 				reg.close();
 				var interfaceID_ = interfaceID.replace(/\\/g, "#");
@@ -422,13 +431,16 @@ function DNS_get_OS_DNSServers() {
 				log.debug("Interface deactivated: " + interfaceID);
 				return false;
 			});
+			if (interfacesOnline.length === 0) {
+				interfacesOnline = interfaces;
+			}
 			
 			// get NameServer and DhcpNameServer of all interfaces
 			registryInterfaces = registry.openChild(
 				"Services\\Tcpip\\Parameters\\Interfaces",
 				registry.ACCESS_READ);
 			var ns = "";
-			for (var i=0; i < interfaces.length; i++) {
+			for (var i=0; i < interfacesOnline.length; i++) {
 				reg = registryInterfaces.openChild(interfaces[i],	registry.ACCESS_READ);
 				if (reg.hasValue("NameServer")) {
 					ns += " " + reg.readStringValue("NameServer");
@@ -455,6 +467,7 @@ function DNS_get_OS_DNSServers() {
 		} catch (e) {
 			log.error("Error reading Registry: " + e + "\n" + e.stack);
 		} finally {
+			// @ts-ignore
 			if (registry) {
 				registry.close();
 			}

@@ -77,6 +77,7 @@
 <!ENTITY error.illformed_i.treatAs.label "Considera tag AUID con sintassi errata come">
 <!ENTITY error.illformed_s.treatAs.label "Considera tag di selezione con sintassi errata come">
 <!ENTITY error.policy.key_insecure.treatAs.label "Considera chiavi DKIM non firmate da DNSSEC come">
+<!ENTITY error.algorithm.sign.rsa-sha1.treatAs.label "Treat rsa-sha1 sign algorithm as">
 
 <!ENTITY error.treatAs.value.0.label "errore">
 <!ENTITY error.treatAs.value.1.label "avviso">
@@ -86,7 +87,7 @@
 
 <!ENTITY arh.read.label "Leggi l’intestazione Authentication-Results">
 <!ENTITY arh.replaceAddonResult.label "La lettura dell’intestazione Authentication-Results sostituisce la verifica del componente aggiuntivo">
-<!ENTITY arh.relaxedParsing.label "Try to read non RFC compliant Authentication-Results header">
+<!ENTITY arh.relaxedParsing.label "Prova a caricare intestazioni Authentication-Results non conformi all’RFC">
 
 <!ENTITY acc.dkim.enable.label "Verifica le firme DKIM:">
 <!ENTITY acc.arh.read.label "Leggi l’intestazione Authentication-Results:">

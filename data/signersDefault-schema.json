@@ -1,0 +1,112 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"$id": "file:///dkim_verifier@pl/data/signersDefault-schema.json",
+	"title": "Default DKIM sign rules",
+	"description": "Contains the default sign rules for the DKIM Verifier Thunderbird add-on",
+	"type": "object",
+	"properties": {
+		"versionTable": {
+			"type": "number"
+		},
+		"versionData": {
+			"type": "number"
+		},
+		"rules": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"properties": {
+					"domain": {
+						"type": "string"
+					},
+					"addr": {
+						"type": "string"
+					},
+					"sdid": {
+						"type": "string"
+					},
+					"ruletype": {
+						"type": "string",
+						"enum": [
+							"ALL",
+							"NEUTRAL"
+						]
+					},
+					"priority": {
+						"type": "string",
+						"enum": [
+							"DEFAULT_RULE_ALL",
+							"DEFAULT_RULE_NEUTRAL",
+							"DEFAULT_RULE_ALL0",
+							"DEFAULT_RULE_ALL_2",
+							"USERINSERT_RULE_NEUTRAL"
+						],
+						"description": "AUTOINSERT_RULE_ALL:  1100,\nDEFAULT_RULE_ALL0:     2000, // used for e-mail providers\nUSERINSERT_RULE_HIDEFAIL: 2050,\nDEFAULT_RULE_ALL:     2100,\nDEFAULT_RULE_ALL_2:     2110, // used for different SDID for subdomains\nDEFAULT_RULE_NEUTRAL:    2200,\nUSERINSERT_RULE_ALL:  3100,\nUSERINSERT_RULE_NEUTRAL: 3200,"
+					}
+				},
+				"required": [
+					"domain",
+					"addr",
+					"sdid",
+					"ruletype",
+					"priority"
+				],
+				"allOf": [
+					{
+						"if": {
+							"properties": {
+								"ruletype": {
+									"type": "string",
+									"enum": [
+										"ALL"
+									]
+								}
+							}
+						},
+						"then": {
+							"properties": {
+								"priority": {
+									"type": "string",
+									"enum": [
+										"DEFAULT_RULE_ALL",
+										"DEFAULT_RULE_ALL0",
+										"DEFAULT_RULE_ALL_2"
+									]
+								}
+							}
+						}
+					},
+					{
+						"if": {
+							"properties": {
+								"ruletype": {
+									"type": "string",
+									"enum": [
+										"NEUTRAL"
+									]
+								}
+							}
+						},
+						"then": {
+							"properties": {
+								"priority": {
+									"type": "string",
+									"enum": [
+										"DEFAULT_RULE_ALL",
+										"DEFAULT_RULE_NEUTRAL",
+										"USERINSERT_RULE_NEUTRAL"
+									]
+								}
+							}
+						}
+					}
+				]
+			}
+		}
+	},
+	"required": [
+		"versionTable",
+		"versionData",
+		"rules"
+	]
+}

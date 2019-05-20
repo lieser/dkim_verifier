@@ -310,6 +310,20 @@ interface nsIVersionComparator {
 	readonly compare: (A: string, B: string) => number;
 }
 
+interface nsIWindowsRegKey {
+    readonly close: () => void;
+    readonly hasChild: (name: String) => Boolean;
+    readonly hasValue: (name: String) => Boolean;
+    readonly open: (rootKey: Number, relPath: String, mode: Number) => void;
+    readonly openChild: (relPath: String, mode: Number) => nsIWindowsRegKey;
+    readonly readIntValue: (name: String) => Number;
+    readonly readStringValue: (name: String) => String;
+
+    readonly ACCESS_QUERY_VALUE: Number;
+    readonly ACCESS_READ: Number;
+    readonly ROOT_KEY_LOCAL_MACHINE: Number;
+}
+
 interface nsIXULAppInfo {
 	readonly platformVersion: string;
 }

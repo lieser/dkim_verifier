@@ -61,12 +61,14 @@
 <!ENTITY error.illformed_i.treatAs.label "将格式不良的 AUID 标签视作">
 <!ENTITY error.illformed_s.treatAs.label "将格式不良的选择器标签视作">
 <!ENTITY error.policy.key_insecure.treatAs.label "将非 DNSSEC 的 DKIM 密钥视作">
+<!ENTITY error.algorithm.sign.rsa-sha1.treatAs.label "Treat rsa-sha1 sign algorithm as">
 <!ENTITY error.treatAs.value.0.label "错误">
 <!ENTITY error.treatAs.value.1.label "警告">
 <!ENTITY error.treatAs.value.2.label "无事">
 <!ENTITY display.keySecure.label "在 SDID 后面用锁标识成功的 DNSSEC 验证">
 <!ENTITY arh.read.label "阅读 Authentication-Results 报头">
 <!ENTITY arh.replaceAddonResult.label "读取 Authentication-Results 头替换本附加组件的验证">
+<!ENTITY arh.relaxedParsing.label "尝试读取非兼容 RFC 的 Authentication-Results 头">
 <!ENTITY acc.dkim.enable.label "验证 DKIM 签名:">
 <!ENTITY acc.arh.read.label "读取 Authentication-Results 头:">
 <!ENTITY acc.arh.allowedAuthserv.label "信任的身份验证服务器:">

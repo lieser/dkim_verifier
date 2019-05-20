@@ -12,7 +12,7 @@ Included third-party Libraries
     - jsbn2.js - BigInteger class extension
     - rsa.js - RSAKey class for RSA public key encryption
     - base64.js - String encoder for Base64 and Hex
- - Kenji Urushima's 'RSA-Sign JavaScript Library' (http://kjur.github.com/jsrsasign)
+ - Kenji Urushima's 'RSA-Sign JavaScript Library' (http://kjur.github.com/jsrsasign) *Version 8.0.12*
     - asn1hex.js - simple ASN.1 parser to read hexadecimal encoded ASN.1 DER
     - rsasign-1.2.js - RSAKey class extension for RSA signing and verification
  - Joshua Tauberer's DNS Libary (part of Thunderbird Sender Verification Extension) (https://github.com/tauberer/thunderbird-spf)

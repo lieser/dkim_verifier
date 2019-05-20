@@ -1,4 +1,21 @@
-2.0.0pre4 [2018-04-01]
+2.1.0pre1 [2019-05-18]
+------------------
+ - Cryptographic Algorithm and Key Usage Update (RFC 8301, #141)
+ - updated default rules and favicons
+
+2.0.1 [2019-01-18]
+------------------
+ - fixed signature verification in case the RSA key has an odd key length (#112)
+ - fixed DMARC heuristic (#125)
+ - fixed "*" not being recognized as valid Service Type in DKIM Keys (#134)
+ - changed update DKIM key button to now update the keys of all DKIM signatures in the e-mail
+ - Authentication-Results header: fixed mixed case results specified by older SPF specs resulting in a parsing error (#135)
+ - JSDNS: fixed a problem getting the default DNS servers on Windows (#116, #120)
+ - JSDNS: reduced default DNS server timeout from 10 to 5 seconds
+ - updated included third-party libraries
+ - updated default rules and favicons
+
+2.0.0 [2018-04-19]
 ------------------
  - now requires at least Thunderbird 52
  - added toolbar button and menuitem for sign rules

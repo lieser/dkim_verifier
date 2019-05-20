@@ -1,7 +1,7 @@
 /*
  * logging.jsm
  *
- * Version: 1.1.0pre1 (19 November 2017)
+ * Version: 1.1.0 (31 December 2017)
  *
  * Copyright (c) 2013-2017 Philippe Lieser
  *

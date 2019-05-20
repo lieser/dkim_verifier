@@ -1,9 +1,9 @@
 /*
  * dkimKey.jsm
  * 
- * Version: 1.2.0pre1 (14 November 2017)
+ * Version: 1.2.0 (28 January 2018)
  * 
- * Copyright (c) 2013-2017 Philippe Lieser
+ * Copyright (c) 2013-2018 Philippe Lieser
  * 
  * This software is licensed under the terms of the MIT License.
  * 
@@ -19,7 +19,7 @@
 /* exported EXPORTED_SYMBOLS, Key */
 
 // @ts-ignore
-const module_version = "1.2.0pre1";
+const module_version = "1.2.0";
 
 var EXPORTED_SYMBOLS = [
 	"Key"

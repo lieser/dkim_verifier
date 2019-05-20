@@ -6,9 +6,9 @@
  *
  * This module is NOT conform to DMARC.
  *
- * Version: 1.1.0pre1 (14 November 2017)
+ * Version: 1.1.1 (13 January 2019)
  * 
- * Copyright (c) 2014-2017 Philippe Lieser
+ * Copyright (c) 2014-2019 Philippe Lieser
  * 
  * This software is licensed under the terms of the MIT License.
  * 
@@ -20,11 +20,11 @@
 /* eslint strict: ["warn", "function"] */
 /* global Components, Services, XPCOMUtils */
 /* global Logging, Verifier, DNS */
-/* global getBaseDomainFromAddr, getDomainFromAddr, DKIM_InternalError */
+/* global getBaseDomainFromAddr, getDomainFromAddr, toType, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, DMARC */
 
 // @ts-ignore
-const module_version = "1.1.0pre1";
+const module_version = "1.1.1";
 
 var EXPORTED_SYMBOLS = [
 	"DMARC"
@@ -128,7 +128,7 @@ var DMARC = {
  * @property {Number} pct
  *   Percentage of messages from the Domain Owner's mail stream to which the
  *   DMARC mechanism is to be applied
- * @property {String} sp
+ * @property {String?} sp
  *   Requested Mail Receiver policy for all subdomains
  *   Possible values: "none", "quarantine", "reject"
  * @property {String} v
@@ -301,11 +301,11 @@ function parseDMARCRecord(DMARCRecordStr) {
 
 	/** @type {DMARCRecord} */
 	let dmarcRecord = {
-		adkim : null, // DKIM identifier alignment mode
+		adkim : "", // DKIM identifier alignment mode
 		// aspf : null, // SPF identifier alignment mode
 		// fo : null, // Failure reporting options
-		p : null, // Requested Mail Receiver policy
-		pct : null, // Percentage of messages from the Domain Owner's
+		p : "", // Requested Mail Receiver policy
+		pct : NaN, // Percentage of messages from the Domain Owner's
 			// mail stream to which the DMARC mechanism is to be applied
 		// rf : null, // Format to be used for message-specific failure reports
 		// ri : null, // Interval requested between aggregate reports
@@ -313,19 +313,22 @@ function parseDMARCRecord(DMARCRecordStr) {
 		// ruf : null, // Addresses to which message-specific failure information is to
 			// be reported
 		sp : null, // Requested Mail Receiver policy for all subdomains
-		v : null // Version 
+		v : "" // Version
 	};
 	
 	// parse tag-value list
-	let tagMap = Verifier.parseTagValueList(DMARCRecordStr);
-	if (tagMap === -1) {
+	let parsedTagMap = Verifier.parseTagValueList(DMARCRecordStr);
+	if (parsedTagMap === -1) {
 		throw new DKIM_InternalError("DKIM_DMARCERROR_ILLFORMED_TAGSPEC");
-	} else if (tagMap === -2) {
+	} else if (parsedTagMap === -2) {
 		throw new DKIM_InternalError("DKIM_DMARCERROR_DUPLICATE_TAG");
 	}
-	if (!(tagMap instanceof Map)) {
-		throw new DKIM_InternalError("unexpected return value from Verifier.parseTagValueList: " + tagMap);
+	if (!(toType(parsedTagMap) === "Map")) {
+		throw new DKIM_InternalError("unexpected return value from Verifier.parseTagValueList: " + parsedTagMap);
 	}
+	/** @type {Map} */
+	// @ts-ignore
+	let tagMap = parsedTagMap;
 
 	// v: Version (plain-text; REQUIRED).  Identifies the record retrieved
 	// as a DMARC record.  It MUST have the value of "DMARC1".  The value
