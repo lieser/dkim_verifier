@@ -1,7 +1,7 @@
 2.1.0pre1 [2019-05-18]
 ------------------
  - Cryptographic Algorithm and Key Usage Update (RFC 8301, #141)
- - updated default rules and favicons
+ - updated default rules and favicons (#140, #145)
 
 2.0.1 [2019-01-18]
 ------------------
