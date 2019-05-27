@@ -45,14 +45,14 @@ class DKIMHeaderfield extends MozXULElement {
 
 		this.setAttribute("context", "copyPopup");
 
-		this._content = document.createElement("hbox");
+		this._content = document.createXULElement("hbox");
 
 		// DKIM result
-		this._dkimValue = document.createElement("description");
+		this._dkimValue = document.createXULElement("description");
 		this._dkimValue.classList.add("headerValue");
 
 		// DKIM warning icon
-		this._dkimWarningIcon = document.createElement("image");
+		this._dkimWarningIcon = document.createXULElement("image");
 		this._dkimWarningIcon.classList.add("alert-icon");
 		this._dkimWarningIcon.setAttribute("anonid", "dkimWarningIcon");
 		this._dkimWarningIcon.setAttribute("tooltip", "dkim-verifier-header-tooltip-warnings");
@@ -65,15 +65,15 @@ class DKIMHeaderfield extends MozXULElement {
 		 * @returns {{box: Element, value: Element}}
 		 */
 		function createArh(anonid, labelValue) {
-			let box = document.createElement("hbox");
+			let box = document.createXULElement("hbox");
 			box.setAttribute("anonid", anonid);
 
-			let label = document.createElement("description");
+			let label = document.createXULElement("description");
 			label.classList.add("headerValue");
 			label.setAttribute("style", "text-align: right");
 			label.textContent = labelValue;
 
-			let value = document.createElement("description");
+			let value = document.createXULElement("description");
 			value.classList.add("headerValue");
 
 			box.appendChild(label);
@@ -90,7 +90,7 @@ class DKIMHeaderfield extends MozXULElement {
 		this._arhSpf = createArh("spf", "SPF:");
 		this._arhDmarc = createArh("dmarc", "DMARC:");
 
-		this._separator = document.createElement("separator");
+		this._separator = document.createXULElement("separator");
 		this._separator.setAttribute("flex", "1");
 
 		this.appendChild(this._content);
@@ -181,9 +181,9 @@ class DKIMTooltip extends XULPopupElement {
 		this._warningsSeparator = false;
 
 		// The DKIM result
-		this._value = document.createElement("label");
+		this._value = document.createXULElement("label");
 		// A box containing the warnings
-		this._warningsBox = document.createElement("vbox");
+		this._warningsBox = document.createXULElement("vbox");
 	}
 
 	/**
@@ -209,7 +209,7 @@ class DKIMTooltip extends XULPopupElement {
 		}
 
 		if (this._warningsSeparator && warnings.length > 0) {
-			let sep = document.createElement("separator");
+			let sep = document.createXULElement("separator");
 			sep.setAttribute("class", "thin");
 			this._warningsBox.appendChild(sep);
 		}
@@ -217,7 +217,7 @@ class DKIMTooltip extends XULPopupElement {
 		// add warnings to warning tooltip
 		for (let w of warnings) {
 			let des;
-			des = document.createElement("description");
+			des = document.createXULElement("description");
 			des.textContent = w;
 			this._warningsBox.appendChild(des);
 		}
@@ -250,12 +250,12 @@ class DKIMTooltipFrom extends DKIMTooltip {
 		this._warningsSeparator = true;
 
 		// Outer box and label
-		this._outerBox = document.createElement("hbox");
-		this._outerBoxLabel = document.createElement("label");
+		this._outerBox = document.createXULElement("hbox");
+		this._outerBoxLabel = document.createXULElement("label");
 		this._outerBoxLabel.setAttribute("value", "DKIM:");
 
 		// The inner box, containing the DKIM result and optional the warnings
-		this._innerBox = document.createElement("vbox");
+		this._innerBox = document.createXULElement("vbox");
 		this._innerBox.setAttribute("flex", "1");
 
 		this.appendChild(this._outerBox);
@@ -278,7 +278,7 @@ class DKIMTooltipStatus extends DKIMTooltip {
 		this._warningsSeparator = true;
 
 		// The DKIM result
-		this._value = document.createElement("label");
+		this._value = document.createXULElement("label");
 
 		this.appendChild(this._value);
 		this.appendChild(this._warningsBox);
@@ -296,24 +296,24 @@ class DKIMStatusbarpanel extends MozXULElement {
 	constructor() {
 		super();
 
-		this._label = document.createElement("label");
+		this._label = document.createXULElement("label");
 		this._label.classList.add("statusbarpanel-text");
 		this._label.textContent = "DKIM:";
 
 		// DKIM result
-		this._dkimValue = document.createElement("label");
+		this._dkimValue = document.createXULElement("label");
 		this._dkimValue.classList.add("statusbarpanel-text");
 		this._dkimValue.setAttribute("anonid", "statusValue");
 		this._dkimValue.setAttribute("context", "copyPopup");
 
 		// DKIM warning icon
-		this._dkimWarningIcon = document.createElement("image");
+		this._dkimWarningIcon = document.createXULElement("image");
 		this._dkimWarningIcon.classList.add("alert-icon");
 		this._dkimWarningIcon.setAttribute("anonid", "warning-icon");
 		this._dkimWarningIcon.setAttribute("tooltip", "dkim-verifier-header-tooltip-warnings");
 
 		// DKIM status icon
-		this._dkimStatusIcon = document.createElement("image");
+		this._dkimStatusIcon = document.createXULElement("image");
 		this._dkimStatusIcon.setAttribute("anonid", "status-icon");
 		this._dkimStatusIcon.setAttribute("tooltip", "dkim-verifier-tooltip-status");
 
@@ -382,7 +382,7 @@ Object.defineProperty(MozMailMultiEmailheaderfield.prototype, "dkimFaviconUrl", 
 		"use strict";
 
 		if (!this._dkimFavicon) {
-			this._dkimFavicon = document.createElement("description");
+			this._dkimFavicon = document.createXULElement("description");
 			this._dkimFavicon.classList.add("headerValue");
 			this._dkimFavicon.setAttribute("anonid", "dkimFavicon");
 			this._dkimFavicon.setAttribute("tooltip", "dkim-verifier-header-tooltip-from");
