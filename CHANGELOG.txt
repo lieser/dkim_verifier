@@ -5,6 +5,11 @@
 Known issues:
  - GUI for account specific options missing
 
+2.1.0pre2 [2019-05-27]
+------------------
+ - Cryptographic Algorithm and Key Usage Update (RFC 8301, #141)
+ - updated default rules and favicons (#140, #145, #157)
+
 2.0.1 [2019-01-18]
 ------------------
  - fixed signature verification in case the RSA key has an odd key length (#112)

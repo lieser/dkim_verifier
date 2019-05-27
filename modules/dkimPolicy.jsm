@@ -413,7 +413,6 @@ var Policy = {
 	 * Get the URL to the favicon, if available.
 	 * 
 	 * @param {String} sdid
-	 * @param {String} from
 	 * @return {Promise<String|undefined>} url to favicon
 	 */
 	getFavicon: function Policy_getFavicon(sdid) {

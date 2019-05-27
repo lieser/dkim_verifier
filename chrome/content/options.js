@@ -68,6 +68,7 @@ Preferences.addAll([
 	{ id: "extensions.dkim_verifier.error.illformed_i.treatAs", type: "int" },
 	{ id: "extensions.dkim_verifier.error.illformed_s.treatAs", type: "int" },
 	{ id: "extensions.dkim_verifier.error.policy.key_insecure.treatAs", type: "int" },
+	{ id: "extensions.dkim_verifier.error.algorithm.sign.rsa-sha1.treatAs", type: "int" },
 ]);
 
 // @ts-ignore
