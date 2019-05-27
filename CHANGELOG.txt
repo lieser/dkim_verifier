@@ -1,7 +1,8 @@
-3.0.0pre3 [2019-04-14]
+3.0.0pre4 [2019-05-27]
 ------------------
  - now requires at least Thunderbird 66
- - fixed incompatibility with Thunderbird 68
+ - fixed incompatibility with Thunderbird 69
+ - include changes from 2.1.0pre2
 Known issues:
  - GUI for account specific options missing
 
