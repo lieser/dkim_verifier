@@ -1,7 +1,7 @@
 {
 	"$schema": "./signersDefault-schema.json",
 	"versionTable": 1,
-	"versionData": 23,
+	"versionData": 24,
 	"rules": [
 		{
 			"domain": "1und1.de",
@@ -100,11 +100,23 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "aruba.it",
+			"addr": "*",
+			"sdid": "aruba.it",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "aruba.it",
+			"addr": "*@pec.aruba.it",
+			"sdid": "aruba.it",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_NEUTRAL"
+		}, {
 			"domain": "arubapec.it",
 			"addr": "*",
 			"sdid": "arubapec.it aruba.it",
-			"ruletype": "ALL",
-			"priority": "DEFAULT_RULE_ALL"
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_NEUTRAL"
 		}, {
 			"domain": "avis-europe.com",
 			"addr": "*",
@@ -115,6 +127,12 @@
 			"domain": "babelzilla.org",
 			"addr": "*",
 			"sdid": "babelzilla.org",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "bancamediolanum.it",
+			"addr": "*",
+			"sdid": "bancamediolanum.it",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -775,8 +793,8 @@
 			"domain": "pec.it",
 			"addr": "*",
 			"sdid": "pec.it aruba.it",
-			"ruletype": "ALL",
-			"priority": "DEFAULT_RULE_ALL"
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_NEUTRAL"
 		}, {
 			"domain": "perdue.com",
 			"addr": "*",
@@ -945,6 +963,12 @@
 			"sdid": "ubi.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
+			"domain": "ubibanca.it",
+			"addr": "*",
+			"sdid": "ubibanca.it",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_NEUTRAL"
 		}, {
 			"domain": "united-domains.de",
 			"addr": "*",
