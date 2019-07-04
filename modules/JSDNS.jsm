@@ -1037,8 +1037,13 @@ function DNS_readAllFromSocket(host,port,outputData,listener)
 		var transportService =
 			Cc["@mozilla.org/network/socket-transport-service;1"].
 			getService(Ci.nsISocketTransportService);
-		var transport = transportService.
-			createTransport(null,0,host,port,proxy);
+		// Newer versions of TB69.0a1 dropped the second argument, see Bug 1558726 (https://bugzilla.mozilla.org/show_bug.cgi?id=1558726)
+		var transport;
+		if (transportService.createTransport.length === 4) {
+			transport = transportService.createTransport([], host, port, proxy);
+		} else {
+			transport = transportService.createTransport(null, 0, host, port, proxy);
+		}
 
 		// change timeout for connection
 		transport.setTimeout(transport.TIMEOUT_CONNECT, timeout_connect);
