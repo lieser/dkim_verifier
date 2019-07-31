@@ -23,7 +23,7 @@
 
 <!ENTITY key.storing.value.0.label "Don't store DKIM keys">
 <!ENTITY key.storing.value.1.label "Store DKIM keys">
-<!ENTITY key.storing.value.2.label "Store DKIM keys and compare them with the current key">
+<!ENTITY key.storing.value.2.label "Store and compare DKIM keys with the current key">
 <!ENTITY key.viewKeys.label "DKIM keys">
 
 <!ENTITY saveResult.label "Save result of the verification">
