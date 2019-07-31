@@ -1,0 +1,12 @@
+<!ENTITY signersRuleHelp.title "Aláírók szabályok súgó">
+
+<!ENTITY domain.description "Összehangolják a feladócím alaptartományával. Például az „e-mail.példa.hu” alaptartománya az „példa.hu”.">
+<!ENTITY listID.description "Összehangolják a listaazonosítóval, ha az e-mailt e-mail listán vették át. Vegye figyelembe, hogy csak a „&lt;” és „&gt;” a listaazonosító fejlécében szereplő tényleges listaazonosító. Csak a tartomány vagy a listaazonosító egyezik egyidejűleg.">
+<!ENTITY addr.description "Összehangolják a feladó címmel. Használjon „*”-ot, hogy egyezzen meg nulla vagy több karaktert.">
+<!ENTITY sdid.description "Az a tartomány, amelyen az e-maileket alá kell írni. Ha ez üres, akkor minden SDID megengedett. Egynél több tartomány megadható, ha szóközzel elválasztják őket.">
+<!ENTITY ruletype.description "A szabály típusa.">
+<!ENTITY ruletype.1.description "Az e-mailt a megadott SDID-nek kell aláírnia.">
+<!ENTITY ruletype.2.description "Az e-mailt nem kell aláírni. Ha aláírják, akkor a megadott SDID-nek kell lennie.">
+<!ENTITY ruletype.3.description "Az e-mailt nem kell aláírni. Ha aláírják, akkor a megadott SDID-nek kell lennie. Ha az e-mail érvénytelen aláírással rendelkezik, akkor azt úgy kell kezelni, mintha nincs aláírás.">
+<!ENTITY priority.description "A szabály sürgőssége. Ha egynél több szabály egyezik, akkor a legmagasabb sürgősséggel rendelkező szabályt kell használni.">
+<!ENTITY enabled.description "0, ha szabály letiltva. 1, ha szabály engedélyezve.">
