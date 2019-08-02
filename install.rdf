@@ -11,6 +11,15 @@
 		<em:name>DKIM Verifier</em:name>
 		<em:description>Verifies the DKIM-Signature of an e-mail.</em:description>
 
+		<em:translator>ionum (de)</em:translator>
+		<em:translator>Philippe Lieser (de)</em:translator>
+		<em:translator>Philippe Lieser (en-US)</em:translator>
+		<em:translator>Christophe CHAUVET (fr)</em:translator>
+		<em:translator>Óvári (hu)</em:translator>
+		<em:translator>Michele Locati (it)</em:translator>
+		<em:translator>SAKURAI Kenichi (ja)</em:translator>
+		<em:translator>YFdyh000 (zh-CN)</em:translator>
+
 		<em:creator>Philippe Lieser</em:creator>
 
 		<em:contributor>Joshua Tauberer (DNS Library)</em:contributor>
@@ -35,9 +44,15 @@
 			<Description>
 				<em:locale>de</em:locale>
 				<em:name>DKIM Verifier</em:name>
-				<em:translator>ionum</em:translator>
-				<em:translator>Philippe Lieser</em:translator>
 				<em:description>Überprüft die DKIM-Signatur von E-Mails.</em:description>
+				<em:translator>ionum (de)</em:translator>
+				<em:translator>Philippe Lieser (de)</em:translator>
+				<em:translator>Philippe Lieser (en-US)</em:translator>
+				<em:translator>Christophe CHAUVET (fr)</em:translator>
+				<em:translator>Óvári (hu)</em:translator>
+				<em:translator>Michele Locati (it)</em:translator>
+				<em:translator>SAKURAI Kenichi (ja)</em:translator>
+				<em:translator>YFdyh000 (zh-CN)</em:translator>
 				<em:contributor>Joshua Tauberer (DNS Bibliothek)</em:contributor>
 				<em:contributor>Tom Wu (RSA Bibliothek)</em:contributor>
 				<em:contributor>Kenji Urushima (RSA Verifizierung und ASN1 Bibliothek)</em:contributor>
@@ -52,6 +67,14 @@
 				<em:locale>en-US</em:locale>
 				<em:name>DKIM Verifier</em:name>
 				<em:description>Verifies the DKIM-Signature of an e-mail.</em:description>
+				<em:translator>ionum (de)</em:translator>
+				<em:translator>Philippe Lieser (de)</em:translator>
+				<em:translator>Philippe Lieser (en-US)</em:translator>
+				<em:translator>Christophe CHAUVET (fr)</em:translator>
+				<em:translator>Óvári (hu)</em:translator>
+				<em:translator>Michele Locati (it)</em:translator>
+				<em:translator>SAKURAI Kenichi (ja)</em:translator>
+				<em:translator>YFdyh000 (zh-CN)</em:translator>
 				<em:contributor>Joshua Tauberer (DNS Library)</em:contributor>
 				<em:contributor>Tom Wu (RSA Library)</em:contributor>
 				<em:contributor>Kenji Urushima (RSA verification and ASN1 Library)</em:contributor>
@@ -64,8 +87,15 @@
 			<Description>
 				<em:locale>fr</em:locale>
 				<em:name>DKIM Verifier</em:name>
-				<em:translator>Christophe CHAUVET</em:translator>
 				<em:description>Vérification de la signature DKIM d'un courriel.</em:description>
+				<em:translator>ionum (de)</em:translator>
+				<em:translator>Philippe Lieser (de)</em:translator>
+				<em:translator>Philippe Lieser (en-US)</em:translator>
+				<em:translator>Christophe CHAUVET (fr)</em:translator>
+				<em:translator>Óvári (hu)</em:translator>
+				<em:translator>Michele Locati (it)</em:translator>
+				<em:translator>SAKURAI Kenichi (ja)</em:translator>
+				<em:translator>YFdyh000 (zh-CN)</em:translator>
 				<em:contributor>Joshua Tauberer (bibliothèque DNS)</em:contributor>
 				<em:contributor>Tom Wu (Bibliothèque RSA)</em:contributor>
 				<em:contributor>Kenji Urushima (verification RSA et bibliothèque ASN1)</em:contributor>
@@ -99,8 +129,15 @@
 			<Description>
 				<em:locale>it</em:locale>
 				<em:name>DKIM Verifier</em:name>
-				<em:translator>Michele Locati</em:translator>
 				<em:description>Verifica la firma DKIM di un’email.</em:description>
+				<em:translator>ionum (de)</em:translator>
+				<em:translator>Philippe Lieser (de)</em:translator>
+				<em:translator>Philippe Lieser (en-US)</em:translator>
+				<em:translator>Christophe CHAUVET (fr)</em:translator>
+				<em:translator>Óvári (hu)</em:translator>
+				<em:translator>Michele Locati (it)</em:translator>
+				<em:translator>SAKURAI Kenichi (ja)</em:translator>
+				<em:translator>YFdyh000 (zh-CN)</em:translator>
 				<em:contributor>Joshua Tauberer (libreria DNS)</em:contributor>
 				<em:contributor>Tom Wu (libreria RSA)</em:contributor>
 				<em:contributor>Kenji Urushima (verifica RSA e libreria ASN1)</em:contributor>
@@ -111,10 +148,17 @@
 
 		<em:localized>
 			<Description>
-				<em:locale>zh-CN</em:locale>
+				<em:locale>ja-JP</em:locale>
 				<em:name>DKIM Verifier</em:name>
-				<em:translator>YFdyh000</em:translator>
-				<em:description>验证邮件的 DKIM 签名。</em:description>
+				<em:description>メールの DKIM 署名を検証します</em:description>
+				<em:translator>ionum (de)</em:translator>
+				<em:translator>Philippe Lieser (de)</em:translator>
+				<em:translator>Philippe Lieser (en-US)</em:translator>
+				<em:translator>Christophe CHAUVET (fr)</em:translator>
+				<em:translator>Óvári (hu)</em:translator>
+				<em:translator>Michele Locati (it)</em:translator>
+				<em:translator>SAKURAI Kenichi (ja)</em:translator>
+				<em:translator>YFdyh000 (zh-CN)</em:translator>
 				<em:contributor>Joshua Tauberer (DNS Library)</em:contributor>
 				<em:contributor>Tom Wu (RSA Library)</em:contributor>
 				<em:contributor>Kenji Urushima (RSA verification and ASN1 Library)</em:contributor>
@@ -125,10 +169,17 @@
 
 		<em:localized>
 			<Description>
-				<em:locale>ja-JP</em:locale>
+				<em:locale>zh-CN</em:locale>
 				<em:name>DKIM Verifier</em:name>
-				<em:translator>SAKURAI Kenichi</em:translator>
-				<em:description>メールの DKIM 署名を検証します</em:description>
+				<em:description>验证邮件的 DKIM 签名。</em:description>
+				<em:translator>ionum (de)</em:translator>
+				<em:translator>Philippe Lieser (de)</em:translator>
+				<em:translator>Philippe Lieser (en-US)</em:translator>
+				<em:translator>Christophe CHAUVET (fr)</em:translator>
+				<em:translator>Óvári (hu)</em:translator>
+				<em:translator>Michele Locati (it)</em:translator>
+				<em:translator>SAKURAI Kenichi (ja)</em:translator>
+				<em:translator>YFdyh000 (zh-CN)</em:translator>
 				<em:contributor>Joshua Tauberer (DNS Library)</em:contributor>
 				<em:contributor>Tom Wu (RSA Library)</em:contributor>
 				<em:contributor>Kenji Urushima (RSA verification and ASN1 Library)</em:contributor>
