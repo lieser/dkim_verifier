@@ -76,6 +76,27 @@
 
 		<em:localized>
 			<Description>
+				<em:locale>hu</em:locale>
+				<em:name>DKIM (DomainKeys Identified Mail – TartományKulcsok azonosított levelek) ellenőrző</em:name>
+				<em:description>Ellenőrzi az e-mailek DKIM-aláírásait</em:description>
+				<em:translator>ionum (de)</em:translator>
+				<em:translator>Philippe Lieser (de)</em:translator>
+				<em:translator>Philippe Lieser (en-US)</em:translator>
+				<em:translator>Christophe CHAUVET (fr)</em:translator>
+				<em:translator>Óvári (hu)</em:translator>
+				<em:translator>Michele Locati (it)</em:translator>
+				<em:translator>SAKURAI Kenichi (ja)</em:translator>
+				<em:translator>YFdyh000 (zh-CN)</em:translator>
+				<em:contributor>Joshua Tauberer (DNS könyvtár)</em:contributor>
+				<em:contributor>Tom Wu (RSA könyvtár)</em:contributor>
+				<em:contributor>Kenji Urushima (RSA ellenőrzés és ASN1 könyvtár)</em:contributor>
+				<em:contributor>Nils Maier</em:contributor>
+				<em:contributor>Pier Carlo Chiodi AKA pierky</em:contributor>
+			</Description>
+		</em:localized>
+
+		<em:localized>
+			<Description>
 				<em:locale>it</em:locale>
 				<em:name>DKIM Verifier</em:name>
 				<em:translator>Michele Locati</em:translator>
