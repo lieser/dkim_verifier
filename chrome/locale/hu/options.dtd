@@ -1,4 +1,4 @@
-<!ENTITY prefwindow.title "DKIM (DomainKeys Identified Mail – TartományKulcsok azonosított levelek) ellenőrző beállításai">
+<!ENTITY prefwindow.title "DKIM Verifier beállításai">
 
 
 <!ENTITY general.label "Általános">

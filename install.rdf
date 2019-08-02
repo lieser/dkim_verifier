@@ -107,7 +107,7 @@
 		<em:localized>
 			<Description>
 				<em:locale>hu</em:locale>
-				<em:name>DKIM (DomainKeys Identified Mail – TartományKulcsok azonosított levelek) ellenőrző</em:name>
+				<em:name>DKIM Verifier</em:name>
 				<em:description>Ellenőrzi az e-mailek DKIM-aláírásait</em:description>
 				<em:translator>ionum (de)</em:translator>
 				<em:translator>Philippe Lieser (de)</em:translator>
