@@ -1,7 +1,7 @@
 2.1.0pre3 [2019-08-11]
 ------------------
  - Cryptographic Algorithm and Key Usage Update (RFC 8301, #141)
- - updated default rules and favicons (#140, #145, #157)
+ - updated default rules and favicons (#140, #145, #152, #157, #159)
  - added Hungarian translation (by Óvári) (#164)
 
 2.0.1 [2019-01-18]
