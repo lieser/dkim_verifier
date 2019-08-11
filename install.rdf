@@ -6,7 +6,7 @@
 	<Description about="urn:mozilla:install-manifest">
 		<em:id>dkim_verifier@pl</em:id>
 		<em:type>2</em:type> <!-- Extensions -->
-		<em:version>2.1.0pre2</em:version>
+		<em:version>2.1.0pre3</em:version>
 
 		<em:name>DKIM Verifier</em:name>
 		<em:description>Verifies the DKIM-Signatures of e-mails.</em:description>
