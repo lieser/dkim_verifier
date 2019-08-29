@@ -1,7 +1,7 @@
 {
 	"$schema": "./signersDefault-schema.json",
 	"versionTable": 1,
-	"versionData": 25,
+	"versionData": 26,
 	"rules": [
 		{
 			"domain": "1und1.de",
@@ -57,6 +57,18 @@
 			"sdid": "aliexpress.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "altroconsumo.it",
+			"addr": "*",
+			"sdid": "altroconsumo.it",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "altroconsumo.it",
+			"addr": "*@noreply.altroconsumo.it",
+			"sdid": "altroconsumo.it noreply.altroconsumo.it",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
 			"domain": "amazon.co.uk",
 			"addr": "*",
@@ -226,6 +238,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "bticino.it",
+			"addr": "*@crm.bticino.it",
+			"sdid": "bticino.it crm.bticino.it",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "bueromarkt-ag.de",
 			"addr": "*",
 			"sdid": "bueromarkt-ag.de",
@@ -291,6 +309,18 @@
 			"sdid": "credit-agricole.it",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "culligan.it",
+			"addr": "*",
+			"sdid": "culligan.it",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "culligan.it",
+			"addr": "amministrazionebw@CULLIGAN.IT",
+			"sdid": "culligan.it culliganorg.onmicrosoft.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
 			"domain": "decathlon.it",
 			"addr": "*@email.decathlon.it",
@@ -394,6 +424,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "elfispa.it",
+			"addr": "*",
+			"sdid": "elfispa.it",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "elster.de",
 			"addr": "*",
 			"sdid": "elster.de",
@@ -454,6 +490,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "fatturecloud.it",
+			"addr": "*@mail.fatturecloud.it",
+			"sdid": "fatturecloud.it mail.fatturecloud.it",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "fbworkmail.com",
 			"addr": "*",
 			"sdid": "fbworkmail.com",
@@ -471,6 +513,12 @@
 			"sdid": "flybe.com",
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_NEUTRAL"
+		}, {
+			"domain": "ford.com",
+			"addr": "*",
+			"sdid": "ford.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
 		}, {
 			"domain": "formdesk.com",
 			"addr": "*",
@@ -814,6 +862,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "monsterinsights.com",
+			"addr": "*",
+			"sdid": "monsterinsights.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "mozilla.org",
 			"addr": "*@e.mozilla.org",
 			"sdid": "mozilla.org e.mozilla.org",
@@ -823,6 +877,12 @@
 			"domain": "mozilla-community.org",
 			"addr": "*",
 			"sdid": "mozilla-community.org",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "mprogetti.com",
+			"addr": "*",
+			"sdid": "mprogetti.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -850,6 +910,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "nexway.com",
+			"addr": "kaspersky_it@nexway.com",
+			"sdid": "",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_NEUTRAL"
+		}, {
 			"domain": "noip.com",
 			"addr": "*",
 			"sdid": "noip.com no-ip.com",
@@ -865,6 +931,12 @@
 			"domain": "o2.de",
 			"addr": "*@news.o2.de",
 			"sdid": "news.o2.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "onedrive.com",
+			"addr": "*@mail.onedrive.com",
+			"sdid": "onedrive.com mail.onedrive.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -1018,6 +1090,18 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "skype.com",
+			"addr": "*@notifications.skype.com",
+			"sdid": "skype.com notifications.skype.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "soltechonline.com",
+			"addr": "*",
+			"sdid": "soltechonline.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "sophos.com",
 			"addr": "*",
 			"sdid": "sophos.com",
@@ -1087,6 +1171,12 @@
 			"domain": "superuser.com",
 			"addr": "*",
 			"sdid": "superuser.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "telepass.it",
+			"addr": "*",
+			"sdid": "telepass.it telepassmailer.it",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
