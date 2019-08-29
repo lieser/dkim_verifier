@@ -368,8 +368,6 @@ class DKIMStatusbarpanel extends MozXULElement {
 
 customElements.define("dkim-verifier-statusbarpanel", DKIMStatusbarpanel, {extends: 'statusbarpanel'});
 
-// TODO: remove workaround for pre TB 68 (also css and xul binding for mail-multi-emailHeaderField)
-if (typeof MozMailMultiEmailheaderfield !== "undefined") {
 Object.defineProperty(MozMailMultiEmailheaderfield.prototype, "dkimFaviconUrl", {
 	/**
 	 * Set the favicon icon to show before the email address
@@ -399,7 +397,6 @@ Object.defineProperty(MozMailMultiEmailheaderfield.prototype, "dkimFaviconUrl", 
 		}
 	}
 });
-}
 
 /*
  * DKIM Verifier display module

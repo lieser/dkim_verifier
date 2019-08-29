@@ -1,7 +1,7 @@
 3.0.0pre5 [2019-07-04]
 ------------------
- - now requires at least Thunderbird 66
- - fixed incompatibility with Thunderbird 69
+ - now requires at least Thunderbird 68
+ - fixed incompatibility with Thunderbird 68/69
  - include changes from 2.1.0pre2
 
 2.1.0 [2019-08-29]

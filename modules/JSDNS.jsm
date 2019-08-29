@@ -4,7 +4,7 @@
  * Based on Joshua Tauberer's DNS LIBRARY IN JAVASCRIPT
  * from "Sender Verification Extension" version 0.9.0.6
  * 
- * Version: 1.4.2pre2 (04 July 2019)
+ * Version: 1.4.2 (29 August 2019)
  * 
  * Copyright (c) 2013-2019 Philippe Lieser
  * 
@@ -57,6 +57,7 @@
  *
  * 1.4.2
  * -----
+ *  - requires at least Gecko 68
  *  - fixed incompatibility with Gecko 68/69
  *
  * 1.4.1
@@ -1063,25 +1064,15 @@ function DNS_readAllFromSocket(host,port,outputData,listener)
 		var dataListener = {
 			data : "",
 			onStartRequest: function(/* request, context */){},
-			onStopRequest: function(request, context, status){
+			onStopRequest: function(request, status){
 				if (listener.finished !== null) {
-					// The new API dropped the context parameter
-					// TODO: change signature for onStopRequest if droping support for pre TB 68
-					listener.finished(this.data, status || context);
+					listener.finished(this.data, status);
 				}
 				outstream.close();
 				stream.close();
 				//DNS_Debug("DNS: Connection closed (" + host + ")");
 			},
-			onDataAvailable: function( ...args /* request, context, inputStream, offset, count */ ){
-				// The new API dropped the context parameter
-				// TODO: change signature for onDataAvailable/onStartRequest if droping support for pre TB 68
-				let count;
-				if (args[1] instanceof Ci.nsIInputStream) {
-					count = args[3];
-				} else {
-					count = args[4];
-				}
+			onDataAvailable: function( request, inputStream, offset, count ){
 
 				//DNS_Debug("DNS: Got data (" + host + ")");
 				for (var i = 0; i < count; i++) {
@@ -1100,11 +1091,7 @@ function DNS_readAllFromSocket(host,port,outputData,listener)
 		var pump = Components.
 			classes["@mozilla.org/network/input-stream-pump;1"].
 			createInstance(Components.interfaces.nsIInputStreamPump);
-		if (Services.vc.compare(Services.appinfo.platformVersion, "57.0-1") >= 0) {
-			pump.init(stream, 0, 0, false);
-		} else {
-			pump.init(stream, -1, -1, 0, 0, false);
-		}
+		pump.init(stream, 0, 0, false);
 		pump.asyncRead(dataListener,null);
 	} catch (ex) {
 		return ex;
