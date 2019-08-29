@@ -1,11 +1,11 @@
 "use strict";
 
-Components.utils.import("resource://dkim_verifier/logging.jsm");
-Components.utils.import("resource://dkim_verifier/dkimPolicy.jsm");
+var { Logging } = ChromeUtils.import("resource://dkim_verifier/logging.jsm");
+var { Policy } = ChromeUtils.import("resource://dkim_verifier/dkimPolicy.jsm");
 
 var log = Logging.getLogger("addSignersRule");
 
-function onAccept(){
+function onAccept() {
 	try {
 		var input = {};
 		input.domain = document.getElementById("domain").value;
@@ -32,17 +32,17 @@ function onAccept(){
 			input.priority = document.getElementById("priority").value;
 		}
 		input.enabled = document.getElementById("enabled").checked;
-		
+
 		window.arguments[0].addRow(input);
 	} catch (exception) {
 		log.fatal(exception);
 		return false;
 	}
-  return true;
+	return true;
 }
 
-function onCancel(){
-  return true;
+function onCancel() {
+	return true;
 }
 
 function updatePriorityMode() {
@@ -54,10 +54,10 @@ function init() {
 	updatePriorityMode();
 }
 
-document.addEventListener("dialogaccept", function(event) {
+document.addEventListener("dialogaccept", function (event) {
 	return onAccept();
 });
 
-document.addEventListener("dialogcancel", function(event) {
+document.addEventListener("dialogcancel", function (event) {
 	return onCancel();
 });

@@ -16,8 +16,8 @@
 	onunload="unsetView();">
 
 <script type="text/javascript">
-Components.utils.import("resource://dkim_verifier/SQLiteTreeView.jsm");
-Components.utils.import("resource://dkim_verifier/dkimPolicy.jsm");
+var { SQLiteTreeView } = ChromeUtils.import("resource://dkim_verifier/SQLiteTreeView.jsm");
+var { Policy } = ChromeUtils.import("resource://dkim_verifier/dkimPolicy.jsm");
 
 var treeView;
 

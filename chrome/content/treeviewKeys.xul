@@ -8,8 +8,8 @@
    onload="setView();">
 
 <script type="text/javascript">
-Components.utils.import("resource://dkim_verifier/SQLiteTreeView.jsm");
-Components.utils.import("resource://dkim_verifier/dkimKey.jsm");
+var { SQLiteTreeView } = ChromeUtils.import("resource://dkim_verifier/SQLiteTreeView.jsm");
+var { Key } = ChromeUtils.import("resource://dkim_verifier/dkimKey.jsm");
 
 var treeView;
 

@@ -16,7 +16,7 @@
 /* eslint strict: ["warn", "function"] */
 /* global Components, ChromeUtils, XPCOMUtils */
 
-Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
+var { XPCOMUtils } = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
 
 //class constructor
 function DkimVerifierAccountManagerExtension() {"use strict";}
