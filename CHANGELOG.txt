@@ -1,4 +1,4 @@
-2.1.0pre3 [2019-08-11]
+2.1.0 [2019-08-29]
 ------------------
  - Cryptographic Algorithm and Key Usage Update (RFC 8301, #141)
  - updated default rules and favicons (#140, #145, #152, #157, #159)
