@@ -23,7 +23,7 @@
 
 <!ENTITY key.storing.value.0.label "Don't store DKIM keys">
 <!ENTITY key.storing.value.1.label "Store DKIM keys">
-<!ENTITY key.storing.value.2.label "Store DKIM keys and compare them with the current key">
+<!ENTITY key.storing.value.2.label "Store and compare DKIM keys with the current key">
 <!ENTITY key.viewKeys.label "DKIM keys">
 
 <!ENTITY saveResult.label "Save result of the verification">
@@ -77,7 +77,7 @@
 <!ENTITY error.illformed_i.treatAs.label "Treat ill-formed AUID tag as">
 <!ENTITY error.illformed_s.treatAs.label "Treat ill-formed selector tag as">
 <!ENTITY error.policy.key_insecure.treatAs.label "Treat DKIM key not secured by DNSSEC as">
-<!ENTITY error.algorithm.sign.rsa-sha1.treatAs.label "Treat rsa-sha1 sign algorithm as">
+<!ENTITY error.algorithm.sign.rsa-sha1.treatAs.label "Treat RSA-SHA1 sign algorithm as">
 
 <!ENTITY error.treatAs.value.0.label "error">
 <!ENTITY error.treatAs.value.1.label "warning">

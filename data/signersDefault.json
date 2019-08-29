@@ -1,7 +1,7 @@
 {
 	"$schema": "./signersDefault-schema.json",
 	"versionTable": 1,
-	"versionData": 24,
+	"versionData": 26,
 	"rules": [
 		{
 			"domain": "1und1.de",
@@ -19,6 +19,18 @@
 			"domain": "accasoftware.it",
 			"addr": "*",
 			"sdid": "accasoftware.it",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "acop.com",
+			"addr": "*",
+			"sdid": "acop.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "activesearchresults.com",
+			"addr": "*",
+			"sdid": "activesearchresults.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -45,6 +57,18 @@
 			"sdid": "aliexpress.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "altroconsumo.it",
+			"addr": "*",
+			"sdid": "altroconsumo.it",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "altroconsumo.it",
+			"addr": "*@noreply.altroconsumo.it",
+			"sdid": "altroconsumo.it noreply.altroconsumo.it",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
 			"domain": "amazon.co.uk",
 			"addr": "*",
@@ -105,6 +129,12 @@
 			"sdid": "aruba.it",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "aruba.it",
+			"addr": "*@*.ad.aruba.it",
+			"sdid": "aruba.it",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_NEUTRAL"
 		}, {
 			"domain": "aruba.it",
 			"addr": "*@pec.aruba.it",
@@ -208,6 +238,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "bticino.it",
+			"addr": "*@crm.bticino.it",
+			"sdid": "bticino.it crm.bticino.it",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "bueromarkt-ag.de",
 			"addr": "*",
 			"sdid": "bueromarkt-ag.de",
@@ -219,6 +255,12 @@
 			"sdid": "bueromarkt-ag.de newsletter.bueromarkt-ag.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
+			"domain": "buyon.com",
+			"addr": "*",
+			"sdid": "buyon.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
 		}, {
 			"domain": "campact.de",
 			"addr": "*",
@@ -244,6 +286,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "conad.com",
+			"addr": "*",
+			"sdid": "conad.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "coursera.org",
 			"addr": "*",
 			"sdid": "coursera.org",
@@ -262,17 +310,53 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "culligan.it",
+			"addr": "*",
+			"sdid": "culligan.it",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "culligan.it",
+			"addr": "amministrazionebw@CULLIGAN.IT",
+			"sdid": "culligan.it culliganorg.onmicrosoft.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
+			"domain": "decathlon.it",
+			"addr": "*@email.decathlon.it",
+			"sdid": "decathlon.it email.decathlon.it",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
 			"domain": "deutschepost.de",
 			"addr": "*",
 			"sdid": "deutschepost.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "dhl.com",
+			"addr": "*",
+			"sdid": "dhl.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "dhl.de",
 			"addr": "*",
 			"sdid": "dhl.de info.dhl.de",
-			"ruletype": "NEUTRAL",
-			"priority": "USERINSERT_RULE_NEUTRAL"
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "discordapp.com",
+			"addr": "*",
+			"sdid": "discordapp.com mailgun.discordapp.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "doveconviene.it",
+			"addr": "*",
+			"sdid": "doveconviene.it",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
 		}, {
 			"domain": "dpd.co.uk",
 			"addr": "*",
@@ -328,9 +412,21 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "efaktura.no",
+			"addr": "*",
+			"sdid": "efaktura.no",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "ekosport.de",
 			"addr": "*",
 			"sdid": "ekosport.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "elfispa.it",
+			"addr": "*",
+			"sdid": "elfispa.it",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -343,6 +439,12 @@
 			"domain": "emailprivacytester.com",
 			"addr": "*",
 			"sdid": "emailprivacytester.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "engieperte.it",
+			"addr": "*",
+			"sdid": "engieperte.it",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -388,6 +490,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "fatturecloud.it",
+			"addr": "*@mail.fatturecloud.it",
+			"sdid": "fatturecloud.it mail.fatturecloud.it",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "fbworkmail.com",
 			"addr": "*",
 			"sdid": "fbworkmail.com",
@@ -397,6 +505,18 @@
 			"domain": "firefox.com",
 			"addr": "*",
 			"sdid": "firefox.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "flybe.com",
+			"addr": "*",
+			"sdid": "flybe.com",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_NEUTRAL"
+		}, {
+			"domain": "ford.com",
+			"addr": "*",
+			"sdid": "ford.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -418,11 +538,23 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "gelsh.it",
+			"addr": "*",
+			"sdid": "gelsh.it",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "gellersen.de",
 			"addr": "*",
 			"sdid": "gellersen.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "generali.com",
+			"addr": "*",
+			"sdid": "generali.com",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_NEUTRAL"
 		}, {
 			"domain": "germanwings.com",
 			"addr": "*",
@@ -514,6 +646,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "grouponmail.it",
+			"addr": "*@r.grouponmail.it",
+			"sdid": "grouponmail.it r.grouponmail.it",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
 			"domain": "guildwars2.com",
 			"addr": "*",
 			"sdid": "guildwars2.com",
@@ -550,6 +688,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "ikeafamily.no",
+			"addr": "*@news.ikeafamily.no",
+			"sdid": "news.ikeafamily.no",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
 			"domain": "iliad.it",
 			"addr": "*",
 			"sdid": "iliad.it",
@@ -562,6 +706,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "infocert.it",
+			"addr": "*",
+			"sdid": "infocert.it",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_NEUTRAL"
+		}, {
 			"domain": "instagram.com",
 			"addr": "*",
 			"sdid": "instagram.com",
@@ -571,6 +721,12 @@
 			"domain": "instagram.com",
 			"addr": "*@mail.instagram.com",
 			"sdid": "instagram.com mail.instagram.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
+			"domain": "italotreno.it",
+			"addr": "*@news.italotreno.it",
+			"sdid": "italotreno.it news.italotreno.it",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
@@ -607,6 +763,12 @@
 			"domain": "kuketz-blog.de",
 			"addr": "*",
 			"sdid": "kuketz-security.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "kycsafe.com",
+			"addr": "*",
+			"sdid": "kycsafe.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -682,9 +844,27 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
+			"domain": "microsoft.com",
+			"addr": "*@css.one.microsoft.com",
+			"sdid": "microsoft.com css.one.microsoft.com",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_NEUTRAL"
+		}, {
+			"domain": "microsoft.com",
+			"addr": "*@mail.support.microsoft.com",
+			"sdid": "microsoft.com mail.support.microsoft.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
 			"domain": "mojang.com",
 			"addr": "*",
 			"sdid": "mojang.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "monsterinsights.com",
+			"addr": "*",
+			"sdid": "monsterinsights.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -697,6 +877,12 @@
 			"domain": "mozilla-community.org",
 			"addr": "*",
 			"sdid": "mozilla-community.org",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "mprogetti.com",
+			"addr": "*",
+			"sdid": "mprogetti.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -718,6 +904,24 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "nexway.com",
+			"addr": "*",
+			"sdid": "nexway.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "nexway.com",
+			"addr": "kaspersky_it@nexway.com",
+			"sdid": "",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_NEUTRAL"
+		}, {
+			"domain": "noip.com",
+			"addr": "*",
+			"sdid": "noip.com no-ip.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "nz-k.de",
 			"addr": "*",
 			"sdid": "nz-k.de",
@@ -727,6 +931,12 @@
 			"domain": "o2.de",
 			"addr": "*@news.o2.de",
 			"sdid": "news.o2.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "onedrive.com",
+			"addr": "*@mail.onedrive.com",
+			"sdid": "onedrive.com mail.onedrive.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -802,6 +1012,18 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "pimkie.com",
+			"addr": "*@news.pimkie.com",
+			"sdid": "pimkie.com news.pimkie.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
+			"domain": "poliambulatoriovalturio.it",
+			"addr": "*",
+			"sdid": "poliambulatoriovalturio.it",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "posteo.de",
 			"addr": "*",
 			"sdid": "posteo.de",
@@ -820,6 +1042,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "rhbank.no",
+			"addr": "*",
+			"sdid": "rhbank.no",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "sbroker.de",
 			"addr": "*",
 			"sdid": "sbroker.de",
@@ -835,8 +1063,8 @@
 			"domain": "sda.it",
 			"addr": "*",
 			"sdid": "sda.it",
-			"ruletype": "ALL",
-			"priority": "DEFAULT_RULE_ALL"
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_NEUTRAL"
 		}, {
 			"domain": "sent.com",
 			"addr": "*",
@@ -862,6 +1090,18 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "skype.com",
+			"addr": "*@notifications.skype.com",
+			"sdid": "skype.com notifications.skype.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "soltechonline.com",
+			"addr": "*",
+			"sdid": "soltechonline.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "sophos.com",
 			"addr": "*",
 			"sdid": "sophos.com",
@@ -871,6 +1111,24 @@
 			"domain": "sourceforge.com",
 			"addr": "*",
 			"sdid": "sourceforge.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "sourceforge.net",
+			"addr": "*",
+			"sdid": "sourceforge.net sourceforge.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "sparebank1.no",
+			"addr": "*",
+			"sdid": "sparebank1.no",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "spotify.com",
+			"addr": "*",
+			"sdid": "spotify.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -916,6 +1174,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "telepass.it",
+			"addr": "*",
+			"sdid": "telepass.it telepassmailer.it",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "tenderapp.com",
 			"addr": "*",
 			"sdid": "tenderapp.com",
@@ -925,6 +1189,12 @@
 			"domain": "thefork.it",
 			"addr": "*",
 			"sdid": "thefork.it",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "timbusinessmail.it",
+			"addr": "*",
+			"sdid": "timbusinessmail.it",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -988,6 +1258,18 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "wetransfer.com",
+			"addr": "*",
+			"sdid": "wetransfer.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "wetransfer.com",
+			"addr": "noreply@wetransfer.com",
+			"sdid": "wetransfer.com email.wetransfer.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
 			"domain": "wikimedia.org",
 			"addr": "*",
 			"sdid": "wikimedia.org",
@@ -1045,6 +1327,12 @@
 			"domain": "yandex-team.ru",
 			"addr": "*",
 			"sdid": "yandex-team.ru",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "yelp.com",
+			"addr": "*",
+			"sdid": "yelp.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {

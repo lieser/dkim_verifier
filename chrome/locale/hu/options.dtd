@@ -1,0 +1,98 @@
+<!ENTITY prefwindow.title "DKIM ellenőrző beállításai">
+
+
+<!ENTITY general.label "Általános">
+<!ENTITY general.general.label "Általános">
+<!ENTITY dkim.enable.label "Ellenőrizze a DKIM aláírásait">
+
+<!ENTITY dns.label "DNS">
+<!ENTITY dns.resolver.label "Megoldó">
+<!ENTITY dns.resolver.value.1.label "JavaScript DNS könyvtár">
+<!ENTITY dns.resolver.value.2.label "libunbound">
+<!ENTITY dns.getNameserversFromOS.label "Szerezzen DNS-kiszolgálókat az operációs rendszer konfigurációjából">
+<!ENTITY dns.nameserver.label "DNS-kiszolgálók (mondattan (EBNF): gép[&quot;:&quot;kikötő]{&quot;;&quot;gép[&quot;:&quot;kikötő]} )">
+
+<!ENTITY dns.timeout_connect.label "DNS-csatlakozás időtúllépése (másodperc)">
+<!ENTITY dns.proxy.enable.label "Megbízott segítségével csatlakozzon a DNS-kiszolgálókhoz">
+<!ENTITY dns.proxy.type.label "Megbízott típus:">
+<!ENTITY dns.proxy.host.label "Megbízott-kiszolgáló:">
+<!ENTITY dns.proxy.port.label "Kikötő:">
+
+<!ENTITY dns.libunbound.path.label "Útvonal">
+<!ENTITY dns.libunbound.path.relToProfileDir.label "Útvonal a profilkönyvtárhoz viszonyítva">
+
+<!ENTITY key.storing.value.0.label "Ne tárolja a DKIM kulcsokat">
+<!ENTITY key.storing.value.1.label "Tárolja a DKIM kulcsokat">
+<!ENTITY key.storing.value.2.label "Tárolja és hasonlítsa össze a DKIM kulcsokat a jelenlegi kulccsal">
+<!ENTITY key.viewKeys.label "DKIM kulcsok">
+
+<!ENTITY saveResult.label "Mentse el az ellenőrzés eredményét">
+
+<!ENTITY general.policy.label "Házirend">
+<!ENTITY policy.signRules.enable.label "Ellenőrizze, hogy az e-mailt alá kell-e írni">
+<!ENTITY policy.signRules.checkDefaultRules.label "Alapértelmezett szabályok használata">
+<!ENTITY policy.signRules.autoAddRule.label "Önműködően adjon hozzá szabályokat a megtekintett DKIM aláírt e-mailek alapján">
+<!ENTITY policy.signRules.autoAddRule.onlyIfFromAddressInSDID.label "Csak akkor, ha a feladócím szerepel az SDID-ben">
+<!ENTITY policy.signRules.autoAddRule.for.value.0.label "feladócímért">
+<!ENTITY policy.signRules.autoAddRule.for.value.1.label "altartományért">
+<!ENTITY policy.signRules.autoAddRule.for.value.2.label "alaptartományért">
+<!ENTITY policy.signRules.sdid.allowSubDomains.label "SDID-altartományok engedélyezése">
+<!ENTITY error.policy.wrong_sdid.asWarning.label "A helytelen SDID-t figyelmeztetésként kezelje, nem hibaként">
+<!ENTITY viewSigners.label "Az aláírók szabályai">
+<!ENTITY viewSignerDefaults.label "Alapértelmezett aláírói szabályok">
+<!ENTITY policy.DMARC.shouldBeSigned.enable.label "A DMARC segítségével heurisztikusan meghatározhatja, hogy alá kell-e írni az e-mailt">
+
+
+<!ENTITY display.label "Megjelenítés">
+
+<!ENTITY showDKIMHeader.label  "A DKIM fejléc megjelenítése">
+<!ENTITY showDKIMStatusbarpanel.label  "A DKIM állapotsor megjelenítése">
+<!ENTITY showDKIMFromTooltip.label  "A DKIM eszköztipp megjelenítése a feladóért fejléchez">
+<!ENTITY showDKIM.value.0.label  "soha">
+<!ENTITY showDKIM.value.10.label "érvényes DKIM aláírással rendelkező e-mail megtekintésekor">
+<!ENTITY showDKIM.value.30.label "DKIM aláírással ellátott e-mailek megtekintésekor">
+<!ENTITY showDKIM.value.40.label "e-mail megtekintésekor">
+<!ENTITY showDKIM.value.50.label "üzenet megtekintésekor">
+<!ENTITY statusbarpanel.result.style.value.1.label "Szöveg megjelenítése">
+<!ENTITY statusbarpanel.result.style.value.2.label "Ikon megjelenítése">
+
+<!ENTITY colorFrom.label "A feladó fejléc kiemelésének engedélyezése">
+<!ENTITY color.label "Szín">
+<!ENTITY color.text.label "Szöveg:">
+<!ENTITY color.background.label "Háttér:">
+<!ENTITY color.success.label "Érvényes aláírás">
+<!ENTITY color.warning.label "Érvényes aláírás figyelmeztetésekkel">
+<!ENTITY color.permfail.label "Érvénytelen aláírás">
+<!ENTITY color.tempfail.label "Ideiglenes hiba">
+<!ENTITY color.nosig.label "Aláíratlan e-mail">
+
+<!ENTITY display.favicon.show.label "Mutassa az ismert aláírási tartományok faviconját a feladócím előtt">
+
+
+<!ENTITY advanced.label "Haladó">
+
+<!ENTITY debug.label "A hibakeresés engedélyezése (Kimenetek és hibakeresési információk a hibakonzolhoz)">
+<!ENTITY error.detailedReasons.label "A hiba okának részletes bemutatása">
+<!ENTITY error.key_testmode.ignore.label "Ellenőrizze az aláírást, ha egy tartomány csak a DKIM-et teszteli">
+<!ENTITY error.illformed_i.treatAs.label "Kezelje hibás formázott AUID-címkéje mint">
+<!ENTITY error.illformed_s.treatAs.label "Kezelje hibás formázott választócímkéje mint">
+<!ENTITY error.policy.key_insecure.treatAs.label "Kezelje a DNSSEC által nem biztosított DKIM kulcsot mint">
+<!ENTITY error.algorithm.sign.rsa-sha1.treatAs.label "Kezelje az RSA-SHA1 jel algoritmust mint">
+
+<!ENTITY error.treatAs.value.0.label "hiba">
+<!ENTITY error.treatAs.value.1.label "figyelmeztetés">
+<!ENTITY error.treatAs.value.2.label "semmi">
+
+<!ENTITY display.keySecure.label "Jelölje meg a sikeres DNSSEC-érvényesítést egy zárral az SDID után">
+
+<!ENTITY arh.read.label "Olvassa el a hitelesítési-eredmények fejlécet">
+<!ENTITY arh.replaceAddonResult.label "A hitelesítési-eredmények fejléc elolvasása helyettesíti a kiegészítők ellenőrzését">
+<!ENTITY arh.relaxedParsing.label "Próbálja meg elolvasni a nem RFC-kompatibilis hitelesítési-eredmények fejlécet">
+
+<!ENTITY acc.dkim.enable.label "Ellenőrizze a DKIM aláírásait:">
+<!ENTITY acc.arh.read.label "Olvassa el a hitelesítési-eredmények fejlécét:">
+<!ENTITY acc.arh.allowedAuthserv.label "Megbízható hitelesítési-kiszolgálók:">
+
+<!ENTITY acc.boolean.value.0.label "Alapértelmezett érték használata">
+<!ENTITY acc.boolean.value.1.label "Igen">
+<!ENTITY acc.boolean.value.2.label "Nem">

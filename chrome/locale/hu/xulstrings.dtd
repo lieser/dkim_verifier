@@ -1,0 +1,38 @@
+<!ENTITY dkim_verifier.header.title "DKIM">
+
+<!ENTITY dkim_verifier.reverifyDKIMSignature.label "DKIM aláírás újraellenőrzése">
+<!ENTITY dkim_verifier.policyAddUserException.label "Alá kell írni kivétel hozzáadása">
+<!ENTITY dkim_verifier.markKeyAsSecure.label "A DKIM kulcs biztonságosként jelölése">
+<!ENTITY dkim_verifier.updateKey.label "DKIM kulcs frissítése">
+
+
+<!ENTITY treeviewKeys.title "DKIM kulcsok">
+<!ENTITY treeviewKeys.treecol.SDID.label "SDID">
+<!ENTITY treeviewKeys.treecol.selector.label "Választó">
+<!ENTITY treeviewKeys.treecol.key.label "DKIM kulcs">
+<!ENTITY treeviewKeys.treecol.insertedAt.label "Beszúrva">
+<!ENTITY treeviewKeys.treecol.lastUsedAt.label "Utolsó használat">
+<!ENTITY treeviewKeys.treecol.secure.label "DNSSEC">
+<!ENTITY treeviewKeys.deleteSelectedRows.label "Kiválasztott kulcsok törlése">
+
+<!ENTITY treeviewSigners.title "Aláírók szabályok">
+<!ENTITY treeviewSigners.treecol.domain.label "Tartomány">
+<!ENTITY treeviewSigners.treecol.listID.label "Listaazonosító">
+<!ENTITY treeviewSigners.treecol.addr.label "Feladó">
+<!ENTITY treeviewSigners.treecol.sdid.label "SDID">
+<!ENTITY treeviewSigners.treecol.ruletype.label "Szabály típusa">
+<!ENTITY treeviewSigners.treecol.priority.label "Sürgősség">
+<!ENTITY treeviewSigners.treecol.enabled.label "Engedélyezve">
+<!ENTITY treeviewSigners.addSignersRule.label "Szabály hozzáadása">
+<!ENTITY treeviewSigners.deleteSelectedRows.label "Kiválasztott szabályok törlése">
+
+<!ENTITY treeviewSignersDefault.title "Alapértelmezett aláírói szabályok">
+
+<!ENTITY addSignersRule.title "Aláírók szabály hozzáadása">
+<!ENTITY signRules.ruletype.SIGNED.label "Alá kell írni (1)">
+<!ENTITY signRules.ruletype.NEUTRAL.label "Aláírható (2)">
+<!ENTITY signRules.ruletype.HIDEFAIL.label "Az érvénytelen aláírás figyelmen kívül hagyása (3)">
+<!ENTITY signRules.priorityMode.auto.label "Önműködően sürgősség kiválasztása">
+<!ENTITY signRules.priorityMode.manual.label "Sürgősség beállítása">
+
+<!ENTITY button.help.label "Súgó">

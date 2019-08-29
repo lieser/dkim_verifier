@@ -1,4 +1,4 @@
-<!ENTITY dkim_verifier.header.title "DKIM ">
+<!ENTITY dkim_verifier.header.title "DKIM">
 
 <!ENTITY dkim_verifier.reverifyDKIMSignature.label "Überprüfe DKIM Signatur neu">
 <!ENTITY dkim_verifier.policyAddUserException.label "Füge Ausnahme für muss signiert sein hinzu">
