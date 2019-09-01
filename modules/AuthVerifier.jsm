@@ -3,7 +3,7 @@
  * 
  * Authentication Verifier.
  *
- * Version: 1.4.1pre1 (14 April 2019)
+ * Version: 1.4.1 (14 April 2019)
  * 
  * Copyright (c) 2014-2019 Philippe Lieser
  * 

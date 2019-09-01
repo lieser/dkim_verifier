@@ -1,9 +1,8 @@
-3.0.0pre5 [2019-07-04]
+3.0.0 [2019-09-01]
 ------------------
  - now requires at least Thunderbird 68
  - fixed incompatibility with Thunderbird 68/69
  - libunbound resolver: remove old root trust anchor (key tag 19036)
- - include changes from 2.1.0pre2
 
 2.1.0 [2019-08-29]
 ------------------
