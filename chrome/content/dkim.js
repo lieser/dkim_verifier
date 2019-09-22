@@ -663,7 +663,7 @@ var that = {
 	 */
 	setCollapsed: function Display_setCollapsed(state) {
 		function setDKIMFromTooltip(headerBox) {
-			var emailDisplayButton = headerBox.emailAddresses.firstChild.firstChild;
+			var emailDisplayButton = headerBox.emailAddresses.getElementsByClassName("emaillabel")[0];
 			if (emailDisplayButton) {
 				emailDisplayButton.tooltip = "dkim-verifier-header-tooltip-from";
 				emailDisplayButton.setAttribute("tooltiptextSaved", 
@@ -673,7 +673,7 @@ var that = {
 			}
 		}
 		function removeDKIMFromTooltip(headerBox) {
-			var emailDisplayButton = headerBox.emailAddresses.firstChild.firstChild;
+			var emailDisplayButton = headerBox.emailAddresses.getElementsByClassName("emaillabel")[0];
 			if (emailDisplayButton) {
 				if (emailDisplayButton.tooltip === "dkim-verifier-header-tooltip-from") {
 					emailDisplayButton.tooltip = "";
