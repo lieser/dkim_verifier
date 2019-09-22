@@ -13,6 +13,7 @@
 
 // options for ESLint
 /* eslint strict: ["warn", "function"] */
+/* eslint no-magic-numbers: ["warn", { "ignoreArrayIndexes": true, "ignore": [0, 1] }] */
 /* global Components, Services, Sqlite */
 /* global Logging, DMARC */
 /* global addrIsInDomain, Deferred, getBaseDomainFromAddr, PREF, readStringFrom, stringEndsWith, stringEqual, DKIM_SigError, DKIM_InternalError */
@@ -95,7 +96,7 @@ var dbInitializedDefer = new Deferred();
 var favicons;
 var rulesUpdatedObservers = [];
 
-var Policy = {
+var _Policy = {
 	get version() { "use strict"; return module_version; },
 
 	/**
@@ -599,6 +600,7 @@ var Policy = {
 		});
 	},
 };
+var Policy = _Policy;
 
 /**
  * Adds rule.

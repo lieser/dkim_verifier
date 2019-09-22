@@ -11,6 +11,11 @@ interface Object extends Object {
 ////////////////////////////////////////////////////////////////////////////////
 //// Mozilla specific modules
 
+interface ChromeUtils {
+    import(url: string): any;
+}
+declare let ChromeUtils: ChromeUtils;
+
 declare module Components {
     let classes: Array;
     let interfaces: ComponentsInterfaces;
@@ -339,7 +344,11 @@ declare class XULPopupElement extends XULElement {};
 ////////////////////////////////////////////////////////////////////////////////
 //// Thunderbird specific interfaces
 
-declare class MozMailMultiEmailheaderfield extends MozXULElement {};
+declare class MozMailMultiEmailheaderfield extends MozXULElement {
+    longEmailAddresses: MozXULElement;
+    // added by add-on
+    _dkimFavicon: MozXULElement;
+};
 
 interface nsIMsgDBHdr {
     getStringProperty(propertyName: string): string;

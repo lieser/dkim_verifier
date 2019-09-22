@@ -506,9 +506,9 @@ DKIM_Verifier.Display = (function() {
 
 			emailheaderfield._dkimFavicon.style.backgroundImage = "url('" + url + "')";
 			if (url) {
-				emailheaderfield.setAttribute("dkimFavicon", true);
+				emailheaderfield.setAttribute("dkimFavicon", "true");
 			} else {
-				emailheaderfield.setAttribute("dkimFavicon", false);
+				emailheaderfield.setAttribute("dkimFavicon", "false");
 			}
 		}
 

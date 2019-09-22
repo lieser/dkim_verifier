@@ -13,6 +13,7 @@
  
 // options for ESLint
 /* eslint strict: ["warn", "function"] */
+/* eslint no-magic-numbers: ["warn", { "ignoreArrayIndexes": true, "ignore": [0, 1, 2, 3] }] */
 /* global Components, Services, Log */
 /* exported EXPORTED_SYMBOLS, Logging */
 
@@ -38,7 +39,7 @@ var prefs = Services.prefs.getBranch(PREF_BRANCH);
 // @ts-ignore
 var log;
 
-var Logging = {
+var _Logging = {
 	/**
 	 * getLogger
 	 * 
@@ -86,6 +87,8 @@ var Logging = {
 		return [cappender, dappender];
 	},
 };
+//@ts-ignore
+var Logging = _Logging;
 
 /**
  * init
