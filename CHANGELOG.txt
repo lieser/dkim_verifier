@@ -3,6 +3,7 @@
  - fixed incompatibility with Thunderbird 70 (#167)
  - fixed DKIM status not visible when a message is opened in a new window (#172)
  - fixed incompatibility with CompactHeader add-on (#177)
+ - JSDNS: fixed proxy support (#173)
 
 3.0.0 [2019-09-01]
 ------------------

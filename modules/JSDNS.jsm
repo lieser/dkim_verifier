@@ -4,7 +4,7 @@
  * Based on Joshua Tauberer's DNS LIBRARY IN JAVASCRIPT
  * from "Sender Verification Extension" version 0.9.0.6
  * 
- * Version: 1.4.2 (29 August 2019)
+ * Version: 1.4.3 (22 September 2019)
  * 
  * Copyright (c) 2013-2019 Philippe Lieser
  * 
@@ -54,6 +54,10 @@
 /*
  * Changelog:
  * ==========
+ *
+ * 1.4.3
+ * -----
+ * - fixed proxy support
  *
  * 1.4.2
  * -----
@@ -1025,13 +1029,14 @@ function DNS_readAllFromSocket(host,port,outputData,listener)
 	try {
 		var proxy = null;
 		if (prefs.getBoolPref("proxy.enable")) {
+			/**@type{nsIProtocolProxyService} */
 			var pps = Cc["@mozilla.org/network/protocol-proxy-service;1"].
 				getService(Ci.nsIProtocolProxyService);
 			proxy = pps.newProxyInfo(
 				prefs.getCharPref("proxy.type"),
 				prefs.getCharPref("proxy.host"),
-				prefs.getCharPref("proxy.port"),
-				0, 0xffffffff, null
+				parseInt(prefs.getCharPref("proxy.port"), 10),
+				"", "",	0, 0xffffffff, null
 			);
 		}
 

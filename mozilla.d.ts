@@ -271,6 +271,20 @@ interface nsIPrefBranch {
     readonly PREF_BOOL: number;
 }
 
+interface nsIProtocolProxyService {
+    readonly newProxyInfo:(
+        aType: string,
+        aHost: string,
+        aPort: number,
+        aProxyAuthorizationHeader: string,
+        aConnectionIsolationKey: string,
+        aFlags: number,
+        aFailoverTimeout: number,
+        aFailoverProxy: nsIProxyInfo?) => nsIProxyInfo;
+}
+
+interface nsIProxyInfo {nsIProxyInfo: never};
+
 type nsIObserver = object;
 
 interface nsIIOService {
