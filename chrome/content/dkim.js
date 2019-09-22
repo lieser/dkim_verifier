@@ -314,14 +314,22 @@ class DKIMStatusbarpanel extends MozXULElement {
 		this._dkimWarningIcon.setAttribute("tooltip", "dkim-verifier-header-tooltip-warnings");
 
 		// DKIM status icon
+		this._dkimStatusIconBox = document.createXULElement("vbox");
+		let separatorTop = document.createXULElement("separator");
+		separatorTop.setAttribute("flex", "1");
+		separatorTop.style.height="0px";
+		let separatorBottom = separatorTop.cloneNode();
 		this._dkimStatusIcon = document.createXULElement("image");
 		this._dkimStatusIcon.setAttribute("anonid", "status-icon");
 		this._dkimStatusIcon.setAttribute("tooltip", "dkim-verifier-tooltip-status");
+		this._dkimStatusIconBox.appendChild(separatorTop);
+		this._dkimStatusIconBox.appendChild(this._dkimStatusIcon);
+		this._dkimStatusIconBox.appendChild(separatorBottom);
 
 		this.appendChild(this._label);
 		this.appendChild(this._dkimValue);
 		this.appendChild(this._dkimWarningIcon);
-		this.appendChild(this._dkimStatusIcon);
+		this.appendChild(this._dkimStatusIconBox);
 	}
 
 	/**
