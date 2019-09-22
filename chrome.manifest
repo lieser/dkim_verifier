@@ -19,6 +19,8 @@ locale		dkim_verifier zh-CN		chrome/locale/zh-CN/
 overlay		chrome://messenger/content/messenger.xul  chrome://dkim_verifier/content/msgHdrViewOverlay.xul
 overlay		chrome://messenger/content/messenger.xul  chrome://dkim_verifier/content/statusbarOverlay.xul
 overlay		chrome://messenger/content/messenger.xul  chrome://dkim_verifier/content/toolbarbutton.xul
+overlay		chrome://messenger/content/messageWindow.xul  chrome://dkim_verifier/content/msgHdrViewOverlay.xul
+overlay		chrome://messenger/content/messageWindow.xul  chrome://dkim_verifier/content/statusbarOverlay.xul
 
 style		chrome://global/content/customizeToolbar.xul	chrome://dkim_verifier/skin/toolbarbutton.css
 

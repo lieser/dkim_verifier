@@ -1,6 +1,7 @@
 3.0.1pre1 [2019-09-22]
 ------------------
  - fixed incompatibility with Thunderbird 70 (#167)
+ - fixed DKIM status not visible when a message is opened in a new window (#172)
  - fixed incompatibility with CompactHeader add-on (#177)
 
 3.0.0 [2019-09-01]
