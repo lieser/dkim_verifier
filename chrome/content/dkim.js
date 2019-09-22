@@ -16,8 +16,9 @@
 /* eslint-env browser */
 /* eslint strict: ["warn", "function"] */
 /* eslint no-console: "off"*/
+/* eslint no-magic-numbers: ["warn", { "ignoreArrayIndexes": true, "ignore": [-1, 0, 1,] }] */
 /* global Components, Cu, Services, gMessageListeners, gFolderDisplay, gExpandedHeaderView, createHeaderEntry, syncGridColumnWidths, currentHeaderData, gMessageDisplay */
-/* global MozMailMultiEmailheaderfield, MozXULElement, XULPopupElement */
+/* global MozXULElement, XULPopupElement */
 
 // namespace
 // @ts-ignore
@@ -368,36 +369,6 @@ class DKIMStatusbarpanel extends MozXULElement {
 
 customElements.define("dkim-verifier-statusbarpanel", DKIMStatusbarpanel, {extends: 'statusbarpanel'});
 
-Object.defineProperty(MozMailMultiEmailheaderfield.prototype, "dkimFaviconUrl", {
-	/**
-	 * Set the favicon icon to show before the email address
-	 *
-	 * @memberof MozMailMultiEmailheaderfield
-	 * @param {String} url
-	 * @return {Void}
-	 */
-	set: function dkimFaviconUrl(url) {
-		"use strict";
-
-		if (!this._dkimFavicon) {
-			this._dkimFavicon = document.createXULElement("description");
-			this._dkimFavicon.classList.add("headerValue");
-			this._dkimFavicon.setAttribute("anonid", "dkimFavicon");
-			this._dkimFavicon.setAttribute("tooltip", "dkim-verifier-header-tooltip-from");
-			// dummy text for align baseline
-			this._dkimFavicon.textContent = "";
-			this.longEmailAddresses.prepend(this._dkimFavicon);
-		}
-
-		this._dkimFavicon.style.backgroundImage = "url('" + url + "')";
-		if (url) {
-		  this.setAttribute("dkimFavicon", true);
-		} else {
-		  this.setAttribute("dkimFavicon", false);
-		}
-	}
-});
-
 /*
  * DKIM Verifier display module
  */
@@ -507,14 +478,40 @@ DKIM_Verifier.Display = (function() {
 	 * @return {void}
 	 */
 	function setFaviconUrl(faviconUrl) {
-		expandedFromBox.dkimFaviconUrl = faviconUrl;
+		/**
+		 * Helper function to create and set properties of the favicon element
+		 *
+		 * @param {MozMailMultiEmailheaderfield} emailheaderfield
+		 * @param {string} url
+		 * @return {void}
+		 */
+		function setDkimFavicon(emailheaderfield, url) {
+			if (!emailheaderfield._dkimFavicon) {
+				emailheaderfield._dkimFavicon = document.createXULElement("description");
+				emailheaderfield._dkimFavicon.classList.add("headerValue");
+				emailheaderfield._dkimFavicon.setAttribute("anonid", "dkimFavicon");
+				emailheaderfield._dkimFavicon.setAttribute("tooltip", "dkim-verifier-header-tooltip-from");
+				// dummy text for align baseline
+				emailheaderfield._dkimFavicon.textContent = "";
+				emailheaderfield.longEmailAddresses.prepend(emailheaderfield._dkimFavicon);
+			}
+
+			emailheaderfield._dkimFavicon.style.backgroundImage = "url('" + url + "')";
+			if (url) {
+				emailheaderfield.setAttribute("dkimFavicon", true);
+			} else {
+				emailheaderfield.setAttribute("dkimFavicon", false);
+			}
+		}
+
+		setDkimFavicon(expandedFromBox, faviconUrl);
 
 		// for CompactHeader addon
 		if (collapsed1LfromBox) {
-			collapsed1LfromBox.dkimFaviconUrl = faviconUrl;
+			setDkimFavicon(collapsed1LfromBox, faviconUrl);
 		}
 		if (collapsed2LfromBox) {
-			collapsed2LfromBox.dkimFaviconUrl = faviconUrl;
+			setDkimFavicon(collapsed2LfromBox, faviconUrl);
 		}
 	}
 

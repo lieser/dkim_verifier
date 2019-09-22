@@ -1,7 +1,11 @@
+3.0.1pre1 [2019-09-22]
+------------------
+ - fixed incompatibility with Thunderbird 70 (#167)
+
 3.0.0 [2019-09-01]
 ------------------
  - now requires at least Thunderbird 68
- - fixed incompatibility with Thunderbird 68/69
+ - fixed incompatibility with Thunderbird 68/69 (#115)
  - libunbound resolver: remove old root trust anchor (key tag 19036)
 
 2.1.0 [2019-08-29]
