@@ -3,7 +3,7 @@
  * 
  * Authentication Verifier.
  *
- * Version: 1.4.1 (14 April 2019)
+ * Version: 1.4.2 (22 September 2019)
  * 
  * Copyright (c) 2014-2019 Philippe Lieser
  * 
@@ -22,7 +22,7 @@
 "use strict";
 
 // @ts-ignore
-const module_version = "1.4.1";
+const module_version = "1.4.2";
 
 var EXPORTED_SYMBOLS = [
 	"AuthVerifier"
