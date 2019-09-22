@@ -603,6 +603,10 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 					case "DKIM_SIGERROR_NOKEY":
 					case "DKIM_SIGERROR_KEY_REVOKED":
 					case "DKIM_SIGERROR_KEY_TESTMODE":
+					case "DKIM_POLICYERROR_MISSING_SIG":
+					case "DKIM_POLICYERROR_KEYMISMATCH":
+					case "DKIM_POLICYERROR_KEY_INSECURE":
+					case "DKIM_POLICYERROR_WRONG_SDID":
 						break;
 					default:
 						log.warn("unknown errorType: " + errorType);
