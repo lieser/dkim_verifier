@@ -1,3 +1,5 @@
+ - Authentication-Results header: fix relaxed parsing option and trailing ";"
+
 2.1.0 [2019-08-29]
 ------------------
  - Cryptographic Algorithm and Key Usage Update (RFC 8301, #141)
