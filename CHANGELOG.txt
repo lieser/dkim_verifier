@@ -1,3 +1,7 @@
+3.1.0pre1 [2020-01-05]
+------------------
+ - includes changes from 2.2.0
+
 2.2.0pre1 [2020-01-05]
 ------------------
  - Authentication-Results header: fix relaxed parsing option and trailing ";"
