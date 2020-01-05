@@ -1,6 +1,7 @@
  - Authentication-Results header: fix relaxed parsing option and trailing ";"
  - Expose option on how to treat weak keys. Default is now ignore (was warning since 2.1.0)
  - Fix default text color for unsigned e-mail in dark theme if highlighting of From header is enabled
+ - updated default rules and favicons (#165, #168, #169, #180)
 
 2.1.0 [2019-08-29]
 ------------------

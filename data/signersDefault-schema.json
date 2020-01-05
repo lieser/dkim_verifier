@@ -93,6 +93,7 @@
 									"type": "string",
 									"enum": [
 										"DEFAULT_RULE_ALL",
+										"DEFAULT_RULE_ALL_2",
 										"DEFAULT_RULE_NEUTRAL",
 										"USERINSERT_RULE_NEUTRAL"
 									]
