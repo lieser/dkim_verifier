@@ -1,3 +1,11 @@
+2.2.0pre1 [2020-01-05]
+------------------
+ - Authentication-Results header: fix relaxed parsing option and trailing ";"
+ - exposed option on how to treat weak keys. Default is now ignore (was warning since 2.1.0) (#174)
+ - fixed default text color for unsigned e-mail in dark theme if highlighting of From header is enabled (#181)
+ - libunbound resolver: add ability to explicitly load dependencies of libunbound (#170, #179)
+ - updated default rules and favicons (#165, #168, #169, #180)
+
 3.0.1 [2019-09-22]
 ------------------
  - fixed incompatibility with Thunderbird 70 (#167)

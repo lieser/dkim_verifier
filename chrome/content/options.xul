@@ -362,6 +362,17 @@
                 </menulist>
                 <spacer/>
               </hbox>
+              <hbox align="center">
+                <label>&error.algorithm.rsa.weakKeyLength.treatAs;</label>
+                <menulist preference="extensions.dkim_verifier.error.algorithm.rsa.weakKeyLength.treatAs">
+                  <menupopup>
+                    <menuitem label="&error.treatAs.value.0.label;" value="0"/>
+                    <menuitem label="&error.treatAs.value.1.label;" value="1"/>
+                    <menuitem label="&error.treatAs.value.2.label;" value="2"/>
+                  </menupopup>
+                </menulist>
+                <spacer/>
+              </hbox>
 
             </prefpane>
 

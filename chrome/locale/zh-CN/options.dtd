@@ -62,6 +62,7 @@
 <!ENTITY error.illformed_s.treatAs.label "将格式不良的选择器标签视作">
 <!ENTITY error.policy.key_insecure.treatAs.label "将非 DNSSEC 的 DKIM 密钥视作">
 <!ENTITY error.algorithm.sign.rsa-sha1.treatAs.label "将 RSA-SHA1 签名算法视作">
+<!ENTITY error.algorithm.rsa.weakKeyLength.treatAs "Treat weak RSA keys (&lt;2048 bits) as">
 <!ENTITY error.treatAs.value.0.label "错误">
 <!ENTITY error.treatAs.value.1.label "警告">
 <!ENTITY error.treatAs.value.2.label "无事">

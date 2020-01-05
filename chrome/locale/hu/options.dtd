@@ -78,6 +78,7 @@
 <!ENTITY error.illformed_s.treatAs.label "Kezelje hibás formázott választócímkéje mint">
 <!ENTITY error.policy.key_insecure.treatAs.label "Kezelje a DNSSEC által nem biztosított DKIM kulcsot mint">
 <!ENTITY error.algorithm.sign.rsa-sha1.treatAs.label "Kezelje az RSA-SHA1 jel algoritmust mint">
+<!ENTITY error.algorithm.rsa.weakKeyLength.treatAs "Treat weak RSA keys (&lt;2048 bits) as">
 
 <!ENTITY error.treatAs.value.0.label "hiba">
 <!ENTITY error.treatAs.value.1.label "figyelmeztetés">

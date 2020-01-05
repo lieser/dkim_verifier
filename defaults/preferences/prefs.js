@@ -105,10 +105,10 @@ pref("extensions.dkim_verifier.color.warning.text", "windowtext");
 pref("extensions.dkim_verifier.color.warning.background", "orange");
 pref("extensions.dkim_verifier.color.permfail.text", "windowtext");
 pref("extensions.dkim_verifier.color.permfail.background", "red");
-pref("extensions.dkim_verifier.color.tempfail.text", "windowtext");
-pref("extensions.dkim_verifier.color.tempfail.background", "transparent");
-pref("extensions.dkim_verifier.color.nosig.text", "windowtext");
-pref("extensions.dkim_verifier.color.nosig.background", "transparent");
+pref("extensions.dkim_verifier.color.tempfail.text", "unset");
+pref("extensions.dkim_verifier.color.tempfail.background", "unset");
+pref("extensions.dkim_verifier.color.nosig.text", "unset");
+pref("extensions.dkim_verifier.color.nosig.background", "unset");
 
 pref("extensions.dkim_verifier.display.favicon.show", true);
 
@@ -134,7 +134,7 @@ pref("extensions.dkim_verifier.error.policy.key_insecure.treatAs", 2);
 pref("extensions.dkim_verifier.error.key_testmode.ignore", false);
 pref("extensions.dkim_verifier.error.contentTypeCharsetAddedQuotes.treatAs", 0);
 pref("extensions.dkim_verifier.error.algorithm.sign.rsa-sha1.treatAs", 1);
-pref("extensions.dkim_verifier.error.algorithm.rsa.weakKeyLength.treatAs", 1);
+pref("extensions.dkim_verifier.error.algorithm.rsa.weakKeyLength.treatAs", 2);
 
 
 ////////////////////////////////////////////////////////////////////////////////
