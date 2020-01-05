@@ -105,10 +105,10 @@ pref("extensions.dkim_verifier.color.warning.text", "windowtext");
 pref("extensions.dkim_verifier.color.warning.background", "orange");
 pref("extensions.dkim_verifier.color.permfail.text", "windowtext");
 pref("extensions.dkim_verifier.color.permfail.background", "red");
-pref("extensions.dkim_verifier.color.tempfail.text", "windowtext");
-pref("extensions.dkim_verifier.color.tempfail.background", "transparent");
-pref("extensions.dkim_verifier.color.nosig.text", "windowtext");
-pref("extensions.dkim_verifier.color.nosig.background", "transparent");
+pref("extensions.dkim_verifier.color.tempfail.text", "unset");
+pref("extensions.dkim_verifier.color.tempfail.background", "unset");
+pref("extensions.dkim_verifier.color.nosig.text", "unset");
+pref("extensions.dkim_verifier.color.nosig.background", "unset");
 
 pref("extensions.dkim_verifier.display.favicon.show", true);
 
