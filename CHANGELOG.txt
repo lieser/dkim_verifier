@@ -1,4 +1,5 @@
  - Authentication-Results header: fix relaxed parsing option and trailing ";"
+ - Expose option on how to treat weak keys. Default is now ignore (was warning since 2.1.0)
 
 2.1.0 [2019-08-29]
 ------------------

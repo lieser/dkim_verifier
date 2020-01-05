@@ -78,6 +78,7 @@
 <!ENTITY error.illformed_s.treatAs.label "Behandel falsch formatierten selector Tag als">
 <!ENTITY error.policy.key_insecure.treatAs.label "Behandel nicht durch DNSSEC gesicherte DKIM Schlüssel als">
 <!ENTITY error.algorithm.sign.rsa-sha1.treatAs.label "Behandel rsa-sha1 Signaturalgorithmus als">
+<!ENTITY error.algorithm.rsa.weakKeyLength.treatAs "Behandel schwachen RSA Schlüssel (&lt;2048 bits) als">
 
 <!ENTITY error.treatAs.value.0.label "Fehler">
 <!ENTITY error.treatAs.value.1.label "Warnung">
