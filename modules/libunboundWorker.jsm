@@ -124,6 +124,7 @@ var Constants = {
 };
 
 var lib;
+var libDeps = [];
 var ctx = ctypes.voidptr_t();
 // http://unbound.net/documentation/libunbound.html
 var ub_ctx;
@@ -251,10 +252,10 @@ function resolve(name, rrtype=Constants.RR_TYPE_A) {
 /**
  * Load library
  *
- * @param {String} path
+ * @param {String} paths paths to libraries to load, separated by ";". Last is libunbound.
  * @return {void}
 */
-function load(path) {
+function load(paths) {
 	// if library was already loaded, do a cleanup first before reloading it
 	if (lib) {
 		// delete old context
@@ -263,7 +264,23 @@ function load(path) {
 		// close library
 		lib.close();
 		lib = null;
+		// close dependency of library
+		for (let libDep of libDeps) {
+			libDep.close();
+		}
+		libDeps = [];
 	}
+	let libPaths = paths.split(";");
+	// Automatic loading of dependencies seems to be buggy.
+	// If a dependency was ones loaded, TB will always try to use the same,
+	// maybe now outdated location.
+	// Explicitly load optionally specified dependency of library as a workaround.
+	for (let libDepPath of libPaths.slice(0, -1)) {
+		log.trace("loading dependency: " + libDepPath);
+		libDeps.push(ctypes.open(libDepPath));
+	}
+	let path = libPaths.slice(-1)[0];
+	log.trace("loading libunbound: " + path);
 	lib = ctypes.open(path);
 
 	ub_ctx = new ctypes.StructType("ub_ctx");

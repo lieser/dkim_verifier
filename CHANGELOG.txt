@@ -1,7 +1,16 @@
-2.1.0pre1 [2019-05-18]
+2.2.0pre1 [2020-01-05]
+------------------
+ - Authentication-Results header: fix relaxed parsing option and trailing ";"
+ - exposed option on how to treat weak keys. Default is now ignore (was warning since 2.1.0) (#174)
+ - fixed default text color for unsigned e-mail in dark theme if highlighting of From header is enabled (#181)
+ - libunbound resolver: add ability to explicitly load dependencies of libunbound (#170, #179)
+ - updated default rules and favicons (#165, #168, #169, #180)
+
+2.1.0 [2019-08-29]
 ------------------
  - Cryptographic Algorithm and Key Usage Update (RFC 8301, #141)
- - updated default rules and favicons
+ - updated default rules and favicons (#140, #145, #152, #157, #159)
+ - added Hungarian translation (by Óvári) (#164)
 
 2.0.1 [2019-01-18]
 ------------------

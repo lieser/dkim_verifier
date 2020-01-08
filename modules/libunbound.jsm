@@ -204,8 +204,10 @@ function init() {
 function load() {
 	let path;
 	if (prefs.getBoolPref("libunbound.path.relToProfileDir")) {
-		path = OS.Path.join(OS.Constants.Path.profileDir,
-			prefs.getCharPref("libunbound.path"));
+		path = prefs.getCharPref("libunbound.path").
+			split(";").
+			map(e => {return OS.Path.join(OS.Constants.Path.profileDir, e);}).
+			join(";");
 	} else {
 		path = prefs.getCharPref("libunbound.path");
 	}

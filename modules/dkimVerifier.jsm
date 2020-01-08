@@ -326,10 +326,20 @@ var Verifier = (function() {
 			log.debug("rsa key size: " + m_hex.length * 4);
 			throw new DKIM_SigError( "DKIM_SIGWARNING_KEYSMALL" );
 		} else if (m_hex.length * 4 < 2048) {
-			// warning if key is short
+			// weak key
 			log.debug("rsa key size: " + m_hex.length * 4);
-			warnings.push({name: "DKIM_SIGWARNING_KEYSMALL"});
-			log.debug("Warning: DKIM_SIGWARNING_KEYSMALL");
+			switch (prefs.getIntPref("error.algorithm.rsa.weakKeyLength.treatAs")) {
+				case 0: // error
+					throw new DKIM_SigError("DKIM_SIGWARNING_KEY_IS_WEAK");
+				case 1: // warning
+					warnings.push({name: "DKIM_SIGWARNING_KEY_IS_WEAK"});
+					log.debug("Warning: DKIM_SIGWARNING_KEY_IS_WEAK");
+					break;
+				case 2: // ignore
+					break;
+				default:
+					throw new DKIM_InternalError("invalid error.algorithm.rsa.weakKeyLength.treatAs");
+			}
 		}
 
 		// set RSA-key

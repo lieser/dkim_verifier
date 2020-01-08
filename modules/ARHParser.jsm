@@ -205,7 +205,8 @@ function parseResinfo(str) {
 		if (prefs.getBoolPref("relaxedParsing"))
 		{
 			// allow trailing ";" at the end
-			if (str.value.trim() === ";") {
+			match_o(str, ";");
+			if (str.value.trim() === "") {
 				str.value = "";
 				return null;
 			}
