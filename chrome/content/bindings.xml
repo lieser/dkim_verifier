@@ -288,6 +288,8 @@
       <property name="dkimFaviconUrl">
         <setter><![CDATA[
           this.dkimFavicon.style.backgroundImage = "url('" + val + "')";
+          this.dkimFavicon.style.backgroundPosition = "center center";
+          this.dkimFavicon.style.backgroundRepeat = "no-repeat";
           if (val) {
             this.setAttribute("dkimFavicon", true);
           } else {

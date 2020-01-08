@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "*.jsm": "javascript",
-        ".eslintrc.json": "jsonc"
+        ".eslintrc.json": "jsonc",
+        "cSpell.json": "jsonc"
     }
 }

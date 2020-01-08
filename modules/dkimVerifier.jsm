@@ -3,10 +3,11 @@
  *
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
+ * Update done by RFC 8301 included https://tools.ietf.org/html/rfc8301
  * 
- * Version: 2.2.0pre1 (14 November 2017)
+ * Version: 2.3.0 (18 Mai 2019)
  * 
- * Copyright (c) 2013-2017 Philippe Lieser
+ * Copyright (c) 2013-2019 Philippe Lieser
  * 
  * This software is licensed under the terms of the MIT License.
  * 
@@ -31,7 +32,7 @@
 /* exported EXPORTED_SYMBOLS, Verifier */
 
 // @ts-ignore
-const module_version = "2.2.0pre1";
+const module_version = "2.3.0";
 
 var EXPORTED_SYMBOLS = [
 	"Verifier"
@@ -150,8 +151,20 @@ var Verifier = (function() {
 	"use strict";
 	
 	// set hash funktions used by rsasign-1.2.js
-	RSA._RSASIGN_HASHHEXFUNC.sha1 = function(s){return dkim_hash(s, "sha1", "hex");};
-	RSA._RSASIGN_HASHHEXFUNC.sha256 = function(s){return dkim_hash(s, "sha256", "hex");};
+	RSA.KJUR = {};
+	RSA.KJUR.crypto = {};
+	RSA.KJUR.crypto.Util = {};
+    RSA.KJUR.crypto.Util.DIGESTINFOHEAD = {
+		'sha1':      "3021300906052b0e03021a05000414",
+		'sha224':    "302d300d06096086480165030402040500041c",
+		'sha256':    "3031300d060960864801650304020105000420",
+		'sha384':    "3041300d060960864801650304020205000430",
+		'sha512':    "3051300d060960864801650304020305000440",
+		'md2':       "3020300c06082a864886f70d020205000410",
+		'md5':       "3020300c06082a864886f70d020505000410",
+		'ripemd160': "3021300906052b2403020105000414",
+	};
+	RSA.KJUR.crypto.Util.hashString = (s, algName) => dkim_hash(s, algName, "hex");
 
 /*
  * preferences
@@ -284,32 +297,37 @@ var Verifier = (function() {
 		let posKeyArray = null;
 
 		// check format by comparing the 1. child in the top element
-		posTopArray = RSA.ASN1HEX.getPosArrayOfChildren_AtObj(asnKey,0);
+		posTopArray = RSA.ASN1HEX.getChildIdx(asnKey,0);
 		if (posTopArray === null || posTopArray.length !== 2) {
 			throw new DKIM_SigError( "DKIM_SIGERROR_KEYDECODE" );
 		}
-		if (RSA.ASN1HEX.getHexOfTLV_AtObj(asnKey, posTopArray[0]) !==
+		if (RSA.ASN1HEX.getTLV(asnKey, posTopArray[0]) !==
 		    "300d06092a864886f70d0101010500") {
 			throw new DKIM_SigError( "DKIM_SIGERROR_KEYDECODE" );
 		}
 
 		// get pos of SEQUENCE under BIT STRING
 		// asn1hex does not support BIT STRING, so we will compute the position
-		let pos = RSA.ASN1HEX.getStartPosOfV_AtObj(asnKey, posTopArray[1]) + 2;
+		let pos = RSA.ASN1HEX.getVidx(asnKey, posTopArray[1]) + 2;
 
 		// get pos of modulus and publicExponent
-		posKeyArray = RSA.ASN1HEX.getPosArrayOfChildren_AtObj(asnKey, pos);
+		posKeyArray = RSA.ASN1HEX.getChildIdx(asnKey, pos);
 		if (posKeyArray === null || posKeyArray.length !== 2) {
 			throw new DKIM_SigError( "DKIM_SIGERROR_KEYDECODE" );
 		}
 
 		// get modulus
-		let m_hex = RSA.ASN1HEX.getHexOfV_AtObj(asnKey,posKeyArray[0]);
+		let m_hex = RSA.ASN1HEX.getV(asnKey,posKeyArray[0]);
 		// get public exponent
-		let e_hex = RSA.ASN1HEX.getHexOfV_AtObj(asnKey,posKeyArray[1]);
+		let e_hex = RSA.ASN1HEX.getV(asnKey,posKeyArray[1]);
 
-		// warning if key is short
 		if (m_hex.length * 4 < 1024) {
+			// error if key is too short
+			log.debug("rsa key size: " + m_hex.length * 4);
+			throw new DKIM_SigError( "DKIM_SIGWARNING_KEYSMALL" );
+		} else if (m_hex.length * 4 < 2048) {
+			// warning if key is short
+			log.debug("rsa key size: " + m_hex.length * 4);
 			warnings.push({name: "DKIM_SIGWARNING_KEYSMALL"});
 			log.debug("Warning: DKIM_SIGWARNING_KEYSMALL");
 		}
@@ -319,7 +337,7 @@ var Verifier = (function() {
 		rsa.setPublic(m_hex, e_hex);
 
 		// verify Signature
-		return rsa.verifyString(str, RSA.b64tohex(signature), keyInfo);
+		return rsa.verify(str, RSA.b64tohex(signature), keyInfo);
 	}
 
 	/**
@@ -328,7 +346,7 @@ var Verifier = (function() {
 	 * 
 	 * @param {String} str
 	 * 
-	 * @return {Map|Number} Map
+	 * @return {Map<String, String>|Number} Map
 	 *                       -1 if a tag-spec is ill-formed
 	 *                       -2 duplicate tag names
 	 */
@@ -343,9 +361,12 @@ var Verifier = (function() {
 		}
 		
 		var array = str.split(";");
+		/** @type{Map<String, String>} */
 		var map = new Map();
 		var tmp;
+		/** @type{String} */
 		var name;
+		/** @type{String} */
 		var value;
 		for (var elem of array) {
 			// get tag name and value
@@ -373,12 +394,12 @@ var Verifier = (function() {
 	/**
 	 * Parse a tag value stored in a Map.
 	 * 
-	 * @param {Map} map
+	 * @param {Map<String, String>} map
 	 * @param {String} tag_name name of the tag
 	 * @param {String} pattern_tag_value Pattern for the tag-value
 	 * @param {Number} [expType=1] Type of exception to throw. 1 for DKIM header, 2 for DKIM key, 3 for general.
 	 * 
-	 * @return {Array|Null} The match from the RegExp if tag_name exists, otherwise null
+	 * @return {RegExpMatchArray|Null} The match from the RegExp if tag_name exists, otherwise null
 	 * 
 	 * @throws {DKIM_SigError|DKIM_InternalError} Throws if tag_value does not match.
 	 */
@@ -475,7 +496,21 @@ var Verifier = (function() {
 		if (algorithmTag === null) {
 			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_A");
 		}
-		if (algorithmTag[0] === "rsa-sha1" || algorithmTag[0] === "rsa-sha256") {
+		if (algorithmTag[0] === "rsa-sha256") {
+			DKIMSignature.a_sig = algorithmTag[1];
+			DKIMSignature.a_hash = algorithmTag[2];
+		} else if (algorithmTag[0] === "rsa-sha1") {
+			switch (prefs.getIntPref("error.algorithm.sign.rsa-sha1.treatAs")) {
+				case 0: // error
+					throw new DKIM_SigError("DKIM_SIGERROR_INSECURE_A");
+				case 1: // warning
+					DKIMSignature.warnings.push({ name: "DKIM_SIGERROR_INSECURE_A" });
+					break;
+				case 2: // ignore
+					break;
+				default:
+					throw new DKIM_InternalError("invalid error.algorithm.sign.rsa-sha1.treatAs");
+			}
 			DKIMSignature.a_sig = algorithmTag[1];
 			DKIMSignature.a_hash = algorithmTag[2];
 		} else {
@@ -729,15 +764,17 @@ var Verifier = (function() {
 	 */
 	function parseDKIMKeyRecord(DKIMKeyRecord) {
 		var DKIMKey = {
+			/** @type {string} */
+			v : "", // Version
 			/** @type {string?} */
-			v : null, // Version
-			/** type {string?} */
 			h : null, // hash algorithms
+			/** @type {string[]?} */
 			h_array : null, // array hash algorithms
+			/** @type {string} */
+			k : "", // key type
 			/** @type {string?} */
-			k : null, // key type
 			n : null, // notes
-			p : null, // Public-key data
+			p : "", // Public-key data
 			/** @type {string?} */
 			s : null, // Service Type
 			/** @type {string?} */
@@ -814,7 +851,8 @@ var Verifier = (function() {
 		if (serviceTypeTag === null) {
 			DKIMKey.s = "*";
 		} else {
-			if (/email/.test(serviceTypeTag[0])) {
+			let service_types = serviceTypeTag[0].split(":").map(s => s.trim());
+			if (service_types.some(s => s === "*" || s === "email")) {
 				DKIMKey.s = serviceTypeTag[0];
 			} else {
 				throw new DKIM_SigError("DKIM_SIGERROR_KEY_NOTEMAILKEY");
