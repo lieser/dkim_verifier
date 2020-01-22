@@ -78,7 +78,7 @@
 <!ENTITY error.illformed_s.treatAs.label "不正な形式のセレクタタグを">
 <!ENTITY error.policy.key_insecure.treatAs.label "DNSSEC によりセキュアにされていない DKIM キーを">
 <!ENTITY error.algorithm.sign.rsa-sha1.treatAs.label "rsa-sha1 署名アルゴリズムを">
-<!ENTITY error.algorithm.rsa.weakKeyLength.treatAs "Treat weak RSA keys (&lt;2048 bits) as">
+<!ENTITY error.algorithm.rsa.weakKeyLength.treatAs "弱い RSA キー （&lt;2048 ビット） を">
 
 <!ENTITY error.treatAs.value.0.label "エラーとする">
 <!ENTITY error.treatAs.value.1.label "警告とする">
