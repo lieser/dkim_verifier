@@ -1,12 +1,12 @@
 <!ENTITY signersRuleHelp.title "Aide sur les règles signataires">
 
-<!ENTITY domain.description "Devra correspondre par rapport au domaine de base de l'adresse de l'expéditeur. Par exemple, le domaine de base pour 'courriel.exemple.fr' est 'exemple.fr'.">
-<!ENTITY listID.description "Devra correspondre par rapport au list-id, si le courriel est reçu au travers d'une liste de diffusion. Noter que c'est seulement la partie entre '&lt;' et '&gt;' du List-Id de l'entête qui est le list-id actuel. Soit seulement le domaine ou le list-id qui correspond au même moment.">
+<!ENTITY domain.description "Devra correspondre au domaine de base de l'adresse de l'expéditeur. Par exemple, le domaine de base pour 'courriel.exemple.fr' est 'exemple.fr'.">
+<!ENTITY listID.description "Devra correspondre au list-id, si le courriel est reçu au travers d'une liste de diffusion. Noter que c'est seulement la partie entre '&lt;' et '&gt;' du List-Id de l'entête qui est le list-id actuel. Soit seulement le domaine ou le list-id qui correspond au même moment.">
 <!ENTITY addr.description "Devra correspondre par rapport à l'adresse de l'expéditeur. Utiliser '*' pour définir zéro ou plusieurs caractères.">
-<!ENTITY sdid.description "Le domaine par lequel les courriels seront signés. Si il est laissé vide, tous les SDID seront autorisés. Plis d'un domaine peut être spécifier en les séparant avec un espace.">
+<!ENTITY sdid.description "Le domaine par lequel les courriels seront signés. Si il est laissé vide, tous les SDID seront autorisés. Plusieurs domaines peuvent être spécifié en les séparant avec un espace.">
 <!ENTITY ruletype.description "Le type de la règle.">
-<!ENTITY ruletype.1.description "Le courriel doit être spécifier par le SDID spécifié.">
-<!ENTITY ruletype.2.description "Le courriel n'a pas besoin d'être signé, si il l'est, cela doit être spécifier par le SDID.">
+<!ENTITY ruletype.1.description "Le courriel doit être spécifié par le SDID spécifié.">
+<!ENTITY ruletype.2.description "Le courriel n'a pas besoin d'être signé, si il l'est, cela doit être spécifié par le SDID.">
 <!ENTITY ruletype.3.description "Le courriel n'a pas besoin d'être signé. Si il est signé, il doit être spécifié oar le SDID. Si le mail a une signature non valide, il sera traité comme n'ayant pas de signature.">
-<!ENTITY priority.description "La priorité de la règles, si plus d'une règle correspond, celle qui aura la plus grande prioroté sera utilisée.">
+<!ENTITY priority.description "La priorité de la règles, si plus d'une règle correspond, celle qui aura la plus grande priorité sera utilisée.">
 <!ENTITY enabled.description "1 si la règle est activée, 0 si elle est désactivé.">
