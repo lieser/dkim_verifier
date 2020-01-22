@@ -1,7 +1,7 @@
 {
 	"$schema": "./signersDefault-schema.json",
 	"versionTable": 1,
-	"versionData": 27,
+	"versionData": 28,
 	"rules": [
 		{
 			"domain": "1und1.de",
@@ -582,7 +582,7 @@
 		}, {
 			"domain": "federlegnoarredo.it",
 			"addr": "*",
-			"sdid": "federlegnoarredo.it flaeventi.onmicrosoft.co",
+			"sdid": "federlegnoarredo.it flaeventi.onmicrosoft.com",
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
