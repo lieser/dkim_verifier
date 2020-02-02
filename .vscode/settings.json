@@ -3,5 +3,8 @@
         "*.jsm": "javascript",
         ".eslintrc.json": "jsonc",
         "cSpell.json": "jsonc"
-    }
+    },
+    "mocha-snippets.function-type": "function",
+    "mocha-snippets.glob": "**/*Spec.mjs.js",
+    "mocha-snippets.quote-type": "double",
 }

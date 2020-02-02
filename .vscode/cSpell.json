@@ -45,6 +45,7 @@
         "TEMPFAIL",
         "tooltips",
         "tooltiptext",
+        "unittest",
         "vchar"
     ],
     // flagWords - list of words to be always considered incorrect

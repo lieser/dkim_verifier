@@ -1,0 +1,15 @@
+{
+    "env": {
+        "mocha": true
+    },
+    "parserOptions": {
+        "sourceType": "module"
+    },
+    "globals": {
+        "globalThis": "readonly"
+    },
+    "rules": {
+        "no-magic-numbers": "off",
+        "no-unused-expressions": "off"
+    }
+}

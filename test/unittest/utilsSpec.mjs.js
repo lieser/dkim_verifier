@@ -1,5 +1,8 @@
 // @ts-check
-/* eslint-disable no-magic-numbers */
+
+/** @type{Chai.ExpectStatic} */
+// @ts-ignore
+const expect = globalThis.expect;
 
 import {
 	addrIsInDomain,
@@ -11,38 +14,38 @@ import {
 	toType
 } from "../../modules/utils.mjs.js";
 
-describe("utils unit test", () => {
+describe("utils [unittest]", () => {
 	describe("addrIsInDomain", () => {
 		it("addr is in domain", () => {
 			expect(
 				addrIsInDomain("foo@bar.com", "bar.com")
-			).toBeTrue();
+			).to.be.true;
 		});
 		it("addr is in domain (different casing)", () => {
 			expect(
 				addrIsInDomain("foo@bar.com", "bAr.Com")
-			).toBeTrue();
+			).to.be.true;
 		});
 		it("addr is in a sub-domain", () => {
 			expect(
 				addrIsInDomain("foo@sub.bar.com", "bar.com")
-			).toBeTrue();
+			).to.be.true;
 		});
 
 		it("addr is only in base-domain", () => {
 			expect(
 				addrIsInDomain("foo@bar.com", "sub.bar.com")
-			).toBeFalse();
+			).to.be.false;
 		});
 		it("addr is not in domain", () => {
 			expect(
 				addrIsInDomain("foo@bar.com", "foo.com")
-			).toBeFalse();
+			).to.be.false;
 		});
 		it("addr is not an e-mail", () => {
 			expect(
 				addrIsInDomain("bar.com", "bar.com")
-			).toBeFalse();
+			).to.be.false;
 		});
 	});
 
@@ -50,33 +53,33 @@ describe("utils unit test", () => {
 		it("addr is in domain", () => {
 			expect(
 				addrIsInDomain2("foo@bar.com", "bar.com")
-			).toBeTrue();
+			).to.be.true;
 		});
 		it("addr is in domain (different casing)", () => {
 			expect(
 				addrIsInDomain2("foo@bar.com", "bAr.Com")
-			).toBeTrue();
+			).to.be.true;
 		});
 		it("addr is in a sub-domain", () => {
 			expect(
 				addrIsInDomain2("foo@sub.bar.com", "bar.com")
-			).toBeTrue();
+			).to.be.true;
 		});
 		it("addr is in base-domain", () => {
 			expect(
 				addrIsInDomain2("foo@bar.com", "sub.bar.com")
-			).toBeTrue();
+			).to.be.true;
 		});
 
 		it("addr is not in domain", () => {
 			expect(
 				addrIsInDomain2("foo@bar.com", "foo.com")
-			).toBeFalse();
+			).to.be.false;
 		});
 		it("addr is not an e-mail", () => {
 			expect(
 				addrIsInDomain2("bar.com", "bar.com")
-			).toBeFalse();
+			).to.be.false;
 		});
 	});
 
@@ -84,23 +87,23 @@ describe("utils unit test", () => {
 		it("domain is same", () => {
 			expect(
 				domainIsInDomain("bar.com", "bar.com")
-			).toBeTrue();
+			).to.be.true;
 		});
 		it("domain is same (different casing)", () => {
 			expect(
 				domainIsInDomain("bAr.com", "bar.cOm")
-			).toBeTrue();
+			).to.be.true;
 		});
 		it("domain is in a sub-domain", () => {
 			expect(
 				domainIsInDomain("sub.bar.com", "bar.com")
-			).toBeTrue();
+			).to.be.true;
 		});
 
 		it("addr is in base-domain", () => {
 			expect(
 				domainIsInDomain("bar.com", "sub.bar.com")
-			).toBeFalse();
+			).to.be.false;
 		});
 	});
 
@@ -108,12 +111,12 @@ describe("utils unit test", () => {
 		it("base-domain", () => {
 			expect(
 				getDomainFromAddr("foo@bar.com")
-			).toBe("bar.com");
+			).to.be.equal("bar.com");
 		});
 		it("sub-domain", () => {
 			expect(
 				getDomainFromAddr("foo@sub.bar.com")
-			).toBe("sub.bar.com");
+			).to.be.equal("sub.bar.com");
 		});
 	});
 
@@ -121,28 +124,28 @@ describe("utils unit test", () => {
 		it("string at end", () => {
 			expect(
 				stringEndsWith("foobar", "bar")
-			).toBeTrue();
+			).to.be.true;
 		});
 		it("string at end (different casing)", () => {
 			expect(
 				stringEndsWith("foobAr", "baR")
-			).toBeTrue();
+			).to.be.true;
 		});
 
 		it("string at front", () => {
 			expect(
 				stringEndsWith("foobar", "foo")
-			).toBeFalse();
+			).to.be.false;
 		});
 		it("string in middle", () => {
 			expect(
 				stringEndsWith("foomuhbar", "muh")
-			).toBeFalse();
+			).to.be.false;
 		});
 		it("string not included", () => {
 			expect(
 				stringEndsWith("foobar", "muh")
-			).toBeFalse();
+			).to.be.false;
 		});
 	});
 
@@ -150,33 +153,33 @@ describe("utils unit test", () => {
 		it("string equal", () => {
 			expect(
 				stringEqual("bar", "bar")
-			).toBeTrue();
+			).to.be.true;
 		});
 		it("string equal (different casing)", () => {
 			expect(
 				stringEqual("BAr", "BaR")
-			).toBeTrue();
+			).to.be.true;
 		});
 
 		it("string at front", () => {
 			expect(
 				stringEqual("foobar", "foo")
-			).toBeFalse();
+			).to.be.false;
 		});
 		it("string in middle", () => {
 			expect(
 				stringEqual("foomuhbar", "muh")
-			).toBeFalse();
+			).to.be.false;
 		});
 		it("string at end", () => {
 			expect(
 				stringEqual("foobar", "bar")
-			).toBeFalse();
+			).to.be.false;
 		});
 		it("string not included", () => {
 			expect(
 				stringEqual("foobar", "muh")
-			).toBeFalse();
+			).to.be.false;
 		});
 	});
 
@@ -184,22 +187,22 @@ describe("utils unit test", () => {
 		it("Number", () => {
 			expect(
 				toType(42)
-			).toBe("Number");
+			).to.be.equal("Number");
 		});
 		it("Boolean", () => {
 			expect(
 				toType(true)
-			).toBe("Boolean");
+			).to.be.equal("Boolean");
 		});
 		it("Object", () => {
 			expect(
 				toType({})
-			).toBe("Object");
+			).to.be.equal("Object");
 		});
 		it("Map", () => {
 			expect(
 				toType(new Map())
-			).toBe("Map");
+			).to.be.equal("Map");
 		});
 	});
 });
