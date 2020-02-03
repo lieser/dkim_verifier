@@ -6,7 +6,7 @@ const expect = globalThis.expect;
 
 import DkimCrypto from "../../modules/dkim/crypto.mjs.js";
 
-describe("crypt [unittest]", function () {
+describe("crypto [unittest]", function () {
 	describe("digest", function () {
 		it("sha1", async function () {
 			expect(
@@ -23,6 +23,35 @@ describe("crypt [unittest]", function () {
 			expect(
 				await DkimCrypto.digest("sha256", "\r\n")
 			).to.be.equal("frcCV1k9oG9oKj3dpUqdJg1PxRT2RSN/XKdLCPjaYaY=");
+		});
+	});
+	describe("verify RSA signature", function () {
+		it("RFC 6376 Appendix A Example", async function () {
+			const pubKey = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDwIRP/UC3SBsEmGqZ9ZJW3/DkM" +
+				"oGeLnQg1fWn7/zYtIxN2SnFCjxOCKG9v3b4jYfcTNh5ijSsq631uBItLa7od+v/R" +
+				"tdC2UzJ1lWT947qR+Rcac2gbto/NMqJ0fzfVjH4OuKhitdY9tf6mcwGjaNBcWToI" +
+				"MmPSPDdQPNUYckcQ2QIDAQAB";
+			const signature = "AuUoFEfDxTDkHlLXSZEpZj79LICEps6eda7W3deTVFOk4yAUoqOB" +
+				"4nujc7YopdG5dWLSdNg6xNAZpOPr+kHxt1IrE+NahM6L/LbvaHut" +
+				"KVdkLLkpVaVVQPzeRDI009SO2Il5Lu7rDNH6mZckBdrIx0orEtZV" +
+				"4bmp/YzhwvcubU4=";
+			const msg =
+				"Received: from client1.football.example.com  [192.0.2.1]\r\n" +
+				"      by submitserver.example.com with SUBMISSION;\r\n" +
+				"      Fri, 11 Jul 2003 21:01:54 -0700 (PDT)\r\n" +
+				"From: Joe SixPack <joe@football.example.com>\r\n" +
+				"To: Suzie Q <suzie@shopping.example.net>\r\n" +
+				"Subject: Is dinner ready?\r\n" +
+				"Date: Fri, 11 Jul 2003 21:00:37 -0700 (PDT)\r\n" +
+				"Message-ID: <20030712040037.46341.5F8J@football.example.com>\r\n" +
+				"DKIM-Signature: v=1; a=rsa-sha256; s=brisbane; d=example.com;\r\n" +
+				"      c=simple/simple; q=dns/txt; i=joe@football.example.com;\r\n" +
+				"      h=Received : From : To : Subject : Date : Message-ID;\r\n" +
+				"      bh=2jUSOH9NhtVGCQWNr9BrIAPreKQjO6Sn7XIkfJVOzv8=;\r\n" +
+				"      b=;";
+			const [valid, keyLength] = await DkimCrypto.verifyRSA(pubKey, "sha256", signature, msg);
+			expect(valid).to.be.true;
+			expect(keyLength).to.be.equal(1024);
 		});
 	});
 });
