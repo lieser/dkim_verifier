@@ -128,6 +128,7 @@ class DkimCryptoWeb extends DkimCryptoI {
 				["verify"]
 			);
 		} catch (e) {
+			// TODO: replace with proper logging
 			console.error("error in importKey: ", e);
 			throw new DKIM_SigError("DKIM_SIGERROR_KEYDECODE");
 		}
@@ -162,6 +163,42 @@ class DkimCryptoNode extends DkimCryptoI {
 		const hash = crypto.createHash(algorithm);
 		hash.update(message);
 		return hash.digest("base64");
+	}
+
+	/**
+	 * Verify an RSA signature.
+	 *
+	 * @param {String} key - b64 encoded RSA key in ASN.1 DER encoded SubjectPublicKeyInfo
+	 * @param {string} digestAlgorithm - sha1 / sha256
+	 * @param {String} signature - b64 encoded signature
+	 * @param {String} data - data whose signature is to be verified
+	 * @return {Promise<[Boolean, number]>} - valid, key length
+	 * @throws DKIM_SigError
+	 */
+	static async verifyRSA(key, digestAlgorithm, signature, data) { // eslint-disable-line require-await
+		const crypto = require('crypto');
+		/** @type {crypto.VerifyKeyWithOptions} */
+		let cryptoKey;
+		try {
+			cryptoKey = crypto.createPublicKey({
+				key: Buffer.from(key, "base64"),
+				format: "der",
+				type: "spki"
+			});
+		} catch (e) {
+			// TODO: replace with proper logging
+			console.error("error in createPublicKey: ", e);
+			throw new DKIM_SigError("DKIM_SIGERROR_KEYDECODE");
+		}
+		cryptoKey.padding = crypto.constants.RSA_PKCS1_PADDING;
+		const valid = crypto.verify(
+			digestAlgorithm,
+			Buffer.from(data, "ascii"),
+			cryptoKey,
+			Buffer.from(signature, "base64")
+		);
+		// TODO: get key size, e.g. with asn.1 parser in https://www.npmjs.com/package/node-forge
+		return [valid, 1024];
 	}
 }
 
