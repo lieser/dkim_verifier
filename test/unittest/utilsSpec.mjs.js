@@ -1,9 +1,5 @@
 // @ts-check
 
-/** @type{Chai.ExpectStatic} */
-// @ts-ignore
-const expect = globalThis.expect;
-
 import {
 	addrIsInDomain,
 	addrIsInDomain2,
@@ -13,6 +9,7 @@ import {
 	stringEqual,
 	toType
 } from "../../modules/utils.mjs.js";
+import expect from "../helpers/chaiUtils.mjs.js";
 
 describe("utils [unittest]", () => {
 	describe("addrIsInDomain", () => {
