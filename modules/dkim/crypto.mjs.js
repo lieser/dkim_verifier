@@ -15,6 +15,9 @@
 /* eslint-env browser, node */
 
 import { DKIM_SigError } from "../error.mjs.js";
+import Logging from "../logging.mjs.js";
+
+const log = Logging.getLogger("Crypto");
 
 /**
  * Interface for Crypto operations needed for DKIM
@@ -23,9 +26,11 @@ class DkimCryptoI {
 	/**
 	 * Generate a hash.
 	 *
+	 * @static
 	 * @param {string} algorithm - sha1 / sha256
 	 * @param {string} message
 	 * @returns {Promise<string>} b64 encoded hash
+	 * @memberof DkimCryptoI
 	 */
 	static digest(algorithm, message) { // eslint-disable-line no-unused-vars
 		throw new Error("Not implemented");
@@ -34,12 +39,14 @@ class DkimCryptoI {
 	/**
 	 * Verify an RSA signature.
 	 *
+	 * @static
 	 * @param {String} key - b64 encoded RSA key in ASN.1 DER format
 	 * @param {string} digestAlgorithm - sha1 / sha256
 	 * @param {String} signature - b64 encoded signature
 	 * @param {String} str
 	 * @return {Promise<[Boolean, number]>} - valid, key length
 	 * @throws DKIM_SigError
+	 * @memberof DkimCryptoI
 	 */
 	static verifyRSA(key, digestAlgorithm, signature, str) { // eslint-disable-line no-unused-vars
 		throw new Error("Not implemented");
@@ -49,10 +56,8 @@ class DkimCryptoI {
 /**
  * Convert a digest name used in DKIM to the one used by the Web Crypto API.
  *
- * @static
  * @param {string} algorithm - algorithm name used by DKIM
  * @returns {string} - algorithm name used by the Web Crypto API
- * @memberof DkimCryptoWeb
  */
 function getWebDigestName(algorithm) {
 	switch (algorithm.toLowerCase()) {
@@ -91,9 +96,11 @@ class DkimCryptoWeb extends DkimCryptoI {
 	/**
 	 * Generate a hash.
 	 *
+	 * @static
 	 * @param {string} algorithm - sha1 / sha256
 	 * @param {string} message
 	 * @returns {Promise<string>} b64 encoded hash
+	 * @memberof DkimCryptoI
 	 */
 	static async digest(algorithm, message) {
 		const digestName = getWebDigestName(algorithm);
@@ -107,12 +114,14 @@ class DkimCryptoWeb extends DkimCryptoI {
 	/**
 	 * Verify an RSA signature.
 	 *
+	 * @static
 	 * @param {String} key - b64 encoded RSA key in ASN.1 DER encoded SubjectPublicKeyInfo
 	 * @param {string} digestAlgorithm - sha1 / sha256
 	 * @param {String} signature - b64 encoded signature
 	 * @param {String} data - data whose signature is to be verified
 	 * @return {Promise<[Boolean, number]>} - valid, key length
 	 * @throws DKIM_SigError
+	 * @memberof DkimCryptoI
 	 */
 	static async verifyRSA(key, digestAlgorithm, signature, data) {
 		let cryptoKey;
@@ -128,8 +137,7 @@ class DkimCryptoWeb extends DkimCryptoI {
 				["verify"]
 			);
 		} catch (e) {
-			// TODO: replace with proper logging
-			console.error("error in importKey: ", e);
+			log.debug("error in importKey: ", e);
 			throw new DKIM_SigError("DKIM_SIGERROR_KEYDECODE");
 		}
 		/** @type {RsaHashedKeyGenParams} */
@@ -154,9 +162,11 @@ class DkimCryptoNode extends DkimCryptoI {
 	/**
 	 * Generate a hash.
 	 *
+	 * @static
 	 * @param {string} algorithm - sha1 / sha256
 	 * @param {string} message
 	 * @returns {Promise<string>} b64 encoded hash
+	 * @memberof DkimCryptoI
 	 */
 	static async digest(algorithm, message) { // eslint-disable-line require-await
 		const crypto = require('crypto');
@@ -168,12 +178,14 @@ class DkimCryptoNode extends DkimCryptoI {
 	/**
 	 * Verify an RSA signature.
 	 *
+	 * @static
 	 * @param {String} key - b64 encoded RSA key in ASN.1 DER encoded SubjectPublicKeyInfo
 	 * @param {string} digestAlgorithm - sha1 / sha256
 	 * @param {String} signature - b64 encoded signature
 	 * @param {String} data - data whose signature is to be verified
 	 * @return {Promise<[Boolean, number]>} - valid, key length
 	 * @throws DKIM_SigError
+	 * @memberof DkimCryptoI
 	 */
 	static async verifyRSA(key, digestAlgorithm, signature, data) { // eslint-disable-line require-await
 		const crypto = require('crypto');
@@ -186,8 +198,7 @@ class DkimCryptoNode extends DkimCryptoI {
 				type: "spki"
 			});
 		} catch (e) {
-			// TODO: replace with proper logging
-			console.error("error in createPublicKey: ", e);
+			log.error("error in createPublicKey: ", e);
 			throw new DKIM_SigError("DKIM_SIGERROR_KEYDECODE");
 		}
 		cryptoKey.padding = crypto.constants.RSA_PKCS1_PADDING;
