@@ -122,7 +122,7 @@ const qp_hdr_value = `(?:(?:${RfcParser.FWS}|${hex_octet}|[!-:<>-{}-~])*)`;
 const hdr_name = "(?:[!-9<-~]+)";
 
 	function newDKIMSignature( DKIMSignatureHeader ) {
-		var DKIMSignature = {
+		return {
 			original_header : DKIMSignatureHeader,
 			warnings: [],
 			v : null, // Version
@@ -145,7 +145,6 @@ const hdr_name = "(?:[!-9<-~]+)";
 			x : null, // Signature Expiration
 			z : null // Copied header fields
 		};
-		return DKIMSignature;
 	}
 
 	/*
@@ -153,7 +152,7 @@ const hdr_name = "(?:[!-9<-~]+)";
 	 * header field is specified in Section 3.5 of RFC 6376
 	 */
 	function parseDKIMSignature(DKIMSignature) { // eslint-disable-line complexity
-		var DKIMSignatureHeader = DKIMSignature.original_header;
+		let DKIMSignatureHeader = DKIMSignature.original_header;
 
 		// strip DKIM-Signatur header name
 		DKIMSignatureHeader = DKIMSignatureHeader.replace(/^DKIM-Signature[ \t]*:/i,"");
@@ -184,9 +183,9 @@ const hdr_name = "(?:[!-9<-~]+)";
 
 		// get signature algorithm (plain-text;REQUIRED)
 		// currently only "rsa-sha1" or "rsa-sha256"
-		var sig_a_tag_k = "(rsa|[A-Za-z](?:[A-Za-z]|[0-9])*)";
-		var sig_a_tag_h = "(sha1|sha256|[A-Za-z](?:[A-Za-z]|[0-9])*)";
-		var sig_a_tag_alg = sig_a_tag_k+"-"+sig_a_tag_h;
+		const sig_a_tag_k = "(rsa|[A-Za-z](?:[A-Za-z]|[0-9])*)";
+		const sig_a_tag_h = "(sha1|sha256|[A-Za-z](?:[A-Za-z]|[0-9])*)";
+		const sig_a_tag_alg = `${sig_a_tag_k}-${sig_a_tag_h}`;
 		const algorithmTag = RfcParser.parseTagValue(tagMap, "a", sig_a_tag_alg);
 		if (algorithmTag === null) {
 			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_A");
@@ -229,7 +228,7 @@ const hdr_name = "(?:[!-9<-~]+)";
 
 		// get Message canonicalization (plain-text; OPTIONAL, default is "simple/simple")
 		// currently only "simple" or "relaxed" for both header and body
-		var sig_c_tag_alg = "(simple|relaxed|"+hyphenated_word+")";
+		const sig_c_tag_alg = `(simple|relaxed|${hyphenated_word})`;
 		const msCanonTag = RfcParser.parseTagValue(tagMap, "c", `${sig_c_tag_alg}(?:/${sig_c_tag_alg})?`);
 		if (msCanonTag === null) {
 			DKIMSignature.c_header = "simple";
@@ -256,8 +255,8 @@ const hdr_name = "(?:[!-9<-~]+)";
 
 		// get SDID (plain-text; REQUIRED)
 		// Pattern for sub-domain as specified in Section 4.1.2 of RFC 5321
-		var sub_domain = "(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?)";
-		var domain_name = "(?:"+sub_domain+"(?:\\."+sub_domain+")+)";
+		const sub_domain = "(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?)";
+		const domain_name = `(?:${sub_domain}(?:\\.${sub_domain})+)`;
 		const SDIDTag = RfcParser.parseTagValue(tagMap, "d", domain_name);
 		if (SDIDTag === null) {
 			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_D");
@@ -336,11 +335,11 @@ const hdr_name = "(?:[!-9<-~]+)";
 		about RegEx and valid mail addresses:
 		http://stackoverflow.com/questions/201323/using-a-regular-expression-to-validate-an-email-address
 		*/
-		
-		var atext = "[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]";
-		var local_part = "(?:"+atext+"+(?:\\."+atext+"+)*)";
-		var sig_i_tag = local_part+"?@("+domain_name+")";
-		var AUIDTag = null;
+
+		const atext = "[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]";
+		const local_part = `(?:${atext}+(?:\\.${atext}+)*)`;
+		const sig_i_tag = `${local_part}?@(${domain_name})`;
+		let AUIDTag = null;
 		try {
 			AUIDTag = RfcParser.parseTagValue(tagMap, "i", sig_i_tag);
 		} catch (exception) {
@@ -363,7 +362,7 @@ const hdr_name = "(?:[!-9<-~]+)";
 			}
 		}
 		if (AUIDTag === null) {
-			DKIMSignature.i = "@"+DKIMSignature.d;
+			DKIMSignature.i = `@${DKIMSignature.d}`;
 			DKIMSignature.i_domain = DKIMSignature.d;
 		} else {
 			DKIMSignature.i = AUIDTag[0];
@@ -380,20 +379,20 @@ const hdr_name = "(?:[!-9<-~]+)";
 		}
 
 		// get query methods (plain-text; OPTIONAL, default is "dns/txt")
-		var sig_q_tag_method = "(?:dns/txt|"+hyphenated_word+"(?:/"+qp_hdr_value+")?)";
+		const sig_q_tag_method = `(?:dns/txt|${hyphenated_word}(?:/${qp_hdr_value})?)`;
 		const sig_q_tag = `${sig_q_tag_method}(?:${RfcParser.FWS}?:${RfcParser.FWS}?${sig_q_tag_method})*`;
 		const QueryMetTag = RfcParser.parseTagValue(tagMap, "q", sig_q_tag);
 		if (QueryMetTag === null) {
 			DKIMSignature.q = "dns/txt";
 		} else {
-			if (!(new RegExp("dns/txt")).test(QueryMetTag[0])) {
+			if (!new RegExp("dns/txt").test(QueryMetTag[0])) {
 				throw new DKIM_SigError("DKIM_SIGERROR_UNKNOWN_Q");
 			}
 			DKIMSignature.q = "dns/txt";
 		}
 
 		// get selector subdividing the namespace for the "d=" (domain) tag (plain-text; REQUIRED)
-		var SelectorTag;
+		let SelectorTag;
 		try {
 			SelectorTag = RfcParser.parseTagValue(tagMap, "s", `${sub_domain}(?:\\.${sub_domain})*`);
 		} catch (exception) {
@@ -401,7 +400,7 @@ const hdr_name = "(?:[!-9<-~]+)";
 				exception.errorType === "DKIM_SIGERROR_ILLFORMED_S")
 			{
 				// try to parse selector in a more relaxed way
-				var sub_domain_ = "(?:[A-Za-z0-9_](?:[A-Za-z0-9_-]*[A-Za-z0-9_])?)";
+				const sub_domain_ = "(?:[A-Za-z0-9_](?:[A-Za-z0-9_-]*[A-Za-z0-9_])?)";
 				SelectorTag = RfcParser.parseTagValue(tagMap, "s", `${sub_domain_}(?:\\.${sub_domain_})*`);
 				switch (prefs.illformed_s.treatAs) {
 					case 0: // error
@@ -458,7 +457,7 @@ const hdr_name = "(?:[!-9<-~]+)";
 	 * key record is specified in Section 3.6.1 of RFC 6376
 	 */
 	function parseDKIMKeyRecord(DKIMKeyRecord) {
-		var DKIMKey = {
+		const DKIMKey = {
 			/** @type {string} */
 			v : "", // Version
 			/** @type {string?} */
@@ -492,7 +491,7 @@ const hdr_name = "(?:[!-9<-~]+)";
 		// get version (plain-text; RECOMMENDED, default is "DKIM1")
 		// If specified, this tag MUST be set to "DKIM1"
 		// This tag MUST be the first tag in the record
-		var key_v_tag_value = dkim_safe_char+"*";
+		const key_v_tag_value = `${dkim_safe_char}*`;
 		const versionTag = RfcParser.parseTagValue(tagMap, "v", key_v_tag_value, 2);
 		if (versionTag === null || versionTag[0] === "DKIM1") {
 			DKIMKey.v = "DKIM1";
@@ -501,7 +500,7 @@ const hdr_name = "(?:[!-9<-~]+)";
 		}
 
 		// get Acceptable hash algorithms (plain-text; OPTIONAL, defaults toallowing all algorithms)
-		var key_h_tag_alg = "(?:sha1|sha256|"+hyphenated_word+")";
+		const key_h_tag_alg = `(?:sha1|sha256|${hyphenated_word})`;
 		const key_h_tag = `${key_h_tag_alg}(?:${RfcParser.FWS}?:${RfcParser.FWS}?${key_h_tag_alg})*`;
 		const algorithmTag = RfcParser.parseTagValue(tagMap, "h", key_h_tag, 2);
 		if (algorithmTag !== null) {
@@ -510,7 +509,7 @@ const hdr_name = "(?:[!-9<-~]+)";
 		}
 
 		// get Key type (plain-text; OPTIONAL, default is "rsa")
-		var key_k_tag_type = "(?:rsa|"+hyphenated_word+")";
+		const key_k_tag_type = `(?:rsa|${hyphenated_word})`;
 		const keyTypeTag = RfcParser.parseTagValue(tagMap, "k", key_k_tag_type, 2);
 		if (keyTypeTag === null || keyTypeTag[0] === "rsa") {
 			DKIMKey.k = "rsa";
@@ -519,8 +518,8 @@ const hdr_name = "(?:[!-9<-~]+)";
 		}
 
 		// get Notes (qp-section; OPTIONAL, default is empty)
-		var ptext = "(?:"+hex_octet+"|[!-<>-~])";
-		var qp_section = "(?:(?:"+ptext+"| |\t)*"+ptext+")?";
+		const ptext = `(?:${hex_octet}|[!-<>-~])`;
+		const qp_section = `(?:(?:${ptext}| |\t)*${ptext})?`;
 		const notesTag = RfcParser.parseTagValue(tagMap, "n", qp_section, 2);
 		if (notesTag !== null) {
 			DKIMKey.n = notesTag[0];
@@ -540,13 +539,13 @@ const hdr_name = "(?:[!-9<-~]+)";
 		}
 
 		// get Service Type (plain-text; OPTIONAL; default is "*")
-		var key_s_tag_type = "(?:email|\\*|"+hyphenated_word+")";
+		const key_s_tag_type = `(?:email|\\*|${hyphenated_word})`;
 		const key_s_tag = `${key_s_tag_type}(?:${RfcParser.FWS}?:${RfcParser.FWS}?${key_s_tag_type})*`;
 		const serviceTypeTag = RfcParser.parseTagValue(tagMap, "s", key_s_tag, 2);
 		if (serviceTypeTag === null) {
 			DKIMKey.s = "*";
 		} else {
-			let service_types = serviceTypeTag[0].split(":").map(s => s.trim());
+			const service_types = serviceTypeTag[0].split(":").map(s => s.trim());
 			if (service_types.some(s => s === "*" || s === "email")) {
 				DKIMKey.s = serviceTypeTag[0];
 			} else {
@@ -555,7 +554,7 @@ const hdr_name = "(?:[!-9<-~]+)";
 		}
 
 		// get Flags (plaintext; OPTIONAL, default is no flags set)
-		var key_t_tag_flag = "(?:y|s|"+hyphenated_word+")";
+		const key_t_tag_flag = `(?:y|s|${hyphenated_word})`;
 		const key_t_tag = `${key_t_tag_flag}(?:${RfcParser.FWS}?:${RfcParser.FWS}?${key_t_tag_flag})*`;
 		const flagsTag = RfcParser.parseTagValue(tagMap, "t", key_t_tag, 2);
 		if (flagsTag !== null) {
@@ -643,7 +642,7 @@ const hdr_name = "(?:[!-9<-~]+)";
 	 */
 	async function computeBodyHash(msg, DKIMSignature) {
 		// canonicalize body
-		var bodyCanon;
+		let bodyCanon;
 		switch (DKIMSignature.c_body) {
 			case "simple":
 				bodyCanon = canonicalizationBodySimple(msg.bodyPlain);
@@ -658,11 +657,11 @@ const hdr_name = "(?:[!-9<-~]+)";
 		if (DKIMSignature.l !== null) {
 			// check the value of the body lenght tag
 			if (DKIMSignature.l > bodyCanon.length) {
-				// lenght tag exceeds body size
-				log.debug("bodyCanon.length: " + bodyCanon.length);
+				// length tag exceeds body size
+				log.debug(`bodyCanon.length: ${bodyCanon.length}`);
 				throw new DKIM_SigError("DKIM_SIGERROR_TOOLARGE_L");
 			} else if (DKIMSignature.l < bodyCanon.length){
-				// lenght tag smaller when body size
+				// length tag smaller when body size
 				DKIMSignature.warnings.push({name: "DKIM_SIGWARNING_SMALL_L"});
 				log.debug("Warning: DKIM_SIGWARNING_SMALL_L");
 			}
@@ -681,11 +680,10 @@ const hdr_name = "(?:[!-9<-~]+)";
 	 * specified in Section 3.7 of RFC 6376
 	 */
 	function computeHeaderHashInput(msg, DKIMSignature) {
-		var hashInput = "";
-		var headerFieldArray, headerField;
+		let hashInput = "";
 
 		// set header canonicalization algorithm
-		var headerCanonAlgo;
+		let headerCanonAlgo;
 		switch (DKIMSignature.c_header) {
 			case "simple":
 				headerCanonAlgo = function (headerField) {return headerField;};
@@ -698,20 +696,20 @@ const hdr_name = "(?:[!-9<-~]+)";
 		}
 
 		// copy header fileds
-		var headerFields = new Map();
-		for (var [key, val] of msg.headerFields) {
+		const headerFields = new Map();
+		for (const [key, val] of msg.headerFields) {
 			headerFields.set(key, val.slice());
 		}
 
 		// get header fields specified by the "h=" tag
 		// and join their canonicalized form
-		for(var i = 0; i < DKIMSignature.h_array.length; i++) {
+		for(let i = 0; i < DKIMSignature.h_array.length; i++) {
 			// if multiple instances of the same header field are signed
 			// include them in reverse order (from bottom to top)
-			headerFieldArray = headerFields.get(DKIMSignature.h_array[i]);
+			const headerFieldArray = headerFields.get(DKIMSignature.h_array[i]);
 			// nonexisting header field MUST be treated as the null string
 			if (headerFieldArray !== undefined) {
-				headerField = headerFieldArray.pop();
+				const headerField = headerFieldArray.pop();
 				if (headerField) {
 					hashInput += headerCanonAlgo(headerField);
 				}
@@ -720,12 +718,12 @@ const hdr_name = "(?:[!-9<-~]+)";
 
 		// add DKIM-Signature header to the hash input
 		// with the value of the "b=" tag (including all surrounding whitespace) deleted
-		var pos_bTag = DKIMSignature.original_header.indexOf(DKIMSignature.b_folded);
-		var tempBegin = DKIMSignature.original_header.substr(0, pos_bTag);
+		const pos_bTag = DKIMSignature.original_header.indexOf(DKIMSignature.b_folded);
+		let tempBegin = DKIMSignature.original_header.substr(0, pos_bTag);
 		tempBegin = tempBegin.replace(new RegExp(`${RfcParser.FWS}?$`), "");
-		var tempEnd = DKIMSignature.original_header.substr(pos_bTag+DKIMSignature.b_folded.length);
+		let tempEnd = DKIMSignature.original_header.substr(pos_bTag+DKIMSignature.b_folded.length);
 		tempEnd = tempEnd.replace(new RegExp(`^${RfcParser.FWS}?`), "");
-		var temp = tempBegin + tempEnd;
+		let temp = tempBegin + tempEnd;
 		// canonicalized using the header canonicalization algorithm specified in the "c=" tag
 		temp = headerCanonAlgo(temp);
 		// without a trailing CRLF
@@ -745,7 +743,7 @@ const hdr_name = "(?:[!-9<-~]+)";
 	function handleException(e, msg, dkimSignature = {} ) {
 		if (e instanceof DKIM_SigError) {
 			// return result
-			let result = {
+			const result = {
 				version : "2.0",
 				result : "PERMFAIL",
 				sdid : dkimSignature.d,
@@ -764,7 +762,7 @@ const hdr_name = "(?:[!-9<-~]+)";
 			return result;
 		}
 		// return result
-		let result = {
+		const result = {
 			version : "2.0",
 			result : "TEMPFAIL",
 			sdid : dkimSignature.d,
@@ -791,12 +789,12 @@ const hdr_name = "(?:[!-9<-~]+)";
 	 * @throws DKIM_SigError
 	 * @throws DKIM_InternalError
 	 */
-	async function verifySignature(msg, DKIMSignature) {
+	async function verifySignature(msg, DKIMSignature) { // eslint-disable-line complexity
 		// check SDID and AUID
 		Policy.checkSDID(msg.DKIMSignPolicy.sdid, msg.from, DKIMSignature.d,
 			DKIMSignature.i, DKIMSignature.warnings);
 
-		var time = Math.round(Date.now() / 1000);
+		const time = Math.round(Date.now() / 1000);
 		// warning if signature expired
 		if (DKIMSignature.x !== null && DKIMSignature.x < time) {
 			DKIMSignature.warnings.push({name: "DKIM_SIGWARNING_EXPIRED"});
@@ -810,7 +808,7 @@ const hdr_name = "(?:[!-9<-~]+)";
 
 		// Compute the Message Hashe for the body
 		const bodyHash = await computeBodyHash(msg, DKIMSignature);
-		log.debug("computed body hash: " + bodyHash);
+		log.debug("computed body hash:", bodyHash);
 
 		// compare body hash
 		if (bodyHash !== DKIMSignature.bh) {
@@ -838,7 +836,7 @@ const hdr_name = "(?:[!-9<-~]+)";
 		}
 
 		DKIMSignature.DKIMKey = parseDKIMKeyRecord(DKIMSignature.keyQueryResult.key);
-		log.debug("Parsed DKIM-Key: ", DKIMSignature.DKIMKey);
+		log.debug("Parsed DKIM-Key:", DKIMSignature.DKIMKey);
 
 		// check that the testing flag is not set
 		if (DKIMSignature.DKIMKey.t_array.indexOf("y") !== -1) {
@@ -866,8 +864,8 @@ const hdr_name = "(?:[!-9<-~]+)";
 		}
 
 		// Compute the input for the header hash
-		var headerHashInput = computeHeaderHashInput(msg,DKIMSignature);
-		log.debug("Header hash input:\n" + headerHashInput);
+		let headerHashInput = computeHeaderHashInput(msg,DKIMSignature);
+		log.debug(`Header hash input:\n${headerHashInput}`);
 
 		// verify Signature
 		let [isValid, keyLength] = await DkimCrypto.verifyRSA(
@@ -884,7 +882,7 @@ const hdr_name = "(?:[!-9<-~]+)";
 					replace(/charset="([^"]+)"/i,	"charset=$1");
 				// Compute the input for the header hash
 				headerHashInput = computeHeaderHashInput(msg,DKIMSignature);
-				log.debug("Header hash input:\n" + headerHashInput);
+				log.debug(`Header hash input:\n${headerHashInput}`);
 				// verify Signature
 				[isValid, keyLength] = await DkimCrypto.verifyRSA(
 					DKIMSignature.DKIMKey.p,
@@ -931,7 +929,7 @@ const hdr_name = "(?:[!-9<-~]+)";
 
 		// return result
 		log.trace("Everything is fine");
-		var verification_result = {
+		const verification_result = {
 			version : "2.0",
 			result : "SUCCESS",
 			sdid : DKIMSignature.d,
@@ -953,11 +951,10 @@ const hdr_name = "(?:[!-9<-~]+)";
 		let iDKIMSignatureIdx = 0;
 		let DKIMSignature;
 		// contains the result of all DKIM-Signatures which have been verified
-		let sigResults = [];
+		const sigResults = [];
 
 		if (msg.headerFields.get("dkim-signature")) {
-			log.debug(msg.headerFields.get("dkim-signature").length +
-				" DKIM-Signatures found.");
+			log.debug(`${msg.headerFields.get("dkim-signature").length} DKIM-Signatures found.`);
 		} else {
 			return sigResults;
 		}
@@ -972,20 +969,19 @@ const hdr_name = "(?:[!-9<-~]+)";
 		     iDKIMSignatureIdx >=0; iDKIMSignatureIdx--) {
 			let sigRes;
 			try {
-				log.debug("Verifying DKIM-Signature " + (iDKIMSignatureIdx+1) + " ...");
+				log.debug(`Verifying DKIM-Signature ${iDKIMSignatureIdx+1} ...`);
 				DKIMSignature = newDKIMSignature(
 					msg.headerFields.get("dkim-signature")[iDKIMSignatureIdx]);
 				parseDKIMSignature(DKIMSignature);
-				log.debug(`Parsed DKIM-Signature ${iDKIMSignatureIdx+1}: `, DKIMSignature);
+				log.debug(`Parsed DKIM-Signature ${iDKIMSignatureIdx+1}:`, DKIMSignature);
 				sigRes = await verifySignature(msg, DKIMSignature);
-				log.debug("Verified DKIM-Signature " + (iDKIMSignatureIdx+1));
+				log.debug(`Verified DKIM-Signature ${iDKIMSignatureIdx+1}`);
 			} catch(e) {
 				sigRes = handleException(e, msg, DKIMSignature);
-				log.debug("Exception on DKIM-Signature " + (iDKIMSignatureIdx+1));
+				log.debug(`Exception on DKIM-Signature ${iDKIMSignatureIdx+1}`);
 			}
 
-			log.trace("Adding DKIM-Signature " + (iDKIMSignatureIdx+1) +
-				" result to result list");
+			log.trace(`Adding DKIM-Signature ${iDKIMSignatureIdx+1} result to result list`);
 			sigResults.push(sigRes);
 		}
 
@@ -1041,8 +1037,8 @@ export default class Verifier {
 	 * @return {Promise<dkimResultV2>}
 	 */
 	verify(msg) {
-		var promise = (async () => {
-			let res = {
+		const promise = (async () => {
+			const res = {
 				version: "2.0",
 				signatures: await processSignatures(msg),
 			};
@@ -1064,22 +1060,22 @@ export default class Verifier {
 	 * @return {Promise<Msg>}
 	 */
 	function createMsg(msgURI) {
-		var promise = (async () => {
+		const promise = (async () => {
 			// read msg
 			/** @type {Msg} */
-			let msg = await MsgReader.read(msgURI);
+			const msg = await MsgReader.read(msgURI);
 			msg.msgURI = msgURI;
 
 			// parse the header
 			msg.headerFields = MsgReader.parseHeader(msg.headerPlain);
 
-			let msgHeaderParser = Cc["@mozilla.org/messenger/headerparser;1"].
+			const msgHeaderParser = Cc["@mozilla.org/messenger/headerparser;1"].
 				createInstance(Ci.nsIMsgHeaderParser);
 
 			// get last from address
 			if (msg.headerFields.has("from")) {
 				// @ts-ignore
-				let numFrom = msg.headerFields.get("from").length;
+				const numFrom = msg.headerFields.get("from").length;
 				// @ts-ignore
 				let author = msg.headerFields.get("from")[numFrom-1];
 				author = author.replace(/^From[ \t]*:/i,"");
@@ -1137,8 +1133,7 @@ export default class Verifier {
 				return 1;
 			}
 
-			throw new DKIM_InternalError("result_compare: sig1.result: " +
-				sig1.result + "; sig2.result: " + sig2.result);
+			throw new DKIM_InternalError(`result_compare: sig1.result: ${sig1.result}; sig2.result: ${sig2.result}`);
 		}
 
 		function warnings_compare(sig1, sig2) {
