@@ -34,6 +34,14 @@ import Logging from "../logging.mjs.js";
 import Preferences from "../preferences.mjs.js";
 import RfcParser from "../rfcParser.mjs.js";
 
+// TODO: move policy checking out of the verifier module
+class DummyPolicy {
+	// eslint-disable-next-line no-unused-vars, no-empty-function
+	checkSDID(...args) {}
+	// eslint-disable-next-line no-unused-vars, no-empty-function
+	signedBy(...args) {}
+}
+const Policy = new DummyPolicy();
 
 /**
  * The result of the verification (Version 1).
@@ -120,6 +128,31 @@ const qp_hdr_value = `(?:(?:${RfcParser.FWS}|${hex_octet}|[!-:<>-{}-~])*)`;
 // Pattern for field-name as specified in Section 3.6.8 of RFC 5322 without ";"
 // used as hdr-name in RFC 6376
 const hdr_name = "(?:[!-9<-~]+)";
+
+/**
+ * Callback for retrieving a DKIM key.
+ *
+ * @callback KeyFetchFunction
+ * @param {string} sdid
+ * @param {string} selector
+ * @return {Promise<{key: string, secure: boolean}>} result
+ * @throws {DKIM_SigError|DKIM_InternalError}
+*/
+
+// TODO: consider making it a member of Verifier
+// TODO: consider providing default implementation
+/** @type{KeyFetchFunction} */
+let getKey;
+
+/**
+ * Set a callback function that will be used to retrieve the DKIM key.
+ *
+ * @param {KeyFetchFunction} keyFetchFunction
+ * @returns {void}
+ */
+export function setKeyFetchFunction(keyFetchFunction) {
+	getKey = keyFetchFunction;
+}
 
 	function newDKIMSignature( DKIMSignatureHeader ) {
 		return {
@@ -816,7 +849,7 @@ const hdr_name = "(?:[!-9<-~]+)";
 		}
 
 		log.trace("Receiving DNS key for DKIM-Signature ...");
-		DKIMSignature.keyQueryResult = await Key.getKey(DKIMSignature.d, DKIMSignature.s);
+		DKIMSignature.keyQueryResult = await getKey(DKIMSignature.d, DKIMSignature.s);
 		log.trace("Received DNS key for DKIM-Signature");
 
 		// if key is not signed by DNSSEC
@@ -1023,7 +1056,6 @@ export default class Verifier {
 	/**
 	 * @typedef {Object} Msg
 	 * @property {Map<String, String[]>} headerFields
-	 * @property {String} headerPlain
 	 * @property {String} bodyPlain
 	 * @property {String} from
 	 * @property {String} listId
