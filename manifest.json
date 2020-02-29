@@ -20,5 +20,21 @@
 	"icons": {
 		"32": "icon_32.png",
 		"64": "icon.png"
+	},
+	"experiment_apis": {
+		"dns2": {
+			"schema": "experiments/jsdns-schema.json",
+			"parent": {
+				"scopes": [
+					"addon_parent"
+				],
+				"paths": [
+					[
+						"jsdns"
+					]
+				],
+				"script": "experiments/jsdns.js"
+			}
+		}
 	}
 }

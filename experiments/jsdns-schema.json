@@ -1,0 +1,33 @@
+[
+	{
+		"namespace": "jsdns",
+		"properties": {
+			"RCODE": {
+				"value": {
+					"NoError": 0, // No Error
+					"FormErr": 1, // Format Error
+					"ServFail": 2, // Server Failure
+					"NXDomain": 3, // Non-Existent Domain
+					"NotImp": 4, // Non-Existent Domain
+					"Refused": 5 // Query Refused
+				},
+				"description": "DNS Response codes from RFC 1035."
+			}
+		},
+		"functions": [
+			{
+				"name": "txt",
+				"type": "function",
+				"description": "Resolve a TXT DNS query.",
+				"async": true,
+				"parameters": [
+					{
+						"name": "name",
+						"type": "string",
+						"description": "DNS name to query"
+					}
+				]
+			}
+		]
+	}
+]
