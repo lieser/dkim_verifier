@@ -6,15 +6,20 @@
  */
 
 // @ts-check
-///<reference path="../globals.d.ts" />
-/* global ChromeUtils, ExtensionCommon */
+///<reference path="../mozilla.d.ts" />
+/* global ChromeUtils, Components, ExtensionCommon */
 
 "use strict";
 
 // eslint-disable-next-line no-invalid-this
 this.jsdns = class extends ExtensionCommon.ExtensionAPI {
+	/**
+	 * @param {ExtensionCommon.Context} context
+	 * @returns {{}}
+	 */
 	getAPI(context) {
-		// console.log("context:", context);
+		this.extension = context.extension;
+
 		const RCODE = {
 			NoError: 0, // No Error [RFC1035]
 			FormErr: 1, // Format Error [RFC1035]
@@ -23,7 +28,8 @@ this.jsdns = class extends ExtensionCommon.ExtensionAPI {
 			NotImp: 4, // Non-Existent Domain [RFC1035]
 			Refused: 5, // Query Refused [RFC1035]
 		};
-		const { JSDNS } = ChromeUtils.import(`${context.extension.baseURL}/experiments/JSDNS.jsm.js`);
+		const { JSDNS } = ChromeUtils.import(this.extension.getURL("experiments/JSDNS.jsm.js"));
+		this.extension.callOnClose(this);
 		return {
 			jsdns: {
 				txt(name) {
@@ -52,5 +58,9 @@ this.jsdns = class extends ExtensionCommon.ExtensionAPI {
 				},
 			}
 		};
+	}
+
+	close() {
+		Components.utils.unload(this.extension.getURL("experiments/JSDNS.jsm.js"));
 	}
 };

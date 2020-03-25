@@ -37,6 +37,22 @@ declare module Components {
 
     interface ComponentsUtils {
         import(url: string, scope?: object): object;
+        unload(url: string): void;
+    }
+}
+
+declare module ExtensionCommon {
+    interface Extension {
+        callOnClose(obj: object): void;
+        getURL(path: string): string;
+    }
+
+    declare class ExtensionAPI implements ExtensionApiI {
+        constructor(extension: Extension);
+    }
+
+    interface Context {
+        readonly extension: Extension;
     }
 }
 
@@ -63,7 +79,7 @@ declare module Log {
     class ConsoleAppender extends Appender {
         doAppend(formatted: string): void;
     };
-    class DumpAppender extends Appender {};
+    class DumpAppender extends Appender { };
 
     abstract class Formatter {
         abstract format(LogMessage): string;
@@ -78,7 +94,7 @@ declare module Log {
         Error: 60,
         Warn: 50,
         Info: 40,
-        Config:	30,
+        Config: 30,
         Debug: 20,
         Trace: 10,
         All: -1,
@@ -90,7 +106,7 @@ declare module Log {
             30: "CONFIG",
             20: "DEBUG",
             10: "TRACE",
-            "-1":  "ALL",
+            "-1": "ALL",
         },
         Numbers: {
             "FATAL": 70,
@@ -131,7 +147,7 @@ declare module Log {
         level: number;
         levelDesc: string;
         time: number;
-        message: string|null;
+        message: string | null;
         params?: Object;
     }
 }
@@ -139,8 +155,8 @@ declare module Log {
 /** JavaScript code module "resource://gre/modules/NetUtil.jsm" */
 declare module NetUtil {
     function asyncCopy(aSource: nsIInputStream, aSink: nsIOutputStream, aCallback?: (status: nsresult) => void): nsIAsyncStreamCopier;
-    function asyncFetch(aSource: aWhatToLoad|nsIChannel|nsIInputStream, aCallback: asyncFetchCallback): void
-    function newURI(aTarget: string|nsIFile, aOriginCharset?, aBaseURI?: nsIURI): nsIURI;
+    function asyncFetch(aSource: aWhatToLoad | nsIChannel | nsIInputStream, aCallback: asyncFetchCallback): void
+    function newURI(aTarget: string | nsIFile, aOriginCharset?, aBaseURI?: nsIURI): nsIURI;
     function readInputStreamToString(aInputStream: nsIInputStream, aCount: number, aOptions?): string;
 
     interface asyncFetchCallback { (inputStream: nsIInputStream, status: nsresult, request: nsIRequest): void }
@@ -180,7 +196,7 @@ declare module Services {
     const vc: nsIVersionComparator;
 
     interface mozIJSSubScriptLoader {
-        loadSubScript(url: string, targetObj?: object , charset?: string): any;
+        loadSubScript(url: string, targetObj?: object, charset?: string): any;
     }
 }
 
@@ -227,10 +243,10 @@ interface mozIStorageStatement extends mozIStorageBaseStatement {
     readonly numEntries: number;
 }
 
-declare class MozXULElement extends XULElement {};
+declare class MozXULElement extends XULElement { };
 
-interface nsIAsyncStreamCopier {nsIAsyncStreamCopier: never}
-interface nsIChannel {nsIChannel: never}
+interface nsIAsyncStreamCopier { nsIAsyncStreamCopier: never }
+interface nsIChannel { nsIChannel: never }
 
 interface nsIInputStream {
     available(): number;
@@ -247,9 +263,9 @@ interface nsIFileInputStream extends nsIInputStream {
     readonly init: (file: nsIFile, ioFlags: number, perm: number, behaviorFlags: number) => void;
 }
 
-interface nsIFileOutputStream extends nsIOutputStream {nsIFileOutputStream: never}
+interface nsIFileOutputStream extends nsIOutputStream { nsIFileOutputStream: never }
 
-interface nsIOutputStream {nsIOutputStream: never}
+interface nsIOutputStream { nsIOutputStream: never }
 
 interface nsIPrefService {
     getBranch(aPrefRoot: string): nsIPrefBranch;
@@ -272,7 +288,7 @@ interface nsIPrefBranch {
 }
 
 interface nsIProtocolProxyService {
-    readonly newProxyInfo:(
+    readonly newProxyInfo: (
         aType: string,
         aHost: string,
         aPort: number,
@@ -283,12 +299,12 @@ interface nsIProtocolProxyService {
         aFailoverProxy: nsIProxyInfo?) => nsIProxyInfo;
 }
 
-interface nsIProxyInfo {nsIProxyInfo: never};
+interface nsIProxyInfo { nsIProxyInfo: never };
 
 type nsIObserver = object;
 
 interface nsIIOService {
-    newURI(aSpec: string, aOriginCharset: string|null, aBaseURI: nsIURI|null): nsIURI;
+    newURI(aSpec: string, aOriginCharset: string | null, aBaseURI: nsIURI | null): nsIURI;
 }
 
 interface nsITreeSelection {
@@ -319,7 +335,7 @@ interface nsIStringBundleService {
 }
 
 interface nsIStringBundle {
-    formatStringFromName(aName: string, params: (string|string[])[], length: number): string;
+    formatStringFromName(aName: string, params: (string | string[])[], length: number): string;
     GetStringFromName(aName: string): string;
 }
 
@@ -328,7 +344,7 @@ interface nsIURI {
 }
 
 interface nsIVersionComparator {
-	readonly compare: (A: string, B: string) => number;
+    readonly compare: (A: string, B: string) => number;
 }
 
 interface nsIWindowsRegKey {
@@ -346,14 +362,14 @@ interface nsIWindowsRegKey {
 }
 
 interface nsIXULAppInfo {
-	readonly platformVersion: string;
+    readonly platformVersion: string;
 }
 
-interface nsresult {nsresult: never};
+interface nsresult { nsresult: never };
 
-declare class XULElement extends HTMLElement {};
+declare class XULElement extends HTMLElement { };
 
-declare class XULPopupElement extends XULElement {};
+declare class XULPopupElement extends XULElement { };
 
 ////////////////////////////////////////////////////////////////////////////////
 //// Thunderbird specific interfaces
