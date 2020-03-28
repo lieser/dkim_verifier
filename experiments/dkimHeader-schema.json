@@ -1,0 +1,33 @@
+[
+	{
+		"namespace": "dkimHeader",
+		"functions": [
+			{
+				"name": "setDkimHeaderResult",
+				"type": "function",
+				"description": "Set some test text",
+				"async": true,
+				"parameters": [
+					{
+						"name": "tabId",
+						"type": "number",
+						"description": "Tab id"
+					},
+					{
+						"name": "result",
+						"type": "string",
+						"description": "DKIM result"
+					},
+					{
+						"name": "warnings",
+						"type": "array",
+						"items": {
+							"type": "string"
+						},
+						"description": "DKIM warnings"
+					}
+				]
+			}
+		]
+	}
+]

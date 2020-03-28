@@ -6,6 +6,7 @@
     "language": "en",
     // words - list of words to be always considered correct
     "words": [
+        "anonid",
         "appender",
         "atext",
         "AUID",
@@ -19,6 +20,7 @@
         "esversion",
         "favicons",
         "googlecode",
+        "hbox",
         "internalerror",
         "libunbound",
         "lieser",
@@ -30,6 +32,7 @@
         "pseudocode",
         "qcontent",
         "qtext",
+        "rcode",
         "s",
         "scriptable",
         "SDID",
@@ -46,6 +49,7 @@
         "tooltips",
         "tooltiptext",
         "unittest",
+        "vbox",
         "vchar"
     ],
     // flagWords - list of words to be always considered incorrect

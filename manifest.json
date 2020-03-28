@@ -22,7 +22,21 @@
 		"64": "icon.png"
 	},
 	"experiment_apis": {
-		"dns2": {
+		"dkimHeader": {
+			"schema": "experiments/dkimHeader-schema.json",
+			"parent": {
+				"scopes": [
+					"addon_parent"
+				],
+				"paths": [
+					[
+						"dkimHeader"
+					]
+				],
+				"script": "experiments/dkimHeader.js"
+			}
+		},
+		"jsdns": {
 			"schema": "experiments/jsdns-schema.json",
 			"parent": {
 				"scopes": [

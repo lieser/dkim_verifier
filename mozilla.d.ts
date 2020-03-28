@@ -36,6 +36,7 @@ declare module Components {
     }
 
     interface ComponentsUtils {
+        getGlobalForObject(obj: object): Window;
         import(url: string, scope?: object): object;
         unload(url: string): void;
     }
