@@ -69,42 +69,6 @@ declare function postMessage(WorkerResponse: Libunbound.Log|Libunbound.Result|Li
 //// The type detection via JSDoc fails at some places,
 //// so we additionally have to specify them here.
 
-declare let Logging = _Logging;
-declare let Policy = _Policy;
-
-namespace _DKIM_Verifier {
-    let _AuthVerifier = AuthVerifier;
-    let _Key = Key;
-    let _Verifier = Verifier;
-    // helper.jsm
-    let _DKIM_InternalError = DKIM_InternalError;
-    let _PREF = PREF;
-}
-
-// for dkim.js
-namespace DKIM_Verifier {
-    let AuthVerifier = _DKIM_Verifier._AuthVerifier;
-    let Display = any;
-    let Key = _DKIM_Verifier._Key;
-    let Logging = _Logging;
-    let Policy = _Policy;
-    // helper.jsm
-    let DKIM_InternalError = _DKIM_Verifier._DKIM_InternalError;
-    let PREF = _DKIM_Verifier._PREF;
-};
-
-// for AuthVerifier.jsm
-namespace DKIM {
-    let Policy = _DKIM_Verifier._Policy;
-    let Verifier = _DKIM_Verifier._Verifier;
-};
-
-// for dkimVerifier.jsm
-    interface dkimResultCallback {
-    (msgURI: string, result: dkimResultV1): void;
-}
-
-
 interface IDeferred<T> {
     promise: Promise<T>;
     resolve(reason: T): void;

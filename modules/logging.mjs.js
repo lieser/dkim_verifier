@@ -27,6 +27,7 @@ class Logger {
 	 */
 	constructor(loggerName) {
 		this.name = loggerName;
+		this._logLevel = Logging.logLevel;
 		this.logLevel = Logging.logLevel;
 	}
 
@@ -114,9 +115,10 @@ export default class Logging {
 	 *
 	 * @static
 	 * @param {number} logLevel
+	 * @returns {void}
 	 * @memberof Logging
 	 */
-	static set logLevel(logLevel) {
+	static setLogLevel(logLevel) {
 		Logging._logLevel = logLevel;
 		Logging._loggers.forEach(logger => {
 			logger.logLevel = logLevel;

@@ -1,3 +1,12 @@
+/**
+ * Copyright (c) 2020 Philippe Lieser
+ *
+ * This software is licensed under the terms of the MIT License.
+ *
+ * The above copyright and license notice shall be
+ * included in all copies or substantial portions of the Software.
+ */
+
 // @ts-check
 
 import { DKIM_SigError } from "../../modules/error.mjs.js";
@@ -14,11 +23,11 @@ const keys = {
 };
 
 // eslint-disable-next-line require-await
-async function getKey(domain, sdid) {
-	if (!keys[domain]) {
+async function getKey(sdid, selector) {
+	if (!keys[sdid]) {
 		throw new DKIM_SigError("DKIM_SIGERROR_NOKEY");
 	}
-	const key = keys[domain][sdid];
+	const key = keys[sdid][selector];
 	if (!key) {
 		throw new DKIM_SigError("DKIM_SIGERROR_NOKEY");
 	}

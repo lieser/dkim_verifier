@@ -192,9 +192,6 @@ var JSDNS = {};
 var prefs = Services.prefs.getBranch(PREF_BRANCH);
 // @ts-ignore
 var log = Log.repository.getLogger(LOG_NAME);
-var DNS_STRINGS = Services.strings.createBundle(
-	"chrome://dkim_verifier/locale/JSDNS.properties"
-);
 
 
 /* structur of DNS_ROOT_NAME_SERVERS, PREF_DNS_ROOT_NAME_SERVERS, OS_DNS_ROOT_NAME_SERVERS:
@@ -721,7 +718,7 @@ function queryDNSRecursive(server, host, recordtype, callback, callbackdata, hop
 
 	if (hops === 10) {
 		log.debug("Maximum number of recursive steps taken in resolving " + host);
-		callback(null, callbackdata, DNS_STRINGS.GetStringFromName("TOO_MANY_HOPS"));
+		callback(null, callbackdata, "TOO_MANY_HOPS");
 		return;
 	}
 
@@ -774,22 +771,22 @@ function queryDNSRecursive(server, host, recordtype, callback, callbackdata, hop
 				if (status === 2152398861) { // NS_ERROR_CONNECTION_REFUSED
 					log.debug("Resolving " + host + "/" + recordtype + ": DNS server " + server + " refused a TCP connection.");
 					if (servers === undefined) {
-						callback(null, callbackdata, DNS_STRINGS.formatStringFromName("CONNECTION_REFUSED", [server], 1));
+						callback(null, callbackdata, ["CONNECTION_REFUSED", server]);
 					}
 				} else if (status === 2152398868) { // NS_ERROR_NET_RESET
 					log.debug("Resolving " + host + "/" + recordtype + ": DNS server " + server + " timed out on a TCP connection.");
 					if (servers === undefined) {
-						callback(null, callbackdata, DNS_STRINGS.formatStringFromName("TIMED_OUT", [server], 1));
+						callback(null, callbackdata, ["TIMED_OUT", server]);
 					}
 				} else if (status === Components.results.NS_ERROR_NET_TIMEOUT) {
 					log.debug("Resolving " + host + "/" + recordtype + ": DNS server " + server + " timed out on a TCP connection (NS_ERROR_NET_TIMEOUT).");
 					if (servers === undefined) {
-						callback(null, callbackdata, DNS_STRINGS.formatStringFromName("TIMED_OUT", [server], 1));
+						callback(null, callbackdata, ["TIMED_OUT", server]);
 					}
 				} else {
 					log.debug("Resolving " + host + "/" + recordtype + ": Failed to connect to DNS server " + server + " with error code " + status + ".");
 					if (servers === undefined) {
-						callback(null, callbackdata, DNS_STRINGS.formatStringFromName("SERVER_ERROR", [server], 1));
+						callback(null, callbackdata, ["SERVER_ERROR", server]);
 					}
 				}
 
@@ -807,7 +804,7 @@ function queryDNSRecursive(server, host, recordtype, callback, callbackdata, hop
 			this.process(data);
 			if (!this.done) {
 				log.debug("Resolving " + host + "/" + recordtype + ": Response was incomplete.");
-				callback(null, callbackdata, DNS_STRINGS.formatStringFromName("INCOMPLETE_RESPONSE", [server], 1));
+				callback(null, callbackdata, ["INCOMPLETE_RESPONSE", server]);
 			}
 		},
 		process : function(data){

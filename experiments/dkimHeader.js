@@ -1,4 +1,6 @@
 /**
+ * Copyright (c) 2020 Philippe Lieser
+ *
  * This software is licensed under the terms of the MIT License.
  *
  * The above copyright and license notice shall be
@@ -54,6 +56,10 @@ class DKIMTooltip {
 		// delete old warnings from tooltips
 		while (this.element._warningsBox.firstChild) {
 			this.element._warningsBox.removeChild(this.element._warningsBox.firstChild);
+		}
+
+		if (!this.element.ownerDocument) {
+			throw Error("Underlying element of DKIMTooltip does not contain ownerDocument");
 		}
 
 		if (this._warningsSeparator && warnings.length > 0) {
@@ -328,7 +334,7 @@ class DKIMHeaderField {
 	static get(document) {
 		const element = document.getElementById(DKIMHeaderField._id);
 		if (!element) {
-			throw Error("COuld not find the DKIMHeaderField element");
+			throw Error("Could not find the DKIMHeaderField element");
 		}
 		return new DKIMHeaderField(document, element);
 	}
@@ -374,7 +380,11 @@ class DkimHeaderRow {
 	 * @memberof DkimHeaderRow
 	 */
 	static get(document) {
-		return document.getElementById(DkimHeaderRow._id);
+		const element = document.getElementById(DkimHeaderRow._id);
+		if (!element) {
+			throw Error("Could not find the DKIMHeaderField element");
+		}
+		return element;
 	}
 }
 DkimHeaderRow._id = "expandedDkim-verifierRow";
@@ -492,6 +502,9 @@ this.dkimHeader = class extends ExtensionCommon.ExtensionAPI {
 		const { document } = window;
 		const headerRow = new DkimHeaderRow(document);
 		const expandedHeaders2 = document.getElementById("expandedHeaders2");
+		if (!expandedHeaders2) {
+			throw Error("Could not find the expandedHeaders2 element");
+		}
 		expandedHeaders2.appendChild(headerRow.element);
 	}
 

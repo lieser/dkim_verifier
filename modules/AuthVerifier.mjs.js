@@ -14,6 +14,7 @@
  */
 
 // @ts-check
+///<reference path="AuthVerifier.d.ts" />
 ///<reference path="../WebExtensions.d.ts" />
 /* eslint-env webextensions */
 /* eslint-disable camelcase */
@@ -503,8 +504,8 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 		case "TEMPFAIL":
 			authResultDKIM.res_num = 20;
 			authResultDKIM.result_str =
-				browser.i18n.getMessage(dkimSigResult.errorType,
-					dkimSigResult.errorStrParams) ||
+				(dkimSigResult.errorType &&
+					browser.i18n.getMessage(dkimSigResult.errorType, dkimSigResult.errorStrParams)) ||
 				dkimSigResult.errorType ||
 				browser.i18n.getMessage("DKIM_INTERNALERROR_NAME");
 			break;

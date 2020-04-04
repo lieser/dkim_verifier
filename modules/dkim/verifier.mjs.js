@@ -25,8 +25,9 @@
  */
 
 // @ts-check
+/* eslint-disable camelcase */
+/* eslint-disable no-magic-numbers */
 
-// options for ESLint
 import {DKIM_InternalError, DKIM_SigError} from "../error.mjs.js";
 import {addrIsInDomain2, domainIsInDomain, stringEndsWith, stringEqual} from "../utils.mjs.js";
 import DkimCrypto from "./crypto.mjs.js";
@@ -68,7 +69,7 @@ const Policy = new DummyPolicy();
 
 /**
  * @typedef {Object} dkimSigWarningV2
- * @property {string} name - Name of the warning (strings from dkim.properties)
+ * @property {string} name - Name of the warning
  * @property {(string|string[])[]|undefined} [params] - optional params for formatted string
  */
 
@@ -80,18 +81,18 @@ const Policy = new DummyPolicy();
  *           result version ("2.0")
  * @property {String} result
  *           "none" / "SUCCESS" / "PERMFAIL" / "TEMPFAIL"
- * @property {String} [sdid]
- * @property {String} [auid]
- * @property {String} [selector]
- * @property {dkimSigWarningV2[]} [warnings]
+ * @property {String|undefined} [sdid]
+ * @property {String|undefined} [auid]
+ * @property {String|undefined} [selector]
+ * @property {dkimSigWarningV2[]|undefined} [warnings]
  *           Array of warning_objects.
  *           required if result="SUCCESS"
- * @property {String} [errorType]
+ * @property {String|undefined} [errorType]
  *           if result="PERMFAIL: DKIM_SigError.errorType
  *           if result="TEMPFAIL: DKIM_InternalError.errorType or Undefined
- * @property {String[]} [errorStrParams]
- * @property {Boolean} [hideFail]
- * @property {Boolean} [keySecure]
+ * @property {String[]|undefined} [errorStrParams]
+ * @property {Boolean|undefined} [hideFail]
+ * @property {Boolean|undefined} [keySecure]
  */
 
 /**

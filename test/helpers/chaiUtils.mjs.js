@@ -1,3 +1,12 @@
+/**
+ * Copyright (c) 2020 Philippe Lieser
+ *
+ * This software is licensed under the terms of the MIT License.
+ *
+ * The above copyright and license notice shall be
+ * included in all copies or substantial portions of the Software.
+ */
+
 // @ts-check
 
 /** @type{Chai.ExpectStatic} */
@@ -6,6 +15,10 @@ const expect = globalThis.expect;
 export default expect;
 
 import { DKIM_SigError } from "../../modules/error.mjs.js";
+import Logging from "../../modules/logging.mjs.js";
+
+// disable logging in tests
+Logging.setLogLevel(Logging.Level.Fatal);
 
 /**
  * Assert that the given promise is rejected with a certain type of DKIM_SigError
