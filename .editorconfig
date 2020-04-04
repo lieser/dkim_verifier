@@ -5,26 +5,32 @@ indent_style = tab
 indent_size = 4
 end_of_line = lf
 charset = utf-8
-trim_trailing_whitespace = unset
+trim_trailing_whitespace = set
 insert_final_newline = true
 
 [*.d.ts]
 indent_style = space
 
-[*.xml]
+[*.{xml,html}]
 indent_style = space
 indent_size = 2
 
 [chrome\content\options.xul]
 indent_style = space
 indent_size = 2
-trim_trailing_whitespace = set
 
 [*.md]
 indent_style = space
+indent_size = 2
 
 [.vscode/cSpell.json]
 indent_style = space
 
 [.vscode/settings.json]
+indent_style = space
+
+[.eslintrc.json]
+indent_style = space
+
+[jsconfig.json]
 indent_style = space

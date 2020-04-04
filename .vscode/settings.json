@@ -2,7 +2,9 @@
     "files.associations": {
         "*.jsm": "javascript",
         ".eslintrc.json": "jsonc",
-        "cSpell.json": "jsonc"
+        "*-schema.json": "jsonc",
+        "cSpell.json": "jsonc",
+        "messages.json": "jsonc"
     },
     "mocha-snippets.function-type": "function",
     "mocha-snippets.glob": "**/*Spec.mjs.js",
