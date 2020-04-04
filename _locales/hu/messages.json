@@ -1,0 +1,286 @@
+{
+	// DKIM_STRINGS
+	"loading": {
+		"message": "Ellenőrzés…"
+	},
+	"SUCCESS": {
+		"message": "Érvényes (Aláírta: $1)"
+	},
+	"PERMFAIL": {
+		"message": "Érvénytelen ($1)"
+	},
+	"PERMFAIL_NO_REASON": {
+		"message": "Érvénytelen"
+	},
+	"TEMPFAIL": {
+		"message": "Ideiglenes érvényesítési hiba (Aláírás céljából $1)"
+	},
+	"NOSIG": {
+		"message": "Nincs aláírás"
+	},
+	"NOT_EMAIL": {
+		"message": "Az üzenet nem e-mail"
+	},
+	// DKIM_INTERNALERROR
+	"DKIM_INTERNALERROR": {
+		"message": "DKIM ellenőrző belső hiba"
+	},
+	"DKIM_INTERNALERROR_NAME": {
+		"message": "Belső hiba"
+	},
+	"DKIM_INTERNALERROR_DEFAULT": {
+		"message": "hiba"
+	},
+	"DKIM_INTERNALERROR_INCORRECT_EMAIL_FORMAT": {
+		"message": "Az e-mail hibás formázott"
+	},
+	// DKIM_INTERNALERROR - DNS
+	"DKIM_DNSERROR_UNKNOWN": {
+		"message": "A DNS-feloldó hibás"
+	},
+	"DKIM_DNSERROR_SERVER_ERROR": {
+		"message": "Hiba történt a DNS-kiszolgálóhoz való csatlakozáskor"
+	},
+	"DKIM_DNSERROR_DNSSEC_BOGUS": {
+		"message": "A DNS eredmény hamis"
+	},
+	// DKIM_SIGERROR
+	"DKIM_SIGERROR": {
+		"message": "DKIM aláírási hiba"
+	},
+	"DKIM_SIGERROR_DEFAULT": {
+		"message": "hiba"
+	},
+	// DKIM_SIGERROR - DKIM-Signature Header
+	"DKIM_SIGERROR_ILLFORMED": {
+		"message": "Az aláírás hibás formázott"
+	},
+	"DKIM_SIGERROR_UNSUPPORTED": {
+		"message": "Az aláírás verziója nem támogatott"
+	},
+	"DKIM_SIGERROR_ILLFORMED_TAGSPEC": {
+		"message": "Az aláírás hibás formázott"
+	},
+	"DKIM_SIGERROR_DUPLICATE_TAG": {
+		"message": "Az aláírás hibás formázott (kettős címke)"
+	},
+	"DKIM_SIGERROR_VERSION": {
+		"message": "A verzió nem támogatott"
+	},
+	"DKIM_SIGERROR_MISSING_V": {
+		"message": "A DKIM verzió hiányzik"
+	},
+	"DKIM_SIGERROR_ILLFORMED_V": {
+		"message": "A verziócímke hibás formázott"
+	},
+	"DKIM_SIGERROR_MISSING_A": {
+		"message": "Az aláírási algoritmus hiányzik"
+	},
+	"DKIM_SIGERROR_UNKNOWN_A": {
+		"message": "Az aláírás algoritmus nem támogatott"
+	},
+	"DKIM_SIGERROR_INSECURE_A": {
+		"message": "Az aláírás algoritmus nem biztonságos"
+	},
+	"DKIM_SIGERROR_ILLFORMED_A": {
+		"message": "Algoritmuscímke hibás formázott"
+	},
+	"DKIM_SIGERROR_MISSING_B": {
+		"message": "Az aláírás hiányzik"
+	},
+	"DKIM_SIGERROR_BADSIG": {
+		"message": "Az aláírás hibás"
+	},
+	"DKIM_SIGERROR_ILLFORMED_B": {
+		"message": "Az aláírás adatcímke hibás formázott"
+	},
+	"DKIM_SIGERROR_MISSING_BH": {
+		"message": "A törzshash hiányzik"
+	},
+	"DKIM_SIGERROR_CORRUPT_BH": {
+		"message": "Az e-mail módosult"
+	},
+	"DKIM_SIGERROR_ILLFORMED_BH": {
+		"message": "A törzshash címke hibás formázott"
+	},
+	"DKIM_SIGERROR_UNKNOWN_C_H": {
+		"message": "Kanonikálási algoritmus a fejléchez nem támogatott"
+	},
+	"DKIM_SIGERROR_UNKNOWN_C_B": {
+		"message": "Kanonikálási algoritmus a törzshöz nem támogatott"
+	},
+	"DKIM_SIGERROR_ILLFORMED_C": {
+		"message": "A kanonizációs címke hibás formázott"
+	},
+	"DKIM_SIGERROR_MISSING_D": {
+		"message": "Az SDID (Signing Domain Identifier – Aláíró tartomány azonosító) hiányzik"
+	},
+	"DKIM_SIGERROR_ILLFORMED_D": {
+		"message": "Az SDID-címke hibás formázott"
+	},
+	"DKIM_SIGERROR_MISSING_H": {
+		"message": "Az aláírt fejléc mezők hiányzók"
+	},
+	"DKIM_SIGERROR_MISSING_FROM": {
+		"message": "A feladó fejléc nincs aláírva"
+	},
+	"DKIM_SIGERROR_ILLFORMED_H": {
+		"message": "Az aláírt fejléc mezők címke hibás formázott"
+	},
+	"DKIM_SIGERROR_SUBDOMAIN_I": {
+		"message": "Az AUID nincs az SDID altartományéban"
+	},
+	"DKIM_SIGERROR_DOMAIN_I": {
+		"message": "Az AUID-nek ugyanabban a tartományban kell lennie, mint az SDID-nek (s-flag beállítva a kulcsrekordban)"
+	},
+	"DKIM_SIGERROR_ILLFORMED_I": {
+		"message": "Az AUID címke hibás formázott"
+	},
+	"DKIM_SIGERROR_TOOLARGE_L": {
+		"message": "Az e-mail rövidebb, mint amit a DKIM aláírásban megadtak"
+	},
+	"DKIM_SIGERROR_ILLFORMED_L": {
+		"message": "A törzshosszasság címke hibás formázott"
+	},
+	"DKIM_SIGERROR_UNKNOWN_Q": {
+		"message": "A nyilvános kulcs lekérdezésének módszerei nem támogatott"
+	},
+	"DKIM_SIGERROR_ILLFORMED_Q": {
+		"message": "A lekérdezési módszer címke hibás formázott"
+	},
+	"DKIM_SIGERROR_MISSING_S": {
+		"message": "Választócímke hiányzik"
+	},
+	"DKIM_SIGERROR_ILLFORMED_S": {
+		"message": "Választócímke hibás formázott"
+	},
+	"DKIM_SIGERROR_ILLFORMED_T": {
+		"message": "Aláírás időbélyegző hibás formázott"
+	},
+	"DKIM_SIGERROR_TIMESTAMPS": {
+		"message": "Az aláírás lejár az aláírás időbélyegzője előtt"
+	},
+	"DKIM_SIGERROR_ILLFORMED_X": {
+		"message": "Az aláírás lejárati címke hibás formázott"
+	},
+	"DKIM_SIGERROR_ILLFORMED_Z": {
+		"message": "A másolt fejléc mezők címke hibás formázott"
+	},
+	// DKIM_SIGERROR - key query
+	"DKIM_SIGERROR_NOKEY": {
+		"message": "A DNS-kiszolgálón nem található a DKIM-kulcs"
+	},
+	// DKIM_SIGERROR - Key record
+	"DKIM_SIGERROR_KEY_ILLFORMED": {
+		"message": "A DKIM kulcs hibás formázott"
+	},
+	"DKIM_SIGERROR_KEY_INVALID": {
+		"message": "Érvénytelen DKIM kulcs"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_TAGSPEC": {
+		"message": "A DKIM kulcs hibás formázott"
+	},
+	"DKIM_SIGERROR_KEY_DUPLICATE_TAG": {
+		"message": "A DKIM kulcs hibás formázott (megkettőzött címke)"
+	},
+	"DKIM_SIGERROR_KEY_INVALID_V": {
+		"message": "Érvénytelen változata a DKIM kulcs rögzítés"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_V": {
+		"message": "A DKIM kulcs verziócímke hibás formázott"
+	},
+	"DKIM_SIGERROR_KEY_HASHNOTINCLUDED": {
+		"message": "Rossz hash algoritmus a DKIM kulcsrögzítésben"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_H": {
+		"message": "A hash algoritmusok címkéje a DKIM kulcsban hibás formázott"
+	},
+	"DKIM_SIGERROR_KEY_UNKNOWN_K": {
+		"message": "A DKIM kulcs típusa nem támogatott"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_K": {
+		"message": "A DKIM kulcs típusú címke hibás formázott"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_N": {
+		"message": "Megjegyzéscímke a DKIM kulcsban hibás formázott"
+	},
+	"DKIM_SIGERROR_KEY_MISSING_P": {
+		"message": "A DKIM kulcs nem tartalmaz nyilvános kulcsot"
+	},
+	"DKIM_SIGERROR_KEY_REVOKED": {
+		"message": "A DKIM kulcs visszavonásra kerül"
+	},
+	"DKIM_SIGERROR_KEY_HASHMISMATCH": {
+		"message": "A DKIM kulcs nyilvános kulcsa hibás hash algoritmussal rendelkezik"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_P": {
+		"message": "Nyilvános kulcsú adatcímke a DKIM kulcsban hibás formázott"
+	},
+	"DKIM_SIGERROR_KEY_NOTEMAILKEY": {
+		"message": "A DKIM kulcs nem e-mail kulcs"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_S": {
+		"message": "A DKIM kulcs szolgáltatástípus-címkéje hibás formázott"
+	},
+	"DKIM_SIGERROR_KEY_TESTMODE": {
+		"message": "Az aláíró tartomány csak a DKIM tesztelését használja"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_T": {
+		"message": "A DKIM kulcsban található zászlócímkéje hibás formázott"
+	},
+	// DKIM_SIGERROR - key decode
+	"DKIM_SIGERROR_KEYDECODE": {
+		"message": "Nyilvános kulcsú adatcímke a DKIM kulcsban nem lehetett dekódolni"
+	},
+	// DKIM_SIGERROR - POLICY
+	"DKIM_POLICYERROR_MISSING_SIG": {
+		"message": "Alá kéne írni: $1"
+	},
+	"DKIM_POLICYERROR_KEYMISMATCH": {
+		"message": "A tárolt DKIM kulcs eltér a jelenlegiől"
+	},
+	"DKIM_POLICYERROR_KEY_INSECURE": {
+		"message": "A DKIM kulcsot a DNSSEC nem írja alá"
+	},
+	"DKIM_POLICYERROR_WRONG_SDID": {
+		"message": "Hibás aláíró (kéne: $1)"
+	},
+	// DKIM_SIGWARNING
+	"DKIM_SIGWARNING_SMALL_L": {
+		"message": "A teljes e-mailt nem írták alá"
+	},
+	"DKIM_SIGWARNING_EXPIRED": {
+		"message": "Az aláírás lejárt"
+	},
+	"DKIM_SIGWARNING_FUTURE": {
+		"message": "Aláírás a jövőben"
+	},
+	"DKIM_SIGWARNING_KEYSMALL": {
+		"message": "Az aláírás nem biztonságos (a kulcs mérete túl kicsi)"
+	},
+	"DKIM_SIGWARNING_KEY_IS_WEAK": {
+		"message": "Gyenge kulccsal aláírva"
+	},
+	"DKIM_SIGWARNING_FROM_NOT_IN_SDID": {
+		"message": "A feladó nem található az aláírási tartományban"
+	},
+	"DKIM_SIGWARNING_FROM_NOT_IN_AUID": {
+		"message": "A feladó nem egyezik a felhasználói azonosítóval"
+	},
+	// JSDNS
+	"TOO_MANY_HOPS": {
+		"message": "Túl sok komló."
+	},
+	"CONNECTION_REFUSED": {
+		"message": "A(z) $1 DNS-kiszolgáló elutasította a TCP-kapcsolatot."
+	},
+	"TIMED_OUT": {
+		"message": "A(z) $1 DNS-kiszolgáló lejárt egy TCP-kapcsolaton."
+	},
+	"SERVER_ERROR": {
+		"message": "Hiba történt a(z) $1 DNS-kiszolgálóhoz való csatlakozáskor."
+	},
+	"INCOMPLETE_RESPONSE": {
+		"message": "$1 hiányos válasz."
+	}
+}
