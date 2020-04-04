@@ -8,5 +8,5 @@ More Information in the wiki at <https://github.com/lieser/dkim_verifier/wiki>
 Included third-party Libraries
 ------------------------------
 
-- Joshua Tauberer's DNS Libary (part of Thunderbird Sender Verification Extension) (<https://github.com/tauberer/thunderbird-spf>)
+- Joshua Tauberer's DNS Library (part of Thunderbird Sender Verification Extension) (<https://github.com/tauberer/thunderbird-spf>)
   - dns.js - DNS Library

@@ -4,7 +4,7 @@ software components included within DKIM Verifier.
 
 *******************************************************************************
 *******************************************************************************
-For Joshua Tauberer's DNS Libary
+For Joshua Tauberer's DNS Library
 (part of Thunderbird Sender Verification Extension)
 
 dns.js - DNS Library
