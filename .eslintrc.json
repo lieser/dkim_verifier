@@ -1,25 +1,39 @@
 {
+    "root": true,
     "extends": [
-        "eslint:all",
         "eslint:recommended"
     ],
     "env": {
-        "es6": true,
-        "browser": false,
-        "serviceworker": false
+        "es2020": true
     },
     "parserOptions": {
-        "ecmaVersion": 8,
+        "ecmaVersion": 2020,
         "ecmaFeatures": {},
         "sourceType": "script"
     },
+    "globals": {
+        "globalThis": "readonly"
+    },
     "rules": {
         // Possible Errors
-        "for-direction": "warn",
-        "getter-return": "warn",
-        "no-extra-parens": ["warn", "all", { "nestedBinaryExpressions": false }],
-        "no-unreachable": "error",
-        "valid-jsdoc": ["warn", {"requireParamDescription": false, "requireReturnDescription": false }],
+        "no-dupe-else-if": "warn",
+        "no-extra-parens": [
+            "warn",
+            "all",
+            {
+                "nestedBinaryExpressions": false
+            }
+        ],
+        "no-import-assign": "warn",
+        "no-setter-return": "warn",
+        "require-atomic-updates": "warn",
+        "valid-jsdoc": [
+            "warn",
+            {
+                "requireParamDescription": false,
+                "requireReturnDescription": false
+            }
+        ],
         // Best Practices
         "array-callback-return": "warn",
         "block-scoped-var": "warn",
@@ -27,11 +41,14 @@
         "consistent-return": "warn",
         "curly": "warn",
         "default-case": "warn",
+        "default-param-last": "warn",
         "dot-location": "warn",
+        "dot-notation": "warn",
         "eqeqeq": "warn",
         "guard-for-in": "warn",
         "no-alert": "error",
         "no-caller": "warn",
+        "no-constructor-return": "warn",
         "no-div-regex": "warn",
         "no-else-return": "warn",
         "no-empty-function": "warn",
@@ -40,7 +57,6 @@
         "no-extend-native": "warn",
         "no-extra-bind": "warn",
         "no-extra-label": "warn",
-        "no-fallthrough": "warn",
         "no-floating-decimal": "warn",
         "no-implicit-coercion": "warn",
         "no-implied-eval": "error",
@@ -49,15 +65,26 @@
         "no-labels": "warn",
         "no-lone-blocks": "warn",
         "no-loop-func": "warn",
-        "no-magic-numbers": ["warn", { "ignoreArrayIndexes": true }],
+        "no-magic-numbers": [
+            "warn",
+            {
+                "ignoreArrayIndexes": true,
+                "ignore": [
+                    -1,
+                    0,
+                    1,
+                    2
+                ]
+            }
+        ],
         "no-multi-spaces": "warn",
         "no-multi-str": "warn",
         "no-new": "warn",
         "no-new-func": "warn",
         "no-new-wrappers": "warn",
         "no-octal-escape": "warn",
+        "no-param-reassign": "warn",
         "no-proto": "warn",
-        "no-redeclare": "error",
         "no-return-assign": "warn",
         "no-return-await": "warn",
         "no-script-url": "warn",
@@ -71,23 +98,44 @@
         "no-useless-return": "warn",
         "no-void": "warn",
         "no-warning-comments": "warn",
-        "no-with": "warn",
         "prefer-promise-reject-errors": "warn",
         "radix": "warn",
         "require-await": "warn",
         "wrap-iife": "warn",
         "yoda": "warn",
         // Strict Mode
-        "strict": ["warn", "global"],
+        "strict": [
+            "warn",
+            "global"
+        ],
         // Variables
-        "no-undef": "error",
-        "no-unused-vars": "error",
+        "no-label-var": "warn",
+        "no-shadow": "warn",
+        "no-use-before-define": "error",
         // Stylistic Issues
-        "no-mixed-spaces-and-tabs": ["warn", "smart-tabs"],
+        "camelcase": [
+            "warn",
+            {
+                "allow": [
+                    "DKIM_InternalError",
+                    "DKIM_SigError"
+                ]
+            }
+        ],
+        "no-mixed-spaces-and-tabs": [
+            "warn",
+            "smart-tabs"
+        ],
         "semi": "warn",
         // ECMAScript 6
-        "constructor-super": "error",
-        "no-const-assign": "warn",
-        "no-this-before-super": "warn"
-    }
+        "no-var": "warn",
+        "prefer-const": "warn",
+        "prefer-numeric-literals": "warn",
+        "prefer-rest-params": "warn",
+        "prefer-spread": "warn",
+        "prefer-template": "warn",
+        "sort-imports": "warn",
+        "template-curly-spacing": "warn"
+    },
+    "reportUnusedDisableDirectives": true
 }
