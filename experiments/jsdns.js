@@ -21,6 +21,9 @@ function toType(obj) {
 
 // eslint-disable-next-line no-invalid-this
 this.jsdns = class extends ExtensionCommon.ExtensionAPI {
+	/**
+	 * @param {ExtensionCommon.Extension} extension
+	 */
 	constructor(extension) {
 		super(extension);
 		this.extension = extension;
@@ -39,7 +42,7 @@ this.jsdns = class extends ExtensionCommon.ExtensionAPI {
 			NotImp: 4, // Non-Existent Domain [RFC1035]
 			Refused: 5, // Query Refused [RFC1035]
 		};
-		const { JSDNS } = ChromeUtils.import(this.extension.getURL("experiments/JSDNS.jsm.js"));
+		const { JSDNS } = ChromeUtils.import(this.extension.rootURI.resolve("experiments/JSDNS.jsm.js"));
 		this.extension.callOnClose(this);
 		return {
 			jsdns: {
@@ -83,6 +86,6 @@ this.jsdns = class extends ExtensionCommon.ExtensionAPI {
 	}
 
 	close() {
-		Components.utils.unload(this.extension.getURL("experiments/JSDNS.jsm.js"));
+		Components.utils.unload(this.extension.rootURI.resolve("experiments/JSDNS.jsm.js"));
 	}
 };

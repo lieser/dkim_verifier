@@ -458,6 +458,9 @@ DkimResetMessageListener._mapping = new Map();
 
 // eslint-disable-next-line no-invalid-this
 this.dkimHeader = class extends ExtensionCommon.ExtensionAPI {
+	/**
+	 * @param {ExtensionCommon.Extension} extension
+	 */
 	constructor(extension) {
 		super(extension);
 		this.extension = extension;

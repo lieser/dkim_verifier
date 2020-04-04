@@ -45,7 +45,8 @@ declare module Components {
 declare module ExtensionCommon {
     interface Extension {
         callOnClose(obj: object): void;
-        getURL(path: string): string;
+        readonly id: string;
+        readonly rootURI: nsIURI;
     }
 
     declare class ExtensionAPI implements ExtensionApiI {
@@ -341,6 +342,7 @@ interface nsIStringBundle {
 }
 
 interface nsIURI {
+    readonly resolve: (relativePath: string) => string;
     readonly asciiHost: string;
 }
 
