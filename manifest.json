@@ -5,6 +5,7 @@
 	"version": "3.1.0",
 	"author": "Philippe Lieser",
 	"homepage_url": "https://github.com/lieser/dkim_verifier/wiki",
+	"default_locale": "en-US",
 	"legacy": {
 		"options": {
 			"page": "chrome://dkim_verifier/content/options.xul",

@@ -55,7 +55,7 @@ const PREF = {
 	STATUSBARPANEL: {
 		RESULT: {
 			STYLE: {
-				TEST: 1,
+				TEXT: 1,
 				ICON: 2,
 			}
 		}
@@ -80,31 +80,6 @@ class Deferred {
 		});
 	}
 }
-
-class Stringbundle {
-	/**
-	 * DKIM stringbundle with the same access methods as XUL:stringbundle
-	 *
-	 * @constructor
-	 * @param {string} propertiesPath
-	 */
-	constructor(propertiesPath) {
-		this.stringbundle = Services.strings.createBundle(propertiesPath);
-
-		/** @type {nsIStringBundle["GetStringFromName"]} */
-		this.getString = this.stringbundle.GetStringFromName;
-
-		/**
-		 * @param {string} key
-		 * @param {(string|string[])[]} strArray
-		 * @return {string}
-		 */
-		this.getFormattedString = function (key, strArray) {
-			return this.stringbundle.formatStringFromName(key, strArray, strArray.length);
-		};
-	}
-}
-// var dkimStrings = new Stringbundle("chrome://dkim_verifier/locale/dkim.properties");
 
 /**
  * Returns true if e-mail address is from domain or a subdomain of it.
@@ -264,49 +239,6 @@ export function stringEqual(str1, str2) {
  */
 export function toType(obj) {
 	return Object.prototype.toString.call(obj).match(/\s([a-zA-Z]+)/)[1];
-}
-
-/**
- * try to get string from stringbundle
- *
- * @param {Stringbundle} stringbundle
- * @param {string|undefined} name
- *
- * @return {string|null}
- */
-function tryGetString(stringbundle, name) {
-	if (!name) {
-		return null;
-	}
-
-	try {
-		return stringbundle.getString(name);
-	} catch (ex) {
-		log.warn(ex);
-		return null;
-	}
-}
-
-/**
- * try to get formatted string from stringbundle
- *
- * @param {Stringbundle} stringbundle
- * @param {string} name
- * @param {(string|string[])[]} [params]
- *
- * @return {string|null}
- */
-function tryGetFormattedString(stringbundle, name, params = []) {
-	if (!name) {
-		return null;
-	}
-
-	try {
-		return stringbundle.getFormattedString(name, params);
-	} catch (ex) {
-		log.warn(ex);
-		return null;
-	}
 }
 
 /**
