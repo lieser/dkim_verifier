@@ -9,7 +9,7 @@
 
 // @ts-check
 
-/** @type{Chai.ExpectStatic} */
+/** @type {Chai.ExpectStatic} */
 // @ts-ignore
 const expect = globalThis.expect;
 export default expect;

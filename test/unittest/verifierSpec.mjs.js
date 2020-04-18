@@ -25,10 +25,14 @@ import { readTextFile } from "../helpers/testUtils.mjs.js";
 async function verifyEmlFile(file) {
 	const msgPlain = await readTextFile(file);
 	const msgParsed = MsgParser.parseMsg(msgPlain);
+	const from = msgParsed.headers.get("from");
+	if (!from) {
+		throw new Error("eml file does not contain a From header");
+	}
 	const msg = {
 		headerFields: msgParsed.headers,
 		bodyPlain: msgParsed.body,
-		from: MsgParser.parseAddressingHeader(msgParsed.headers.get("from")[0]),
+		from: MsgParser.parseAddressingHeader(from[0]),
 		listId: "",
 		DKIMSignPolicy: {},
 	};

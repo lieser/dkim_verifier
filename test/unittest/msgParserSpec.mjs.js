@@ -49,28 +49,48 @@ describe("Message parser [unittest]", function () {
 		it("parse CRLF", function () {
 			const msg = MsgParser.parseMsg(msgPlain);
 			expect(msg.body).to.be.equal(msgBody);
+
+			expect(msg.headers.has("received")).to.be.true;
+			// @ts-ignore
 			expect(msg.headers.get("received").length).to.be.equal(1);
+
+			expect(msg.headers.has("subject")).to.be.true;
+			// @ts-ignore
 			expect(msg.headers.get("subject").length).to.be.equal(1);
+			// @ts-ignore
 			expect(msg.headers.get("subject")[0]).to.be.equal("Subject: Is dinner ready?\r\n");
 		});
 		it("parse LF", function () {
 			const msg = MsgParser.parseMsg(msgPlain.replace(/\r\n/g, "\n"));
 			expect(msg.body).to.be.equal(msgBody);
+
+			expect(msg.headers.has("subject")).to.be.true;
+			// @ts-ignore
 			expect(msg.headers.get("subject").length).to.be.equal(1);
+			// @ts-ignore
 			expect(msg.headers.get("subject")[0]).to.be.equal("Subject: Is dinner ready?\r\n");
 		});
 		it("parse CR", function () {
 			const msg = MsgParser.parseMsg(msgPlain.replace(/\r\n/g, "\r"));
 			expect(msg.body).to.be.equal(msgBody);
+
+			expect(msg.headers.has("subject")).to.be.true;
+			// @ts-ignore
 			expect(msg.headers.get("subject").length).to.be.equal(1);
+			// @ts-ignore
 			expect(msg.headers.get("subject")[0]).to.be.equal("Subject: Is dinner ready?\r\n");
 		});
 
 		it("multiple received headers", function () {
 			const msg = MsgParser.parseMsg(`Received: foo\r\n${msgPlain}`);
 			expect(msg.body).to.be.equal(msgBody);
+
+			expect(msg.headers.has("received")).to.be.true;
+			// @ts-ignore
 			expect(msg.headers.get("received").length).to.be.equal(2);
+			// @ts-ignore
 			expect(msg.headers.get("received")[0]).to.be.equal("Received: foo\r\n");
+			// @ts-ignore
 			expect(msg.headers.get("received")[1]).to.have.string('\r\n      by submitserver.example.com');
 		});
 

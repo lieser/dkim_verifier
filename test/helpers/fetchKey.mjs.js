@@ -22,6 +22,7 @@ const keys = {
 	},
 };
 
+/** @type {import("../../modules/dkim/verifier.mjs.js").KeyFetchFunction} */
 // eslint-disable-next-line require-await
 async function getKey(sdid, selector) {
 	if (!keys[sdid]) {

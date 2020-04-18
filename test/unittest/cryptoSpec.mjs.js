@@ -56,6 +56,12 @@ describe("crypto [unittest]", function () {
 			"      bh=2jUSOH9NhtVGCQWNr9BrIAPreKQjO6Sn7XIkfJVOzv8=;\r\n" +
 			"      b=;";
 
+		/**
+		 * @param {string} str
+		 * @param {number} index
+		 * @param {string} replacement
+		 * @returns {string}
+		 */
 		function strReplaceAt(str, index, replacement) {
 			return str.substr(0, index) + replacement + str.substr(index + replacement.length);
 		}

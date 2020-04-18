@@ -45,18 +45,21 @@ declare module Components {
 declare module ExtensionCommon {
     interface Extension {
         callOnClose(obj: object): void;
-        readonly id: string;
         readonly localeData: {
             localizeMessage: (
                 messageName: string,
                 substitutions?: undefined | string | (string | string[])[]
             ) => string
         };
+
+        readonly id: string;
         readonly rootURI: nsIURI;
     }
 
     declare class ExtensionAPI implements ExtensionApiI {
         constructor(extension: Extension);
+
+        readonly extension: Extension:
     }
 
     interface Context {

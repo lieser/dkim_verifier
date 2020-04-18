@@ -26,7 +26,6 @@ this.jsdns = class extends ExtensionCommon.ExtensionAPI {
 	 */
 	constructor(extension) {
 		super(extension);
-		this.extension = extension;
 	}
 
 	/**

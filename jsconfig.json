@@ -1,14 +1,14 @@
 {
     "compilerOptions": {
-        "module": "es6",
+        "module": "es2020",
         "target": "es2020",
         "lib": [
             "es2020",
             "dom"
         ],
-        "strictNullChecks": true,
+        "strict": true,
         "isolatedModules": true,
-        "checkJs": true
+        "checkJs": true,
     },
     "exclude": []
 }

@@ -142,7 +142,7 @@ const hdr_name = "(?:[!-9<-~]+)";
 
 // TODO: consider making it a member of Verifier
 // TODO: consider providing default implementation
-/** @type{KeyFetchFunction} */
+/** @type {KeyFetchFunction} */
 let getKey;
 
 /**

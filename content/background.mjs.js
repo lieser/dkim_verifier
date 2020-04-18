@@ -9,7 +9,6 @@
 
 // @ts-check
 ///<reference path="../WebExtensions.d.ts" />
-
 /* eslint-env browser, webextensions */
 
 import { DKIM_InternalError, DKIM_SigError } from "../modules/error.mjs.js";
@@ -20,6 +19,8 @@ import { setKeyFetchFunction } from "../modules/dkim/verifier.mjs.js";
 Logging.setLogLevel(Logging.Level.Debug);
 const log = Logging.getLogger("background");
 
+// eslint-disable-next-line valid-jsdoc
+/** @type {import("../modules/dkim/verifier.mjs.js").KeyFetchFunction} */
 async function getKey(sdid, selector) {
 	const RCODE = {
 		NoError: 0, // No Error [RFC1035]

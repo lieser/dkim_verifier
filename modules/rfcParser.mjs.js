@@ -42,7 +42,7 @@ export default class RfcParser {
 		}
 
 		const array = str.split(";");
-		/** @type{Map<String, String>} */
+		/** @type {Map<String, String>} */
 		const map = new Map();
 		for (const elem of array) {
 			// get tag name and value

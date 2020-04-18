@@ -12,6 +12,7 @@
 */
 
 // @ts-check
+///<reference path="./logging.d.ts" />
 /* eslint-env browser */
 /* eslint no-use-before-define: ["error", { "classes": false }] */
 /* eslint-disable no-empty-function */
@@ -99,13 +100,14 @@ export default class Logging {
 	 *
 	 * @static
 	 * @param {string|void} loggerName
-	 * @returns {Logger} Logger
+	 * @returns {LoggerI} Logger
 	 * @memberof Logging
 	 */
 	static getLogger(loggerName) {
 		const name = loggerName ? `${LOG_NAME}.${loggerName}` : `${LOG_NAME}`;
 		const logger = new Logger(name);
 		Logging._loggers.push(logger);
+		// @ts-ignore
 		return logger;
 	}
 
@@ -129,5 +131,5 @@ export default class Logging {
 	}
 }
 Logging._logLevel = Logging.Level.Error;
-/** @type{Logger[]} */
+/** @type {Logger[]} */
 Logging._loggers = [];
