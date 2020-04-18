@@ -58,10 +58,10 @@ async function getKey(sdid, selector) {
 
 setKeyFetchFunction(getKey);
 
-browser.messageDisplay.onMessageDisplayed.addListener(async (tabId, message) => {
+browser.messageDisplay.onMessageDisplayed.addListener(async (tab, message) => {
 	const rawMessage = await browser.messages.getRaw(message.id);
 	const verifier = new AuthVerifier();
 	const res = await verifier.verify(rawMessage);
 	const warnings = res.dkim[0].warnings_str || [];
-	await browser.dkimHeader.setDkimHeaderResult(tabId, res.dkim[0].result_str, warnings);
+	await browser.dkimHeader.setDkimHeaderResult(tab.id, res.dkim[0].result_str, warnings);
 });

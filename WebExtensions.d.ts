@@ -33,7 +33,7 @@ declare module browser {
             tags: string[],
         }
 
-        const onMessageDisplayed: Event<(tabId: number, message: MessageHeader) => void>,
+        const onMessageDisplayed: Event<(tabId: { id: number, windowID: number }, message: MessageHeader) => void>,
     }
 
     declare module windows {
