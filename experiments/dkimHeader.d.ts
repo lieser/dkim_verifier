@@ -11,3 +11,9 @@ interface DKIMTooltipElement extends XULElement {
     _value: XULElement|void
     _warningsBox: XULElement
 }
+
+declare module browser {
+    declare module dkimHeader {
+        const setDkimHeaderResult: (tabId: number, result: string, warnings: string[]) => void;
+    }
+}

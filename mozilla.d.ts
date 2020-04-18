@@ -46,6 +46,12 @@ declare module ExtensionCommon {
     interface Extension {
         callOnClose(obj: object): void;
         readonly id: string;
+        readonly localeData: {
+            localizeMessage: (
+                messageName: string,
+                substitutions?: undefined | string | (string | string[])[]
+            ) => string
+        };
         readonly rootURI: nsIURI;
     }
 
@@ -56,6 +62,16 @@ declare module ExtensionCommon {
     interface Context {
         readonly extension: Extension;
     }
+}
+
+declare module ExtensionSupportM {
+    const registerWindowListener: (
+        id: string,
+        listener: { chromeURLs: string[], onLoadWindow: (window: Window) => void }
+    ) => void;
+    const unregisterWindowListener: (id: string) => void;
+
+    const openWindows: Window[];
 }
 
 /** JavaScript code module "resource://gre/modules/FileUtils.jsm" */

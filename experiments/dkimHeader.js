@@ -16,6 +16,7 @@
 "use strict";
 
 const { ExtensionParent } = ChromeUtils.import("resource://gre/modules/ExtensionParent.jsm");
+/** @type {{ExtensionSupport: ExtensionSupportM}} */
 const { ExtensionSupport } = ChromeUtils.import("resource:///modules/ExtensionSupport.jsm");
 
 /**
@@ -38,7 +39,7 @@ class DKIMTooltip {
 			this.element = element;
 			return;
 		}
-		/** @type{DKIMTooltipElement} */
+		/** @type {DKIMTooltipElement} */
 		// @ts-ignore
 		this.element = document.createXULElement("tooltip");
 
@@ -172,7 +173,7 @@ class DKIMHeaderField {
 			this._dkimWarningTooltip = new DKIMWarningsTooltip(document, this.element._dkimWarningTooltip);
 			return;
 		}
-		/** @type{DKIMHeaderFieldElement} */
+		/** @type {DKIMHeaderFieldElement} */
 		// @ts-ignore
 		this.element = document.createXULElement("hbox");
 
@@ -316,7 +317,7 @@ class DKIMHeaderField {
 	}
 
 	reset() {
-		this.value = "Validating…";
+		this.value = DKIMHeaderField.resetValue;
 		this.warnings = [];
 		this.spfValue = "";
 		this.dmarcValue = "";
@@ -339,6 +340,7 @@ class DKIMHeaderField {
 		return new DKIMHeaderField(document, element);
 	}
 }
+DKIMHeaderField.resetValue = "Validating…";
 DKIMHeaderField._id = "expandedDkim-verifierBox";
 
 /**
@@ -463,13 +465,14 @@ this.dkimHeader = class extends ExtensionCommon.ExtensionAPI {
 	 */
 	constructor(extension) {
 		super(extension);
-		this.extension = extension;
 
 		this.id = `${extension.id}|dkimHeader`;
 		this.windowURLs = [
 			"chrome://messenger/content/messenger.xhtml",
 			"chrome://messenger/content/messageWindow.xhtml",
 		];
+
+		DKIMHeaderField.resetValue = extension.localeData.localizeMessage("loading");
 
 		extension.callOnClose(this);
 		this.open();
@@ -526,7 +529,7 @@ this.dkimHeader = class extends ExtensionCommon.ExtensionAPI {
 
 	/**
 	 * @param {ExtensionCommon.Context} context
-	 * @returns {{}}
+	 * @returns {{dkimHeader: browser.dkimHeader}}
 	 */
 	// eslint-disable-next-line no-unused-vars
 	getAPI(context) {
