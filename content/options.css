@@ -1,0 +1,80 @@
+body {
+	display: grid;
+	grid-template-columns: 240px 1fr;
+	grid-template-rows: 100vh;
+}
+
+nav.nav-main {
+	background-color: var(--in-content-categories-background);
+	padding-top: 54px;
+}
+
+nav.nav-main>div[pane] {
+	display: flex;
+	align-items: center;
+	min-height: 40px;
+	margin-inline-start: 34px;
+	border-left: 4px solid transparent;
+	padding: 5px 10px;
+	padding-inline-start: 19px;
+}
+
+nav.nav-main>div[pane][selected] {
+	color: var(--in-content-category-text-selected);
+	border-left-color: var(--in-content-border-highlight)
+}
+
+nav.nav-main>div[pane]:hover {
+	background-color: var(--in-content-category-background-selected-hover);
+}
+
+nav.nav-section {
+	display: flex;
+	margin-bottom: 15px;
+	border-top: 1px solid var(--in-content-box-border-color);
+	border-bottom: 1px solid var(--in-content-box-border-color);
+}
+
+nav.nav-section>div[pane] {
+	display: flex;
+	align-items: center;
+	min-height: 40px;
+	border-bottom: 4px solid transparent;
+	padding: 4px 20px 0;
+}
+
+nav.nav-section>div[pane][selected] {
+	background-color: var(--in-content-box-background-hover);
+	border-bottom-color: var(--in-content-border-highlight);
+}
+
+nav.nav-section>div[pane]:hover {
+	background-color: var(--in-content-box-background-hover);
+}
+
+main {
+	padding: 40px 28px;
+}
+
+label.checkbox {
+	display: flex;
+	align-items: center;
+	margin: 2px 0;
+	padding: 1px 0;
+}
+
+.colorGrid {
+	display: grid;
+	grid-template-columns: max-content auto;
+	align-items: center;
+}
+
+.colorGridHeader {
+	justify-self: end;
+	margin-inline-end: 4px;
+	font-weight: bold;
+}
+
+fieldset:disabled label {
+	opacity: 0.5;
+}

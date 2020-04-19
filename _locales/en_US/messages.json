@@ -282,5 +282,246 @@
 	},
 	"INCOMPLETE_RESPONSE": {
 		"message": "Incomplete response from $1."
+	},
+	// ==================== Options window ====================
+	"options_prefwindow.title": {
+		"message": "DKIM Verifier Options"
+	},
+	// -------------------- General options --------------------
+	"options_general": {
+		"message": "General"
+	},
+	// ---------- General options tab ----------
+	"options_general.general": {
+		"message": "General"
+	},
+	"options_dkim.enable": {
+		"message": "Verify DKIM signatures"
+	},
+	"options_key.storing.value.0": {
+		"message": "Don't store DKIM keys"
+	},
+	"options_key.storing.value.1": {
+		"message": "Store DKIM keys"
+	},
+	"options_key.storing.value.2": {
+		"message": "Store and compare DKIM keys with the current key"
+	},
+	"options_key.viewKeys": {
+		"message": "DKIM keys"
+	},
+	"options_saveResult": {
+		"message": "Save result of the verification"
+	},
+	// ---------- DNS options tab ----------
+	"options_dns": {
+		"message": "DNS"
+	},
+	"options_dns.resolver": {
+		"message": "Resolver"
+	},
+	"options_dns.resolver.value.1": {
+		"message": "JavaScript DNS library"
+	},
+	"options_dns.resolver.value.2": {
+		"message": "libunbound"
+	},
+	"options_dns.getNameserversFromOS": {
+		"message": "Get DNS servers from OS configuration"
+	},
+	"options_dns.nameserver": {
+		"message": "DNS servers (Syntax (EBNF): host[\":\"port]{\";\"host[\":\"port]} )"
+	},
+	"options_dns.timeout_connect": {
+		"message": "DNS connect timeout (in seconds)"
+	},
+	"options_dns.proxy.enable": {
+		"message": "Use a Proxy to connect to the DNS servers"
+	},
+	"options_dns.proxy.type": {
+		"message": "Proxy type:"
+	},
+	"options_dns.proxy.host": {
+		"message": "Proxy server:"
+	},
+	"options_dns.proxy.port": {
+		"message": "Port:"
+	},
+	"options_dns.libunbound.path": {
+		"message": "Path"
+	},
+	"options_dns.libunbound.path.relToProfileDir": {
+		"message": "Path relative to profile directory"
+	},
+	// ---------- Policy options tab ----------
+	"options_general.policy": {
+		"message": "Policy"
+	},
+	"options_policy.signRules.enable": {
+		"message": "Check if e-mail should be signed"
+	},
+	"options_policy.signRules.checkDefaultRules": {
+		"message": "Use default rules"
+	},
+	"options_policy.signRules.autoAddRule": {
+		"message": "Automatically add rules based on viewed DKIM signed e-mails"
+	},
+	"options_policy.signRules.autoAddRule.onlyIfFromAddressInSDID": {
+		"message": "Only if the From address is in the SDID"
+	},
+	"options_policy.signRules.autoAddRule.for.value.0": {
+		"message": "for From address"
+	},
+	"options_policy.signRules.autoAddRule.for.value.1": {
+		"message": "for subdomain"
+	},
+	"options_policy.signRules.autoAddRule.for.value.2": {
+		"message": "for base domain"
+	},
+	"options_policy.signRules.sdid.allowSubDomains": {
+		"message": "Allow also subdomains of the SDIDs"
+	},
+	"options_error.policy.wrong_sdid.asWarning": {
+		"message": "Treat wrong SDID as a warning instead of an error"
+	},
+	"options_viewSigners": {
+		"message": "Signers rules"
+	},
+	"options_viewSignerDefaults": {
+		"message": "Default signers rules"
+	},
+	"options_policy.DMARC.shouldBeSigned.enable": {
+		"message": "Use DMARC to heuristically determine if an e-mail should be signed"
+	},
+	// -------------------- Display options --------------------
+	"options_display": {
+		"message": "Display"
+	},
+	"options_showDKIMHeader": {
+		"message": "Show DKIM header"
+	},
+	"options_showDKIMStatusbarpanel": {
+		"message": "Show DKIM status bar"
+	},
+	"options_showDKIMFromTooltip": {
+		"message": "Show DKIM tooltip for From header"
+	},
+	"options_showDKIM.value.0": {
+		"message": "never"
+	},
+	"options_showDKIM.value.10": {
+		"message": "when an e-mail with a valid DKIM signature is viewed"
+	},
+	"options_showDKIM.value.30": {
+		"message": "when an e-mail with a DKIM signature is viewed"
+	},
+	"options_showDKIM.value.40": {
+		"message": "when an e-mail is viewed"
+	},
+	"options_showDKIM.value.50": {
+		"message": "when a message is viewed"
+	},
+	"options_statusbarpanel.result.style.value.1": {
+		"message": "Show text"
+	},
+	"options_statusbarpanel.result.style.value.2": {
+		"message": "Show icon"
+	},
+	"options_colorFrom": {
+		"message": "Enable highlighting of From header"
+	},
+	"options_color": {
+		"message": "Color"
+	},
+	"options_color.text": {
+		"message": "Text:"
+	},
+	"options_color.background": {
+		"message": "Background:"
+	},
+	"options_color.success": {
+		"message": "Valid signature"
+	},
+	"options_color.warning": {
+		"message": "Valid signature with warnings"
+	},
+	"options_color.permfail": {
+		"message": "Invalid signature"
+	},
+	"options_color.tempfail": {
+		"message": "Temporary error"
+	},
+	"options_color.nosig": {
+		"message": "Unsigned e-mail"
+	},
+	"options_display.favicon.show": {
+		"message": "Show the favicon of known signing domains before the From address"
+	},
+	// -------------------- Advanced options --------------------
+	"options_advanced": {
+		"message": "Advanced"
+	},
+	"options_debug": {
+		"message": "Enable debugging (Outputs errors and debug info in the Error Console)"
+	},
+	"options_error.detailedReasons": {
+		"message": "Show detailed error reasons"
+	},
+	"options_error.key_testmode.ignore": {
+		"message": "Still verify the signature, if a domain is only testing DKIM"
+	},
+	"options_error.illformed_i.treatAs": {
+		"message": "Treat ill-formed AUID tag as"
+	},
+	"options_error.illformed_s.treatAs": {
+		"message": "Treat ill-formed selector tag as"
+	},
+	"options_error.policy.key_insecure.treatAs": {
+		"message": "Treat DKIM key not secured by DNSSEC as"
+	},
+	"options_error.algorithm.sign.rsa-sha1.treatAs": {
+		"message": "Treat RSA-SHA1 sign algorithm as"
+	},
+	"options_error.algorithm.rsa.weakKeyLength.treatAs": {
+		"message": "Treat weak RSA keys (&lt;2048 bits) as"
+	},
+	"options_error.treatAs.value.0": {
+		"message": "error"
+	},
+	"options_error.treatAs.value.1": {
+		"message": "warning"
+	},
+	"options_error.treatAs.value.2": {
+		"message": "nothing"
+	},
+	"options_display.keySecure": {
+		"message": "Indicate successful DNSSEC validation with a lock after the SDID"
+	},
+	"options_arh.read": {
+		"message": "Read Authentication-Results header"
+	},
+	"options_arh.replaceAddonResult": {
+		"message": "Reading the Authentication-Results header replaces the add-ons verification"
+	},
+	"options_arh.relaxedParsing": {
+		"message": "Try to read non RFC compliant Authentication-Results header"
+	},
+	"options_acc.dkim.enable": {
+		"message": "Verify DKIM signatures:"
+	},
+	"options_acc.arh.read": {
+		"message": "Read Authentication-Results header:"
+	},
+	"options_acc.arh.allowedAuthserv": {
+		"message": "Trusted authentication servers:"
+	},
+	"options_acc.boolean.value.0": {
+		"message": "Use default value"
+	},
+	"options_acc.boolean.value.1": {
+		"message": "Yes"
+	},
+	"options_acc.boolean.value.2": {
+		"message": "No"
 	}
 }

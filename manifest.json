@@ -18,6 +18,10 @@
 	"background": {
 		"page": "content/background.html"
 	},
+	"options_ui": {
+		"page": "content/options.html",
+		"open_in_tab": true
+	},
 	"icons": {
 		"32": "icon_32.png",
 		"64": "icon.png"

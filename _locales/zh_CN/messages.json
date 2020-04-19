@@ -282,5 +282,246 @@
 	},
 	"INCOMPLETE_RESPONSE": {
 		"message": "来自 $1 的响应不完整。"
+	},
+	// ==================== Options window ====================
+	"options_prefwindow.title": {
+		"message": "DKIM Verifier 选项"
+	},
+	// -------------------- General options --------------------
+	"options_general": {
+		"message": "常规"
+	},
+	// ---------- General options tab ----------
+	"options_general.general": {
+		"message": "常规"
+	},
+	"options_dkim.enable": {
+		"message": "验证 DKIM 签名"
+	},
+	"options_key.storing.value.0": {
+		"message": "不要存储 DKIM 密钥"
+	},
+	"options_key.storing.value.1": {
+		"message": "存储 DKIM 密钥"
+	},
+	"options_key.storing.value.2": {
+		"message": "存储 DKIM 密钥并与当前密钥比较"
+	},
+	"options_key.viewKeys": {
+		"message": "DKIM 密钥"
+	},
+	"options_saveResult": {
+		"message": "保存验证结果"
+	},
+	// ---------- DNS options tab ----------
+	"options_dns": {
+		"message": "DNS"
+	},
+	"options_dns.resolver": {
+		"message": "解析"
+	},
+	"options_dns.resolver.value.1": {
+		"message": "JavaScript DNS 软件库"
+	},
+	"options_dns.resolver.value.2": {
+		"message": "libunbound"
+	},
+	"options_dns.getNameserversFromOS": {
+		"message": "从操作系统的配置获取 DNS 名称服务器"
+	},
+	"options_dns.nameserver": {
+		"message": "DNS 名称服务器 (语法 (EBNF): host[\":\"port]{\";\"host[\":\"port]} )"
+	},
+	"options_dns.timeout_connect": {
+		"message": "DNS 连接超时 (秒)"
+	},
+	"options_dns.proxy.enable": {
+		"message": "使用代理服务器连接 DNS 服务器"
+	},
+	"options_dns.proxy.type": {
+		"message": "代理类型:"
+	},
+	"options_dns.proxy.host": {
+		"message": "代理服务器:"
+	},
+	"options_dns.proxy.port": {
+		"message": "端口:"
+	},
+	"options_dns.libunbound.path": {
+		"message": "路径"
+	},
+	"options_dns.libunbound.path.relToProfileDir": {
+		"message": "配置文件目录的相对路径"
+	},
+	// ---------- Policy options tab ----------
+	"options_general.policy": {
+		"message": "策略"
+	},
+	"options_policy.signRules.enable": {
+		"message": "检查，如果邮件应该被签名"
+	},
+	"options_policy.signRules.checkDefaultRules": {
+		"message": "使用默认规则"
+	},
+	"options_policy.signRules.autoAddRule": {
+		"message": "自动基于见过的 DKIM 签名邮件添加规则"
+	},
+	"options_policy.signRules.autoAddRule.onlyIfFromAddressInSDID": {
+		"message": "仅当如果 From 地址在 SDID 中"
+	},
+	"options_policy.signRules.autoAddRule.for.value.0": {
+		"message": "对 From 地址"
+	},
+	"options_policy.signRules.autoAddRule.for.value.1": {
+		"message": "对子域"
+	},
+	"options_policy.signRules.autoAddRule.for.value.2": {
+		"message": "对基础域"
+	},
+	"options_policy.signRules.sdid.allowSubDomains": {
+		"message": "也允许 SDID 项的子域"
+	},
+	"options_error.policy.wrong_sdid.asWarning": {
+		"message": "将错误的 SDID 视作一个警告而不是错误"
+	},
+	"options_viewSigners": {
+		"message": "签名者规则"
+	},
+	"options_viewSignerDefaults": {
+		"message": "默认签名者规则"
+	},
+	"options_policy.DMARC.shouldBeSigned.enable": {
+		"message": "如果一个邮件应该被签名，使用 DMARC 来试探性地测定"
+	},
+	// -------------------- Display options --------------------
+	"options_display": {
+		"message": "显示"
+	},
+	"options_showDKIMHeader": {
+		"message": "显示 DKIM 头"
+	},
+	"options_showDKIMStatusbarpanel": {
+		"message": "显示 DKIM 状态栏"
+	},
+	"options_showDKIMFromTooltip": {
+		"message": "From 头显示 DKIM 工具提示"
+	},
+	"options_showDKIM.value.0": {
+		"message": "从不"
+	},
+	"options_showDKIM.value.10": {
+		"message": "当一封具有有效的 DKIM 签名的邮件被查看"
+	},
+	"options_showDKIM.value.30": {
+		"message": "当一封具有 DKIM 签名的邮件被查看"
+	},
+	"options_showDKIM.value.40": {
+		"message": "当一封邮件被查看"
+	},
+	"options_showDKIM.value.50": {
+		"message": "当一个消息被查看"
+	},
+	"options_statusbarpanel.result.style.value.1": {
+		"message": "显示文本"
+	},
+	"options_statusbarpanel.result.style.value.2": {
+		"message": "显示图标"
+	},
+	"options_colorFrom": {
+		"message": "启用 From 头高亮"
+	},
+	"options_color": {
+		"message": "颜色"
+	},
+	"options_color.text": {
+		"message": "文本:"
+	},
+	"options_color.background": {
+		"message": "背景色:"
+	},
+	"options_color.success": {
+		"message": "有效签名"
+	},
+	"options_color.warning": {
+		"message": "有效签名但有警告"
+	},
+	"options_color.permfail": {
+		"message": "无效签名"
+	},
+	"options_color.tempfail": {
+		"message": "暂时出错"
+	},
+	"options_color.nosig": {
+		"message": "未签名邮件"
+	},
+	"options_display.favicon.show": {
+		"message": "在发件人地址前显示已知签名域名的网站图标"
+	},
+	// -------------------- Advanced options --------------------
+	"options_advanced": {
+		"message": "高级"
+	},
+	"options_debug": {
+		"message": "启用调试（在错误控制台中输出错误和调试信息）"
+	},
+	"options_error.detailedReasons": {
+		"message": "Show detailed error reasons"
+	},
+	"options_error.key_testmode.ignore": {
+		"message": "如果一个域只是在测试 DKIM，仍然验证签名"
+	},
+	"options_error.illformed_i.treatAs": {
+		"message": "将格式不良的 AUID 标签视作"
+	},
+	"options_error.illformed_s.treatAs": {
+		"message": "将格式不良的选择器标签视作"
+	},
+	"options_error.policy.key_insecure.treatAs": {
+		"message": "将非 DNSSEC 的 DKIM 密钥视作"
+	},
+	"options_error.algorithm.sign.rsa-sha1.treatAs": {
+		"message": "将 RSA-SHA1 签名算法视作"
+	},
+	"options_error.algorithm.rsa.weakKeyLength.treatAs": {
+		"message": "将 RSA 弱密钥（小于 2048 位）视作"
+	},
+	"options_error.treatAs.value.0": {
+		"message": "错误"
+	},
+	"options_error.treatAs.value.1": {
+		"message": "警告"
+	},
+	"options_error.treatAs.value.2": {
+		"message": "无事"
+	},
+	"options_display.keySecure": {
+		"message": "在 SDID 后面用锁标识成功的 DNSSEC 验证"
+	},
+	"options_arh.read": {
+		"message": "阅读 Authentication-Results 报头"
+	},
+	"options_arh.replaceAddonResult": {
+		"message": "读取 Authentication-Results 头替换本附加组件的验证"
+	},
+	"options_arh.relaxedParsing": {
+		"message": "尝试读取非兼容 RFC 的 Authentication-Results 头"
+	},
+	"options_acc.dkim.enable": {
+		"message": "验证 DKIM 签名:"
+	},
+	"options_acc.arh.read": {
+		"message": "读取 Authentication-Results 头:"
+	},
+	"options_acc.arh.allowedAuthserv": {
+		"message": "信任的身份验证服务器:"
+	},
+	"options_acc.boolean.value.0": {
+		"message": "使用默认值"
+	},
+	"options_acc.boolean.value.1": {
+		"message": "是"
+	},
+	"options_acc.boolean.value.2": {
+		"message": "否"
 	}
 }

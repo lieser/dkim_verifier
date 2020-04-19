@@ -282,5 +282,246 @@
 	},
 	"INCOMPLETE_RESPONSE": {
 		"message": "Réponse incomplète de $1."
+	},
+	// ==================== Options window ====================
+	"options_prefwindow.title": {
+		"message": "Préférence du vérificateur DKIM"
+	},
+	// -------------------- General options --------------------
+	"options_general": {
+		"message": "Général"
+	},
+	// ---------- General options tab ----------
+	"options_general.general": {
+		"message": "Général"
+	},
+	"options_dkim.enable": {
+		"message": "Verification des signatures DKIM"
+	},
+	"options_key.storing.value.0": {
+		"message": "Ne pas stocker les clés DKIM"
+	},
+	"options_key.storing.value.1": {
+		"message": "Stocker les clés DKIM"
+	},
+	"options_key.storing.value.2": {
+		"message": "Stocker les clés DKIM et les comparer avec la clé actuelle"
+	},
+	"options_key.viewKeys": {
+		"message": "Clés DKIM"
+	},
+	"options_saveResult": {
+		"message": "Sauvegarder le résultat de la vérification"
+	},
+	// ---------- DNS options tab ----------
+	"options_dns": {
+		"message": "DNS"
+	},
+	"options_dns.resolver": {
+		"message": "Résolution"
+	},
+	"options_dns.resolver.value.1": {
+		"message": "Bibliothèque DNS en JavaScript"
+	},
+	"options_dns.resolver.value.2": {
+		"message": "libunbound"
+	},
+	"options_dns.getNameserversFromOS": {
+		"message": "Récupérer les serveurs de DNS depuis la configuration de l'OS"
+	},
+	"options_dns.nameserver": {
+		"message": "Nom de serveur DNS (Syntaxe (EBNF): host[\":\"port]{\";\"host[\":\"port]} )"
+	},
+	"options_dns.timeout_connect": {
+		"message": "Expiration de la connexion DNS (en secondes)"
+	},
+	"options_dns.proxy.enable": {
+		"message": "Utiliser un proxy pour se connecter au serveur DNS"
+	},
+	"options_dns.proxy.type": {
+		"message": "Type de proxy:"
+	},
+	"options_dns.proxy.host": {
+		"message": "Serveur proxy:"
+	},
+	"options_dns.proxy.port": {
+		"message": "Port:"
+	},
+	"options_dns.libunbound.path": {
+		"message": "Chemin"
+	},
+	"options_dns.libunbound.path.relToProfileDir": {
+		"message": "Chemin relatif vers le dossier de profile"
+	},
+	// ---------- Policy options tab ----------
+	"options_general.policy": {
+		"message": "Politique"
+	},
+	"options_policy.signRules.enable": {
+		"message": "Vérifier les courriels qui devraient être signés"
+	},
+	"options_policy.signRules.checkDefaultRules": {
+		"message": "Utiliser les règles par défauts"
+	},
+	"options_policy.signRules.autoAddRule": {
+		"message": "Ajouter automatiquement les règles en se basant sur l'aperçu des courriels signés par DKIM"
+	},
+	"options_policy.signRules.autoAddRule.onlyIfFromAddressInSDID": {
+		"message": "Seulement si l'adresse expédteur est dans le SDID"
+	},
+	"options_policy.signRules.autoAddRule.for.value.0": {
+		"message": "pour l'adresse expéditeur"
+	},
+	"options_policy.signRules.autoAddRule.for.value.1": {
+		"message": "pour le sous domaines"
+	},
+	"options_policy.signRules.autoAddRule.for.value.2": {
+		"message": "pour le domaine de base"
+	},
+	"options_policy.signRules.sdid.allowSubDomains": {
+		"message": "Autoriser également les sous domaines du SDID"
+	},
+	"options_error.policy.wrong_sdid.asWarning": {
+		"message": "Traiter un mauvais SDID comme un avertissement au lieu d'une erreur"
+	},
+	"options_viewSigners": {
+		"message": "Règles signataires"
+	},
+	"options_viewSignerDefaults": {
+		"message": "Règles signataires par défaut"
+	},
+	"options_policy.DMARC.shouldBeSigned.enable": {
+		"message": "Utiliser DMARC pour déterminer de façon précise si le mail doit être signé"
+	},
+	// -------------------- Display options --------------------
+	"options_display": {
+		"message": "Affichage"
+	},
+	"options_showDKIMHeader": {
+		"message": "Montrer l'entête DKIM"
+	},
+	"options_showDKIMStatusbarpanel": {
+		"message": "Montrer la signature DKIM dans la barre de status"
+	},
+	"options_showDKIMFromTooltip": {
+		"message": "Montrer l'infobulle DKIM dans l'expéditeur de l'entête"
+	},
+	"options_showDKIM.value.0": {
+		"message": "jamais"
+	},
+	"options_showDKIM.value.10": {
+		"message": "quand un courriel avec une signature DKIM valide est vu"
+	},
+	"options_showDKIM.value.30": {
+		"message": "quand un courriel avec une signature DKIM est vu"
+	},
+	"options_showDKIM.value.40": {
+		"message": "quand le courriel est vu"
+	},
+	"options_showDKIM.value.50": {
+		"message": "quand le message est vu"
+	},
+	"options_statusbarpanel.result.style.value.1": {
+		"message": "Montrer le texte"
+	},
+	"options_statusbarpanel.result.style.value.2": {
+		"message": "Montrer l'icône"
+	},
+	"options_colorFrom": {
+		"message": "Activer la coloration de l'expéditeur dans l'entête"
+	},
+	"options_color": {
+		"message": "Couleur"
+	},
+	"options_color.text": {
+		"message": "Texte:"
+	},
+	"options_color.background": {
+		"message": "Arrière plan:"
+	},
+	"options_color.success": {
+		"message": "Signature valide"
+	},
+	"options_color.warning": {
+		"message": "Signature valide avec avertissement"
+	},
+	"options_color.permfail": {
+		"message": "Signature non valide"
+	},
+	"options_color.tempfail": {
+		"message": "Erreur temporaire"
+	},
+	"options_color.nosig": {
+		"message": "Courriel non signé"
+	},
+	"options_display.favicon.show": {
+		"message": "Afficher l'icône des signatures de domaine connus avant l'adresse De"
+	},
+	// -------------------- Advanced options --------------------
+	"options_advanced": {
+		"message": "Avancés"
+	},
+	"options_debug": {
+		"message": "Activer le deboggage (Les sorties d'erreur et de debug seront dans la console d'erreur)"
+	},
+	"options_error.detailedReasons": {
+		"message": "Montrer la raison de l'erreur en détail"
+	},
+	"options_error.key_testmode.ignore": {
+		"message": "Toujours vérifier la signature, si le domaine teste seulement le DKIM"
+	},
+	"options_error.illformed_i.treatAs": {
+		"message": "Traiter l'étiquette AUID malformée comme"
+	},
+	"options_error.illformed_s.treatAs": {
+		"message": "Traiter l'étiquette du sélecteur malformée comme"
+	},
+	"options_error.policy.key_insecure.treatAs": {
+		"message": "Traiter une clé DKIM qui n'est pas signé par DNSSEC"
+	},
+	"options_error.algorithm.sign.rsa-sha1.treatAs": {
+		"message": "Traiter l'agorithme de signature rsa-sha1 comme"
+	},
+	"options_error.algorithm.rsa.weakKeyLength.treatAs": {
+		"message": "Traitez les clés RSA faibles (&lt;2048 bits) comme"
+	},
+	"options_error.treatAs.value.0": {
+		"message": "erreur"
+	},
+	"options_error.treatAs.value.1": {
+		"message": "avertissement"
+	},
+	"options_error.treatAs.value.2": {
+		"message": "rien"
+	},
+	"options_display.keySecure": {
+		"message": "Indiquez le succès de la validation DNSSEC avec un verrou après le SSID"
+	},
+	"options_arh.read": {
+		"message": "Lecture du résultat de l'authentification de l'entête"
+	},
+	"options_arh.replaceAddonResult": {
+		"message": "Lecture de l'en-tête Authentication-Results pour remplacer la vérification des add-ons"
+	},
+	"options_arh.relaxedParsing": {
+		"message": "Essayer de lire une entête Authentication-Results non conforme à la RFC"
+	},
+	"options_acc.dkim.enable": {
+		"message": "Vérifier les signatures DKIM:"
+	},
+	"options_acc.arh.read": {
+		"message": "Lecture de l'entête du résultat de l'authentification:"
+	},
+	"options_acc.arh.allowedAuthserv": {
+		"message": "Serveurs d'authentification vérifiés:"
+	},
+	"options_acc.boolean.value.0": {
+		"message": "Utiliser les valeurs par défaut"
+	},
+	"options_acc.boolean.value.1": {
+		"message": "Oui"
+	},
+	"options_acc.boolean.value.2": {
+		"message": "Non"
 	}
 }
