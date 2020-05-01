@@ -32,8 +32,8 @@ import {DKIM_InternalError, DKIM_SigError} from "../error.mjs.js";
 import {addrIsInDomain2, domainIsInDomain, stringEndsWith, stringEqual} from "../utils.mjs.js";
 import DkimCrypto from "./crypto.mjs.js";
 import Logging from "../logging.mjs.js";
-import Preferences from "../preferences.mjs.js";
 import RfcParser from "../rfcParser.mjs.js";
+import prefs from "../preferences.mjs.js";
 
 // TODO: move policy checking out of the verifier module
 class DummyPolicy {
@@ -109,7 +109,6 @@ const Policy = new DummyPolicy();
  */
 
 const log = Logging.getLogger("Verifier");
-const prefs = new Preferences().error;
 
 
 // Pattern for hyphenated-word as specified in Section 2.10 of RFC 6376
@@ -228,7 +227,7 @@ export function setKeyFetchFunction(keyFetchFunction) {
 			DKIMSignature.a_sig = algorithmTag[1];
 			DKIMSignature.a_hash = algorithmTag[2];
 		} else if (algorithmTag[0] === "rsa-sha1") {
-			switch (prefs.algorithm.sign["rsa-sha1"].treatAs) {
+			switch (prefs["error.algorithm.sign.rsa-sha1.treatAs"]) {
 				case 0: // error
 					throw new DKIM_SigError("DKIM_SIGERROR_INSECURE_A");
 				case 1: // warning
@@ -380,7 +379,7 @@ export function setKeyFetchFunction(keyFetchFunction) {
 			if (exception instanceof DKIM_SigError &&
 				exception.errorType === "DKIM_SIGERROR_ILLFORMED_I")
 			{
-				switch (prefs.illformed_i.treatAs) {
+				switch (prefs["error.illformed_i.treatAs"]) {
 					case 0: // error
 						throw exception;
 					case 1: // warning
@@ -436,7 +435,7 @@ export function setKeyFetchFunction(keyFetchFunction) {
 				// try to parse selector in a more relaxed way
 				const sub_domain_ = "(?:[A-Za-z0-9_](?:[A-Za-z0-9_-]*[A-Za-z0-9_])?)";
 				SelectorTag = RfcParser.parseTagValue(tagMap, "s", `${sub_domain_}(?:\\.${sub_domain_})*`);
-				switch (prefs.illformed_s.treatAs) {
+				switch (prefs["error.illformed_s.treatAs"]) {
 					case 0: // error
 						throw exception;
 					case 1: // warning
@@ -855,7 +854,7 @@ export function setKeyFetchFunction(keyFetchFunction) {
 
 		// if key is not signed by DNSSEC
 		if (!DKIMSignature.keyQueryResult.secure) {
-			switch (prefs.policy.key_insecure.treatAs) {
+			switch (prefs["error.policy.key_insecure.treatAs"]) {
 				case 0: // error
 					throw new DKIM_SigError("DKIM_POLICYERROR_KEY_INSECURE");
 				case 1: // warning
@@ -874,7 +873,7 @@ export function setKeyFetchFunction(keyFetchFunction) {
 
 		// check that the testing flag is not set
 		if (DKIMSignature.DKIMKey.t_array.indexOf("y") !== -1) {
-			if (prefs.key_testmode.ignore) {
+			if (prefs["error.key_testmode.ignore"]) {
 				DKIMSignature.warnings.push({name: "DKIM_SIGERROR_KEY_TESTMODE"});
 				log.debug("Warning: DKIM_SIGERROR_KEY_TESTMODE");
 			} else {
@@ -909,7 +908,7 @@ export function setKeyFetchFunction(keyFetchFunction) {
 			headerHashInput
 		);
 		if (!isValid) {
-			if (prefs.contentTypeCharsetAddedQuotes.treatAs > 0) {
+			if (prefs["error.contentTypeCharsetAddedQuotes.treatAs"] > 0) {
 				log.debug("Try with removed quotes in Content-Type charset.");
 				msg.headerFields.get("content-type")[0] =
 					msg.headerFields.get("content-type")[0].
@@ -926,7 +925,7 @@ export function setKeyFetchFunction(keyFetchFunction) {
 				);
 				if (!isValid) {
 					throw new DKIM_SigError("DKIM_SIGERROR_BADSIG");
-				} else if (prefs.contentTypeCharsetAddedQuotes.treatAs === 1) {
+				} else if (prefs["error.contentTypeCharsetAddedQuotes.treatAs"] === 1) {
 					DKIMSignature.warnings.push({name: "DKIM_SIGERROR_CONTENT_TYPE_CHARSET_ADDED_QUOTES"});
 					log.debug("Warning: DKIM_SIGERROR_CONTENT_TYPE_CHARSET_ADDED_QUOTES");
 				}
@@ -942,7 +941,7 @@ export function setKeyFetchFunction(keyFetchFunction) {
 		} else if (keyLength < 2048) {
 			// weak key
 			log.debug(`rsa key size: ${keyLength}`);
-			switch (prefs.algorithm.rsa.weakKeyLength.treatAs) {
+			switch (prefs["error.algorithm.rsa.weakKeyLength.treatAs"]) {
 				case 0: // error
 					throw new DKIM_SigError("DKIM_SIGWARNING_KEY_IS_WEAK");
 				case 1: // warning
@@ -1071,6 +1070,7 @@ export default class Verifier {
 	 */
 	verify(msg) {
 		const promise = (async () => {
+			await prefs.init();
 			const res = {
 				version: "2.0",
 				signatures: await processSignatures(msg),

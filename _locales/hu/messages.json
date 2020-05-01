@@ -381,7 +381,7 @@
 	"options_policy.signRules.sdid.allowSubDomains": {
 		"message": "SDID-altartományok engedélyezése"
 	},
-	"options_error.policy.wrong_sdid.asWarning": {
+	"options_policy.signRules.error.wrong_sdid.asWarning": {
 		"message": "A helytelen SDID-t figyelmeztetésként kezelje, nem hibaként"
 	},
 	"options_viewSigners": {

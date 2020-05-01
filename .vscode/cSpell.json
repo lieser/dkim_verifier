@@ -17,6 +17,7 @@
         "DKIM",
         "DMARC",
         "dnssec",
+        "endregion",
         "esversion",
         "favicons",
         "googlecode",

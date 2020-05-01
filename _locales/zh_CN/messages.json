@@ -381,7 +381,7 @@
 	"options_policy.signRules.sdid.allowSubDomains": {
 		"message": "也允许 SDID 项的子域"
 	},
-	"options_error.policy.wrong_sdid.asWarning": {
+	"options_policy.signRules.error.wrong_sdid.asWarning": {
 		"message": "将错误的 SDID 视作一个警告而不是错误"
 	},
 	"options_viewSigners": {

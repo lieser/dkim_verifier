@@ -14,10 +14,22 @@
 import { DKIM_InternalError, DKIM_SigError } from "../modules/error.mjs.js";
 import AuthVerifier from "../modules/AuthVerifier.mjs.js";
 import Logging from "../modules/logging.mjs.js";
+import prefs from "../modules/preferences.mjs.js";
 import { setKeyFetchFunction } from "../modules/dkim/verifier.mjs.js";
 
-Logging.setLogLevel(Logging.Level.Debug);
 const log = Logging.getLogger("background");
+(async () => {
+	await prefs.init();
+	if (prefs.debug) {
+		/** @type {number|undefined} */
+		// @ts-ignore
+		let logLevel = Logging.Level[prefs["logging.console"]];
+		if (!logLevel) {
+			logLevel = Logging.Level.Debug;
+		}
+		Logging.setLogLevel(logLevel);
+	}
+})().catch(error => log.fatal("Setting debug log level failed with:", error));
 
 // eslint-disable-next-line valid-jsdoc
 /** @type {import("../modules/dkim/verifier.mjs.js").KeyFetchFunction} */
@@ -33,7 +45,6 @@ async function getKey(sdid, selector) {
 
 	const dnsRes = await browser.jsdns.txt(`${selector}._domainkey.${sdid}`);
 
-
 	if (dnsRes.bogus) {
 		throw new DKIM_InternalError(null, "DKIM_DNSERROR_DNSSEC_BOGUS");
 	}
@@ -45,8 +56,6 @@ async function getKey(sdid, selector) {
 	if (dnsRes.data === null || dnsRes.data[0] === "") {
 		throw new DKIM_SigError("DKIM_SIGERROR_NOKEY");
 	}
-	console.log("dd");
-
 
 	if (!dnsRes.data) {
 		throw new DKIM_SigError("DKIM_SIGERROR_NOKEY");

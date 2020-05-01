@@ -11,6 +11,7 @@
 /* eslint no-unused-vars: ["error", { "varsIgnorePattern": "VerifierModule" }]*/
 
 import "../helpers/fetchKey.mjs.js";
+import "../helpers/initWebExtensions.mjs.js";
 import Verifier, * as VerifierModule from "../../modules/dkim/verifier.mjs.js";
 import MsgParser from "../../modules/msgParser.mjs.js";
 import expect from "../helpers/chaiUtils.mjs.js";

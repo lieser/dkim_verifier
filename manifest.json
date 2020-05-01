@@ -13,7 +13,8 @@
 		}
 	},
 	"permissions": [
-		"messagesRead"
+		"messagesRead",
+		"storage"
 	],
 	"background": {
 		"page": "content/background.html"

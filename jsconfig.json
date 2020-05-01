@@ -9,6 +9,9 @@
         "strict": true,
         "isolatedModules": true,
         "checkJs": true,
+        "moduleResolution": "node"
     },
-    "exclude": []
+    "exclude": [
+        "node_modules"
+    ]
 }

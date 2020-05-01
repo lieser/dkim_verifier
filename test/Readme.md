@@ -4,6 +4,11 @@ The unit test are written with [Mocha](https://mochajs.org/) and [Chai](https://
 
 ## Running unit tests in a browser
 
+> **Note**:
+> The unit test do currently not have a fake implementation of the storage API.
+> Instead they use a preference implementation that differs from the one
+> actually used in the add-on.
+
 Because of *CORS* opening the runner html page directly from the file system does not work.
 A HTTP server is needed instead.
 
@@ -22,6 +27,11 @@ node node_modules/http-server/bin/http-server .
 
 ## Running unit test in Node
 
+> **Note**:
+> As the Web Crypto API is not available in Node,
+> the crypto implementation used differs from the one
+> actually used in the add-on.
+
 ```PowerShell
 # Install dependencies
 npm install --save-dev mocha
@@ -30,7 +40,9 @@ npm install --save-dev chai
 # https://github.com/mochajs/mocha/pull/4038
 npm install --save-dev esm
 
+npm install --save-dev sinon
+npm install --save-dev webextensions-api-fake
+
 # Run tests
-node node_modules/jasmine/bin/jasmine
-node node_modules/mocha/bin/mocha --recursive
+node node_modules/mocha/bin/mocha --recursive --reporter dot
 ```

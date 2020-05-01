@@ -381,7 +381,7 @@
 	"options_policy.signRules.sdid.allowSubDomains": {
 		"message": "SDID のサブドメインも許容"
 	},
-	"options_error.policy.wrong_sdid.asWarning": {
+	"options_policy.signRules.error.wrong_sdid.asWarning": {
 		"message": "正しくない SDID をエラーではなく警告として扱う"
 	},
 	"options_viewSigners": {

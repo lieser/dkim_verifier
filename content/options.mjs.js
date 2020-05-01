@@ -10,6 +10,11 @@
 // @ts-check
 /* eslint-env browser */
 
+import Logging from "../modules/logging.mjs.js";
+import prefs from "../modules/preferences.mjs.js";
+
+const log = Logging.getLogger("Options");
+
 /**
  * Set the active pane to the given navigation selector
  *
@@ -54,8 +59,10 @@ function setNavigation(navSelector) {
 
 /**
  * Add navigation logic to <nav> elements and initialize navigation.
+ *
+ * @returns {void}
  */
-document.addEventListener("DOMContentLoaded", () => {
+function initNavigation() {
 	const navElements = Array.from(document.querySelectorAll("nav"));
 	for (const navElement of navElements) {
 		/** @type {HTMLElement[]} */
@@ -69,4 +76,98 @@ document.addEventListener("DOMContentLoaded", () => {
 			};
 		}
 	}
+}
+
+/**
+ * React to a change event on an HTML element representing a preference.
+ *
+ * @param {Event} event
+ * @returns {void}
+ */
+function preferenceChanged(event) {
+	try {
+		const target = event.target;
+		if (!(target instanceof HTMLElement)) {
+			log.warn("Received unexpected change event for non HTML element", event);
+			return;
+		}
+		const prefName = target.dataset.pref;
+		if (!prefName) {
+			log.warn("Received unexpected change event for element without data-pref attribute", event);
+			return;
+		}
+		if (target instanceof HTMLInputElement) {
+			if (target.getAttribute("type") === "checkbox") {
+				prefs.setValue(prefName, target.checked);
+			} else if (target.getAttribute("type") === "text" ||
+				target.dataset.prefType === "string"
+			) {
+				prefs.setValue(prefName, target.value);
+			} else if (target.getAttribute("type") === "number") {
+				prefs.setValue(prefName, parseInt(target.value, 10));
+			} else {
+				log.error("Received change event for input element without unexpected type", event);
+			}
+		} else if (target instanceof HTMLSelectElement) {
+			if (target.dataset.prefType === "string") {
+				prefs.setValue(prefName, target.value);
+			} else {
+				prefs.setValue(prefName, parseInt(target.value, 10));
+			}
+		} else {
+			log.error("Received change event for unexpected element", event);
+		}
+	} catch (e) {
+		log.fatal("Unexpected error in preferenceChanged():", e);
+	}
+}
+
+/**
+ * Initialize logic for preferences.
+ *
+ * @returns {Promise<void>}
+ */
+async function initPreferences() {
+	await prefs.init();
+
+	// set prefs to initial value
+	/** @type {HTMLElement[]} */
+	const prefElements = Array.from(document.querySelectorAll("[data-pref]"));
+	for (const element of prefElements) {
+		const prefName = element.dataset.pref;
+		if (!prefName) {
+			log.error("Preference element has unexpected data-pref attribute", element);
+			continue;
+		}
+		if (element instanceof HTMLInputElement) {
+			if (element.getAttribute("type") === "checkbox") {
+				element.checked = prefs.getBool(prefName);
+			} else if (element.getAttribute("type") === "text" ||
+				element.dataset.prefType === "string"
+			) {
+				element.value = prefs.getString(prefName);
+			} else if (element.getAttribute("type") === "number") {
+				element.value = prefs.getNumber(prefName).toString();
+			} else {
+				log.error("Input element has unexpected type", element);
+			}
+		} else if (element instanceof HTMLSelectElement) {
+			if (element.dataset.prefType === "string") {
+				element.value = prefs.getString(prefName);
+			} else {
+				element.value = prefs.getNumber(prefName).toString();
+			}
+		} else {
+			log.error("Unexpected preference element", element);
+		}
+	}
+
+	// listening to changes
+	document.body.addEventListener("change", preferenceChanged);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+	initNavigation();
+	initPreferences().
+		catch(e => log.fatal("Unexpected error in initPreferences():", e));
 });

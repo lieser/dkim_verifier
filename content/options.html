@@ -82,7 +82,7 @@
         <fieldset disabled="disabled">
           <div>
             <label class="proxyConfig" data-i18n="options_dns.proxy.type"></label>
-            <select class="proxyConfig" data-pref="dns.proxy.type">
+            <select class="proxyConfig" data-pref="dns.proxy.type" data-pref-type="string">
               <option value="socks">SOCKS v5</option>
               <option value="socks4">SOCKS v4</option>
             </select>
@@ -91,7 +91,7 @@
             <label data-i18n="options_dns.proxy.host"></label>
             <input type="text" data-pref="dns.proxy.host">
             <label data-i18n="options_dns.proxy.port"></label>
-            <input type="number" data-pref="dns.proxy.port" size="10" min="0" max="65535">
+            <input type="number" data-pref="dns.proxy.port" data-pref-type="string" size="10" min="0" max="65535">
           </div>
         </fieldset>
       </fieldset>
@@ -103,7 +103,7 @@
           <input type="text" data-pref="dns.libunbound.path">
         </div>
         <label class="checkbox" data-i18n="options_dns.libunbound.path.relToProfileDir">
-          <input type="checkbox" data-pref="dns.libunbound.path.relToProfileDire">
+          <input type="checkbox" data-pref="dns.libunbound.path.relToProfileDir">
         </label>
       </fieldset>
     </section>
@@ -135,8 +135,8 @@
         <label class="checkbox" data-i18n="options_policy.signRules.sdid.allowSubDomains">
           <input type="checkbox" data-pref="policy.signRules.sdid.allowSubDomains">
         </label>
-        <label class="checkbox" data-i18n="options_error.policy.wrong_sdid.asWarning">
-          <input type="checkbox" data-pref="error.policy.wrong_sdid.asWarning">
+        <label class="checkbox" data-i18n="options_policy.signRules.error.wrong_sdid.asWarning">
+          <input type="checkbox" data-pref="policy.signRules.error.wrong_sdid.asWarning">
         </label>
         <label class="checkbox" data-i18n="options_policy.DMARC.shouldBeSigned.enable">
           <input type="checkbox" data-pref="policy.DMARC.shouldBeSigned.enable">

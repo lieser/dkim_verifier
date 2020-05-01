@@ -28,10 +28,9 @@ import { domainIsInDomain, getDomainFromAddr } from "./utils.mjs.js";
 import { DKIM_InternalError } from "./error.mjs.js";
 import Logging from "./logging.mjs.js";
 import MsgParser from "./msgParser.mjs.js";
-import Preferences from "./preferences.mjs.js";
+import prefs from "./preferences.mjs.js";
 
 const log = Logging.getLogger("AuthVerifier");
-const prefs = new Preferences();
 
 /**
  * @typedef {Object} AuthResult|AuthResultV2
@@ -91,6 +90,7 @@ export default class AuthVerifier {
 	 * @return {Promise<AuthResult>}
 	 */
 	async verify(rawMessage, messageId) {
+		await prefs.init();
 		// check for saved AuthResult
 		let savedAuthResult = loadAuthResult(messageId);
 		if (savedAuthResult) {
@@ -119,7 +119,7 @@ export default class AuthVerifier {
 		const arhResult = getARHResult(messageId, msg);
 
 		if (arhResult) {
-			if (prefs.arh.replaceAddonResult) {
+			if (prefs["arh.replaceAddonResult"]) {
 				savedAuthResult = arhResult;
 			} else {
 				savedAuthResult = {
@@ -144,10 +144,10 @@ export default class AuthVerifier {
 			let dkimEnable = false;
 			if (true || !msgHdr.folder) {
 				// message is external
-				dkimEnable = prefs.dkim.enable;
+				dkimEnable = prefs["dkim.enable"];
 			} else if (msgHdr.folder.server.getIntValue("dkim_verifier.dkim.enable") === PREF.ENABLE.DEFAULT) {
 				// account uses global default
-				dkimEnable = prefs.dkim.enable;
+				dkimEnable = prefs["dkim.enable"];
 			} else if (msgHdr.folder.server.getIntValue("dkim_verifier.dkim.enable") === PREF.ENABLE.TRUE) {
 				// dkim enabled for account
 				dkimEnable = true;
@@ -491,7 +491,7 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 			authResultDKIM.res_num = 10;
 			let keySecureStr = "";
 			if (dkimSigResult.keySecure &&
-				prefs.display.keySecure) {
+				prefs["display.keySecure"]) {
 				keySecureStr = " \uD83D\uDD12";
 			}
 			authResultDKIM.result_str = browser.i18n.getMessage("SUCCESS",
@@ -516,7 +516,7 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 				authResultDKIM.res_num = 30;
 			}
 			let errorType = dkimSigResult.errorType;
-			if (!prefs.error.detailedReasons) {
+			if (!prefs["error.detailedReasons"]) {
 				switch (errorType) {
 					case "DKIM_SIGERROR_ILLFORMED_TAGSPEC":
 					case "DKIM_SIGERROR_DUPLICATE_TAG":
@@ -658,7 +658,7 @@ function AuthResultDKIMV2_to_dkimSigResultV2(authResultDKIM) {
  * @return {Promise<AuthResult>} authResult
  */
 async function addFavicons(authResult) {
-	if (!prefs.display.favicon.show) {
+	if (!prefs["display.favicon.show"]) {
 		return authResult;
 	}
 	for (let i = 0; i < authResult.dkim.length; i++) {
