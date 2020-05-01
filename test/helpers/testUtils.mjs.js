@@ -14,6 +14,20 @@ function isNodeJs() {
 	return typeof window === 'undefined';
 }
 
+let rootDirPath = "";
+async function rootDir() {
+	if (rootDirPath) {
+		return rootDirPath;
+	}
+	const path = await import("path");
+	const { fileURLToPath } = await import("url");
+
+	const __filename = fileURLToPath(import.meta.url);
+	const __dirname = path.dirname(__filename);
+	rootDirPath = path.resolve(path.join(__dirname, "../../"));
+	return rootDirPath;
+}
+
 /**
  * Read a text file from the test data directory.
  *
@@ -22,9 +36,10 @@ function isNodeJs() {
  */
 export async function readTextFile(file) {
 	if (isNodeJs()) {
-		const fs = require('fs');
-		const path = require('path');
-		const filePath = path.join(__dirname, `../data/${file}`);
+		const fs = await import("fs");
+		const path = await import("path");
+
+		const filePath = path.join(await rootDir(), `test/data/${file}`);
 
 		return new Promise((resolve, reject) => {
 			fs.readFile(filePath, { encoding: 'utf-8' }, (err, data) => {

@@ -168,8 +168,8 @@ class DkimCryptoNode extends DkimCryptoI {
 	 * @returns {Promise<string>} b64 encoded hash
 	 * @memberof DkimCryptoI
 	 */
-	static async digest(algorithm, message) { // eslint-disable-line require-await
-		const crypto = require('crypto');
+	static async digest(algorithm, message) {
+		const crypto = await import("crypto");
 		const hash = crypto.createHash(algorithm);
 		hash.update(message);
 		return hash.digest("base64");
@@ -187,9 +187,9 @@ class DkimCryptoNode extends DkimCryptoI {
 	 * @throws DKIM_SigError
 	 * @memberof DkimCryptoI
 	 */
-	static async verifyRSA(key, digestAlgorithm, signature, data) { // eslint-disable-line require-await
-		const crypto = require('crypto');
-		/** @type {crypto.VerifyKeyWithOptions} */
+	static async verifyRSA(key, digestAlgorithm, signature, data) {
+		const crypto = await import("crypto");
+		/** @type {import("crypto").VerifyKeyWithOptions} */
 		let cryptoKey;
 		try {
 			cryptoKey = crypto.createPublicKey({
