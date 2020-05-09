@@ -14,7 +14,7 @@
  */
 
 // @ts-check
-///<reference path="AuthVerifier.d.ts" />
+///<reference path="./AuthVerifier.d.ts" />
 ///<reference path="../WebExtensions.d.ts" />
 /* eslint-env webextensions */
 /* eslint-disable camelcase */
@@ -28,23 +28,27 @@ import { domainIsInDomain, getDomainFromAddr } from "./utils.mjs.js";
 import { DKIM_InternalError } from "./error.mjs.js";
 import Logging from "./logging.mjs.js";
 import MsgParser from "./msgParser.mjs.js";
+import { getFavicon } from "./dkim/favicon.mjs.js";
 import prefs from "./preferences.mjs.js";
 
 const log = Logging.getLogger("AuthVerifier");
 
 /**
- * @typedef {Object} AuthResult|AuthResultV2
+ * @typedef {Object} AuthResultV2
  * @property {String} version
  *           result version ("2.1")
- * @property {IAuthVerifier.AuthResultDKIM[]} dkim
+ * @property {AuthResultDKIM[]} dkim
  * @property {ARHResinfo[]} [spf]
  * @property {ARHResinfo[]} [dmarc]
  * @property {{dkim?: AuthResultDKIM[]}} [arh]
  *           added in version 2.1
  */
+/**
+ * @typedef {AuthResultV2} AuthResult
+ */
 
 /**
- * @typedef {Object} SavedAuthResult|SavedAuthResultV3
+ * @typedef {Object} SavedAuthResultV3
  * @property {String} version
  *           result version ("3.0")
  * @property {VerifierModule.dkimSigResultV2[]} dkim
@@ -53,10 +57,13 @@ const log = Logging.getLogger("AuthVerifier");
  * @property {Object} [arh]
  * @property {VerifierModule.dkimSigResultV2[]} [arh.dkim]
  */
+/**
+ * @typedef {SavedAuthResultV3} SavedAuthResult
+ */
 
 /**
- * @typedef {Object} AuthResultDKIM|AuthResultDKIMV2
- * @extends dkimSigResultV2
+ * @typedef {IAuthVerifier.AuthResultDKIMV2} AuthResultDKIMV2
+ * extends dkimSigResultV2
  * @property {Number} res_num
  *           10: SUCCESS
  *           20: TEMPFAIL
@@ -69,6 +76,9 @@ const log = Logging.getLogger("AuthVerifier");
  *           localized warnings
  * @property {String} [favicon]
  *           url to the favicon of the sdid
+ */
+/**
+ * @typedef {AuthResultDKIMV2} AuthResultDKIM
  */
 
 export default class AuthVerifier {
@@ -480,11 +490,11 @@ function dkimResultV1_to_dkimSigResultV2(dkimResultV1) {
  * Convert dkimSigResultV2 to AuthResultDKIM
  *
  * @param {VerifierModule.dkimSigResultV2} dkimSigResult
- * @return {IAuthVerifier.AuthResultDKIM}
+ * @return {AuthResultDKIM}
  * @throws DKIM_InternalError
  */
 function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-line complexity
-	/** @type {IAuthVerifier.AuthResultDKIM} */
+	/** @type {AuthResultDKIM} */
 	const authResultDKIM = dkimSigResult;
 	switch (dkimSigResult.result) {
 		case "SUCCESS": {
@@ -634,7 +644,7 @@ async function SavedAuthResult_to_AuthResult(savedAuthResult) { // eslint-disabl
 /**
  * Convert AuthResultV2 to dkimSigResultV2
  *
- * @param {IAuthVerifier.AuthResultDKIMV2} authResultDKIM
+ * @param {AuthResultDKIMV2} authResultDKIM
  * @return {VerifierModule.dkimSigResultV2} dkimSigResultV2
  */
 function AuthResultDKIMV2_to_dkimSigResultV2(authResultDKIM) {
@@ -661,9 +671,10 @@ async function addFavicons(authResult) {
 	if (!prefs["display.favicon.show"]) {
 		return authResult;
 	}
-	for (let i = 0; i < authResult.dkim.length; i++) {
-		authResult.dkim[i].favicon =
-			await DKIM.Policy.getFavicon(authResult.dkim[i].sdid);
+	for (const dkim of authResult.dkim) {
+		if (dkim.sdid) {
+			dkim.favicon = await getFavicon(dkim.sdid);
+		}
 	}
 	return authResult;
 }

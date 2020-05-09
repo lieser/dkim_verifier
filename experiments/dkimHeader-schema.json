@@ -25,6 +25,11 @@
 							"type": "string"
 						},
 						"description": "DKIM warnings"
+					},
+					{
+						"name": "faviconUrl",
+						"type": "string",
+						"description": "URL to the favicon to show"
 					}
 				]
 			}

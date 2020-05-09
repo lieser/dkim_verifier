@@ -15,7 +15,7 @@ import "../helpers/initWebExtensions.mjs.js";
 import Verifier, * as VerifierModule from "../../modules/dkim/verifier.mjs.js";
 import MsgParser from "../../modules/msgParser.mjs.js";
 import expect from "../helpers/chaiUtils.mjs.js";
-import { readTextFile } from "../helpers/testUtils.mjs.js";
+import { readTestFile } from "../helpers/testUtils.mjs.js";
 
 /**
  * Verify DKIM for the given eml file.
@@ -24,7 +24,7 @@ import { readTextFile } from "../helpers/testUtils.mjs.js";
  * @returns {Promise<VerifierModule.dkimResultV2>}
  */
 async function verifyEmlFile(file) {
-	const msgPlain = await readTextFile(file);
+	const msgPlain = await readTestFile(file);
 	const msgParsed = MsgParser.parseMsg(msgPlain);
 	const from = msgParsed.headers.get("from");
 	if (!from) {

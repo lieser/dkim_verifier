@@ -1,4 +1,7 @@
 /**
+ * Setup the global browser object and the extensionUtils module for the tests
+ * environment.
+ *
  * Copyright (c) 2020 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
@@ -9,11 +12,15 @@
 
 // @ts-check
 
+import ExtensionUtils from "../../modules/extensionUtils.mjs.js";
 import prefs from "../../modules/preferences.mjs.js";
+import { readTextFile } from "./testUtils.mjs.js";
 
 export let hasWebExtensions = false;
 /** @type {import("webextensions-api-fake/dist").BrowserFake} */
 export let fakeBrowser;
+
+ExtensionUtils.readFile = readTextFile;
 
 before(async function () {
 	try {

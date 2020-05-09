@@ -8,7 +8,8 @@
  */
 
 // @ts-check
-///<reference path="dkimHeader.d.ts" />
+///<reference path="./dkimHeader.d.ts" />
+///<reference path="../mozilla.d.ts" />
 ///<reference path="../mozillaDom.d.ts" />
 /* eslint-env worker */
 /* global ChromeUtils, Components, ExtensionCommon */
@@ -156,7 +157,7 @@ class DKIMTooltipFrom extends DKIMTooltip {
 }
 
 /**
- * DKIM header field
+ * The content that is shown inside the DkimHeaderRow.
  */
 class DKIMHeaderField {
 	/**
@@ -344,10 +345,7 @@ DKIMHeaderField.resetValue = "Validating…";
 DKIMHeaderField._id = "expandedDkim-verifierBox";
 
 /**
- *
- *
- * @class DkimHeaderRow
- * @implements {HTMLElement}
+ * The DKIM row shown in the e-mail header.
  */
 class DkimHeaderRow {
 	/**
@@ -384,12 +382,154 @@ class DkimHeaderRow {
 	static get(document) {
 		const element = document.getElementById(DkimHeaderRow._id);
 		if (!element) {
-			throw Error("Could not find the DKIMHeaderField element");
+			throw Error("Could not find the DkimHeaderRow element");
 		}
 		return element;
 	}
+
+	/**
+	 * Add the DKIM header row to a given document.
+	 *
+	 * @static
+	 * @param {Document} document
+	 * @returns {void}
+	 * @memberof DkimHeaderRow
+	 */
+	static add(document) {
+		const headerRow = new DkimHeaderRow(document);
+		const expandedHeaders2 = document.getElementById("expandedHeaders2");
+		if (!expandedHeaders2) {
+			throw Error("Could not find the expandedHeaders2 element");
+		}
+		expandedHeaders2.appendChild(headerRow.element);
+	}
 }
 DkimHeaderRow._id = "expandedDkim-verifierRow";
+
+/**
+ * The favicon shown before the from address.
+ */
+class DkimFavicon {
+	/**
+	 * Creates an instance of DkimFavicon.
+	 *
+	 * @param {Document} document
+	 * @param {XULElement|void} element - optional underlying element, will be created if not given
+	 * @memberof DkimFavicon
+	 */
+	constructor(document, element) {
+		if (element) {
+			// @ts-ignore
+			this.element = element;
+			this._dkimTooltipFrom = new DKIMTooltipFrom(document, this.element._dkimTooltipFromElement);
+			return;
+		}
+
+		/** @type {DKIMFaviconElement} */
+		// @ts-ignore
+		this.element = document.createXULElement("description");
+
+		this.element.id = DkimFavicon._id;
+		this.element.classList.add("headerValue");
+		this.element.setAttribute("tooltip", "dkim-verifier-header-tooltip-from");
+		// dummy text for align baseline
+		this.element.textContent = "";
+		this.element.style.setProperty("min-width", "0px", "important");
+		this.element.style.width = "1.5em";
+		this.element.style.height = "1.5em";
+		this.element.style.backgroundSize = "contain";
+		this.element.style.backgroundPosition = "center center";
+		this.element.style.backgroundRepeat = "no-repeat";
+
+		// DKIM tooltip
+		this._dkimTooltipFrom = new DKIMTooltipFrom(document);
+		this.element._dkimTooltipFromElement = this._dkimTooltipFrom.element;
+		this.element._dkimTooltipFromElement.id = "dkim-verifier-header-tooltip-from";
+		this.element.setAttribute("tooltip", "dkim-verifier-header-tooltip-from");
+
+		this.element.appendChild(this.element._dkimTooltipFromElement);
+
+		this.reset();
+	}
+
+	/**
+	 * Set the DKIM result.
+	 *
+	 * @param {String} val
+	 * @memberof DkimFavicon
+	 */
+	set value(val) {
+		this._dkimTooltipFrom.value = val;
+	}
+
+	/**
+	 * Set the DKIM warnings.
+	 *
+	 * @param {String[]} warnings
+	 * @memberof DkimFavicon
+	 */
+	set warnings(warnings) {
+		this._dkimTooltipFrom.warnings = warnings;
+	}
+
+	/**
+	 * Sets the url to the favicon. Empty string to reset it.
+	 *
+	 * @param {String} faviconUrl
+	 * @return {void}
+	 * @memberof DkimFavicon
+	 */
+	setFaviconUrl(faviconUrl) {
+		this.element.style.backgroundImage = `url('${faviconUrl}')`;
+		if (faviconUrl) {
+			this.element.style.display = "";
+		} else {
+			this.element.style.display = "none";
+		}
+	}
+
+	reset() {
+		this.setFaviconUrl("");
+		this.value = DKIMHeaderField.resetValue;
+		this.warnings = [];
+	}
+
+	/**
+	 * Get the DKIM favicon in a given document.
+	 *
+	 * @static
+	 * @param {Document} document
+	 * @returns {DkimFavicon}
+	 * @memberof DkimFavicon
+	 */
+	static get(document) {
+		const element = document.getElementById(DkimFavicon._id);
+		if (!element) {
+			throw Error("Could not find the DkimFavicon element");
+		}
+		return new DkimFavicon(document, element);
+	}
+
+	/**
+	 * Add the DKIM favicon to a given document.
+	 *
+	 * @static
+	 * @param {Document} document
+	 * @returns {void}
+	 * @memberof DkimFavicon
+	 */
+	static add(document) {
+		const headerRow = new DkimFavicon(document);
+		/** @type {MozMailMultiEmailheaderfield|null} */
+		// @ts-ignore
+		const expandedFromBox = document.getElementById("expandedfromBox");
+		if (!expandedFromBox) {
+			throw Error("Could not find the expandedFromBox element");
+		}
+		expandedFromBox.longEmailAddresses.prepend(headerRow.element);
+	}
+}
+DkimFavicon._id = "dkimFavicon";
 
 /**
  * A listener on gMessageListeners that resets the DKIM related header elements.
@@ -421,7 +561,7 @@ class DkimResetMessageListener {
 	 */
 	static register(window) {
 		if (DkimResetMessageListener._mapping.has(window)) {
-			console.warn("MessageListener.register(): already registered");
+			console.error("MessageListener.register(): already registered");
 		}
 		const messageListener = new DkimResetMessageListener(window);
 		DkimResetMessageListener._mapping.set(window, messageListener);
@@ -437,18 +577,26 @@ class DkimResetMessageListener {
 	 * @memberof DkimResetMessageListener
 	 */
 	static unregister(window) {
-		const pos = window.gMessageListeners.indexOf(this);
+		const listener = DkimResetMessageListener._mapping.get(window);
+		if (!listener) {
+			console.error("MessageListener.unregister(): could not find a listener for the window");
+			return;
+		}
+		const pos = window.gMessageListeners.indexOf(listener);
 		if (pos !== -1) {
 			window.gMessageListeners.splice(pos, 1);
 		} else {
-			console.warn("MessageListener.unregister(): could not find the listener");
+			console.error("MessageListener.unregister(): could not find the listener");
 		}
 		DkimResetMessageListener._mapping.delete(window);
 	}
 
 	onStartHeaders() {
-		const dkimHeaderField = DKIMHeaderField.get(this.window.document);
+		const document = this.window.document;
+		const dkimHeaderField = DKIMHeaderField.get(document);
 		dkimHeaderField.reset();
+		const dkimFavicon = DkimFavicon.get(document);
+		dkimFavicon.reset();
 	}
 	// eslint-disable-next-line no-empty-function
 	onEndHeaders() { }
@@ -506,12 +654,8 @@ this.dkimHeader = class extends ExtensionCommon.ExtensionAPI {
 	 */
 	paint(window) {
 		const { document } = window;
-		const headerRow = new DkimHeaderRow(document);
-		const expandedHeaders2 = document.getElementById("expandedHeaders2");
-		if (!expandedHeaders2) {
-			throw Error("Could not find the expandedHeaders2 element");
-		}
-		expandedHeaders2.appendChild(headerRow.element);
+		DkimHeaderRow.add(document);
+		DkimFavicon.add(document);
 	}
 
 	/**
@@ -525,6 +669,10 @@ this.dkimHeader = class extends ExtensionCommon.ExtensionAPI {
 		if (headerRow) {
 			headerRow.remove();
 		}
+		const favicon = DkimFavicon.get(window.document);
+		if (favicon) {
+			favicon.element.remove();
+		}
 	}
 
 	/**
@@ -536,13 +684,18 @@ this.dkimHeader = class extends ExtensionCommon.ExtensionAPI {
 		const tabTracker = ExtensionParent.apiManager.global.tabTracker;
 		return {
 			dkimHeader: {
-				setDkimHeaderResult: (tabId, result, warnings) => {
+				setDkimHeaderResult: (tabId, result, warnings, faviconUrl) => {
 					const target = tabTracker.getTab(tabId);
 					const { document } = Components.utils.getGlobalForObject(target);
 
 					const dkimHeaderField = DKIMHeaderField.get(document);
 					dkimHeaderField.value = result;
 					dkimHeaderField.warnings = warnings;
+
+					const favicon = DkimFavicon.get(document);
+					favicon.value = result;
+					favicon.warnings = warnings;
+					favicon.setFaviconUrl(faviconUrl);
 				},
 			}
 		};
