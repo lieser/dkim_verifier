@@ -268,7 +268,7 @@ describe("preferences [unittest]", function () {
 			pref.setValue("dns.nameserver", "fooBar");
 			expect(
 				fakeBrowser.storage.local.set.calledOnceWithExactly(
-					{ preferences: { "dns.nameserver": "fooBar" } })
+					{ "dns.nameserver": "fooBar" })
 			).to.be.true;
 			const loadedPref = new StorageLocalPreferences();
 			await loadedPref.init();
@@ -280,25 +280,19 @@ describe("preferences [unittest]", function () {
 			).to.be.equal("fooBar");
 		});
 		it("clear storage", async function () {
-			await browser.storage.local.set({ someStorage: "this should not be cleared by prefs" });
-
 			pref.setValue("dns.nameserver", "fooBar");
 			expect(
 				pref["dns.nameserver"]
 			).to.be.equal("fooBar");
 
-			// clearing prefs should not affect other storage
+			// clearing prefs
 			pref.clear();
-			expect(
-				fakeBrowser.storage.local.set.lastCall.calledWithExactly(
-					{ preferences: {} })
-			).to.be.true;
+			expect(fakeBrowser.storage.local.clear.calledOnce).to.be.true;
+			const storage = await browser.storage.local.get();
+			expect(storage).to.deep.equal({});
 			expect(
 				pref["dns.nameserver"]
 			).to.be.equal("8.8.8.8");
-			expect(
-				(await browser.storage.local.get("someStorage")).someStorage
-			).to.be.equal("this should not be cleared by prefs");
 
 			// loading new prefs after clear should have defaults again
 			const loadedPref = new StorageLocalPreferences();
@@ -308,29 +302,35 @@ describe("preferences [unittest]", function () {
 			).to.be.equal("8.8.8.8");
 		});
 		it("pref should change on storage update", async function () {
+			after(function () {
+				fakeBrowser.storage.local.set.callsFake(fakeBrowser.storage.local._set);
+			});
+
+			fakeBrowser.storage.local.set.callsFake(async items => {
+				await fakeBrowser.storage.local._set(items, undefined);
+
+				/** @type {Object.<string, {oldValue: any, newValue: any}>} */
+				const changes = {};
+				for (const [name, value] of Object.entries(items)) {
+					changes[name] = {
+						oldValue: {},
+						newValue: JSON.parse(JSON.stringify(value)),
+					};
+				}
+				fakeBrowser.storage.onChanged.addListener.yield(changes, "local");
+			});
+
 			const pref2 = new StorageLocalPreferences();
 			await pref2.init();
 			// setting option on global pref object
-			pref.setValue("dns.nameserver", "fooBar");
-			fakeBrowser.storage.onChanged.addListener.yield({
-				preferences: {
-					oldValue: pref2._prefs,
-					newValue: pref._prefs,
-				}
-			}, "local");
+			await pref.setValue("dns.nameserver", "fooBar");
 			// should sync it to local pref object
 			expect(
 				pref2["dns.nameserver"]
 			).to.be.equal("fooBar");
 
 			// setting option on local pref object
-			pref2.setValue("dns.nameserver", "muh");
-			fakeBrowser.storage.onChanged.addListener.yield({
-				preferences: {
-					oldValue: pref._prefs,
-					newValue: pref2._prefs,
-				}
-			}, "local");
+			await pref2.setValue("dns.nameserver", "muh");
 			// should sync it to global pref object
 			expect(
 				pref["dns.nameserver"]
@@ -339,23 +339,57 @@ describe("preferences [unittest]", function () {
 		it("other storage changes are ignored", function () {
 			pref.setValue("dns.nameserver", "fooBar");
 			fakeBrowser.storage.onChanged.addListener.yield({
-				preferences: {
+				"dns.nameserver": {
 					oldValue: pref._prefs,
-					newValue: {},
+					newValue: "sync",
 				}
 			}, "sync");
 			expect(
 				pref["dns.nameserver"]
 			).to.be.equal("fooBar");
-			fakeBrowser.storage.onChanged.addListener.yield({
-				preferencesX: {
-					oldValue: pref._prefs,
-					newValue: {},
+		});
+		it("test multiple pref changes at the same time", async function () {
+			after(function () {
+				fakeBrowser.storage.local.set.callsFake(fakeBrowser.storage.local._set);
+			});
+
+			/** @type {Object.<string, any>[]} */
+			const storageCalls = [];
+			fakeBrowser.storage.local.set.callsFake(items => {
+				storageCalls.push(JSON.parse(JSON.stringify(items)));
+				return fakeBrowser.storage.local._set(items, undefined);
+			});
+
+			function triggerListener() {
+				const items = storageCalls.shift();
+				if (!items) {
+					return;
 				}
-			}, "local");
-			expect(
-				pref["dns.nameserver"]
-			).to.be.equal("fooBar");
+				/** @type {Object.<string, {oldValue: any, newValue: any}>} */
+				const changes = {};
+				for (const [name, value] of Object.entries(items)) {
+					changes[name] = {
+						oldValue: {},
+						newValue: value,
+					};
+				}
+				fakeBrowser.storage.onChanged.addListener.yield(changes, "local");
+			}
+
+			await pref.setValue("dns.nameserver", "fooBar");
+			await pref.setValue("arh.read", true);
+			triggerListener();
+			await pref.setValue("color.nosig.background", "red");
+			await pref.setValue("dns.proxy.port", "1111");
+
+			while (storageCalls.length > 0) {
+				triggerListener();
+			}
+
+			expect(pref["dns.nameserver"]).to.be.equal("fooBar");
+			expect(pref["arh.read"]).to.be.equal(true);
+			expect(pref["color.nosig.background"]).to.be.equal("red");
+			expect(pref["dns.proxy.port"]).to.be.equal("1111");
 		});
 	});
 });

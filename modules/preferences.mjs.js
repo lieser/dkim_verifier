@@ -517,7 +517,7 @@ export class StorageLocalPreferences extends BasePreferences {
 			(name, value) => {
 				checkInitialized();
 				this._prefs[name] = value;
-				const promise = browser.storage.local.set({ preferences: this._prefs });
+				const promise = browser.storage.local.set({ [name]: value });
 				promise.catch(error => log.fatal("Storing preferences in browser.storage.local failed", error));
 				return promise;
 			},
@@ -531,7 +531,7 @@ export class StorageLocalPreferences extends BasePreferences {
 		if (this._isInitialized) {
 			return;
 		}
-		const { preferences } = await browser.storage.local.get("preferences");
+		const preferences = await browser.storage.local.get();
 		if (preferences) {
 			this._prefs = preferences;
 		}
@@ -539,9 +539,8 @@ export class StorageLocalPreferences extends BasePreferences {
 			if (areaName !== "local") {
 				return;
 			}
-			const prefChange = changes.preferences;
-			if (prefChange) {
-				this._prefs = Object.assign({}, prefChange.newValue);
+			for (const [name, change] of Object.entries(changes)) {
+				this._prefs[name] = change.newValue;
 			}
 		});
 		this._isInitialized = true;
@@ -549,7 +548,7 @@ export class StorageLocalPreferences extends BasePreferences {
 
 	clear() {
 		this._prefs = {};
-		const promise = browser.storage.local.set({ preferences: this._prefs });
+		const promise = browser.storage.local.clear();
 		promise.catch(error => log.fatal("Storing preferences in browser.storage.local failed", error));
 		return promise;
 	}
