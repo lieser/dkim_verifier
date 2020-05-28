@@ -59,7 +59,7 @@ declare module ExtensionCommon {
     declare class ExtensionAPI implements ExtensionApiI {
         constructor(extension: Extension);
 
-        readonly extension: Extension:
+        readonly extension: Extension;
     }
 
     interface Context {
@@ -297,6 +297,7 @@ interface nsIPrefBranch {
     clearUserPref(aPrefName: string);
     getBoolPref(aPrefName: string, aDefaultValue?: boolean): boolean;
     getCharPref(aPrefName: string, aDefaultValue?: string): string;
+    getChildList(aStartingAt: string, aCount?: {value?: number}): string[];
     getIntPref(aPrefName: string, aDefaultValue?: number): number;
     getPrefType(aPrefName: string): number;
     prefHasUserValue(aPrefName: string): boolean;

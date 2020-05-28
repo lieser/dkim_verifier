@@ -14,12 +14,15 @@
 import { DKIM_InternalError, DKIM_SigError } from "../modules/error.mjs.js";
 import AuthVerifier from "../modules/AuthVerifier.mjs.js";
 import Logging from "../modules/logging.mjs.js";
+import { migratePrefs } from "../modules/migration.mjs.js";
 import prefs from "../modules/preferences.mjs.js";
 import { setKeyFetchFunction } from "../modules/dkim/verifier.mjs.js";
 
 const log = Logging.getLogger("background");
-(async () => {
+
+async function init() {
 	await prefs.init();
+
 	if (prefs.debug) {
 		/** @type {number|undefined} */
 		// @ts-ignore
@@ -29,7 +32,11 @@ const log = Logging.getLogger("background");
 		}
 		Logging.setLogLevel(logLevel);
 	}
-})().catch(error => log.fatal("Setting debug log level failed with:", error));
+
+	await migratePrefs();
+}
+const isInitialized = init();
+isInitialized.catch(error => log.fatal("Initializing failed with:", error));
 
 // eslint-disable-next-line valid-jsdoc
 /** @type {import("../modules/dkim/verifier.mjs.js").KeyFetchFunction} */
@@ -69,6 +76,8 @@ async function getKey(sdid, selector) {
 setKeyFetchFunction(getKey);
 
 browser.messageDisplay.onMessageDisplayed.addListener(async (tab, message) => {
+	await isInitialized;
+
 	const rawMessage = await browser.messages.getRaw(message.id);
 	const verifier = new AuthVerifier();
 	const res = await verifier.verify(rawMessage);

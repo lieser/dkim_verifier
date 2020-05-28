@@ -1,0 +1,14 @@
+[
+	{
+		"namespace": "migration",
+		"functions": [
+			{
+				"name": "getUserPrefs",
+				"type": "function",
+				"description": "Get the prefs set by the user",
+				"async": true,
+				"parameters": []
+			}
+		]
+	}
+]

@@ -355,7 +355,6 @@ export class BasePreferences {
 		return this._tryGetBoolValue("policy.signRules.sdid.allowSubDomains", true);
 	}
 	get "policy.signRules.error.wrong_sdid.asWarning"() {
-		// pref("extensions.dkim_verifier.error.policy.wrong_sdid.asWarning", false);
 		return this._tryGetBoolValue("policy.signRules.error.wrong_sdid.asWarning", false);
 	}
 

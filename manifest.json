@@ -55,6 +55,20 @@
 				],
 				"script": "experiments/jsdns.js"
 			}
+		},
+		"migration": {
+			"schema": "experiments/migration-schema.json",
+			"parent": {
+				"scopes": [
+					"addon_parent"
+				],
+				"paths": [
+					[
+						"migration"
+					]
+				],
+				"script": "experiments/migration.js"
+			}
 		}
 	}
 }
