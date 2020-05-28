@@ -35,7 +35,7 @@
         <input type="checkbox" data-pref="dkim.enable">
       </label>
       <div>
-        <select id="key.storing" data-pref="key.storing" oncommand="gDKIMOptionsGeneralPane.update_key_storing();">
+        <select data-pref="key.storing">
           <option data-i18n="options_key.storing.value.0" value="0"></option>
           <option data-i18n="options_key.storing.value.1" value="1"></option>
           <option data-i18n="options_key.storing.value.2" value="2"></option>
@@ -56,8 +56,7 @@
     <section pane="dns">
       <div>
         <label data-i18n="options_dns.resolver"></label>
-        <select id="dns.resolver.label" data-pref="dns.resolver"
-          oncommand="gDKIMOptionsGeneralPane.update_dns_resolver();">
+        <select data-pref="dns.resolver">
           <option data-i18n="options_dns.resolver.value.1" value="1"></option>
           <option data-i18n="options_dns.resolver.value.2" value="2"></option>
         </select>
@@ -70,16 +69,16 @@
         <input type="text" data-pref="dns.nameserver">
       </div>
       <!-- jsdns specific options -->
-      <fieldset>
+      <fieldset id="dns.resolver.1">
         <legend data-i18n="options_dns.resolver.value.1"></legend>
         <div>
           <label for="dns.timeout_connect" data-i18n="options_dns.timeout_connect"></label>
           <input type="number" data-pref="dns.timeout_connect" size="10" min="0">
         </div>
         <label class="checkbox" data-i18n="options_dns.proxy.enable">
-          <input type="checkbox" data-pref="dns.proxy.enable" oncommand="gDKIMOptionsGeneralPane.update_dns_proxy();">
+          <input type="checkbox" data-pref="dns.proxy.enable">
         </label>
-        <fieldset disabled="disabled">
+        <fieldset id="dns.proxy">
           <div>
             <label class="proxyConfig" data-i18n="options_dns.proxy.type"></label>
             <select class="proxyConfig" data-pref="dns.proxy.type" data-pref-type="string">
@@ -96,7 +95,7 @@
         </fieldset>
       </fieldset>
       <!-- libunbound specific options -->
-      <fieldset disabled="disabled">
+      <fieldset id="dns.resolver.2">
         <legend data-i18n="options_dns.resolver.value.2"></legend>
         <div>
           <label data-i18n="options_dns.libunbound.path"></label>
@@ -111,18 +110,16 @@
     <!-- policy tab -->
     <section pane="policy">
       <label class="checkbox" data-i18n="options_policy.signRules.enable">
-        <input id="policy.signRules.enable" type="checkbox" data-pref="policy.signRules.enable"
-          oncommand="gDKIMOptionsGeneralPane.update_Policy_signRules_enable();">
+        <input type="checkbox" data-pref="policy.signRules.enable">
       </label>
-      <fieldset class="indent">
+      <fieldset id="policy.signRules" class="indent">
         <label class="checkbox" data-i18n="options_policy.signRules.checkDefaultRules">
           <input type="checkbox" data-pref="policy.signRules.checkDefaultRules">
         </label>
         <label class="checkbox" data-i18n="options_policy.signRules.autoAddRule">
-          <input id="policy.signRules.autoAddRule" type="checkbox" data-pref="policy.signRules.autoAddRule"
-            oncommand="gDKIMOptionsGeneralPane.update_Policy_autoAddRule_enable();">
+          <input type="checkbox" data-pref="policy.signRules.autoAddRule">
         </label>
-        <fieldset class="indent">
+        <fieldset id="policy.signRules.autoAddRule" class="indent">
           <label class="checkbox" data-i18n="options_policy.signRules.autoAddRule.onlyIfFromAddressInSDID">
             <input type="checkbox" data-pref="policy.signRules.autoAddRule.onlyIfFromAddressInSDID">
           </label>

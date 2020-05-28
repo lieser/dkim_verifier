@@ -78,6 +78,95 @@ function initNavigation() {
 	}
 }
 
+function updateKeyStoring() {
+	/** @type {HTMLSelectElement|null} */
+	const keyStoring = document.querySelector("[data-pref='key.storing']");
+	if (!keyStoring) {
+		throw Error("key.storing element not found");
+	}
+	const viewKeys = document.getElementById("key.viewKeys");
+	if (!viewKeys) {
+		throw Error("key.viewKeys element not found");
+	}
+	if (!(viewKeys instanceof HTMLButtonElement)) {
+		throw Error("key.viewKeys element is not a button");
+	}
+
+	viewKeys.disabled = parseInt(keyStoring.value, 10) === 0;
+}
+
+function updateDnsResolver() {
+	/** @type {HTMLSelectElement|null} */
+	const dnsResolver = document.querySelector("[data-pref='dns.resolver']");
+	if (!dnsResolver) {
+		throw Error("dns.resolver element not found");
+	}
+	const dnsResolver1 = document.getElementById("dns.resolver.1");
+	if (!dnsResolver1) {
+		throw Error("dns.resolver.1 element not found");
+	}
+	const dnsResolver2 = document.getElementById("dns.resolver.2");
+	if (!dnsResolver2) {
+		throw Error("dns.resolver.2 element not found");
+	}
+
+	const resolverIndex = parseInt(dnsResolver.value, 10);
+	dnsResolver1.hidden = resolverIndex !== 1;
+	dnsResolver2.hidden = resolverIndex !== 2;
+}
+
+function updateDnsProxy() {
+	/** @type {HTMLInputElement|null} */
+	const dnsProxyEnable = document.querySelector("[data-pref='dns.proxy.enable']");
+	if (!dnsProxyEnable) {
+		throw Error("dns.proxy.enable element not found");
+	}
+	const dnsProxy = document.getElementById("dns.proxy");
+	if (!dnsProxy) {
+		throw Error("dns.proxy element not found");
+	}
+	if (!(dnsProxy instanceof HTMLFieldSetElement)) {
+		throw Error("dns.proxy element is not a fieldset");
+	}
+
+	dnsProxy.disabled = !dnsProxyEnable.checked;
+}
+
+function updatePolicySignRulesEnable() {
+	/** @type {HTMLInputElement|null} */
+	const policySignRulesEnable = document.querySelector("[data-pref='policy.signRules.enable']");
+	if (!policySignRulesEnable) {
+		throw Error("policy.signRules.enable element not found");
+	}
+	const policySignRules = document.getElementById("policy.signRules");
+	if (!policySignRules) {
+		throw Error("policy.signRules element not found");
+	}
+	if (!(policySignRules instanceof HTMLFieldSetElement)) {
+		throw Error("policy.signRules element is not a fieldset");
+	}
+
+	policySignRules.disabled = !policySignRulesEnable.checked;
+}
+
+function updatePolicyAutoAddRuleEnable() {
+	/** @type {HTMLInputElement|null} */
+	const policySignRulesAutoAddRuleEnabled =
+		document.querySelector("[data-pref='policy.signRules.autoAddRule']");
+	if (!policySignRulesAutoAddRuleEnabled) {
+		throw Error("policy.signRules.autoAddRule enabled element not found");
+	}
+	const policySignRulesAutoAddRule = document.getElementById("policy.signRules.autoAddRule");
+	if (!policySignRulesAutoAddRule) {
+		throw Error("policy.signRules.autoAddRule element not found");
+	}
+	if (!(policySignRulesAutoAddRule instanceof HTMLFieldSetElement)) {
+		throw Error("policy.signRules.autoAddRule element is not a fieldset");
+	}
+
+	policySignRulesAutoAddRule.disabled = !policySignRulesAutoAddRuleEnabled.checked;
+}
+
 /**
  * React to a change event on an HTML element representing a preference.
  *
@@ -116,6 +205,25 @@ function preferenceChanged(event) {
 			}
 		} else {
 			log.error("Received change event for unexpected element", event);
+		}
+
+		switch (prefName) {
+			case "key.storing":
+				updateKeyStoring();
+				break;
+			case "dns.resolver":
+				updateDnsResolver();
+				break;
+			case "dns.proxy.enable":
+				updateDnsProxy();
+				break;
+			case "policy.signRules.enable":
+				updatePolicySignRulesEnable();
+				break;
+			case "policy.signRules.autoAddRule":
+				updatePolicyAutoAddRuleEnable();
+				break;
+			default:
 		}
 	} catch (e) {
 		log.fatal("Unexpected error in preferenceChanged():", e);
@@ -161,6 +269,12 @@ async function initPreferences() {
 			log.error("Unexpected preference element", element);
 		}
 	}
+
+	updateKeyStoring();
+	updateDnsResolver();
+	updateDnsProxy();
+	updatePolicySignRulesEnable();
+	updatePolicyAutoAddRuleEnable();
 
 	// listening to changes
 	document.body.addEventListener("change", preferenceChanged);
