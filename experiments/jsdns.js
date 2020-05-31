@@ -9,14 +9,24 @@
 
 
 // @ts-check
+///<reference path="./jsdns.d.ts" />
 ///<reference path="../mozilla.d.ts" />
 /* eslint-env worker */
 /* global ChromeUtils, Components, ExtensionCommon */
 
 "use strict";
 
+/**
+ * From https://javascriptweblog.wordpress.com/2011/08/08/fixing-the-javascript-typeof-operator/
+ * @param {any} obj
+ * @returns {string}
+ */
 function toType(obj) {
-	return Object.prototype.toString.call(obj).match(/\s([a-zA-Z]+)/)[1];
+	const typeMatch = Object.prototype.toString.call(obj).match(/\s([a-zA-Z]+)/);
+	if (!typeMatch) {
+		throw new Error(`Failed to get type for ${obj}`);
+	}
+	return typeMatch[1];
 }
 
 // eslint-disable-next-line no-invalid-this
@@ -30,7 +40,7 @@ this.jsdns = class extends ExtensionCommon.ExtensionAPI {
 
 	/**
 	 * @param {ExtensionCommon.Context} context
-	 * @returns {{}}
+	 * @returns {{jsdns: browser.jsdns}}
 	 */
 	getAPI(context) {
 		const RCODE = {
@@ -41,23 +51,26 @@ this.jsdns = class extends ExtensionCommon.ExtensionAPI {
 			NotImp: 4, // Non-Existent Domain [RFC1035]
 			Refused: 5, // Query Refused [RFC1035]
 		};
+		/** @type {{JSDNS: {queryDNS: typeof queryDNS}}} */
 		const { JSDNS } = ChromeUtils.import(this.extension.rootURI.resolve("experiments/JSDNS.jsm.js"));
 		this.extension.callOnClose(this);
 		return {
 			jsdns: {
 				txt(name) {
+					// eslint-disable-next-line valid-jsdoc
+					/** @type {QueryDnsCallback<{resolve: function(browser.jsdns.TxtResult): void, reject: function(Error): void}>} */
 					function dnsCallback(dnsResult, defer, queryError, rcode) {
 						try {
 							let resRcode = RCODE.NoError;
 							if (rcode !== undefined) {
 								resRcode = rcode;
 							} else if (queryError !== undefined) {
+								/** @type {string|string[]} */
 								let error = "";
-								if (toType(queryError) === "String") {
+								if (typeof queryError === "string") {
 									error = context.extension.localeData.localizeMessage(queryError);
 								} else if (toType(queryError) === "Array") {
 									error = context.extension.localeData.localizeMessage(queryError[0], queryError[1]);
-									console.warn("error",error);
 								}
 								if (!error) {
 									error = queryError;
@@ -66,8 +79,15 @@ this.jsdns = class extends ExtensionCommon.ExtensionAPI {
 								resRcode = RCODE.ServFail;
 							}
 
+							const results = dnsResult && dnsResult.map(rdData => {
+								if (typeof rdData !== "string") {
+									throw Error(`DNS result has unexpected type ${typeof rdData}`);
+								}
+								return rdData;
+							});
+
 							defer.resolve({
-								data: dnsResult,
+								data: results,
 								rcode: resRcode,
 								secure: false,
 								bogus: false,
@@ -80,7 +100,7 @@ this.jsdns = class extends ExtensionCommon.ExtensionAPI {
 					return new Promise((resolve, reject) => JSDNS.queryDNS(
 						name, "TXT", dnsCallback, { resolve: resolve, reject: reject }));
 				},
-			}
+			},
 		};
 	}
 

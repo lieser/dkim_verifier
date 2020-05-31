@@ -17,7 +17,7 @@ interface ChromeUtils {
 declare let ChromeUtils: ChromeUtils;
 
 declare module Components {
-    let classes: Array;
+    let classes: { readonly [key: string]: nsIJSCID };
     let interfaces: ComponentsInterfaces;
     let results: ComponentsResults;
     let stack: nsIStackFrame;
@@ -28,7 +28,15 @@ declare module Components {
     interface ComponentsInterfaces {
         [key: string]: object;
         readonly nsMsgFolderFlags: nsMsgFolderFlags;
+        readonly nsIBinaryInputStream: nsIBinaryInputStream;
+        readonly nsIFile: nsIFile;
+        readonly nsIFileInputStream: nsIFileInputStream;
+        readonly nsIInputStreamPump: nsIInputStreamPump;
+        readonly nsILineInputStream: nsILineInputStream;
         readonly nsIMsgIdentity: nsIMsgIdentity;
+        readonly nsIProtocolProxyService: nsIProtocolProxyService;
+        readonly nsISocketTransportService: nsISocketTransportService;
+        readonly nsIWindowsRegKey: nsIWindowsRegKey;
     }
 
     interface ComponentsResults {
@@ -267,12 +275,66 @@ interface mozIStorageStatement extends mozIStorageBaseStatement {
 declare class MozXULElement extends XULElement { };
 
 interface nsIAsyncStreamCopier { nsIAsyncStreamCopier: never }
+
+interface nsIBinaryInputStream extends nsIInputStream {
+    readonly read8: () => number;
+    readonly setInputStream: (aInputStream: nsIInputStream) => void;
+}
+
 interface nsIChannel { nsIChannel: never }
+
+interface nsIEventTarget { nsIEventTarget: never }
 
 interface nsIInputStream {
     available(): number;
     close(): void;
     isNonBlocking(): boolean;
+}
+
+interface nsIInputStreamPump extends nsIRequest {
+    readonly asyncRead: (aListener: nsIStreamListener, aListenerContext: nsISupports?) => void;
+    readonly init: (aStream: nsIInputStream, aSegmentSize: number, aSegmentCount: number, aCloseWhenDone: boolean, aMainThreadTarget?: nsIEventTarget) => void;
+}
+
+interface nsIJSCID {
+    createInstance(): nsISupports;
+    createInstance<nsIIDRef>(uuid: nsIIDRef): nsIIDRef;
+    readonly getService: <nsIIDRef>(uuid: nsIIDRef) => nsIIDRef;
+}
+
+interface nsILineInputStream {
+    readonly readLine: (aLine: { value: string }) => boolean;
+}
+
+interface nsIRequest { nsIRequest: never }
+
+interface nsIRequestObserver {
+    readonly onStartRequest: (aRequest: nsIRequest, aContext: nsISupports) => void;
+    readonly onStopRequest: (aRequest: nsIRequest, aContext: nsISupports, aStatusCode: nsresult) => void;
+}
+
+interface nsISocketTransport extends nsITransport {
+    readonly setTimeout: (aType: 0 | 1, aValue: number) => void;
+
+    readonly TIMEOUT_CONNECT: 0;
+    readonly TIMEOUT_READ_WRITE: 1;
+}
+
+interface nsISocketTransportService {
+    readonly createTransport: (aSocketTypes: string[], aHost: string, aPort: number, aProxyInfo: nsIProxyInfo?) => nsISocketTransport
+}
+
+interface nsIStreamListener extends nsIRequestObserver {
+    readonly onDataAvailable: (aRequest: nsIRequest, aContext: nsISupports, aInputStream: nsIInputStream, aOffset: number, aCount: number) => void;
+}
+
+interface nsISupports {
+        readonly QueryInterface: <nsIIDRef>(uuid: nsIIDRef) => nsIIDRef;
+}
+
+interface nsITransport {
+    readonly openInputStream: (aFlags: number, aSegmentSize: number, aSegmentCount: number) => nsIInputStream;
+    readonly openOutputStream: (aFlags: number, aSegmentSize: number, aSegmentCount: number) => nsIOutputStream;
 }
 
 interface nsIFile {
@@ -286,7 +348,10 @@ interface nsIFileInputStream extends nsIInputStream {
 
 interface nsIFileOutputStream extends nsIOutputStream { nsIFileOutputStream: never }
 
-interface nsIOutputStream { nsIOutputStream: never }
+interface nsIOutputStream {
+    readonly close: () => void;
+    readonly write: (aBuf: string, aCount: number) => number;
+}
 
 interface nsIPrefService {
     getBranch(aPrefRoot: string): nsIPrefBranch;
@@ -297,7 +362,7 @@ interface nsIPrefBranch {
     clearUserPref(aPrefName: string);
     getBoolPref(aPrefName: string, aDefaultValue?: boolean): boolean;
     getCharPref(aPrefName: string, aDefaultValue?: string): string;
-    getChildList(aStartingAt: string, aCount?: {value?: number}): string[];
+    getChildList(aStartingAt: string, aCount?: { value?: number }): string[];
     getIntPref(aPrefName: string, aDefaultValue?: number): number;
     getPrefType(aPrefName: string): number;
     prefHasUserValue(aPrefName: string): boolean;
@@ -388,7 +453,7 @@ interface nsIXULAppInfo {
     readonly platformVersion: string;
 }
 
-interface nsresult { nsresult: never };
+type nsresult = number;
 
 declare class XULElement extends HTMLElement { };
 
