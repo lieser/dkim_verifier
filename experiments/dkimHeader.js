@@ -696,8 +696,9 @@ this.dkimHeader = class extends ExtensionCommon.ExtensionAPI {
 					favicon.value = result;
 					favicon.warnings = warnings;
 					favicon.setFaviconUrl(faviconUrl);
+					return Promise.resolve();
 				},
-			}
+			},
 		};
 	}
 };

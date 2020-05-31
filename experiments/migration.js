@@ -52,7 +52,7 @@ this.migration = class extends ExtensionCommon.ExtensionAPI {
 					}
 					return Promise.resolve(userPrefs);
 				},
-			}
+			},
 		};
 	}
 };

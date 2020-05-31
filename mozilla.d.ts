@@ -107,26 +107,6 @@ declare module FileUtils {
     function openSafeFileOutputStream(file: nsIFile, modeFlags?: number): nsIFileOutputStream;
 }
 
-/** JavaScript code module "resource://gre/modules/NetUtil.jsm" */
-declare module NetUtil {
-    function asyncCopy(aSource: nsIInputStream, aSink: nsIOutputStream, aCallback?: (status: nsresult) => void): nsIAsyncStreamCopier;
-    function asyncFetch(aSource: aWhatToLoad | nsIChannel | nsIInputStream, aCallback: asyncFetchCallback): void
-    function newURI(aTarget: string | nsIFile, aOriginCharset?, aBaseURI?: nsIURI): nsIURI;
-    function readInputStreamToString(aInputStream: nsIInputStream, aCount: number, aOptions?): string;
-
-    interface asyncFetchCallback { (inputStream: nsIInputStream, status: nsresult, request: nsIRequest): void }
-
-    interface aWhatToLoad {
-        uri: string | nsIURI | nsIFile;
-        loadingNode?;
-        loadingPrincipal?;
-        triggeringPrincipal?;
-        securityFlags?;
-        contentPolicyType?;
-        loadUsingSystemPrincipal?: boolean;
-    };
-}
-
 /** JavaScript code module "resource://gre/modules/osfile.jsm" */
 declare module OS {
     declare module Path {
@@ -148,7 +128,6 @@ declare module Services {
     const prefs: nsIPrefService;
     const scriptloader: mozIJSSubScriptLoader;
     const storage: mozIStorageService;
-    const strings: nsIStringBundleService;
     const vc: nsIVersionComparator;
 
     interface mozIJSSubScriptLoader {
@@ -201,14 +180,10 @@ interface mozIStorageStatement extends mozIStorageBaseStatement {
 
 declare class MozXULElement extends XULElement { };
 
-interface nsIAsyncStreamCopier { nsIAsyncStreamCopier: never }
-
 interface nsIBinaryInputStream extends nsIInputStream {
     readonly read8: () => number;
     readonly setInputStream: (aInputStream: nsIInputStream) => void;
 }
-
-interface nsIChannel { nsIChannel: never }
 
 interface nsIEventTarget { nsIEventTarget: never }
 
@@ -346,15 +321,6 @@ interface nsIStackFrame {
     readonly lineNumber: number;
     readonly name: string;
     readonly sourceLine: string;
-}
-
-interface nsIStringBundleService {
-    createBundle(aURLSpec: string): nsIStringBundle;
-}
-
-interface nsIStringBundle {
-    formatStringFromName(aName: string, params: (string | string[])[], length: number): string;
-    GetStringFromName(aName: string): string;
 }
 
 interface nsIURI {

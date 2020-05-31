@@ -5,7 +5,7 @@
 			{
 				"name": "setDkimHeaderResult",
 				"type": "function",
-				"description": "Set some test text",
+				"description": "Show the given DKIM result in the header",
 				"async": true,
 				"parameters": [
 					{

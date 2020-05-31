@@ -6,4 +6,6 @@ interface LoggerI {
     config(message?: any, ...optionalParams: any[]): void;
     debug(message?: any, ...optionalParams: any[]): void;
     trace(message?: any, ...optionalParams: any[]): void;
+
+    logLevel: number;
 }

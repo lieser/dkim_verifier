@@ -154,6 +154,10 @@ export function setKeyFetchFunction(keyFetchFunction) {
 	getKey = keyFetchFunction;
 }
 
+	/**
+	 * @param {string} DKIMSignatureHeader
+	 * @returns {object}
+	 */
 	function newDKIMSignature( DKIMSignatureHeader ) {
 		return {
 			original_header : DKIMSignatureHeader,
@@ -180,9 +184,12 @@ export function setKeyFetchFunction(keyFetchFunction) {
 		};
 	}
 
-	/*
+	/**
 	 * parse the DKIM-Signature header field
 	 * header field is specified in Section 3.5 of RFC 6376
+	 *
+	 * @param {any} DKIMSignature
+	 * @returns {object}
 	 */
 	function parseDKIMSignature(DKIMSignature) { // eslint-disable-line complexity
 		let DKIMSignatureHeader = DKIMSignature.original_header;
@@ -485,9 +492,12 @@ export function setKeyFetchFunction(keyFetchFunction) {
 		return DKIMSignature;
 	}
 
-	/*
+	/**
 	 * parse the DKIM key record
 	 * key record is specified in Section 3.6.1 of RFC 6376
+	 *
+	 * @param {string} DKIMKeyRecord
+	 * @returns {object}
 	 */
 	function parseDKIMKeyRecord(DKIMKeyRecord) {
 		const DKIMKey = {
@@ -601,9 +611,12 @@ export function setKeyFetchFunction(keyFetchFunction) {
 		return DKIMKey;
 	}
 
-	/*
+	/**
 	 * canonicalize a single header field using the relaxed algorithm
 	 * specified in Section 3.4.2 of RFC 6376
+	 *
+	 * @param {string} headerField
+	 * @returns {string}
 	 */
 	function canonicalizationHeaderFieldRelaxed(headerField) {
 		// Convert header field name (not the header field values) to lowercase
@@ -632,9 +645,12 @@ export function setKeyFetchFunction(keyFetchFunction) {
 		return headerField;
 	}
 
-	/*
+	/**
 	 * canonicalize the body using the simple algorithm
 	 * specified in Section 3.4.3 of RFC 6376
+	 *
+	 * @param {string} body
+	 * @returns {string}
 	 */
 	function canonicalizationBodySimple(body) {
 		// Ignore all empty lines at the end of the message body
@@ -646,9 +662,12 @@ export function setKeyFetchFunction(keyFetchFunction) {
 		return body;
 	}
 
-	/*
+	/**
 	 * canonicalize the body using the relaxed algorithm
 	 * specified in Section 3.4.4 of RFC 6376
+	 *
+	 * @param {string} body
+	 * @returns {string}
 	 */
 	function canonicalizationBodyRelaxed(body) {
 		// Ignore all whitespace at the end of lines
@@ -669,9 +688,13 @@ export function setKeyFetchFunction(keyFetchFunction) {
 		return body;
 	}
 
-	/*
+	/**
 	 * Computing the Message Hash for the body
 	 * specified in Section 3.7 of RFC 6376
+	 *
+	 * @param {Msg} msg
+	 * @param {any} DKIMSignature
+	 * @returns {Promise<string>}
 	 */
 	async function computeBodyHash(msg, DKIMSignature) {
 		// canonicalize body
@@ -708,9 +731,13 @@ export function setKeyFetchFunction(keyFetchFunction) {
 		return bodyHash;
 	}
 
-	/*
+	/**
 	 * Computing the input for the header Hash
 	 * specified in Section 3.7 of RFC 6376
+	 *
+	 * @param {Msg} msg
+	 * @param {any} DKIMSignature
+	 * @returns {string}
 	 */
 	function computeHeaderHashInput(msg, DKIMSignature) {
 		let hashInput = "";
@@ -769,8 +796,8 @@ export function setKeyFetchFunction(keyFetchFunction) {
 	 * handeles Exeption
 	 *
 	 * @param {Error} e
-	 * @param {Object} msg
-	 * @param {Object} [dkimSignature]
+	 * @param {Msg} msg
+	 * @param {any} [dkimSignature]
 	 * @return {dkimSigResultV2}
 	 */
 	function handleException(e, msg, dkimSignature = {} ) {
@@ -795,6 +822,7 @@ export function setKeyFetchFunction(keyFetchFunction) {
 			return result;
 		}
 		// return result
+		/** @type {dkimSigResultV2} */
 		const result = {
 			version : "2.0",
 			result : "TEMPFAIL",
@@ -816,8 +844,8 @@ export function setKeyFetchFunction(keyFetchFunction) {
 	/**
 	 * Verifying a single DKIM signature
 	 *
-	 * @param {Object} msg
-	 * @param {Object} DKIMSignature
+	 * @param {Msg} msg
+	 * @param {any} DKIMSignature
 	 * @return {Promise<dkimSigResultV2>}
 	 * @throws DKIM_SigError
 	 * @throws DKIM_InternalError
@@ -977,17 +1005,19 @@ export function setKeyFetchFunction(keyFetchFunction) {
 	/**
 	 * processes signatures
 	 *
-	 * @param {Object} msg
+	 * @param {Msg} msg
 	 * @return {Promise<dkimSigResultV2[]>}
 	 */
 	async function processSignatures(msg) {
 		let iDKIMSignatureIdx = 0;
 		let DKIMSignature;
 		// contains the result of all DKIM-Signatures which have been verified
+		/** @type {dkimSigResultV2[]} */
 		const sigResults = [];
 
-		if (msg.headerFields.get("dkim-signature")) {
-			log.debug(`${msg.headerFields.get("dkim-signature").length} DKIM-Signatures found.`);
+		const dkimSignatureHeaders = msg.headerFields.get("dkim-signature");
+		if (dkimSignatureHeaders) {
+			log.debug(`${dkimSignatureHeaders.length} DKIM-Signatures found.`);
 		} else {
 			return sigResults;
 		}
@@ -998,13 +1028,13 @@ export function setKeyFetchFunction(keyFetchFunction) {
 		// SHOULD NOT be reordered and SHOULD be prepended to the message."
 		//
 		// The first added signature is verified first.
-		for (iDKIMSignatureIdx = msg.headerFields.get("dkim-signature").length - 1;
+		for (iDKIMSignatureIdx = dkimSignatureHeaders.length - 1;
 		     iDKIMSignatureIdx >=0; iDKIMSignatureIdx--) {
 			let sigRes;
 			try {
 				log.debug(`Verifying DKIM-Signature ${iDKIMSignatureIdx+1} ...`);
 				DKIMSignature = newDKIMSignature(
-					msg.headerFields.get("dkim-signature")[iDKIMSignatureIdx]);
+					dkimSignatureHeaders[iDKIMSignatureIdx]);
 				parseDKIMSignature(DKIMSignature);
 				log.debug(`Parsed DKIM-Signature ${iDKIMSignatureIdx+1}:`, DKIMSignature);
 				sigRes = await verifySignature(msg, DKIMSignature);
@@ -1025,7 +1055,7 @@ export function setKeyFetchFunction(keyFetchFunction) {
 	 * Checks if at least on signature exists.
 	 * If not, adds one to signatures with result "no sig" or "missing sig".
 	 *
-	 * @param {Object} msg
+	 * @param {Msg} msg
 	 * @param {dkimSigResultV2[]} signatures
 	 * @return {void}
 	 */
@@ -1138,11 +1168,16 @@ export default class Verifier {
 	/**
 	 * Sorts the given signatures.
 	 *
-	 * @param {Object} msg
+	 * @param {Msg} msg
 	 * @param {dkimSigResultV2[]} signatures
 	 * @return {void}
 	 */
 	function sortSignatures(msg, signatures) {
+		/**
+		 * @param {dkimSigResultV2} sig1
+		 * @param {dkimSigResultV2} sig2
+		 * @returns {number}
+		 */
 		function result_compare(sig1, sig2) {
 			if (sig1.result === sig2.result) {
 				return 0;
@@ -1169,6 +1204,11 @@ export default class Verifier {
 			throw new DKIM_InternalError(`result_compare: sig1.result: ${sig1.result}; sig2.result: ${sig2.result}`);
 		}
 
+		/**
+		 * @param {dkimSigResultV2} sig1
+		 * @param {dkimSigResultV2} sig2
+		 * @returns {number}
+		 */
 		function warnings_compare(sig1, sig2) {
 			if (sig1.result !== "SUCCESS") {
 				return 0;
@@ -1194,6 +1234,11 @@ export default class Verifier {
 			}
 		}
 
+		/**
+		 * @param {dkimSigResultV2} sig1
+		 * @param {dkimSigResultV2} sig2
+		 * @returns {number}
+		 */
 		function sdid_compare(sig1, sig2) {
 			if (sig1.sdid === sig2.sdid) {
 				return 0;

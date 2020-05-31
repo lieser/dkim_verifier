@@ -1,7 +1,5 @@
 /*
- * utils.mjs.js
- *
- * Version: 3.0.0pre1 (31 January 2020)
+ * General utility functions that do not have any dependencies.
  *
  * Copyright (c) 2013-2020 Philippe Lieser
  *
@@ -13,54 +11,6 @@
 
 // @ts-check
 /* eslint-disable no-use-before-define */
-
-const PREF = {
-	DNS: {
-		RESOLVER: {
-			JSDNS: 1,
-			LIBUNBOUND: 2,
-		}
-	},
-	ENABLE: {
-		DEFAULT: 0,
-		TRUE: 1,
-		FALSE: 2,
-	},
-	KEY: {
-		STORING: {
-			DISABLED: 0,
-			STORE: 1,
-			COMPARE: 2,
-		}
-	},
-	POLICY: {
-		SIGN_RULES: {
-			AUTO_ADD_RULE: {
-				FOR: {
-					FROM: 0,
-					SUBDOMAIN: 1,
-					BASE_DOMAIN: 2,
-				}
-			}
-		}
-	},
-	SHOW: {
-		NEVER: 0,
-		DKIM_VALID: 10,
-		DKIM_VALID_ALL: 20,
-		DKIM_SIGNED: 30,
-		EMAIL: 40,
-		MSG: 50,
-	},
-	STATUSBARPANEL: {
-		RESULT: {
-			STYLE: {
-				TEXT: 1,
-				ICON: 2,
-			}
-		}
-	}
-};
 
 /**
  * Deferred Promise
@@ -162,43 +112,6 @@ function getBaseDomainFromAddr(addr, aAdditionalParts=0) {
  */
 export function getDomainFromAddr(addr) {
 	return addr.substr(addr.lastIndexOf("@")+1);
-}
-
-/**
- * Reads from a source asynchronously into a String.
- *
- * Based on https://developer.mozilla.org/en-US/docs/Code_snippets/File_I_O#Asynchronously
- *
- * @param {string} aSource The source to read from.
- *
- * @return {Promise<string>}
- */
-function readStringFrom(aSource) {
-	log.trace("readStringFrom begin");
-
-	/** @type {IDeferred<string>} */
-	var defer = new Deferred();
-
-	NetUtil.asyncFetch({
-		uri: aSource,
-		loadUsingSystemPrincipal: true
-	}, function(inputStream, status) {
-		if (!Components.isSuccessCode(status)) {
-			// Handle error!
-			defer.reject(new Error(`readStringFrom: nsresult: ${status}`));
-			// defer.reject(Object.keys(Components.results).find(o=>o[status] === value));
-			log.trace(`readStringFrom nsresult: ${status}`);
-			return;
-		}
-
-		// The source data is contained within inputStream.
-		// You can read it into a string with
-		var data = NetUtil.readInputStreamToString(inputStream, inputStream.available());
-		defer.resolve(data);
-		log.trace("readStringFrom begin");
-	});
-
-	return defer.promise;
 }
 
 /**
