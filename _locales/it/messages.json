@@ -363,7 +363,7 @@
 	"options_policy.signRules.checkDefaultRules": {
 		"message": "Usa regole predefinite"
 	},
-	"options_policy.signRules.autoAddRule": {
+	"options_policy.signRules.autoAddRule.enable": {
 		"message": "Aggiungi regole automaticamente in base alle email con firma DKIM"
 	},
 	"options_policy.signRules.autoAddRule.onlyIfFromAddressInSDID": {

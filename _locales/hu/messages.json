@@ -363,7 +363,7 @@
 	"options_policy.signRules.checkDefaultRules": {
 		"message": "Alapértelmezett szabályok használata"
 	},
-	"options_policy.signRules.autoAddRule": {
+	"options_policy.signRules.autoAddRule.enable": {
 		"message": "Önműködően adjon hozzá szabályokat a megtekintett DKIM aláírt e-mailek alapján"
 	},
 	"options_policy.signRules.autoAddRule.onlyIfFromAddressInSDID": {

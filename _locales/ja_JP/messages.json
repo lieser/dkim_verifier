@@ -363,7 +363,7 @@
 	"options_policy.signRules.checkDefaultRules": {
 		"message": "デフォルトルールを利用"
 	},
-	"options_policy.signRules.autoAddRule": {
+	"options_policy.signRules.autoAddRule.enable": {
 		"message": "閲覧した DKIM 署名メールをもとにルールを自動追加"
 	},
 	"options_policy.signRules.autoAddRule.onlyIfFromAddressInSDID": {

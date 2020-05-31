@@ -46,6 +46,7 @@ describe("migration [unittest]", function () {
 					"dns.proxy.port": "42",
 					"error.policy.wrong_sdid.asWarning": true,
 					"key.storing": 2,
+					"policy.signRules.autoAddRule": true,
 					"saveResult": true,
 				}),
 			};
@@ -56,6 +57,7 @@ describe("migration [unittest]", function () {
 			expect(prefs["key.storing"]).to.be.equal(2);
 			expect(prefs.saveResult).to.be.equal(true);
 			// renamed
+			expect(prefs["policy.signRules.autoAddRule.enable"]).to.be.equal(true);
 			expect(prefs["policy.signRules.error.wrong_sdid.asWarning"]).to.be.equal(true);
 			// type changed
 			expect(prefs["dns.proxy.port"]).to.be.equal(42);

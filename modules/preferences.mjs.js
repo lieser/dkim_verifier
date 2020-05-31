@@ -337,8 +337,8 @@ export class BasePreferences {
 	get "policy.signRules.checkDefaultRules"() {
 		return this._tryGetBoolValue("policy.signRules.checkDefaultRules", true);
 	}
-	get "policy.signRules.autoAddRule"() {
-		return this._tryGetBoolValue("policy.signRules.autoAddRule", false);
+	get "policy.signRules.autoAddRule.enable"() {
+		return this._tryGetBoolValue("policy.signRules.autoAddRule.enable", false);
 	}
 	get "policy.signRules.autoAddRule.onlyIfFromAddressInSDID"() {
 		return this._tryGetBoolValue("policy.signRules.autoAddRule.onlyIfFromAddressInSDID", true);

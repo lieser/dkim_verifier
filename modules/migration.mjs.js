@@ -35,6 +35,9 @@ export async function migratePrefs() {
 			if (name === "error.policy.wrong_sdid.asWarning") {
 				name = "policy.signRules.error.wrong_sdid.asWarning";
 			}
+			if (name === "policy.signRules.autoAddRule") {
+				name = "policy.signRules.autoAddRule.enable";
+			}
 			await prefs.setValue(name, value);
 		} catch (error) {
 			log.error(`Migration of preference ${name} with value ${value} failed:`, error);

@@ -363,7 +363,7 @@
 	"options_policy.signRules.checkDefaultRules": {
 		"message": "使用默认规则"
 	},
-	"options_policy.signRules.autoAddRule": {
+	"options_policy.signRules.autoAddRule.enable": {
 		"message": "自动基于见过的 DKIM 签名邮件添加规则"
 	},
 	"options_policy.signRules.autoAddRule.onlyIfFromAddressInSDID": {

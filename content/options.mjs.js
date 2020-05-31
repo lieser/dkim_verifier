@@ -151,9 +151,9 @@ function updatePolicySignRulesEnable() {
 
 function updatePolicyAutoAddRuleEnable() {
 	/** @type {HTMLInputElement|null} */
-	const policySignRulesAutoAddRuleEnabled =
-		document.querySelector("[data-pref='policy.signRules.autoAddRule']");
-	if (!policySignRulesAutoAddRuleEnabled) {
+	const policySignRulesAutoAddRuleEnable =
+		document.querySelector("[data-pref='policy.signRules.autoAddRule.enable']");
+	if (!policySignRulesAutoAddRuleEnable) {
 		throw Error("policy.signRules.autoAddRule enabled element not found");
 	}
 	const policySignRulesAutoAddRule = document.getElementById("policy.signRules.autoAddRule");
@@ -164,7 +164,7 @@ function updatePolicyAutoAddRuleEnable() {
 		throw Error("policy.signRules.autoAddRule element is not a fieldset");
 	}
 
-	policySignRulesAutoAddRule.disabled = !policySignRulesAutoAddRuleEnabled.checked;
+	policySignRulesAutoAddRule.disabled = !policySignRulesAutoAddRuleEnable.checked;
 }
 
 /**
@@ -220,7 +220,7 @@ function preferenceChanged(event) {
 			case "policy.signRules.enable":
 				updatePolicySignRulesEnable();
 				break;
-			case "policy.signRules.autoAddRule":
+			case "policy.signRules.autoAddRule.enable":
 				updatePolicyAutoAddRuleEnable();
 				break;
 			default:
