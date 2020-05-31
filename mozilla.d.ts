@@ -50,6 +50,21 @@ declare module Components {
     }
 }
 
+/**
+ * The `console` global in Chrome context allows creating ConsoleInstance
+ * https://searchfox.org/mozilla-central/source/dom/console/ConsoleInstance.h
+ */
+interface ChromeConsole extends Console {
+    readonly createInstance: (aConsoleOptions: {
+        prefix?: string,
+        maxLogLevel?: "All" | "Debug" | "Log" | "Info" | "Clear" | "Trace" | "TimeLog" | "TimeEnd" | "Time" | "Group" | "GroupEnd" | "Profile" | "ProfileEnd" | "Dir" | "Dirxml" | "Warn" | "Error" | "Off",
+        maxLogLevelPref?: string,
+        dump?: Function,
+        innerID?: sting,
+        consoleID?: string,
+    }) => Console;
+}
+
 declare module ExtensionCommon {
     interface Extension {
         callOnClose(obj: object): void;
@@ -92,95 +107,6 @@ declare module FileUtils {
     function openSafeFileOutputStream(file: nsIFile, modeFlags?: number): nsIFileOutputStream;
 }
 
-/** JavaScript code module "resource://gre/modules/Log.jsm" */
-declare module Log {
-    function exceptionStr(e: Error): string;
-
-    abstract class Appender {
-        constructor(formatter: Formatter);
-        append(message: LogMessage): void;
-        abstract doAppend(formatted: string): void;
-
-        readonly _formatter: Formatter;
-        readonly _name: string;
-        level: number;
-    }
-    class ConsoleAppender extends Appender {
-        doAppend(formatted: string): void;
-    };
-    class DumpAppender extends Appender { };
-
-    abstract class Formatter {
-        abstract format(LogMessage): string;
-    }
-    class BasicFormatter extends Formatter {
-        formatText(message: LogMessage): string
-    }
-
-    let repository: LoggerRepository;
-    let Level: {
-        Fatal: 70,
-        Error: 60,
-        Warn: 50,
-        Info: 40,
-        Config: 30,
-        Debug: 20,
-        Trace: 10,
-        All: -1,
-        Desc: {
-            70: "FATAL",
-            60: "ERROR",
-            50: "WARN",
-            40: "INFO",
-            30: "CONFIG",
-            20: "DEBUG",
-            10: "TRACE",
-            "-1": "ALL",
-        },
-        Numbers: {
-            "FATAL": 70,
-            "ERROR": 60,
-            "WARN": 50,
-            "INFO": 40,
-            "CONFIG": 30,
-            "DEBUG": 20,
-            "TRACE": 10,
-            "ALL": -1,
-        }
-    }
-
-    interface LoggerRepository {
-        getLogger(name: string): Logger;
-    }
-
-    interface Logger {
-        addAppender(appender: Appender);
-
-        fatal(text: string, params?: Object): void;
-        fatal(error: Error): void;
-        error(text: string, params?: Object): void;
-        error(error: Error): void;
-        warn(text: string, params?: Object): void;
-        warn(error: Error): void;
-        info(text: string, params?: Object): void;
-        config(text: string, params?: Object): void;
-        debug(text: string, params?: Object): void;
-        debug(error: Error): void;
-        trace(text: string, params?: Object): void;
-
-        level: number;
-    }
-
-    interface LogMessage {
-        loggerName: string;
-        level: number;
-        levelDesc: string;
-        time: number;
-        message: string | null;
-        params?: Object;
-    }
-}
-
 /** JavaScript code module "resource://gre/modules/NetUtil.jsm" */
 declare module NetUtil {
     function asyncCopy(aSource: nsIInputStream, aSink: nsIOutputStream, aCallback?: (status: nsresult) => void): nsIAsyncStreamCopier;
@@ -218,6 +144,7 @@ declare module OS {
 declare module Services {
     const appinfo: nsIXULAppInfo;
     const io: nsIIOService;
+    const obs: nsIObserverService;
     const prefs: nsIPrefService;
     const scriptloader: mozIJSSubScriptLoader;
     const storage: mozIStorageService;
@@ -306,11 +233,15 @@ interface nsILineInputStream {
     readonly readLine: (aLine: { value: string }) => boolean;
 }
 
+interface nsIObserverService {
+    readonly notifyObservers: (aSubject: nsISupports?, aTopic: string, someData?: string?) => void;
+}
+
 interface nsIRequest { nsIRequest: never }
 
 interface nsIRequestObserver {
     readonly onStartRequest: (aRequest: nsIRequest, aContext: nsISupports) => void;
-    readonly onStopRequest: (aRequest: nsIRequest, aContext: nsISupports, aStatusCode: nsresult) => void;
+    readonly onStopRequest: (aRequest: nsIRequest, aStatusCode: nsresult) => void;
 }
 
 interface nsISocketTransport extends nsITransport {
@@ -329,7 +260,7 @@ interface nsIStreamListener extends nsIRequestObserver {
 }
 
 interface nsISupports {
-        readonly QueryInterface: <nsIIDRef>(uuid: nsIIDRef) => nsIIDRef;
+    readonly QueryInterface: <nsIIDRef>(uuid: nsIIDRef) => nsIIDRef;
 }
 
 interface nsITransport {

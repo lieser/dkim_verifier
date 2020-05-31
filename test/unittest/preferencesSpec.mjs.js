@@ -380,7 +380,7 @@ describe("preferences [unittest]", function () {
 			await pref.setValue("arh.read", true);
 			triggerListener();
 			await pref.setValue("color.nosig.background", "red");
-			await pref.setValue("dns.proxy.port", "1111");
+			await pref.setValue("dns.proxy.port", 1111);
 
 			while (storageCalls.length > 0) {
 				triggerListener();
@@ -389,7 +389,7 @@ describe("preferences [unittest]", function () {
 			expect(pref["dns.nameserver"]).to.be.equal("fooBar");
 			expect(pref["arh.read"]).to.be.equal(true);
 			expect(pref["color.nosig.background"]).to.be.equal("red");
-			expect(pref["dns.proxy.port"]).to.be.equal("1111");
+			expect(pref["dns.proxy.port"]).to.be.equal(1111);
 		});
 	});
 });

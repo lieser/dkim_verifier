@@ -9,10 +9,12 @@
 
 // @ts-check
 ///<reference path="../WebExtensions.d.ts" />
+///<reference path="../experiments/dkimHeader.d.ts" />
 /* eslint-env browser, webextensions */
 
 import { DKIM_InternalError, DKIM_SigError } from "../modules/error.mjs.js";
 import AuthVerifier from "../modules/AuthVerifier.mjs.js";
+import DNS from "../modules/dns.mjs.js";
 import Logging from "../modules/logging.mjs.js";
 import { migratePrefs } from "../modules/migration.mjs.js";
 import prefs from "../modules/preferences.mjs.js";
@@ -41,21 +43,12 @@ isInitialized.catch(error => log.fatal("Initializing failed with:", error));
 // eslint-disable-next-line valid-jsdoc
 /** @type {import("../modules/dkim/verifier.mjs.js").KeyFetchFunction} */
 async function getKey(sdid, selector) {
-	const RCODE = {
-		NoError: 0, // No Error [RFC1035]
-		FormErr: 1, // Format Error [RFC1035]
-		ServFail: 2, // Server Failure [RFC1035]
-		NXDomain: 3, // Non-Existent Domain [RFC1035]
-		NotImp: 4, // Non-Existent Domain [RFC1035]
-		Refused: 5, // Query Refused [RFC1035]
-	};
-
-	const dnsRes = await browser.jsdns.txt(`${selector}._domainkey.${sdid}`);
+	const dnsRes = await DNS.txt(`${selector}._domainkey.${sdid}`);
 
 	if (dnsRes.bogus) {
 		throw new DKIM_InternalError(null, "DKIM_DNSERROR_DNSSEC_BOGUS");
 	}
-	if (dnsRes.rcode !== RCODE.NoError && dnsRes.rcode !== RCODE.NXDomain) {
+	if (dnsRes.rcode !== DNS.RCODE.NoError && dnsRes.rcode !== DNS.RCODE.NXDomain) {
 		log.info("DNS query failed with result:", dnsRes);
 		throw new DKIM_InternalError(`rcode: ${dnsRes.rcode}`,
 			"DKIM_DNSERROR_SERVER_ERROR");

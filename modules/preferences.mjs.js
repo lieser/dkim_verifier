@@ -313,7 +313,7 @@ export class BasePreferences {
 		return this._tryGetStringValue("dns.proxy.host", "");
 	}
 	get "dns.proxy.port"() {
-		return this._tryGetStringValue("dns.proxy.port", "");
+		return this._tryGetNumberValue("dns.proxy.port", 1080);
 	}
 	get "dns.jsdns.autoResetServerAlive"() {
 		return this._tryGetBoolValue("dns.jsdns.autoResetServerAlive", false);

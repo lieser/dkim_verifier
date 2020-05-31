@@ -27,9 +27,11 @@ export async function migratePrefs() {
 	await prefs.init();
 
 	const userPrefs = await browser.migration.getUserPrefs();
-	// eslint-disable-next-line prefer-const
 	for (let [name, value] of Object.entries(userPrefs)) {
 		try {
+			if (name === "dns.proxy.port" && typeof value === "string") {
+				value = parseInt(value, 10);
+			}
 			if (name === "error.policy.wrong_sdid.asWarning") {
 				name = "policy.signRules.error.wrong_sdid.asWarning";
 			}

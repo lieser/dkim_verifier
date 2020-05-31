@@ -43,6 +43,7 @@ describe("migration [unittest]", function () {
 					"arh.read": true,
 					"dkim.enable": false,
 					"dns.nameserver": "1.1.1.1",
+					"dns.proxy.port": "42",
 					"error.policy.wrong_sdid.asWarning": true,
 					"key.storing": 2,
 					"saveResult": true,
@@ -56,6 +57,8 @@ describe("migration [unittest]", function () {
 			expect(prefs.saveResult).to.be.equal(true);
 			// renamed
 			expect(prefs["policy.signRules.error.wrong_sdid.asWarning"]).to.be.equal(true);
+			// type changed
+			expect(prefs["dns.proxy.port"]).to.be.equal(42);
 		});
 		it("errors should be ignored", async function () {
 			browser.migration = {

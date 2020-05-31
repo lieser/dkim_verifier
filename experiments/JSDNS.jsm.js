@@ -57,6 +57,7 @@
  *
  * 2.0.0
  * -----
+ * - configure preferences from outside
  * - removed unused code
  * - requires at least Gecko 69
  * - some ESLint and TS fixes
@@ -170,7 +171,7 @@
 /* eslint strict: ["warn", "function"] */
 /* eslint complexity: "off" */
 /* eslint no-magic-numbers: "off" */
-/* global Components, Services */
+/* global Components */
 /* exported EXPORTED_SYMBOLS, JSDNS */
 
 
@@ -182,22 +183,13 @@ var EXPORTED_SYMBOLS = [
 const Cc = Components.classes;
 // @ts-ignore
 const Ci = Components.interfaces;
-// @ts-ignore
-const Cu = Components.utils;
-
-Cu.import("resource://gre/modules/Services.jsm");
 
 
 // @ts-ignore
 const LOG_NAME = "DKIM_Verifier.JSDNS";
-// @ts-ignore
-const PREF_BRANCH = "extensions.dkim_verifier.dns.";
 
 
 var JSDNS = {};
-
-// @ts-ignore
-var prefs = Services.prefs.getBranch(PREF_BRANCH);
 
 /** @type {ChromeConsole} */
 // @ts-ignore
@@ -215,203 +207,61 @@ var log = chromeConsole.createInstance({
  * @property {boolean} alive -  whether the server is alive
  */
 
+// Preferences
 /** @type {DnsServer[]} */
 var DNS_ROOT_NAME_SERVERS = [];
-/** @type {DnsServer[]} */
-var PREF_DNS_ROOT_NAME_SERVERS = [];
-/** @type {DnsServer[]} */
-var OS_DNS_ROOT_NAME_SERVERS = [];
-
-// Preferences
-/** @type {boolean|null} */
-var getNameserversFromOS = null;
 var timeout_connect = 0xFFFF;
 /** @type {number|null} */
 var timeout_read_write = null;
-
-/**
- * Try to get a the user value of a preference
- *
- * @param {string} prefName
- * @param {boolean} defaultValue - default value if no user value exists
- * @returns {boolean}
- */
-function tryGetBoolPref(prefName, defaultValue) {
-	"use strict";
-	if (prefs.prefHasUserValue(prefName)) {
-		return prefs.getBoolPref(prefName);
-	}
-	return defaultValue;
-}
-
-/**
- * Try to get a the user value of a preference
- *
- * @param {string} prefName
- * @param {string} defaultValue - default value if no user value exists
- * @returns {string}
- */
-function tryGetCharPref(prefName, defaultValue) {
-	"use strict";
-	if (prefs.prefHasUserValue(prefName)) {
-		return prefs.getCharPref(prefName);
-	}
-	return defaultValue;
-}
-
-/**
- * Try to get a the user value of a preference
- *
- * @param {string} prefName
- * @param {number} defaultValue - default value if no user value exists
- * @returns {number}
- */
-function tryGetIntPref(prefName, defaultValue) {
-	"use strict";
-	if (prefs.prefHasUserValue(prefName)) {
-		return prefs.getIntPref(prefName);
-	}
-	return defaultValue;
-}
-
-/**
- * init
- * @return {void}
- */
-function init() {
-	"use strict";
-
-	// Register to receive notifications of preference changes
-	prefs.addObserver("", prefObserver, false);
-
-	// load preferences
-	dnsChangeNameserver(tryGetCharPref("nameserver", "8.8.8.8"));
-	dnsChangeGetNameserversFromOS(
-		tryGetBoolPref("getNameserversFromOS", true)
-	);
-	dnsChangeGetNameserversFromOS(false);
-	dnsChangeTimeoutConnect(tryGetIntPref("timeout_connect", 5));
-	if (prefs.getPrefType("timeout_read_write") === prefs.PREF_INT) {
-		timeout_read_write = prefs.getIntPref("timeout_read_write");
-	}
-
-}
-
-var prefObserver = {
-	/**
-	 * gets called called whenever an event occurs on the preference
-	 * @param {string} subject
-	 * @param {string} topic
-	 * @param {string} data
-	 * @returns {void}
-	 */
-	observe: function Verifier_observe(subject, topic, data) {
-		"use strict";
-
-		// subject is the nsIPrefBranch we're observing (after appropriate QI)
-		// data is the name of the pref that's been changed (relative to aSubject)
-
-		if (topic !== "nsPref:changed") {
-			return;
-		}
-
-		switch (data) {
-			case "getNameserversFromOS":
-				dnsChangeGetNameserversFromOS(
-					prefs.getBoolPref("getNameserversFromOS")
-				);
-				break;
-			case "nameserver":
-				dnsChangeNameserver(prefs.getCharPref("nameserver"));
-				break;
-			case "timeout_connect":
-				dnsChangeTimeoutConnect(prefs.getIntPref("timeout_connect"));
-				break;
-			case "timeout_read_write":
-				if (prefs.getPrefType("timeout_read_write") === prefs.PREF_INT) {
-					timeout_read_write = prefs.getIntPref("timeout_read_write");
-					// log.trace("timeout_read_write: "+timeout_read_write);
-				} else {
-					timeout_read_write = null;
-					// log.trace("timeout_read_write disabled");
-				}
-				break;
-			default:
-			// ignore other options
-		}
-	},
+var PROXY_CONFIG = {
+	enable: false,
+	type: "",
+	host: "",
+	port: 0
 };
+var AUTO_RESET_SERVER_ALIVE = false;
 
 /**
- * Changes preference getNameserversFromOS and updates DNS Servers
+ * Set preferences to use.
  *
- * @param {Boolean} bool
- * @return {void}
+ * @param {boolean} getNameserversFromOS
+ * @param {string} nameServer
+ * @param {number} timeoutConnect
+ * @param {{ enable: boolean, type: string, host: string, port: number }} proxy
+ * @param {boolean} autoResetServerAlive
+ * @returns {void}
  */
-function dnsChangeGetNameserversFromOS(bool) {
+function configureDNS(getNameserversFromOS, nameServer, timeoutConnect, proxy, autoResetServerAlive) {
 	"use strict";
 
-	getNameserversFromOS = bool;
-
-	if (getNameserversFromOS) {
-		DNS_get_OS_DNSServers();
-		DNS_ROOT_NAME_SERVERS = arrayUniqBy(
-			OS_DNS_ROOT_NAME_SERVERS.concat(PREF_DNS_ROOT_NAME_SERVERS),
-			function (e) { return e.server; }
-		);
-	} else {
-		DNS_ROOT_NAME_SERVERS = PREF_DNS_ROOT_NAME_SERVERS;
-	}
-
-	log.info("changed DNS Servers to : " + DNS_ROOT_NAME_SERVERS.toSource());
-}
-
-/**
- * Changes preference DNS Servers and updates DNS Servers
- *
- * @param {String} nameserver
- *        ";" separated list of DNS Nameservers
- * @return {void}
- */
-function dnsChangeNameserver(nameserver) {
-	"use strict";
-
-	var nameservers = nameserver.split(";");
-	PREF_DNS_ROOT_NAME_SERVERS = [];
-	nameservers.forEach(function (element /*, index, array*/) {
+	/** @type {DnsServer[]} */
+	const prefDnsRootNameServers = [];
+	nameServer.split(";").forEach(function (element /*, index, array*/) {
 		if (element.trim() !== "") {
-			PREF_DNS_ROOT_NAME_SERVERS.push({
+			prefDnsRootNameServers.push({
 				server: element.trim(),
 				alive: true
 			});
 		}
 	});
-	//DNS_Debug("DNS: Got servers from user preference: " + PREF_DNS_ROOT_NAME_SERVERS.toSource());
-
 	if (getNameserversFromOS) {
-		DNS_get_OS_DNSServers();
+		const osDnsRootNameServers = getOsDnsServers();
 		DNS_ROOT_NAME_SERVERS = arrayUniqBy(
-			OS_DNS_ROOT_NAME_SERVERS.concat(PREF_DNS_ROOT_NAME_SERVERS),
+			osDnsRootNameServers.concat(prefDnsRootNameServers),
 			function (e) { return e.server; }
 		);
 	} else {
-		DNS_ROOT_NAME_SERVERS = PREF_DNS_ROOT_NAME_SERVERS;
+		DNS_ROOT_NAME_SERVERS = prefDnsRootNameServers;
 	}
 
-	log.info("changed DNS Servers to : " + DNS_ROOT_NAME_SERVERS.toSource());
-}
+	log.info("changed DNS Servers to :", DNS_ROOT_NAME_SERVERS);
 
-/**
- * Changes preference timeout_connect
- *
- * @param {Number} timeout
- *        Timeout in seconds
- * @return {void}
- */
-function dnsChangeTimeoutConnect(timeout) {
-	"use strict";
+	timeout_connect = timeoutConnect;
+	timeout_read_write = timeoutConnect;
 
-	timeout_connect = timeout;
+	PROXY_CONFIG = proxy;
+
+	AUTO_RESET_SERVER_ALIVE = autoResetServerAlive;
 }
 
 /**
@@ -443,12 +293,13 @@ function arrayUniqBy(ary, key) {
 /**
  * get DNS Servers from OS configuration
  *
- * @return {void}
+ * @return {DnsServer[]}
  */
-function DNS_get_OS_DNSServers() {
+function getOsDnsServers() {
 	"use strict";
 
-	OS_DNS_ROOT_NAME_SERVERS = [];
+	/** @type {DnsServer[]} */
+	const OS_DNS_ROOT_NAME_SERVERS = [];
 
 	if ("@mozilla.org/windows-registry-key;1" in Components.classes) {
 		// Firefox 1.5 or newer on Windows
@@ -603,8 +454,7 @@ function DNS_get_OS_DNSServers() {
 			}
 		}
 	}
-
-	//DNS_Debug("DNS: Autoconfigured servers: " + OS_DNS_ROOT_NAME_SERVERS);
+	return OS_DNS_ROOT_NAME_SERVERS;
 }
 
 /**
@@ -665,7 +515,7 @@ function queryDNSRecursive(server, host, recordtype, callback, callbackdata, hop
 
 		if (server === null) {
 			log.debug("no DNS Server alive");
-			if (tryGetBoolPref("jsdns.autoResetServerAlive", false)) {
+			if (AUTO_RESET_SERVER_ALIVE) {
 				servers.forEach(function (element /*, index, array*/) {
 					element.alive = true;
 				});
@@ -1108,13 +958,13 @@ function DNS_readAllFromSocket(host, port, outputData, listener) {
 
 	try {
 		var proxy = null;
-		if (tryGetBoolPref("proxy.enable", false)) {
+		if (PROXY_CONFIG.enable) {
 			var pps = Cc["@mozilla.org/network/protocol-proxy-service;1"].
 				getService(Ci.nsIProtocolProxyService);
 			proxy = pps.newProxyInfo(
-				tryGetCharPref("proxy.type", "socks"),
-				tryGetCharPref("proxy.host", ""),
-				parseInt(tryGetCharPref("proxy.port", ""), 10),
+				PROXY_CONFIG.type,
+				PROXY_CONFIG.host,
+				PROXY_CONFIG.port,
 				"", "", 0, 0xffffffff, null
 			);
 		}
@@ -1191,6 +1041,5 @@ function DNS_StartsWith(a, b) {
 	return a.substring(0, b.length) === b;
 }
 
+JSDNS.configureDNS = configureDNS;
 JSDNS.queryDNS = queryDNS;
-
-init();

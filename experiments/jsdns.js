@@ -54,11 +54,15 @@ this.jsdns = class extends ExtensionCommon.ExtensionAPI {
 			NotImp: 4, // Non-Existent Domain [RFC1035]
 			Refused: 5, // Query Refused [RFC1035]
 		};
-		/** @type {{JSDNS: {queryDNS: typeof queryDNS}}} */
+		/** @type {{JSDNS: {configureDNS: typeof configureDNS, queryDNS: typeof queryDNS}}} */
 		const { JSDNS } = ChromeUtils.import(this.extension.rootURI.resolve("experiments/JSDNS.jsm.js"));
 		this.extension.callOnClose(this);
 		return {
 			jsdns: {
+				configure(getNameserversFromOS, nameServer, timeoutConnect, proxy, autoResetServerAlive) {
+					JSDNS.configureDNS(getNameserversFromOS, nameServer, timeoutConnect, proxy, autoResetServerAlive);
+					return Promise.resolve();
+				},
 				txt(name) {
 					// eslint-disable-next-line valid-jsdoc
 					/** @type {QueryDnsCallback<{resolve: function(browser.jsdns.TxtResult): void, reject: function(Error): void}>} */
@@ -82,11 +86,11 @@ this.jsdns = class extends ExtensionCommon.ExtensionAPI {
 								resRcode = RCODE.ServFail;
 							}
 
-							const results = dnsResult && dnsResult.map(rdData => {
-								if (typeof rdData !== "string") {
-									throw Error(`DNS result has unexpected type ${typeof rdData}`);
+							const results = dnsResult && dnsResult.map(rdata => {
+								if (typeof rdata !== "string") {
+									throw Error(`DNS result has unexpected type ${typeof rdata}`);
 								}
-								return rdData;
+								return rdata;
 							});
 
 							defer.resolve({
