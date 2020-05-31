@@ -16,6 +16,9 @@
 
 "use strict";
 
+// @ts-ignore
+const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
+
 /**
  * From https://javascriptweblog.wordpress.com/2011/08/08/fixing-the-javascript-typeof-operator/
  * @param {any} obj
@@ -96,7 +99,6 @@ this.jsdns = class extends ExtensionCommon.ExtensionAPI {
 							defer.reject(e);
 						}
 					}
-
 					return new Promise((resolve, reject) => JSDNS.queryDNS(
 						name, "TXT", dnsCallback, { resolve: resolve, reject: reject }));
 				},
@@ -106,5 +108,6 @@ this.jsdns = class extends ExtensionCommon.ExtensionAPI {
 
 	close() {
 		Components.utils.unload(this.extension.rootURI.resolve("experiments/JSDNS.jsm.js"));
+		Services.obs.notifyObservers(null, "startupcache-invalidate");
 	}
 };
