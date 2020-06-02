@@ -32,6 +32,29 @@
 						"description": "URL to the favicon to show"
 					}
 				]
+			},
+			{
+				"name": "highlightFromAddress",
+				"type": "function",
+				"description": "Highlight the from address with the given text and background color",
+				"async": true,
+				"parameters": [
+					{
+						"name": "tabId",
+						"type": "number",
+						"description": "Tab id"
+					},
+					{
+						"name": "color",
+						"type": "string",
+						"description": "text color"
+					},
+					{
+						"name": "backgroundColor",
+						"type": "string",
+						"description": "background color"
+					}
+				]
 			}
 		]
 	}

@@ -76,4 +76,29 @@ browser.messageDisplay.onMessageDisplayed.addListener(async (tab, message) => {
 	const res = await verifier.verify(rawMessage);
 	const warnings = res.dkim[0].warnings_str || [];
 	await browser.dkimHeader.setDkimHeaderResult(tab.id, res.dkim[0].result_str, warnings, res.dkim[0].favicon || "");
+	if (prefs.colorFrom) {
+		switch (res.dkim[0].res_num) {
+			case AuthVerifier.DKIM_RES.SUCCESS: {
+				const dkim = res.dkim[0];
+				if (!dkim.warnings_str || dkim.warnings_str.length === 0) {
+					browser.dkimHeader.highlightFromAddress(tab.id, prefs["color.success.text"], prefs["color.success.background"]);
+				} else {
+					browser.dkimHeader.highlightFromAddress(tab.id, prefs["color.warning.text"], prefs["color.warning.background"]);
+				}
+				break;
+			}
+			case AuthVerifier.DKIM_RES.TEMPFAIL:
+				browser.dkimHeader.highlightFromAddress(tab.id, prefs["color.tempfail.text"], prefs["color.tempfail.background"]);
+				break;
+			case AuthVerifier.DKIM_RES.PERMFAIL:
+				browser.dkimHeader.highlightFromAddress(tab.id, prefs["color.permfail.text"], prefs["color.permfail.background"]);
+				break;
+			case AuthVerifier.DKIM_RES.PERMFAIL_NOSIG:
+			case AuthVerifier.DKIM_RES.NOSIG:
+				browser.dkimHeader.highlightFromAddress(tab.id, prefs["color.nosig.text"], prefs["color.nosig.background"]);
+				break;
+			default:
+				throw new Error(`unknown res_num: ${res.dkim[0].res_num}`);
+		}
+	}
 });

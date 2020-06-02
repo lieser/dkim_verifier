@@ -360,6 +360,14 @@ declare class XULPopupElement extends XULElement { };
 //// Thunderbird specific interfaces
 
 declare class MozMailMultiEmailheaderfield extends MozXULElement {
+    /**
+     * The description inside `longEmailAddresses` with class "headerValue".
+     * Contains a <mail-email address> element.
+     */
+    emailAddresses: MozXULElement;
+    /**
+     * The outer hbox with class "headerValueBox"
+     */
     longEmailAddresses: MozXULElement;
     // added by add-on
     _dkimFavicon: MozXULElement;

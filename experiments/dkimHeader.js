@@ -532,6 +532,68 @@ class DkimFavicon {
 DkimFavicon._id = "dkimFavicon";
 
 /**
+ * Highlighting of the from address (text & background color)
+ */
+class HighlightFromAddress {
+	/**
+	 * Get the element containing the from address (without the following star)
+	 * @static
+	 * @param {Document} document
+	 * @returns {XULElement?}
+	 */
+	static _getFromAddress(document) {
+		/** @type {MozMailMultiEmailheaderfield?} */
+		// @ts-ignore
+		const expandedFromBox = document.getElementById("expandedfromBox");
+		if (!expandedFromBox) {
+			console.debug("DKIM: skipped highlighting of Email Address (no expandedfromBox)");
+			return null;
+		}
+		/** @type {XULElement?} */
+		// @ts-ignore
+		const mailEmailadress = expandedFromBox.emailAddresses.firstChild;
+		if (!mailEmailadress) {
+			console.debug("DKIM: skipped highlighting of Email Address (no firstChild)");
+			return null;
+		}
+		/** @type {XULElement|undefined} */
+		// @ts-ignore
+		const emailValue = mailEmailadress.getElementsByClassName("emaillabel")[0];
+		if (!emailValue) {
+			console.debug("DKIM: skipped highlighting of Email Address (no emaillabel)");
+			return null;
+		}
+		return emailValue;
+	}
+
+	/**
+	 * Set the text and background color of the from address.
+	 * @param {Document} document
+	 * @param {string} color
+	 * @param {string} backgroundColor
+	 * @returns {void}
+	 */
+	static setHighlightColor(document, color, backgroundColor) {
+		const emailValue = this._getFromAddress(document);
+		if (!emailValue) {
+			return;
+		}
+		emailValue.style.borderRadius = "3px";
+		emailValue.style.color = color;
+		emailValue.style.backgroundColor = backgroundColor;
+	}
+
+	/**
+	 * Reset the text and background color of the from address.
+	 * @param {Document} document
+	 * @returns {void}
+	 */
+	static reset(document) {
+		this.setHighlightColor(document, "", "");
+	}
+}
+
+/**
  * A listener on gMessageListeners that resets the DKIM related header elements.
  *
  * Functions will be called in the following order:
@@ -597,6 +659,7 @@ class DkimResetMessageListener {
 		dkimHeaderField.reset();
 		const dkimFavicon = DkimFavicon.get(document);
 		dkimFavicon.reset();
+		HighlightFromAddress.reset(document);
 	}
 	// eslint-disable-next-line no-empty-function
 	onEndHeaders() { }
@@ -698,6 +761,12 @@ this.dkimHeader = class extends ExtensionCommon.ExtensionAPI {
 					favicon.setFaviconUrl(faviconUrl);
 					return Promise.resolve();
 				},
+				highlightFromAddress: (tabId, color, backgroundColor) => {
+					const target = tabTracker.getTab(tabId);
+					const { document } = Components.utils.getGlobalForObject(target);
+					HighlightFromAddress.setHighlightColor(document, color, backgroundColor);
+					return Promise.resolve();
+				}
 			},
 		};
 	}
