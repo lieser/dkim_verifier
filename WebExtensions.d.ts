@@ -12,6 +12,20 @@ declare module browser {
         ) => string;
     }
 
+    declare module accounts {
+        interface MailAccount {
+            type: string,
+        }
+
+        const get: (accountId) => Promise<MailAccount?>;
+    }
+
+    declare module folder {
+        interface MailFolder {
+            accountId: string,
+        }
+    }
+
     declare module messages {
         interface MessagePart {
             body?: string,
@@ -34,7 +48,7 @@ declare module browser {
             ccList: string[],
             date: Date,
             flagged: boolean,
-            folder: MailFolder,
+            folder: folder.MailFolder,
             id: number,
             junk: boolean,
             junkScore: number,

@@ -81,6 +81,15 @@ browser.messageDisplay.onMessageDisplayed.addListener(async (tab, message) => {
 	try {
 		await isInitialized;
 
+		// return if msg is RSS feed or news
+		const account = await browser.accounts.get(message.folder.accountId);
+		if (account && (account.type === "rss" || account.type === "nntp")) {
+			browser.dkimHeader.showDkimHeader(tab.id, prefs.showDKIMHeader >= SHOW.MSG);
+			browser.dkimHeader.setDkimHeaderResult(
+				tab.id, browser.i18n.getMessage("NOT_EMAIL"), [], "");
+			return;
+		}
+
 		// If we already know if the header should be shown, trigger it now
 		if (prefs.showDKIMHeader >= SHOW.EMAIL) {
 			browser.dkimHeader.showDkimHeader(tab.id, true);
