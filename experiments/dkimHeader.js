@@ -351,9 +351,14 @@ class DkimHeaderRow {
 	/**
 	 * Creates an instance of DkimHeaderRow.
 	 * @param {Document} document
+	 * @param {XULElement|void} element - optional underlying element, will be created if not given
 	 * @memberof DkimHeaderRow
 	 */
-	constructor(document) {
+	constructor(document, element) {
+		if (element) {
+			this.element = element;
+			return;
+		}
 		this.element = document.createElement("tr");
 		this.element.id = DkimHeaderRow._id;
 
@@ -372,11 +377,26 @@ class DkimHeaderRow {
 	}
 
 	/**
+	 * Set whether the DKIM heder should be shown
+	 *
+	 * @param {boolean} show
+	 * @returns {void}
+	 * @memberof DkimHeaderRow
+	 */
+	show(show) {
+		if (show) {
+			this.element.style.visibility = "";
+		} else {
+			this.element.style.visibility = "collapse";
+		}
+	}
+
+	/**
 	 * Get the DKIM header row in a given document.
 	 *
 	 * @static
 	 * @param {Document} document
-	 * @returns {HTMLElement}
+	 * @returns {DkimHeaderRow}
 	 * @memberof DkimHeaderRow
 	 */
 	static get(document) {
@@ -384,7 +404,7 @@ class DkimHeaderRow {
 		if (!element) {
 			throw Error("Could not find the DkimHeaderRow element");
 		}
-		return element;
+		return new DkimHeaderRow(document, element);
 	}
 
 	/**
@@ -397,6 +417,7 @@ class DkimHeaderRow {
 	 */
 	static add(document) {
 		const headerRow = new DkimHeaderRow(document);
+		headerRow.show(false);
 		const expandedHeaders2 = document.getElementById("expandedHeaders2");
 		if (!expandedHeaders2) {
 			throw Error("Could not find the expandedHeaders2 element");
@@ -730,7 +751,7 @@ this.dkimHeader = class extends ExtensionCommon.ExtensionAPI {
 	unPaint(window) {
 		const headerRow = DkimHeaderRow.get(window.document);
 		if (headerRow) {
-			headerRow.remove();
+			headerRow.element.remove();
 		}
 		const favicon = DkimFavicon.get(window.document);
 		if (favicon) {
@@ -747,6 +768,15 @@ this.dkimHeader = class extends ExtensionCommon.ExtensionAPI {
 		const tabTracker = ExtensionParent.apiManager.global.tabTracker;
 		return {
 			dkimHeader: {
+				showDkimHeader: (tabId, show) => {
+					const target = tabTracker.getTab(tabId);
+					const { document } = Components.utils.getGlobalForObject(target);
+
+					const dkimHeaderRow = DkimHeaderRow.get(document);
+					dkimHeaderRow.show(show);
+
+					return Promise.resolve();
+				},
 				setDkimHeaderResult: (tabId, result, warnings, faviconUrl) => {
 					const target = tabTracker.getTab(tabId);
 					const { document } = Components.utils.getGlobalForObject(target);
@@ -759,12 +789,15 @@ this.dkimHeader = class extends ExtensionCommon.ExtensionAPI {
 					favicon.value = result;
 					favicon.warnings = warnings;
 					favicon.setFaviconUrl(faviconUrl);
+
 					return Promise.resolve();
 				},
 				highlightFromAddress: (tabId, color, backgroundColor) => {
 					const target = tabTracker.getTab(tabId);
 					const { document } = Components.utils.getGlobalForObject(target);
+
 					HighlightFromAddress.setHighlightColor(document, color, backgroundColor);
+
 					return Promise.resolve();
 				}
 			},

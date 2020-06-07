@@ -18,6 +18,7 @@ interface DKIMFaviconElement extends XULElement {
 
 declare module browser {
     declare module dkimHeader {
+        const showDkimHeader: (tabId: number, show: boolean) => Promise<void>;
         const setDkimHeaderResult: (tabId: number, result: string, warnings: string[], faviconUrl: string) => Promise<void>;
         const highlightFromAddress: (tabId: number, color: string, backgroundColor: string) => Promise<void>;
     }

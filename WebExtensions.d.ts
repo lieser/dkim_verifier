@@ -13,6 +13,17 @@ declare module browser {
     }
 
     declare module messages {
+        interface MessagePart {
+            body?: string,
+            contentType?: string,
+            headers?: { [x: string]: string[] },
+            name?: string,
+            partNam?: string,
+            parts?: MessagePart[],
+            size?: number,
+        }
+
+        const getFull: (messageId: number) => MessagePart;
         const getRaw: (messageId: number) => string;
     }
 
