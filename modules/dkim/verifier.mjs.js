@@ -294,10 +294,7 @@ export function setKeyFetchFunction(keyFetchFunction) {
 		}
 
 		// get SDID (plain-text; REQUIRED)
-		// Pattern for sub-domain as specified in Section 4.1.2 of RFC 5321
-		const sub_domain = "(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?)";
-		const domain_name = `(?:${sub_domain}(?:\\.${sub_domain})+)`;
-		const SDIDTag = RfcParser.parseTagValue(tagMap, "d", domain_name);
+		const SDIDTag = RfcParser.parseTagValue(tagMap, "d", RfcParser.domain_name);
 		if (SDIDTag === null) {
 			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_D");
 		}
@@ -376,9 +373,8 @@ export function setKeyFetchFunction(keyFetchFunction) {
 		http://stackoverflow.com/questions/201323/using-a-regular-expression-to-validate-an-email-address
 		*/
 
-		const atext = "[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]";
-		const local_part = `(?:${atext}+(?:\\.${atext}+)*)`;
-		const sig_i_tag = `${local_part}?@(${domain_name})`;
+		const local_part = RfcParser.dot_atom_text;
+		const sig_i_tag = `${local_part}?@(${RfcParser.domain_name})`;
 		let AUIDTag = null;
 		try {
 			AUIDTag = RfcParser.parseTagValue(tagMap, "i", sig_i_tag);
@@ -434,7 +430,7 @@ export function setKeyFetchFunction(keyFetchFunction) {
 		// get selector subdividing the namespace for the "d=" (domain) tag (plain-text; REQUIRED)
 		let SelectorTag;
 		try {
-			SelectorTag = RfcParser.parseTagValue(tagMap, "s", `${sub_domain}(?:\\.${sub_domain})*`);
+			SelectorTag = RfcParser.parseTagValue(tagMap, "s", `${RfcParser.sub_domain}(?:\\.${RfcParser.sub_domain})*`);
 		} catch (exception) {
 			if (exception instanceof DKIM_SigError &&
 				exception.errorType === "DKIM_SIGERROR_ILLFORMED_S")

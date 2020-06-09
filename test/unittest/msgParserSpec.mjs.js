@@ -9,7 +9,7 @@
 
 // @ts-check
 
-import {DKIM_InternalError} from "../../modules/error.mjs.js";
+import { DKIM_InternalError } from "../../modules/error.mjs.js";
 import MsgParser from "../../modules/msgParser.mjs.js";
 import expect from "../helpers/chaiUtils.mjs.js";
 
@@ -105,6 +105,20 @@ describe("Message parser [unittest]", function () {
 			expect(
 				MsgParser.parseAddressingHeader("<foo@example.com>")
 			).to.be.equal("foo@example.com");
+			expect(
+				MsgParser.parseAddressingHeader("<foo@example.com>\r\n")
+			).to.be.equal("foo@example.com");
+		});
+		it("addr only", function () {
+			expect(
+				MsgParser.parseAddressingHeader("foo@example.com")
+			).to.be.equal("foo@example.com");
+			expect(
+				MsgParser.parseAddressingHeader("foo@example.com\r\n")
+			).to.be.equal("foo@example.com");
+			expect(
+				MsgParser.parseAddressingHeader(" foo@example.com")
+			).to.be.equal("foo@example.com");
 		});
 		it("name-addr with simple atoms as display-name", function () {
 			expect(
@@ -115,6 +129,36 @@ describe("Message parser [unittest]", function () {
 			expect(
 				MsgParser.parseAddressingHeader(`"this is from foo" <foo@example.com>`)
 			).to.be.equal("foo@example.com");
+		});
+		it("name-addr with email like name before it", function () {
+			expect(
+				MsgParser.parseAddressingHeader(`bar@bad.com <foo@example.com>`)
+			).to.be.equal("foo@example.com");
+		});
+		it("malformed", function () {
+			expect(() =>
+				MsgParser.parseAddressingHeader("foo.example.com")
+			).to.throw();
+			expect(() =>
+				MsgParser.parseAddressingHeader("<@foo.example.com>")
+			).to.throw();
+			expect(() =>
+				MsgParser.parseAddressingHeader("bar foo@example.com")
+			).to.throw();
+		});
+		it("Extract address from From header", function () {
+			expect(
+				MsgParser.parseFromHeader("From: foo@example.com")
+			).to.be.equal("foo@example.com");
+			expect(
+				MsgParser.parseFromHeader("from: foo@example.com\r\n")
+			).to.be.equal("foo@example.com");
+			expect(() =>
+				MsgParser.parseFromHeader("From:<@foo.example.com>")
+			).to.throw();
+			expect(() =>
+				MsgParser.parseFromHeader("To: <@foo.example.com>")
+			).to.throw();
 		});
 	});
 });

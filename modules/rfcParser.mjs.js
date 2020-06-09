@@ -12,14 +12,26 @@
  */
 
 // @ts-check
+/* eslint-disable camelcase */
 
-import {DKIM_InternalError, DKIM_SigError} from "./error.mjs.js";
+import { DKIM_InternalError, DKIM_SigError } from "./error.mjs.js";
 
 export default class RfcParser {
-	// WSP help pattern as specified in Section 2.8 of RFC 6376
+	//// RFC 5321 - Simple Mail Transfer Protocol
+	// 4.1.2.  Command Argument Syntax
+	static get sub_domain() { return "(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?)"; }
+
+	//// RFC 5322 - Internet Message Format
+	// 3.2.3.  Atom
+	static get atext() { return "[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]"; }
+	static get dot_atom_text() { return `(?:${this.atext}+(?:\\.${this.atext}+)*)`; }
+
+	//// RFC 6376 - DomainKeys Identified Mail (DKIM) Signatures
+	// 2.8.  Whitespace
 	static get WSP() { return "[ \t]"; }
-	// FWS help pattern as specified in Section 2.8 of RFC 6376
-	static get FWS() { return `(?:${RfcParser.WSP}*(?:\r\n)?${RfcParser.WSP}+)`; }
+	static get FWS() { return `(?:${this.WSP}*(?:\r\n)?${this.WSP}+)`; }
+	// 3.5.  The DKIM-Signature Header Field
+	static get domain_name() { return `(?:${this.sub_domain}(?:\\.${this.sub_domain})+)`; }
 
 	/**
 	 * Parses a Tag=Value list.
@@ -34,11 +46,11 @@ export default class RfcParser {
 	static parseTagValueList(str) {
 		const tval = "[!-:<-~]+";
 		const tagName = "[A-Za-z][A-Za-z0-9_]*";
-		const tagValue = `(?:${tval}(?:(${RfcParser.WSP}|${RfcParser.FWS})+${tval})*)?`;
+		const tagValue = `(?:${tval}(?:(${this.WSP}|${this.FWS})+${tval})*)?`;
 
 		// delete optional semicolon at end
-		if (str.charAt(str.length-1) === ";") {
-			str = str.substr(0, str.length-1);
+		if (str.charAt(str.length - 1) === ";") {
+			str = str.substr(0, str.length - 1);
 		}
 
 		const array = str.split(";");
@@ -47,7 +59,7 @@ export default class RfcParser {
 		for (const elem of array) {
 			// get tag name and value
 			const tmp = elem.match(new RegExp(
-				`^${RfcParser.FWS}?(${tagName})${RfcParser.FWS}?=${RfcParser.FWS}?(${tagValue})${RfcParser.FWS}?$`
+				`^${this.FWS}?(${tagName})${this.FWS}?=${this.FWS}?(${tagValue})${this.FWS}?$`
 			));
 			if (tmp === null) {
 				return -1;

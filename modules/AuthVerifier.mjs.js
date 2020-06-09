@@ -112,7 +112,7 @@ export default class AuthVerifier {
 		const msg = {
 			headerFields: msgParsed.headers,
 			bodyPlain: msgParsed.body,
-			from: MsgParser.parseAddressingHeader(msgParsed.headers.get("from")[0]),
+			from: MsgParser.parseFromHeader(msgParsed.headers.get("from")[0]),
 			// TODO: get listId
 			listId: "",
 			DKIMSignPolicy: {},

@@ -33,7 +33,7 @@ async function verifyEmlFile(file) {
 	const msg = {
 		headerFields: msgParsed.headers,
 		bodyPlain: msgParsed.body,
-		from: MsgParser.parseAddressingHeader(from[0]),
+		from: MsgParser.parseFromHeader(from[0]),
 		listId: "",
 		DKIMSignPolicy: {},
 	};

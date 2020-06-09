@@ -15,8 +15,9 @@
 
 // @ts-check
 
-import {DKIM_InternalError} from "./error.mjs.js";
+import { DKIM_InternalError } from "./error.mjs.js";
 import Logging from "./logging.mjs.js";
+import RfcParser from "./rfcParser.mjs.js";
 
 const log = Logging.getLogger("msgParser");
 
@@ -106,6 +107,7 @@ export default class MsgParser {
 
 	/**
 	 * Extract the first address from a header which matches the RFC 5322 address-list production.
+	 * Must be called with the header value only.
 	 *
 	 * @static
 	 * @param {string} header
@@ -114,10 +116,31 @@ export default class MsgParser {
 	 */
 	static parseAddressingHeader(header) {
 		// TODO: improve extraction of address
-		const regExpMatch = header.match(/<([A-Za-z0-9!#$%&'*+/=?^_`{|}~.@-]*)>/);
-		if (regExpMatch === null) {
-			throw new Error("header does not contain an address");
+		const mail = `${RfcParser.dot_atom_text}@(${RfcParser.domain_name})`;
+		let regExpMatch = header.match(new RegExp(`<(${mail})>`));
+		if (regExpMatch !== null) {
+			return regExpMatch[1];
 		}
-		return regExpMatch[1];
+		regExpMatch = header.trim().match(new RegExp(`^(${mail})$`));
+		if (regExpMatch !== null) {
+			return regExpMatch[1];
+		}
+		throw new Error("header does not contain an address");
+	}
+
+	/**
+	 * Extract the first address from the From header.
+	 *
+	 * @static
+	 * @param {string} header
+	 * @returns {string}
+	 * @memberof MsgParser
+	 */
+	static parseFromHeader(header) {
+		const headerStart = "from: ";
+		if (!header.toLowerCase().startsWith(headerStart)) {
+			throw new Error("Unexpected start of from header");
+		}
+		return this.parseAddressingHeader(header.substr(headerStart.length));
 	}
 }
