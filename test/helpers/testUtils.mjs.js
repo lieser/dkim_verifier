@@ -24,6 +24,7 @@ async function rootDir() {
 
 	const __filename = fileURLToPath(import.meta.url);
 	const __dirname = path.dirname(__filename);
+	// eslint-disable-next-line require-atomic-updates
 	rootDirPath = path.resolve(path.join(__dirname, "../../"));
 	return rootDirPath;
 }

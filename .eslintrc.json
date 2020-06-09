@@ -16,7 +16,6 @@
     },
     "rules": {
         // Possible Errors
-        "no-dupe-else-if": "warn",
         "no-extra-parens": [
             "warn",
             "all",
@@ -24,8 +23,6 @@
                 "nestedBinaryExpressions": false
             }
         ],
-        "no-import-assign": "warn",
-        "no-setter-return": "warn",
         "require-atomic-updates": "warn",
         "valid-jsdoc": [
             "warn",
