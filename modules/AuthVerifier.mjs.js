@@ -671,6 +671,9 @@ async function addFavicons(authResult) {
 	if (!prefs["display.favicon.show"]) {
 		return authResult;
 	}
+	if (authResult.dkim[0].res_num !== AuthVerifier.DKIM_RES.SUCCESS) {
+		return authResult;
+	}
 	for (const dkim of authResult.dkim) {
 		if (dkim.sdid) {
 			dkim.favicon = await getFavicon(dkim.sdid);
