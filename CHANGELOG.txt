@@ -1,3 +1,7 @@
+4.0.0 []
+------------------
+ - Authentication-Results header: fixed parsing of version
+
 3.1.0 [2020-01-22]
 ------------------
  - includes changes from 2.2.0

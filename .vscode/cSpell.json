@@ -62,7 +62,6 @@
     "flagWords": [],
     "ignoreRegExpList": [
         "_domainkey",
-        "ARHResinfo",
         "AUTOINSERT_RULE_",
         "USERINSERT_RULE_",
         "collapsed[12]LfromBox",
