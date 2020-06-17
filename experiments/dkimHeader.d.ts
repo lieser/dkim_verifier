@@ -19,6 +19,7 @@ interface DKIMFaviconElement extends XULElement {
 declare module browser {
     declare module dkimHeader {
         const showDkimHeader: (tabId: number, show: boolean) => Promise<void>;
+        const showFromTooltip: (tabId: number, show: boolean) => Promise<void>;
         const setDkimHeaderResult: (
             tabId: number,
             result: string,

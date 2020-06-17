@@ -108,9 +108,9 @@ class DKIMWarningsTooltip extends DKIMTooltip {
  *
  * @extends {DKIMTooltip}
  */
-class DKIMTooltipFrom extends DKIMTooltip {
+class DkimResultTooltip extends DKIMTooltip {
 	/**
-	 * Creates an instance of DKIMTooltipFrom.
+	 * Creates an instance of DkimResultTooltip.
 	 *
 	 * @param {Document} document
 	 * @param {XULElement|void} element - optional underlying element, will be created if not given
@@ -150,7 +150,7 @@ class DKIMTooltipFrom extends DKIMTooltip {
 	 */
 	set value(val) {
 		if (!this.element._value) {
-			throw Error("Underlying element of DKIMTooltipFrom does not contain _value");
+			throw Error("Underlying element of DkimResultTooltip does not contain _value");
 		}
 		this.element._value.textContent = val;
 	}
@@ -424,6 +424,21 @@ class DkimHeaderRow {
 		}
 		expandedHeaders2.appendChild(headerRow.element);
 	}
+
+	/**
+	 * Remove the DKIM header row from a given document.
+	 *
+	 * @static
+	 * @param {Document} document
+	 * @returns {void}
+	 * @memberof DkimHeaderRow
+	 */
+	static remove(document) {
+		const headerRow = DkimHeaderRow.get(document);
+		if (headerRow) {
+			headerRow.element.remove();
+		}
+	}
 }
 DkimHeaderRow._id = "expandedDkim-verifierRow";
 
@@ -442,7 +457,7 @@ class DkimFavicon {
 		if (element) {
 			// @ts-ignore
 			this.element = element;
-			this._dkimTooltipFrom = new DKIMTooltipFrom(document, this.element._dkimTooltipFromElement);
+			this._dkimTooltipFrom = new DkimResultTooltip(document, this.element._dkimTooltipFromElement);
 			return;
 		}
 
@@ -452,7 +467,7 @@ class DkimFavicon {
 
 		this.element.id = DkimFavicon._id;
 		this.element.classList.add("headerValue");
-		this.element.setAttribute("tooltip", "dkim-verifier-header-tooltip-from");
+		this.element.setAttribute("tooltip", DkimFavicon._idTooltip);
 		// dummy text for align baseline
 		this.element.textContent = "";
 		this.element.style.setProperty("min-width", "0px", "important");
@@ -463,12 +478,10 @@ class DkimFavicon {
 		this.element.style.backgroundRepeat = "no-repeat";
 
 		// DKIM tooltip
-		this._dkimTooltipFrom = new DKIMTooltipFrom(document);
+		this._dkimTooltipFrom = new DkimResultTooltip(document);
 		this.element._dkimTooltipFromElement = this._dkimTooltipFrom.element;
-		this.element._dkimTooltipFromElement.id = "dkim-verifier-header-tooltip-from";
-		this.element.setAttribute("tooltip", "dkim-verifier-header-tooltip-from");
-
-		this.element.appendChild(this.element._dkimTooltipFromElement);
+		this.element._dkimTooltipFromElement.id = DkimFavicon._idTooltip;
+		this.element.setAttribute("tooltip", DkimFavicon._idTooltip);
 
 		this.reset();
 	}
@@ -548,14 +561,35 @@ class DkimFavicon {
 			throw Error("Could not find the expandedFromBox element");
 		}
 		expandedFromBox.longEmailAddresses.prepend(headerRow.element);
+		// The tooltip is reused, and wherefore can not defined directly under the favicon
+		expandedFromBox.longEmailAddresses.prepend(headerRow._dkimTooltipFrom.element);
+	}
+
+	/**
+	 * Remove the DKIM favicon from a given document.
+	 *
+	 * @static
+	 * @param {Document} document
+	 * @returns {void}
+	 * @memberof DkimFavicon
+	 */
+	static remove(document) {
+		const favicon = DkimFavicon.get(document);
+		if (favicon) {
+			favicon.element.remove();
+			favicon._dkimTooltipFrom.element.remove();
+		}
 	}
 }
 DkimFavicon._id = "dkimFavicon";
+DkimFavicon._idTooltip = "dkim-verifier-header-tooltip-from";
 
 /**
- * Highlighting of the from address (text & background color)
+ * DKIM specific modifications of the from address:
+ * - Highlighting of the from address (text & background color)
+ * - Show DKIM tooltip
  */
-class HighlightFromAddress {
+class DkimFromAddress {
 	/**
 	 * Get the element containing the from address (without the following star)
 	 * @static
@@ -567,21 +601,21 @@ class HighlightFromAddress {
 		// @ts-ignore
 		const expandedFromBox = document.getElementById("expandedfromBox");
 		if (!expandedFromBox) {
-			console.debug("DKIM: skipped highlighting of Email Address (no expandedfromBox)");
+			console.debug("DKIM: from address not found (no expandedfromBox)");
 			return null;
 		}
 		/** @type {XULElement?} */
 		// @ts-ignore
 		const mailEmailadress = expandedFromBox.emailAddresses.firstChild;
 		if (!mailEmailadress) {
-			console.debug("DKIM: skipped highlighting of Email Address (no firstChild)");
+			console.debug("DKIM: from address not found (no firstChild)");
 			return null;
 		}
 		/** @type {XULElement|undefined} */
 		// @ts-ignore
 		const emailValue = mailEmailadress.getElementsByClassName("emaillabel")[0];
 		if (!emailValue) {
-			console.debug("DKIM: skipped highlighting of Email Address (no emaillabel)");
+			console.debug("DKIM: from address not found (no emaillabel)");
 			return null;
 		}
 		return emailValue;
@@ -605,12 +639,48 @@ class HighlightFromAddress {
 	}
 
 	/**
-	 * Reset the text and background color of the from address.
+	 * Set whether the DKIM heder should be shown
+	 *
+	 * @param {Document} document
+	 * @param {boolean} show
+	 * @returns {void}
+	 */
+	static showTooltip(document, show) {
+		const emailValue = this._getFromAddress(document);
+		if (!emailValue) {
+			return;
+		}
+		if (show) {
+			// save current tooltip if set
+			const tooltiptext = emailValue.getAttribute("tooltiptext");
+			if (tooltiptext) {
+				emailValue.setAttribute("tooltiptextSaved", tooltiptext);
+			}
+			emailValue.removeAttribute("tooltiptext");
+			// set DKIM tooltip
+			emailValue.setAttribute("tooltip", DkimFavicon._idTooltip);
+		} else {
+			if (emailValue.getAttribute("tooltip") === DkimFavicon._idTooltip) {
+				// remove DKIM tooltip
+				emailValue.removeAttribute("tooltip");
+				// restore saved tooltip
+				const tooltiptextSaved = emailValue.getAttribute("tooltiptextSaved");
+				if (tooltiptextSaved) {
+					emailValue.setAttribute("tooltiptext", tooltiptextSaved);
+					emailValue.removeAttribute("tooltiptextSaved");
+				}
+			}
+		}
+	}
+
+	/**
+	 * Reset the DKIM specific modifications of the from address.
 	 * @param {Document} document
 	 * @returns {void}
 	 */
 	static reset(document) {
 		this.setHighlightColor(document, "", "");
+		this.showTooltip(document, false);
 	}
 }
 
@@ -680,7 +750,7 @@ class DkimResetMessageListener {
 		dkimHeaderField.reset();
 		const dkimFavicon = DkimFavicon.get(document);
 		dkimFavicon.reset();
-		HighlightFromAddress.reset(document);
+		DkimFromAddress.reset(document);
 	}
 	// eslint-disable-next-line no-empty-function
 	onEndHeaders() { }
@@ -749,14 +819,9 @@ this.dkimHeader = class extends ExtensionCommon.ExtensionAPI {
 	 * @returns {void}
 	 */
 	unPaint(window) {
-		const headerRow = DkimHeaderRow.get(window.document);
-		if (headerRow) {
-			headerRow.element.remove();
-		}
-		const favicon = DkimFavicon.get(window.document);
-		if (favicon) {
-			favicon.element.remove();
-		}
+		const { document } = window;
+		DkimHeaderRow.remove(document);
+		DkimFavicon.remove(document);
 	}
 
 	/**
@@ -774,6 +839,14 @@ this.dkimHeader = class extends ExtensionCommon.ExtensionAPI {
 
 					const dkimHeaderRow = DkimHeaderRow.get(document);
 					dkimHeaderRow.show(show);
+
+					return Promise.resolve();
+				},
+				showFromTooltip: (tabId, show) => {
+					const target = tabTracker.getTab(tabId);
+					const { document } = Components.utils.getGlobalForObject(target);
+
+					DkimFromAddress.showTooltip(document, show);
 
 					return Promise.resolve();
 				},
@@ -805,7 +878,7 @@ this.dkimHeader = class extends ExtensionCommon.ExtensionAPI {
 					const target = tabTracker.getTab(tabId);
 					const { document } = Components.utils.getGlobalForObject(target);
 
-					HighlightFromAddress.setHighlightColor(document, color, backgroundColor);
+					DkimFromAddress.setHighlightColor(document, color, backgroundColor);
 
 					return Promise.resolve();
 				}

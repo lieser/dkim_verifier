@@ -103,6 +103,10 @@ browser.messageDisplay.onMessageDisplayed.addListener(async (tab, message) => {
 				}
 			}
 		}
+		// show from tooltip if not completely disabled
+		if (prefs.showDKIMFromTooltip > SHOW.NEVER) {
+			browser.dkimHeader.showFromTooltip(tab.id, true);
+		}
 
 		const rawMessage = await browser.messages.getRaw(message.id);
 		const verifier = new AuthVerifier();
@@ -121,6 +125,9 @@ browser.messageDisplay.onMessageDisplayed.addListener(async (tab, message) => {
 		}
 
 		browser.dkimHeader.showDkimHeader(tab.id, prefs.showDKIMHeader >= res.dkim[0].res_num);
+		if (prefs.showDKIMFromTooltip > SHOW.NEVER && prefs.showDKIMFromTooltip < res.dkim[0].res_num) {
+			browser.dkimHeader.showFromTooltip(tab.id, false);
+		}
 		browser.dkimHeader.setDkimHeaderResult(
 			tab.id,
 			res.dkim[0].result_str,

@@ -21,6 +21,24 @@
 				]
 			},
 			{
+				"name": "showFromTooltip",
+				"type": "function",
+				"description": "Set whether the DKIM From tooltip should be shown",
+				"async": true,
+				"parameters": [
+					{
+						"name": "tabId",
+						"type": "number",
+						"description": "Tab id"
+					},
+					{
+						"name": "show",
+						"type": "boolean",
+						"description": "True if the tooltip should be shown"
+					}
+				]
+			},
+			{
 				"name": "setDkimHeaderResult",
 				"type": "function",
 				"description": "Show the given DKIM result in the header",
