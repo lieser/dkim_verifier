@@ -77,6 +77,7 @@ const SHOW = {
 	MSG: 50,
 };
 
+// eslint-disable-next-line complexity
 browser.messageDisplay.onMessageDisplayed.addListener(async (tab, message) => {
 	try {
 		await isInitialized;
@@ -86,7 +87,7 @@ browser.messageDisplay.onMessageDisplayed.addListener(async (tab, message) => {
 		if (account && (account.type === "rss" || account.type === "nntp")) {
 			browser.dkimHeader.showDkimHeader(tab.id, prefs.showDKIMHeader >= SHOW.MSG);
 			browser.dkimHeader.setDkimHeaderResult(
-				tab.id, browser.i18n.getMessage("NOT_EMAIL"), [], "");
+				tab.id, browser.i18n.getMessage("NOT_EMAIL"), [], "", {});
 			return;
 		}
 
@@ -107,9 +108,26 @@ browser.messageDisplay.onMessageDisplayed.addListener(async (tab, message) => {
 		const verifier = new AuthVerifier();
 		const res = await verifier.verify(rawMessage);
 		const warnings = res.dkim[0].warnings_str || [];
+		/** @type {Parameters<typeof browser.dkimHeader.setDkimHeaderResult>[4]} */
+		const arh = {};
+		if (res.arh && res.arh.dkim && res.arh.dkim[0]) {
+			arh.dkim = res.arh.dkim[0].result_str;
+		}
+		if (res.spf && res.spf[0]) {
+			arh.spf = res.spf[0].result;
+		}
+		if (res.dmarc && res.dmarc[0]) {
+			arh.dmarc = res.dmarc[0].result;
+		}
 
 		browser.dkimHeader.showDkimHeader(tab.id, prefs.showDKIMHeader >= res.dkim[0].res_num);
-		await browser.dkimHeader.setDkimHeaderResult(tab.id, res.dkim[0].result_str, warnings, res.dkim[0].favicon || "");
+		browser.dkimHeader.setDkimHeaderResult(
+			tab.id,
+			res.dkim[0].result_str,
+			warnings,
+			res.dkim[0].favicon ?? "",
+			arh
+		);
 		if (prefs.colorFrom) {
 			switch (res.dkim[0].res_num) {
 				case AuthVerifier.DKIM_RES.SUCCESS: {
@@ -139,6 +157,6 @@ browser.messageDisplay.onMessageDisplayed.addListener(async (tab, message) => {
 		log.fatal("Unexpected error during onMessageDisplayed", e);
 		browser.dkimHeader.showDkimHeader(tab.id, true);
 		browser.dkimHeader.setDkimHeaderResult(
-			tab.id, browser.i18n.getMessage("DKIM_INTERNALERROR_NAME"), [], "");
+			tab.id, browser.i18n.getMessage("DKIM_INTERNALERROR_NAME"), [], "", {});
 	}
 });

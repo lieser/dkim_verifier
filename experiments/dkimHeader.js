@@ -777,13 +777,22 @@ this.dkimHeader = class extends ExtensionCommon.ExtensionAPI {
 
 					return Promise.resolve();
 				},
-				setDkimHeaderResult: (tabId, result, warnings, faviconUrl) => {
+				setDkimHeaderResult: (tabId, result, warnings, faviconUrl, arh) => {
 					const target = tabTracker.getTab(tabId);
 					const { document } = Components.utils.getGlobalForObject(target);
 
 					const dkimHeaderField = DKIMHeaderField.get(document);
 					dkimHeaderField.value = result;
 					dkimHeaderField.warnings = warnings;
+					if (arh.dkim) {
+						dkimHeaderField.arhDkimValue = arh.dkim;
+					}
+					if (arh.spf) {
+						dkimHeaderField.spfValue = arh.spf;
+					}
+					if (arh.dmarc) {
+						dkimHeaderField.dmarcValue = arh.dmarc;
+					}
 
 					const favicon = DkimFavicon.get(document);
 					favicon.value = result;

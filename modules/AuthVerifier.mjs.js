@@ -19,10 +19,11 @@
 /* eslint-env webextensions */
 /* eslint-disable camelcase */
 /* eslint-disable no-use-before-define */
-/* eslint no-unused-vars: ["error", { "varsIgnorePattern": "VerifierModule" }]*/
+/* eslint no-unused-vars: ["error", { "varsIgnorePattern": "ArhParserModule|VerifierModule" }]*/
 
 export const moduleVersion = "2.0.0";
 
+import ArhParser, * as ArhParserModule from "./arhParser.mjs.js";
 import Verifier, * as VerifierModule from "./dkim/verifier.mjs.js";
 import { domainIsInDomain, getDomainFromAddr } from "./utils.mjs.js";
 import { DKIM_InternalError } from "./error.mjs.js";
@@ -38,9 +39,9 @@ const log = Logging.getLogger("AuthVerifier");
  * @property {String} version
  *           result version ("2.1")
  * @property {AuthResultDKIM[]} dkim
- * @property {ARHResinfo[]} [spf]
- * @property {ARHResinfo[]} [dmarc]
- * @property {{dkim?: AuthResultDKIM[]}} [arh]
+ * @property {ArhParserModule.ArhResInfo[]=} [spf]
+ * @property {ArhParserModule.ArhResInfo[]=} [dmarc]
+ * @property {{dkim?: AuthResultDKIM[]}=} [arh]
  *           added in version 2.1
  */
 /**
@@ -52,10 +53,10 @@ const log = Logging.getLogger("AuthVerifier");
  * @property {String} version
  *           result version ("3.0")
  * @property {VerifierModule.dkimSigResultV2[]} dkim
- * @property {ARHResinfo[]} [spf]
- * @property {ARHResinfo[]} [dmarc]
- * @property {Object} [arh]
- * @property {VerifierModule.dkimSigResultV2[]} [arh.dkim]
+ * @property {ArhParserModule.ArhResInfo[]=} [spf]
+ * @property {ArhParserModule.ArhResInfo[]=} [dmarc]
+ * @property {Object=} [arh]
+ * @property {VerifierModule.dkimSigResultV2[]=} [arh.dkim]
  */
 /**
  * @typedef {SavedAuthResultV3} SavedAuthResult
@@ -72,9 +73,9 @@ const log = Logging.getLogger("AuthVerifier");
  *           40: no sig
  * @property {String} result_str
  *           localized result string
- * @property {String[]} [warnings_str]
+ * @property {String[]=} [warnings_str]
  *           localized warnings
- * @property {String} [favicon]
+ * @property {String=} [favicon]
  *           url to the favicon of the sdid
  */
 /**
@@ -126,7 +127,7 @@ export default class AuthVerifier {
 		// }
 
 		// read Authentication-Results header
-		const arhResult = getARHResult(messageId, msg);
+		const arhResult = getARHResult(msg.headerFields, msg.from);
 
 		if (arhResult) {
 			if (prefs["arh.replaceAddonResult"]) {
@@ -199,12 +200,11 @@ export default class AuthVerifier {
 /**
  * Get the Authentication-Results header as an SavedAuthResult.
  *
- * @param {nsIMsgDBHdr} msgHdr
- * @param {Object} msg
+ * @param {Map<string, string[]>} headers
+ * @param {string} from
  * @return {SavedAuthResult|Null}
  */
-function getARHResult(msgHdr, msg) {
-	return null;
+function getARHResult(headers, from) {
 	function testAllowedAuthserv(e) {
 		if (this.authserv_id === e) {
 			return true;
@@ -215,37 +215,31 @@ function getARHResult(msgHdr, msg) {
 		return false;
 	}
 
-	if (!msg.headerFields.has("authentication-results") ||
-		( // disabled via default setting
-			(
-				!msgHdr.folder ||
-				msgHdr.folder.server.getIntValue("dkim_verifier.arh.read") === PREF.ENABLE.DEFAULT
-			) &&
-			!prefs.getBoolPref("arh.read")
-		) ||
-		( // disabled for the folder
-			msgHdr.folder &&
-			msgHdr.folder.server.getIntValue("dkim_verifier.arh.read") === PREF.ENABLE.FALSE
-		)) {
+	const arHeaders = headers.get("authentication-results");
+	if (!arHeaders || !prefs["arh.read"]) {
 		return null;
 	}
 
 	// get DKIM, SPF and DMARC res
+	/** @type {ArhParserModule.ArhResInfo[]} */
 	let arhDKIM = [];
+	/** @type {ArhParserModule.ArhResInfo[]} */
 	let arhSPF = [];
+	/** @type {ArhParserModule.ArhResInfo[]} */
 	let arhDMARC = [];
-	for (let i = 0; i < msg.headerFields.get("authentication-results").length; i++) {
+	for (let i = 0; i < arHeaders.length; i++) {
 		let arh;
 		try {
-			arh = ARHParser.parse(msg.headerFields.get("authentication-results")[i]);
+			arh = ArhParser.parse(arHeaders[i]);
 		} catch (exception) {
 			log.error("Ignoring error in parsing of ARH", exception);
 			continue;
 		}
 
 		// only use header if the authserv_id is in the allowed servers
+		/** @type {string[]} */
 		let allowedAuthserv;
-		if (msgHdr.folder) {
+		if (false && msgHdr.folder) {
 			allowedAuthserv = msgHdr.folder.server.
 				getCharValue("dkim_verifier.arh.allowedAuthserv").split(" ").
 				filter(function (e) { return e; });
@@ -270,11 +264,11 @@ function getARHResult(msgHdr, msg) {
 	}
 
 	// convert DKIM results
-	let dkimSigResults = arhDKIM.map(arhDKIM_to_dkimSigResultV2);
+	const dkimSigResults = arhDKIM.map(arhDKIM_to_dkimSigResultV2);
 
 	// if ARH result is replacing the add-ons,
 	// check SDID and AUID of DKIM results
-	if (prefs.getBoolPref("arh.replaceAddonResult")) {
+	if (prefs["arh.replaceAddonResult"] && false) {
 		for (let i = 0; i < dkimSigResults.length; i++) {
 			if (dkimSigResults[i].result === "SUCCESS") {
 				try {
@@ -297,9 +291,9 @@ function getARHResult(msgHdr, msg) {
 	}
 
 	// sort signatures
-	DKIM.Verifier.sortSignatures(msg, dkimSigResults);
+	VerifierModule.sortSignatures(dkimSigResults, from);
 
-	let savedAuthResult = {
+	const savedAuthResult = {
 		version: "3.0",
 		dkim: dkimSigResults,
 		spf: arhSPF,
@@ -401,7 +395,7 @@ function loadAuthResult(msgHdr) {
 /**
  * Convert DKIM ARHresinfo to dkimResult
  *
- * @param {ARHResinfo} arhDKIM
+ * @param {ArhParserModule.ArhResInfo} arhDKIM
  * @return {VerifierModule.dkimSigResultV2}
  */
 function arhDKIM_to_dkimSigResultV2(arhDKIM) {

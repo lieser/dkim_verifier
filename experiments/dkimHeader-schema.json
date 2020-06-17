@@ -48,6 +48,24 @@
 						"name": "faviconUrl",
 						"type": "string",
 						"description": "URL to the favicon to show"
+					},
+					{
+						"name": "arh",
+						"type": "object",
+						"properties": {
+							"dkim": {
+								"type": "string",
+								"optional": true
+							},
+							"spf": {
+								"type": "string",
+								"optional": true
+							},
+							"dmarc": {
+								"type": "string",
+								"optional": true
+							}
+						}
 					}
 				]
 			},

@@ -1102,7 +1102,7 @@ export default class Verifier {
 				signatures: await processSignatures(msg),
 			};
 			checkForSignatureExsistens(msg, res.signatures);
-			sortSignatures(msg, res.signatures);
+			sortSignatures(res.signatures, msg.from, msg.listId);
 			return res;
 		})();
 		promise.then(null, function onReject(exception) {
@@ -1164,11 +1164,12 @@ export default class Verifier {
 	/**
 	 * Sorts the given signatures.
 	 *
-	 * @param {Msg} msg
 	 * @param {dkimSigResultV2[]} signatures
+	 * @param {string} from
+	 * @param {string} [listId]
 	 * @return {void}
 	 */
-	function sortSignatures(msg, signatures) {
+	export function sortSignatures(signatures, from, listId) {
 		/**
 		 * @param {dkimSigResultV2} sig1
 		 * @param {dkimSigResultV2} sig2
@@ -1240,16 +1241,16 @@ export default class Verifier {
 				return 0;
 			}
 
-			if (addrIsInDomain2(msg.from, sig1.sdid)) {
+			if (addrIsInDomain2(from, sig1.sdid)) {
 				return -1;
-			} else if (addrIsInDomain2(msg.from, sig2.sdid)) {
+			} else if (addrIsInDomain2(from, sig2.sdid)) {
 				return 1;
 			}
 
-			if (msg.listId) {
-				if (domainIsInDomain(msg.listId, sig1.sdid)) {
+			if (listId) {
+				if (domainIsInDomain(listId, sig1.sdid)) {
 					return -1;
-				} else if (domainIsInDomain(msg.listId, sig2.sdid)) {
+				} else if (domainIsInDomain(listId, sig2.sdid)) {
 					return 1;
 				}
 			}
