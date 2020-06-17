@@ -85,34 +85,34 @@ browser.messageDisplay.onMessageDisplayed.addListener(async (tab, message) => {
 		// return if msg is RSS feed or news
 		const account = await browser.accounts.get(message.folder.accountId);
 		if (account && (account.type === "rss" || account.type === "nntp")) {
-			browser.dkimHeader.showDkimHeader(tab.id, prefs.showDKIMHeader >= SHOW.MSG);
+			browser.dkimHeader.showDkimHeader(tab.id, message.id, prefs.showDKIMHeader >= SHOW.MSG);
 			browser.dkimHeader.setDkimHeaderResult(
-				tab.id, browser.i18n.getMessage("NOT_EMAIL"), [], "", {});
+				tab.id, message.id, browser.i18n.getMessage("NOT_EMAIL"), [], "", {});
 			return;
 		}
 
 		// If we already know if the header should be shown, trigger it now
 		if (prefs.showDKIMHeader >= SHOW.EMAIL) {
-			browser.dkimHeader.showDkimHeader(tab.id, true);
+			browser.dkimHeader.showDkimHeader(tab.id, message.id, true);
 		}
 		else {
 			const { headers } = await browser.messages.getFull(message.id);
 			if (headers && Object.keys(headers).includes("dkim-signature")) {
 				if (prefs.showDKIMHeader >= SHOW.DKIM_SIGNED) {
-					browser.dkimHeader.showDkimHeader(tab.id, true);
+					browser.dkimHeader.showDkimHeader(tab.id, message.id, true);
 				}
 			}
 		}
 		// show from tooltip if not completely disabled
 		if (prefs.showDKIMFromTooltip > SHOW.NEVER) {
-			browser.dkimHeader.showFromTooltip(tab.id, true);
+			browser.dkimHeader.showFromTooltip(tab.id, message.id, true);
 		}
 
 		const rawMessage = await browser.messages.getRaw(message.id);
 		const verifier = new AuthVerifier();
 		const res = await verifier.verify(rawMessage);
 		const warnings = res.dkim[0].warnings_str || [];
-		/** @type {Parameters<typeof browser.dkimHeader.setDkimHeaderResult>[4]} */
+		/** @type {Parameters<typeof browser.dkimHeader.setDkimHeaderResult>[5]} */
 		const arh = {};
 		if (res.arh && res.arh.dkim && res.arh.dkim[0]) {
 			arh.dkim = res.arh.dkim[0].result_str;
@@ -124,37 +124,42 @@ browser.messageDisplay.onMessageDisplayed.addListener(async (tab, message) => {
 			arh.dmarc = res.dmarc[0].result;
 		}
 
-		browser.dkimHeader.showDkimHeader(tab.id, prefs.showDKIMHeader >= res.dkim[0].res_num);
-		if (prefs.showDKIMFromTooltip > SHOW.NEVER && prefs.showDKIMFromTooltip < res.dkim[0].res_num) {
-			browser.dkimHeader.showFromTooltip(tab.id, false);
-		}
-		browser.dkimHeader.setDkimHeaderResult(
+		const messageStillDisplayed = await browser.dkimHeader.setDkimHeaderResult(
 			tab.id,
+			message.id,
 			res.dkim[0].result_str,
 			warnings,
 			res.dkim[0].favicon ?? "",
 			arh
 		);
+		if (!messageStillDisplayed) {
+			log.debug("Showing of DKIM result skipped because message is no longer displayed");
+			return;
+		}
+		browser.dkimHeader.showDkimHeader(tab.id, message.id, prefs.showDKIMHeader >= res.dkim[0].res_num);
+		if (prefs.showDKIMFromTooltip > SHOW.NEVER && prefs.showDKIMFromTooltip < res.dkim[0].res_num) {
+			browser.dkimHeader.showFromTooltip(tab.id, message.id, false);
+		}
 		if (prefs.colorFrom) {
 			switch (res.dkim[0].res_num) {
 				case AuthVerifier.DKIM_RES.SUCCESS: {
 					const dkim = res.dkim[0];
 					if (!dkim.warnings_str || dkim.warnings_str.length === 0) {
-						browser.dkimHeader.highlightFromAddress(tab.id, prefs["color.success.text"], prefs["color.success.background"]);
+						browser.dkimHeader.highlightFromAddress(tab.id, message.id, prefs["color.success.text"], prefs["color.success.background"]);
 					} else {
-						browser.dkimHeader.highlightFromAddress(tab.id, prefs["color.warning.text"], prefs["color.warning.background"]);
+						browser.dkimHeader.highlightFromAddress(tab.id, message.id, prefs["color.warning.text"], prefs["color.warning.background"]);
 					}
 					break;
 				}
 				case AuthVerifier.DKIM_RES.TEMPFAIL:
-					browser.dkimHeader.highlightFromAddress(tab.id, prefs["color.tempfail.text"], prefs["color.tempfail.background"]);
+					browser.dkimHeader.highlightFromAddress(tab.id, message.id, prefs["color.tempfail.text"], prefs["color.tempfail.background"]);
 					break;
 				case AuthVerifier.DKIM_RES.PERMFAIL:
-					browser.dkimHeader.highlightFromAddress(tab.id, prefs["color.permfail.text"], prefs["color.permfail.background"]);
+					browser.dkimHeader.highlightFromAddress(tab.id, message.id, prefs["color.permfail.text"], prefs["color.permfail.background"]);
 					break;
 				case AuthVerifier.DKIM_RES.PERMFAIL_NOSIG:
 				case AuthVerifier.DKIM_RES.NOSIG:
-					browser.dkimHeader.highlightFromAddress(tab.id, prefs["color.nosig.text"], prefs["color.nosig.background"]);
+					browser.dkimHeader.highlightFromAddress(tab.id, message.id, prefs["color.nosig.text"], prefs["color.nosig.background"]);
 					break;
 				default:
 					throw new Error(`unknown res_num: ${res.dkim[0].res_num}`);
@@ -162,8 +167,8 @@ browser.messageDisplay.onMessageDisplayed.addListener(async (tab, message) => {
 		}
 	} catch (e) {
 		log.fatal("Unexpected error during onMessageDisplayed", e);
-		browser.dkimHeader.showDkimHeader(tab.id, true);
+		browser.dkimHeader.showDkimHeader(tab.id, message.id, true);
 		browser.dkimHeader.setDkimHeaderResult(
-			tab.id, browser.i18n.getMessage("DKIM_INTERNALERROR_NAME"), [], "", {});
+			tab.id, message.id, browser.i18n.getMessage("DKIM_INTERNALERROR_NAME"), [], "", {});
 	}
 });

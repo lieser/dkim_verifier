@@ -74,6 +74,9 @@ declare module ExtensionCommon {
                 substitutions?: undefined | string | (string | string[])[]
             ) => string
         };
+        readonly messageManager: {
+            readonly convert: (msgDBHdr: nsIMsgDBHdr) => browser.messageDisplay.MessageHeader
+        }
 
         readonly id: string;
         readonly rootURI: nsIURI;
@@ -87,6 +90,18 @@ declare module ExtensionCommon {
 
     interface Context {
         readonly extension: Extension;
+    }
+}
+
+declare module ExtensionParentM {
+    declare module apiManager {
+        declare module global {
+            declare module tabTracker {
+                interface Tab { Tab: never }
+
+                const getTab: (id: number) => Tab;
+            }
+        }
     }
 }
 

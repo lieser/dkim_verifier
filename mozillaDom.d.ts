@@ -3,5 +3,6 @@ interface Document {
 }
 
 interface Window {
+    readonly gFolderDisplay: { selectedMessage: nsIMsgDBHdr };
     readonly gMessageListeners: object[];
 }

@@ -18,15 +18,21 @@ interface DKIMFaviconElement extends XULElement {
 
 declare module browser {
     declare module dkimHeader {
-        const showDkimHeader: (tabId: number, show: boolean) => Promise<void>;
-        const showFromTooltip: (tabId: number, show: boolean) => Promise<void>;
+        const showDkimHeader: (tabId: number, messageId: number, show: boolean) => Promise<boolean>;
+        const showFromTooltip: (tabId: number, messageId: number, show: boolean) => Promise<boolean>;
         const setDkimHeaderResult: (
             tabId: number,
+            messageId: number,
             result: string,
             warnings: string[],
             faviconUrl: string,
             arh: { dkim?: string?, spf?: string?, dmarc?: string?},
-        ) => Promise<void>;
-        const highlightFromAddress: (tabId: number, color: string, backgroundColor: string) => Promise<void>;
+        ) => Promise<boolean>;
+        const highlightFromAddress: (
+            tabId: number,
+            messageId: number,
+            color: string,
+            backgroundColor: string,
+        ) => Promise<boolean>;
     }
 }

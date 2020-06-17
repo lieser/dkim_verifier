@@ -16,6 +16,7 @@
 
 "use strict";
 
+/** @type {{ExtensionParent: ExtensionParentM}} */
 const { ExtensionParent } = ChromeUtils.import("resource://gre/modules/ExtensionParent.jsm");
 /** @type {{ExtensionSupport: ExtensionSupportM}} */
 const { ExtensionSupport } = ChromeUtils.import("resource:///modules/ExtensionSupport.jsm");
@@ -825,34 +826,58 @@ this.dkimHeader = class extends ExtensionCommon.ExtensionAPI {
 	}
 
 	/**
+	 * Get the Document for a specific message shown in a tab.
+	 * Returns null if a different message is shown.
+	 *
+	 * @param {number} tabId
+	 * @param {number} messageId
+	 * @returns {Document?}
+	 */
+	getDocumentForCurrentMsg(tabId, messageId) {
+		const target = ExtensionParent.apiManager.global.tabTracker.getTab(tabId);
+		const window = Components.utils.getGlobalForObject(target);
+		const msg = this.extension.messageManager.convert(
+			window.gFolderDisplay.selectedMessage);
+		if (msg.id !== messageId) {
+			return null;
+		}
+		return window.document;
+	}
+
+	/**
 	 * @param {ExtensionCommon.Context} context
 	 * @returns {{dkimHeader: browser.dkimHeader}}
 	 */
 	// eslint-disable-next-line no-unused-vars
 	getAPI(context) {
-		const tabTracker = ExtensionParent.apiManager.global.tabTracker;
 		return {
 			dkimHeader: {
-				showDkimHeader: (tabId, show) => {
-					const target = tabTracker.getTab(tabId);
-					const { document } = Components.utils.getGlobalForObject(target);
+				showDkimHeader: (tabId, messageId, show) => {
+					const document = this.getDocumentForCurrentMsg(tabId, messageId);
+					if (!document) {
+						return Promise.resolve(false);
+					}
 
 					const dkimHeaderRow = DkimHeaderRow.get(document);
 					dkimHeaderRow.show(show);
 
-					return Promise.resolve();
+					return Promise.resolve(true);
 				},
-				showFromTooltip: (tabId, show) => {
-					const target = tabTracker.getTab(tabId);
-					const { document } = Components.utils.getGlobalForObject(target);
+				showFromTooltip: (tabId, messageId, show) => {
+					const document = this.getDocumentForCurrentMsg(tabId, messageId);
+					if (!document) {
+						return Promise.resolve(false);
+					}
 
 					DkimFromAddress.showTooltip(document, show);
 
-					return Promise.resolve();
+					return Promise.resolve(true);
 				},
-				setDkimHeaderResult: (tabId, result, warnings, faviconUrl, arh) => {
-					const target = tabTracker.getTab(tabId);
-					const { document } = Components.utils.getGlobalForObject(target);
+				setDkimHeaderResult: (tabId, messageId, result, warnings, faviconUrl, arh) => {
+					const document = this.getDocumentForCurrentMsg(tabId, messageId);
+					if (!document) {
+						return Promise.resolve(false);
+					}
 
 					const dkimHeaderField = DKIMHeaderField.get(document);
 					dkimHeaderField.value = result;
@@ -872,15 +897,17 @@ this.dkimHeader = class extends ExtensionCommon.ExtensionAPI {
 					favicon.warnings = warnings;
 					favicon.setFaviconUrl(faviconUrl);
 
-					return Promise.resolve();
+					return Promise.resolve(true);
 				},
-				highlightFromAddress: (tabId, color, backgroundColor) => {
-					const target = tabTracker.getTab(tabId);
-					const { document } = Components.utils.getGlobalForObject(target);
+				highlightFromAddress: (tabId, messageId, color, backgroundColor) => {
+					const document = this.getDocumentForCurrentMsg(tabId, messageId);
+					if (!document) {
+						return Promise.resolve(false);
+					}
 
 					DkimFromAddress.setHighlightColor(document, color, backgroundColor);
 
-					return Promise.resolve();
+					return Promise.resolve(true);
 				}
 			},
 		};
