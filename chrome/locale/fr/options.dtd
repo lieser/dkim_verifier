@@ -13,9 +13,9 @@
 <!ENTITY dns.nameserver.label "Nom du serveur DNS (Syntaxe (EBNF) : host[&quot;:&quot;port]{&quot;;&quot;host[&quot;:&quot;port]} )">
 
 <!ENTITY dns.timeout_connect.label "Expiration de la connexion DNS (en secondes)">
-<!ENTITY dns.proxy.enable.label "Utiliser un mandataire pour se connecter au serveur DNS">
-<!ENTITY dns.proxy.type.label "Type de mandataire :">
-<!ENTITY dns.proxy.host.label "Serveur mandataire :">
+<!ENTITY dns.proxy.enable.label "Utiliser un « proxy » pour se connecter au serveur DNS">
+<!ENTITY dns.proxy.type.label "Type de  « proxy » :">
+<!ENTITY dns.proxy.host.label "Serveur  « proxy » :">
 <!ENTITY dns.proxy.port.label "Port :">
 
 <!ENTITY dns.libunbound.path.label "Chemin">
