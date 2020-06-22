@@ -8,12 +8,12 @@
 
 <!ENTITY treeviewKeys.title "Clés DKIM">
 <!ENTITY treeviewKeys.treecol.SDID.label "SDID">
-<!ENTITY treeviewKeys.treecol.selector.label "Selecteur">
+<!ENTITY treeviewKeys.treecol.selector.label "Sélecteur">
 <!ENTITY treeviewKeys.treecol.key.label "Clé DKIM">
 <!ENTITY treeviewKeys.treecol.insertedAt.label "Inséré">
 <!ENTITY treeviewKeys.treecol.lastUsedAt.label "Dernière utilisation">
 <!ENTITY treeviewKeys.treecol.secure.label "DNSSEC">
-<!ENTITY treeviewKeys.deleteSelectedRows.label "Effacer les clés sélectionnés">
+<!ENTITY treeviewKeys.deleteSelectedRows.label "Effacer les clés sélectionnées">
 
 <!ENTITY treeviewSigners.title "Règles signataires">
 <!ENTITY treeviewSigners.treecol.domain.label "Domaine">
