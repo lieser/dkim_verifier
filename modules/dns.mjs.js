@@ -1,7 +1,7 @@
 /*
- * Wrapper to resolve DNS lookups via the following libraries:
- *  - JSDNS.jsm
- *  - libunbound.jsm
+ * Wrapper to resolve DNS lookups via the following experiment libraries:
+ *  - JSDNS
+ *  - libunbound
  *
  * Copyright (c) 2020 Philippe Lieser
  *
@@ -36,6 +36,8 @@ const RESOLVER_LIBUNBOUND = 2;
 
 /** @type {Promise<void>?} */
 let jsdnsIsConfigured = null;
+/** @type {Promise<void>?} */
+let libunboundIsConfigured = null;
 
 /**
  * Configure the JSDNS resolver if needed.
@@ -44,6 +46,7 @@ let jsdnsIsConfigured = null;
  */
 function configureJsdns() {
 	if (!jsdnsIsConfigured) {
+		log.debug("configure jsdns");
 		jsdnsIsConfigured = browser.jsdns.configure(
 			prefs["dns.getNameserversFromOS"],
 			prefs["dns.nameserver"],
@@ -60,12 +63,36 @@ function configureJsdns() {
 	return jsdnsIsConfigured;
 }
 
+/**
+ * Configure the libunbound resolver if needed.
+ *
+ * @returns {Promise<void>}
+ */
+function configureLibunbound() {
+	if (!libunboundIsConfigured) {
+		log.debug("configure libunbound");
+		libunboundIsConfigured = browser.libunbound.configure(
+			prefs["dns.getNameserversFromOS"],
+			prefs["dns.nameserver"],
+			prefs["dns.dnssec.trustAnchor"],
+			prefs["dns.libunbound.path"],
+			prefs["dns.libunbound.path.relToProfileDir"],
+			prefs.debug,
+		);
+	}
+	return libunboundIsConfigured;
+}
+
 browser.storage.onChanged.addListener((changes, areaName) => {
 	if (areaName !== "local") {
 		return;
 	}
 	if (Object.keys(changes).some(name => name.startsWith("dns."))) {
 		jsdnsIsConfigured = null;
+		libunboundIsConfigured = null;
+	}
+	if (Object.keys(changes).some(name => name === "debug")) {
+		libunboundIsConfigured = null;
 	}
 });
 
@@ -93,30 +120,8 @@ export default class DNS {
 				await configureJsdns();
 				return browser.jsdns.txt(name);
 			case RESOLVER_LIBUNBOUND: {
-				throw new Error("libunbound not yet available");
-				let res = await libunbound.
-					resolve(name, libunbound.Constants["RR_TYPE_" + rrtype]);
-				/** @type {DNSResult} */
-				let result = {};
-				if (res !== null) {
-					if (res.havedata) {
-						result.data = res.data;
-					} else {
-						result.data = null;
-					}
-					result.rcode = res.rcode;
-					result.secure = res.secure;
-					result.bogus = res.bogus;
-				} else {
-					// error in libunbound
-					result.data = null;
-					result.rcode = RCODE.ServFail;
-					result.secure = false;
-					result.bogus = false;
-				}
-
-				log.debug("result: " + result.toSource());
-				return result;
+				await configureLibunbound();
+				return browser.libunbound.txt(name);
 			}
 			default:
 				throw new Error("invalid resolver preference");

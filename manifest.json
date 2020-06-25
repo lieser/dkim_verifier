@@ -57,6 +57,20 @@
 				"script": "experiments/jsdns.js"
 			}
 		},
+		"libunbound": {
+			"schema": "experiments/libunbound-schema.json",
+			"parent": {
+				"scopes": [
+					"addon_parent"
+				],
+				"paths": [
+					[
+						"libunbound"
+					]
+				],
+				"script": "experiments/libunbound.js"
+			}
+		},
 		"migration": {
 			"schema": "experiments/migration-schema.json",
 			"parent": {

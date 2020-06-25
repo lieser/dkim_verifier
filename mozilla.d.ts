@@ -27,6 +27,7 @@ declare module Components {
 
     interface ComponentsInterfaces {
         [key: string]: object;
+        readonly amIAddonManagerStartup: amIAddonManagerStartup;
         readonly nsMsgFolderFlags: nsMsgFolderFlags;
         readonly nsIBinaryInputStream: nsIBinaryInputStream;
         readonly nsIFile: nsIFile;
@@ -166,6 +167,10 @@ declare module MailServices {
 ////////////////////////////////////////////////////////////////////////////////
 //// Mozilla specific interfaces/types
 
+interface amIAddonManagerStartup {
+    readonly registerChrome: (manifestURI: nsIURI, entries: string[][]) => nsIJSRAIIHelper;
+}
+
 interface mozIStorageBaseStatement extends mozIStorageBindingParams {
     readonly finalize: () => void;
 }
@@ -217,6 +222,10 @@ interface nsIJSCID {
     createInstance(): nsISupports;
     createInstance<nsIIDRef>(uuid: nsIIDRef): nsIIDRef;
     readonly getService: <nsIIDRef>(uuid: nsIIDRef) => nsIIDRef;
+}
+
+interface nsIJSRAIIHelper {
+    readonly destruct: () => void;
 }
 
 interface nsILineInputStream {

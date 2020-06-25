@@ -1,20 +1,19 @@
 /*
- * libunboundWorker.jsm
- * 
  * A ChromeWorker wrapper for the libunbound DNS library.
  * Currently only the TXT resource record is completely supported.
  *
- * Version: 2.0.1 (02 January 2018)
- * 
- * Copyright (c) 2016-2018 Philippe Lieser
- * 
+ * Copyright (c) 2016-2018;2020 Philippe Lieser
+ *
  * This software is licensed under the terms of the MIT License.
- * 
+ *
  * The above copyright and license notice shall be
  * included in all copies or substantial portions of the Software.
  */
 
-// options for ESLint
+// @ts-check
+///<reference path="./ctypes.d.ts" />
+///<reference path="./libunbound.d.ts" />
+/* eslint-disable camelcase */
 /* eslint no-global-assign: ["error", {"exceptions": ["onmessage"]}] */
 /* global ctypes, onmessage, postMessage, dump */
 /* exported onmessage */
@@ -24,41 +23,47 @@
 
 const log_prefix = "libunboundWorker: ";
 // @ts-ignore
-var log = {
-	fatal : function (msg) {
-		let toSend = {type: "log", subType: "fatal", message: log_prefix + msg};
+const postLog = {
+	/**
+	 * @param {string} msg
+	 * @returns {void}
+	 */
+	error: function (msg) {
+		/** @type {Libunbound.Log} */
+		const toSend = { type: "log", subType: "error", message: log_prefix + msg };
 		postMessage(toSend);
 	},
-	error : function (msg) {
-		let toSend = {type : "log", subType: "error", message: log_prefix + msg};
+	/**
+	 * @param {string} msg
+	 * @returns {void}
+	 */
+	warn: function (msg) {
+		/** @type {Libunbound.Log} */
+		const toSend = { type: "log", subType: "warn", message: log_prefix + msg };
 		postMessage(toSend);
 	},
-	warn : function (msg) {
-		let toSend = {type : "log", subType: "warn", message: log_prefix + msg};
+	/**
+	 * @param {string} msg
+	 * @returns {void}
+	 */
+	info: function (msg) {
+		/** @type {Libunbound.Log} */
+		const toSend = { type: "log", subType: "info", message: log_prefix + msg };
 		postMessage(toSend);
 	},
-	info : function (msg) {
-		let toSend = {type : "log", subType: "info", message: log_prefix + msg};
-		postMessage(toSend);
-	},
-	config : function (msg) {
-		let toSend = {type : "log", subType: "config", message: log_prefix + msg};
-		postMessage(toSend);
-	},
-	debug : function (msg) {
-		let toSend = {type : "log", subType: "debug", message: log_prefix + msg};
-		postMessage(toSend);
-	},
-	trace : function (msg) {
-		let toSend = {type : "log", subType: "trace", message: log_prefix + msg};
+	/**
+	 * @param {string} msg
+	 * @returns {void}
+	 */
+	debug: function (msg) {
+		/** @type {Libunbound.Log} */
+		const toSend = { type: "log", subType: "debug", message: log_prefix + msg };
 		postMessage(toSend);
 	},
 };
 
-/**
- * @public
- */
-var Constants = {
+// @ts-ignore
+const Constants = {
 	RR_TYPE_A: 1,
 	RR_TYPE_A6: 38,
 	RR_TYPE_AAAA: 28,
@@ -123,63 +128,88 @@ var Constants = {
 	RR_TYPE_X25: 19,
 };
 
-var lib;
-var libDeps = [];
-var ctx = ctypes.voidptr_t();
+/** @type {ctypes.Library?} */
+let lib;
+/** @type {ctypes.Library[]} */
+let libDeps = [];
+/** @type {p_ub_ctx} */
+let ctx = ctypes.voidptr_t();
 // http://unbound.net/documentation/libunbound.html
-var ub_ctx;
-var ub_result;
-var ub_ctx_create;
-var ub_ctx_delete;
-var ub_ctx_config;
-var ub_ctx_set_fwd;
-var ub_ctx_resolvconf;
-var ub_ctx_add_ta;
-var ub_ctx_debuglevel;
-var ub_resolve;
-var ub_resolve_free;
-var ub_strerror;
+/** @typedef {ctypes.CDataPointerType<ub_ctx_struct>} p_ub_ctx */
+/** @type {ub_ctx_struct=} */
+let ub_ctx;
+/** @typedef {ctypes.CDataPointerType<ub_result_struct>} p_ub_result */
+/** @typedef {ctypes.CDataPointerType<ctypes.PointerTypeI<ub_result_struct>>} pp_ub_result */
+/** @type {ub_result_struct} */
+let ub_result;
+/** @type {()=>p_ub_ctx} */
+let ub_ctx_create;
+/** @type {(ctx: p_ub_ctx)=>void} */
+let ub_ctx_delete;
+/** @type {(ctx: p_ub_ctx, fname: string)=>number} */
+let ub_ctx_config;
+/** @type {(ctx: p_ub_ctx, addr: string)=>number} */
+let ub_ctx_set_fwd;
+/** @type {(ctx: p_ub_ctx, fname: string?)=>number} */
+let ub_ctx_resolvconf;
+/** @type {(ctx: p_ub_ctx, ta: string)=>number} */
+let ub_ctx_add_ta;
+/** @type {(ctx: p_ub_ctx, d: number)=>number} */
+let ub_ctx_debuglevel;
+/** @type {(ctx: p_ub_ctx, name: string, rrtype: number, rrclass: number, result: pp_ub_result)=>number} */
+let ub_resolve;
+/** @type {(result: p_ub_result)=>void} */
+let ub_resolve_free;
+/** @type {(err: number)=>ReturnType<ctypes["char"]["ptr"]>} */
+let ub_strerror;
 
 /**
  * Perform resolution of the target name.
- * 
+ *
  * @param {String} name
  * @param {Number} [rrtype=libunbound.Constants.RR_TYPE_A]
- * 
+ *
  * @return {ub_result}
  */
-function resolve(name, rrtype=Constants.RR_TYPE_A) {
+function resolve(name, rrtype = Constants.RR_TYPE_A) {
 	if (!ub_resolve) {
 		throw new Error("libunbound not correctly initialized (ub_resolve missing)");
 	}
+	if (!ub_result) {
+		throw new Error("libunbound not correctly initialized (ub_result missing)");
+	}
+	if (!ctx) {
+		throw new Error("libunbound not correctly initialized (ctx missing)");
+	}
 
-	let _result = ub_result.ptr();
-	let retval;
+	const _result = ub_result.ptr();
 
 	// query for name
-	retval = ub_resolve(ctx, name,
+	const retval = ub_resolve(ctx, name,
 		rrtype,
 		1 /* CLASS IN (internet) */, _result.address()
 	);
 	if (retval !== 0) {
-		log.debug("resolve error: "+ub_strerror(retval).readString()+"\n");
-		throw new Error("resolve error: "+ub_strerror(retval).readString());
+		postLog.debug(`resolve error: ${ub_strerror(retval).readString()}\n`);
+		throw new Error(`resolve error: ${ub_strerror(retval).readString()}`);
 	}
 
 	// array of converted rdata
-	let data = [];
+	const data = [];
 	// array of rdata as byte array
-	let data_raw = [];
-	if(_result.contents.havedata) {
+	/** @type {number[][]} */
+	const data_raw = [];
+	if (_result.contents.havedata) {
 		// get data
 		let lenPtr = _result.contents.len;
-		let dataPtr=_result.contents.data;
+		let dataPtr = _result.contents.data;
 		while (!dataPtr.contents.isNull()) {
 			// get rdata as byte array
-			let tmp = ctypes.cast(dataPtr.contents,
+			const tmp = ctypes.cast(dataPtr.contents,
 				ctypes.uint8_t.array(lenPtr.contents).ptr
 			).contents;
-			let rdata = new Array(tmp.length);
+			/** @type {number[]} */
+			const rdata = new Array(tmp.length);
 			for (let i = 0; i < tmp.length; i++) {
 				rdata[i] = tmp[i];
 			}
@@ -190,7 +220,8 @@ function resolve(name, rrtype=Constants.RR_TYPE_A) {
 				case Constants.RR_TYPE_TXT: {
 					// http://tools.ietf.org/html/rfc1035#page-20
 					let str = "";
-					let i=0;
+					let i = 0;
+					/** @type {number} */
 					let j;
 					// read all <character-string>s
 					while (i < rdata.length) {
@@ -198,29 +229,29 @@ function resolve(name, rrtype=Constants.RR_TYPE_A) {
 						j = rdata[i];
 						i += 1;
 						// read current <character-string>
-						str += String.fromCharCode.apply(null, rdata.slice(i, i+j));
+						str += String.fromCharCode.apply(null, rdata.slice(i, i + j));
 						i += j;
 					}
 					data.push(str);
 					break;
 				}
 				default:
-					log.warn("skipped converting of unknown rdata type: " + rrtype);
+					postLog.warn(`skipped converting of unknown rdata type: ${rrtype}`);
 			}
 
 			dataPtr = dataPtr.increment();
 			lenPtr = lenPtr.increment();
 		}
 
-		log.debug("data: " + data);
+		postLog.debug(`data: ${data}`);
 	}
 
 	/** @type {ub_result} */
-	let result = {};
+	const result = {};
 	if (!_result.contents.qname.isNull()) {
 		result.qname = _result.contents.qname.readString();
 	} else {
-		log.warn("qname missing");
+		postLog.warn("qname missing");
 		result.qname = "";
 	}
 	result.qtype = _result.contents.qtype;
@@ -242,7 +273,7 @@ function resolve(name, rrtype=Constants.RR_TYPE_A) {
 	}
 	result.ttl = _result.contents.ttl;
 
-	log.debug("qname: "+result.qname+", qtype: "+result.qtype+", rcode: "+result.rcode+", secure: "+result.secure+", bogus: "+result.bogus+", why_bogus: "+result.why_bogus);
+	postLog.debug(`qname: ${result.qname}, qtype: ${result.qtype}, rcode: ${result.rcode}, secure: ${result.secure}, bogus: ${result.bogus}, why_bogus: ${result.why_bogus}`);
 
 	ub_resolve_free(_result);
 
@@ -265,41 +296,41 @@ function load(paths) {
 		lib.close();
 		lib = null;
 		// close dependency of library
-		for (let libDep of libDeps) {
+		for (const libDep of libDeps) {
 			libDep.close();
 		}
 		libDeps = [];
 	}
-	let libPaths = paths.split(";");
+	const libPaths = paths.split(";");
 	// Automatic loading of dependencies seems to be buggy.
 	// If a dependency was ones loaded, TB will always try to use the same,
 	// maybe now outdated location.
 	// Explicitly load optionally specified dependency of library as a workaround.
-	for (let libDepPath of libPaths.slice(0, -1)) {
-		log.trace("loading dependency: " + libDepPath);
+	for (const libDepPath of libPaths.slice(0, -1)) {
+		postLog.debug(`loading dependency: ${libDepPath}`);
 		libDeps.push(ctypes.open(libDepPath));
 	}
-	let path = libPaths.slice(-1)[0];
-	log.trace("loading libunbound: " + path);
+	const path = libPaths.slice(-1)[0];
+	postLog.debug(`loading libunbound: ${path}`);
 	lib = ctypes.open(path);
 
 	ub_ctx = new ctypes.StructType("ub_ctx");
 	// struct ub_result {
-		// char* qname; /* text string, original question */
-		// int qtype;   /* type code asked for */
-		// int qclass;  /* class code asked for */
-		// char** data; /* array of rdata items, NULL terminated*/
-		// int* len;    /* array with lengths of rdata items */
-		// char* canonname; /* canonical name of result */
-		// int rcode;   /* additional error code in case of no data */
-		// void* answer_packet; /* full network format answer packet */
-		// int answer_len; /* length of packet in octets */
-		// int havedata; /* true if there is data */
-		// int nxdomain; /* true if nodata because name does not exist */
-		// int secure;  /* true if result is secure */
-		// int bogus;   /* true if a security failure happened */
-		// char* why_bogus; /* string with error if bogus */
-		// int ttl;     /* number of seconds the result is valid */
+	//     char* qname; /* text string, original question */
+	//     int qtype;   /* type code asked for */
+	//     int qclass;  /* class code asked for */
+	//     char** data; /* array of rdata items, NULL terminated*/
+	//     int* len;    /* array with lengths of rdata items */
+	//     char* canonname; /* canonical name of result */
+	//     int rcode;   /* additional error code in case of no data */
+	//     void* answer_packet; /* full network format answer packet */
+	//     int answer_len; /* length of packet in octets */
+	//     int havedata; /* true if there is data */
+	//     int nxdomain; /* true if nodata because name does not exist */
+	//     int secure;  /* true if result is secure */
+	//     int bogus;   /* true if a security failure happened */
+	//     char* why_bogus; /* string with error if bogus */
+	//     int ttl;     /* number of seconds the result is valid */
 	// };
 	ub_result = new ctypes.StructType("ub_result", [
 		{ "qname": ctypes.char.ptr },
@@ -347,7 +378,7 @@ function load(paths) {
 		ub_ctx.ptr, ctypes.int);
 
 	// int ub_resolve(struct ub_ctx* ctx, char* name,
-                  // int rrtype, int rrclass, struct ub_result** result);
+	//                int rrtype, int rrclass, struct ub_result** result);
 	ub_resolve = lib.declare("ub_resolve", ctypes.default_abi, ctypes.int,
 		ub_ctx.ptr, ctypes.char.ptr, ctypes.int, ctypes.int, ub_result.ptr.ptr);
 
@@ -359,7 +390,7 @@ function load(paths) {
 	ub_strerror = lib.declare("ub_strerror", ctypes.default_abi, ctypes.char.ptr,
 		ctypes.int);
 
-	log.debug("libunbound loaded");
+	postLog.debug("libunbound loaded");
 }
 
 /**
@@ -377,6 +408,7 @@ function update_ctx(conf, debuglevel, getNameserversFromOS, nameservers, trustAn
 		throw new Error("libunbound not correctly initialized (ub_ctx_create missing)");
 	}
 
+	/** @type {number} */
 	let retval;
 
 	if (!ctx.isNull()) {
@@ -387,51 +419,51 @@ function update_ctx(conf, debuglevel, getNameserversFromOS, nameservers, trustAn
 
 	// create context
 	ctx = ub_ctx_create();
-	if(ctx.isNull()) {
+	if (ctx.isNull()) {
 		throw new Error("could not create unbound context");
 	}
 
 	// read config file if specified
 	if (conf) {
-		if((retval=ub_ctx_config(ctx, conf)) !== 0) {
-			throw new Error("error in ub_ctx_config: " +
-				ub_strerror(retval).readString() + ". errno: " + ctypes.errno);
+		if ((retval = ub_ctx_config(ctx, conf)) !== 0) {
+			throw new Error(`error in ub_ctx_config: ${
+				ub_strerror(retval).readString()}. errno: ${ctypes.errno}`);
 		}
 	}
 
 	// set debuglevel if specified
 	if (debuglevel) {
-		if((retval=ub_ctx_debuglevel(ctx, debuglevel)) !== 0) {
-			throw new Error("error in ub_ctx_debuglevel: " +
-				ub_strerror(retval).readString() + ". errno: "+ctypes.errno);
+		if ((retval = ub_ctx_debuglevel(ctx, debuglevel)) !== 0) {
+			throw new Error(`error in ub_ctx_debuglevel: ${
+				ub_strerror(retval).readString()}. errno: ${ctypes.errno}`);
 		}
 	}
 
 	// get DNS servers form OS
 	if (getNameserversFromOS) {
-		if((retval=ub_ctx_resolvconf(ctx, null)) !== 0) {
-			throw new Error("error in ub_ctx_resolvconf: " +
-				ub_strerror(retval).readString() + ". errno: " + ctypes.errno);
+		if ((retval = ub_ctx_resolvconf(ctx, null)) !== 0) {
+			throw new Error(`error in ub_ctx_resolvconf: ${
+				ub_strerror(retval).readString()}. errno: ${ctypes.errno}`);
 		}
 	}
 
 	// set additional DNS servers
-	nameservers.forEach(function(element /*, index, array*/) {
-		if((retval=ub_ctx_set_fwd(ctx, element.trim())) !== 0) {
-			throw new Error("error in ub_ctx_set_fwd: " +
-				ub_strerror(retval).readString() + ". errno: " + ctypes.errno);
+	nameservers.forEach(function (element /*, index, array*/) {
+		if ((retval = ub_ctx_set_fwd(ctx, element.trim())) !== 0) {
+			throw new Error(`error in ub_ctx_set_fwd: ${
+				ub_strerror(retval).readString()}. errno: ${ctypes.errno}`);
 		}
 	});
 
 	// add root trust anchors
-	trustAnchors.forEach(function(element /*, index, array*/) {
-		if((retval=ub_ctx_add_ta(ctx, element.trim())) !== 0) {
-			throw new Error("error in ub_ctx_add_ta: " +
-				ub_strerror(retval).readString() + ". errno: " + ctypes.errno);
+	trustAnchors.forEach(function (element /*, index, array*/) {
+		if ((retval = ub_ctx_add_ta(ctx, element.trim())) !== 0) {
+			throw new Error(`error in ub_ctx_add_ta: ${
+				ub_strerror(retval).readString()}. errno: ${ctypes.errno}`);
 		}
 	});
 
-	log.debug("context created");
+	postLog.debug("context created");
 }
 
 /**
@@ -439,8 +471,7 @@ function update_ctx(conf, debuglevel, getNameserversFromOS, nameservers, trustAn
  * @param {Libunbound.WorkerRequest} msg
  * @return {void}
  */
-onmessage = function(msg) {
-	log.trace("Message received from main script: " + msg.data.toSource());
+onmessage = function (msg) {
 	try {
 		try {
 			let res;
@@ -450,51 +481,48 @@ onmessage = function(msg) {
 				case "resolve": {
 					/** @type {Libunbound.ResolveRequest} */
 					// @ts-ignore
-					let req = msg.data;
+					const req = msg.data;
 					res = resolve(req.name, req.rrtype);
 					break;
 				}
 				case "load": {
 					/** @type {Libunbound.LoadRequest} */
 					// @ts-ignore
-					let req = msg.data;
+					const req = msg.data;
 					load(req.path);
 					break;
 				}
 				case "update_ctx": {
 					/** @type {Libunbound.UpdateCtxRequest} */
 					// @ts-ignore
-					let req = msg.data;
+					const req = msg.data;
 					update_ctx(req.conf, req.debuglevel,
 						req.getNameserversFromOS, req.nameservers,
 						req.trustAnchors);
 					break;
 				}
 				default:
-					throw new Error("unknown method " + msg.data.method);
+					throw new Error(`unknown method ${msg.data.method}`);
 			}
 
-			// return result if available
-			if (res !== undefined) {
-				log.trace("Posting result back to main script: " +
-					(res ? res.toSource() : res));
-				postMessage({
-					callId: msg.data.callId,
-					result: res,
-				});
-			}
+			// return result
+			postMessage({
+				callId: msg.data.callId,
+				result: res,
+			});
 		} catch (exception) {
-			log.debug("Posting exception back to main script: " +
-				exception.toString());
+			postLog.debug(`Posting exception back to main script: ${exception}; stack: ${exception.stack}`);
 			postMessage({
 				type: "error",
 				subType: "DKIM_DNSERROR_UNKNOWN",
 				callId: msg.data.callId,
-				message: "libunboundWorker: " + exception.toString(),
+				message: `libunboundWorker: ${exception}`,
+				stack: exception.stack,
 			});
 		}
 	} catch (e) {
-		dump(e.toString() + "\n");
-		log.fatal(e.toString());
+		// @ts-ignore
+		dump(`${e}\n`);
+		postLog.error(`Exception: ${e}; stack: ${e.stack}`);
 	}
 };
