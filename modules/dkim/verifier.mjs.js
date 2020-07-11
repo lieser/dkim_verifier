@@ -52,18 +52,18 @@ const Policy = new DummyPolicy();
  *           result version ("1.0" / "1.1")
  * @property {String} result
  *           "none" / "SUCCESS" / "PERMFAIL" / "TEMPFAIL"
- * @property {String} [SDID]
+ * @property {String=} [SDID]
  *           required if result="SUCCESS
- * @property {String} [selector]
+ * @property {String=} [selector]
  *           added in version 1.1
- * @property {String[]} [warnings]
+ * @property {String[]=} [warnings]
  *           required if result="SUCCESS
- * @property {String} [errorType]
+ * @property {String=} [errorType]
  *           if result="PERMFAIL: DKIM_SigError.errorType
  *           if result="TEMPFAIL: DKIM_InternalError.errorType or Undefined
- * @property {String} [shouldBeSignedBy]
+ * @property {String=} [shouldBeSignedBy]
  *           added in version 1.1
- * @property {Boolean} [hideFail]
+ * @property {Boolean=} [hideFail]
  *           added in  version 1.1
  */
 

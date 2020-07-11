@@ -92,13 +92,13 @@ const domain_name_p = RfcParser.domain_name;
  * @property {number} method_version
  * @property {string} result
  *           none|pass|fail|softfail|policy|neutral|temperror|permerror
- * @property {string} [reason]
+ * @property {string=} [reason]
  * @property {ArhProperties} propertys
  * @property {ArhProperty} propertys.smtp
  * @property {ArhProperty} propertys.header
  * @property {ArhProperty} propertys.body
  * @property {ArhProperty} propertys.policy
- * @property {ArhProperty} [propertys._Keyword_]
+ * @property {ArhProperty=} [propertys._Keyword_]
  *           ArhResInfo can also include other propertys besides the aboves.
  */
 
