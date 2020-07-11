@@ -16,7 +16,8 @@
 "use strict";
 
 // @ts-ignore
-const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
+// eslint-disable-next-line no-var
+var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 // eslint-disable-next-line no-invalid-this
 this.migration = class extends ExtensionCommon.ExtensionAPI {

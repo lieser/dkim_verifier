@@ -17,7 +17,8 @@
 "use strict";
 
 // @ts-ignore
-const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
+// eslint-disable-next-line no-var
+var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 /**
  * From https://javascriptweblog.wordpress.com/2011/08/08/fixing-the-javascript-typeof-operator/
