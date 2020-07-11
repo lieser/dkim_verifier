@@ -396,8 +396,7 @@ function getOsDnsServers() {
 						});
 					}
 				});
-				log.info("Got servers from Windows registry: " +
-					OS_DNS_ROOT_NAME_SERVERS.toSource());
+				log.info("Got servers from Windows registry: ", OS_DNS_ROOT_NAME_SERVERS);
 			}
 		} catch (e) {
 			log.error("Error reading Registry: " + e + "\n" + e.stack);
@@ -444,7 +443,7 @@ function getOsDnsServers() {
 
 			stream_filestream.close();
 
-			log.info("Got servers from resolv.conf: " + OS_DNS_ROOT_NAME_SERVERS.toSource());
+			log.info("Got servers from resolv.conf: ", OS_DNS_ROOT_NAME_SERVERS);
 		} catch (e) {
 			log.error("Error reading resolv.conf: " + e + "\n" + e.stack);
 

@@ -3,10 +3,6 @@
 
 declare function fixIterator<T>(obj: any, type: T): T[]
 
-interface Object extends Object {
-    toSource(): string;
-}
-
 
 ////////////////////////////////////////////////////////////////////////////////
 //// Mozilla specific modules
