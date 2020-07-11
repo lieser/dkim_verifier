@@ -11,6 +11,7 @@
 
 // @ts-check
 ///<reference path="../WebExtensions.d.ts" />
+///<reference path="../experiments/migration.d.ts" />
 /* eslint-env webextensions */
 
 import Logging from "./logging.mjs.js";

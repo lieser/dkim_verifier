@@ -1,5 +1,7 @@
 4.0.0 []
 ------------------
+ - now requires at least Thunderbird 78
+ - fixed incompatibility with Thunderbird 78 (#119)
  - Authentication-Results header: fixed parsing of version
 
 3.1.0 [2020-01-22]

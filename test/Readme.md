@@ -19,7 +19,7 @@ Below is an example with Node's [http-server](https://www.npmjs.com/package/http
 npm install --save-dev http-server
 
 # Start the server in the root directory of the repository
-node node_modules/http-server/bin/http-server .
+npx http-server .
 
 # Open the test runner page
 # http://localhost:8080/test/unittest/SpecRunner.html
@@ -44,5 +44,5 @@ npm install --save-dev sinon
 npm install --save-dev webextensions-api-fake
 
 # Run tests
-node node_modules/mocha/bin/mocha --recursive --reporter dot
+npx mocha --recursive --reporter dot
 ```
