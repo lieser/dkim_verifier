@@ -356,6 +356,7 @@ class DkimHeaderRow {
 	 * @memberof DkimHeaderRow
 	 */
 	constructor(document, element) {
+		this.document = document;
 		if (element) {
 			this.element = element;
 			return;
@@ -389,6 +390,13 @@ class DkimHeaderRow {
 			this.element.style.visibility = "";
 		} else {
 			this.element.style.visibility = "collapse";
+		}
+		// Trigger the OnResizeExpandedHeaderView() function from Thunderbird
+		// to recalculate the height on the expandedHeaderView element.
+		const defaultView = this.document.defaultView;
+		if (defaultView) {
+			const window = defaultView.window;
+			window.dispatchEvent(new window.Event('resize'));
 		}
 	}
 
