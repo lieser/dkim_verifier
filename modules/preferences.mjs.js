@@ -250,14 +250,6 @@ export class BasePreferences {
 	 * - 1: warning
 	 * - 2: ignore
 	 */
-	get "error.contentTypeCharsetAddedQuotes.treatAs"() {
-		return this._tryGetNumberValue("error.contentTypeCharsetAddedQuotes.treatAs", 0);
-	}
-	/**
-	 * - 0: error
-	 * - 1: warning
-	 * - 2: ignore
-	 */
 	get "error.algorithm.sign.rsa-sha1.treatAs"() {
 		return this._tryGetNumberValue("error.algorithm.sign.rsa-sha1.treatAs", 1);
 	}

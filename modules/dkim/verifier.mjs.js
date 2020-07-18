@@ -932,30 +932,7 @@ export function setKeyFetchFunction(keyFetchFunction) {
 			headerHashInput
 		);
 		if (!isValid) {
-			if (prefs["error.contentTypeCharsetAddedQuotes.treatAs"] > 0) {
-				log.debug("Try with removed quotes in Content-Type charset.");
-				msg.headerFields.get("content-type")[0] =
-					msg.headerFields.get("content-type")[0].
-					replace(/charset="([^"]+)"/i,	"charset=$1");
-				// Compute the input for the header hash
-				headerHashInput = computeHeaderHashInput(msg,DKIMSignature);
-				log.debug(`Header hash input:\n${headerHashInput}`);
-				// verify Signature
-				[isValid, keyLength] = await DkimCrypto.verifyRSA(
-					DKIMSignature.DKIMKey.p,
-					DKIMSignature.a_hash,
-					DKIMSignature.b,
-					headerHashInput
-				);
-				if (!isValid) {
-					throw new DKIM_SigError("DKIM_SIGERROR_BADSIG");
-				} else if (prefs["error.contentTypeCharsetAddedQuotes.treatAs"] === 1) {
-					DKIMSignature.warnings.push({name: "DKIM_SIGERROR_CONTENT_TYPE_CHARSET_ADDED_QUOTES"});
-					log.debug("Warning: DKIM_SIGERROR_CONTENT_TYPE_CHARSET_ADDED_QUOTES");
-				}
-			} else {
-				throw new DKIM_SigError("DKIM_SIGERROR_BADSIG");
-			}
+			throw new DKIM_SigError("DKIM_SIGERROR_BADSIG");
 		}
 
 		if (keyLength < 1024) {
