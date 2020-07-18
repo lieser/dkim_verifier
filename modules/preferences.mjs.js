@@ -386,24 +386,6 @@ export class BasePreferences {
 	 * - 40:  when an e-mail is viewed
 	 * - 50:  when a message is viewed
 	 */
-	get "showDKIMStatusbarpanel"() {
-		return this._tryGetNumberValue("showDKIMStatusbarpanel", 0);
-	}
-	/**
-	 * - 1:  text
-	 * - 2:  icon
-	 */
-	get "statusbarpanel.result.style"() {
-		return this._tryGetNumberValue("statusbarpanel.result.style", 1);
-	}
-	/**
-	 * -  0:  never
-	 * - 10:  when an e-mail with a valid DKIM signature is viewed  (SUCCESS)
-	 * - 20:  when an e-mail with a valid DKIM signature is viewed (including TEMPFAIL) (SUCCESS, TEMPFAIL)
-	 * - 30:  when an e-mail with a DKIM signature is viewed (SUCCESS, TEMPFAIL, PERMFAIL, loading)
-	 * - 40:  when an e-mail is viewed
-	 * - 50:  when a message is viewed
-	 */
 	get "showDKIMFromTooltip"() {
 		return this._tryGetNumberValue("showDKIMFromTooltip", 0);
 	}

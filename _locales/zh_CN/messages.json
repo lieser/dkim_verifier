@@ -400,9 +400,6 @@
 	"options_showDKIMHeader": {
 		"message": "显示 DKIM 头"
 	},
-	"options_showDKIMStatusbarpanel": {
-		"message": "显示 DKIM 状态栏"
-	},
 	"options_showDKIMFromTooltip": {
 		"message": "From 头显示 DKIM 工具提示"
 	},
@@ -420,12 +417,6 @@
 	},
 	"options_showDKIM.value.50": {
 		"message": "当一个消息被查看"
-	},
-	"options_statusbarpanel.result.style.value.1": {
-		"message": "显示文本"
-	},
-	"options_statusbarpanel.result.style.value.2": {
-		"message": "显示图标"
 	},
 	"options_colorFrom": {
 		"message": "启用 From 头高亮"

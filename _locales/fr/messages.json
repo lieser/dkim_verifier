@@ -400,9 +400,6 @@
 	"options_showDKIMHeader": {
 		"message": "Montrer l’entête DKIM"
 	},
-	"options_showDKIMStatusbarpanel": {
-		"message": "Montrer la signature DKIM dans la barre de status"
-	},
 	"options_showDKIMFromTooltip": {
 		"message": "Montrer l’infobulle DKIM dans l’expéditeur de l’entête"
 	},
@@ -420,12 +417,6 @@
 	},
 	"options_showDKIM.value.50": {
 		"message": "quand le message est vu"
-	},
-	"options_statusbarpanel.result.style.value.1": {
-		"message": "Montrer le texte"
-	},
-	"options_statusbarpanel.result.style.value.2": {
-		"message": "Montrer l’icône"
 	},
 	"options_colorFrom": {
 		"message": "Activer la coloration de l’expéditeur dans l’entête"

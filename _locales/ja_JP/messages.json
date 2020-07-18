@@ -400,9 +400,6 @@
 	"options_showDKIMHeader": {
 		"message": "DKIM ヘッダを表示"
 	},
-	"options_showDKIMStatusbarpanel": {
-		"message": "DKIM ステータスバーを表示"
-	},
 	"options_showDKIMFromTooltip": {
 		"message": "差出人ヘッダに DKIM ツールチップを表示"
 	},
@@ -420,12 +417,6 @@
 	},
 	"options_showDKIM.value.50": {
 		"message": "メッセージを閲覧した場合"
-	},
-	"options_statusbarpanel.result.style.value.1": {
-		"message": "テキストを表示"
-	},
-	"options_statusbarpanel.result.style.value.2": {
-		"message": "アイコンを表示"
 	},
 	"options_colorFrom": {
 		"message": "差出人ヘッダのハイライトを有効化"
