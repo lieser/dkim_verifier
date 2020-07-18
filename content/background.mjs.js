@@ -44,6 +44,7 @@ isInitialized.catch(error => log.fatal("Initializing failed with:", error));
 /** @type {import("../modules/dkim/verifier.mjs.js").KeyFetchFunction} */
 async function getKey(sdid, selector) {
 	const dnsRes = await DNS.txt(`${selector}._domainkey.${sdid}`);
+	log.debug("dns result", dnsRes);
 
 	if (dnsRes.bogus) {
 		throw new DKIM_InternalError(null, "DKIM_DNSERROR_DNSSEC_BOGUS");
@@ -62,7 +63,7 @@ async function getKey(sdid, selector) {
 	}
 	return {
 		key: dnsRes.data[0],
-		secure: false,
+		secure: dnsRes.secure,
 	};
 }
 
