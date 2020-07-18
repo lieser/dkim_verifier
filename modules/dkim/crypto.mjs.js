@@ -89,8 +89,6 @@ function strToArrayBuffer(str) {
 
 /**
  * Crypto implementation using the Web Crypto API
- *
- * @implements {DkimCrypto}
  */
 class DkimCryptoWeb extends DkimCryptoI {
 	/**
@@ -155,8 +153,6 @@ class DkimCryptoWeb extends DkimCryptoI {
 
 /**
  * Crypto implementation using Node's Crypto API
- *
- * @implements {DkimCrypto}
  */
 class DkimCryptoNode extends DkimCryptoI {
 	/**
