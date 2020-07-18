@@ -17,6 +17,8 @@ nav.nav-main>div[pane] {
 	border-left: 4px solid transparent;
 	padding: 5px 10px;
 	padding-inline-start: 19px;
+	cursor: default;
+	user-select: none;
 }
 
 nav.nav-main>div[pane][selected] {
@@ -41,6 +43,8 @@ nav.nav-section>div[pane] {
 	min-height: 40px;
 	border-bottom: 4px solid transparent;
 	padding: 4px 20px 0;
+	cursor: default;
+	user-select: none;
 }
 
 nav.nav-section>div[pane][selected] {
@@ -77,4 +81,40 @@ label.checkbox {
 
 fieldset:disabled label {
 	opacity: 0.5;
+}
+
+.account-options {
+	display: flex;
+	flex-direction: row;
+}
+
+.account-options[hidden] {
+	display: none;
+}
+
+.account-selection-box {
+	overflow: auto;
+	overflow-x: hidden;
+	min-width: 15%;
+	max-width: 40%;
+	margin: 2px 0px;
+	margin-inline-end: 8px;
+	border: 1px solid var(--in-content-box-border-color);
+	border-radius: 2px;
+	background-color: var(--in-content-box-background);
+}
+
+.account-selection-item {
+	padding: .3em;
+	cursor: default;
+	user-select: none;
+}
+
+.account-selection-item:hover {
+	background-color: var(--in-content-item-hover);
+}
+
+.account-selection-item[selected] {
+	color: var(--in-content-selected-text);
+	background-color: var(--in-content-item-selected)
 }

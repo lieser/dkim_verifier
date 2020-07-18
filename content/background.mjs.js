@@ -108,9 +108,8 @@ browser.messageDisplay.onMessageDisplayed.addListener(async (tab, message) => {
 			browser.dkimHeader.showFromTooltip(tab.id, message.id, true);
 		}
 
-		const rawMessage = await browser.messages.getRaw(message.id);
 		const verifier = new AuthVerifier();
-		const res = await verifier.verify(rawMessage);
+		const res = await verifier.verify(message);
 		const warnings = res.dkim[0].warnings_str || [];
 		/** @type {Parameters<typeof browser.dkimHeader.setDkimHeaderResult>[5]} */
 		const arh = {};

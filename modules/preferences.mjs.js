@@ -480,6 +480,106 @@ export class BasePreferences {
 		return this._tryGetStringValue("logging.console", "Debug");
 	}
 	//#endregion
+
+	////////////////////////////////////////////////////////////////////////////
+	//#region Account preferences
+	////////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * @param {string} name
+	 * @param {string} account
+	 * @param {boolean|number|string} value
+	 * @returns {Promise<void>}
+	 * @memberof BasePreferences
+	 */
+	setAccountValue(name, account, value) {
+		if (!Object.prototype.hasOwnProperty.call(BasePreferences.prototype, `account.${name}`)) {
+			throw new Error(`Can not set nonexisting account preference "${name}"`);
+		}
+		if (name === "dkim.enable" || name === "arh.read") {
+			if (typeof value !== "number") {
+				throw new Error(`Can not set account preference ${name} with type number to a ${typeof value}`);
+			}
+			if (value < 0 || value > 2) {
+				throw new Error(`Can not set account preference ${name} to value ${value}`);
+			}
+		}
+		if (name === "arh.allowedAuthserv") {
+			if (typeof value !== "string") {
+				throw new Error(`Can not set account preference ${name} with type number to a ${typeof value}`);
+			}
+		}
+		return this._valueSetter(`account.${account}.${name}`, value);
+	}
+
+	/**
+	 * @param {string} name
+	 * @param {string} account
+	 * @returns {boolean|number|string}
+	 * @memberof BasePreferences
+	 */
+	getAccountValue(name, account) {
+		if (!Object.prototype.hasOwnProperty.call(BasePreferences.prototype, `account.${name}`)) {
+			throw new Error(`Can not get nonexisting account preference "${name}"`);
+		}
+		if (name === "dkim.enable" || name === "arh.read") {
+			return this._tryGetNumberValue(`account.${account}.${name}`, 0);
+		}
+		/** @type {any} */
+		const that = this;
+		return that[`account.${name}`](account);
+	}
+
+	/**
+	 * Get an boolean account preference that has a global default.
+	 *
+	 * @param {string} name
+	 * @param {string} account
+	 * @returns {boolean}
+	 * @memberof BasePreferences
+	 */
+	_getAccountBoolWithDefault(name, account) {
+		// 0: default, 1: yes, 2: no
+		const accBool = this._tryGetNumberValue(`account.${account}.${name}`, 0);
+		switch (accBool) {
+			case 0:
+				return this.getBool(name);
+			case 1:
+				return true;
+			case 2:
+				return false;
+			default:
+				throw new Error(`Account preference ${name} has unexpected value ${accBool}`);
+		}
+	}
+
+	/**
+	 * @param {string} account
+	 * @returns {boolean}
+	 * @memberof BasePreferences
+	 */
+	"account.dkim.enable"(account) {
+		return this._getAccountBoolWithDefault("dkim.enable", account);
+	}
+
+	/**
+	 * @param {string} account
+	 * @returns {boolean}
+	 * @memberof BasePreferences
+	 */
+	"account.arh.read"(account) {
+		return this._getAccountBoolWithDefault("arh.read", account);
+	}
+
+	/**
+	 * @param {string} account
+	 * @returns {string}
+	 * @memberof BasePreferences
+	 */
+	"account.arh.allowedAuthserv"(account) {
+		return this._tryGetStringValue(`account.${account}.arh.allowedAuthserv`, "");
+	}
+	//#endregion
 }
 
 /**
@@ -555,14 +655,3 @@ export class StorageLocalPreferences extends BasePreferences {
 
 const prefs = new StorageLocalPreferences();
 export default prefs;
-
-////////////////////////////////////////////////////////////////////////////////
-// account specific options
-////////////////////////////////////////////////////////////////////////////////
-
-// 0: default, 1: yes, 2: no
-// pref("mail.server.default.dkim_verifier.dkim.enable", 0);
-// pref("mail.server.default.dkim_verifier.arh.read", 0);
-
-// empty to allow all
-// pref("mail.server.default.dkim_verifier.arh.allowedAuthserv", "");

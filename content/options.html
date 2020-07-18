@@ -18,6 +18,7 @@
   <nav class="nav-main">
     <div pane="general" data-i18n="options_general"></div>
     <div pane="display" data-i18n="options_display"></div>
+    <div pane="account" data-i18n="options_account"></div>
     <div pane="advanced" data-i18n="options_advanced"></div>
   </nav>
 
@@ -66,14 +67,14 @@
       </label>
       <label for="dns.nameserver" data-i18n="options_dns.nameserver"></label>
       <div>
-        <input type="text" data-pref="dns.nameserver">
+        <input id="dns.nameserver" type="text" data-pref="dns.nameserver">
       </div>
       <!-- jsdns specific options -->
       <fieldset id="dns.resolver.1">
         <legend data-i18n="options_dns.resolver.value.1"></legend>
         <div>
           <label for="dns.timeout_connect" data-i18n="options_dns.timeout_connect"></label>
-          <input type="number" data-pref="dns.timeout_connect" size="10" min="0">
+          <input id="dns.timeout_connect" type="number" data-pref="dns.timeout_connect" size="10" min="0">
         </div>
         <label class="checkbox" data-i18n="options_dns.proxy.enable">
           <input type="checkbox" data-pref="dns.proxy.enable">
@@ -233,6 +234,36 @@
     <label class="checkbox" data-i18n="options_display.favicon.show">
       <input type="checkbox" data-pref="display.favicon.show">
     </label>
+  </main>
+
+  <!-- account options -->
+  <main pane="account" class="account-options">
+    <section id="account-selection-box" class="account-selection-box">
+      <!-- <div class="account-selection-item">account name</div> -->
+    </section>
+
+    <section>
+      <div>
+        <label data-i18n="options_acc.dkim.enable"></label>
+        <select data-account-pref="dkim.enable">
+          <option data-i18n="options_acc.boolean.value.0" value="0"></option>
+          <option data-i18n="options_acc.boolean.value.1" value="1"></option>
+          <option data-i18n="options_acc.boolean.value.2" value="2"></option>
+        </select>
+      </div>
+      <div>
+        <label data-i18n="options_acc.arh.read"></label>
+        <select data-account-pref="arh.read">
+          <option data-i18n="options_acc.boolean.value.0" value="0"></option>
+          <option data-i18n="options_acc.boolean.value.1" value="1"></option>
+          <option data-i18n="options_acc.boolean.value.2" value="2"></option>
+        </select>
+      </div>
+      <label for="acc.arh.allowedAuthserv" data-i18n="options_acc.arh.allowedAuthserv"></label>
+      <div>
+        <input id="acc.arh.allowedAuthserv" type="text" data-account-pref="arh.allowedAuthserv" style="width: 80%;">
+      </div>
+    </section>
   </main>
 
   <!-- advanced options -->

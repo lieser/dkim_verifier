@@ -392,4 +392,34 @@ describe("preferences [unittest]", function () {
 			expect(pref["dns.proxy.port"]).to.be.equal(1111);
 		});
 	});
+	describe("account settings", function () {
+		it("default value", function () {
+			expect(pref["account.dkim.enable"]("fooAccount")).to.be.equal(true);
+			expect(pref["account.arh.read"]("barAccount")).to.be.equal(false);
+			expect(pref["account.arh.allowedAuthserv"]("fooAccount")).to.be.equal("");
+
+			pref.setValue("dkim.enable", false);
+			pref.setValue("arh.read", true);
+			expect(pref["account.dkim.enable"]("fooAccount")).to.be.equal(false);
+			expect(pref["account.arh.read"]("barAccount")).to.be.equal(true);
+		});
+		it("account specific setting", function () {
+			pref.setAccountValue("dkim.enable", "fooAccount", 2);
+			pref.setAccountValue("arh.allowedAuthserv", "fooAccount", "foo.com");
+			pref.setAccountValue("arh.read", "fooAccount", 1);
+			pref.setAccountValue("arh.read", "barAccount", 2);
+
+			expect(pref.getAccountValue("dkim.enable", "fooAccount")).to.be.equal(2);
+			expect(pref.getAccountValue("dkim.enable", "barAccount")).to.be.equal(0);
+			expect(pref.getAccountValue("arh.read", "fooAccount")).to.be.equal(1);
+			expect(pref.getAccountValue("arh.read", "barAccount")).to.be.equal(2);
+
+			expect(pref["account.dkim.enable"]("fooAccount")).to.be.equal(false);
+			expect(pref["account.dkim.enable"]("barAccount")).to.be.equal(true);
+			expect(pref["account.arh.allowedAuthserv"]("fooAccount")).to.be.equal("foo.com");
+			expect(pref["account.arh.allowedAuthserv"]("barAccount")).to.be.equal("");
+			expect(pref["account.arh.read"]("fooAccount")).to.be.equal(true);
+			expect(pref["account.arh.read"]("barAccount")).to.be.equal(false);
+		});
+	});
 });

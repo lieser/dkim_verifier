@@ -506,6 +506,11 @@
 	"options_arh.relaxedParsing": {
 		"message": "Try to read non RFC compliant Authentication-Results header"
 	},
+	// -------------------- Account options --------------------
+	"options_account": {
+		"message": "Account",
+		"description": "Title for account specific options"
+	},
 	"options_acc.dkim.enable": {
 		"message": "Verify DKIM signatures:"
 	},

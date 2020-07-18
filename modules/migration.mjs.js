@@ -44,4 +44,15 @@ export async function migratePrefs() {
 			log.error(`Migration of preference ${name} with value ${value} failed:`, error);
 		}
 	}
+
+	const accountPrefs = await browser.migration.getAccountPrefs();
+	for (const [account, accountPreferences] of Object.entries(accountPrefs)) {
+		for (const [name, value] of Object.entries(accountPreferences)) {
+			try {
+				await prefs.setAccountValue(name, account, value);
+			} catch (error) {
+				log.error(`Migration of preference ${name} for account ${account} with value ${value} failed:`, error);
+			}
+		}
+	}
 }

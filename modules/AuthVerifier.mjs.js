@@ -96,19 +96,21 @@ export default class AuthVerifier {
 	/**
 	 * Verifies the authentication of the msg.
 	 *
-	 * @param {string} rawMessage
-	 * @param {any} [messageId] - required to save/load result
+	 * @param {browser.messageDisplay.MessageHeader} message
 	 * @return {Promise<AuthResult>}
 	 */
-	async verify(rawMessage, messageId) {
+	async verify(message) {
 		await prefs.init();
 		// check for saved AuthResult
-		let savedAuthResult = loadAuthResult(messageId);
+		// TODO:
+		// let savedAuthResult = loadAuthResult(messageId);
+		let savedAuthResult = null;
 		if (savedAuthResult) {
 			return SavedAuthResult_to_AuthResult(savedAuthResult);
 		}
 
 		// create msg object
+		const rawMessage = await browser.messages.getRaw(message.id);
 		const msgParsed = MsgParser.parseMsg(rawMessage);
 		const msg = {
 			headerFields: msgParsed.headers,
@@ -127,7 +129,7 @@ export default class AuthVerifier {
 		// }
 
 		// read Authentication-Results header
-		const arhResult = getARHResult(msg.headerFields, msg.from);
+		const arhResult = getARHResult(msg.headerFields, msg.from, message.folder.accountId);
 
 		if (arhResult) {
 			if (prefs["arh.replaceAddonResult"]) {
@@ -151,19 +153,7 @@ export default class AuthVerifier {
 		}
 
 		if (!savedAuthResult.dkim || savedAuthResult.dkim.length === 0) {
-			// DKIM Verification enabled?
-			let dkimEnable = false;
-			if (true || !msgHdr.folder) {
-				// message is external
-				dkimEnable = prefs["dkim.enable"];
-			} else if (msgHdr.folder.server.getIntValue("dkim_verifier.dkim.enable") === PREF.ENABLE.DEFAULT) {
-				// account uses global default
-				dkimEnable = prefs["dkim.enable"];
-			} else if (msgHdr.folder.server.getIntValue("dkim_verifier.dkim.enable") === PREF.ENABLE.TRUE) {
-				// dkim enabled for account
-				dkimEnable = true;
-			}
-			if (dkimEnable) {
+			if (prefs["account.dkim.enable"](message.folder.accountId)) {
 				// verify DKIM signatures
 				const dkimResultV2 = await new Verifier().verify(msg);
 				savedAuthResult.dkim = dkimResultV2.signatures;
@@ -173,7 +163,8 @@ export default class AuthVerifier {
 		}
 
 		// save AuthResult
-		saveAuthResult(messageId, savedAuthResult);
+		// TODO:
+		// saveAuthResult(messageId, savedAuthResult);
 
 		const authResult = await SavedAuthResult_to_AuthResult(savedAuthResult);
 		log.debug("authResult: ", authResult);
@@ -202,21 +193,12 @@ export default class AuthVerifier {
  *
  * @param {Map<string, string[]>} headers
  * @param {string} from
+ * @param {string} account
  * @return {SavedAuthResult|Null}
  */
-function getARHResult(headers, from) {
-	function testAllowedAuthserv(e) {
-		if (this.authserv_id === e) {
-			return true;
-		}
-		if (e.charAt(0) === "@") {
-			return domainIsInDomain(this.authserv_id, e.substr(1));
-		}
-		return false;
-	}
-
+function getARHResult(headers, from, account) {
 	const arHeaders = headers.get("authentication-results");
-	if (!arHeaders || !prefs["arh.read"]) {
+	if (!arHeaders || !prefs["account.arh.read"](account)) {
 		return null;
 	}
 
@@ -228,6 +210,7 @@ function getARHResult(headers, from) {
 	/** @type {ArhParserModule.ArhResInfo[]} */
 	let arhDMARC = [];
 	for (let i = 0; i < arHeaders.length; i++) {
+		/** @type {ArhParserModule.ArhHeader} */
 		let arh;
 		try {
 			arh = ArhParser.parse(arHeaders[i]);
@@ -237,18 +220,19 @@ function getARHResult(headers, from) {
 		}
 
 		// only use header if the authserv_id is in the allowed servers
-		/** @type {string[]} */
-		let allowedAuthserv;
-		if (false && msgHdr.folder) {
-			allowedAuthserv = msgHdr.folder.server.
-				getCharValue("dkim_verifier.arh.allowedAuthserv").split(" ").
-				filter(function (e) { return e; });
-		} else {
-			// no option exist for external messages, allow all
-			allowedAuthserv = [];
-		}
+		const allowedAuthserv = prefs["account.arh.allowedAuthserv"](account).
+			split(" ").
+			filter(server => server);
 		if (allowedAuthserv.length > 0 &&
-			!allowedAuthserv.some(testAllowedAuthserv, arh)) {
+			!allowedAuthserv.some(server => {
+				if (arh.authserv_id === server) {
+					return true;
+				}
+				if (server.charAt(0) === "@") {
+					return domainIsInDomain(arh.authserv_id, server.substr(1));
+				}
+				return false;
+			})) {
 			continue;
 		}
 

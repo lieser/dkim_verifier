@@ -9,9 +9,12 @@ declare module browser {
 
     declare module accounts {
         interface MailAccount {
+            id: string,
+            name: string,
             type: string,
         }
 
+        const list: () => Promise<MailAccount[]>;
         const get: (accountId) => Promise<MailAccount?>;
     }
 
