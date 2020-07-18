@@ -474,7 +474,7 @@
 		"message": "Considera algoritmo di firma rsa-sha1 come"
 	},
 	"options_error.algorithm.rsa.weakKeyLength.treatAs": {
-		"message": "Considera chiavi RSA deboli (&lt;2048 bit) come"
+		"message": "Considera chiavi RSA deboli (<2048 bit) come"
 	},
 	"options_error.treatAs.value.0": {
 		"message": "errore"

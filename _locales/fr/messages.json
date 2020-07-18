@@ -474,7 +474,7 @@
 		"message": "Traiter l’agorithme de signature rsa-sha1 comme"
 	},
 	"options_error.algorithm.rsa.weakKeyLength.treatAs": {
-		"message": "Traiter les clés RSA faibles (&lt;2048 bits) comme"
+		"message": "Traiter les clés RSA faibles (<2048 bits) comme"
 	},
 	"options_error.treatAs.value.0": {
 		"message": "erreur"

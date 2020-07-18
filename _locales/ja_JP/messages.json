@@ -474,7 +474,7 @@
 		"message": "rsa-sha1 署名アルゴリズムを"
 	},
 	"options_error.algorithm.rsa.weakKeyLength.treatAs": {
-		"message": "弱い RSA キー （&lt;2048 ビット） を"
+		"message": "弱い RSA キー （<2048 ビット） を"
 	},
 	"options_error.treatAs.value.0": {
 		"message": "エラーとする"

@@ -474,7 +474,7 @@
 		"message": "Behandel rsa-sha1 Signaturalgorithmus als"
 	},
 	"options_error.algorithm.rsa.weakKeyLength.treatAs": {
-		"message": "Behandel schwachen RSA Schlüssel (&lt;2048 bits) als"
+		"message": "Behandel schwachen RSA Schlüssel (<2048 bits) als"
 	},
 	"options_error.treatAs.value.0": {
 		"message": "Fehler"

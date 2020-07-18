@@ -474,7 +474,7 @@
 		"message": "Kezelje az RSA-SHA1 jel algoritmust mint"
 	},
 	"options_error.algorithm.rsa.weakKeyLength.treatAs": {
-		"message": "Kezelje a gyenge RSA kulcsokat (&lt;2048 bites) mint"
+		"message": "Kezelje a gyenge RSA kulcsokat (<2048 bites) mint"
 	},
 	"options_error.treatAs.value.0": {
 		"message": "hiba"

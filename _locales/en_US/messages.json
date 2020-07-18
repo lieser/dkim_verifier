@@ -474,7 +474,7 @@
 		"message": "Treat RSA-SHA1 sign algorithm as"
 	},
 	"options_error.algorithm.rsa.weakKeyLength.treatAs": {
-		"message": "Treat weak RSA keys (&lt;2048 bits) as"
+		"message": "Treat weak RSA keys (<2048 bits) as"
 	},
 	"options_error.treatAs.value.0": {
 		"message": "error"
