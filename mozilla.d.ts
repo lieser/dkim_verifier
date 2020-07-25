@@ -69,11 +69,12 @@ declare module ExtensionCommon {
             localizeMessage: (
                 messageName: string,
                 substitutions?: undefined | string | (string | string[])[]
-            ) => string
+            ) => string;
         };
         readonly messageManager: {
-            readonly convert: (msgDBHdr: nsIMsgDBHdr) => browser.messageDisplay.MessageHeader
-        }
+            readonly convert: (msgDBHdr: nsIMsgDBHdr) => browser.messageDisplay.MessageHeader;
+            readonly get: (messageId: number) => nsIMsgDBHdr;
+        };
 
         readonly id: string;
         readonly rootURI: nsIURI;
@@ -395,7 +396,7 @@ declare class MozMailMultiEmailheaderfield extends MozXULElement {
 
 interface nsIMsgDBHdr {
     getStringProperty(propertyName: string): string;
-    setStringProperty(propertyName: string, propertyValue: string);
+    setStringProperty(propertyName: string, propertyValue: string): void;
     readonly folder: nsIMsgFolder;
     readonly mime2DecodedAuthor: string;
 }

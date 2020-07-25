@@ -16,6 +16,7 @@
 // @ts-check
 ///<reference path="./AuthVerifier.d.ts" />
 ///<reference path="../WebExtensions.d.ts" />
+///<reference path="../experiments/storageMessage.d.ts" />
 /* eslint-env webextensions */
 /* eslint-disable camelcase */
 /* eslint-disable no-use-before-define */
@@ -55,8 +56,7 @@ const log = Logging.getLogger("AuthVerifier");
  * @property {VerifierModule.dkimSigResultV2[]} dkim
  * @property {ArhParserModule.ArhResInfo[]=} [spf]
  * @property {ArhParserModule.ArhResInfo[]=} [dmarc]
- * @property {Object=} [arh]
- * @property {VerifierModule.dkimSigResultV2[]=} [arh.dkim]
+ * @property {{dkim?: VerifierModule.dkimSigResultV2[]}=} [arh]
  */
 /**
  * @typedef {SavedAuthResultV3} SavedAuthResult
@@ -102,9 +102,7 @@ export default class AuthVerifier {
 	async verify(message) {
 		await prefs.init();
 		// check for saved AuthResult
-		// TODO:
-		// let savedAuthResult = loadAuthResult(messageId);
-		let savedAuthResult = null;
+		let savedAuthResult = await loadAuthResult(message);
 		if (savedAuthResult) {
 			return SavedAuthResult_to_AuthResult(savedAuthResult);
 		}
@@ -163,8 +161,8 @@ export default class AuthVerifier {
 		}
 
 		// save AuthResult
-		// TODO:
-		// saveAuthResult(messageId, savedAuthResult);
+		saveAuthResult(message, savedAuthResult).
+			catch(error => log.fatal("Failed to store result", error));
 
 		const authResult = await SavedAuthResult_to_AuthResult(savedAuthResult);
 		log.debug("authResult: ", authResult);
@@ -289,91 +287,100 @@ function getARHResult(headers, from, account) {
 /**
  * Save authentication result
  *
- * @param {nsIMsgDBHdr} msgHdr
+ * @param {browser.messageDisplay.MessageHeader} message
  * @param {SavedAuthResult|Null} savedAuthResult
- * @return {void}
+ * @return {Promise<void>}
  */
-function saveAuthResult(msgHdr, savedAuthResult) {
-	if (prefs.saveResult) {
-		// don't save result if message is external
-		if (!msgHdr.folder) {
-			log.debug("result not saved because message is external");
-			return;
-		}
+async function saveAuthResult(message, savedAuthResult) {
+	// don't save result if disabled or message is external
+	if (!prefs.saveResult || !message.folder) {
+		return;
+	}
 
-		if (savedAuthResult === null) {
-			// reset result
-			log.debug("reset AuthResult result");
-			msgHdr.setStringProperty("dkim_verifier@pl-result", "");
-		} else if (savedAuthResult.dkim[0].result === "TEMPFAIL") {
-			// don't save result if DKIM result is a TEMPFAIL
-			log.debug("result not saved because DKIM result is a TEMPFAIL");
-		} else {
-			log.debug("save AuthResult result");
-			msgHdr.setStringProperty("dkim_verifier@pl-result",
-				JSON.stringify(savedAuthResult));
-		}
+	if (savedAuthResult === null) {
+		// reset result
+		log.debug("reset AuthResult result");
+		await browser.storageMessage.set(message.id, "dkim_verifier@pl-result", "");
+	} else if (savedAuthResult.dkim[0].result === "TEMPFAIL") {
+		// don't save result if DKIM result is a TEMPFAIL
+		log.debug("result not saved because DKIM result is a TEMPFAIL");
+	} else {
+		log.debug("save AuthResult result");
+		await browser.storageMessage.set(message.id, "dkim_verifier@pl-result",
+			JSON.stringify(savedAuthResult));
 	}
 }
 
 /**
  * Get saved authentication result
  *
- * @param {nsIMsgDBHdr} msgHdr
- * @return {SavedAuthResult|Null} savedAuthResult
+ * @param {browser.messageDisplay.MessageHeader} message
+ * @return {Promise<SavedAuthResult|null>} savedAuthResult
  */
-function loadAuthResult(msgHdr) {
-	if (prefs.saveResult) {
-		// don't read result if message is external
-		if (!msgHdr.folder) {
-			return null;
-		}
-
-		const savedAuthResultJSON = msgHdr.getStringProperty("dkim_verifier@pl-result");
-
-		if (savedAuthResultJSON !== "") {
-			log.debug("AuthResult result found: ", savedAuthResultJSON);
-
-			/** @type {SavedAuthResult} */
-			const savedAuthResult = JSON.parse(savedAuthResultJSON);
-
-			const majorVersion = savedAuthResult.version.match(/^[0-9]+/)[0];
-			if (majorVersion === "1") {
-				// old dkimResultV1 (AuthResult version 1)
-				/** @type {VerifierModule.dkimResultV1} */
-				// @ts-ignore
-				const resultV1 = savedAuthResult;
-				const res = {
-					version: "3.0",
-					dkim: [dkimResultV1_to_dkimSigResultV2(resultV1)],
-				};
-				return res;
-			}
-			if (majorVersion === "2") {
-				// AuthResult version 2
-				/** @type {AuthResultV2} */
-				// @ts-ignore
-				const resultV2 = savedAuthResult;
-				savedAuthResult.version = "3.0";
-				savedAuthResult.dkim = resultV2.dkim.map(
-					AuthResultDKIMV2_to_dkimSigResultV2);
-				if (resultV2.arh && resultV2.arh.dkim) {
-					savedAuthResult.arh.dkim = resultV2.arh.dkim.map(
-						AuthResultDKIMV2_to_dkimSigResultV2);
-				}
-				return savedAuthResult;
-			}
-			if (majorVersion === "3") {
-				// SavedAuthResult version 3
-				return savedAuthResult;
-			}
-
-			throw new DKIM_InternalError(`AuthResult result has wrong Version (${
-				savedAuthResult.version})`);
-		}
+async function loadAuthResult(message) {
+	// don't load result if disabled or message is external
+	if (!prefs.saveResult || !message.folder) {
+		return null;
 	}
 
-	return null;
+	const savedAuthResultJSON = await browser.storageMessage.
+		get(message.id, "dkim_verifier@pl-result");
+
+	if (savedAuthResultJSON === "") {
+		return null;
+	}
+	log.debug("AuthResult result found: ", savedAuthResultJSON);
+
+	/** @type {VerifierModule.dkimResultV1|AuthResultV2|SavedAuthResultV3} */
+	const savedAuthResult = JSON.parse(savedAuthResultJSON);
+
+	const versionMatch = savedAuthResult.version.match(/^[0-9]+/);
+	if (!versionMatch) {
+		throw new Error("No version found in AuthResult");
+	}
+	const majorVersion = versionMatch[0];
+	if (majorVersion === "1") {
+		// old dkimResultV1 (AuthResult version 1)
+		/** @type {VerifierModule.dkimResultV1} */
+		// @ts-expect-error
+		const resultV1 = savedAuthResult;
+		/** @type {SavedAuthResultV3} */
+		const res = {
+			version: "3.0",
+			dkim: [dkimResultV1_to_dkimSigResultV2(resultV1)],
+		};
+		return res;
+	}
+	if (majorVersion === "2") {
+		// AuthResult version 2
+		/** @type {AuthResultV2} */
+		// @ts-expect-error
+		const resultV2 = savedAuthResult;
+		/** @type {SavedAuthResultV3} */
+		const res = {
+			version: "3.0",
+			dkim: resultV2.dkim.map(AuthResultDKIMV2_to_dkimSigResultV2),
+		};
+		if (resultV2.spf) {
+			res.spf = resultV2.spf;
+		}
+		if (resultV2.dmarc) {
+			res.dmarc = resultV2.dmarc;
+		}
+		if (resultV2.arh && resultV2.arh.dkim) {
+			res.arh = {
+				dkim: resultV2.arh.dkim.map(AuthResultDKIMV2_to_dkimSigResultV2),
+			};
+		}
+		return res;
+	}
+	if (majorVersion === "3") {
+		// SavedAuthResult version 3
+		// @ts-expect-error
+		return savedAuthResult;
+	}
+
+	throw new Error(`AuthResult result has wrong Version (${savedAuthResult.version})`);
 }
 
 /**

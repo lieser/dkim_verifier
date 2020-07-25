@@ -11,9 +11,10 @@
 
     <script src="https://unpkg.com/chai/chai.js"></script>
     <script src="https://unpkg.com/mocha/mocha.js"></script>
+    <script src="https://unpkg.com/sinon/pkg/sinon.js"></script>
 
     <script class="mocha-init">
-      mocha.setup('bdd');
+      mocha.setup({ui: "bdd", globals: ["browser"]});
       mocha.checkLeaks();
     </script>
     <script class="chai-init">
@@ -27,6 +28,7 @@
     <script type="module" src="verifierSpec.mjs.js"></script>
     <script type="module" src="faviconSpec.mjs.js"></script>
     <script type="module" src="arhParserSpec.mjs.js"></script>
+    <script type="module" src="authVerifierSpec.mjs.js"></script>
     <script type="module" class="mocha-exec">
       mocha.run();
     </script>

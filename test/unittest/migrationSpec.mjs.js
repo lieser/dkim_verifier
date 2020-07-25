@@ -15,12 +15,7 @@ import expect from "../helpers/chaiUtils.mjs.js";
 import { hasWebExtensions } from "../helpers/initWebExtensions.mjs.js";
 import { migratePrefs } from "../../modules/migration.mjs.js";
 import prefs from "../../modules/preferences.mjs.js";
-
-// @ts-ignore
-import sinonImport from "../../node_modules/sinon/pkg/sinon-esm.js";
-/** @type {import("sinon")} */
-// @ts-ignore
-const sinon = sinonImport;
+import sinon from "../helpers/sinonUtils.mjs.js";
 
 describe("migration [unittest]", function () {
 

@@ -32,7 +32,7 @@ async function rootDir() {
 /**
  * Read a text file from the root directory.
  *
- * @param {string} file - path to file relative to test data directory
+ * @param {string} file - path to file relative to root directory
  * @returns {Promise<string>}
  */
 export async function readTextFile(file) {

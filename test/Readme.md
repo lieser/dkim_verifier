@@ -36,13 +36,10 @@ npx http-server .
 # Install dependencies
 npm install --save-dev mocha
 npm install --save-dev chai
-# Mocha currently has no native ESM support
-# https://github.com/mochajs/mocha/pull/4038
-npm install --save-dev esm
 
 npm install --save-dev sinon
 npm install --save-dev webextensions-api-fake
 
 # Run tests
-npx mocha --recursive --reporter dot
+npx mocha --reporter dot
 ```

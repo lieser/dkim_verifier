@@ -1,0 +1,43 @@
+[
+	{
+		"namespace": "storageMessage",
+		"functions": [
+			{
+				"name": "set",
+				"type": "function",
+				"description": "Set data for a specific message",
+				"async": true,
+				"parameters": [
+					{
+						"name": "messageId",
+						"type": "number"
+					},
+					{
+						"name": "key",
+						"type": "string"
+					},
+					{
+						"name": "value",
+						"type": "string"
+					}
+				]
+			},
+			{
+				"name": "get",
+				"type": "function",
+				"description": "Get data for a specific message",
+				"async": true,
+				"parameters": [
+					{
+						"name": "messageId",
+						"type": "number"
+					},
+					{
+						"name": "key",
+						"type": "string"
+					}
+				]
+			}
+		]
+	}
+]

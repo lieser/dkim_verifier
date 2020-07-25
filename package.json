@@ -19,15 +19,18 @@
 	"scripts": {
 		"test": "node node_modules/mocha/bin/mocha --recursive --reporter dot"
 	},
+	"type": "module",
 	"dependencies": {},
 	"devDependencies": {
-		"@types/firefox-webext-browser": "^70.0.1",
+		"@types/firefox-webext-browser": "^78.0.0",
 		"chai": "^4.2.0",
-		"eslint": "^7.2.0",
-		"esm": "^3.2.25",
+		"eslint": "^7.5.0",
 		"http-server": "^0.12.3",
-		"mocha": "^7.2.0",
+		"mocha": "^8.0.1",
 		"sinon": "^9.0.2",
 		"webextensions-api-fake": "^1.3.0"
+	},
+	"engines": {
+		"node": ">=14.1.0"
 	}
 }

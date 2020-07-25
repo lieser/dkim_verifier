@@ -1,6 +1,6 @@
 {
+	"recursive": true,
 	"require": [
-		"chai/register-expect",
-		"esm"
+		"chai/register-expect"
 	]
 }
