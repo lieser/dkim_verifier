@@ -110,10 +110,14 @@ export default class AuthVerifier {
 		// create msg object
 		const rawMessage = await browser.messages.getRaw(message.id);
 		const msgParsed = MsgParser.parseMsg(rawMessage);
+		const fromHeader = msgParsed.headers.get("from");
+		if (!fromHeader) {
+			throw new Error("message does not contain a from header");
+		}
 		const msg = {
 			headerFields: msgParsed.headers,
 			bodyPlain: msgParsed.body,
-			from: MsgParser.parseFromHeader(msgParsed.headers.get("from")[0]),
+			from: MsgParser.parseFromHeader(fromHeader[0]),
 			// TODO: get listId
 			listId: "",
 			DKIMSignPolicy: {},
@@ -176,13 +180,11 @@ export default class AuthVerifier {
 	 * @return {Promise<void>}
 	 */
 	resetResult(messageId) {
-		const promise = (async () => {
-			saveAuthResult(messageId, null);
-		})();
+		const promise = saveAuthResult(messageId, null);
 		promise.then(null, function onReject(exception) {
 			log.warn(exception);
 		});
-		return promise;
+		return saveAuthResult(messageId, null);
 	}
 }
 
@@ -404,6 +406,7 @@ function arhDKIM_to_dkimSigResultV2(arhDKIM) {
 			let auid = arhDKIM.propertys.header.i;
 			if (sdid || auid) {
 				if (!sdid) {
+					// @ts-expect-error
 					sdid = getDomainFromAddr(auid);
 				} else if (!auid) {
 					auid = `@${sdid}`;
@@ -458,7 +461,7 @@ function dkimResultV1_to_dkimSigResultV2(dkimResultV1) {
 		sigResultV2.warnings = dkimResultV1.warnings.map(
 			function (w) {
 				if (w === "DKIM_POLICYERROR_WRONG_SDID") {
-					return { name: w, params: [dkimResultV1.shouldBeSignedBy] };
+					return { name: w, params: [dkimResultV1.shouldBeSignedBy ?? ""] };
 				}
 				return { name: w };
 			}
@@ -466,7 +469,7 @@ function dkimResultV1_to_dkimSigResultV2(dkimResultV1) {
 	}
 	if (dkimResultV1.errorType === "DKIM_POLICYERROR_WRONG_SDID" ||
 		dkimResultV1.errorType === "DKIM_POLICYERROR_MISSING_SIG") {
-		sigResultV2.errorStrParams = [dkimResultV1.shouldBeSignedBy];
+		sigResultV2.errorStrParams = [dkimResultV1.shouldBeSignedBy ?? ""];
 	}
 	return sigResultV2;
 }
@@ -480,6 +483,7 @@ function dkimResultV1_to_dkimSigResultV2(dkimResultV1) {
  */
 function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-line complexity
 	/** @type {AuthResultDKIM} */
+	// @ts-expect-error
 	const authResultDKIM = dkimSigResult;
 	switch (dkimSigResult.result) {
 		case "SUCCESS": {
@@ -491,6 +495,9 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 			}
 			authResultDKIM.result_str = browser.i18n.getMessage("SUCCESS",
 				[dkimSigResult.sdid + keySecureStr]);
+			if (!dkimSigResult.warnings) {
+				throw new Error("expected warnings to be defined on SUCCESS result");
+			}
 			authResultDKIM.warnings_str = dkimSigResult.warnings.map(function (e) {
 				return browser.i18n.getMessage(e.name, e.params) || e.name;
 			});
@@ -511,6 +518,9 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 				authResultDKIM.res_num = 30;
 			}
 			let errorType = dkimSigResult.errorType;
+			if (!errorType) {
+				throw new Error("expected errorType on PERMFAIL result");
+			}
 			if (!prefs["error.detailedReasons"]) {
 				switch (errorType) {
 					case "DKIM_SIGERROR_ILLFORMED_TAGSPEC":
@@ -614,14 +624,23 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
  * @param {SavedAuthResult} savedAuthResult
  * @return {Promise<AuthResult>} authResult
  */
-async function SavedAuthResult_to_AuthResult(savedAuthResult) { // eslint-disable-line require-await
+function SavedAuthResult_to_AuthResult(savedAuthResult) {
 	/** @type {AuthResult} */
-	const authResult = savedAuthResult;
-	authResult.version = "2.1";
-	authResult.dkim = authResult.dkim.map(dkimSigResultV2_to_AuthResultDKIM);
-	if (authResult.arh && authResult.arh.dkim) {
-		authResult.arh.dkim = authResult.arh.dkim.map(
-			dkimSigResultV2_to_AuthResultDKIM);
+	const authResult = {
+		version: "2.1",
+		dkim: savedAuthResult.dkim.map(dkimSigResultV2_to_AuthResultDKIM),
+	};
+	if (savedAuthResult.spf) {
+		authResult.spf = savedAuthResult.spf;
+	}
+	if (savedAuthResult.dmarc) {
+		authResult.dmarc = savedAuthResult.dmarc;
+	}
+	if (savedAuthResult.arh && savedAuthResult.arh.dkim) {
+		authResult.arh = {
+			dkim: savedAuthResult.arh.dkim.map(
+				dkimSigResultV2_to_AuthResultDKIM)
+		};
 	}
 	return addFavicons(authResult);
 }
@@ -634,7 +653,7 @@ async function SavedAuthResult_to_AuthResult(savedAuthResult) { // eslint-disabl
  */
 function AuthResultDKIMV2_to_dkimSigResultV2(authResultDKIM) {
 	/** @type {VerifierModule.dkimSigResultV2} */
-	let dkimSigResult = authResultDKIM;
+	const dkimSigResult = authResultDKIM;
 	// @ts-ignore
 	dkimSigResult.res_num = undefined;
 	// @ts-ignore

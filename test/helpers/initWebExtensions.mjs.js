@@ -46,7 +46,9 @@ before(async function () {
 			},
 		};
 		// workaround for https://github.com/stoically/webextensions-api-fake/issues/4
+		// @ts-expect-error
 		if (browserFake.default) {
+			// @ts-expect-error
 			fakeBrowser = browserFake.default(options);
 		} else {
 			fakeBrowser = browserFake(options);
