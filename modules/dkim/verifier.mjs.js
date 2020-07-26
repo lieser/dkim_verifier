@@ -1,11 +1,7 @@
 /*
- * verifier.mjs.js
- *
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  * Update done by RFC 8301 included https://tools.ietf.org/html/rfc8301
- *
- * Version: 3.0.0pre1 (31 January 2020)
  *
  * Copyright (c) 2013-2020 Philippe Lieser
  *
@@ -154,52 +150,26 @@ export function setKeyFetchFunction(keyFetchFunction) {
 	getKey = keyFetchFunction;
 }
 
-	/**
-	 * @param {string} DKIMSignatureHeader
-	 * @returns {object}
-	 */
-	function newDKIMSignature( DKIMSignatureHeader ) {
-		return {
-			original_header : DKIMSignatureHeader,
-			warnings: [],
-			v : null, // Version
-			a_sig : null, // signature algorithm (signing part)
-			a_hash : null, // signature algorithm (hashing part)
-			b : null, // signature (unfolded)
-			b_folded : null, // signature (still folded)
-			bh : null, // body hash
-			c_header : null, // canonicalization for header
-			c_body : null, // canonicalization for body
-			d : null, // Signing Domain Identifier (SDID) claiming responsibility
-			h : null, // Signed header fields
-			h_array : [], // array of Signed header fields
-			i : null, // Agent or User Identifier (AUID) on behalf of which the SDID is taking responsibility
-			i_domain : null, // domain part of AUID
-			l : null, // Body length count
-			q : null, // query methods for public key retrievel
-			s : null, // selector
-			t : null, // Signature Timestamp
-			x : null, // Signature Expiration
-			z : null // Copied header fields
-		};
-	}
-
+class DkimSignature {
 	/**
 	 * parse the DKIM-Signature header field
 	 * header field is specified in Section 3.5 of RFC 6376
 	 *
-	 * @param {any} DKIMSignature
-	 * @returns {object}
+	 * @param {string} dkimSignatureHeader
 	 */
-	function parseDKIMSignature(DKIMSignature) { // eslint-disable-line complexity
-		let DKIMSignatureHeader = DKIMSignature.original_header;
+	constructor( dkimSignatureHeader ) {
+		this.original_header = dkimSignatureHeader;
+		/** @type {dkimSigWarningV2[]} */
+		this.warnings = [];
+		/** @type {boolean=} */
+		this.keySecure = undefined;
 
-		// strip DKIM-Signatur header name
-		DKIMSignatureHeader = DKIMSignatureHeader.replace(/^DKIM-Signature[ \t]*:/i,"");
+		// strip DKIM-Signature header name
+		let dkimHeader = dkimSignatureHeader.replace(/^DKIM-Signature[ \t]*:/i,"");
 		// strip the \r\n at the end
-		DKIMSignatureHeader = DKIMSignatureHeader.substr(0, DKIMSignatureHeader.length-2);
+		dkimHeader = dkimHeader.substr(0, dkimHeader.length-2);
 		// parse tag-value list
-		const tagMap = RfcParser.parseTagValueList(DKIMSignatureHeader);
+		const tagMap = RfcParser.parseTagValueList(dkimHeader);
 		if (tagMap === -1) {
 			throw new DKIM_SigError("DKIM_SIGERROR_ILLFORMED_TAGSPEC");
 		} else if (tagMap === -2) {
@@ -209,18 +179,83 @@ export function setKeyFetchFunction(keyFetchFunction) {
 			throw new DKIM_InternalError(`unexpected return value from RfcParser.parseTagValueList: ${tagMap}`);
 		}
 
+		// Version
+		this.v = DkimSignature._parseVersion(tagMap);
+
+		const signatureAlgorithms = DkimSignature._parseSignatureAlgorithms(tagMap, this.warnings);
+		// signature algorithm (signing part)
+		this.a_sig = signatureAlgorithms.signature;
+		// signature algorithm (hashing part)
+		this.a_hash = signatureAlgorithms.hash;
+
+		const signatureData = DkimSignature._parseSignatureData(tagMap);
+		// signature (unfolded)
+		this.b = signatureData.b;
+		// signature (still folded)
+		this.b_folded = signatureData.bFolded;
+
+		// body hash
+		this.bh = DkimSignature._parseBodyHash(tagMap);
+
+		const canonicalization = DkimSignature._parseCanonicalization(tagMap);
+		// canonicalization for header
+		this.c_header = canonicalization.header;
+		// canonicalization for body
+		this.c_body = canonicalization.body;
+
+		// Signing Domain Identifier (SDID) claiming responsibility
+		this.d = DkimSignature._parseSdid(tagMap);
+
+		// array of Signed header fields
+		this.h_array = DkimSignature._parseSignedHeaders(tagMap);
+
+		const auid = DkimSignature._parseAuid(tagMap, this.d, this.warnings);
+		// Agent or User Identifier (AUID) on behalf of which the SDID is taking responsibility
+		this.i = auid.auid;
+		// domain part of AUID
+		this.i_domain = auid.auidDomain;
+
+		// Body length count
+		this.l = DkimSignature._parseBodyLength(tagMap);
+
+		// query methods for public key retrieval
+		this.q = DkimSignature._parseQueryMethod(tagMap);
+
+		// selector
+		this.s = DkimSignature._parseSelector(tagMap, this.warnings);
+
+		// Signature Timestamp
+		this.t = DkimSignature._parseSignatureTimestamp(tagMap);
+		// Signature Expiration
+		this.x = DkimSignature._parseSignatureExpiration(tagMap, this.t);
+
+		// Copied header fields
+		this.z = DkimSignature._parseCopiedHeaders(tagMap);
+	}
+
+	/**
+	 * @param {Map<string, string>} tagMap
+	 * @returns {string}
+	 */
+	static _parseVersion(tagMap) {
 		// get Version (plain-text; REQUIRED)
 		// must be "1"
 		const versionTag = RfcParser.parseTagValue(tagMap, "v", "[0-9]+");
 		if (versionTag === null) {
 			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_V");
 		}
-		if (versionTag[0] === "1") {
-			DKIMSignature.v = "1";
-		} else {
+		if (versionTag[0] !== "1") {
 			throw new DKIM_InternalError(null, "DKIM_SIGERROR_VERSION");
 		}
+		return "1";
+	}
 
+	/**
+	 * @param {Map<string, string>} tagMap
+	 * @param {dkimSigWarningV2[]} warnings
+	 * @returns {{signature: string, hash: string}}
+	 */
+	static _parseSignatureAlgorithms(tagMap, warnings) {
 		// get signature algorithm (plain-text;REQUIRED)
 		// currently only "rsa-sha1" or "rsa-sha256"
 		const sig_a_tag_k = "(rsa|[A-Za-z](?:[A-Za-z]|[0-9])*)";
@@ -231,91 +266,143 @@ export function setKeyFetchFunction(keyFetchFunction) {
 			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_A");
 		}
 		if (algorithmTag[0] === "rsa-sha256") {
-			DKIMSignature.a_sig = algorithmTag[1];
-			DKIMSignature.a_hash = algorithmTag[2];
+			return {
+				signature: algorithmTag[1],
+				hash: algorithmTag[2],
+			};
 		} else if (algorithmTag[0] === "rsa-sha1") {
 			switch (prefs["error.algorithm.sign.rsa-sha1.treatAs"]) {
 				case 0: // error
 					throw new DKIM_SigError("DKIM_SIGERROR_INSECURE_A");
 				case 1: // warning
-					DKIMSignature.warnings.push({ name: "DKIM_SIGERROR_INSECURE_A" });
+					warnings.push({ name: "DKIM_SIGERROR_INSECURE_A" });
 					break;
 				case 2: // ignore
 					break;
 				default:
 					throw new DKIM_InternalError("invalid error.algorithm.sign.rsa-sha1.treatAs");
 			}
-			DKIMSignature.a_sig = algorithmTag[1];
-			DKIMSignature.a_hash = algorithmTag[2];
-		} else {
-			throw new DKIM_SigError("DKIM_SIGERROR_UNKNOWN_A");
+			return {
+				signature: algorithmTag[1],
+				hash: algorithmTag[2],
+			};
 		}
+		throw new DKIM_SigError("DKIM_SIGERROR_UNKNOWN_A");
+	}
 
+	/**
+	 * @param {Map<string, string>} tagMap
+	 * @returns {{b: string, bFolded: string}}
+	 */
+	static _parseSignatureData(tagMap) {
 		// get signature data (base64;REQUIRED)
 		const signatureDataTag = RfcParser.parseTagValue(tagMap, "b", base64string);
 		if (signatureDataTag === null) {
 			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_B");
 		}
-		DKIMSignature.b = signatureDataTag[0].replace(new RegExp(RfcParser.FWS,"g"), "");
-		DKIMSignature.b_folded = signatureDataTag[0];
+		return {
+			b: signatureDataTag[0].replace(new RegExp(RfcParser.FWS,"g"), ""),
+			bFolded: signatureDataTag[0],
+		};
+	}
 
+	/**
+	 * @param {Map<string, string>} tagMap
+	 * @returns {string}
+	 */
+	static _parseBodyHash(tagMap) {
 		// get body hash (base64;REQUIRED)
 		const bodyHashTag = RfcParser.parseTagValue(tagMap, "bh", base64string);
 		if (bodyHashTag === null) {
 			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_BH");
 		}
-		DKIMSignature.bh = bodyHashTag[0].replace(new RegExp(RfcParser.FWS,"g"), "");
+		return bodyHashTag[0].replace(new RegExp(RfcParser.FWS,"g"), "");
+	}
 
+	/**
+	 * @param {Map<string, string>} tagMap
+	 * @returns {{header: string, body: string}}
+	 */
+	static _parseCanonicalization(tagMap) {
 		// get Message canonicalization (plain-text; OPTIONAL, default is "simple/simple")
 		// currently only "simple" or "relaxed" for both header and body
 		const sig_c_tag_alg = `(simple|relaxed|${hyphenated_word})`;
 		const msCanonTag = RfcParser.parseTagValue(tagMap, "c", `${sig_c_tag_alg}(?:/${sig_c_tag_alg})?`);
 		if (msCanonTag === null) {
-			DKIMSignature.c_header = "simple";
-			DKIMSignature.c_body = "simple";
-		} else {
-			// canonicalization for header
-			if (msCanonTag[1] === "simple" || msCanonTag[1] === "relaxed") {
-				DKIMSignature.c_header = msCanonTag[1];
-			} else {
-				throw new DKIM_SigError("DKIM_SIGERROR_UNKNOWN_C_H");
-			}
-
-			// canonicalization for body
-			if (msCanonTag[2] === undefined) {
-				DKIMSignature.c_body = "simple";
-			} else {
-				if (msCanonTag[2] === "simple" || msCanonTag[2] === "relaxed") {
-					DKIMSignature.c_body = msCanonTag[2];
-				} else {
-					throw new DKIM_SigError("DKIM_SIGERROR_UNKNOWN_C_B");
-				}
-			}
+			return {
+				header: "simple",
+				body: "simple",
+			};
 		}
 
+		// canonicalization for header
+		let canonicalizationHeader;
+		if (msCanonTag[1] === "simple" || msCanonTag[1] === "relaxed") {
+			canonicalizationHeader = msCanonTag[1];
+		} else {
+			throw new DKIM_SigError("DKIM_SIGERROR_UNKNOWN_C_H");
+		}
+
+		// canonicalization for body
+		let canonicalizationBody;
+		if (msCanonTag[2] === undefined) {
+			canonicalizationBody = "simple";
+		} else {
+			if (msCanonTag[2] === "simple" || msCanonTag[2] === "relaxed") {
+				canonicalizationBody = msCanonTag[2];
+			} else {
+				throw new DKIM_SigError("DKIM_SIGERROR_UNKNOWN_C_B");
+			}
+		}
+		return {
+			header: canonicalizationHeader,
+			body: canonicalizationBody,
+		};
+	}
+
+	/**
+	 * @param {Map<string, string>} tagMap
+	 * @returns {string}
+	 */
+	static _parseSdid(tagMap) {
 		// get SDID (plain-text; REQUIRED)
 		const SDIDTag = RfcParser.parseTagValue(tagMap, "d", RfcParser.domain_name);
 		if (SDIDTag === null) {
 			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_D");
 		}
-		DKIMSignature.d = SDIDTag[0];
+		return SDIDTag[0];
+	}
 
+	/**
+	 * @param {Map<string, string>} tagMap
+	 * @returns {string[]}
+	 */
+	static _parseSignedHeaders(tagMap) {
 		// get Signed header fields (plain-text, but see description; REQUIRED)
 		const sig_h_tag = `(${hdr_name})(?:${RfcParser.FWS}?:${RfcParser.FWS}?${hdr_name})*`;
 		const signedHeadersTag = RfcParser.parseTagValue(tagMap, "h", sig_h_tag);
 		if (signedHeadersTag === null) {
 			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_H");
 		}
-		DKIMSignature.h = signedHeadersTag[0].replace(new RegExp(RfcParser.FWS,"g"), "");
+		const signedHeaderFields = signedHeadersTag[0].replace(new RegExp(RfcParser.FWS,"g"), "");
 		// get the header field names and store them in lower case in an array
-		DKIMSignature.h_array = DKIMSignature.h.split(":").
+		const signedHeaderFieldsArray = signedHeaderFields.split(":").
 			map(function (x) {return x.trim().toLowerCase();}).
 			filter(function (x) {return x;});
 		// check that the from header is included
-		if (DKIMSignature.h_array.indexOf("from") === -1) {
+		if (signedHeaderFieldsArray.indexOf("from") === -1) {
 			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_FROM");
 		}
+		return signedHeaderFieldsArray;
+	}
 
+	/**
+	 * @param {Map<string, string>} tagMap
+	 * @param {string} sdid
+	 * @param {dkimSigWarningV2[]} warnings
+	 * @returns {{auid: string, auidDomain: string}}
+	 */
+	static _parseAuid(tagMap, sdid, warnings) {
 		// get AUID (dkim-quoted-printable; OPTIONAL, default is an empty local-part
 		// followed by an "@" followed by the domain from the "d=" tag)
 		// The domain part of the address MUST be the same as, or a subdomain of,
@@ -386,7 +473,7 @@ export function setKeyFetchFunction(keyFetchFunction) {
 					case 0: // error
 						throw exception;
 					case 1: // warning
-						DKIMSignature.warnings.push({ name: "DKIM_SIGERROR_ILLFORMED_I" });
+						warnings.push({ name: "DKIM_SIGERROR_ILLFORMED_I" });
 						break;
 					case 2: // ignore
 						break;
@@ -398,35 +485,59 @@ export function setKeyFetchFunction(keyFetchFunction) {
 			}
 		}
 		if (AUIDTag === null) {
-			DKIMSignature.i = `@${DKIMSignature.d}`;
-			DKIMSignature.i_domain = DKIMSignature.d;
-		} else {
-			DKIMSignature.i = AUIDTag[0];
-			DKIMSignature.i_domain = AUIDTag[1];
-			if (!stringEndsWith(DKIMSignature.i_domain, DKIMSignature.d)) {
-				throw new DKIM_SigError("DKIM_SIGERROR_SUBDOMAIN_I");
-			}
+			return {
+				auid: `@${sdid}`,
+				auidDomain: sdid,
+			};
 		}
+		const auid = AUIDTag[0];
+		const auidDomain = AUIDTag[1];
+		if (!stringEndsWith(auidDomain, sdid)) {
+			throw new DKIM_SigError("DKIM_SIGERROR_SUBDOMAIN_I");
+		}
+		return {
+			auid: auid,
+			auidDomain: auidDomain,
+		};
+	}
 
+	/**
+	 * @param {Map<string, string>} tagMap
+	 * @returns {number?}
+	 */
+	static _parseBodyLength(tagMap) {
 		// get Body length count (plain-text unsigned decimal integer; OPTIONAL, default is entire body)
 		const BodyLengthTag = RfcParser.parseTagValue(tagMap, "l", "[0-9]{1,76}");
 		if (BodyLengthTag !== null) {
-			DKIMSignature.l = parseInt(BodyLengthTag[0], 10);
+			return parseInt(BodyLengthTag[0], 10);
 		}
+		return null;
+	}
 
+	/**
+	 * @param {Map<string, string>} tagMap
+	 * @returns {string}
+	 */
+	static _parseQueryMethod(tagMap) {
 		// get query methods (plain-text; OPTIONAL, default is "dns/txt")
 		const sig_q_tag_method = `(?:dns/txt|${hyphenated_word}(?:/${qp_hdr_value})?)`;
 		const sig_q_tag = `${sig_q_tag_method}(?:${RfcParser.FWS}?:${RfcParser.FWS}?${sig_q_tag_method})*`;
 		const QueryMetTag = RfcParser.parseTagValue(tagMap, "q", sig_q_tag);
 		if (QueryMetTag === null) {
-			DKIMSignature.q = "dns/txt";
-		} else {
-			if (!new RegExp("dns/txt").test(QueryMetTag[0])) {
-				throw new DKIM_SigError("DKIM_SIGERROR_UNKNOWN_Q");
-			}
-			DKIMSignature.q = "dns/txt";
+			return "dns/txt";
 		}
+		if (!new RegExp("dns/txt").test(QueryMetTag[0])) {
+			throw new DKIM_SigError("DKIM_SIGERROR_UNKNOWN_Q");
+		}
+		return "dns/txt";
+	}
 
+	/**
+	 * @param {Map<string, string>} tagMap
+	 * @param {dkimSigWarningV2[]} warnings
+	 * @returns {string}
+	 */
+	static _parseSelector(tagMap, warnings) {
 		// get selector subdividing the namespace for the "d=" (domain) tag (plain-text; REQUIRED)
 		let SelectorTag;
 		try {
@@ -442,7 +553,7 @@ export function setKeyFetchFunction(keyFetchFunction) {
 					case 0: // error
 						throw exception;
 					case 1: // warning
-						DKIMSignature.warnings.push({name: "DKIM_SIGERROR_ILLFORMED_S"});
+						warnings.push({name: "DKIM_SIGERROR_ILLFORMED_S"});
 						break;
 					case 2: // ignore
 						break;
@@ -456,68 +567,70 @@ export function setKeyFetchFunction(keyFetchFunction) {
 		if (SelectorTag === null) {
 			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_S");
 		}
-		DKIMSignature.s = SelectorTag[0];
+		return SelectorTag[0];
+	}
 
+	/**
+	 * @param {Map<string, string>} tagMap
+	 * @returns {number?}
+	 */
+	static _parseSignatureTimestamp(tagMap) {
 		// get Signature Timestamp (plain-text unsigned decimal integer; RECOMMENDED,
 		// default is an unknown creation time)
 		const SigTimeTag = RfcParser.parseTagValue(tagMap, "t", "[0-9]+");
-		if (SigTimeTag !== null) {
-			DKIMSignature.t = parseInt(SigTimeTag[0], 10);
+		if (SigTimeTag === null) {
+			return null;
 		}
+		return parseInt(SigTimeTag[0], 10);
+	}
 
+	/**
+	 * @param {Map<string, string>} tagMap
+	 * @param {number?} signatureTimestamp
+	 * @returns {number?}
+	 */
+	static _parseSignatureExpiration(tagMap, signatureTimestamp) {
 		// get Signature Expiration (plain-text unsigned decimal integer;
 		// RECOMMENDED, default is no expiration)
 		// The value of the "x=" tag MUST be greater than the value of the "t=" tag if both are present
 		const ExpTimeTag = RfcParser.parseTagValue(tagMap, "x", "[0-9]+");
-		if (ExpTimeTag !== null) {
-			DKIMSignature.x = parseInt(ExpTimeTag[0], 10);
-			if (DKIMSignature.t !== null && DKIMSignature.x < DKIMSignature.t) {
-				throw new DKIM_SigError("DKIM_SIGERROR_TIMESTAMPS");
-			}
+		if (ExpTimeTag === null) {
+			return null;
 		}
+		const signatureExpiration = parseInt(ExpTimeTag[0], 10);
+		if (signatureTimestamp !== null && signatureExpiration < signatureTimestamp) {
+			throw new DKIM_SigError("DKIM_SIGERROR_TIMESTAMPS");
+		}
+		return signatureExpiration;
+	}
 
+	/**
+	 * @param {Map<string, string>} tagMap
+	 * @returns {string?}
+	 */
+	static _parseCopiedHeaders(tagMap) {
 		// get Copied header fields (dkim-quoted-printable, but see description; OPTIONAL, default is null)
 		const hdr_name_FWS = `(?:(?:[!-9<-~]${RfcParser.FWS}?)+)`;
 		const sig_z_tag_copy = `${hdr_name_FWS+RfcParser.FWS}?:${qp_hdr_value}`;
 		const sig_z_tag = `${sig_z_tag_copy}(\\|${RfcParser.FWS}?${sig_z_tag_copy})*`;
 		const CopyHeaderFieldsTag = RfcParser.parseTagValue(tagMap, "z", sig_z_tag);
-		if (CopyHeaderFieldsTag !== null) {
-			DKIMSignature.z = CopyHeaderFieldsTag[0].replace(new RegExp(RfcParser.FWS,"g"), "");
+		if (CopyHeaderFieldsTag === null) {
+			return null;
 		}
-
-		return DKIMSignature;
+		return CopyHeaderFieldsTag[0].replace(new RegExp(RfcParser.FWS,"g"), "");
 	}
+}
 
+class DkimKey {
 	/**
 	 * parse the DKIM key record
 	 * key record is specified in Section 3.6.1 of RFC 6376
 	 *
-	 * @param {string} DKIMKeyRecord
-	 * @returns {object}
+	 * @param {string} DkimKeyRecord
 	 */
-	function parseDKIMKeyRecord(DKIMKeyRecord) {
-		const DKIMKey = {
-			/** @type {string} */
-			v : "", // Version
-			/** @type {string?} */
-			h : null, // hash algorithms
-			/** @type {string[]?} */
-			h_array : null, // array hash algorithms
-			/** @type {string} */
-			k : "", // key type
-			/** @type {string?} */
-			n : null, // notes
-			p : "", // Public-key data
-			/** @type {string?} */
-			s : null, // Service Type
-			/** @type {string?} */
-			t : null, // flags
-			/** @type {string[]?} */
-			t_array : [] // array of all flags
-		};
-
+	constructor(DkimKeyRecord) {
 		// parse tag-value list
-		const tagMap = RfcParser.parseTagValueList(DKIMKeyRecord);
+		const tagMap = RfcParser.parseTagValueList(DkimKeyRecord);
 		if (tagMap === -1) {
 			throw new DKIM_SigError("DKIM_SIGERROR_KEY_ILLFORMED_TAGSPEC");
 		} else if (tagMap === -2) {
@@ -527,85 +640,134 @@ export function setKeyFetchFunction(keyFetchFunction) {
 			throw new DKIM_InternalError(`unexpected return value from RfcParser.parseTagValueList: ${tagMap}`);
 		}
 
+		// Version
+		this.v = DkimKey._parseVersion(tagMap);
+		// array hash algorithms
+		this.h_array = DkimKey._parseAcceptableHash(tagMap);
+		// key type
+		this.k = DkimKey._parseKeyType(tagMap);
+		// notes
+		this.n = DkimKey._parseNotes(tagMap);
+		// Public-key data
+		this.p = DkimKey._parsePublicKey(tagMap);
+		// Service Type
+		this.s = DkimKey._parseServiceType(tagMap);
+		// array of all flags
+		this.t_array = DkimKey._parseFlags(tagMap);
+	}
+
+	/**
+	 * @param {Map<string, string>} tagMap
+	 * @returns {string}
+	 */
+	static _parseVersion(tagMap) {
 		// get version (plain-text; RECOMMENDED, default is "DKIM1")
 		// If specified, this tag MUST be set to "DKIM1"
 		// This tag MUST be the first tag in the record
 		const key_v_tag_value = `${dkim_safe_char}*`;
 		const versionTag = RfcParser.parseTagValue(tagMap, "v", key_v_tag_value, 2);
 		if (versionTag === null || versionTag[0] === "DKIM1") {
-			DKIMKey.v = "DKIM1";
-		} else {
-			throw new DKIM_SigError("DKIM_SIGERROR_KEY_INVALID_V");
+			return "DKIM1";
 		}
+		throw new DKIM_SigError("DKIM_SIGERROR_KEY_INVALID_V");
+	}
 
-		// get Acceptable hash algorithms (plain-text; OPTIONAL, defaults toallowing all algorithms)
+	/**
+	 * @param {Map<string, string>} tagMap
+	 * @returns {string[]|null}
+	 */
+	static _parseAcceptableHash(tagMap) {
+		// get Acceptable hash algorithms (plain-text; OPTIONAL, defaults to allowing all algorithms)
 		const key_h_tag_alg = `(?:sha1|sha256|${hyphenated_word})`;
 		const key_h_tag = `${key_h_tag_alg}(?:${RfcParser.FWS}?:${RfcParser.FWS}?${key_h_tag_alg})*`;
 		const algorithmTag = RfcParser.parseTagValue(tagMap, "h", key_h_tag, 2);
-		if (algorithmTag !== null) {
-			DKIMKey.h = algorithmTag[0];
-			DKIMKey.h_array = DKIMKey.h.split(":").map(s => s.trim()).filter(function (x) {return x;});
+		if (algorithmTag === null) {
+			return null;
 		}
+		return algorithmTag[0].split(":").map(s => s.trim()).filter(function (x) {return x;});
+	}
 
+	/**
+	 * @param {Map<string, string>} tagMap
+	 * @returns {string}
+	 */
+	static _parseKeyType(tagMap) {
 		// get Key type (plain-text; OPTIONAL, default is "rsa")
 		const key_k_tag_type = `(?:rsa|${hyphenated_word})`;
 		const keyTypeTag = RfcParser.parseTagValue(tagMap, "k", key_k_tag_type, 2);
 		if (keyTypeTag === null || keyTypeTag[0] === "rsa") {
-			DKIMKey.k = "rsa";
-		} else {
-			throw new DKIM_SigError("DKIM_SIGERROR_KEY_UNKNOWN_K");
+			return "rsa";
 		}
+		throw new DKIM_SigError("DKIM_SIGERROR_KEY_UNKNOWN_K");
+	}
 
+	/**
+	 * @param {Map<string, string>} tagMap
+	 * @returns {string?}
+	 */
+	static _parseNotes(tagMap) {
 		// get Notes (qp-section; OPTIONAL, default is empty)
 		const ptext = `(?:${hex_octet}|[!-<>-~])`;
 		const qp_section = `(?:(?:${ptext}| |\t)*${ptext})?`;
 		const notesTag = RfcParser.parseTagValue(tagMap, "n", qp_section, 2);
-		if (notesTag !== null) {
-			DKIMKey.n = notesTag[0];
+		if (notesTag === null) {
+			return null;
 		}
+		return notesTag[0];
+	}
 
+	/**
+	 * @param {Map<string, string>} tagMap
+	 * @returns {string}
+	 */
+	static _parsePublicKey(tagMap) {
 		// get Public-key data (base64; REQUIRED)
 		// empty value means that this public key has been revoked
 		const keyTag = RfcParser.parseTagValue(tagMap, "p", `${base64string}?`, 2);
 		if (keyTag === null) {
 			throw new DKIM_SigError("DKIM_SIGERROR_KEY_MISSING_P");
-		} else {
-			if (keyTag[0] === "") {
-				throw new DKIM_SigError("DKIM_SIGERROR_KEY_REVOKED");
-			} else {
-				DKIMKey.p = keyTag[0];
-			}
 		}
+		if (keyTag[0] === "") {
+			throw new DKIM_SigError("DKIM_SIGERROR_KEY_REVOKED");
+		}
+		return keyTag[0];
+	}
 
+	/**
+	 * @param {Map<string, string>} tagMap
+	 * @returns {string}
+	 */
+	static _parseServiceType(tagMap) {
 		// get Service Type (plain-text; OPTIONAL; default is "*")
 		const key_s_tag_type = `(?:email|\\*|${hyphenated_word})`;
 		const key_s_tag = `${key_s_tag_type}(?:${RfcParser.FWS}?:${RfcParser.FWS}?${key_s_tag_type})*`;
 		const serviceTypeTag = RfcParser.parseTagValue(tagMap, "s", key_s_tag, 2);
 		if (serviceTypeTag === null) {
-			DKIMKey.s = "*";
-		} else {
-			const service_types = serviceTypeTag[0].split(":").map(s => s.trim());
-			if (service_types.some(s => s === "*" || s === "email")) {
-				DKIMKey.s = serviceTypeTag[0];
-			} else {
-				throw new DKIM_SigError("DKIM_SIGERROR_KEY_NOTEMAILKEY");
-			}
+			return "*";
 		}
+		const service_types = serviceTypeTag[0].split(":").map(s => s.trim());
+		if (service_types.some(s => s === "*" || s === "email")) {
+			return serviceTypeTag[0];
+		}
+		throw new DKIM_SigError("DKIM_SIGERROR_KEY_NOTEMAILKEY");
+	}
 
+	/**
+	 * @param {Map<string, string>} tagMap
+	 * @returns {string[]}
+	 */
+	static _parseFlags(tagMap) {
 		// get Flags (plaintext; OPTIONAL, default is no flags set)
 		const key_t_tag_flag = `(?:y|s|${hyphenated_word})`;
 		const key_t_tag = `${key_t_tag_flag}(?:${RfcParser.FWS}?:${RfcParser.FWS}?${key_t_tag_flag})*`;
 		const flagsTag = RfcParser.parseTagValue(tagMap, "t", key_t_tag, 2);
-		if (flagsTag !== null) {
-			DKIMKey.t = flagsTag[0];
-			// get the flags and store them in an array
-			DKIMKey.t_array = DKIMKey.t.split(":").map(s => s.trim()).filter(function (x) {return x;});
-		} else {
-			DKIMKey.t = "";
+		if (flagsTag === null) {
+			return [];
 		}
-
-		return DKIMKey;
+		// get the flags and store them in an array
+		return flagsTag[0].split(":").map(s => s.trim()).filter(function (x) {return x;});
 	}
+}
 
 	/**
 	 * canonicalize a single header field using the relaxed algorithm
@@ -689,7 +851,7 @@ export function setKeyFetchFunction(keyFetchFunction) {
 	 * specified in Section 3.7 of RFC 6376
 	 *
 	 * @param {Msg} msg
-	 * @param {any} DKIMSignature
+	 * @param {DkimSignature} DKIMSignature
 	 * @returns {Promise<string>}
 	 */
 	async function computeBodyHash(msg, DKIMSignature) {
@@ -732,7 +894,7 @@ export function setKeyFetchFunction(keyFetchFunction) {
 	 * specified in Section 3.7 of RFC 6376
 	 *
 	 * @param {Msg} msg
-	 * @param {any} DKIMSignature
+	 * @param {DkimSignature} DKIMSignature
 	 * @returns {string}
 	 */
 	function computeHeaderHashInput(msg, DKIMSignature) {
@@ -793,7 +955,7 @@ export function setKeyFetchFunction(keyFetchFunction) {
 	 *
 	 * @param {Error} e
 	 * @param {Msg} msg
-	 * @param {any} [dkimSignature]
+	 * @param {DkimSignature} [dkimSignature]
 	 * @return {dkimSigResultV2}
 	 */
 	function handleException(e, msg, dkimSignature = {} ) {
@@ -809,8 +971,7 @@ export function setKeyFetchFunction(keyFetchFunction) {
 				errorStrParams : e.errorStrParams,
 				hideFail : e.errorType === "DKIM_SIGERROR_KEY_TESTMODE" ||
 					msg.DKIMSignPolicy.hideFail,
-				keySecure : dkimSignature.keyQueryResult &&
-					dkimSignature.keyQueryResult.secure,
+				keySecure : dkimSignature.keySecure,
 			};
 
 			log.warn(e);
@@ -841,7 +1002,7 @@ export function setKeyFetchFunction(keyFetchFunction) {
 	 * Verifying a single DKIM signature
 	 *
 	 * @param {Msg} msg
-	 * @param {any} DKIMSignature
+	 * @param {DkimSignature} DKIMSignature
 	 * @return {Promise<dkimSigResultV2>}
 	 * @throws DKIM_SigError
 	 * @throws DKIM_InternalError
@@ -873,11 +1034,13 @@ export function setKeyFetchFunction(keyFetchFunction) {
 		}
 
 		log.trace("Receiving DNS key for DKIM-Signature ...");
-		DKIMSignature.keyQueryResult = await getKey(DKIMSignature.d, DKIMSignature.s);
+		const keyQueryResult = await getKey(DKIMSignature.d, DKIMSignature.s);
+		// eslint-disable-next-line require-atomic-updates
+		DKIMSignature.keySecure = keyQueryResult.secure;
 		log.trace("Received DNS key for DKIM-Signature");
 
 		// if key is not signed by DNSSEC
-		if (!DKIMSignature.keyQueryResult.secure) {
+		if (!keyQueryResult.secure) {
 			switch (prefs["error.policy.key_insecure.treatAs"]) {
 				case 0: // error
 					throw new DKIM_SigError("DKIM_POLICYERROR_KEY_INSECURE");
@@ -892,11 +1055,11 @@ export function setKeyFetchFunction(keyFetchFunction) {
 			}
 		}
 
-		DKIMSignature.DKIMKey = parseDKIMKeyRecord(DKIMSignature.keyQueryResult.key);
-		log.debug("Parsed DKIM-Key:", DKIMSignature.DKIMKey);
+		const dkimKey = new DkimKey(keyQueryResult.key);
+		log.debug("Parsed DKIM-Key:", dkimKey);
 
 		// check that the testing flag is not set
-		if (DKIMSignature.DKIMKey.t_array.indexOf("y") !== -1) {
+		if (dkimKey.t_array.indexOf("y") !== -1) {
 			if (prefs["error.key_testmode.ignore"]) {
 				DKIMSignature.warnings.push({name: "DKIM_SIGERROR_KEY_TESTMODE"});
 				log.debug("Warning: DKIM_SIGERROR_KEY_TESTMODE");
@@ -907,7 +1070,7 @@ export function setKeyFetchFunction(keyFetchFunction) {
 
 		// if s flag is set in DKIM key record
 		// AUID must be from the same domain as SDID (and not a subdomain)
-		if (DKIMSignature.DKIMKey.t_array.indexOf("s") !== -1 &&
+		if (dkimKey.t_array.indexOf("s") !== -1 &&
 		    !stringEqual(DKIMSignature.i_domain, DKIMSignature.d)) {
 			throw new DKIM_SigError("DKIM_SIGERROR_DOMAIN_I");
 		}
@@ -915,8 +1078,8 @@ export function setKeyFetchFunction(keyFetchFunction) {
 		// If the "h=" tag exists in the DKIM key record
 		// the hash algorithm implied by the "a=" tag in the DKIM-Signature header field
 		// must be included in the contents of the "h=" tag
-		if (DKIMSignature.DKIMKey.h_array &&
-		    DKIMSignature.DKIMKey.h_array.indexOf(DKIMSignature.a_hash) === -1) {
+		if (dkimKey.h_array &&
+		    dkimKey.h_array.indexOf(DKIMSignature.a_hash) === -1) {
 			throw new DKIM_SigError( "DKIM_SIGERROR_KEY_HASHNOTINCLUDED" );
 		}
 
@@ -926,7 +1089,7 @@ export function setKeyFetchFunction(keyFetchFunction) {
 
 		// verify Signature
 		let [isValid, keyLength] = await DkimCrypto.verifyRSA(
-			DKIMSignature.DKIMKey.p,
+			dkimKey.p,
 			DKIMSignature.a_hash,
 			DKIMSignature.b,
 			headerHashInput
@@ -970,7 +1133,7 @@ export function setKeyFetchFunction(keyFetchFunction) {
 			auid : DKIMSignature.i,
 			selector : DKIMSignature.s,
 			warnings : DKIMSignature.warnings,
-			keySecure : DKIMSignature.keyQueryResult.secure,
+			keySecure : keyQueryResult.secure,
 		};
 		return verification_result;
 	}
@@ -983,7 +1146,7 @@ export function setKeyFetchFunction(keyFetchFunction) {
 	 */
 	async function processSignatures(msg) {
 		let iDKIMSignatureIdx = 0;
-		let DKIMSignature;
+		let dkimSignature;
 		// contains the result of all DKIM-Signatures which have been verified
 		/** @type {dkimSigResultV2[]} */
 		const sigResults = [];
@@ -1006,14 +1169,12 @@ export function setKeyFetchFunction(keyFetchFunction) {
 			let sigRes;
 			try {
 				log.debug(`Verifying DKIM-Signature ${iDKIMSignatureIdx+1} ...`);
-				DKIMSignature = newDKIMSignature(
-					dkimSignatureHeaders[iDKIMSignatureIdx]);
-				parseDKIMSignature(DKIMSignature);
-				log.debug(`Parsed DKIM-Signature ${iDKIMSignatureIdx+1}:`, DKIMSignature);
-				sigRes = await verifySignature(msg, DKIMSignature);
+				dkimSignature = new DkimSignature(dkimSignatureHeaders[iDKIMSignatureIdx]);
+				log.debug(`Parsed DKIM-Signature ${iDKIMSignatureIdx+1}:`, dkimSignature);
+				sigRes = await verifySignature(msg, dkimSignature);
 				log.debug(`Verified DKIM-Signature ${iDKIMSignatureIdx+1}`);
 			} catch(e) {
-				sigRes = handleException(e, msg, DKIMSignature);
+				sigRes = handleException(e, msg, dkimSignature);
 				log.debug(`Exception on DKIM-Signature ${iDKIMSignatureIdx+1}`);
 			}
 
