@@ -84,6 +84,20 @@
 				],
 				"script": "experiments/migration.js"
 			}
+		},
+		"storageMessage": {
+			"schema": "experiments/storageMessage-schema.json",
+			"parent": {
+				"scopes": [
+					"addon_parent"
+				],
+				"paths": [
+					[
+						"storageMessage"
+					]
+				],
+				"script": "experiments/storageMessage.js"
+			}
 		}
 	}
 }
