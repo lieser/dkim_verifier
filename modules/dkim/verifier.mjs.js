@@ -33,8 +33,10 @@ import prefs from "../preferences.mjs.js";
 
 // TODO: move policy checking out of the verifier module
 class DummyPolicy {
+	// @ts-expect-error
 	// eslint-disable-next-line no-unused-vars, no-empty-function
 	checkSDID(...args) {}
+	// @ts-expect-error
 	// eslint-disable-next-line no-unused-vars, no-empty-function
 	signedBy(...args) {}
 }
@@ -778,7 +780,7 @@ class DkimKey {
 	 */
 	function canonicalizationHeaderFieldRelaxed(headerField) {
 		// Convert header field name (not the header field values) to lowercase
-		headerField = headerField.replace(
+		let headerCanonicalized = headerField.replace(
 			/^\S[^:]*/,
 			function(match) {
 				return match.toLowerCase();
@@ -786,21 +788,21 @@ class DkimKey {
 		);
 
 		// Unfold header field continuation lines
-		headerField = headerField.replace(/\r\n[ \t]/g," ");
+		headerCanonicalized = headerCanonicalized.replace(/\r\n[ \t]/g," ");
 
 		// Convert all sequences of one or more WSP characters to a single SP character.
 		// WSP characters here include those before and after a line folding boundary.
-		headerField = headerField.replace(/[ \t]+/g," ");
+		headerCanonicalized = headerCanonicalized.replace(/[ \t]+/g," ");
 
 		// Delete all WSP characters at the end of each unfolded header field value.
-		headerField = headerField.replace(/[ \t]+\r\n/,"\r\n");
+		headerCanonicalized = headerCanonicalized.replace(/[ \t]+\r\n/,"\r\n");
 
 		// Delete any WSP characters remaining before and after the colon
 		// separating the header field name from the header field value.
 		// The colon separator MUST be retained.
-		headerField = headerField.replace(/[ \t]*:[ \t]*/,":");
+		headerCanonicalized = headerCanonicalized.replace(/[ \t]*:[ \t]*/,":");
 
-		return headerField;
+		return headerCanonicalized;
 	}
 
 	/**
@@ -815,9 +817,9 @@ class DkimKey {
 		// If there is no body or no trailing CRLF on the message body, a CRLF is added
 		// for some reason /(\r\n)*$/ doesn't work all the time
 		// (especially in large strings; matching only last "\r\n")
-		body = body.replace(/((\r\n)+)?$/,"\r\n");
+		const bodyCanonicalized = body.replace(/((\r\n)+)?$/,"\r\n");
 
-		return body;
+		return bodyCanonicalized;
 	}
 
 	/**
@@ -829,21 +831,21 @@ class DkimKey {
 	 */
 	function canonicalizationBodyRelaxed(body) {
 		// Ignore all whitespace at the end of lines
-		body = body.replace(/[ \t]+\r\n/g,"\r\n");
+		let bodyCanonicalized = body.replace(/[ \t]+\r\n/g,"\r\n");
 		// Reduce all sequences of WSP within a line to a single SP character
-		body = body.replace(/[ \t]+/g," ");
+		bodyCanonicalized = bodyCanonicalized.replace(/[ \t]+/g," ");
 
 		// Ignore all empty lines at the end of the message body
 		// If the body is non-empty but does not end with a CRLF, a CRLF is added
 		// for some reason /(\r\n)*$/ doesn't work all the time
 		// (especially in large strings; matching only last "\r\n")
-		body = body.replace(/((\r\n)+)?$/,"\r\n");
+		bodyCanonicalized = bodyCanonicalized.replace(/((\r\n)+)?$/,"\r\n");
 
-		// If only one \r\n rests, there were only emtpy lines or body was empty.
-		if (body === "\r\n") {
+		// If only one \r\n rests, there were only empty lines or body was empty.
+		if (bodyCanonicalized === "\r\n") {
 			return "";
 		}
-		return body;
+		return bodyCanonicalized;
 	}
 
 	/**
@@ -869,7 +871,7 @@ class DkimKey {
 		}
 		// if a body length count is given
 		if (DKIMSignature.l !== null) {
-			// check the value of the body lenght tag
+			// check the value of the body length tag
 			if (DKIMSignature.l > bodyCanon.length) {
 				// length tag exceeds body size
 				log.debug(`bodyCanon.length: ${bodyCanon.length}`);
@@ -904,6 +906,7 @@ class DkimKey {
 		let headerCanonAlgo;
 		switch (DKIMSignature.c_header) {
 			case "simple":
+				// @ts-expect-error
 				headerCanonAlgo = function (headerField) {return headerField;};
 				break;
 			case "relaxed":
@@ -913,7 +916,8 @@ class DkimKey {
 				throw new DKIM_InternalError("unsupported canonicalization algorithm (header) got parsed");
 		}
 
-		// copy header fileds
+		// copy header fields
+		/** @type {Map<string, string[]>} */
 		const headerFields = new Map();
 		for (const [key, val] of msg.headerFields) {
 			headerFields.set(key, val.slice());
@@ -951,11 +955,11 @@ class DkimKey {
 	}
 
 	/**
-	 * handeles Exeption
+	 * handles Exception
 	 *
 	 * @param {Error} e
 	 * @param {Msg} msg
-	 * @param {DkimSignature} [dkimSignature]
+	 * @param {DkimSignature|Object.<string, undefined>} [dkimSignature]
 	 * @return {dkimSigResultV2}
 	 */
 	function handleException(e, msg, dkimSignature = {} ) {
@@ -1024,7 +1028,7 @@ class DkimKey {
 			log.debug("Warning: DKIM_SIGWARNING_FUTURE");
 		}
 
-		// Compute the Message Hashe for the body
+		// Compute the Message hash for the body
 		const bodyHash = await computeBodyHash(msg, DKIMSignature);
 		log.debug("computed body hash:", bodyHash);
 
@@ -1084,11 +1088,11 @@ class DkimKey {
 		}
 
 		// Compute the input for the header hash
-		let headerHashInput = computeHeaderHashInput(msg,DKIMSignature);
+		const headerHashInput = computeHeaderHashInput(msg,DKIMSignature);
 		log.debug(`Header hash input:\n${headerHashInput}`);
 
 		// verify Signature
-		let [isValid, keyLength] = await DkimCrypto.verifyRSA(
+		const [isValid, keyLength] = await DkimCrypto.verifyRSA(
 			dkimKey.p,
 			DKIMSignature.a_hash,
 			DKIMSignature.b,
@@ -1193,7 +1197,7 @@ class DkimKey {
 	 * @param {dkimSigResultV2[]} signatures
 	 * @return {void}
 	 */
-	function checkForSignatureExsistens(msg, signatures) {
+	function checkForSignatureExistence(msg, signatures) {
 		// check if a DKIM signature exists
 		if (signatures.length === 0) {
 			let dkimSigResultV2;
@@ -1239,7 +1243,8 @@ export default class Verifier {
 				version: "2.0",
 				signatures: await processSignatures(msg),
 			};
-			checkForSignatureExsistens(msg, res.signatures);
+			checkForSignatureExistence(msg, res.signatures);
+			// eslint-disable-next-line no-use-before-define
 			sortSignatures(res.signatures, msg.from, msg.listId);
 			return res;
 		})();
@@ -1351,22 +1356,19 @@ export default class Verifier {
 			if (!sig1.warnings || sig1.warnings.length === 0) {
 				// sig1 has no warnings
 				if (!sig2.warnings || sig2.warnings.length === 0) {
-					// both sigs have no warnings
-					return 0;
-				} else {
-					// sig2 has warings
-					return -1;
-				}
-			} else {
-				// sig1 has warnings
-				if (!sig2.warnings || sig2.warnings.length === 0) {
-					// sig2 has no warings
-					return 1;
-				} else {
-					// both sigs have warnings
+					// both signatures have no warnings
 					return 0;
 				}
+				// sig2 has warnings
+				return -1;
 			}
+			// sig1 has warnings
+			if (!sig2.warnings || sig2.warnings.length === 0) {
+				// sig2 has no warnings
+				return 1;
+			}
+			// both signatures have warnings
+			return 0;
 		}
 
 		/**
@@ -1379,16 +1381,16 @@ export default class Verifier {
 				return 0;
 			}
 
-			if (addrIsInDomain2(from, sig1.sdid)) {
+			if (sig1.sdid && addrIsInDomain2(from, sig1.sdid)) {
 				return -1;
-			} else if (addrIsInDomain2(from, sig2.sdid)) {
+			} else if (sig2.sdid && addrIsInDomain2(from, sig2.sdid)) {
 				return 1;
 			}
 
 			if (listId) {
-				if (domainIsInDomain(listId, sig1.sdid)) {
+				if (sig1.sdid && domainIsInDomain(listId, sig1.sdid)) {
 					return -1;
-				} else if (domainIsInDomain(listId, sig2.sdid)) {
+				} else if (sig2.sdid && domainIsInDomain(listId, sig2.sdid)) {
 					return 1;
 				}
 			}
