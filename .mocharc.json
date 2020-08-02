@@ -1,6 +1,10 @@
 {
 	"recursive": true,
+	"exclude": [
+		"test/helpers/*"
+	],
 	"require": [
+		"test/helpers/sinonRegisterNode.mjs.js",
 		"chai/register-expect"
 	]
 }
