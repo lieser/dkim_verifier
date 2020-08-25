@@ -826,6 +826,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "instantsystems.se",
+			"addr": "*",
+			"sdid": "instantsystems.se",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "immobilienscout24.de",
 			"addr": "*",
 			"sdid": "immobilienscout24.de",
@@ -937,6 +943,18 @@
 			"domain": "linkedin.com",
 			"addr": "*",
 			"sdid": "linkedin.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "linux.pizza",
+			"addr": "*",
+			"sdid": "linux.pizza social.linux.pizza",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "lovaapp.com",
+			"addr": "*",
+			"sdid": "lovaapp.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
