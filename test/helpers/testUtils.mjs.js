@@ -30,12 +30,13 @@ async function rootDir() {
 }
 
 /**
- * Read a text file from the root directory.
+ * Read a file with the requested encoding from the root directory.
  *
  * @param {string} file - path to file relative to root directory
+ * @param {"utf-8"|"binary"} encoding - encoding
  * @returns {Promise<string>}
  */
-export async function readTextFile(file) {
+async function readFile(file, encoding) {
 	if (isNodeJs()) {
 		const fs = await import("fs");
 		const path = await import("path");
@@ -43,7 +44,7 @@ export async function readTextFile(file) {
 		const filePath = path.join(await rootDir(), file);
 
 		return new Promise((resolve, reject) => {
-			fs.readFile(filePath, { encoding: 'utf-8' }, (err, data) => {
+			fs.readFile(filePath, { encoding: encoding }, (err, data) => {
 				if (err) {
 					reject(err);
 					return;
@@ -55,16 +56,37 @@ export async function readTextFile(file) {
 
 	const req = new Request(`../../${file}`);
 	const response = await fetch(req);
-	const text = await response.text();
-	return text;
+	switch (encoding) {
+		case "utf-8": {
+			const text = await response.text();
+			return text;
+		}
+		case "binary": {
+			const data = await response.arrayBuffer();
+			const dataArray = new Uint8Array(data);
+			return String.fromCharCode(...dataArray);
+		}
+		default:
+			throw new Error(`unsupported encoding ${encoding}`);
+	}
 }
 
 /**
- * Read a text file from the test data directory.
+ * Read a text file from the root directory.
  *
- * @param {string} file - path to file relative to test data directory
+ * @param {string} file - path to file relative to root directory
  * @returns {Promise<string>}
  */
+export function readTextFile(file) {
+	return readFile(file, "utf-8");
+}
+
+/**
+ * Read a file as a binary string from the test data directory.
+ *
+ * @param {string} file - path to file relative to test data directory
+ * @returns {Promise<string>} - (binary string)
+ */
 export function readTestFile(file) {
-	return readTextFile(`test/data/${file}`);
+	return readFile(`test/data/${file}`, "binary");
 }
