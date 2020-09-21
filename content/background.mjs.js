@@ -23,6 +23,8 @@ import { setKeyFetchFunction } from "../modules/dkim/verifier.mjs.js";
 const log = Logging.getLogger("background");
 
 async function init() {
+	await migratePrefs();
+
 	await prefs.init();
 
 	if (prefs.debug) {
@@ -34,8 +36,6 @@ async function init() {
 		}
 		Logging.setLogLevel(logLevel);
 	}
-
-	await migratePrefs();
 }
 const isInitialized = init();
 isInitialized.catch(error => log.fatal("Initializing failed with:", error));
