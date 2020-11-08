@@ -13,7 +13,7 @@
 
 // @ts-check
 ///<reference path="./logging.d.ts" />
-/* eslint-env browser */
+/* eslint-env browser, webextensions */
 /* eslint no-use-before-define: ["error", { "classes": false }] */
 /* eslint-disable no-empty-function */
 
@@ -128,6 +128,44 @@ export default class Logging {
 	}
 	static get logLevel() {
 		return Logging._logLevel;
+	}
+
+	/**
+	 * Initialize the log level from preferences.
+	 * Also adds a change listener to adapt log level if setting changes.
+	 *
+	 * @static
+	 * @returns {Promise<void>}
+	 * @memberof Logging
+	 */
+	static async initLogLevelFromPrefs() {
+		const setLogLevelFromPrefs = async () => {
+			const prefs = await browser.storage.local.get(["debug", "logging.console"]);
+			const debug = prefs.debug ?? false;
+			if (debug) {
+				/** @type {number|undefined} */
+				// @ts-expect-error
+				let logLevel = Logging.Level[prefs["logging.console"]];
+				if (!logLevel) {
+					logLevel = Logging.Level.Debug;
+				}
+				Logging.setLogLevel(logLevel);
+			} else {
+				Logging.setLogLevel(Logging.Level.Error);
+			}
+		};
+
+		await setLogLevelFromPrefs();
+		browser.storage.onChanged.addListener((changes, areaName) => {
+			if (areaName !== "local") {
+				return;
+			}
+			if (Object.keys(changes).some(name => name === "debug") ||
+				Object.keys(changes).some(name => name === "logging.console")
+			) {
+				setLogLevelFromPrefs();
+			}
+		});
 	}
 }
 Logging._logLevel = Logging.Level.Error;

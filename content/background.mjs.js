@@ -24,21 +24,13 @@ import { setKeyFetchFunction } from "../modules/dkim/verifier.mjs.js";
 const log = Logging.getLogger("background");
 
 async function init() {
-	await migratePrefs();
+	await Logging.initLogLevelFromPrefs();
 
+	await migratePrefs();
 	await prefs.init();
 
 	await migrateSignRulesUser();
 	initSignRulesProxy();
-	if (prefs.debug) {
-		/** @type {number|undefined} */
-		// @ts-ignore
-		let logLevel = Logging.Level[prefs["logging.console"]];
-		if (!logLevel) {
-			logLevel = Logging.Level.Debug;
-		}
-		Logging.setLogLevel(logLevel);
-	}
 }
 const isInitialized = init();
 isInitialized.catch(error => log.fatal("Initializing failed with:", error));
