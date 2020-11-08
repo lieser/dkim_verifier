@@ -1,7 +1,5 @@
 /**
- * rfcParser.mjs.js
- *
- * Version: 0.1.0 (31 January 2020)
+ * RegExp pattern for ABNF definitions in various RFCs.
  *
  * Copyright (c) 2020 Philippe Lieser
  *
@@ -17,20 +15,61 @@
 import { DKIM_InternalError, DKIM_SigError } from "./error.mjs.js";
 
 export default class RfcParser {
-	//// RFC 5321 - Simple Mail Transfer Protocol
-	// 4.1.2.  Command Argument Syntax
+	////// RFC 5234 - Augmented BNF for Syntax Specifications: ABNF
+	//// Appendix B.1.  Core Rules
+	static get VCHAR() { return "[!-~]"; }
+	static get WSP() { return "[ \t]"; }
+
+	////// RFC 5321 - Simple Mail Transfer Protocol
+	//// 4.1.2.  Command Argument Syntax
 	static get sub_domain() { return "(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?)"; }
 
-	//// RFC 5322 - Internet Message Format
-	// 3.2.3.  Atom
-	static get atext() { return "[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]"; }
-	static get dot_atom_text() { return `(?:${this.atext}+(?:\\.${this.atext}+)*)`; }
-
-	//// RFC 6376 - DomainKeys Identified Mail (DKIM) Signatures
-	// 2.8.  Whitespace
-	static get WSP() { return "[ \t]"; }
+	////// RFC 5322 - Internet Message Format
+	//// 3.2.1.  Quoted characters
+	// Note: this is incomplete (obs-qp is missing)
+	static get quoted_pair() { return `(?:\\\\(?:${this.VCHAR}|${this.WSP}))`; }
+	//// 3.2.2.  Folding White Space and Comments
+	// Note: this is incomplete (obs-FWS is missing)
+	// Note: this is as specified in Section 2.8. of RFC 6376 [DKIM]
 	static get FWS() { return `(?:${this.WSP}*(?:\r\n)?${this.WSP}+)`; }
-	// 3.5.  The DKIM-Signature Header Field
+	// Note: helper only, not part of the RFC
+	static get FWS_op() { return `${this.FWS}?`; }
+	// Note: this is incomplete (obs-ctext is missing)
+	static get ctext() { return "[!-'*-[\\]-~]"; }
+	// Note: this is incomplete (comment is missing)
+	static get ccontent() { return `(?:${this.ctext}|${this.quoted_pair})`; }
+	static get comment() { return `\\((?:${this.FWS_op}${this.ccontent})*${this.FWS_op}\\)`; }
+	static get CFWS() { return `(?:(?:(?:${this.FWS_op}${this.comment})+${this.FWS_op})|${this.FWS})`; }
+	// Note: helper only, not part of the RFC
+	static get CFWS_op() { return `${this.CFWS}?`; }
+	//// 3.2.3.  Atom
+	static get atext() { return "[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]"; }
+	static get atom() { return `(?:${this.CFWS_op}${this.atext}+${this.CFWS_op})`; }
+	static get dot_atom_text() { return `(?:${this.atext}+(?:\\.${this.atext}+)*)`; }
+	static get dot_atom() { return `(?:${this.CFWS_op}${this.dot_atom_text}${this.CFWS_op})`; }
+	//// 3.2.4.  Quoted Strings
+	// Note: this is incomplete (obs-qtext is missing)
+	static get qtext() { return "[!#-[\\]-~]"; }
+	static get qcontent() { return `(?:${this.qtext}|${this.quoted_pair})`; }
+	static get quoted_string() { return `(?:${this.CFWS_op}"(?:${this.FWS_op}${this.qcontent})*${this.FWS_op}"${this.CFWS_op})`; }
+	//// 3.2.5.  Miscellaneous Tokens
+	static get word() { return `(?:${this.atom}|${this.quoted_string})`; }
+	// Note: this is incomplete (obs-phrase is missing)
+	static get phrase() { return `(?:(?:${this.word})+)`; }
+	//// 3.4.  Address Specification
+	static get name_addr() { return `(?:${this.display_name}?${this.angle_addr})`; }
+	// Note: this is incomplete (obs-angle-addr is missing)
+	static get angle_addr() { return `(?:${this.CFWS_op}<${this.addr_spec}>${this.CFWS_op})`; }
+	static get display_name() { return `(?:${this.phrase})`; }
+	//// 3.4.1.  Addr-Spec Specification
+	static get addr_spec() { return `(?:${this.local_part}@${this.domain})`; }
+	// Note: this is incomplete (obs-local-part is missing)
+	static get local_part() { return `(?:${this.dot_atom}|${this.quoted_string})`; }
+	// Note: this is incomplete (domain-literal and obs-domain are missing)
+	static get domain() { return `(?:${this.dot_atom})`; }
+
+	////// RFC 6376 - DomainKeys Identified Mail (DKIM) Signatures
+	//// 3.5.  The DKIM-Signature Header Field
 	static get domain_name() { return `(?:${this.sub_domain}(?:\\.${this.sub_domain})+)`; }
 
 	/**

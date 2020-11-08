@@ -1,9 +1,5 @@
 /*
- * msgParser.mjs.js
- *
  * Reads and parses a message.
- *
- * Version: 3.0.0 (23 February 2020)
  *
  * Copyright (c) 2014-2020 Philippe Lieser
  *
@@ -106,30 +102,12 @@ export default class MsgParser {
 	}
 
 	/**
-	 * Extract the first address from a header which matches the RFC 5322 address-list production.
-	 * Must be called with the header value only.
+	 * Extract the address from the From header (RFC 5322).
 	 *
-	 * @static
-	 * @param {string} header
-	 * @returns {string}
-	 * @memberof MsgParser
-	 */
-	static parseAddressingHeader(header) {
-		// TODO: improve extraction of address
-		const mail = `${RfcParser.dot_atom_text}@(${RfcParser.domain_name})`;
-		let regExpMatch = header.match(new RegExp(`<(${mail})>`));
-		if (regExpMatch !== null) {
-			return regExpMatch[1];
-		}
-		regExpMatch = header.trim().match(new RegExp(`^(${mail})$`));
-		if (regExpMatch !== null) {
-			return regExpMatch[1];
-		}
-		throw new Error("header does not contain an address");
-	}
-
-	/**
-	 * Extract the first address from the From header.
+	 * Note: The RFC also allows a list of addresses (mailbox-list).
+	 * This is currently not supported, and will throw a parsing error.
+	 * Note: Some obsolete patterns are not supported.
+	 * Note: Using a domain-literal as domain is not supported.
 	 *
 	 * @static
 	 * @param {string} header
@@ -137,11 +115,54 @@ export default class MsgParser {
 	 * @memberof MsgParser
 	 */
 	static parseFromHeader(header) {
-		const headerStart = "from: ";
+		const headerStart = "from:";
 		if (!header.toLowerCase().startsWith(headerStart)) {
 			throw new Error("Unexpected start of from header");
 		}
-		return this.parseAddressingHeader(header.substr(headerStart.length));
+		const headerValue = header.substr(headerStart.length);
+
+		const dotAtomC = `(?:${RfcParser.CFWS_op}(${RfcParser.dot_atom_text})${RfcParser.CFWS_op})`;
+		const quotedStringC = `(?:${RfcParser.CFWS_op}("(?:${RfcParser.FWS_op}${RfcParser.qcontent})*${RfcParser.FWS_op}")${RfcParser.CFWS_op})`;
+		const localPartC = `(?:${dotAtomC}|${quotedStringC})`;
+		// Capturing address pattern there
+		// 1. Group is the local part as dot-atom-text (can be undefined)
+		// 2. Group is the local part as quoted-string (can be undefined)
+		// 3. Group is the domain part
+		const addrSpecC = `(?:${localPartC}@${dotAtomC})`;
+
+		/**
+		 * Join together the local and domain part of the address.
+		 *
+		 * @param {RegExpMatchArray} regExpMatchArray
+		 * @returns {string}
+		 */
+		const joinAddress = (regExpMatchArray) => {
+			const localDotAtom = regExpMatchArray[1];
+			const localQuotedString = regExpMatchArray[2];
+			const domain = regExpMatchArray[3];
+
+			let local = localDotAtom;
+			if (local === undefined) {
+				local = localQuotedString;
+			}
+			return `${local}@${domain}`;
+		};
+
+		// Try to parse as address that is in <> (name-addr)
+		const angleAddrC = `(?:${RfcParser.CFWS_op}<${addrSpecC}>${RfcParser.CFWS_op})`;
+		const nameAddrC = `(?:${RfcParser.display_name}?${angleAddrC})`;
+		let regExpMatch = headerValue.match(new RegExp(`^${nameAddrC}\r\n$`));
+		if (regExpMatch !== null) {
+			return joinAddress(regExpMatch);
+		}
+
+		// Try to parse as address without <> (addr-spec)
+		regExpMatch = headerValue.match(new RegExp(`^${addrSpecC}\r\n$`));
+		if (regExpMatch !== null) {
+			return joinAddress(regExpMatch);
+		}
+
+		throw new Error("From header does not contain an address");
 	}
 
 	/**
