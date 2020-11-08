@@ -126,7 +126,7 @@ async function loadDefaultRules() {
 	defaultRulesLoaded = new Deferred();
 	try {
 		const signersDefaultStr = await ExtensionUtils.readFile("data/signersDefault.json");
-		/** @type {{versionTable: number, versionData: number, rules: {domain: string, addr: string, sdid: string, ruletype: string, priority: string}[]}} */
+		/** @type {{rules: {domain: string, addr: string, sdid: string, ruletype: string, priority: string}[]}} */
 		const signersDefaultData = JSON.parse(signersDefaultStr);
 		defaultRules = signersDefaultData.rules.map(function (rule) {
 			/** @type {number=} */

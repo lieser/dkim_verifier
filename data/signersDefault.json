@@ -1,7 +1,5 @@
 {
 	"$schema": "./signersDefault-schema.json",
-	"versionTable": 1,
-	"versionData": 28,
 	"rules": [
 		{
 			"domain": "1und1.de",
