@@ -160,7 +160,7 @@
 		}, {
 			"domain": "auer-verlag.de",
 			"addr": "*",
-			"sdid": "auer-verlag.d aaplehrerfachverlage.onmicrosoft.com",
+			"sdid": "auer-verlag.de aaplehrerfachverlage.onmicrosoft.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
