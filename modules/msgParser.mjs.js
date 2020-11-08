@@ -168,6 +168,8 @@ export default class MsgParser {
 	/**
 	 * Extract the list identifier from the List-Id header (RFC 2919).
 	 *
+	 * Note: Some obsolete patterns are not supported.
+	 *
 	 * @static
 	 * @param {string} header
 	 * @returns {string}
@@ -178,9 +180,11 @@ export default class MsgParser {
 		if (!header.toLowerCase().startsWith(headerStart)) {
 			throw new Error("Unexpected start of List-Id header");
 		}
-		// TODO: Currently simply tries to ignore the optional leading phrase.
-		// This can lead to the wrong list identifier being returned.
-		const regExpMatch = header.match(new RegExp(`<(${RfcParser.dot_atom_text}.(?:${RfcParser.dot_atom_text}))>`));
+		const headerValue = header.substr(headerStart.length);
+
+		const listId = `${RfcParser.dot_atom_text}.(?:${RfcParser.dot_atom_text}`;
+		// Note: adapted according to Errata ID: 3951
+		const regExpMatch = headerValue.match(new RegExp(`^(?:${RfcParser.phrase}|${RfcParser.CFWS})?<(${listId}))>\r\n$`));
 		if (regExpMatch !== null) {
 			return regExpMatch[1];
 		}
