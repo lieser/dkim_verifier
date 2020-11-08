@@ -15,7 +15,8 @@
 	"permissions": [
 		"accountsRead",
 		"messagesRead",
-		"storage"
+		"storage",
+		"tabs"
 	],
 	"background": {
 		"page": "content/background.html"
@@ -69,6 +70,20 @@
 					]
 				],
 				"script": "experiments/libunbound.js"
+			}
+		},
+		"mailUtils": {
+			"schema": "experiments/mailUtils-schema.json",
+			"parent": {
+				"scopes": [
+					"addon_parent"
+				],
+				"paths": [
+					[
+						"mailUtils"
+					]
+				],
+				"script": "experiments/mailUtils.js"
 			}
 		},
 		"migration": {

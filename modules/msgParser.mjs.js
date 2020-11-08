@@ -143,4 +143,26 @@ export default class MsgParser {
 		}
 		return this.parseAddressingHeader(header.substr(headerStart.length));
 	}
+
+	/**
+	 * Extract the list identifier from the List-Id header (RFC 2919).
+	 *
+	 * @static
+	 * @param {string} header
+	 * @returns {string}
+	 * @memberof MsgParser
+	 */
+	static parseListIdHeader(header) {
+		const headerStart = "list-id:";
+		if (!header.toLowerCase().startsWith(headerStart)) {
+			throw new Error("Unexpected start of List-Id header");
+		}
+		// TODO: Currently simply tries to ignore the optional leading phrase.
+		// This can lead to the wrong list identifier being returned.
+		const regExpMatch = header.match(new RegExp(`<(${RfcParser.dot_atom_text}.(?:${RfcParser.dot_atom_text}))>`));
+		if (regExpMatch !== null) {
+			return regExpMatch[1];
+		}
+		throw new Error("Cannot extract the list identifier from the List-Id header.");
+	}
 }

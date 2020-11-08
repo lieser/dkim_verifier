@@ -161,4 +161,24 @@ describe("Message parser [unittest]", function () {
 			).to.throw();
 		});
 	});
+	describe("Extracting List-Id", function () {
+		it("RFC 2919 examples", function () {
+			expect(
+				MsgParser.parseListIdHeader("List-Id: List Header Mailing List <list-header.nisto.com>")
+			).to.be.equal("list-header.nisto.com");
+			expect(
+				MsgParser.parseListIdHeader("List-Id: <commonspace-users.list-id.within.com>")
+			).to.be.equal("commonspace-users.list-id.within.com");
+			expect(
+				MsgParser.parseListIdHeader("List-Id: \"Lena's Personal Joke List\"\r\n" +
+					"         <lenas-jokes.da39efc25c530ad145d41b86f7420c3b.021999.localhost>")
+			).to.be.equal("lenas-jokes.da39efc25c530ad145d41b86f7420c3b.021999.localhost");
+			expect(
+				MsgParser.parseListIdHeader('List-Id: "An internal CMU List" <0Jks9449.list-id.cmu.edu>')
+			).to.be.equal("0Jks9449.list-id.cmu.edu");
+			expect(
+				MsgParser.parseListIdHeader("List-Id: <da39efc25c530ad145d41b86f7420c3b.052000.localhost>")
+			).to.be.equal("da39efc25c530ad145d41b86f7420c3b.052000.localhost");
+		});
+	});
 });

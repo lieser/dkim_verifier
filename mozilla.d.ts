@@ -136,6 +136,7 @@ declare module OS {
 /** JavaScript code module "resource://gre/modules/Services.jsm" */
 declare module Services {
     const appinfo: nsIXULAppInfo;
+    const eTLD: nsIEffectiveTLDService;
     const io: nsIIOService;
     const obs: nsIObserverService;
     const prefs: nsIPrefService;
@@ -166,6 +167,11 @@ declare module MailServices {
 
 interface amIAddonManagerStartup {
     readonly registerChrome: (manifestURI: nsIURI, entries: string[][]) => nsIJSRAIIHelper;
+}
+
+interface nsIEffectiveTLDService {
+    readonly getBaseDomain: (aURI: nsIURI, aAdditionalParts: number = 0) => string;
+    readonly getBaseDomainFromHost: (aHost: string, aAdditionalParts: number = 0) => string;
 }
 
 interface mozIStorageBaseStatement extends mozIStorageBindingParams {

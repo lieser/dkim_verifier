@@ -13,10 +13,11 @@
 /* eslint-env browser, webextensions */
 
 import { DKIM_InternalError, DKIM_SigError } from "../modules/error.mjs.js";
+import { migratePrefs, migrateSignRulesUser } from "../modules/migration.mjs.js";
 import AuthVerifier from "../modules/AuthVerifier.mjs.js";
 import DNS from "../modules/dns.mjs.js";
 import Logging from "../modules/logging.mjs.js";
-import { migratePrefs } from "../modules/migration.mjs.js";
+import { initSignRulesProxy } from "../modules/dkim/signRules.mjs.js";
 import prefs from "../modules/preferences.mjs.js";
 import { setKeyFetchFunction } from "../modules/dkim/verifier.mjs.js";
 
@@ -27,6 +28,8 @@ async function init() {
 
 	await prefs.init();
 
+	await migrateSignRulesUser();
+	initSignRulesProxy();
 	if (prefs.debug) {
 		/** @type {number|undefined} */
 		// @ts-ignore

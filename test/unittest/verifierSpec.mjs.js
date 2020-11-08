@@ -61,4 +61,24 @@ describe("DKIM Verifier [unittest]", function () {
 			expect(res.signatures[0].errorType).to.be.equal("DKIM_SIGERROR_BADSIG");
 		});
 	});
+	describe("Signature warnings", function () {
+		it("From address is not in the SDID ", async function () {
+			// TODO: instead of artificial test, add test mail there this is the case
+			const msgPlain = await readTestFile("rfc6376-A.2.eml");
+			const msgParsed = MsgParser.parseMsg(msgPlain);
+			const msg = {
+				headerFields: msgParsed.headers,
+				bodyPlain: msgParsed.body,
+				from: "foo@bar.com",
+				listId: "",
+				DKIMSignPolicy: {},
+			};
+			const verifier = new Verifier();
+			const res = await verifier.verify(msg);
+			expect(res.signatures.length).to.be.equal(1);
+			expect(res.signatures[0].result).to.be.equal("SUCCESS");
+			expect(res.signatures[0].warnings).to.be.an('array').
+				that.deep.includes({name: "DKIM_SIGWARNING_FROM_NOT_IN_SDID"});
+		});
+	});
 });

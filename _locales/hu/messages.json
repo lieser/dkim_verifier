@@ -514,5 +514,121 @@
 	},
 	"options_acc.boolean.value.2": {
 		"message": "Nem"
+	},
+	// ==================== Actions ====================
+	"dkim_verifier.reverifyDKIMSignature": {
+		"message": "DKIM aláírás újraellenőrzése"
+	},
+	"dkim_verifier.policyAddUserException": {
+		"message": "Alá kell írni kivétel hozzáadása"
+	},
+	"dkim_verifier.markKeyAsSecure": {
+		"message": "A DKIM kulcs biztonságosként jelölése"
+	},
+	"dkim_verifier.updateKey": {
+		"message": "DKIM kulcs frissítése"
+	},
+	// ==================== Table Views ====================
+	"treeviewKeys.treecol.SDID": {
+		"message": "SDID"
+	},
+	"treeviewKeys.treecol.selector": {
+		"message": "Választó"
+	},
+	"treeviewKeys.treecol.key": {
+		"message": "DKIM kulcs"
+	},
+	"treeviewKeys.treecol.insertedAt": {
+		"message": "Beszúrva"
+	},
+	"treeviewKeys.treecol.lastUsedAt": {
+		"message": "Utolsó használat"
+	},
+	"treeviewKeys.treecol.secure": {
+		"message": "DNSSEC"
+	},
+	"treeviewKeys.deleteSelectedRows": {
+		"message": "Kiválasztott kulcsok törlése"
+	},
+	"treeviewSigners.treecol.domain": {
+		"message": "Tartomány"
+	},
+	"treeviewSigners.treecol.listId": {
+		"message": "Listaazonosító"
+	},
+	"treeviewSigners.treecol.addr": {
+		"message": "Feladó"
+	},
+	"treeviewSigners.treecol.sdid": {
+		"message": "SDID"
+	},
+	"treeviewSigners.treecol.ruletype": {
+		"message": "Szabály típusa"
+	},
+	"treeviewSigners.treecol.priority": {
+		"message": "Sürgősség"
+	},
+	"treeviewSigners.treecol.enabled": {
+		"message": "Engedélyezve"
+	},
+	"treeviewSigners.addSignersRule": {
+		"message": "Szabály hozzáadása"
+	},
+	"treeviewSigners.deleteSelectedRows": {
+		"message": "Kiválasztott szabályok törlése"
+	},
+	"addSignersRule.title": {
+		"message": "Aláírók szabály hozzáadása"
+	},
+	"signRules.ruletype.SIGNED": {
+		"message": "Alá kell írni (1)"
+	},
+	"signRules.ruletype.NEUTRAL": {
+		"message": "Aláírható (2)"
+	},
+	"signRules.ruletype.HIDEFAIL": {
+		"message": "Az érvénytelen aláírás figyelmen kívül hagyása (3)"
+	},
+	"signRules.priorityMode.auto": {
+		"message": "Önműködően sürgősség kiválasztása"
+	},
+	"signRules.priorityMode.manual": {
+		"message": "Sürgősség beállítása"
+	},
+	"button.help": {
+		"message": "Súgó"
+	},
+	"signersRuleHelp.title": {
+		"message": "Aláírók szabályok súgó"
+	},
+	"domain.description": {
+		"message": "Összehangolják a feladócím alaptartományával. Például az „e-mail.példa.hu” alaptartománya az „példa.hu”."
+	},
+	"listId.description": {
+		"message": "Összehangolják a listaazonosítóval, ha az e-mailt e-mail listán vették át. Vegye figyelembe, hogy csak a „<” és „>” a listaazonosító fejlécében szereplő tényleges listaazonosító. Csak a tartomány vagy a listaazonosító egyezik egyidejűleg."
+	},
+	"addr.description": {
+		"message": "Összehangolják a feladó címmel. Használjon „*”-ot, hogy egyezzen meg nulla vagy több karaktert."
+	},
+	"sdid.description": {
+		"message": "Az a tartomány, amelyen az e-maileket alá kell írni. Ha ez üres, akkor minden SDID megengedett. Egynél több tartomány megadható, ha szóközzel elválasztják őket."
+	},
+	"ruletype.description": {
+		"message": "A szabály típusa."
+	},
+	"ruletype.1.description": {
+		"message": "Az e-mailt a megadott SDID-nek kell aláírnia."
+	},
+	"ruletype.2.description": {
+		"message": "Az e-mailt nem kell aláírni. Ha aláírják, akkor a megadott SDID-nek kell lennie."
+	},
+	"ruletype.3.description": {
+		"message": "Az e-mailt nem kell aláírni. Ha aláírják, akkor a megadott SDID-nek kell lennie. Ha az e-mail érvénytelen aláírással rendelkezik, akkor azt úgy kell kezelni, mintha nincs aláírás."
+	},
+	"priority.description": {
+		"message": "A szabály sürgőssége. Ha egynél több szabály egyezik, akkor a legmagasabb sürgősséggel rendelkező szabályt kell használni."
+	},
+	"enabled.description": {
+		"message": "0, ha szabály letiltva. 1, ha szabály engedélyezve."
 	}
 }

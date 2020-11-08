@@ -21,9 +21,12 @@ const log = Logging.getLogger("Migration");
 
 export async function migratePrefs() {
 	const preferences = await browser.storage.local.get();
-	if (preferences && Object.keys(preferences).length !== 0) {
-		log.info("Skipping migration of preferences as browser.storage already has some set");
-		return;
+	if (preferences) {
+		delete preferences.signRulesUser;
+		if (Object.keys(preferences).length !== 0) {
+			log.info("Skipping migration of preferences as browser.storage already has some set");
+			return;
+		}
 	}
 	await prefs.init();
 
@@ -54,5 +57,18 @@ export async function migratePrefs() {
 				log.error(`Migration of preference ${name} for account ${account} with value ${value} failed:`, error);
 			}
 		}
+	}
+}
+
+export async function migrateSignRulesUser() {
+	const storage = await browser.storage.local.get();
+	if (storage && storage.signRulesUser) {
+		log.info("Skipping migration of user sign rules as browser.storage already contains some");
+		return;
+	}
+
+	const userRules = await browser.migration.getSignRulesUser();
+	if (userRules) {
+		await browser.storage.local.set({ signRulesUser: userRules });
 	}
 }

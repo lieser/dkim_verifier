@@ -606,6 +606,7 @@ export class StorageLocalPreferences extends BasePreferences {
 		}
 		const preferences = await browser.storage.local.get();
 		if (preferences) {
+			delete preferences.signRulesUser;
 			this._prefs = preferences;
 		}
 		browser.storage.onChanged.addListener((changes, areaName) => {
@@ -619,11 +620,15 @@ export class StorageLocalPreferences extends BasePreferences {
 		this._isInitialized = true;
 	}
 
-	clear() {
+	async clear() {
+		const signRulesUser = (await browser.storage.local.get("signRulesUser")).signRulesUser;
+
 		this._prefs = {};
-		const promise = browser.storage.local.clear();
-		promise.catch(error => log.fatal("Storing preferences in browser.storage.local failed", error));
-		return promise;
+		await browser.storage.local.clear();
+
+		if (signRulesUser) {
+			await browser.storage.local.set({ signRulesUser: signRulesUser });
+		}
 	}
 }
 

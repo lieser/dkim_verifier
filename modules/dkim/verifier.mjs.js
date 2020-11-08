@@ -25,22 +25,11 @@
 /* eslint-disable no-magic-numbers */
 
 import {DKIM_InternalError, DKIM_SigError} from "../error.mjs.js";
-import {addrIsInDomain2, domainIsInDomain, stringEndsWith, stringEqual} from "../utils.mjs.js";
+import {addrIsInDomain, addrIsInDomain2, domainIsInDomain, stringEndsWith, stringEqual} from "../utils.mjs.js";
 import DkimCrypto from "./crypto.mjs.js";
 import Logging from "../logging.mjs.js";
 import RfcParser from "../rfcParser.mjs.js";
 import prefs from "../preferences.mjs.js";
-
-// TODO: move policy checking out of the verifier module
-class DummyPolicy {
-	// @ts-expect-error
-	// eslint-disable-next-line no-unused-vars, no-empty-function
-	checkSDID(...args) {}
-	// @ts-expect-error
-	// eslint-disable-next-line no-unused-vars, no-empty-function
-	signedBy(...args) {}
-}
-const Policy = new DummyPolicy();
 
 /**
  * The result of the verification (Version 1).
@@ -958,11 +947,10 @@ class DkimKey {
 	 * handles Exception
 	 *
 	 * @param {Error} e
-	 * @param {Msg} msg
 	 * @param {DkimSignature|Object.<string, undefined>} [dkimSignature]
 	 * @return {dkimSigResultV2}
 	 */
-	function handleException(e, msg, dkimSignature = {} ) {
+	function handleException(e, dkimSignature = {} ) {
 		if (e instanceof DKIM_SigError) {
 			// return result
 			const result = {
@@ -973,8 +961,7 @@ class DkimKey {
 				selector : dkimSignature.s,
 				errorType : e.errorType,
 				errorStrParams : e.errorStrParams,
-				hideFail : e.errorType === "DKIM_SIGERROR_KEY_TESTMODE" ||
-					msg.DKIMSignPolicy.hideFail,
+				hideFail : e.errorType === "DKIM_SIGERROR_KEY_TESTMODE",
 				keySecure : dkimSignature.keySecure,
 			};
 
@@ -1012,9 +999,14 @@ class DkimKey {
 	 * @throws DKIM_InternalError
 	 */
 	async function verifySignature(msg, DKIMSignature) { // eslint-disable-line complexity
-		// check SDID and AUID
-		Policy.checkSDID(msg.DKIMSignPolicy.sdid, msg.from, DKIMSignature.d,
-			DKIMSignature.i, DKIMSignature.warnings);
+		// warning if from is not in SDID or AUID
+		if (!addrIsInDomain(msg.from, DKIMSignature.d)) {
+			DKIMSignature.warnings.push({ name: "DKIM_SIGWARNING_FROM_NOT_IN_SDID" });
+			log.debug("Warning: DKIM_SIGWARNING_FROM_NOT_IN_SDID");
+		} else if (!stringEndsWith(msg.from, DKIMSignature.i)) {
+			DKIMSignature.warnings.push({ name: "DKIM_SIGWARNING_FROM_NOT_IN_AUID" });
+			log.debug("Warning: DKIM_SIGWARNING_FROM_NOT_IN_AUID");
+		}
 
 		const time = Math.round(Date.now() / 1000);
 		// warning if signature expired
@@ -1123,11 +1115,6 @@ class DkimKey {
 			}
 		}
 
-		// add should be signed rule
-		if (!msg.DKIMSignPolicy.foundRule) {
-			Policy.signedBy(msg.from, DKIMSignature.d);
-		}
-
 		// return result
 		log.trace("Everything is fine");
 		const verification_result = {
@@ -1178,7 +1165,7 @@ class DkimKey {
 				sigRes = await verifySignature(msg, dkimSignature);
 				log.debug(`Verified DKIM-Signature ${iDKIMSignatureIdx+1}`);
 			} catch(e) {
-				sigRes = handleException(e, msg, dkimSignature);
+				sigRes = handleException(e, dkimSignature);
 				log.debug(`Exception on DKIM-Signature ${iDKIMSignatureIdx+1}`);
 			}
 
@@ -1191,7 +1178,7 @@ class DkimKey {
 
 	/**
 	 * Checks if at least on signature exists.
-	 * If not, adds one to signatures with result "no sig" or "missing sig".
+	 * If not, adds one to signatures with result "no sig"
 	 *
 	 * @param {Msg} msg
 	 * @param {dkimSigResultV2[]} signatures
@@ -1200,22 +1187,10 @@ class DkimKey {
 	function checkForSignatureExistence(msg, signatures) {
 		// check if a DKIM signature exists
 		if (signatures.length === 0) {
-			let dkimSigResultV2;
-			if (!msg.DKIMSignPolicy.shouldBeSigned) {
-				dkimSigResultV2 = {
+			const dkimSigResultV2 = {
 					version: "2.0",
 					result: "none",
-				};
-			} else {
-				dkimSigResultV2 = handleException(
-					new DKIM_SigError(
-						"DKIM_POLICYERROR_MISSING_SIG",
-						[msg.DKIMSignPolicy.sdid]
-					),
-					msg
-				);
-			}
-
+			};
 			signatures.push(dkimSigResultV2);
 		}
 	}
@@ -1227,7 +1202,6 @@ export default class Verifier {
 	 * @property {String} bodyPlain
 	 * @property {String} from
 	 * @property {String} listId
-	 * @property {DKIMSignPolicy} DKIMSignPolicy
 	 */
 
 	/**
@@ -1249,7 +1223,7 @@ export default class Verifier {
 			return res;
 		})();
 		promise.then(null, function onReject(exception) {
-			log.warn("verify2 failed", exception);
+			log.warn("verify failed", exception);
 		});
 		return promise;
 	}

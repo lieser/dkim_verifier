@@ -30,6 +30,7 @@ import { domainIsInDomain, getDomainFromAddr } from "./utils.mjs.js";
 import { DKIM_InternalError } from "./error.mjs.js";
 import Logging from "./logging.mjs.js";
 import MsgParser from "./msgParser.mjs.js";
+import SignRules from "./dkim/signRules.mjs.js";
 import { getFavicon } from "./dkim/favicon.mjs.js";
 import prefs from "./preferences.mjs.js";
 
@@ -118,10 +119,12 @@ export default class AuthVerifier {
 			headerFields: msgParsed.headers,
 			bodyPlain: msgParsed.body,
 			from: MsgParser.parseFromHeader(fromHeader[0]),
-			// TODO: get listId
 			listId: "",
-			DKIMSignPolicy: {},
 		};
+		const listId = msgParsed.headers.get("list-id");
+		if (listId) {
+			msg.listId = MsgParser.parseListIdHeader(listId[0]);
+		}
 
 		// TODO
 		// ignore must be signed for outgoing messages
@@ -131,7 +134,7 @@ export default class AuthVerifier {
 		// }
 
 		// read Authentication-Results header
-		const arhResult = getARHResult(msg.headerFields, msg.from, message.folder.accountId);
+		const arhResult = await getARHResult(msg.headerFields, msg.from, msg.listId, message.folder.accountId);
 
 		if (arhResult) {
 			if (prefs["arh.replaceAddonResult"]) {
@@ -158,6 +161,10 @@ export default class AuthVerifier {
 			if (prefs["account.dkim.enable"](message.folder.accountId)) {
 				// verify DKIM signatures
 				const dkimResultV2 = await new Verifier().verify(msg);
+
+				await checkSignRules(dkimResultV2.signatures, msg.from, msg.listId);
+				VerifierModule.sortSignatures(dkimResultV2.signatures, msg.from, msg.listId);
+
 				savedAuthResult.dkim = dkimResultV2.signatures;
 			} else {
 				savedAuthResult.dkim = [{ version: "2.0", result: "none" }];
@@ -193,10 +200,11 @@ export default class AuthVerifier {
  *
  * @param {Map<string, string[]>} headers
  * @param {string} from
+ * @param {string} listId
  * @param {string} account
- * @return {SavedAuthResult|Null}
+ * @return {Promise<SavedAuthResult|Null>}
  */
-function getARHResult(headers, from, account) {
+async function getARHResult(headers, from, listId, account) {
 	const arHeaders = headers.get("authentication-results");
 	if (!arHeaders || !prefs["account.arh.read"](account)) {
 		return null;
@@ -252,26 +260,8 @@ function getARHResult(headers, from, account) {
 
 	// if ARH result is replacing the add-ons,
 	// check SDID and AUID of DKIM results
-	if (prefs["arh.replaceAddonResult"] && false) {
-		for (let i = 0; i < dkimSigResults.length; i++) {
-			if (dkimSigResults[i].result === "SUCCESS") {
-				try {
-					DKIM.Policy.checkSDID(
-						msg.DKIMSignPolicy.sdid,
-						msg.from,
-						dkimSigResults[i].sdid,
-						dkimSigResults[i].auid,
-						dkimSigResults[i].warnings
-					);
-				} catch (exception) {
-					dkimSigResults[i] = DKIM.Verifier.handleException(
-						exception,
-						msg,
-						{ d: dkimSigResults[i].sdid, i: dkimSigResults[i].auid }
-					);
-				}
-			}
-		}
+	if (prefs["arh.replaceAddonResult"]) {
+		await checkSignRules(dkimSigResults, from, listId);
 	}
 
 	// sort signatures
@@ -383,6 +373,25 @@ async function loadAuthResult(message) {
 	}
 
 	throw new Error(`AuthResult result has wrong Version (${savedAuthResult.version})`);
+}
+
+/**
+ * Checks the DKIM results against the sign rules.
+ *
+ * @param {VerifierModule.dkimSigResultV2[]} dkimResults
+ * @param {string} from
+ * @param {string} listId
+ * @returns {Promise<void>}
+ */
+async function checkSignRules(dkimResults, from, listId) {
+	if (!prefs["policy.signRules.enable"]) {
+		return;
+	}
+
+	for (let i = 0; i < dkimResults.length; i++) {
+		// eslint-disable-next-line require-atomic-updates
+		dkimResults[i] = await SignRules.check(dkimResults[i], from, listId);
+	}
 }
 
 /**
@@ -617,7 +626,6 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 	return authResultDKIM;
 }
 
-
 /**
  * Convert SavedAuthResult to AuthResult
  *
@@ -664,6 +672,7 @@ function AuthResultDKIMV2_to_dkimSigResultV2(authResultDKIM) {
 	dkimSigResult.favicon = undefined;
 	return dkimSigResult;
 }
+
 
 /**
  * Add favicons to the DKIM results.
