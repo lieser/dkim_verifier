@@ -1,7 +1,7 @@
 {
 	"manifest_version": 2,
-	"name": "DKIM Verifier",
-	"description": "Verifies the DKIM-Signature of an e-mail.",
+	"name": "__MSG_about_name__",
+	"description": "__MSG_about_summary__",
 	"version": "4.0.0pre3",
 	"author": "Philippe Lieser",
 	"homepage_url": "https://github.com/lieser/dkim_verifier/wiki",
