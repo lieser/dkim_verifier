@@ -1,0 +1,9 @@
+A <a href="https://en.wikipedia.org/wiki/DomainKeys_Identified_Mail">DKIM (DomainKeys Identified Mail – TartományKulcsok azonosított levelek)</a> egy olyan módszer, amely lehetővé teszi a tartománynak, hogy e-maileket írjon alá. A kiegészítő ellenőrzi ezeket a DKIM aláírásokat, és megjeleníti az eredményt az e-mail fejlécében. Ily módon láthatjuk, hogy melyik tartomány állítja felelősséget egy adott e-mailért. Az eredmény megjelenítésének módja az opciókban megváltoztatható.
+
+Fontos megjegyezni, hogy az e-maileket tetszőleges tartomány aláírhatja. Ezért önmagában az érvényes DKIM aláírás nem jelzi a megbízható e-maileket. Mindig ellenőrizze, hogy ki az aláíró-e, hogy megbízható-e az e-mailek!
+
+Bizonyos esetekben a DKIM aláírás hiánya hasznos lehet a becsapott e-mailek azonosításához. Ha ismert, hogy egy adott tartomány minden e-mailt aláír a DKIM-mel, a DKIM-aláírás hiánya erősen jelzi a hamis e-maileket.
+
+A megkönnyítés érdekében megvizsgálja, hogy az e-mail aláírt, a kiegészítő támogatja az aláírási szabályok használatát. A aláírási szabályokkal meghatározható, hogy egy bizonyos feladó e-mailéit mindig egy meghatározott tartomány (SDID-nek is nevezzük) aláírja. A jelszabályokról bővebben a https://github.com/lieser/dkim_verifier/wiki/Sign-rules.
+
+A rendelkezésre álló kiegészítő lehetőségek leírása megtalálható a https://github.com/lieser/dkim_verifier/wiki/Options oldalon.

@@ -1,0 +1,9 @@
+<a href="https://en.wikipedia.org/wiki/DomainKeys_Identified_Mail">DomainKeys Identified Mail (DKIM)</a> è una tecnica di firma delle email da parte dei domini. Il componente aggiuntivo verifica queste firme DKIM e mostra i risultati di questa verifica nell’intestazione dell’email. In questo modo è possibile visualizzare quale dominio rivendica la responsibilità di una specifica email. La modalità di visualizzazione dei risultati può essere modificata nelle opzioni.
+
+È importante notare che un’email può essere firmata da domini arbitrari. Una firma DKIM valida da sola non è quindi un’indicatore di un’email attendibile. È sempre opportuno verificare chi ha firmato per determinare se un’email è attendibile!
+
+In alcuni casi l’assenza di una firma DKIM può essere utile per identificare email fraudolente. Se si sa che un dominio firma tutte le sue email con DKIM, l’assenza di una firma DKIM è un significativo indicatore di un’email contraffatta.
+
+Per facilitare la verifica sia della presenza della firma sia del suo mittente, il componente aggiuntivo supporta le regole delle firme. Con tali regole è possibile specificare che le email provenienti da un determinato mittente devono essere sempre firmate da uno specifico dominio (chiamato anche SDID). Ulteriori informazioni sulle regole delle firme sono disponibili qui: https://github.com/lieser/dkim_verifier/wiki/Sign-rules
+
+Una descrizione di tutte le opzioni del componente aggiuntivo possono essere trovate qui: https://github.com/lieser/dkim_verifier/wiki/Options

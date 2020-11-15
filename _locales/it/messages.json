@@ -515,6 +515,15 @@
 	"options_acc.boolean.value.2": {
 		"message": "No"
 	},
+	// -------------------- Account options --------------------
+	"about_name": {
+		"message": "DKIM Verifier",
+		"description": "Name of the add-on"
+	},
+	"about_summary": {
+		"message": "Verifica la firma DKIM di un’email.",
+		"description": "Short description of the add-on"
+	},
 	// ==================== Actions ====================
 	"dkim_verifier.reverifyDKIMSignature": {
 		"message": "Ri-verifica firma DKIM"

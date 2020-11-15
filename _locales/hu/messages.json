@@ -515,6 +515,15 @@
 	"options_acc.boolean.value.2": {
 		"message": "Nem"
 	},
+	// -------------------- Account options --------------------
+	"about_name": {
+		"message": "DKIM ellenőrző (DKIM Verifier)",
+		"description": "Name of the add-on"
+	},
+	"about_summary": {
+		"message": "Ellenőrzi az e-mailek DKIM-aláírásait",
+		"description": "Short description of the add-on"
+	},
 	// ==================== Actions ====================
 	"dkim_verifier.reverifyDKIMSignature": {
 		"message": "DKIM aláírás újraellenőrzése"
