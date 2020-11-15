@@ -1,3 +1,3 @@
-Per ricevere supporto usare https://github.com/lieser/dkim_verifier/issues, http://forums.mozillazine.org/viewtopic.php?f=48&t=2704121 o inviare un’email a lieser+dkim@posteo.net (in inglese o in tedesco).
+Per ricevere supporto usare https://github.com/lieser/dkim_verifier/issues o inviare un’email a lieser+dkim@posteo.net (in inglese o in tedesco).
 
 Per segnalare bug è preferibile utilizzare https://github.com/lieser/dkim_verifier/issues.
