@@ -380,6 +380,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
+			"domain": "datev.de",
+			"addr": "*",
+			"sdid": "datev.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "deutschepost.de",
 			"addr": "*",
 			"sdid": "deutschepost.de",
