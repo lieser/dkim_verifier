@@ -204,4 +204,39 @@ describe("AuthVerifier [unittest]", function () {
 			expect(res.dkim[0].result_str).to.be.equal("Invalid (Should be signed by paypal.com)");
 		});
 	});
+	describe("ARH header", function () {
+		beforeEach(async function () {
+			await prefs.clear();
+		});
+
+		it("spf and dkim result", async function () {
+			const message = await createMessageHeader("rfc6376-A.2-arh-valid.eml");
+			let res = await authVerifier.verify(message);
+			expect(res.dkim[0].result).to.be.equal("SUCCESS");
+			expect(res.spf).to.be.equal(undefined);
+
+			await prefs.setValue("dkim.enable", false);
+
+			res = await authVerifier.verify(message);
+			expect(res.dkim[0].result).to.be.equal("none");
+
+			await prefs.setValue("arh.read", true);
+
+			res = await authVerifier.verify(message);
+			expect(res.dkim[0].result).to.be.equal("SUCCESS");
+			expect((res.spf ?? [])[0].result).to.be.equal("pass");
+		});
+		it("relaxed parsing", async function () {
+			const message = await createMessageHeader("rfc6376-A.2-arh-valid_relaxed.eml");
+			await prefs.setValue("arh.read", true);
+
+			let res = await authVerifier.verify(message);
+			expect(res.spf?.length).to.be.equal(0);
+
+			await prefs.setValue("arh.relaxedParsing", true);
+
+			res = await authVerifier.verify(message);
+			expect((res.spf ?? [])[0].result).to.be.equal("pass");
+		});
+	});
 });

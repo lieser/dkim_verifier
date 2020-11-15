@@ -221,7 +221,7 @@ async function getARHResult(headers, from, listId, account) {
 		/** @type {ArhParserModule.ArhHeader} */
 		let arh;
 		try {
-			arh = ArhParser.parse(arHeaders[i]);
+			arh = ArhParser.parse(arHeaders[i], prefs["arh.relaxedParsing"]);
 		} catch (exception) {
 			log.error("Ignoring error in parsing of ARH", exception);
 			continue;
