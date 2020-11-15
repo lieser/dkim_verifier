@@ -521,6 +521,9 @@
 		"message": "No"
 	},
 	// -------------------- Account options --------------------
+	"about": {
+		"message": "About"
+	},
 	"about_name": {
 		"message": "DKIM Verifier",
 		"description": "Name of the add-on"
@@ -531,6 +534,26 @@
 	},
 	"about_homepage": {
 		"message": "Homepage"
+	},
+	"about_documentation": {
+		"message": "Documentation",
+		"description": "Link text for GitHub contributors page"
+	},
+	"about_contributors": {
+		"message": "GitHub contributors",
+		"description": "Link text for GitHub contributors page"
+	},
+	"about_translators": {
+		"message": "Translators:",
+		"description": "Heading for list of translators"
+	},
+	"about_dependencies": {
+		"message": "Included dependencies:",
+		"description": "Heading for list of included dependencies"
+	},
+	"about_by": {
+		"message": "by",
+		"description": "<dependency name> by <author>"
 	},
 	// ==================== Actions ====================
 	"dkim_verifier.reverifyDKIMSignature": {
