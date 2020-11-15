@@ -13,9 +13,11 @@
 /* eslint-disable camelcase */
 
 import AuthVerifier from "../../modules/AuthVerifier.mjs.js";
+import MsgParser from "../../modules/msgParser.mjs.js";
 import expect from "../helpers/chaiUtils.mjs.js";
 import { hasWebExtensions } from "../helpers/initWebExtensions.mjs.js";
 import prefs from "../../modules/preferences.mjs.js";
+import { readTestFile } from "../helpers/testUtils.mjs.js";
 import sinon from "../helpers/sinonUtils.mjs.js";
 
 /**
@@ -39,32 +41,47 @@ function createFakeMessageHeader() {
 	};
 }
 
+/**
+ * @param {string} file - path to file relative to test data directory
+ * @returns {Promise<browser.messageDisplay.MessageHeader>}
+ */
+async function createMessageHeader(file) {
+	const fakeMessageHeader = createFakeMessageHeader();
+	const msgPlain = await readTestFile(file);
+	const msgParsed = MsgParser.parseMsg(msgPlain);
+	fakeMessageHeader.author = (msgParsed.headers.get("from") ?? [])[0];
+	fakeMessageHeader.recipients = msgParsed.headers.get("to") ?? [];
+	fakeMessageHeader.subject = (msgParsed.headers.get("subject") ?? [])[0];
+	browser.messages = {
+		getRaw: sinon.fake.resolves(msgPlain),
+		getFull: sinon.fake.throws("no fake for browser.messages.messages"),
+	};
+	return fakeMessageHeader;
+}
+
 describe("AuthVerifier [unittest]", function () {
+	const authVerifier = new AuthVerifier();
+
+	before(async function () {
+		if (!hasWebExtensions) {
+			// eslint-disable-next-line no-invalid-this
+			this.skip();
+		}
+		await prefs.init();
+		await prefs.clear();
+	});
 
 	describe("saving of results", function () {
-		const authVerifier = new AuthVerifier();
-		/** type {VerifierModule.dkimResultV1|AuthResultV2|SavedAuthResultV3} */
 		/** @type {import("../../modules/dkim/verifier.mjs.js").dkimResultV1|import("../../modules/AuthVerifier.mjs.js").AuthResultV2|import("../../modules/AuthVerifier.mjs.js").SavedAuthResultV3} */
 		let storedData;
 
 		before(async function () {
-			if (!hasWebExtensions) {
-				// eslint-disable-next-line no-invalid-this
-				this.skip();
-			}
-			await prefs.init();
-			await prefs.clear();
-			prefs.setValue("saveResult", true);
+			await prefs.setValue("saveResult", true);
 
 			browser.storageMessage = {
-				// get: sinon.fake.resolves(JSON.stringify(storedData)),
 				get: sinon.stub().callsFake(() => JSON.stringify(storedData)),
-				set: sinon.fake.throws(""),
+				set: sinon.fake.throws("no fake for browser.storageMessage.set"),
 			};
-		});
-
-		beforeEach(async function () {
-			// await prefs.clear();
 		});
 
 		it("loading dkimResultV1", async function () {
@@ -168,6 +185,23 @@ describe("AuthVerifier [unittest]", function () {
 			expect(res.dkim[0].result_str).to.be.equal("Invalid (Signature has an unsupported version)");
 
 			expect(res.dmarc && res.dmarc[0].result).to.be.equal("pass");
+		});
+	});
+	describe("default sign rules", function () {
+		beforeEach(async function () {
+			await prefs.clear();
+		});
+
+		it("unsigned PayPal message", async function () {
+			const fakePayPalMessage = await createMessageHeader("fakePayPal.eml");
+			let res = await authVerifier.verify(fakePayPalMessage);
+			expect(res.dkim[0].result).to.be.equal("none");
+
+			await prefs.setValue("policy.signRules.enable", true);
+
+			res = await authVerifier.verify(fakePayPalMessage);
+			expect(res.dkim[0].result).to.be.equal("PERMFAIL");
+			expect(res.dkim[0].result_str).to.be.equal("Invalid (Should be signed by paypal.com)");
 		});
 	});
 });

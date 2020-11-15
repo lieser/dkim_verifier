@@ -514,5 +514,121 @@
 	},
 	"options_acc.boolean.value.2": {
 		"message": "No"
+	},
+	// ==================== Actions ====================
+	"dkim_verifier.reverifyDKIMSignature": {
+		"message": "Ri-verifica firma DKIM"
+	},
+	"dkim_verifier.policyAddUserException": {
+		"message": "Aggiungi eccezione firma richiesta"
+	},
+	"dkim_verifier.markKeyAsSecure": {
+		"message": "Contrassegna firma DKIM come sicura"
+	},
+	"dkim_verifier.updateKey": {
+		"message": "Aggiorna chiave DKIM"
+	},
+	// ==================== Table Views ====================
+	"treeviewKeys.treecol.SDID": {
+		"message": "SDID"
+	},
+	"treeviewKeys.treecol.selector": {
+		"message": "Selettore"
+	},
+	"treeviewKeys.treecol.key": {
+		"message": "Chiave DKIM"
+	},
+	"treeviewKeys.treecol.insertedAt": {
+		"message": "Inserita"
+	},
+	"treeviewKeys.treecol.lastUsedAt": {
+		"message": "Ultimo utilizzo"
+	},
+	"treeviewKeys.treecol.secure": {
+		"message": "DNSSEC"
+	},
+	"treeviewKeys.deleteSelectedRows": {
+		"message": "Rimuovi chiavi selezionate"
+	},
+	"treeviewSigners.treecol.domain": {
+		"message": "Dominio"
+	},
+	"treeviewSigners.treecol.listId": {
+		"message": "Id lista"
+	},
+	"treeviewSigners.treecol.addr": {
+		"message": "Mittente"
+	},
+	"treeviewSigners.treecol.sdid": {
+		"message": "SDID"
+	},
+	"treeviewSigners.treecol.ruletype": {
+		"message": "Tipo regola"
+	},
+	"treeviewSigners.treecol.priority": {
+		"message": "Priorità"
+	},
+	"treeviewSigners.treecol.enabled": {
+		"message": "Abilitata"
+	},
+	"treeviewSigners.addSignersRule": {
+		"message": "Aggiungi regola"
+	},
+	"treeviewSigners.deleteSelectedRows": {
+		"message": "Rimuovi regole selezionate"
+	},
+	"addSignersRule.title": {
+		"message": "Aggiungi regole firmatari"
+	},
+	"signRules.ruletype.SIGNED": {
+		"message": "Deve essere firmata (1)"
+	},
+	"signRules.ruletype.NEUTRAL": {
+		"message": "Può essere firmata (2)"
+	},
+	"signRules.ruletype.HIDEFAIL": {
+		"message": "Ignora firme non valide (3)"
+	},
+	"signRules.priorityMode.auto": {
+		"message": "Selezione automatica priorità"
+	},
+	"signRules.priorityMode.manual": {
+		"message": "Imposta priorità a"
+	},
+	"button.help": {
+		"message": "Aiuto"
+	},
+	"signersRuleHelp.title": {
+		"message": "Aiuto sulle regole dei firmatari"
+	},
+	"domain.description": {
+		"message": "verrà confrontato con il dominio base dell’indirizzo del mittente. Ad esempio il dominio base di “email.example.co.uk” è example.co.uk”."
+	},
+	"listId.description": {
+		"message": "verrà confrontato con l’id della lista, se l’email è stata ricevuta tramite una mailing list. Nota che solo la parte tra “<” e “>” dell’intestazione List-Id è l’id della lista effettivo. I confronti con il dominio e l’id della lista sono alternativi."
+	},
+	"addr.description": {
+		"message": "verrà confrontato con l’indirizzo del mittente. Usare “*” per indicare zero o più caratteri."
+	},
+	"sdid.description": {
+		"message": "Il dominio che dovrebbe firmare le email. Lasciare vuoto per permettere qualsiasi SDID. È possibile indicare più di un dominio utilizzando lo spazio come separatore."
+	},
+	"ruletype.description": {
+		"message": "Il tipo di regola."
+	},
+	"ruletype.1.description": {
+		"message": "L’email dovrebbe essere firmata dal SDID specificato."
+	},
+	"ruletype.2.description": {
+		"message": "Non è necessario che l’email sia firmata. Se è firmata deve esserlo con il SDID specificato."
+	},
+	"ruletype.3.description": {
+		"message": "Non è necessario che l’email sia firmata. Se è firmata deve esserlo con il SDID specificato. Se l’email ha una firma non valida viene considerata come non firmata."
+	},
+	"priority.description": {
+		"message": "La priorità della regola. Nel caso vi siano più regole applicabili verrà utilizzata quella con la priorità più alta."
+	},
+	"enabled.description": {
+		"message": "1 se la regola è abilitata, 0 se è disabilitata."
 	}
 }

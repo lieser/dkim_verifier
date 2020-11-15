@@ -14,18 +14,16 @@
 
 /**
  * Deferred Promise
- * @class
+ *
  * @template T
- * @property {Promise<T>} promise
- * @property {Function} resolve
- *           Function to call to resolve promise
- * @property {Function} reject
- *           Function to call to reject promise
  */
-class Deferred {
+export class Deferred {
 	constructor() {
+		/** @type {Promise<T>} */
 		this.promise = new Promise((resolve, reject) => {
+			/** @type {(reason: T) => void} */
 			this.resolve = resolve;
+			/** @type {(reason: Error) => void} */
 			this.reject = reject;
 		});
 	}
@@ -60,6 +58,17 @@ export function addrIsInDomain2(addr, domain) {
 }
 
 /**
+ * Deep copy an object. Only works with basic types.
+ *
+ * @template T
+ * @param {T} src
+ * @return {T}
+ */
+export function copy(src) {
+	return JSON.parse(JSON.stringify(src));
+}
+
+/**
  * Returns true if domain1 is the same or a subdomain of domain2.
  *
  * @param {string} domain1
@@ -70,37 +79,6 @@ export function addrIsInDomain2(addr, domain) {
 export function domainIsInDomain(domain1, domain2) {
 	return stringEqual(domain1, domain2) ||
 		stringEndsWith(domain1, `.${domain2}`);
-}
-
-/**
- * Returns the base domain for an e-mail address; that is, the public suffix
- * with a given number of additional domain name parts.
- *
- * @param {string} addr
- * @param {number} [aAdditionalParts=0]
- *
- * @return {string}
- */
-function getBaseDomainFromAddr(addr, aAdditionalParts=0) {
-	// var fullDomain = addr.substr(addr.lastIndexOf("@")+1);
-	var nsiURI = Services.io.newURI(`http://${addr}`, null, null);
-	var res;
-	try {
-		res = eTLDService.getBaseDomain(nsiURI, aAdditionalParts);
-	} catch (e) {
-		// domains like "blogspot.co.uk", "blogspot.com", "googlecode.com"
-		// are on the public suffix list, but should be valid base domains
-		// because e-mails may be send from them
-		if (e.result === Cr.NS_ERROR_INSUFFICIENT_DOMAIN_LEVELS && aAdditionalParts === 0) {
-			// add "invalid" subdomain to avoid error
-			let invalidSub = "invalid.";
-			var host = invalidSub + nsiURI.asciiHost;
-			res = eTLDService.getBaseDomainFromHost(host, 0);
-			// remove "invalid" subdomain from result
-			res = res.substr(invalidSub.length);
-		}
-	}
-	return res;
 }
 
 /**

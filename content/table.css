@@ -1,0 +1,37 @@
+table {
+	border-collapse: collapse;
+	margin: 20px;
+}
+
+th {
+	text-align: left;
+}
+
+th, td {
+	border-inline: 1px solid var(--in-content-box-border-color);
+	padding: 3px 4px;
+}
+
+tr:nth-child(even) {
+	background-color: var(--in-content-box-background-odd);
+}
+
+tr:hover {
+	background-color: var(--in-content-item-hover);
+}
+
+tr[selected] {
+	background-color: var(--in-content-item-selected)
+}
+
+.body {
+	padding-bottom: 40px;
+}
+
+.footer {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background-color: var(--in-content-box-info-background);
+}

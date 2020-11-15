@@ -13,29 +13,24 @@
 /* eslint-env browser, webextensions */
 
 import { DKIM_InternalError, DKIM_SigError } from "../modules/error.mjs.js";
+import { migratePrefs, migrateSignRulesUser } from "../modules/migration.mjs.js";
 import AuthVerifier from "../modules/AuthVerifier.mjs.js";
 import DNS from "../modules/dns.mjs.js";
 import Logging from "../modules/logging.mjs.js";
-import { migratePrefs } from "../modules/migration.mjs.js";
+import { initSignRulesProxy } from "../modules/dkim/signRules.mjs.js";
 import prefs from "../modules/preferences.mjs.js";
 import { setKeyFetchFunction } from "../modules/dkim/verifier.mjs.js";
 
 const log = Logging.getLogger("background");
 
 async function init() {
-	await prefs.init();
-
-	if (prefs.debug) {
-		/** @type {number|undefined} */
-		// @ts-ignore
-		let logLevel = Logging.Level[prefs["logging.console"]];
-		if (!logLevel) {
-			logLevel = Logging.Level.Debug;
-		}
-		Logging.setLogLevel(logLevel);
-	}
+	await Logging.initLogLevelFromPrefs();
 
 	await migratePrefs();
+	await prefs.init();
+
+	await migrateSignRulesUser();
+	initSignRulesProxy();
 }
 const isInitialized = init();
 isInitialized.catch(error => log.fatal("Initializing failed with:", error));

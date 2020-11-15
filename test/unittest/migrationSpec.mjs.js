@@ -11,16 +11,15 @@
 ///<reference path="../../WebExtensions.d.ts" />
 /* eslint-env webextensions */
 
+import { migratePrefs, migrateSignRulesUser } from "../../modules/migration.mjs.js";
+import SignRules from "../../modules/dkim/signRules.mjs.js";
 import expect from "../helpers/chaiUtils.mjs.js";
 import { hasWebExtensions } from "../helpers/initWebExtensions.mjs.js";
-import { migratePrefs } from "../../modules/migration.mjs.js";
 import prefs from "../../modules/preferences.mjs.js";
 import sinon from "../helpers/sinonUtils.mjs.js";
 
 describe("migration [unittest]", function () {
-
 	describe("migration of preferences", function () {
-
 		before(function () {
 			if (!hasWebExtensions) {
 				// eslint-disable-next-line no-invalid-this
@@ -54,6 +53,7 @@ describe("migration [unittest]", function () {
 						"dkim.enable": 1,
 					},
 				}),
+				getSignRulesUser: sinon.fake.rejects("not available"),
 			};
 			await migratePrefs();
 			expect(prefs["arh.read"]).to.be.equal(true);
@@ -93,6 +93,7 @@ describe("migration [unittest]", function () {
 						"dkim.enable": 2,
 					},
 				}),
+				getSignRulesUser: sinon.fake.rejects("not available"),
 			};
 			await migratePrefs();
 			expect(prefs["arh.read"]).to.be.equal(true);
@@ -116,11 +117,89 @@ describe("migration [unittest]", function () {
 						"arh.allowedAuthserv": "foo.com",
 					},
 				}),
+				getSignRulesUser: sinon.fake.rejects("not available"),
 			};
 			await prefs.setValue("dkim.enable", true);
 			await migratePrefs();
 			expect(prefs["arh.read"]).to.be.equal(false);
 			expect(prefs["account.arh.allowedAuthserv"]("account1")).to.be.equal("");
+		});
+		it("don't skip migration if only sign rules exist", async function () {
+			browser.migration = {
+				getUserPrefs: sinon.fake.resolves({
+					"arh.read": true,
+				}),
+				getAccountPrefs: sinon.fake.resolves({
+					account1: {
+						"arh.allowedAuthserv": "foo.com",
+					},
+				}),
+				getSignRulesUser: sinon.fake.rejects("not available"),
+			};
+			await SignRules.addException("foo@bar.com");
+			await migratePrefs();
+			expect(prefs["arh.read"]).to.be.equal(true);
+			expect(prefs["account.arh.allowedAuthserv"]("account1")).to.be.equal("foo.com");
+		});
+	});
+
+	describe("migration of sign rules", function () {
+		before(function () {
+			if (!hasWebExtensions) {
+				// eslint-disable-next-line no-invalid-this
+				this.skip();
+			}
+		});
+
+		beforeEach(async function () {
+			await SignRules.clearRules();
+
+			browser.migration = {
+				getUserPrefs: sinon.fake.rejects("not available"),
+				getAccountPrefs: sinon.fake.rejects("not available"),
+				getSignRulesUser: sinon.fake.resolves({
+					maxId: 1,
+					rules: [
+						{
+							id: 1,
+							domain: "foo.com",
+							listId: "",
+							addr: "*",
+							sdid: "foo.com",
+							type: SignRules.TYPE.ALL,
+							priority: SignRules.PRIORITY.USERINSERT_RULE_ALL,
+							enabled: true,
+						},
+					],
+				}),
+			};
+		});
+
+		const dkimNone = {
+			version: "1.1",
+			result: "none",
+			warnings: []
+		};
+
+		it("normal migration", async function () {
+			await migrateSignRulesUser();
+
+			const res = await SignRules.check(dkimNone, "bar@foo.com");
+			expect(res.result).is.equal("PERMFAIL");
+		});
+		it("skip migration if sign rules already exist", async function () {
+			await SignRules.addRule("bar.com", null, "*", "bar.com", SignRules.TYPE.ALL);
+			await migrateSignRulesUser();
+
+			const res = await SignRules.check(dkimNone, "bar@foo.com");
+			expect(res.result).is.equal("none");
+		});
+		it("don't skip migration if only preferences exist", async function () {
+			await prefs.setValue("dkim.enable", true);
+			await migrateSignRulesUser();
+
+			const res = await SignRules.check(dkimNone, "bar@foo.com");
+			expect(res.result).is.equal("PERMFAIL");
 		});
 	});
 });

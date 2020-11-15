@@ -15,6 +15,13 @@
 				"description": "Get the prefs set by the user for a specific account",
 				"async": true,
 				"parameters": []
+			},
+			{
+				"name": "getSignRulesUser",
+				"type": "function",
+				"description": "Get users sign rules",
+				"async": true,
+				"parameters": []
 			}
 		]
 	}

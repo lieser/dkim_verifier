@@ -14,6 +14,34 @@
 /* eslint-env browser, webextensions */
 
 /**
+ * Create popup window, or raise it if already open.
+ *
+ * @param {string} url
+ * @param {string} title
+ * @param {number} [height]
+ * @param {number} [width]
+ * @return {Promise<browser.windows.Window>}
+ */
+async function createOrRaisePopup(url, title, height = undefined, width = undefined) {
+	const popupWindows = await browser.windows.getAll({
+		populate: true,
+		windowTypes: ["popup"],
+	});
+	const popupWindow = popupWindows.find(popup => popup.title === `${title} - Mozilla Thunderbird`);
+	if (popupWindow?.id !== undefined) {
+		await browser.windows.update(popupWindow.id, { focused: true });
+		return popupWindow;
+	}
+	return browser.windows.create({
+		url: url,
+		type: "popup",
+		allowScriptsToClose: true,
+		height: height,
+		width: width,
+	});
+}
+
+/**
  * Reads a file included in the extension as a string.
  *
  * @param {string} path - path inside the extension of the file to read
@@ -28,6 +56,7 @@ async function readFile(path) {
 }
 
 const ExtensionUtils = {
+	createOrRaisePopup: createOrRaisePopup,
 	readFile: readFile,
 };
 export default ExtensionUtils;

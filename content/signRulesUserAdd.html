@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset='utf-8'>
+  <title data-i18n="addSignersRule.title"></title>
+
+  <link rel='stylesheet' type='text/css' href="chrome://global/skin/in-content/common.css">
+
+  <link rel='stylesheet' type='text/css' href="./signRulesUserAdd.css">
+
+  <script type="module" src="./translation.mjs.js"></script>
+  <script type="module" src="./signRulesUserAdd.mjs.js"></script>
+</head>
+
+<body>
+  <div>
+    <div>
+      <label for="domain" data-i18n="treeviewSigners.treecol.domain"></label>
+      <input id="domain" type="text" style="width: 70%">
+    </div>
+    <div>
+      <label for="listId" data-i18n="treeviewSigners.treecol.listId"></label>
+      <input id="listId" type="text" style="width: 70%">
+    </div>
+    <div>
+      <label for="addr" data-i18n="treeviewSigners.treecol.addr"></label>
+      <input id="addr" type="text" style="width: 70%">
+    </div>
+    <div>
+      <label for="sdid" data-i18n="treeviewSigners.treecol.sdid"></label>
+      <input id="sdid" type="text" style="width: 70%">
+    </div>
+    <div>
+      <label data-i18n="treeviewSigners.treecol.ruletype"></label>
+      <select id="ruletype">
+        <option data-i18n="signRules.ruletype.SIGNED" value="1"></option>
+        <option data-i18n="signRules.ruletype.NEUTRAL" value="2"></option>
+        <option data-i18n="signRules.ruletype.HIDEFAIL" value="3"></option>
+      </select>
+    </div>
+    <div>
+      <div>
+        <input id="priorityModeAuto" type="radio" name="priorityMode" value="1" checked="checked">
+        <label for="priorityModeAuto" data-i18n="signRules.priorityMode.auto"></label>
+      </div>
+      <div>
+        <input id="priorityModeManual" type="radio" name="priorityMode" value="2">
+        <label for="priorityModeManual" data-i18n="signRules.priorityMode.manual"></label>
+        <input id="priority" type="text">
+      </div>
+    </div>
+    <div>
+      <label class="checkbox" data-i18n="treeviewSigners.treecol.enabled">
+        <input id="enabled" type="checkbox" checked>
+      </label>
+    </div>
+  </div>
+  <div>
+    <button id="accept" data-i18n="treeviewSigners.addSignersRule"></button>
+    <button id="cancel" data-i18n="button.cancel"></button>
+  </div>
+</body>
+
+</html>

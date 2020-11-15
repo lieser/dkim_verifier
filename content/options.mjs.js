@@ -11,6 +11,7 @@
 ///<reference path="../WebExtensions.d.ts" />
 /* eslint-env browser, webextensions */
 
+import ExtensionUtils from "../modules/extensionUtils.mjs.js";
 import Logging from "../modules/logging.mjs.js";
 import prefs from "../modules/preferences.mjs.js";
 
@@ -396,10 +397,40 @@ async function initAccount() {
 	items[0].click();
 }
 
+/**
+ * Set click handlers for buttons.
+ *
+ * @returns {void}
+ */
+function initButtons() {
+	const signRulesDefaultsView = document.getElementById("signRulesDefaultsView");
+	if (!signRulesDefaultsView) {
+		throw new Error("element signRulesDefaultsView not found");
+	}
+	signRulesDefaultsView.addEventListener("click", () => {
+		ExtensionUtils.createOrRaisePopup(
+			"./signRulesDefaultsView.html",
+			browser.i18n.getMessage("options_viewSignerDefaults"),
+		);
+	});
+
+	const signRulesUserView = document.getElementById("signRulesUserView");
+	if (!signRulesUserView) {
+		throw new Error("element signRulesUserView not found");
+	}
+	signRulesUserView.addEventListener("click", () => {
+		ExtensionUtils.createOrRaisePopup(
+			"./signRulesUserView.html",
+			browser.i18n.getMessage("options_viewSigners"),
+		);
+	});
+}
+
 document.addEventListener("DOMContentLoaded", () => {
 	initNavigation();
 	initPreferences().
 		catch(e => log.fatal("Unexpected error in initPreferences():", e));
 	initAccount().
 		catch(e => log.fatal("Unexpected error in initAccount():", e));
+	initButtons();
 });

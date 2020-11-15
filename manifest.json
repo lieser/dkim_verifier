@@ -2,10 +2,10 @@
 	"manifest_version": 2,
 	"name": "DKIM Verifier",
 	"description": "Verifies the DKIM-Signature of an e-mail.",
-	"version": "4.0.0pre1",
+	"version": "4.0.0pre3",
 	"author": "Philippe Lieser",
 	"homepage_url": "https://github.com/lieser/dkim_verifier/wiki",
-	"default_locale": "en-US",
+	"default_locale": "en_US",
 	"applications": {
 		"gecko": {
 			"id": "dkim_verifier@pl",
@@ -15,7 +15,8 @@
 	"permissions": [
 		"accountsRead",
 		"messagesRead",
-		"storage"
+		"storage",
+		"tabs"
 	],
 	"background": {
 		"page": "content/background.html"
@@ -69,6 +70,20 @@
 					]
 				],
 				"script": "experiments/libunbound.js"
+			}
+		},
+		"mailUtils": {
+			"schema": "experiments/mailUtils-schema.json",
+			"parent": {
+				"scopes": [
+					"addon_parent"
+				],
+				"paths": [
+					[
+						"mailUtils"
+					]
+				],
+				"script": "experiments/mailUtils.js"
 			}
 		},
 		"migration": {

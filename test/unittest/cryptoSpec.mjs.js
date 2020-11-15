@@ -30,6 +30,11 @@ describe("crypto [unittest]", function () {
 				await DkimCrypto.digest("sha256", "\r\n")
 			).to.be.equal("frcCV1k9oG9oKj3dpUqdJg1PxRT2RSN/XKdLCPjaYaY=");
 		});
+		it("8-bit", async function () {
+			expect(
+				await DkimCrypto.digest("sha256", "a test ð\u009f\u008d\u0095\r\n")
+			).to.be.equal("bYcDq5OnCARcoHQv2Qhc9Jw8ZYXgw75R/Ku1CCT8qNA=");
+		});
 	});
 	describe("verify RSA signature", function () {
 		// RFC 6376 Appendix A Example

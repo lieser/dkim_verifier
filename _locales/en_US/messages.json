@@ -519,5 +519,124 @@
 	},
 	"options_acc.boolean.value.2": {
 		"message": "No"
+	},
+	// ==================== Actions ====================
+	"dkim_verifier.reverifyDKIMSignature": {
+		"message": "Reverify DKIM Signature"
+	},
+	"dkim_verifier.policyAddUserException": {
+		"message": "Add must be signed exception"
+	},
+	"dkim_verifier.markKeyAsSecure": {
+		"message": "Mark DKIM key as secure"
+	},
+	"dkim_verifier.updateKey": {
+		"message": "Update DKIM key"
+	},
+	// ==================== Table Views ====================
+	"treeviewKeys.treecol.SDID": {
+		"message": "SDID"
+	},
+	"treeviewKeys.treecol.selector": {
+		"message": "Selector"
+	},
+	"treeviewKeys.treecol.key": {
+		"message": "DKIM key"
+	},
+	"treeviewKeys.treecol.insertedAt": {
+		"message": "Inserted"
+	},
+	"treeviewKeys.treecol.lastUsedAt": {
+		"message": "Last used"
+	},
+	"treeviewKeys.treecol.secure": {
+		"message": "DNSSEC"
+	},
+	"treeviewKeys.deleteSelectedRows": {
+		"message": "Delete selected keys"
+	},
+	"treeviewSigners.treecol.domain": {
+		"message": "Domain"
+	},
+	"treeviewSigners.treecol.listId": {
+		"message": "List-Id"
+	},
+	"treeviewSigners.treecol.addr": {
+		"message": "From"
+	},
+	"treeviewSigners.treecol.sdid": {
+		"message": "SDID"
+	},
+	"treeviewSigners.treecol.ruletype": {
+		"message": "Rule type"
+	},
+	"treeviewSigners.treecol.priority": {
+		"message": "Priority"
+	},
+	"treeviewSigners.treecol.enabled": {
+		"message": "Enabled"
+	},
+	"treeviewSigners.addSignersRule": {
+		"message": "Add rule"
+	},
+	"treeviewSigners.deleteSelectedRows": {
+		"message": "Delete selected rules"
+	},
+	"addSignersRule.title": {
+		"message": "Add signers rule"
+	},
+	"signRules.ruletype.SIGNED": {
+		"message": "Must be signed (1)"
+	},
+	"signRules.ruletype.NEUTRAL": {
+		"message": "Can be signed (2)"
+	},
+	"signRules.ruletype.HIDEFAIL": {
+		"message": "Ignore invalid signature (3)"
+	},
+	"signRules.priorityMode.auto": {
+		"message": "Automatically select priority"
+	},
+	"signRules.priorityMode.manual": {
+		"message": "Set priority to"
+	},
+	"button.cancel": {
+		"message": "Cancel"
+	},
+	"button.help": {
+		"message": "Help"
+	},
+	"signersRuleHelp.title": {
+		"message": "Signers rules help"
+	},
+	"domain.description": {
+		"message": "Will be matched against the base domain of the From address. For example, the base domain for 'email.example.co.uk' is 'example.co.uk'."
+	},
+	"listId.description": {
+		"message": "Will be matched against the list-id, if the e-mail was received through an e-mail list. Note that only the part between '<' and '>' of the List-Id header is the actual list-id. Only either the domain or the list-id is matched at the same time."
+	},
+	"addr.description": {
+		"message": "Will be matched against the From address. Use an '*' to match zero or more characters."
+	},
+	"sdid.description": {
+		"message": "The domain by which the e-mails should be signed. If this is left empty, every SDID is allowed. More than one domain can be specified by separating them with a space."
+	},
+	"ruletype.description": {
+		"message": "The type of the rule."
+	},
+	"ruletype.1.description": {
+		"message": "E-mail must be signed by the specified SDID."
+	},
+	"ruletype.2.description": {
+		"message": "E-mail doesn't have to be signed. If it is signed, it must be by the specified SDID."
+	},
+	"ruletype.3.description": {
+		"message": "E-mail doesn't have to be signed. If it is signed, it must be by the specified SDID. If the e-mail has an invalid signature, it is treated as having no signature."
+	},
+	"priority.description": {
+		"message": "The priority of the rule. If more than one rule matches, the one with the highest priority is used."
+	},
+	"enabled.description": {
+		"message": "1 if the rule is enabled, 0 if it is disabled."
 	}
 }

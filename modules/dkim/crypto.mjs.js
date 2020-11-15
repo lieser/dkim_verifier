@@ -28,7 +28,7 @@ class DkimCryptoI {
 	 *
 	 * @static
 	 * @param {string} algorithm - sha1 / sha256
-	 * @param {string} message
+	 * @param {string} message - binary string
 	 * @returns {Promise<string>} b64 encoded hash
 	 * @memberof DkimCryptoI
 	 */
@@ -40,15 +40,15 @@ class DkimCryptoI {
 	 * Verify an RSA signature.
 	 *
 	 * @static
-	 * @param {String} key - b64 encoded RSA key in ASN.1 DER format
+	 * @param {string} key - b64 encoded RSA key in ASN.1 DER format
 	 * @param {string} digestAlgorithm - sha1 / sha256
-	 * @param {String} signature - b64 encoded signature
-	 * @param {String} str
+	 * @param {string} signature - b64 encoded signature
+	 * @param {string} data - data whose signature is to be verified (binary string)
 	 * @return {Promise<[Boolean, number]>} - valid, key length
 	 * @throws DKIM_SigError
 	 * @memberof DkimCryptoI
 	 */
-	static verifyRSA(key, digestAlgorithm, signature, str) { // eslint-disable-line no-unused-vars
+	static verifyRSA(key, digestAlgorithm, signature, data) { // eslint-disable-line no-unused-vars
 		throw new Error("Not implemented");
 	}
 }
@@ -96,13 +96,13 @@ class DkimCryptoWeb extends DkimCryptoI {
 	 *
 	 * @static
 	 * @param {string} algorithm - sha1 / sha256
-	 * @param {string} message
+	 * @param {string} message - binary string
 	 * @returns {Promise<string>} b64 encoded hash
 	 * @memberof DkimCryptoI
 	 */
 	static async digest(algorithm, message) {
 		const digestName = getWebDigestName(algorithm);
-		const data = new TextEncoder().encode(message);
+		const data = strToArrayBuffer(message);
 		const digest = await crypto.subtle.digest(digestName, data);
 		const digestArray = new Uint8Array(digest);
 		const digestB64 = btoa(String.fromCharCode(...digestArray));
@@ -113,10 +113,10 @@ class DkimCryptoWeb extends DkimCryptoI {
 	 * Verify an RSA signature.
 	 *
 	 * @static
-	 * @param {String} key - b64 encoded RSA key in ASN.1 DER encoded SubjectPublicKeyInfo
+	 * @param {string} key - b64 encoded RSA key in ASN.1 DER encoded SubjectPublicKeyInfo
 	 * @param {string} digestAlgorithm - sha1 / sha256
-	 * @param {String} signature - b64 encoded signature
-	 * @param {String} data - data whose signature is to be verified
+	 * @param {string} signature - b64 encoded signature
+	 * @param {string} data - data whose signature is to be verified (binary string)
 	 * @return {Promise<[Boolean, number]>} - valid, key length
 	 * @throws DKIM_SigError
 	 * @memberof DkimCryptoI
@@ -160,14 +160,14 @@ class DkimCryptoNode extends DkimCryptoI {
 	 *
 	 * @static
 	 * @param {string} algorithm - sha1 / sha256
-	 * @param {string} message
+	 * @param {string} message - binary string
 	 * @returns {Promise<string>} b64 encoded hash
 	 * @memberof DkimCryptoI
 	 */
 	static async digest(algorithm, message) {
 		const crypto = await import("crypto");
 		const hash = crypto.createHash(algorithm);
-		hash.update(message);
+		hash.update(message, "latin1");
 		return hash.digest("base64");
 	}
 
@@ -175,10 +175,10 @@ class DkimCryptoNode extends DkimCryptoI {
 	 * Verify an RSA signature.
 	 *
 	 * @static
-	 * @param {String} key - b64 encoded RSA key in ASN.1 DER encoded SubjectPublicKeyInfo
+	 * @param {string} key - b64 encoded RSA key in ASN.1 DER encoded SubjectPublicKeyInfo
 	 * @param {string} digestAlgorithm - sha1 / sha256
-	 * @param {String} signature - b64 encoded signature
-	 * @param {String} data - data whose signature is to be verified
+	 * @param {string} signature - b64 encoded signature
+	 * @param {string} data - data whose signature is to be verified (binary string)
 	 * @return {Promise<[Boolean, number]>} - valid, key length
 	 * @throws DKIM_SigError
 	 * @memberof DkimCryptoI
@@ -200,7 +200,7 @@ class DkimCryptoNode extends DkimCryptoI {
 		cryptoKey.padding = crypto.constants.RSA_PKCS1_PADDING;
 		const valid = crypto.verify(
 			digestAlgorithm,
-			Buffer.from(data, "ascii"),
+			Buffer.from(data, "latin1"),
 			cryptoKey,
 			Buffer.from(signature, "base64")
 		);

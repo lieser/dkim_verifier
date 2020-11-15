@@ -514,5 +514,121 @@
 	},
 	"options_acc.boolean.value.2": {
 		"message": "Non"
+	},
+	// ==================== Actions ====================
+	"dkim_verifier.reverifyDKIMSignature": {
+		"message": "Revérifier la signature DKIM"
+	},
+	"dkim_verifier.policyAddUserException": {
+		"message": "Ajouter une exception doit être signé"
+	},
+	"dkim_verifier.markKeyAsSecure": {
+		"message": "Marquer la clé DKIM comme sécurisée"
+	},
+	"dkim_verifier.updateKey": {
+		"message": "Mise à jour de la clé DKIM"
+	},
+	// ==================== Table Views ====================
+	"treeviewKeys.treecol.SDID": {
+		"message": "SDID"
+	},
+	"treeviewKeys.treecol.selector": {
+		"message": "Sélecteur"
+	},
+	"treeviewKeys.treecol.key": {
+		"message": "Clé DKIM"
+	},
+	"treeviewKeys.treecol.insertedAt": {
+		"message": "Inséré"
+	},
+	"treeviewKeys.treecol.lastUsedAt": {
+		"message": "Dernière utilisation"
+	},
+	"treeviewKeys.treecol.secure": {
+		"message": "DNSSEC"
+	},
+	"treeviewKeys.deleteSelectedRows": {
+		"message": "Effacer les clés sélectionnées"
+	},
+	"treeviewSigners.treecol.domain": {
+		"message": "Domaine"
+	},
+	"treeviewSigners.treecol.listId": {
+		"message": "List-Id"
+	},
+	"treeviewSigners.treecol.addr": {
+		"message": "De"
+	},
+	"treeviewSigners.treecol.sdid": {
+		"message": "SDID"
+	},
+	"treeviewSigners.treecol.ruletype": {
+		"message": "Type de règle"
+	},
+	"treeviewSigners.treecol.priority": {
+		"message": "Priorité"
+	},
+	"treeviewSigners.treecol.enabled": {
+		"message": "Activer"
+	},
+	"treeviewSigners.addSignersRule": {
+		"message": "Ajouter une règle"
+	},
+	"treeviewSigners.deleteSelectedRows": {
+		"message": "Effacer les règles sélectionnées"
+	},
+	"addSignersRule.title": {
+		"message": "Ajouter une règle de signataire"
+	},
+	"signRules.ruletype.SIGNED": {
+		"message": "Doit être signé (1)"
+	},
+	"signRules.ruletype.NEUTRAL": {
+		"message": "Peut être signé (2)"
+	},
+	"signRules.ruletype.HIDEFAIL": {
+		"message": "Ignorer les signatures non valides (3)"
+	},
+	"signRules.priorityMode.auto": {
+		"message": "Sélectionner automatiquement la priorité"
+	},
+	"signRules.priorityMode.manual": {
+		"message": "Mettre la priorité à"
+	},
+	"button.help": {
+		"message": "Aide"
+	},
+	"signersRuleHelp.title": {
+		"message": "Aide sur les règles signataires"
+	},
+	"domain.description": {
+		"message": "Devra correspondre au domaine de base de l’adresse de l’expéditeur. Par exemple, le domaine de base pour ’courriel.example.com’ est example.com’."
+	},
+	"listId.description": {
+		"message": "Devra correspondre au list-id, si le courriel est reçu au travers d’une liste de diffusion. Noter que c’est seulement la partie entre ’<’ et ’>’ du « List-Id » de l’en-tête qui est le « List-Id » actuel. Soit seulement le domaine ou le « List-Id » qui correspond au même moment."
+	},
+	"addr.description": {
+		"message": "Devra correspondre par rapport à l’adresse de l’expéditeur. Utiliser ’*’ pour définir zéro ou plusieurs caractères."
+	},
+	"sdid.description": {
+		"message": "Le domaine par lequel les courriels seront signés. S’il est laissé vide, tous les SDID seront autorisés. Plusieurs domaines peuvent être spécifié en les séparant avec un espace."
+	},
+	"ruletype.description": {
+		"message": "Le type de la règle."
+	},
+	"ruletype.1.description": {
+		"message": "Le courriel doit être spécifié par le SDID spécifié."
+	},
+	"ruletype.2.description": {
+		"message": "Le courriel n’a pas besoin d’être signé, si il l’est, cela doit être spécifié par le SDID."
+	},
+	"ruletype.3.description": {
+		"message": "Le courriel n’a pas besoin d’être signé. Si il est signé, il doit être spécifié oar le SDID. Si le mail a une signature non valide, il sera traité comme n’ayant pas de signature."
+	},
+	"priority.description": {
+		"message": "La priorité de la règles, si plus d’une règle correspond, celle qui aura la plus grande priorité sera utilisée."
+	},
+	"enabled.description": {
+		"message": "1 si la règle est activée, 0 si elle est désactivée."
 	}
 }

@@ -35,7 +35,7 @@
       <label class="checkbox" data-i18n="options_dkim.enable">
         <input type="checkbox" data-pref="dkim.enable">
       </label>
-      <div>
+      <div style="opacity: 0.5;">
         <select data-pref="key.storing">
           <option data-i18n="options_key.storing.value.0" value="0"></option>
           <option data-i18n="options_key.storing.value.1" value="1"></option>
@@ -136,16 +136,12 @@
         <label class="checkbox" data-i18n="options_policy.signRules.error.wrong_sdid.asWarning">
           <input type="checkbox" data-pref="policy.signRules.error.wrong_sdid.asWarning">
         </label>
-        <label class="checkbox" data-i18n="options_policy.DMARC.shouldBeSigned.enable">
+        <label style="opacity: 0.5;" class="checkbox" data-i18n="options_policy.DMARC.shouldBeSigned.enable">
           <input type="checkbox" data-pref="policy.DMARC.shouldBeSigned.enable">
         </label>
         <div>
-          <button id="viewSigners" data-i18n="options_viewSigners"
-            oncommand="toOpenWindowByType('dkim_verifier:treeviewSigners', 'chrome://dkim_verifier/content/treeviewSigners.xul');">
-          </button>
-          <button id="viewSignerDefaults" data-i18n="options_viewSignerDefaults"
-            oncommand="toOpenWindowByType('dkim_verifier:treeviewSignersDefault', 'chrome://dkim_verifier/content/treeviewSignersDefault.xul');">
-          </button>
+          <button id="signRulesUserView" data-i18n="options_viewSigners"></button>
+          <button id="signRulesDefaultsView" data-i18n="options_viewSignerDefaults"></button>
         </div>
       </fieldset>
     </section>

@@ -15,6 +15,8 @@
 import ExtensionUtils from "../../modules/extensionUtils.mjs.js";
 import prefs from "../../modules/preferences.mjs.js";
 import { readTextFile } from "./testUtils.mjs.js";
+import sinon from "./sinonUtils.mjs.js";
+import { stringEndsWith } from "../../modules/utils.mjs.js";
 
 export let hasWebExtensions = false;
 /** @type {import("webextensions-api-fake").BrowserFake} */
@@ -34,6 +36,26 @@ function jsonParse(data) {
 		filter(line => !line.trimStart().startsWith("//")).
 		join("\n");
 	return JSON.parse(dataWithoutComments);
+}
+
+/**
+ * Returns the base domain for an e-mail address
+ *
+ * @param {string} addr
+ * @return {Promise<string>}
+ */
+function getBaseDomainFromAddr(addr) {
+	const publicSuffixList = [
+		"co.uk",
+	];
+	let numberDomainParts = 2;
+	if (publicSuffixList.some(suffix => stringEndsWith(addr, suffix))) {
+		numberDomainParts = 3;
+	}
+	const fullDomain = addr.substr(addr.lastIndexOf("@") + 1);
+	const domainParts = fullDomain.split(".");
+	const baseDomain = domainParts.slice(-numberDomainParts).join(".");
+	return Promise.resolve(baseDomain);
 }
 
 before(async function () {
@@ -63,7 +85,15 @@ before(async function () {
 		prefs.init = () => { return Promise.resolve(); };
 		prefs.clear = () => { prefs._prefs = {}; return Promise.resolve(); };
 		// Still allow adding stubs to browser namespace
-		// @ts-expect-error
-		globalThis.browser = {};
+		globalThis.browser = {
+			// @ts-expect-error
+			runtime: {},
+		};
 	}
+
+	globalThis.browser.runtime.sendMessage = sinon.fake.resolves(undefined);
+
+	globalThis.browser.mailUtils = {
+		getBaseDomainFromAddr: getBaseDomainFromAddr,
+	};
 });

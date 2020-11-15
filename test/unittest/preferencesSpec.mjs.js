@@ -286,9 +286,10 @@ describe("preferences [unittest]", function () {
 			).to.be.equal("fooBar");
 
 			// clearing prefs
-			pref.clear();
+			await pref.clear();
 			expect(fakeBrowser.storage.local.clear.calledOnce).to.be.true;
 			const storage = await browser.storage.local.get();
+			delete storage.signRulesUser;
 			expect(storage).to.deep.equal({});
 			expect(
 				pref["dns.nameserver"]

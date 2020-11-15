@@ -1,8 +1,6 @@
 ///<reference path="mozilla.d.ts" />
 ///<reference path="modules/AuthVerifier.d.ts" />
 
-let Sqlite: any;
-
 ////////////////////////////////////////////////////////////////////////////////
 //// The following is for Visual Studio Code IntelliSense only:
 //// The type detection via JSDoc fails at some places,

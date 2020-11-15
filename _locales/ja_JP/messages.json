@@ -514,5 +514,121 @@
 	},
 	"options_acc.boolean.value.2": {
 		"message": "いいえ"
+	},
+	// ==================== Actions ====================
+	"dkim_verifier.reverifyDKIMSignature": {
+		"message": "DKIM 署名を再検証"
+	},
+	"dkim_verifier.policyAddUserException": {
+		"message": "署名必須の例外を追加"
+	},
+	"dkim_verifier.markKeyAsSecure": {
+		"message": "DKIM キーをセキュアとマーク"
+	},
+	"dkim_verifier.updateKey": {
+		"message": "DKIM キーを更新"
+	},
+	// ==================== Table Views ====================
+	"treeviewKeys.treecol.SDID": {
+		"message": "SDID"
+	},
+	"treeviewKeys.treecol.selector": {
+		"message": "セレクタ"
+	},
+	"treeviewKeys.treecol.key": {
+		"message": "DKIM キー"
+	},
+	"treeviewKeys.treecol.insertedAt": {
+		"message": "登録日"
+	},
+	"treeviewKeys.treecol.lastUsedAt": {
+		"message": "最終利用日"
+	},
+	"treeviewKeys.treecol.secure": {
+		"message": "DNSSEC"
+	},
+	"treeviewKeys.deleteSelectedRows": {
+		"message": "選択したキーを削除"
+	},
+	"treeviewSigners.treecol.domain": {
+		"message": "ドメイン"
+	},
+	"treeviewSigners.treecol.listId": {
+		"message": "リスト ID"
+	},
+	"treeviewSigners.treecol.addr": {
+		"message": "差出人"
+	},
+	"treeviewSigners.treecol.sdid": {
+		"message": "SDID"
+	},
+	"treeviewSigners.treecol.ruletype": {
+		"message": "ルールタイプ"
+	},
+	"treeviewSigners.treecol.priority": {
+		"message": "優先度"
+	},
+	"treeviewSigners.treecol.enabled": {
+		"message": "有効化"
+	},
+	"treeviewSigners.addSignersRule": {
+		"message": "ルールを追加"
+	},
+	"treeviewSigners.deleteSelectedRows": {
+		"message": "選択したルールを削除"
+	},
+	"addSignersRule.title": {
+		"message": "署名者ルールを追加"
+	},
+	"signRules.ruletype.SIGNED": {
+		"message": "署名必須 (1)"
+	},
+	"signRules.ruletype.NEUTRAL": {
+		"message": "署名可能 (2)"
+	},
+	"signRules.ruletype.HIDEFAIL": {
+		"message": "無効な署名を無視 (3)"
+	},
+	"signRules.priorityMode.auto": {
+		"message": "優先度を自動選択"
+	},
+	"signRules.priorityMode.manual": {
+		"message": "優先度を手動指定"
+	},
+	"button.help": {
+		"message": "ヘルプ"
+	},
+	"signersRuleHelp.title": {
+		"message": "署名者ルールのヘルプ"
+	},
+	"domain.description": {
+		"message": "差出人アドレスのベースドメインにマッチする。例えば、「email.example.co.uk」のベースドメインは「example.co.uk」。"
+	},
+	"listId.description": {
+		"message": "メーリングリスト経由でメールを受信した場合、リスト ID にマッチする。リスト ID ヘッダの「<」と「>」に囲まれた部分のみが実際のリスト ID となることに注意すること。一度にマッチするのはドメインとリスト ID のいずれか一方のみ。"
+	},
+	"addr.description": {
+		"message": "差出人アドレスにマッチする。0 文字以上にマッチさせるには「*」を使うこと。"
+	},
+	"sdid.description": {
+		"message": "メールが署名されているべきドメイン。空の場合、どの SDID でも許可される。スペースで区切ることにより複数のドメインを指定可能です。"
+	},
+	"ruletype.description": {
+		"message": "ルールのタイプ。"
+	},
+	"ruletype.1.description": {
+		"message": "メールは特定の SDID により署名されている必要がある。"
+	},
+	"ruletype.2.description": {
+		"message": "メールは署名されている必要はない。もし署名されている場合は、特定の SDID による署名でなければならない。"
+	},
+	"ruletype.3.description": {
+		"message": "メールは署名されている必要はない。もし署名されている場合は、特定の SDID による署名でなければならない。無効な署名のメールは、署名無しとして扱う。"
+	},
+	"priority.description": {
+		"message": "ルールの優先度。複数のルールがマッチした場合は、最も優先度が高いルールが適用される。"
+	},
+	"enabled.description": {
+		"message": "ルールが有効な場合 1、無効な場合 0。"
 	}
 }

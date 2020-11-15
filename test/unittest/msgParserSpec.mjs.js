@@ -100,65 +100,191 @@ describe("Message parser [unittest]", function () {
 			).to.throw(DKIM_InternalError).with.property("errorType", "DKIM_INTERNALERROR_INCORRECT_EMAIL_FORMAT");
 		});
 	});
-	describe("Extracting address from an address-list", function () {
-		it("angle-addr only", function () {
-			expect(
-				MsgParser.parseAddressingHeader("<foo@example.com>")
-			).to.be.equal("foo@example.com");
-			expect(
-				MsgParser.parseAddressingHeader("<foo@example.com>\r\n")
-			).to.be.equal("foo@example.com");
+	describe("Extracting From address", function () {
+		describe("addr-spec", function () {
+			it("without comment", function () {
+				expect(
+					MsgParser.parseFromHeader("From: foo@example.com\r\n")
+				).to.be.equal("foo@example.com");
+				expect(
+					MsgParser.parseFromHeader("From:  foo@example.com \r\n")
+				).to.be.equal("foo@example.com");
+			});
+			it("with comment", function () {
+				expect(
+					MsgParser.parseFromHeader("From: (comment) foo@example.com\r\n")
+				).to.be.equal("foo@example.com");
+				expect(
+					MsgParser.parseFromHeader("From: (bar@bad.com) foo@example.com\r\n")
+				).to.be.equal("foo@example.com");
+			});
+			it("with quoted-string as local part", function () {
+				expect(
+					MsgParser.parseFromHeader('From: "foo bar"@example.com\r\n')
+				).to.be.equal('"foo bar"@example.com');
+			});
 		});
-		it("addr only", function () {
-			expect(
-				MsgParser.parseAddressingHeader("foo@example.com")
-			).to.be.equal("foo@example.com");
-			expect(
-				MsgParser.parseAddressingHeader("foo@example.com\r\n")
-			).to.be.equal("foo@example.com");
-			expect(
-				MsgParser.parseAddressingHeader(" foo@example.com")
-			).to.be.equal("foo@example.com");
+		describe("name-addr", function () {
+			it("angle-addr only", function () {
+				expect(
+					MsgParser.parseFromHeader("From: <foo@example.com>\r\n")
+				).to.be.equal("foo@example.com");
+				expect(
+					MsgParser.parseFromHeader("From:   <foo@example.com>\t\r\n")
+				).to.be.equal("foo@example.com");
+			});
+			it("with simple atoms as display-name", function () {
+				expect(
+					MsgParser.parseFromHeader("From: this is from foo <foo@example.com>\r\n")
+				).to.be.equal("foo@example.com");
+			});
+			it("with simple quoted-string as display-name", function () {
+				expect(
+					MsgParser.parseFromHeader(`From: "this is from foo" <foo@example.com>\r\n`)
+				).to.be.equal("foo@example.com");
+			});
+			it("with comment", function () {
+				expect(
+					MsgParser.parseFromHeader(`From: (bar@bad.com) <foo@example.com>\r\n`)
+				).to.be.equal("foo@example.com");
+			});
+			it("with quoted-string as local part", function () {
+				expect(
+					MsgParser.parseFromHeader('From: <"foo bar"@example.com>\r\n')
+				).to.be.equal('"foo bar"@example.com');
+				expect(
+					MsgParser.parseFromHeader('From: "a test" <"foo@bar"@example.com>\r\n')
+				).to.be.equal('"foo@bar"@example.com');
+			});
 		});
-		it("name-addr with simple atoms as display-name", function () {
+		it("Casing of From header", function () {
 			expect(
-				MsgParser.parseAddressingHeader("this is from foo <foo@example.com>")
-			).to.be.equal("foo@example.com");
-		});
-		it("name-addr with simple quoted-string as display-name", function () {
-			expect(
-				MsgParser.parseAddressingHeader(`"this is from foo" <foo@example.com>`)
-			).to.be.equal("foo@example.com");
-		});
-		it("name-addr with email like name before it", function () {
-			expect(
-				MsgParser.parseAddressingHeader(`bar@bad.com <foo@example.com>`)
-			).to.be.equal("foo@example.com");
-		});
-		it("malformed", function () {
-			expect(() =>
-				MsgParser.parseAddressingHeader("foo.example.com")
-			).to.throw();
-			expect(() =>
-				MsgParser.parseAddressingHeader("<@foo.example.com>")
-			).to.throw();
-			expect(() =>
-				MsgParser.parseAddressingHeader("bar foo@example.com")
-			).to.throw();
-		});
-		it("Extract address from From header", function () {
-			expect(
-				MsgParser.parseFromHeader("From: foo@example.com")
+				MsgParser.parseFromHeader("FROM: foo@example.com\r\n")
 			).to.be.equal("foo@example.com");
 			expect(
 				MsgParser.parseFromHeader("from: foo@example.com\r\n")
 			).to.be.equal("foo@example.com");
+			expect(
+				MsgParser.parseFromHeader("frOm: <foo@example.com>\r\n")
+			).to.be.equal("foo@example.com");
+		});
+		it("RFC 5322 Appendix A", function () {
+			// Appendix A.1.1.  A Message from One Person to Another with Simple
+			expect(
+				MsgParser.parseFromHeader("From: John Doe <jdoe@machine.example>\r\n")
+			).to.be.equal("jdoe@machine.example");
+			// Appendix A.1.2.  Different Types of Mailboxes
+			expect(
+				MsgParser.parseFromHeader('From: "Joe Q. Public" <john.q.public@example.com>\r\n')
+			).to.be.equal("john.q.public@example.com");
+			// Appendix A.1.3.  Group Addresses
+			expect(
+				MsgParser.parseFromHeader("From: Pete <pete@silly.example>\r\n")
+			).to.be.equal("pete@silly.example");
+			// Appendix A.2.  Reply Messages
+			expect(
+				MsgParser.parseFromHeader("From: Mary Smith <mary@example.net>\r\n")
+			).to.be.equal("mary@example.net");
+			// Appendix A.4.  Messages with Trace Fields
+			expect(
+				MsgParser.parseFromHeader("From: John Doe <jdoe@node.example>\r\n")
+			).to.be.equal("jdoe@node.example");
+			// Appendix A.5.  White Space, Comments, and Other Oddities
+			expect(
+				MsgParser.parseFromHeader("From: Pete(A nice \\) chap) <pete(his account)@silly.test(his host)>\r\n")
+			).to.be.equal("pete@silly.test");
+			expect(
+				MsgParser.parseFromHeader("From: Chris Jones <c@(Chris's host.)public.example>\r\n")
+			).to.be.equal("c@public.example");
+		});
+		it("RFC 5322 Appendix A - Obsolete", function () {
+			// Obsolete syntax is not supported and should fail
+
+			// Appendix A.6.1.  Obsolete Addressing
 			expect(() =>
-				MsgParser.parseFromHeader("From:<@foo.example.com>")
+				MsgParser.parseFromHeader("From: Joe Q. Public <john.q.public@example.com>\r\n")
+			).to.throw();
+			// Appendix A.6.3.  Obsolete White Space and Comments
+			expect(() =>
+				MsgParser.parseFromHeader("From  : John Doe <jdoe@machine(comment).  example>\r\n")
 			).to.throw();
 			expect(() =>
-				MsgParser.parseFromHeader("To: <@foo.example.com>")
+				MsgParser.parseFromHeader("From: John Doe <jdoe@machine(comment).  example>\r\n")
 			).to.throw();
+		});
+		it("Strange but valid whitespace", function () {
+			expect(
+				MsgParser.parseFromHeader("From:foo@example.com\r\n")
+			).to.be.equal("foo@example.com");
+			expect(
+				MsgParser.parseFromHeader("From:<foo@example.com>\r\n")
+			).to.be.equal("foo@example.com");
+			expect(
+				MsgParser.parseFromHeader("From: (\r\n some\r\n\tfolding) foo@example.com\r\n")
+			).to.be.equal("foo@example.com");
+			expect(
+				MsgParser.parseFromHeader("From: \r\n (some\r\n\tfolding) foo@example.com\r\n")
+			).to.be.equal("foo@example.com");
+			expect(
+				MsgParser.parseFromHeader("From: \r\n some\r\n\tfolding <foo@example.com>\r\n")
+			).to.be.equal("foo@example.com");
+			expect(
+				MsgParser.parseFromHeader("From:\r\n   some <foo@example.com>\r\n")
+			).to.be.equal("foo@example.com");
+			expect(
+				MsgParser.parseFromHeader("From:\r\n\t=?utf-8?q?(omit)?=\r\n\t=?utf-8?q?(omit)?= <mail@example.com>\r\n")
+			).to.be.equal("mail@example.com");
+		});
+		it("malformed", function () {
+			expect(() =>
+				MsgParser.parseFromHeader("From: foo.example.com\r\n")
+			).to.throw();
+			expect(() =>
+				MsgParser.parseFromHeader("From: <@foo.example.com>\r\n")
+			).to.throw();
+			expect(() =>
+				MsgParser.parseFromHeader("From: bar foo@example.com\r\n")
+			).to.throw();
+			expect(() =>
+				MsgParser.parseFromHeader("From: bar@bad.com foo@example.com\r\n")
+			).to.throw();
+			expect(() =>
+				MsgParser.parseFromHeader("From: bar@bad.com <foo@example.com>\r\n")
+			).to.throw();
+			expect(() =>
+				MsgParser.parseFromHeader("To: <foo@example.com>\r\n")
+			).to.throw();
+		});
+	});
+	describe("Extracting List-Id", function () {
+		it("RFC 2919 examples", function () {
+			expect(
+				MsgParser.parseListIdHeader("List-Id: List Header Mailing List <list-header.nisto.com>\r\n")
+			).to.be.equal("list-header.nisto.com");
+			expect(
+				MsgParser.parseListIdHeader("List-Id: <commonspace-users.list-id.within.com>\r\n")
+			).to.be.equal("commonspace-users.list-id.within.com");
+			expect(
+				MsgParser.parseListIdHeader("List-Id: \"Lena's Personal Joke List\"\r\n" +
+					"         <lenas-jokes.da39efc25c530ad145d41b86f7420c3b.021999.localhost>\r\n")
+			).to.be.equal("lenas-jokes.da39efc25c530ad145d41b86f7420c3b.021999.localhost");
+			expect(
+				MsgParser.parseListIdHeader('List-Id: "An internal CMU List" <0Jks9449.list-id.cmu.edu>\r\n')
+			).to.be.equal("0Jks9449.list-id.cmu.edu");
+			expect(
+				MsgParser.parseListIdHeader("List-Id: <da39efc25c530ad145d41b86f7420c3b.052000.localhost>\r\n")
+			).to.be.equal("da39efc25c530ad145d41b86f7420c3b.052000.localhost");
+		});
+		it("valid headers", function () {
+			expect(
+				MsgParser.parseListIdHeader('list-ID: <list-header.nisto.com>\r\n')
+			).to.be.equal("list-header.nisto.com");
+			expect(
+				MsgParser.parseListIdHeader('List-Id:<list-header.nisto.com>\r\n')
+			).to.be.equal("list-header.nisto.com");
+			expect(
+				MsgParser.parseListIdHeader('List-Id: "<fake.list.com>" <list-header.nisto.com>\r\n')
+			).to.be.equal("list-header.nisto.com");
 		});
 	});
 });

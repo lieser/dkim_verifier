@@ -18,6 +18,14 @@
 // @ts-ignore
 // eslint-disable-next-line no-var
 var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
+// eslint-disable-next-line no-var
+var { Sqlite } = ChromeUtils.import("resource://gre/modules/Sqlite.jsm");
+// @ts-expect-error
+// eslint-disable-next-line no-var
+var { OS } = ChromeUtils.import("resource://gre/modules/osfile.jsm");
+// @ts-expect-error
+// eslint-disable-next-line no-var
+var { FileUtils } = ChromeUtils.import("resource://gre/modules/FileUtils.jsm");
 
 // eslint-disable-next-line no-invalid-this
 this.migration = class extends ExtensionCommon.ExtensionAPI {
@@ -51,6 +59,26 @@ this.migration = class extends ExtensionCommon.ExtensionAPI {
 	}
 
 	/**
+	 * Open connection to an SQLite database if it exist.
+	 *
+	 * @param {string} fileName
+	 * @returns {Promise<any>?}
+	 */
+	_openSqlite(fileName) {
+		// Retains absolute paths and normalizes relative as relative to profile.
+		const path = OS.Path.join(OS.Constants.Path.profileDir, fileName);
+		const file = FileUtils.File(path);
+
+		// test that db exists
+		if (!file.exists()) {
+			return null;
+		}
+
+		return Sqlite.openConnection({ path: fileName });
+
+	}
+
+	/**
 	 * @param {ExtensionCommon.Context} context
 	 * @returns {{migration: browser.migration}}
 	 */
@@ -77,6 +105,32 @@ this.migration = class extends ExtensionCommon.ExtensionAPI {
 					}
 					return Promise.resolve(accountPrefs);
 				},
+				getSignRulesUser: async () => {
+					const conn = await this._openSqlite("dkimPolicy.sqlite");
+					if (!conn) {
+						return null;
+					}
+
+					const sqlRes = await conn.execute("SELECT * FROM signers");
+					await conn.close();
+
+					let maxId = 0;
+					/** @type {import("../modules/dkim/signRules.mjs.js").DkimSignRuleUser[]} */
+					const userRules = [];
+					for (const rule of sqlRes) {
+						userRules.push({
+							id: ++maxId,
+							domain: rule.getResultByName("domain") ?? "",
+							listId: rule.getResultByName("listID") ?? "",
+							addr: rule.getResultByName("addr"),
+							sdid: rule.getResultByName("sdid") ?? "",
+							type: rule.getResultByName("ruletype"),
+							priority: rule.getResultByName("priority"),
+							enabled: rule.getResultByName("enabled") === 1,
+						});
+					}
+					return {maxId: maxId, rules: userRules};
+				}
 			},
 		};
 	}
