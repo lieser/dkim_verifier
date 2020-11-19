@@ -45,6 +45,8 @@ export default class RfcParser {
 	//// 3.2.3.  Atom
 	static get atext() { return "[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]"; }
 	static get atom() { return `(?:${this.CFWS_op}${this.atext}+${this.CFWS_op})`; }
+	// Note: helper only, not part of the RFC: an atom without the optional surrounding CFWS
+	static get atom_b() { return `(?:${this.atext}+)`; }
 	static get dot_atom_text() { return `(?:${this.atext}+(?:\\.${this.atext}+)*)`; }
 	static get dot_atom() { return `(?:${this.CFWS_op}${this.dot_atom_text}${this.CFWS_op})`; }
 	//// 3.2.4.  Quoted Strings
@@ -54,8 +56,11 @@ export default class RfcParser {
 	static get quoted_string() { return `(?:${this.CFWS_op}"(?:${this.FWS_op}${this.qcontent})*${this.FWS_op}"${this.CFWS_op})`; }
 	//// 3.2.5.  Miscellaneous Tokens
 	static get word() { return `(?:${this.atom}|${this.quoted_string})`; }
+	// Note: helper only, not part of the RFC: chain of word without whitespace between
+	static get word_chain() { return `(?:(?:${this.atom_b}|(?:${this.atom_b}?${this.quoted_string})+${this.atom_b}?))`; }
 	// Note: this is incomplete (obs-phrase is missing)
-	static get phrase() { return `(?:(?:${this.word})+)`; }
+	// Note: this is rewritten to avoid backtracking issues (in RFC specified as `1*word / obs-phrase`)
+	static get phrase() { return `(?:${this.CFWS_op}${this.word_chain}(?:${this.CFWS}${this.word_chain})*${this.CFWS_op})`; }
 	//// 3.4.  Address Specification
 	static get name_addr() { return `(?:${this.display_name}?${this.angle_addr})`; }
 	// Note: this is incomplete (obs-angle-addr is missing)

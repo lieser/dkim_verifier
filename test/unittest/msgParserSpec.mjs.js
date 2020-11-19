@@ -135,6 +135,9 @@ describe("Message parser [unittest]", function () {
 			});
 			it("with simple atoms as display-name", function () {
 				expect(
+					MsgParser.parseFromHeader("From: singleAtom <foo@example.com>\r\n")
+				).to.be.equal("foo@example.com");
+				expect(
 					MsgParser.parseFromHeader("From: this is from foo <foo@example.com>\r\n")
 				).to.be.equal("foo@example.com");
 			});
@@ -147,6 +150,9 @@ describe("Message parser [unittest]", function () {
 				expect(
 					MsgParser.parseFromHeader(`From: (bar@bad.com) <foo@example.com>\r\n`)
 				).to.be.equal("foo@example.com");
+				expect(
+					MsgParser.parseFromHeader(`From: A (bar@bad.com) comment <foo@example.com>\r\n`)
+				).to.be.equal("foo@example.com");
 			});
 			it("with quoted-string as local part", function () {
 				expect(
@@ -155,6 +161,20 @@ describe("Message parser [unittest]", function () {
 				expect(
 					MsgParser.parseFromHeader('From: "a test" <"foo@bar"@example.com>\r\n')
 				).to.be.equal('"foo@bar"@example.com');
+			});
+			it("Strange but valid display name", function () {
+				expect(
+					MsgParser.parseFromHeader(`From: "mixed" atoms "and quoted-string" <foo@example.com>\r\n`)
+				).to.be.equal("foo@example.com");
+				expect(
+					MsgParser.parseFromHeader('From: "a"strange"phrase" <foo@example.com>\r\n')
+				).to.be.equal("foo@example.com");
+				expect(
+					MsgParser.parseFromHeader('From: another"strange"phrase <foo@example.com>\r\n')
+				).to.be.equal("foo@example.com");
+				expect(
+					MsgParser.parseFromHeader('From: "multiple""quoted-string""without" space "between" <foo@example.com>\r\n')
+				).to.be.equal("foo@example.com");
 			});
 		});
 		it("Casing of From header", function () {
@@ -234,6 +254,16 @@ describe("Message parser [unittest]", function () {
 			expect(
 				MsgParser.parseFromHeader("From:\r\n\t=?utf-8?q?(omit)?=\r\n\t=?utf-8?q?(omit)?= <mail@example.com>\r\n")
 			).to.be.equal("mail@example.com");
+		});
+		it("avoid backtracking issues", function () {
+			// A naive implementation of the phrase pattern can lead to backtracking issues,
+			// especially if it tries but fails to match it to a long string.
+			expect(
+				MsgParser.parseFromHeader("From: noreply-play-developer-console@google.com\r\n")
+			).to.be.equal("noreply-play-developer-console@google.com");
+			expect(() =>
+				MsgParser.parseFromHeader("From: noreply-play-developer-console-google.com\r\n")
+			).to.throw();
 		});
 		it("malformed", function () {
 			expect(() =>
