@@ -14,6 +14,7 @@
 /* eslint-env webextensions */
 /* eslint no-magic-numbers: "off" */
 
+import { Deferred } from "./utils.mjs.js";
 import ExtensionUtils from "./extensionUtils.mjs.js";
 import Logging from "./logging.mjs.js";
 
@@ -602,23 +603,31 @@ export class StorageLocalPreferences extends BasePreferences {
 	}
 
 	async init() {
-		if (this._isInitialized) {
-			return;
+		if (this._isInitializedDeferred) {
+			return this._isInitializedDeferred.promise;
 		}
-		const preferences = await ExtensionUtils.safeGetLocalStorage();
-		if (preferences) {
-			delete preferences.signRulesUser;
-			this._prefs = preferences;
+		/** @type {Deferred<void>} */
+		this._isInitializedDeferred = new Deferred();
+		try {
+			const preferences = await ExtensionUtils.safeGetLocalStorage();
+			if (preferences) {
+				delete preferences.signRulesUser;
+				this._prefs = preferences;
+			}
+			browser.storage.onChanged.addListener((changes, areaName) => {
+				if (areaName !== "local") {
+					return;
+				}
+				for (const [name, change] of Object.entries(changes)) {
+					this._prefs[name] = change.newValue;
+				}
+			});
+			this._isInitialized = true;
+			this._isInitializedDeferred.resolve();
+		} catch (error) {
+			this._isInitializedDeferred.reject(error);
 		}
-		browser.storage.onChanged.addListener((changes, areaName) => {
-			if (areaName !== "local") {
-				return;
-			}
-			for (const [name, change] of Object.entries(changes)) {
-				this._prefs[name] = change.newValue;
-			}
-		});
-		this._isInitialized = true;
+		return this._isInitializedDeferred.promise;
 	}
 
 	async clear() {
