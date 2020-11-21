@@ -10,6 +10,7 @@
  */
 
 // @ts-check
+/* eslint-env shared-node-browser */
 /* eslint-disable no-use-before-define */
 
 /**
@@ -90,6 +91,40 @@ export function domainIsInDomain(domain1, domain2) {
  */
 export function getDomainFromAddr(addr) {
 	return addr.substr(addr.lastIndexOf("@")+1);
+}
+
+/**
+ * Create a promise that rejects in <ms> milliseconds.
+ *
+ * @template T
+ * @param {number} ms
+ * @param {Promise<T>} promise
+ * @returns {Promise<T>}
+ */
+export async function promiseWithTimeout(ms, promise) {
+	let timeoutId;
+	const timeout = new Promise((resolve, reject) => {
+		timeoutId = setTimeout(() => {
+			reject(new Error(`Timed out after ${ms} ms.`));
+		}, ms);
+	});
+
+	await Promise.race([
+		promise,
+		timeout
+	]);
+	clearTimeout(timeoutId);
+	return promise;
+}
+
+/**
+ * Sleep for <ms> milliseconds.
+ *
+ * @param {number} ms
+ * @return {Promise<void>}
+ */
+export function sleep(ms) {
+	return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 /**

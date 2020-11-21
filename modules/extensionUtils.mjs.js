@@ -13,6 +13,11 @@
 ///<reference path="../WebExtensions.d.ts" />
 /* eslint-env browser, webextensions */
 
+import { promiseWithTimeout, sleep } from "./utils.mjs.js";
+import Logging from "./logging.mjs.js";
+
+const log = Logging.getLogger("ExtensionUtils");
+
 /**
  * Create popup window, or raise it if already open.
  *
@@ -55,8 +60,42 @@ async function readFile(path) {
 	return text;
 }
 
+/**
+ * Wrapper around browser.storage.local.get() to workaround the following issues:
+ * - TransactionInactiveError resulting in PRomise never being resolved
+ * - Getting rejected with "An unexpected error occurred"
+ *
+ * @returns {Promise<Object.<string, any>>}
+ */
+async function safeGetLocalStorage() {
+	const overallTimeout = 15000;
+	const storageTimeout = 3000;
+	let retrySleepTime = 100;
+	const retrySleepTimeIncrease = 50;
+	const retrySleepTimeMax = 500;
+
+	let timeout = false;
+	const timeoutId = setTimeout(() => {
+		timeout = true;
+	}, overallTimeout);
+	// eslint-disable-next-line no-unmodified-loop-condition
+	while (!timeout) {
+		try {
+			const result = await promiseWithTimeout(storageTimeout, browser.storage.local.get());
+			clearTimeout(timeoutId);
+			return result;
+		} catch (error) {
+			log.debug("browser.storage.local.get() failed (will retry) with", error);
+			await sleep(retrySleepTime);
+			retrySleepTime = Math.max(retrySleepTime + retrySleepTimeIncrease, retrySleepTimeMax);
+		}
+	}
+	throw Error("browser.storage.local.get() failed");
+}
+
 const ExtensionUtils = {
 	createOrRaisePopup: createOrRaisePopup,
+	safeGetLocalStorage: safeGetLocalStorage,
 	readFile: readFile,
 };
 export default ExtensionUtils;

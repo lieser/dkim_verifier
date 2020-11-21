@@ -14,13 +14,14 @@
 ///<reference path="../experiments/migration.d.ts" />
 /* eslint-env webextensions */
 
+import ExtensionUtils from "./extensionUtils.mjs.js";
 import Logging from "./logging.mjs.js";
 import prefs from "../modules/preferences.mjs.js";
 
 const log = Logging.getLogger("Migration");
 
 export async function migratePrefs() {
-	const preferences = await browser.storage.local.get();
+	const preferences = await ExtensionUtils.safeGetLocalStorage();
 	if (preferences) {
 		delete preferences.signRulesUser;
 		if (Object.keys(preferences).length !== 0) {
@@ -61,7 +62,7 @@ export async function migratePrefs() {
 }
 
 export async function migrateSignRulesUser() {
-	const storage = await browser.storage.local.get();
+	const storage = await ExtensionUtils.safeGetLocalStorage();
 	if (storage && storage.signRulesUser) {
 		log.info("Skipping migration of user sign rules as browser.storage already contains some");
 		return;

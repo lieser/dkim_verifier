@@ -8,12 +8,14 @@
  */
 
 // @ts-check
+/* eslint-env shared-node-browser */
 
 import {
 	addrIsInDomain,
 	addrIsInDomain2,
 	domainIsInDomain,
 	getDomainFromAddr,
+	promiseWithTimeout,
 	stringEndsWith,
 	stringEqual,
 	toType
@@ -123,6 +125,25 @@ describe("utils [unittest]", () => {
 			expect(
 				getDomainFromAddr("foo@sub.bar.com")
 			).to.be.equal("sub.bar.com");
+		});
+	});
+
+	describe("promiseWithTimeout", () => {
+		it("no timeout", async () => {
+			const res = await promiseWithTimeout(100, Promise.resolve(true));
+			expect(res).to.be.true;
+
+			await promiseWithTimeout(100, new Promise(resolve => setTimeout(resolve, 50)));
+		});
+		it("timeout", async () => {
+			let timedOut = true;
+			try {
+				await promiseWithTimeout(50, new Promise(resolve => setTimeout(resolve, 100)));
+				timedOut = false;
+			} catch (error) {
+				// expected
+			}
+			expect(timedOut).to.be.true;
 		});
 	});
 

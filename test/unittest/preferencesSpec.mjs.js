@@ -9,7 +9,7 @@
 
 // @ts-check
 ///<reference path="../../WebExtensions.d.ts" />
-/* eslint-env webextensions */
+/* eslint-env shared-node-browser, webextensions */
 
 import { fakeBrowser, hasWebExtensions } from "../helpers/initWebExtensions.mjs.js";
 import prefs, { ObjPreferences, StorageLocalPreferences } from "../../modules/preferences.mjs.js";
@@ -303,39 +303,41 @@ describe("preferences [unittest]", function () {
 			).to.be.equal("8.8.8.8");
 		});
 		it("pref should change on storage update", async function () {
-			after(function () {
+			try {
+				fakeBrowser.storage.local.set.callsFake(async items => {
+					console.error("set.callsFake - 111");
+					await fakeBrowser.storage.local._set(items, undefined);
+
+					/** @type {Object.<string, {oldValue: any, newValue: any}>} */
+					const changes = {};
+					for (const [name, value] of Object.entries(items)) {
+						changes[name] = {
+							oldValue: {},
+							newValue: JSON.parse(JSON.stringify(value)),
+						};
+					}
+					fakeBrowser.storage.onChanged.addListener.yield(changes, "local");
+				});
+
+				const pref2 = new StorageLocalPreferences();
+				await pref2.init();
+				// setting option on global pref object
+				await pref.setValue("dns.nameserver", "fooBar");
+				// should sync it to local pref object
+				expect(
+					pref2["dns.nameserver"]
+				).to.be.equal("fooBar");
+
+				// setting option on local pref object
+				await pref2.setValue("dns.nameserver", "muh");
+				// should sync it to global pref object
+				expect(
+					pref["dns.nameserver"]
+				).to.be.equal("muh");
+
+			} finally {
 				fakeBrowser.storage.local.set.callsFake(fakeBrowser.storage.local._set);
-			});
-
-			fakeBrowser.storage.local.set.callsFake(async items => {
-				await fakeBrowser.storage.local._set(items, undefined);
-
-				/** @type {Object.<string, {oldValue: any, newValue: any}>} */
-				const changes = {};
-				for (const [name, value] of Object.entries(items)) {
-					changes[name] = {
-						oldValue: {},
-						newValue: JSON.parse(JSON.stringify(value)),
-					};
-				}
-				fakeBrowser.storage.onChanged.addListener.yield(changes, "local");
-			});
-
-			const pref2 = new StorageLocalPreferences();
-			await pref2.init();
-			// setting option on global pref object
-			await pref.setValue("dns.nameserver", "fooBar");
-			// should sync it to local pref object
-			expect(
-				pref2["dns.nameserver"]
-			).to.be.equal("fooBar");
-
-			// setting option on local pref object
-			await pref2.setValue("dns.nameserver", "muh");
-			// should sync it to global pref object
-			expect(
-				pref["dns.nameserver"]
-			).to.be.equal("muh");
+			}
 		});
 		it("other storage changes are ignored", function () {
 			pref.setValue("dns.nameserver", "fooBar");
@@ -391,6 +393,77 @@ describe("preferences [unittest]", function () {
 			expect(pref["arh.read"]).to.be.equal(true);
 			expect(pref["color.nosig.background"]).to.be.equal("red");
 			expect(pref["dns.proxy.port"]).to.be.equal(1111);
+		});
+		it("safeGetLocalStorage - retry on reject", async function () {
+			try {
+				pref.setValue("dns.nameserver", "fooBar");
+
+				fakeBrowser.storage.local.get.onFirstCall().rejects("a failure");
+				fakeBrowser.storage.local.get.onSecondCall().rejects("a failure");
+
+				const loadedPref = new StorageLocalPreferences();
+				await loadedPref.init();
+				expect(fakeBrowser.storage.local.get.calledThrice).to.be.true;
+				expect(
+					loadedPref["dns.nameserver"]
+				).to.be.equal("fooBar");
+			} finally {
+				fakeBrowser.storage.local.get.resetBehavior();
+				fakeBrowser.storage.local.get.callsFake(fakeBrowser.storage.local._get);
+			}
+		});
+		xit("safeGetLocalStorage - single timeout", async function () {
+			// eslint-disable-next-line no-invalid-this
+			this.timeout(5000);
+			try {
+				pref.setValue("dns.nameserver", "fooBar");
+
+				fakeBrowser.storage.local.get.onFirstCall().callsFake(async items => {
+					await new Promise(resolve => setTimeout(resolve, 4000));
+					return fakeBrowser.storage.local._get(items);
+				});
+
+				const loadedPref = new StorageLocalPreferences();
+				await loadedPref.init();
+				expect(fakeBrowser.storage.local.get.calledTwice).to.be.true;
+				expect(
+					loadedPref["dns.nameserver"]
+				).to.be.equal("fooBar");
+
+			} finally {
+				fakeBrowser.storage.local.get.resetBehavior();
+				fakeBrowser.storage.local.get.callsFake(fakeBrowser.storage.local._get);
+			}
+		});
+		xit("safeGetLocalStorage - complete timeout", async function () {
+			// eslint-disable-next-line no-invalid-this
+			this.timeout(20000);
+			try {
+				pref.setValue("dns.nameserver", "fooBar");
+
+				fakeBrowser.storage.local.get.callsFake(async items => {
+					await new Promise(resolve => setTimeout(resolve, 4000));
+					return fakeBrowser.storage.local._get(items);
+				});
+				fakeBrowser.storage.local.get.onSecondCall().rejects("a failure");
+
+				const loadedPref = new StorageLocalPreferences();
+				let timedOut = true;
+				try {
+					await loadedPref.init();
+					timedOut = false;
+				} catch (error) {
+					// expected
+				}
+				expect(timedOut).to.be.true;
+				expect(fakeBrowser.storage.local.get.callCount).to.be.greaterThan(2);
+				expect(() =>
+					loadedPref["dns.nameserver"]
+				).to.throw;
+			} finally {
+				fakeBrowser.storage.local.get.resetBehavior();
+				fakeBrowser.storage.local.get.callsFake(fakeBrowser.storage.local._get);
+			}
 		});
 	});
 	describe("account settings", function () {

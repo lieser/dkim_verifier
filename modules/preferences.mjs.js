@@ -14,6 +14,7 @@
 /* eslint-env webextensions */
 /* eslint no-magic-numbers: "off" */
 
+import ExtensionUtils from "./extensionUtils.mjs.js";
 import Logging from "./logging.mjs.js";
 
 const log = Logging.getLogger("Verifier");
@@ -604,7 +605,7 @@ export class StorageLocalPreferences extends BasePreferences {
 		if (this._isInitialized) {
 			return;
 		}
-		const preferences = await browser.storage.local.get();
+		const preferences = await ExtensionUtils.safeGetLocalStorage();
 		if (preferences) {
 			delete preferences.signRulesUser;
 			this._prefs = preferences;
