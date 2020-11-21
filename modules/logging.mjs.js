@@ -13,7 +13,7 @@
 
 // @ts-check
 ///<reference path="./logging.d.ts" />
-/* eslint-env browser, webextensions */
+/* eslint-env shared-node-browser, webextensions */
 /* eslint no-use-before-define: ["error", { "classes": false }] */
 /* eslint-disable no-empty-function */
 
@@ -168,6 +168,6 @@ export default class Logging {
 		});
 	}
 }
-Logging._logLevel = Logging.Level.Error;
+Logging._logLevel = Logging.Level.Debug;
 /** @type {Logger[]} */
 Logging._loggers = [];
