@@ -313,8 +313,7 @@ export class BasePreferences {
 		return this._tryGetBoolValue("dns.jsdns.autoResetServerAlive", false);
 	}
 	get "dns.libunbound.path"() {
-		return this._tryGetStringValue("dns.libunbound.path",
-			"extensions/dnssec@nic.cz/plugins/ub_ds_windows-x86.dll");
+		return this._tryGetStringValue("dns.libunbound.path", "");
 	}
 	get "dns.libunbound.path.relToProfileDir"() {
 		return this._tryGetBoolValue("dns.libunbound.path.relToProfileDir", true);

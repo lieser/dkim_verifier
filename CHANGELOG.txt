@@ -4,6 +4,7 @@
  - fixed incompatibility with Thunderbird 78 (#119)
  - removed option to show DKIM result in the statusbarpanel
  - Authentication-Results header: fixed parsing of version
+ - don't set default libunbound path (#208, #209, #210)
 
 3.1.0 [2020-01-22]
 ------------------
