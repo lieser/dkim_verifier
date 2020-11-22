@@ -14,6 +14,7 @@ import { copy } from "../../modules/utils.mjs.js";
 import expect from "../helpers/chaiUtils.mjs.js";
 import { hasWebExtensions } from "../helpers/initWebExtensions.mjs.js";
 import prefs from "../../modules/preferences.mjs.js";
+import sinon from "../helpers/sinonUtils.mjs.js";
 
 describe("Sign rules [unittest]", function () {
 	before(async function () {
@@ -157,6 +158,25 @@ describe("Sign rules [unittest]", function () {
 			expect(res.result).is.equal("SUCCESS");
 			expect(res.warnings).to.be.an('array').
 				that.not.deep.includes({ name: "DKIM_SIGWARNING_FROM_NOT_IN_SDID" });
+		});
+	});
+	describe("outgoing mail", function () {
+		it("outgoing mail must not be signed", async function () {
+			let res = await SignRules.check(dkimNone, "bar@paypal.com", "", () => Promise.resolve(false));
+			expect(res.result).is.equal("PERMFAIL");
+			res = await SignRules.check(dkimNone, "bar@paypal.com", "", () => Promise.resolve(true));
+			expect(res.result).is.equal("none");
+		});
+		it("check that callback is not called unnecessarily", async function () {
+			const callback = sinon.fake.rejects("should not be called");
+
+			let res = await SignRules.check(dkimNone, "bar@test.com", "", callback);
+			expect(res.result).is.equal("none");
+			expect(callback.notCalled).to.be.true;
+
+			res = await SignRules.check(dkimSuccessPayPal, "bar@paypal.com", "", callback);
+			expect(res.result).is.equal("SUCCESS");
+			expect(callback.notCalled).to.be.true;
 		});
 	});
 });

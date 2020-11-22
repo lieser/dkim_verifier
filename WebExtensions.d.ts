@@ -10,17 +10,23 @@ declare module browser {
     declare module accounts {
         interface MailAccount {
             id: string,
+            identities: MailIdentity[],
             name: string,
             type: string,
         }
 
+        interface MailIdentity {
+            email: string,
+        }
+
         const list: () => Promise<MailAccount[]>;
-        const get: (accountId) => Promise<MailAccount?>;
+        const get: (accountId: string) => Promise<MailAccount?>;
     }
 
     declare module folder {
         interface MailFolder {
             accountId: string,
+            type?: string,
         }
     }
 

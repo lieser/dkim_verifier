@@ -187,7 +187,7 @@ describe("AuthVerifier [unittest]", function () {
 			expect(res.dmarc && res.dmarc[0].result).to.be.equal("pass");
 		});
 	});
-	describe("default sign rules", function () {
+	describe("sign rules", function () {
 		beforeEach(async function () {
 			await prefs.clear();
 		});
@@ -202,6 +202,20 @@ describe("AuthVerifier [unittest]", function () {
 			res = await authVerifier.verify(fakePayPalMessage);
 			expect(res.dkim[0].result).to.be.equal("PERMFAIL");
 			expect(res.dkim[0].result_str).to.be.equal("Invalid (Should be signed by paypal.com)");
+		});
+
+		it("outgoing mail", async function () {
+			await prefs.setValue("policy.signRules.enable", true);
+			const fakePayPalMessage = await createMessageHeader("fakePayPal.eml");
+
+			let res = await authVerifier.verify(fakePayPalMessage);
+			expect(res.dkim[0].result).to.be.equal("PERMFAIL");
+			expect(res.dkim[0].result_str).to.be.equal("Invalid (Should be signed by paypal.com)");
+
+			fakePayPalMessage.folder.type = "sent";
+
+			res = await authVerifier.verify(fakePayPalMessage);
+			expect(res.dkim[0].result).to.be.equal("none");
 		});
 	});
 	describe("ARH header", function () {

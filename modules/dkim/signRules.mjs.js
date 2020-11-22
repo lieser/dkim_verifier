@@ -364,15 +364,16 @@ export default class SignRules {
 	 * @param {VerifierModule.dkimSigResultV2} dkimResult
 	 * @param {string} from
 	 * @param {string} [listId]
+	 * @param {function(void): Promise<boolean>} [isOutgoingCallback]
 	 * @returns {Promise<VerifierModule.dkimSigResultV2>}
 	 */
-	static async check(dkimResult, from, listId) {
+	static async check(dkimResult, from, listId, isOutgoingCallback) {
 		await prefs.init();
 
 		const policy = await checkIfShouldBeSigned(from, listId);
 		log.debug("shouldBeSigned: ", policy);
 		if (dkimResult.result === "none") {
-			if (policy.shouldBeSigned) {
+			if (policy.shouldBeSigned && !(isOutgoingCallback && await isOutgoingCallback())) {
 				return {
 					version: "2.0",
 					result: "PERMFAIL",

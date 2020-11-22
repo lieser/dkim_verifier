@@ -28,6 +28,7 @@ import ArhParser, * as ArhParserModule from "./arhParser.mjs.js";
 import Verifier, * as VerifierModule from "./dkim/verifier.mjs.js";
 import { domainIsInDomain, getDomainFromAddr } from "./utils.mjs.js";
 import { DKIM_InternalError } from "./error.mjs.js";
+import ExtensionUtils from "./extensionUtils.mjs.js";
 import Logging from "./logging.mjs.js";
 import MsgParser from "./msgParser.mjs.js";
 import SignRules from "./dkim/signRules.mjs.js";
@@ -126,15 +127,8 @@ export default class AuthVerifier {
 			msg.listId = MsgParser.parseListIdHeader(listId[0]);
 		}
 
-		// TODO
-		// ignore must be signed for outgoing messages
-		// if (msg.DKIMSignPolicy.shouldBeSigned && isOutgoing(msgHdr)) {
-		// 	log.debug("ignored must be signed for outgoing message");
-		// 	msg.DKIMSignPolicy.shouldBeSigned = false;
-		// }
-
 		// read Authentication-Results header
-		const arhResult = await getARHResult(msg.headerFields, msg.from, msg.listId, message.folder.accountId);
+		const arhResult = await getARHResult(message, msg.headerFields, msg.from, msg.listId, message.folder.accountId);
 
 		if (arhResult) {
 			if (prefs["arh.replaceAddonResult"]) {
@@ -162,7 +156,7 @@ export default class AuthVerifier {
 				// verify DKIM signatures
 				const dkimResultV2 = await new Verifier().verify(msg);
 
-				await checkSignRules(dkimResultV2.signatures, msg.from, msg.listId);
+				await checkSignRules(message, dkimResultV2.signatures, msg.from, msg.listId);
 				VerifierModule.sortSignatures(dkimResultV2.signatures, msg.from, msg.listId);
 
 				savedAuthResult.dkim = dkimResultV2.signatures;
@@ -198,13 +192,14 @@ export default class AuthVerifier {
 /**
  * Get the Authentication-Results header as an SavedAuthResult.
  *
+ * @param {browser.messageDisplay.MessageHeader} message
  * @param {Map<string, string[]>} headers
  * @param {string} from
  * @param {string} listId
  * @param {string} account
  * @return {Promise<SavedAuthResult|Null>}
  */
-async function getARHResult(headers, from, listId, account) {
+async function getARHResult(message, headers, from, listId, account) {
 	const arHeaders = headers.get("authentication-results");
 	if (!arHeaders || !prefs["account.arh.read"](account)) {
 		return null;
@@ -261,7 +256,7 @@ async function getARHResult(headers, from, listId, account) {
 	// if ARH result is replacing the add-ons,
 	// check SDID and AUID of DKIM results
 	if (prefs["arh.replaceAddonResult"]) {
-		await checkSignRules(dkimSigResults, from, listId);
+		await checkSignRules(message, dkimSigResults, from, listId);
 	}
 
 	// sort signatures
@@ -378,19 +373,25 @@ async function loadAuthResult(message) {
 /**
  * Checks the DKIM results against the sign rules.
  *
+ * @param {browser.messageDisplay.MessageHeader} message
  * @param {VerifierModule.dkimSigResultV2[]} dkimResults
  * @param {string} from
  * @param {string} listId
+ * returns {Promise<VerifierModule.dkimSigResultV2[]>}
  * @returns {Promise<void>}
  */
-async function checkSignRules(dkimResults, from, listId) {
+async function checkSignRules(message, dkimResults, from, listId) {
 	if (!prefs["policy.signRules.enable"]) {
 		return;
 	}
 
+	const isOutgoingCallback = () => {
+		return ExtensionUtils.isOutgoing(message, from);
+	};
+
 	for (let i = 0; i < dkimResults.length; i++) {
 		// eslint-disable-next-line require-atomic-updates
-		dkimResults[i] = await SignRules.check(dkimResults[i], from, listId);
+		dkimResults[i] = await SignRules.check(dkimResults[i], from, listId, isOutgoingCallback);
 	}
 }
 
@@ -693,34 +694,4 @@ async function addFavicons(authResult) {
 		}
 	}
 	return authResult;
-}
-
-/**
- * Checks if a message is outgoing
- *
- * @param {nsIMsgDBHdr} msgHdr
- * @return {boolean}
- */
-function isOutgoing(msgHdr) {
-	if (!msgHdr.folder) {
-		// msg is external
-		return false;
-	}
-	if (msgHdr.folder.getFlag(Ci.nsMsgFolderFlags.SentMail)) {
-		// msg is in sent folder
-		return true;
-	}
-
-	// return true if one of the servers identities contain the from address
-	let author = msgHdr.mime2DecodedAuthor;
-	let identities = MailServices.accounts.
-		getIdentitiesForServer(msgHdr.folder.server);
-	for (let identity of fixIterator(identities, Ci.nsIMsgIdentity)) {
-		if (author.includes(identity.email)) {
-			return true;
-		}
-	}
-
-	// default to false
-	return false;
 }

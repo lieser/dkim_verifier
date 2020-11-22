@@ -1,10 +1,4 @@
 ////////////////////////////////////////////////////////////////////////////////
-//// Mozilla specific JS extensions
-
-declare function fixIterator<T>(obj: any, type: T): T[]
-
-
-////////////////////////////////////////////////////////////////////////////////
 //// Mozilla specific modules
 
 interface ChromeUtils {
@@ -24,13 +18,11 @@ declare module Components {
     interface ComponentsInterfaces {
         [key: string]: object;
         readonly amIAddonManagerStartup: amIAddonManagerStartup;
-        readonly nsMsgFolderFlags: nsMsgFolderFlags;
         readonly nsIBinaryInputStream: nsIBinaryInputStream;
         readonly nsIFile: nsIFile;
         readonly nsIFileInputStream: nsIFileInputStream;
         readonly nsIInputStreamPump: nsIInputStreamPump;
         readonly nsILineInputStream: nsILineInputStream;
-        readonly nsIMsgIdentity: nsIMsgIdentity;
         readonly nsIProtocolProxyService: nsIProtocolProxyService;
         readonly nsISocketTransportService: nsISocketTransportService;
         readonly nsIWindowsRegKey: nsIWindowsRegKey;
@@ -153,14 +145,6 @@ declare module Services {
 declare module XPCOMUtils {
     function defineLazyModuleGetter(aObject: Object, aName: string, aResource: string, aSymbol?: string): void;
 }
-
-////////////////////////////////////////////////////////////////////////////////
-//// Thunderbird specific modules
-
-declare module MailServices {
-    let accounts: nsIMsgAccountManager
-}
-
 
 ////////////////////////////////////////////////////////////////////////////////
 //// Mozilla specific interfaces/types
@@ -413,19 +397,7 @@ interface nsIMsgFolder {
     readonly server: nsIMsgIncomingServer;
 }
 
-interface nsMsgFolderFlags {
-    readonly SentMail: number;
-}
-
 interface nsIMsgIncomingServer {
     getCharValue(attr: string): string;
     getIntValue(attr: string): number;
-}
-
-interface nsIMsgAccountManager {
-    getIdentitiesForServer(server: nsIMsgIncomingServer): nsIMsgIdentity[];
-}
-
-interface nsIMsgIdentity {
-    email: string;
 }

@@ -47,6 +47,40 @@ async function createOrRaisePopup(url, title, height = undefined, width = undefi
 }
 
 /**
+ * Checks if a message is outgoing.
+ *
+ * @param {browser.messageDisplay.MessageHeader} message
+ * @param {string} fromAddr
+ * @returns {Promise<boolean>}
+ */
+async function isOutgoing(message, fromAddr) {
+	if (!message.folder) {
+		// msg is external
+		return false;
+	}
+	if (["drafts", "sent", "templates", "outbox"].includes(message.folder.type ?? "")) {
+		// msg is in an outgoing type folder
+		log.debug("email is in outgoing type folder, no need fo it to be signed");
+		return true;
+	}
+
+	// return true if one of the accounts identities contain the from address
+	const account = await browser.accounts.get(message.folder.accountId);
+	const identities = account?.identities;
+	if (identities) {
+		for (const identity of identities) {
+			if (fromAddr === identity.email) {
+				log.debug("email is from own identity, no need fo it to be signed");
+				return true;
+			}
+		}
+	}
+
+	// default to false
+	return false;
+}
+
+/**
  * Reads a file included in the extension as a string.
  *
  * @param {string} path - path inside the extension of the file to read
@@ -95,6 +129,7 @@ async function safeGetLocalStorage() {
 
 const ExtensionUtils = {
 	createOrRaisePopup: createOrRaisePopup,
+	isOutgoing: isOutgoing,
 	safeGetLocalStorage: safeGetLocalStorage,
 	readFile: readFile,
 };

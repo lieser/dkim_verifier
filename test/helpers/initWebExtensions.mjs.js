@@ -93,6 +93,11 @@ before(async function () {
 
 	globalThis.browser.runtime.sendMessage = sinon.fake.resolves(undefined);
 
+	globalThis.browser.accounts = {
+		list: sinon.fake.resolves([]),
+		get: sinon.fake.resolves(null),
+	};
+
 	globalThis.browser.mailUtils = {
 		getBaseDomainFromAddr: getBaseDomainFromAddr,
 	};
