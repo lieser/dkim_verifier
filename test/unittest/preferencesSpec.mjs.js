@@ -352,17 +352,8 @@ describe("preferences [unittest]", function () {
 			).to.be.equal("fooBar");
 		});
 		it("test multiple pref changes at the same time", async function () {
-			after(function () {
-				fakeBrowser.storage.local.set.callsFake(fakeBrowser.storage.local._set);
-			});
-
 			/** @type {Object.<string, any>[]} */
 			const storageCalls = [];
-			fakeBrowser.storage.local.set.callsFake(items => {
-				storageCalls.push(JSON.parse(JSON.stringify(items)));
-				return fakeBrowser.storage.local._set(items, undefined);
-			});
-
 			function triggerListener() {
 				const items = storageCalls.shift();
 				if (!items) {
@@ -379,20 +370,29 @@ describe("preferences [unittest]", function () {
 				fakeBrowser.storage.onChanged.addListener.yield(changes, "local");
 			}
 
-			await pref.setValue("dns.nameserver", "fooBar");
-			await pref.setValue("arh.read", true);
-			triggerListener();
-			await pref.setValue("color.nosig.background", "red");
-			await pref.setValue("dns.proxy.port", 1111);
+			try {
+				fakeBrowser.storage.local.set.callsFake(items => {
+					storageCalls.push(JSON.parse(JSON.stringify(items)));
+					return fakeBrowser.storage.local._set(items, undefined);
+				});
 
-			while (storageCalls.length > 0) {
+				await pref.setValue("dns.nameserver", "fooBar");
+				await pref.setValue("arh.read", true);
 				triggerListener();
-			}
+				await pref.setValue("color.nosig.background", "red");
+				await pref.setValue("dns.proxy.port", 1111);
 
-			expect(pref["dns.nameserver"]).to.be.equal("fooBar");
-			expect(pref["arh.read"]).to.be.equal(true);
-			expect(pref["color.nosig.background"]).to.be.equal("red");
-			expect(pref["dns.proxy.port"]).to.be.equal(1111);
+				while (storageCalls.length > 0) {
+					triggerListener();
+				}
+
+				expect(pref["dns.nameserver"]).to.be.equal("fooBar");
+				expect(pref["arh.read"]).to.be.equal(true);
+				expect(pref["color.nosig.background"]).to.be.equal("red");
+				expect(pref["dns.proxy.port"]).to.be.equal(1111);
+			} finally {
+				fakeBrowser.storage.local.set.callsFake(fakeBrowser.storage.local._set);
+			}
 		});
 		it("safeGetLocalStorage - retry on reject", async function () {
 			try {
