@@ -176,6 +176,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "balsamico.shop",
+			"addr": "*",
+			"sdid": "balsamico.shop",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "bancamediolanum.it",
 			"addr": "*",
 			"sdid": "bancamediolanum.it",
@@ -229,6 +235,18 @@
 			"sdid": "blizzard.com email.blizzard.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
+			"domain": "bni-hamburg.de",
+			"addr": "*",
+			"sdid": "bni-hamburg.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "buhl-newsletter.de",
+			"addr": "*",
+			"sdid": "buhl-newsletter.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
 		}, {
 			"domain": "booking.com",
 			"addr": "*",
@@ -434,6 +452,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "dpd.de",
+			"addr": "*@paket.dpd.de",
+			"sdid": "dpd.de paket.dpd.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "dropbox.com",
 			"addr": "*",
 			"sdid": "dropbox.com",
@@ -457,6 +481,12 @@
 			"sdid": "easyJet.com email.easyJet.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
+			"domain": "eat-the-world.com",
+			"addr": "*",
+			"sdid": "eat-the-world.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
 		}, {
 			"domain": "ebay.de",
 			"addr": "*",
@@ -521,6 +551,12 @@
 			"domain": "engieperte.it",
 			"addr": "*",
 			"sdid": "engieperte.it",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "enquete-sncf.fr",
+			"addr": "*",
+			"sdid": "enquete-sncf.fr",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -806,6 +842,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "huk-coburg.de",
+			"addr": "*",
+			"sdid": "huk-coburg.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "huk24.de",
 			"addr": "*",
 			"sdid": "huk24.de",
@@ -966,7 +1008,7 @@
 			"addr": "*",
 			"sdid": "luxair.lu",
 			"ruletype": "NEUTRAL",
-			"priority": "DEFAULT_RULE_NEUTRAL"
+			"priority": "DEFAULT_RULE_ALL"
 		}, {
 			"domain": "luxair.lu",
 			"addr": "*@newsletter.luxair.lu",
@@ -1034,6 +1076,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
+			"domain": "milesandmore.com",
+			"addr": "*@mailing.milesandmore.com",
+			"sdid": "milesandmore.com mailing.milesandmore.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "mojang.com",
 			"addr": "*",
 			"sdid": "mojang.com",
@@ -1070,6 +1118,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "myfritz.net",
+			"addr": "*",
+			"sdid": "myfritz.net",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "nadh-austria.at",
 			"addr": "*",
 			"sdid": "nadh-austria.at nhda.onmicrosoft.com",
@@ -1091,6 +1145,12 @@
 			"domain": "netflix.com",
 			"addr": "*",
 			"sdid": "netflix.com mailer.netflix.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "neuronation.com",
+			"addr": "*",
+			"sdid": "neuronation.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -1214,6 +1274,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "peterhahn.de",
+			"addr": "*",
+			"sdid": "peterhahn.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "pimkie.com",
 			"addr": "*@news.pimkie.com",
 			"sdid": "pimkie.com news.pimkie.com",
@@ -1256,9 +1322,21 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "ripcurl.com",
+			"addr": "*",
+			"sdid": "ripcurl.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "rockstargames.com",
 			"addr": "*",
 			"sdid": "rockstargames.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "rossmann.de",
+			"addr": "*@mailing.rossmann.de",
+			"sdid": "rossmann.de mailing.rossmann.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -1412,6 +1490,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "telekom.de",
+			"addr": "*",
+			"sdid": "telekom.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "telepass.it",
 			"addr": "*",
 			"sdid": "telepass.it telepassmailer.it",
@@ -1439,6 +1523,12 @@
 			"domain": "thenewsletterplugin.com",
 			"addr": "*",
 			"sdid": "thenewsletterplugin.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "tidbit5150.com",
+			"addr": "*",
+			"sdid": "tidbit5150.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
