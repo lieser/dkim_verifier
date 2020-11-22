@@ -347,6 +347,12 @@
 	"options_dns.proxy.port": {
 		"message": "Port:"
 	},
+	"options_dns.libunbound.nameserver": {
+		"message": "DNS servers (Syntax (EBNF): IP{\";\"IP} )"
+	},
+	"options_dns.libunbound.usageWarning": {
+		"message": "The libunbound resolver requires an externally installed library"
+	},
 	"options_dns.libunbound.path": {
 		"message": "Path"
 	},

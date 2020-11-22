@@ -66,12 +66,13 @@
       <label class="checkbox" data-i18n="options_dns.getNameserversFromOS">
         <input type="checkbox" data-pref="dns.getNameserversFromOS">
       </label>
-      <label for="dns.nameserver" data-i18n="options_dns.nameserver"></label>
+      <label for="dns.nameserver" data-dns-resolver="1" data-i18n="options_dns.nameserver"></label>
+      <label for="dns.nameserver" data-dns-resolver="2" data-i18n="options_dns.libunbound.nameserver"></label>
       <div>
         <input id="dns.nameserver" type="text" data-pref="dns.nameserver">
       </div>
       <!-- jsdns specific options -->
-      <fieldset id="dns.resolver.1">
+      <fieldset data-dns-resolver="1">
         <legend data-i18n="options_dns.resolver.value.1"></legend>
         <div>
           <label for="dns.timeout_connect" data-i18n="options_dns.timeout_connect"></label>
@@ -97,8 +98,9 @@
         </fieldset>
       </fieldset>
       <!-- libunbound specific options -->
-      <fieldset id="dns.resolver.2">
+      <fieldset data-dns-resolver="2">
         <legend data-i18n="options_dns.resolver.value.2"></legend>
+        <p id="libunbound.usageWarning" class="usage-warning">⚠ <span data-i18n="options_dns.libunbound.usageWarning"></span></p>
         <div>
           <label data-i18n="options_dns.libunbound.path"></label>
           <input type="text" data-pref="dns.libunbound.path">

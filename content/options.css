@@ -118,3 +118,7 @@ fieldset:disabled label {
 	color: var(--in-content-selected-text);
 	background-color: var(--in-content-item-selected)
 }
+
+.usage-warning[data-highlight="true"] {
+	color: orange;
+}

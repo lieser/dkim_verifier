@@ -18,6 +18,18 @@ import prefs from "../modules/preferences.mjs.js";
 const log = Logging.getLogger("Options");
 
 /**
+ * @param {string} id
+ * @returns {HTMLElement}
+ */
+function getElementById(id) {
+	const element = document.getElementById(id);
+	if (!element) {
+		throw new Error(`Could not find element with id '${id}'.`);
+	}
+	return element;
+}
+
+/**
  * Set the active pane to the given navigation selector
  *
  * @param {HTMLElement} navSelector
@@ -86,10 +98,7 @@ function updateKeyStoring() {
 	if (!keyStoring) {
 		throw Error("key.storing element not found");
 	}
-	const viewKeys = document.getElementById("key.viewKeys");
-	if (!viewKeys) {
-		throw Error("key.viewKeys element not found");
-	}
+	const viewKeys = getElementById("key.viewKeys");
 	if (!(viewKeys instanceof HTMLButtonElement)) {
 		throw Error("key.viewKeys element is not a button");
 	}
@@ -103,18 +112,12 @@ function updateDnsResolver() {
 	if (!dnsResolver) {
 		throw Error("dns.resolver element not found");
 	}
-	const dnsResolver1 = document.getElementById("dns.resolver.1");
-	if (!dnsResolver1) {
-		throw Error("dns.resolver.1 element not found");
-	}
-	const dnsResolver2 = document.getElementById("dns.resolver.2");
-	if (!dnsResolver2) {
-		throw Error("dns.resolver.2 element not found");
-	}
 
-	const resolverIndex = parseInt(dnsResolver.value, 10);
-	dnsResolver1.hidden = resolverIndex !== 1;
-	dnsResolver2.hidden = resolverIndex !== 2;
+	/** @type {HTMLElement[]} */
+	const dnsResolverElements = Array.from(document.querySelectorAll("[data-dns-resolver]"));
+	for (const element of dnsResolverElements) {
+		element.hidden = element.dataset.dnsResolver !== dnsResolver.value;
+	}
 }
 
 function updateDnsProxy() {
@@ -123,15 +126,18 @@ function updateDnsProxy() {
 	if (!dnsProxyEnable) {
 		throw Error("dns.proxy.enable element not found");
 	}
-	const dnsProxy = document.getElementById("dns.proxy");
-	if (!dnsProxy) {
-		throw Error("dns.proxy element not found");
-	}
+	const dnsProxy = getElementById("dns.proxy");
 	if (!(dnsProxy instanceof HTMLFieldSetElement)) {
 		throw Error("dns.proxy element is not a fieldset");
 	}
 
 	dnsProxy.disabled = !dnsProxyEnable.checked;
+}
+
+function updateDnsLibunboundWarning() {
+	const highlightUsageWarning = prefs["dns.libunbound.path"].trim() === "";
+	const usageWarning = getElementById("libunbound.usageWarning");
+	usageWarning.dataset.highlight = highlightUsageWarning.toString();
 }
 
 function updatePolicySignRulesEnable() {
@@ -140,10 +146,7 @@ function updatePolicySignRulesEnable() {
 	if (!policySignRulesEnable) {
 		throw Error("policy.signRules.enable element not found");
 	}
-	const policySignRules = document.getElementById("policy.signRules");
-	if (!policySignRules) {
-		throw Error("policy.signRules element not found");
-	}
+	const policySignRules = getElementById("policy.signRules");
 	if (!(policySignRules instanceof HTMLFieldSetElement)) {
 		throw Error("policy.signRules element is not a fieldset");
 	}
@@ -158,10 +161,7 @@ function updatePolicyAutoAddRuleEnable() {
 	if (!policySignRulesAutoAddRuleEnable) {
 		throw Error("policy.signRules.autoAddRule enabled element not found");
 	}
-	const policySignRulesAutoAddRule = document.getElementById("policy.signRules.autoAddRule");
-	if (!policySignRulesAutoAddRule) {
-		throw Error("policy.signRules.autoAddRule element not found");
-	}
+	const policySignRulesAutoAddRule = getElementById("policy.signRules.autoAddRule");
 	if (!(policySignRulesAutoAddRule instanceof HTMLFieldSetElement)) {
 		throw Error("policy.signRules.autoAddRule element is not a fieldset");
 	}
@@ -174,26 +174,26 @@ function updatePolicyAutoAddRuleEnable() {
  *
  * @param {string} prefName
  * @param {HTMLElement} target
- * @returns {void}
+ * @returns {Promise<void>}
  */
-function setPreference(prefName, target) {
+async function setPreference(prefName, target) {
 	if (target instanceof HTMLInputElement) {
 		if (target.getAttribute("type") === "checkbox") {
-			prefs.setValue(prefName, target.checked);
+			await prefs.setValue(prefName, target.checked);
 		} else if (target.getAttribute("type") === "text" ||
 			target.dataset.prefType === "string"
 		) {
-			prefs.setValue(prefName, target.value);
+			await prefs.setValue(prefName, target.value);
 		} else if (target.getAttribute("type") === "number") {
-			prefs.setValue(prefName, parseInt(target.value, 10));
+			await prefs.setValue(prefName, parseInt(target.value, 10));
 		} else {
 			log.error("Received change event for input element with unexpected type", event);
 		}
 	} else if (target instanceof HTMLSelectElement) {
 		if (target.dataset.prefType === "string") {
-			prefs.setValue(prefName, target.value);
+			await prefs.setValue(prefName, target.value);
 		} else {
-			prefs.setValue(prefName, parseInt(target.value, 10));
+			await prefs.setValue(prefName, parseInt(target.value, 10));
 		}
 	} else {
 		log.error("Received change event for unexpected element", event);
@@ -208,6 +208,9 @@ function setPreference(prefName, target) {
 			break;
 		case "dns.proxy.enable":
 			updateDnsProxy();
+			break;
+		case "dns.libunbound.path":
+			updateDnsLibunboundWarning();
 			break;
 		case "policy.signRules.enable":
 			updatePolicySignRulesEnable();
@@ -224,22 +227,19 @@ function setPreference(prefName, target) {
  *
  * @param {string} prefName
  * @param {HTMLElement} target
- * @returns {void}
+ * @returns {Promise<void>}
  */
-function setAccountPreference(prefName, target) {
-	const accountSelectionBox = document.getElementById("account-selection-box");
-	if (!accountSelectionBox) {
-		throw new Error("element account-selection not found");
-	}
+async function setAccountPreference(prefName, target) {
+	const accountSelectionBox = getElementById("account-selection-box");
 	const account = accountSelectionBox.dataset.current;
 	if (!account) {
 		throw new Error("no account defined on account-selection element");
 	}
 
 	if (target instanceof HTMLInputElement) {
-		prefs.setAccountValue(prefName, account, target.value);
+		await prefs.setAccountValue(prefName, account, target.value);
 	} else if (target instanceof HTMLSelectElement) {
-		prefs.setAccountValue(prefName, account, parseInt(target.value, 10));
+		await prefs.setAccountValue(prefName, account, parseInt(target.value, 10));
 	} else {
 		log.error("Received change event for unexpected element", event);
 	}
@@ -249,9 +249,9 @@ function setAccountPreference(prefName, target) {
  * React to a change event on an HTML element representing a preference.
  *
  * @param {Event} event
- * @returns {void}
+ * @returns {Promise<void>}
  */
-function preferenceChanged(event) {
+async function preferenceChanged(event) {
 	try {
 		const target = event.target;
 		if (!(target instanceof HTMLElement)) {
@@ -260,12 +260,12 @@ function preferenceChanged(event) {
 		}
 		let prefName = target.dataset.pref;
 		if (prefName) {
-			setPreference(prefName, target);
+			await setPreference(prefName, target);
 			return;
 		}
 		prefName = target.dataset.accountPref;
 		if (prefName) {
-			setAccountPreference(prefName, target);
+			await setAccountPreference(prefName, target);
 			return;
 		}
 		log.warn("Received unexpected change event for element without data-pref or data-account-pref attribute", event);
@@ -317,6 +317,7 @@ async function initPreferences() {
 	updateKeyStoring();
 	updateDnsResolver();
 	updateDnsProxy();
+	updateDnsLibunboundWarning();
 	updatePolicySignRulesEnable();
 	updatePolicyAutoAddRuleEnable();
 
@@ -362,10 +363,7 @@ function updateAccountPreferences(account) {
 async function initAccount() {
 	await prefs.init();
 
-	const accountSelectionBox = document.getElementById("account-selection-box");
-	if (!accountSelectionBox) {
-		throw new Error("element account-selection not found");
-	}
+	const accountSelectionBox = getElementById("account-selection-box");
 
 	const accounts = (await browser.accounts.list()).
 		filter(account =>
@@ -403,10 +401,7 @@ async function initAccount() {
  * @returns {void}
  */
 function initButtons() {
-	const signRulesDefaultsView = document.getElementById("signRulesDefaultsView");
-	if (!signRulesDefaultsView) {
-		throw new Error("element signRulesDefaultsView not found");
-	}
+	const signRulesDefaultsView = getElementById("signRulesDefaultsView");
 	signRulesDefaultsView.addEventListener("click", () => {
 		ExtensionUtils.createOrRaisePopup(
 			"./signRulesDefaultsView.html",
@@ -414,10 +409,7 @@ function initButtons() {
 		);
 	});
 
-	const signRulesUserView = document.getElementById("signRulesUserView");
-	if (!signRulesUserView) {
-		throw new Error("element signRulesUserView not found");
-	}
+	const signRulesUserView = getElementById("signRulesUserView");
 	signRulesUserView.addEventListener("click", () => {
 		ExtensionUtils.createOrRaisePopup(
 			"./signRulesUserView.html",
