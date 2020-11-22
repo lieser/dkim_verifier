@@ -1,11 +1,13 @@
-4.0.0pre3 [2020-11-09]
+4.0.0pre4 [2020-11-23]
 ------------------
  - now requires at least Thunderbird 78
  - fixed incompatibility with Thunderbird 78 (#119)
  - removed option to show DKIM result in the statusbarpanel
  - Authentication-Results header: fixed parsing of version
- - updated default rules and favicons (#165, #168, #169, #180)
- - don't set default libunbound path (#208, #209, #210)
+ - libunbound resolver: Don't provide a default path
+ - libunbound resolver: Improve options description
+ - added about page in options
+ - updated default rules and favicons (#208, #209, #210)
 
 3.1.0 [2020-01-22]
 ------------------
