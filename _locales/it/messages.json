@@ -506,7 +506,7 @@
 	// -------------------- Account options --------------------
 	"options_account": {
 		"message": "Account",
-		"description": "Titolo per le opzioni specifiche dell'account"
+		"description": "Title for account specific options"
 	},
 	"options_acc.dkim.enable": {
 		"message": "Verifica le firme DKIM:"
@@ -532,34 +532,34 @@
 	},
 	"about_name": {
 		"message": "DKIM Verifier",
-		"description": "Nome del componente aggiuntivo"
+		"description": "Name of the add-on"
 	},
 	"about_summary": {
 		"message": "Verifica la firma DKIM di un’email.",
-		"description": "Breve descrizione del componente aggiuntivo"
+		"description": "Short description of the add-on"
 	},
 	"about_homepage": {
 		"message": "Homepage"
 	},
 	"about_documentation": {
 		"message": "Documentazione",
-		"description": "Testo collegamento alla pagina della documentazione su GitHub"
+		"description": "Link text for GitHub documentation page"
 	},
 	"about_contributors": {
 		"message": "Collaboratori GitHub",
-		"description": "Testo collegamento alla pagina dei collaboratori su GitHub"
+		"description": "Link text for GitHub contributors page"
 	},
 	"about_translators": {
 		"message": "Traduttori:",
-		"description": "Intestazione dell'elenco dei traduttori"
+		"description": "Heading for list of translators"
 	},
 	"about_dependencies": {
 		"message": "Dipendenze incluse:",
-		"description": "Intestazione dell'elenco delle dipendenze incluse"
+		"description": "Heading for list of included dependencies"
 	},
 	"about_by": {
 		"message": "di",
-		"description": "<nome dipendenza> di <autore>"
+		"description": "<dependency name> by <author>"
 	},
 	// ==================== Actions ====================
 	"dkim_verifier.reverifyDKIMSignature": {
