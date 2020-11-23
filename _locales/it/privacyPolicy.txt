@@ -1,4 +1,4 @@
-Il componente aggiuntivo interroga un server DNS (quello predefinito è il DNS pubblico di Google (8.8.8.8) o quello configurato sul proprio computer) verificando un record TXT record indicato nella firma. Tale record TXT contiene la chiave pubblica della firma.
+Il componente aggiuntivo interroga un server DNS (quello predefinito è il DNS pubblico di Google (8.8.8.8) o quello configurato sul proprio computer) verificando un record TXT indicato nella firma. Tale record TXT contiene la chiave pubblica della firma.
 Questo viene fatto ogni volta che viene visualizzata un’email contenente una firma DKIM.
 
 Se è abilitato l’uso di DMARC, potrebbero venire effettuate ulteriori richieste DNS, anche quando vengono visualizzate email non formate con DKIM.
