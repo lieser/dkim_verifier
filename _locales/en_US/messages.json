@@ -543,7 +543,7 @@
 	},
 	"about_documentation": {
 		"message": "Documentation",
-		"description": "Link text for GitHub contributors page"
+		"description": "Link text for GitHub documentation page"
 	},
 	"about_contributors": {
 		"message": "GitHub contributors",
