@@ -526,7 +526,7 @@
 	"options_acc.boolean.value.2": {
 		"message": "Nein"
 	},
-	// -------------------- Account options --------------------
+	// -------------------- About --------------------
 	"about": {
 		"message": "Über"
 	},
@@ -543,7 +543,7 @@
 	},
 	"about_documentation": {
 		"message": "Dokumentation",
-		"description": "Link text for GitHub contributors page"
+		"description": "Link text for GitHub documentation page"
 	},
 	"about_contributors": {
 		"message": "GitHub Mitwirkende",
