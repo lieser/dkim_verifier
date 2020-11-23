@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset='utf-8'>
+  <title data-i18n="options_prefwindow.title"></title>
+
+  <link rel='stylesheet' type='text/css' href="chrome://global/skin/in-content/common.css">
+  <link rel='stylesheet' type='text/css' href="chrome://messenger/skin/preferences/preferences.css">
+
+  <link rel='stylesheet' type='text/css' href="./options.css">
+  <script type="module" src="./translation.mjs.js"></script>
+  <script type="module" src="./options.mjs.js"></script>
+</head>
+
+<body>
+
+  <nav class="nav-main">
+    <div pane="general" data-i18n="options_general"></div>
+    <div pane="display" data-i18n="options_display"></div>
+    <div pane="account" data-i18n="options_account"></div>
+    <div pane="advanced" data-i18n="options_advanced"></div>
+    <div pane="about" data-i18n="about"></div>
+  </nav>
+
+  <!-- general options -->
+  <main pane="general">
+    <nav class="nav-section">
+      <div pane="general" data-i18n="options_general.general"></div>
+      <div pane="dns" data-i18n="options_dns"></div>
+      <div pane="policy" data-i18n="options_general.policy"></div>
+    </nav>
+
+    <!-- general tab -->
+    <section pane="general">
+      <label class="checkbox" data-i18n="options_dkim.enable">
+        <input type="checkbox" data-pref="dkim.enable">
+      </label>
+      <div style="opacity: 0.5;">
+        <select data-pref="key.storing">
+          <option data-i18n="options_key.storing.value.0" value="0"></option>
+          <option data-i18n="options_key.storing.value.1" value="1"></option>
+          <option data-i18n="options_key.storing.value.2" value="2"></option>
+        </select>
+        <button id="key.viewKeys" data-i18n="options_key.viewKeys"
+          oncommand="window.open('chrome://dkim_verifier/content/treeviewKeys.xul', 'dkimKeys', 'chrome,resizable,centerscreen,width=600,height=300,modal');">
+        </button>
+      </div>
+      <label class="checkbox" data-i18n="options_saveResult">
+        <input type="checkbox" data-pref="saveResult">
+      </label>
+      <label class="checkbox" data-i18n="options_arh.read">
+        <input type="checkbox" data-pref="arh.read">
+      </label>
+    </section>
+
+    <!-- dns tab -->
+    <section pane="dns">
+      <div>
+        <label data-i18n="options_dns.resolver"></label>
+        <select data-pref="dns.resolver">
+          <option data-i18n="options_dns.resolver.value.1" value="1"></option>
+          <option data-i18n="options_dns.resolver.value.2" value="2"></option>
+        </select>
+      </div>
+      <label class="checkbox" data-i18n="options_dns.getNameserversFromOS">
+        <input type="checkbox" data-pref="dns.getNameserversFromOS">
+      </label>
+      <label for="dns.nameserver" data-dns-resolver="1" data-i18n="options_dns.nameserver"></label>
+      <label for="dns.nameserver" data-dns-resolver="2" data-i18n="options_dns.libunbound.nameserver"></label>
+      <div>
+        <input id="dns.nameserver" type="text" data-pref="dns.nameserver">
+      </div>
+      <!-- jsdns specific options -->
+      <fieldset data-dns-resolver="1">
+        <legend data-i18n="options_dns.resolver.value.1"></legend>
+        <div>
+          <label for="dns.timeout_connect" data-i18n="options_dns.timeout_connect"></label>
+          <input id="dns.timeout_connect" type="number" data-pref="dns.timeout_connect" size="10" min="0">
+        </div>
+        <label class="checkbox" data-i18n="options_dns.proxy.enable">
+          <input type="checkbox" data-pref="dns.proxy.enable">
+        </label>
+        <fieldset id="dns.proxy">
+          <div>
+            <label class="proxyConfig" data-i18n="options_dns.proxy.type"></label>
+            <select class="proxyConfig" data-pref="dns.proxy.type" data-pref-type="string">
+              <option value="socks">SOCKS v5</option>
+              <option value="socks4">SOCKS v4</option>
+            </select>
+          </div>
+          <div>
+            <label data-i18n="options_dns.proxy.host"></label>
+            <input type="text" data-pref="dns.proxy.host">
+            <label data-i18n="options_dns.proxy.port"></label>
+            <input type="number" data-pref="dns.proxy.port" size="10" min="0" max="65535">
+          </div>
+        </fieldset>
+      </fieldset>
+      <!-- libunbound specific options -->
+      <fieldset data-dns-resolver="2">
+        <legend data-i18n="options_dns.resolver.value.2"></legend>
+        <p id="libunbound.usageWarning" class="usage-warning">⚠ <span data-i18n="options_dns.libunbound.usageWarning"></span></p>
+        <div>
+          <label data-i18n="options_dns.libunbound.path"></label>
+          <input type="text" data-pref="dns.libunbound.path">
+        </div>
+        <label class="checkbox" data-i18n="options_dns.libunbound.path.relToProfileDir">
+          <input type="checkbox" data-pref="dns.libunbound.path.relToProfileDir">
+        </label>
+      </fieldset>
+    </section>
+
+    <!-- policy tab -->
+    <section pane="policy">
+      <label class="checkbox" data-i18n="options_policy.signRules.enable">
+        <input type="checkbox" data-pref="policy.signRules.enable">
+      </label>
+      <fieldset id="policy.signRules" class="indent">
+        <label class="checkbox" data-i18n="options_policy.signRules.checkDefaultRules">
+          <input type="checkbox" data-pref="policy.signRules.checkDefaultRules">
+        </label>
+        <label class="checkbox" data-i18n="options_policy.signRules.autoAddRule.enable">
+          <input type="checkbox" data-pref="policy.signRules.autoAddRule.enable">
+        </label>
+        <fieldset id="policy.signRules.autoAddRule" class="indent">
+          <label class="checkbox" data-i18n="options_policy.signRules.autoAddRule.onlyIfFromAddressInSDID">
+            <input type="checkbox" data-pref="policy.signRules.autoAddRule.onlyIfFromAddressInSDID">
+          </label>
+          <select data-pref="policy.signRules.autoAddRule.for">
+            <option data-i18n="options_policy.signRules.autoAddRule.for.value.0" value="0"></option>
+            <option data-i18n="options_policy.signRules.autoAddRule.for.value.1" value="1"></option>
+            <option data-i18n="options_policy.signRules.autoAddRule.for.value.2" value="2"></option>
+          </select>
+        </fieldset>
+        <label class="checkbox" data-i18n="options_policy.signRules.sdid.allowSubDomains">
+          <input type="checkbox" data-pref="policy.signRules.sdid.allowSubDomains">
+        </label>
+        <label class="checkbox" data-i18n="options_policy.signRules.error.wrong_sdid.asWarning">
+          <input type="checkbox" data-pref="policy.signRules.error.wrong_sdid.asWarning">
+        </label>
+        <label style="opacity: 0.5;" class="checkbox" data-i18n="options_policy.DMARC.shouldBeSigned.enable">
+          <input type="checkbox" data-pref="policy.DMARC.shouldBeSigned.enable">
+        </label>
+        <div>
+          <button id="signRulesUserView" data-i18n="options_viewSigners"></button>
+          <button id="signRulesDefaultsView" data-i18n="options_viewSignerDefaults"></button>
+        </div>
+      </fieldset>
+    </section>
+  </main>
+
+  <!-- display options -->
+  <main pane="display">
+    <label class="checkbox" data-i18n="options_colorFrom">
+      <input type="checkbox" data-pref="colorFrom">
+    </label>
+    <fieldset class="colorGrid">
+      <!-- <legend data-i18n="options_color"></legend> -->
+      <label class="colorGridHeader" data-i18n="options_color.success"></label>
+      <div>
+        <label data-i18n="options_color.text"></label>
+        <input type="text" data-pref="color.success.text" size="15">
+        <label data-i18n="options_color.background"></label>
+        <input type="text" data-pref="color.success.background" size="15">
+      </div>
+
+      <label class="colorGridHeader" data-i18n="options_color.warning"></label>
+      <div>
+        <label data-i18n="options_color.text"></label>
+        <input type="text" data-pref="color.warning.text" size="15">
+        <label data-i18n="options_color.background"></label>
+        <input type="text" data-pref="color.warning.background" size="15">
+      </div>
+
+      <label class="colorGridHeader" data-i18n="options_color.permfail"></label>
+      <div>
+        <label data-i18n="options_color.text"></label>
+        <input type="text" data-pref="color.permfail.text" size="15">
+        <label data-i18n="options_color.background"></label>
+        <input type="text" data-pref="color.permfail.background" size="15">
+      </div>
+
+      <label class="colorGridHeader" data-i18n="options_color.tempfail"></label>
+      <div>
+        <label data-i18n="options_color.text"></label>
+        <input type="text" data-pref="color.tempfail.text" size="15">
+        <label data-i18n="options_color.background"></label>
+        <input type="text" data-pref="color.tempfail.background" size="15">
+      </div>
+
+      <label class="colorGridHeader" data-i18n="options_color.nosig"></label>
+      <div>
+        <label data-i18n="options_color.text"></label>
+        <input type="text" data-pref="color.nosig.text" size="15">
+        <label data-i18n="options_color.background"></label>
+        <input type="text" data-pref="color.nosig.background" size="15">
+      </div>
+    </fieldset>
+    <div>
+      <label data-i18n="options_showDKIMHeader"></label>
+      <select data-pref="showDKIMHeader">
+        <option data-i18n="options_showDKIM.value.0" value="0"></option>
+        <option data-i18n="options_showDKIM.value.10" value="10"></option>
+        <option data-i18n="options_showDKIM.value.30" value="30"></option>
+        <option data-i18n="options_showDKIM.value.40" value="40"></option>
+        <option data-i18n="options_showDKIM.value.50" value="50"></option>
+      </select>
+    </div>
+    <div>
+      <label data-i18n="options_showDKIMFromTooltip"></label>
+      <select data-pref="showDKIMFromTooltip">
+        <option data-i18n="options_showDKIM.value.0" value="0"></option>
+        <option data-i18n="options_showDKIM.value.10" value="10"></option>
+        <option data-i18n="options_showDKIM.value.30" value="30"></option>
+        <option data-i18n="options_showDKIM.value.40" value="40"></option>
+        <option data-i18n="options_showDKIM.value.50" value="50"></option>
+      </select>
+    </div>
+    <label class="checkbox" data-i18n="options_display.favicon.show">
+      <input type="checkbox" data-pref="display.favicon.show">
+    </label>
+  </main>
+
+  <!-- account options -->
+  <main pane="account" class="account-options">
+    <section id="account-selection-box" class="account-selection-box">
+      <!-- <div class="account-selection-item">account name</div> -->
+    </section>
+
+    <section>
+      <div>
+        <label data-i18n="options_acc.dkim.enable"></label>
+        <select data-account-pref="dkim.enable">
+          <option data-i18n="options_acc.boolean.value.0" value="0"></option>
+          <option data-i18n="options_acc.boolean.value.1" value="1"></option>
+          <option data-i18n="options_acc.boolean.value.2" value="2"></option>
+        </select>
+      </div>
+      <div>
+        <label data-i18n="options_acc.arh.read"></label>
+        <select data-account-pref="arh.read">
+          <option data-i18n="options_acc.boolean.value.0" value="0"></option>
+          <option data-i18n="options_acc.boolean.value.1" value="1"></option>
+          <option data-i18n="options_acc.boolean.value.2" value="2"></option>
+        </select>
+      </div>
+      <label for="acc.arh.allowedAuthserv" data-i18n="options_acc.arh.allowedAuthserv"></label>
+      <div>
+        <input id="acc.arh.allowedAuthserv" type="text" data-account-pref="arh.allowedAuthserv" style="width: 80%;">
+      </div>
+    </section>
+  </main>
+
+  <!-- advanced options -->
+  <main pane="advanced">
+    <label class="checkbox" data-i18n="options_debug">
+      <input type="checkbox" data-pref="debug">
+    </label>
+    <label class="checkbox" data-i18n="options_error.detailedReasons">
+      <input type="checkbox" data-pref="error.detailedReasons">
+    </label>
+    <label class="checkbox" data-i18n="options_error.key_testmode.ignore">
+      <input type="checkbox" data-pref="error.key_testmode.ignore">
+    </label>
+    <label class="checkbox" data-i18n="options_display.keySecure">
+      <input type="checkbox" data-pref="display.keySecure">
+    </label>
+    <label class="checkbox" data-i18n="options_arh.replaceAddonResult">
+      <input type="checkbox" data-pref="arh.replaceAddonResult">
+    </label>
+    <label class="checkbox" data-i18n="options_arh.relaxedParsing">
+      <input type="checkbox" data-pref="arh.relaxedParsing">
+    </label>
+    <div>
+      <label data-i18n="options_error.illformed_i.treatAs"></label>
+      <select data-pref="error.illformed_i.treatAs">
+        <option data-i18n="options_error.treatAs.value.0" value="0"></option>
+        <option data-i18n="options_error.treatAs.value.1" value="1"></option>
+        <option data-i18n="options_error.treatAs.value.2" value="2"></option>
+      </select>
+    </div>
+    <div>
+      <label data-i18n="options_error.illformed_s.treatAs"></label>
+      <select data-pref="error.illformed_s.treatAs">
+        <option data-i18n="options_error.treatAs.value.0" value="0"></option>
+        <option data-i18n="options_error.treatAs.value.1" value="1"></option>
+        <option data-i18n="options_error.treatAs.value.2" value="2"></option>
+      </select>
+    </div>
+    <div>
+      <label data-i18n="options_error.policy.key_insecure.treatAs"></label>
+      <select data-pref="error.policy.key_insecure.treatAs">
+        <option data-i18n="options_error.treatAs.value.0" value="0"></option>
+        <option data-i18n="options_error.treatAs.value.1" value="1"></option>
+        <option data-i18n="options_error.treatAs.value.2" value="2"></option>
+      </select>
+    </div>
+    <div>
+      <label data-i18n="options_error.algorithm.sign.rsa-sha1.treatAs"></label>
+      <select data-pref="error.algorithm.sign.rsa-sha1.treatAs">
+        <option data-i18n="options_error.treatAs.value.0" value="0"></option>
+        <option data-i18n="options_error.treatAs.value.1" value="1"></option>
+        <option data-i18n="options_error.treatAs.value.2" value="2"></option>
+      </select>
+    </div>
+    <div>
+      <label data-i18n="options_error.algorithm.rsa.weakKeyLength.treatAs"></label>
+      <select data-pref="error.algorithm.rsa.weakKeyLength.treatAs">
+        <option data-i18n="options_error.treatAs.value.0" value="0"></option>
+        <option data-i18n="options_error.treatAs.value.1" value="1"></option>
+        <option data-i18n="options_error.treatAs.value.2" value="2"></option>
+      </select>
+    </div>
+  </main>
+
+  <!-- about page -->
+  <main pane="about">
+    <h1 data-i18n="about_name"></h1>
+    <section>
+      <p data-i18n="about_summary"></p>
+      <p><span data-i18n="about_homepage"></span>: <a href="https://github.com/lieser/dkim_verifier/wiki">https://github.com/lieser/dkim_verifier/wiki</a></p>
+      <p><a href="https://github.com/lieser/dkim_verifier/wiki/Options" data-i18n="about_documentation"></a></p>
+    </section>
+    <section>
+      <p><a href="https://github.com/lieser/dkim_verifier/graphs/contributors" data-i18n="about_contributors"></a></p>
+      <p data-i18n="about_translators"></p>
+      <ul>
+        <li>de: ionum</li>
+        <li>de: Philippe Lieser</li>
+        <li>fr: Christophe CHAUVET</li>
+        <li>hu: Óvári</li>
+        <li>it: Michele Locati</li>
+        <li>ja: SAKURAI Kenichi</li>
+        <li>zh-CN: YFdyh000</li>
+      </ul>
+    </section>
+    <section>
+      <p data-i18n="about_dependencies"></p>
+      <ul>
+        <li><a href="https://github.com/JoshData/thunderbird-spf">DNS Library</a> <span data-i18n="about_by"></span> Joshua Tauberer</li>
+      </ul>
+    </section>
+  </main>
+
+</body>
+
+</html>

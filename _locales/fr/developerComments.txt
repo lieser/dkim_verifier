@@ -1,0 +1,3 @@
+Le support est disponible à aux adresses : https://github.com/lieser/dkim_verifier/issues ou par courriel à lieser+dkim@posteo.net (en Anglais ou Allemand).
+
+Pour signaler une anomalie, veuillez créer un ticket à l’adresse https://github.com/lieser/dkim_verifier/issues.

@@ -1,13 +1,17 @@
 {
     "compilerOptions": {
-        "target": "es2017",
+        "module": "esnext",
+        "target": "es2020",
         "lib": [
-            "es2017",
+            "es2020",
             "dom"
         ],
-        "strictNullChecks": true,
-        "checkJs": true
+        "strict": true,
+        "isolatedModules": true,
+        "checkJs": true,
+        "moduleResolution": "node"
     },
     "exclude": [
+        "node_modules"
     ]
 }

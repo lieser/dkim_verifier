@@ -1,0 +1,9 @@
+<a href="https://fr.wikipedia.org/wiki/DomainKeys_Identified_Mail">DomainKeys Identified Mail (DKIM)</a> est une norme d’authentification fiable du nom de domaine de l’expéditeur d’un courrier électronique. Ce module vérifie les signatures DKIM et affiche le résultat dans l’entête du message. Ainsi il est possible de visualiser la vérification du domaine et identifier les responsabilités d’un message spécifique. L’affichage du résultat peut être modifié dans les options.
+
+Il est important de noter qu’un courrier peut être signé par un domaine arbitraire. Une signature DKIM valide seule n’est pas un indicateur d’un courriel authentique. Il est nécessaire de toujours vérifier le signataire pour déterminer si ce courriel est sûr!
+
+Dans certains cas, l’absence de signature DKIM peut aider à identifier une arnaque lorsque vous savez qu’un domaine donné signe toujours les courriels avec DKIM. C’est aussi un indicateur fort d’un courriel corrompu
+
+Pour faciliter la vérification du signataire d’un courriel, ce module supporte des règles de signature. Ces règles permettent d’indiquer que les courriels de certains expéditeurs ont toujours une signature DKIM SDID (veuillez vous référer au SDID). En savoir plus à propos des règles de signatures : https://github.com/lieser/dkim_verifier/wiki/Sign-rules.
+
+Une description de toutes les options disponibles peut être trouvée ici : https://github.com/lieser/dkim_verifier/wiki/Options.

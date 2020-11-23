@@ -1,0 +1,3 @@
+Támogatást a https://github.com/lieser/dkim_verifier/issues webhelyen, vagy e-mailen küld a lieser+dkim@posteo.net. (angol vagy német nyelven).
+
+A hibák jelentésének preferált módja egy probléma létrehozása a https://github.com/lieser/dkim_verifier/issues webhelyen.

@@ -9,10 +9,14 @@
 
 	<!-- main script -->
 	<script type="application/javascript" src="chrome://dkim_verifier/content/dkim.js"/>
+	<hbox id="msgHeaderView">
+		<tooltip is="dkim-tooltip-warnings" id="dkim-verifier-header-tooltip-warnings"/>
+		<tooltip is="dkim-tooltip-from" id="dkim-verifier-header-tooltip-from"/>
+	</hbox>
 	<rows id="expandedHeader2Rows">
 		<row id="expandeddkim-verifierRow">
 			<label id="expandeddkim-verifierLabel" class="headerName" value="&dkim_verifier.header.title;" control="expandeddkim-verifierBox"/>
-			<mail-headerfield id="expandeddkim-verifierBox" flex="1"/>
+			<dkim-verifier-headerfield id="expandeddkim-verifierBox" flex="1"/>
 		</row>
 	</rows>
 	
@@ -34,8 +38,4 @@
 		          label="&treeviewSigners.title;"
 		          oncommand="toOpenWindowByType('dkim_verifier:treeviewSigners', 'chrome://dkim_verifier/content/treeviewSigners.xul');"/>
 	</menupopup>
-	
-	<hbox id="msgHeaderView">
-		<box id="dkim-verifier-header-tooltips"/>
-	</hbox>
 </overlay>

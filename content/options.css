@@ -1,0 +1,124 @@
+body {
+	display: grid;
+	grid-template-columns: 240px 1fr;
+	grid-template-rows: 100vh;
+}
+
+nav.nav-main {
+	background-color: var(--in-content-categories-background);
+	padding-top: 54px;
+}
+
+nav.nav-main>div[pane] {
+	display: flex;
+	align-items: center;
+	min-height: 40px;
+	margin-inline-start: 34px;
+	border-left: 4px solid transparent;
+	padding: 5px 10px;
+	padding-inline-start: 19px;
+	cursor: default;
+	user-select: none;
+}
+
+nav.nav-main>div[pane][selected] {
+	color: var(--in-content-category-text-selected);
+	border-left-color: var(--in-content-border-highlight)
+}
+
+nav.nav-main>div[pane]:hover {
+	background-color: var(--in-content-category-background-selected-hover);
+}
+
+nav.nav-section {
+	display: flex;
+	margin-bottom: 15px;
+	border-top: 1px solid var(--in-content-box-border-color);
+	border-bottom: 1px solid var(--in-content-box-border-color);
+}
+
+nav.nav-section>div[pane] {
+	display: flex;
+	align-items: center;
+	min-height: 40px;
+	border-bottom: 4px solid transparent;
+	padding: 4px 20px 0;
+	cursor: default;
+	user-select: none;
+}
+
+nav.nav-section>div[pane][selected] {
+	background-color: var(--in-content-box-background-hover);
+	border-bottom-color: var(--in-content-border-highlight);
+}
+
+nav.nav-section>div[pane]:hover {
+	background-color: var(--in-content-box-background-hover);
+}
+
+main {
+	padding: 40px 28px;
+}
+
+label.checkbox {
+	display: flex;
+	align-items: center;
+	margin: 2px 0;
+	padding: 1px 0;
+}
+
+.colorGrid {
+	display: grid;
+	grid-template-columns: max-content auto;
+	align-items: center;
+}
+
+.colorGridHeader {
+	justify-self: end;
+	margin-inline-end: 4px;
+	font-weight: bold;
+}
+
+fieldset:disabled label {
+	opacity: 0.5;
+}
+
+.account-options {
+	display: flex;
+	flex-direction: row;
+}
+
+.account-options[hidden] {
+	display: none;
+}
+
+.account-selection-box {
+	overflow: auto;
+	overflow-x: hidden;
+	min-width: 15%;
+	max-width: 40%;
+	margin: 2px 0px;
+	margin-inline-end: 8px;
+	border: 1px solid var(--in-content-box-border-color);
+	border-radius: 2px;
+	background-color: var(--in-content-box-background);
+}
+
+.account-selection-item {
+	padding: .3em;
+	cursor: default;
+	user-select: none;
+}
+
+.account-selection-item:hover {
+	background-color: var(--in-content-item-hover);
+}
+
+.account-selection-item[selected] {
+	color: var(--in-content-selected-text);
+	background-color: var(--in-content-item-selected)
+}
+
+.usage-warning[data-highlight="true"] {
+	color: orange;
+}

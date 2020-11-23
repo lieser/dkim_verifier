@@ -1,0 +1,19 @@
+[
+	{
+		"namespace": "mailUtils",
+		"functions": [
+			{
+				"name": "getBaseDomainFromAddr",
+				"type": "function",
+				"description": "Get the base domain for an e-mail address",
+				"async": true,
+				"parameters": [
+					{
+						"name": "addr",
+						"type": "string"
+					}
+				]
+			}
+		]
+	}
+]

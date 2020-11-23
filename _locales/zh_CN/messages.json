@@ -1,0 +1,643 @@
+{
+	// DKIM_STRINGS
+	"loading": {
+		"message": "验证中…"
+	},
+	"SUCCESS": {
+		"message": "有效 (签名者 $1)"
+	},
+	"PERMFAIL": {
+		"message": "无效 ($1)"
+	},
+	"PERMFAIL_NO_REASON": {
+		"message": "无效"
+	},
+	"TEMPFAIL": {
+		"message": "验证暂时出错 (称签名者 $1)"
+	},
+	"NOSIG": {
+		"message": "无签名"
+	},
+	"NOT_EMAIL": {
+		"message": "消息不是一封邮件"
+	},
+	// DKIM_INTERNALERROR
+	"DKIM_INTERNALERROR": {
+		"message": "DKIM 验证内部错误"
+	},
+	"DKIM_INTERNALERROR_NAME": {
+		"message": "内部错误"
+	},
+	"DKIM_INTERNALERROR_DEFAULT": {
+		"message": "错误"
+	},
+	"DKIM_INTERNALERROR_INCORRECT_EMAIL_FORMAT": {
+		"message": "邮件不是正确的格式"
+	},
+	// DKIM_INTERNALERROR - DNS
+	"DKIM_DNSERROR_UNKNOWN": {
+		"message": "DNS 解析器出错"
+	},
+	"DKIM_DNSERROR_SERVER_ERROR": {
+		"message": "连接到 DNS 服务器出错"
+	},
+	"DKIM_DNSERROR_DNSSEC_BOGUS": {
+		"message": "DNS 结果有假"
+	},
+	// DKIM_SIGERROR
+	"DKIM_SIGERROR": {
+		"message": "DKIM 签名出错"
+	},
+	"DKIM_SIGERROR_DEFAULT": {
+		"message": "错误"
+	},
+	// DKIM_SIGERROR - DKIM-Signature Header
+	"DKIM_SIGERROR_ILLFORMED": {
+		"message": "签名格式异常"
+	},
+	"DKIM_SIGERROR_UNSUPPORTED": {
+		"message": "签名存在意外的版本"
+	},
+	"DKIM_SIGERROR_ILLFORMED_TAGSPEC": {
+		"message": "签名是不良的格式"
+	},
+	"DKIM_SIGERROR_DUPLICATE_TAG": {
+		"message": "签名是不良的格式 (重复标签)"
+	},
+	"DKIM_SIGERROR_VERSION": {
+		"message": "不支持的版本"
+	},
+	"DKIM_SIGERROR_MISSING_V": {
+		"message": "DKIM 版本缺失"
+	},
+	"DKIM_SIGERROR_ILLFORMED_V": {
+		"message": "版本标签格式不良"
+	},
+	"DKIM_SIGERROR_MISSING_A": {
+		"message": "缺少签名算法"
+	},
+	"DKIM_SIGERROR_UNKNOWN_A": {
+		"message": "不支持的签名算法"
+	},
+	"DKIM_SIGERROR_INSECURE_A": {
+		"message": "不安全的签名算法"
+	},
+	"DKIM_SIGERROR_ILLFORMED_A": {
+		"message": "算法标签格式不良"
+	},
+	"DKIM_SIGERROR_MISSING_B": {
+		"message": "缺少签名"
+	},
+	"DKIM_SIGERROR_BADSIG": {
+		"message": "签名有错误"
+	},
+	"DKIM_SIGERROR_ILLFORMED_B": {
+		"message": "签名日期标签格式不良"
+	},
+	"DKIM_SIGERROR_MISSING_BH": {
+		"message": "缺少主体哈希"
+	},
+	"DKIM_SIGERROR_CORRUPT_BH": {
+		"message": "错误的主题哈希"
+	},
+	"DKIM_SIGERROR_ILLFORMED_BH": {
+		"message": "主题哈希格式不良"
+	},
+	"DKIM_SIGERROR_UNKNOWN_C_H": {
+		"message": "头使用了不支持的标准化算法"
+	},
+	"DKIM_SIGERROR_UNKNOWN_C_B": {
+		"message": "主体使用了不支持的标准化算法"
+	},
+	"DKIM_SIGERROR_ILLFORMED_C": {
+		"message": "标准化标签格式不良"
+	},
+	"DKIM_SIGERROR_MISSING_D": {
+		"message": "缺少签名域标识符 (SDID)"
+	},
+	"DKIM_SIGERROR_ILLFORMED_D": {
+		"message": "SDID 标签格式不良"
+	},
+	"DKIM_SIGERROR_MISSING_H": {
+		"message": "缺少已签名的头字段"
+	},
+	"DKIM_SIGERROR_MISSING_FROM": {
+		"message": "From 头未签名"
+	},
+	"DKIM_SIGERROR_ILLFORMED_H": {
+		"message": "已签名的头字段标签格式不良"
+	},
+	"DKIM_SIGERROR_SUBDOMAIN_I": {
+		"message": "AUID 不在 SDID 的子域中"
+	},
+	"DKIM_SIGERROR_DOMAIN_I": {
+		"message": "AUID 必须在 SDID 的同一个域中 (在密钥记录中设置 s-flag)"
+	},
+	"DKIM_SIGERROR_ILLFORMED_I": {
+		"message": "AUID 标签格式不良"
+	},
+	"DKIM_SIGERROR_TOOLARGE_L": {
+		"message": "主体长度标签超出主体大小"
+	},
+	"DKIM_SIGERROR_ILLFORMED_L": {
+		"message": "主体长度标签格式不良"
+	},
+	"DKIM_SIGERROR_UNKNOWN_Q": {
+		"message": "不支持的公钥取回查询方法"
+	},
+	"DKIM_SIGERROR_ILLFORMED_Q": {
+		"message": "查询方法标签格式不良"
+	},
+	"DKIM_SIGERROR_MISSING_S": {
+		"message": "缺少选择器标签"
+	},
+	"DKIM_SIGERROR_ILLFORMED_S": {
+		"message": "选择器标签格式不良"
+	},
+	"DKIM_SIGERROR_ILLFORMED_T": {
+		"message": "签名时间戳标签格式不良"
+	},
+	"DKIM_SIGERROR_TIMESTAMPS": {
+		"message": "签名期满在签名时间戳之前"
+	},
+	"DKIM_SIGERROR_ILLFORMED_X": {
+		"message": "签名期满时间戳格式不良"
+	},
+	"DKIM_SIGERROR_ILLFORMED_Z": {
+		"message": "Copied 头字段标签格式不良"
+	},
+	// DKIM_SIGERROR - key query
+	"DKIM_SIGERROR_NOKEY": {
+		"message": "没有在 DNS 服务器找到密钥"
+	},
+	// DKIM_SIGERROR - Key record
+	"DKIM_SIGERROR_KEY_ILLFORMED": {
+		"message": "DKIM 密钥格式异常"
+	},
+	"DKIM_SIGERROR_KEY_INVALID": {
+		"message": "DKIM 密钥无效"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_TAGSPEC": {
+		"message": "DKIM 密钥格式不良"
+	},
+	"DKIM_SIGERROR_KEY_DUPLICATE_TAG": {
+		"message": "DKIM 密钥格式不良 (重复标签)"
+	},
+	"DKIM_SIGERROR_KEY_INVALID_V": {
+		"message": "DKIM 密钥记录的版本无效"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_V": {
+		"message": "DKIM 密钥的版本格式不良"
+	},
+	"DKIM_SIGERROR_KEY_HASHNOTINCLUDED": {
+		"message": "DKIM 密钥记录中的哈希签名有错"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_H": {
+		"message": "哈希签名标签格式不良"
+	},
+	"DKIM_SIGERROR_KEY_UNKNOWN_K": {
+		"message": "不支持的密钥类型"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_K": {
+		"message": "密钥类型标签格式不良"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_N": {
+		"message": "Notes 标签格式不良"
+	},
+	"DKIM_SIGERROR_KEY_MISSING_P": {
+		"message": "缺少密钥"
+	},
+	"DKIM_SIGERROR_KEY_REVOKED": {
+		"message": "密钥已废除"
+	},
+	"DKIM_SIGERROR_KEY_HASHMISMATCH": {
+		"message": "公钥算法有错"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_P": {
+		"message": "公钥数据标签格式不良"
+	},
+	"DKIM_SIGERROR_KEY_NOTEMAILKEY": {
+		"message": "密钥不是一个邮件密钥"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_S": {
+		"message": "服务类型标签格式不良"
+	},
+	"DKIM_SIGERROR_KEY_TESTMODE": {
+		"message": "该域只是在测试 DKIM"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_T": {
+		"message": "标志标签格式不良"
+	},
+	// DKIM_SIGERROR - key decode
+	"DKIM_SIGERROR_KEYDECODE": {
+		"message": "密钥不能被解码"
+	},
+	// DKIM_SIGERROR - POLICY
+	"DKIM_POLICYERROR_MISSING_SIG": {
+		"message": "应该被 $1 签名"
+	},
+	"DKIM_POLICYERROR_KEYMISMATCH": {
+		"message": "存储的密钥域当前的密钥不同"
+	},
+	"DKIM_POLICYERROR_KEY_INSECURE": {
+		"message": "密钥未被 DNSSEC 签名"
+	},
+	"DKIM_POLICYERROR_WRONG_SDID": {
+		"message": "错误的签名者 (应该为 $1)"
+	},
+	// DKIM_SIGWARNING
+	"DKIM_SIGWARNING_SMALL_L": {
+		"message": "并非整个主题已被签名"
+	},
+	"DKIM_SIGWARNING_EXPIRED": {
+		"message": "签名已过期"
+	},
+	"DKIM_SIGWARNING_FUTURE": {
+		"message": "签名处在未来"
+	},
+	"DKIM_SIGWARNING_KEYSMALL": {
+		"message": "签名密钥尺寸太小"
+	},
+	"DKIM_SIGWARNING_KEY_IS_WEAK": {
+		"message": "使用弱密钥签名"
+	},
+	"DKIM_SIGWARNING_FROM_NOT_IN_SDID": {
+		"message": "From 不在签名域中"
+	},
+	"DKIM_SIGWARNING_FROM_NOT_IN_AUID": {
+		"message": "From 不匹配用户标识符"
+	},
+	// JSDNS
+	"TOO_MANY_HOPS": {
+		"message": "太多跳数。"
+	},
+	"CONNECTION_REFUSED": {
+		"message": "DNS 服务器 $1 拒绝 TCP 连接。"
+	},
+	"TIMED_OUT": {
+		"message": "DNS 服务器 $1 在一个 TCP 连接上超时。"
+	},
+	"SERVER_ERROR": {
+		"message": "连接 DNS 服务器 $1 出错。"
+	},
+	"INCOMPLETE_RESPONSE": {
+		"message": "来自 $1 的响应不完整。"
+	},
+	// ==================== Options window ====================
+	"options_prefwindow.title": {
+		"message": "DKIM Verifier 选项"
+	},
+	// -------------------- General options --------------------
+	"options_general": {
+		"message": "常规"
+	},
+	// ---------- General options tab ----------
+	"options_general.general": {
+		"message": "常规"
+	},
+	"options_dkim.enable": {
+		"message": "验证 DKIM 签名"
+	},
+	"options_key.storing.value.0": {
+		"message": "不要存储 DKIM 密钥"
+	},
+	"options_key.storing.value.1": {
+		"message": "存储 DKIM 密钥"
+	},
+	"options_key.storing.value.2": {
+		"message": "存储 DKIM 密钥并与当前密钥比较"
+	},
+	"options_key.viewKeys": {
+		"message": "DKIM 密钥"
+	},
+	"options_saveResult": {
+		"message": "保存验证结果"
+	},
+	// ---------- DNS options tab ----------
+	"options_dns": {
+		"message": "DNS"
+	},
+	"options_dns.resolver": {
+		"message": "解析"
+	},
+	"options_dns.resolver.value.1": {
+		"message": "JavaScript DNS 软件库"
+	},
+	"options_dns.resolver.value.2": {
+		"message": "libunbound"
+	},
+	"options_dns.getNameserversFromOS": {
+		"message": "从操作系统的配置获取 DNS 名称服务器"
+	},
+	"options_dns.nameserver": {
+		"message": "DNS 名称服务器 (语法 (EBNF): host[\":\"port]{\";\"host[\":\"port]} )"
+	},
+	"options_dns.timeout_connect": {
+		"message": "DNS 连接超时 (秒)"
+	},
+	"options_dns.proxy.enable": {
+		"message": "使用代理服务器连接 DNS 服务器"
+	},
+	"options_dns.proxy.type": {
+		"message": "代理类型:"
+	},
+	"options_dns.proxy.host": {
+		"message": "代理服务器:"
+	},
+	"options_dns.proxy.port": {
+		"message": "端口:"
+	},
+	"options_dns.libunbound.path": {
+		"message": "路径"
+	},
+	"options_dns.libunbound.path.relToProfileDir": {
+		"message": "配置文件目录的相对路径"
+	},
+	// ---------- Policy options tab ----------
+	"options_general.policy": {
+		"message": "策略"
+	},
+	"options_policy.signRules.enable": {
+		"message": "检查，如果邮件应该被签名"
+	},
+	"options_policy.signRules.checkDefaultRules": {
+		"message": "使用默认规则"
+	},
+	"options_policy.signRules.autoAddRule.enable": {
+		"message": "自动基于见过的 DKIM 签名邮件添加规则"
+	},
+	"options_policy.signRules.autoAddRule.onlyIfFromAddressInSDID": {
+		"message": "仅当如果 From 地址在 SDID 中"
+	},
+	"options_policy.signRules.autoAddRule.for.value.0": {
+		"message": "对 From 地址"
+	},
+	"options_policy.signRules.autoAddRule.for.value.1": {
+		"message": "对子域"
+	},
+	"options_policy.signRules.autoAddRule.for.value.2": {
+		"message": "对基础域"
+	},
+	"options_policy.signRules.sdid.allowSubDomains": {
+		"message": "也允许 SDID 项的子域"
+	},
+	"options_policy.signRules.error.wrong_sdid.asWarning": {
+		"message": "将错误的 SDID 视作一个警告而不是错误"
+	},
+	"options_viewSigners": {
+		"message": "签名者规则"
+	},
+	"options_viewSignerDefaults": {
+		"message": "默认签名者规则"
+	},
+	"options_policy.DMARC.shouldBeSigned.enable": {
+		"message": "如果一个邮件应该被签名，使用 DMARC 来试探性地测定"
+	},
+	// -------------------- Display options --------------------
+	"options_display": {
+		"message": "显示"
+	},
+	"options_showDKIMHeader": {
+		"message": "显示 DKIM 头"
+	},
+	"options_showDKIMFromTooltip": {
+		"message": "From 头显示 DKIM 工具提示"
+	},
+	"options_showDKIM.value.0": {
+		"message": "从不"
+	},
+	"options_showDKIM.value.10": {
+		"message": "当一封具有有效的 DKIM 签名的邮件被查看"
+	},
+	"options_showDKIM.value.30": {
+		"message": "当一封具有 DKIM 签名的邮件被查看"
+	},
+	"options_showDKIM.value.40": {
+		"message": "当一封邮件被查看"
+	},
+	"options_showDKIM.value.50": {
+		"message": "当一个消息被查看"
+	},
+	"options_colorFrom": {
+		"message": "启用 From 头高亮"
+	},
+	"options_color": {
+		"message": "颜色"
+	},
+	"options_color.text": {
+		"message": "文本:"
+	},
+	"options_color.background": {
+		"message": "背景色:"
+	},
+	"options_color.success": {
+		"message": "有效签名"
+	},
+	"options_color.warning": {
+		"message": "有效签名但有警告"
+	},
+	"options_color.permfail": {
+		"message": "无效签名"
+	},
+	"options_color.tempfail": {
+		"message": "暂时出错"
+	},
+	"options_color.nosig": {
+		"message": "未签名邮件"
+	},
+	"options_display.favicon.show": {
+		"message": "在发件人地址前显示已知签名域名的网站图标"
+	},
+	// -------------------- Advanced options --------------------
+	"options_advanced": {
+		"message": "高级"
+	},
+	"options_debug": {
+		"message": "启用调试（在错误控制台中输出错误和调试信息）"
+	},
+	"options_error.detailedReasons": {
+		"message": "Show detailed error reasons"
+	},
+	"options_error.key_testmode.ignore": {
+		"message": "如果一个域只是在测试 DKIM，仍然验证签名"
+	},
+	"options_error.illformed_i.treatAs": {
+		"message": "将格式不良的 AUID 标签视作"
+	},
+	"options_error.illformed_s.treatAs": {
+		"message": "将格式不良的选择器标签视作"
+	},
+	"options_error.policy.key_insecure.treatAs": {
+		"message": "将非 DNSSEC 的 DKIM 密钥视作"
+	},
+	"options_error.algorithm.sign.rsa-sha1.treatAs": {
+		"message": "将 RSA-SHA1 签名算法视作"
+	},
+	"options_error.algorithm.rsa.weakKeyLength.treatAs": {
+		"message": "将 RSA 弱密钥（小于 2048 位）视作"
+	},
+	"options_error.treatAs.value.0": {
+		"message": "错误"
+	},
+	"options_error.treatAs.value.1": {
+		"message": "警告"
+	},
+	"options_error.treatAs.value.2": {
+		"message": "无事"
+	},
+	"options_display.keySecure": {
+		"message": "在 SDID 后面用锁标识成功的 DNSSEC 验证"
+	},
+	"options_arh.read": {
+		"message": "阅读 Authentication-Results 报头"
+	},
+	"options_arh.replaceAddonResult": {
+		"message": "读取 Authentication-Results 头替换本附加组件的验证"
+	},
+	"options_arh.relaxedParsing": {
+		"message": "尝试读取非兼容 RFC 的 Authentication-Results 头"
+	},
+	"options_acc.dkim.enable": {
+		"message": "验证 DKIM 签名:"
+	},
+	"options_acc.arh.read": {
+		"message": "读取 Authentication-Results 头:"
+	},
+	"options_acc.arh.allowedAuthserv": {
+		"message": "信任的身份验证服务器:"
+	},
+	"options_acc.boolean.value.0": {
+		"message": "使用默认值"
+	},
+	"options_acc.boolean.value.1": {
+		"message": "是"
+	},
+	"options_acc.boolean.value.2": {
+		"message": "否"
+	},
+	// -------------------- Account options --------------------
+	"about_name": {
+		"message": "DKIM Verifier",
+		"description": "Name of the add-on"
+	},
+	"about_summary": {
+		"message": "验证邮件的 DKIM 签名。",
+		"description": "Short description of the add-on"
+	},
+	// ==================== Actions ====================
+	"dkim_verifier.reverifyDKIMSignature": {
+		"message": "重新验证 DKIM 签名"
+	},
+	"dkim_verifier.policyAddUserException": {
+		"message": "添加“必须被签名”例外"
+	},
+	"dkim_verifier.markKeyAsSecure": {
+		"message": "标记 DKIM 密钥为安全"
+	},
+	"dkim_verifier.updateKey": {
+		"message": "更新 DKIM 密钥"
+	},
+	// ==================== Table Views ====================
+	"treeviewKeys.treecol.SDID": {
+		"message": "SDID"
+	},
+	"treeviewKeys.treecol.selector": {
+		"message": "选择器"
+	},
+	"treeviewKeys.treecol.key": {
+		"message": "DKIM 密钥"
+	},
+	"treeviewKeys.treecol.insertedAt": {
+		"message": "已插入"
+	},
+	"treeviewKeys.treecol.lastUsedAt": {
+		"message": "最后使用"
+	},
+	"treeviewKeys.treecol.secure": {
+		"message": "DNSSEC"
+	},
+	"treeviewKeys.deleteSelectedRows": {
+		"message": "删除选定密钥"
+	},
+	"treeviewSigners.treecol.domain": {
+		"message": "域"
+	},
+	"treeviewSigners.treecol.listId": {
+		"message": "List-Id"
+	},
+	"treeviewSigners.treecol.addr": {
+		"message": "From"
+	},
+	"treeviewSigners.treecol.sdid": {
+		"message": "SDID"
+	},
+	"treeviewSigners.treecol.ruletype": {
+		"message": "规则类型"
+	},
+	"treeviewSigners.treecol.priority": {
+		"message": "优先级"
+	},
+	"treeviewSigners.treecol.enabled": {
+		"message": "启用"
+	},
+	"treeviewSigners.addSignersRule": {
+		"message": "添加规则"
+	},
+	"treeviewSigners.deleteSelectedRows": {
+		"message": "删除选定规则"
+	},
+	"addSignersRule.title": {
+		"message": "添加签名者规则"
+	},
+	"signRules.ruletype.SIGNED": {
+		"message": "必须签名 (1)"
+	},
+	"signRules.ruletype.NEUTRAL": {
+		"message": "可以签名 (2)"
+	},
+	"signRules.ruletype.HIDEFAIL": {
+		"message": "忽略无效签名 (3)"
+	},
+	"signRules.priorityMode.auto": {
+		"message": "自动选择优先级"
+	},
+	"signRules.priorityMode.manual": {
+		"message": "设置优先级为"
+	},
+	"button.help": {
+		"message": "帮助"
+	},
+	"signersRuleHelp.title": {
+		"message": "签名者规则帮助"
+	},
+	"domain.description": {
+		"message": "From 地址违反基础域的将被匹配。例如，'email.example.co.uk' 的基础域是 'excample.co.uk'。"
+	},
+	"listId.description": {
+		"message": "违反 list-id 将被匹配，如果邮件是通过邮件列表而接收。请注意，只有 List-Id 头的 '<' 和 '>' 之间的部分是真正的 list-id。在同一时间，域或 list-id 任意一个匹配都视为匹配。"
+	},
+	"addr.description": {
+		"message": "From 地址违反将被匹配。使用 '*' 匹配零个或多个字符。"
+	},
+	"sdid.description": {
+		"message": "该域的电子邮件应该被签名。如果这为空，每个 SDID 都是允许的。指定多个域可以通过空格分隔。"
+	},
+	"ruletype.description": {
+		"message": "规则的类型。"
+	},
+	"ruletype.1.description": {
+		"message": "电子邮件必须被特定的 SDID 签名。"
+	},
+	"ruletype.2.description": {
+		"message": "电子邮件不必被签名。如果它已被签名，则它必须被特定的 SDID 签名。"
+	},
+	"ruletype.3.description": {
+		"message": "电子邮件不必被签名。如果它已被签名，则它必须被特定的 SDID 签名。如果该邮件有一个无效的签名，它将被视为没有签名。"
+	},
+	"priority.description": {
+		"message": "规则的优先级。如果有一个以上的规则被匹配，则具有较高优先级的规则被使用。"
+	},
+	"enabled.description": {
+		"message": "1 如果规则已启用，0 如果规则被禁用。"
+	}
+}

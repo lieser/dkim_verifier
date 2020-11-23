@@ -1,0 +1,6 @@
+验证邮件的 <a href="http://zh.wikipedia.org/wiki/DKIM">DKIM 签名</a>。
+验证结果显示在邮件的头部分，并可根据喜好显示在状态栏、高亮发送者地址，或者在 From 头上悬停时显示工具提示。
+
+此外，其他一些操作功能，像是“重新验证 DKIM 签名”等，可在邮件头的“其他操作”下拉菜单中找到。另外，可以指定签名规则来指示特定的电子邮件始终应该被签名。更多有关签名规则的信息请见 <a href="https://github.com/lieser/dkim_verifier/wiki/Sign-rules">https://github.com/lieser/dkim_verifier/wiki/Sign-rules</a>。
+
+本附加组件可用的选项的描述也可在 https://github.com/lieser/dkim_verifier/wiki/Options 中找到。

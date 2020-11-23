@@ -1,0 +1,36 @@
+{
+	"description": "A DKIM verifier add-on for Thunderbird",
+	"keywords": [
+		"thunderbird",
+		"mailextension",
+		"webextension",
+		"dkim"
+	],
+	"homepage": "https://github.com/lieser/dkim_verifier/wiki",
+	"bugs": {
+		"url": "https://github.com/lieser/dkim_verifier/issues"
+	},
+	"license": "MIT",
+	"author": "Philippe Lieser",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/lieser/dkim_verifier.git"
+	},
+	"scripts": {
+		"test": "node node_modules/mocha/bin/mocha --recursive --reporter dot"
+	},
+	"type": "module",
+	"dependencies": {},
+	"devDependencies": {
+		"@types/firefox-webext-browser": "^78.0.0",
+		"chai": "^4.2.0",
+		"eslint": "^7.5.0",
+		"http-server": "^0.12.3",
+		"mocha": "^8.0.1",
+		"sinon": "^9.0.2",
+		"webextensions-api-fake": "^1.3.0"
+	},
+	"engines": {
+		"node": ">=14.1.0"
+	}
+}

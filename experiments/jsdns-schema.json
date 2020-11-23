@@ -1,0 +1,62 @@
+[
+	{
+		"namespace": "jsdns",
+		"functions": [
+			{
+				"name": "configure",
+				"type": "function",
+				"description": "Set preferences to use",
+				"async": true,
+				"parameters": [
+					{
+						"name": "getNameserversFromOS",
+						"type": "boolean"
+					},
+					{
+						"name": "nameServer",
+						"type": "string"
+					},
+					{
+						"name": "timeoutConnect",
+						"type": "number"
+					},
+					{
+						"name": "proxy",
+						"type": "object",
+						"properties": {
+							"enable": {
+								"type": "boolean"
+							},
+							"type": {
+								"type": "string"
+							},
+							"host": {
+								"type": "string"
+							},
+							"port": {
+								"type": "number"
+							}
+						}
+					},
+					{
+						"name": "autoResetServerAlive",
+						"type": "boolean"
+					}
+				]
+			},
+			{
+				"name": "txt",
+				"type": "function",
+				"description": "Resolve a TXT DNS query.",
+				"async": true,
+				"parameters": [
+					{
+						"name": "name",
+						"type": "string",
+						"description": "DNS name to query"
+					}
+				]
+			}
+		]
+	}
+]

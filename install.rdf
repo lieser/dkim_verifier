@@ -6,7 +6,7 @@
 	<Description about="urn:mozilla:install-manifest">
 		<em:id>dkim_verifier@pl</em:id>
 		<em:type>2</em:type> <!-- Extensions -->
-		<em:version>2.2.0pre1</em:version>
+		<em:version>2.2.0</em:version>
 
 		<em:name>DKIM Verifier</em:name>
 		<em:description>Verifies the DKIM-Signatures of e-mails.</em:description>
@@ -23,8 +23,6 @@
 		<em:creator>Philippe Lieser</em:creator>
 
 		<em:contributor>Joshua Tauberer (DNS Library)</em:contributor>
-		<em:contributor>Tom Wu (RSA Library)</em:contributor>
-		<em:contributor>Kenji Urushima (RSA verification and ASN1 Library)</em:contributor>
 		<em:contributor>Nils Maier</em:contributor>
 		<em:contributor>Pier Carlo Chiodi AKA pierky</em:contributor>
 
@@ -54,8 +52,6 @@
 				<em:translator>SAKURAI Kenichi (ja)</em:translator>
 				<em:translator>YFdyh000 (zh-CN)</em:translator>
 				<em:contributor>Joshua Tauberer (DNS Bibliothek)</em:contributor>
-				<em:contributor>Tom Wu (RSA Bibliothek)</em:contributor>
-				<em:contributor>Kenji Urushima (RSA Verifizierung und ASN1 Bibliothek)</em:contributor>
 				<em:contributor>Nils Maier</em:contributor>
 				<em:contributor>Pier Carlo Chiodi AKA pierky</em:contributor>
 			</Description>
@@ -76,8 +72,6 @@
 				<em:translator>SAKURAI Kenichi (ja)</em:translator>
 				<em:translator>YFdyh000 (zh-CN)</em:translator>
 				<em:contributor>Joshua Tauberer (DNS Library)</em:contributor>
-				<em:contributor>Tom Wu (RSA Library)</em:contributor>
-				<em:contributor>Kenji Urushima (RSA verification and ASN1 Library)</em:contributor>
 				<em:contributor>Nils Maier</em:contributor>
 				<em:contributor>Pier Carlo Chiodi AKA pierky</em:contributor>
 			</Description>
@@ -97,8 +91,6 @@
 				<em:translator>SAKURAI Kenichi (ja)</em:translator>
 				<em:translator>YFdyh000 (zh-CN)</em:translator>
 				<em:contributor>Joshua Tauberer (bibliothèque DNS)</em:contributor>
-				<em:contributor>Tom Wu (Bibliothèque RSA)</em:contributor>
-				<em:contributor>Kenji Urushima (verification RSA et bibliothèque ASN1)</em:contributor>
 				<em:contributor>Nils Maier</em:contributor>
 				<em:contributor>Pier Carlo Chiodi AKA pierky</em:contributor>
 			</Description>
@@ -118,8 +110,6 @@
 				<em:translator>SAKURAI Kenichi (ja)</em:translator>
 				<em:translator>YFdyh000 (zh-CN)</em:translator>
 				<em:contributor>Joshua Tauberer (DNS könyvtár)</em:contributor>
-				<em:contributor>Tom Wu (RSA könyvtár)</em:contributor>
-				<em:contributor>Kenji Urushima (RSA ellenőrzés és ASN1 könyvtár)</em:contributor>
 				<em:contributor>Nils Maier</em:contributor>
 				<em:contributor>Pier Carlo Chiodi AKA pierky</em:contributor>
 			</Description>
@@ -139,8 +129,6 @@
 				<em:translator>SAKURAI Kenichi (ja)</em:translator>
 				<em:translator>YFdyh000 (zh-CN)</em:translator>
 				<em:contributor>Joshua Tauberer (libreria DNS)</em:contributor>
-				<em:contributor>Tom Wu (libreria RSA)</em:contributor>
-				<em:contributor>Kenji Urushima (verifica RSA e libreria ASN1)</em:contributor>
 				<em:contributor>Nils Maier</em:contributor>
 				<em:contributor>Pier Carlo Chiodi AKA pierky</em:contributor>
 			</Description>
@@ -160,8 +148,6 @@
 				<em:translator>SAKURAI Kenichi (ja)</em:translator>
 				<em:translator>YFdyh000 (zh-CN)</em:translator>
 				<em:contributor>Joshua Tauberer (DNS Library)</em:contributor>
-				<em:contributor>Tom Wu (RSA Library)</em:contributor>
-				<em:contributor>Kenji Urushima (RSA verification and ASN1 Library)</em:contributor>
 				<em:contributor>Nils Maier</em:contributor>
 				<em:contributor>Pier Carlo Chiodi AKA pierky</em:contributor>
 			</Description>
@@ -181,8 +167,6 @@
 				<em:translator>SAKURAI Kenichi (ja)</em:translator>
 				<em:translator>YFdyh000 (zh-CN)</em:translator>
 				<em:contributor>Joshua Tauberer (DNS Library)</em:contributor>
-				<em:contributor>Tom Wu (RSA Library)</em:contributor>
-				<em:contributor>Kenji Urushima (RSA verification and ASN1 Library)</em:contributor>
 				<em:contributor>Nils Maier</em:contributor>
 				<em:contributor>Pier Carlo Chiodi AKA pierky</em:contributor>
 			</Description>

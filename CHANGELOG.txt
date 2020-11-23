@@ -1,10 +1,39 @@
-2.2.0pre1 [2020-01-05]
+4.0.0pre4 [2020-11-23]
+------------------
+ - now requires at least Thunderbird 78
+ - fixed incompatibility with Thunderbird 78 (#119)
+ - removed option to show DKIM result in the statusbarpanel
+ - Authentication-Results header: fixed parsing of version
+ - libunbound resolver: Don't provide a default path
+ - libunbound resolver: Improve options description
+ - added about page in options
+ - updated default rules and favicons (#208, #209, #210)
+
+3.1.0 [2020-01-22]
+------------------
+ - includes changes from 2.2.0
+ - fix default rules and favicons (#197)
+
+2.2.0 [2020-01-19]
 ------------------
  - Authentication-Results header: fix relaxed parsing option and trailing ";"
  - exposed option on how to treat weak keys. Default is now ignore (was warning since 2.1.0) (#174)
  - fixed default text color for unsigned e-mail in dark theme if highlighting of From header is enabled (#181)
  - libunbound resolver: add ability to explicitly load dependencies of libunbound (#170, #179)
  - updated default rules and favicons (#165, #168, #169, #180)
+
+3.0.1 [2019-09-22]
+------------------
+ - fixed incompatibility with Thunderbird 70 (#167)
+ - fixed DKIM status not visible when a message is opened in a new window (#172)
+ - fixed incompatibility with CompactHeader add-on (#177)
+ - JSDNS: fixed proxy support (#173)
+
+3.0.0 [2019-09-01]
+------------------
+ - now requires at least Thunderbird 68
+ - fixed incompatibility with Thunderbird 68/69 (#115)
+ - libunbound resolver: remove old root trust anchor (key tag 19036)
 
 2.1.0 [2019-08-29]
 ------------------

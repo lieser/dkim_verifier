@@ -15,7 +15,10 @@
 // options for ESLint
 /* eslint-env browser */
 /* eslint strict: ["warn", "function"] */
+/* eslint no-console: "off"*/
+/* eslint no-magic-numbers: ["warn", { "ignoreArrayIndexes": true, "ignore": [-1, 0, 1,] }] */
 /* global Components, Cu, Services, gMessageListeners, gFolderDisplay, gExpandedHeaderView, createHeaderEntry, syncGridColumnWidths, currentHeaderData, gMessageDisplay */
+/* global MozXULElement, XULPopupElement */
 
 // namespace
 // @ts-ignore
@@ -29,6 +32,350 @@ Cu.import("resource://dkim_verifier/dkimKey.jsm", DKIM_Verifier);
 
 // @ts-ignore
 const PREF_BRANCH = "extensions.dkim_verifier.";
+
+
+/**
+ * DKIM header field
+ */
+class DKIMHeaderfield extends MozXULElement {
+	constructor() {
+		super();
+
+		/** @type{IAuthVerifier.AuthResultDKIM[]} */
+		this.dkimResults = [];
+
+		this.setAttribute("context", "copyPopup");
+
+		this._content = document.createXULElement("hbox");
+
+		// DKIM result
+		this._dkimValue = document.createXULElement("description");
+		this._dkimValue.classList.add("headerValue");
+
+		// DKIM warning icon
+		this._dkimWarningIcon = document.createXULElement("image");
+		this._dkimWarningIcon.classList.add("alert-icon");
+		this._dkimWarningIcon.setAttribute("anonid", "dkimWarningIcon");
+		this._dkimWarningIcon.setAttribute("tooltip", "dkim-verifier-header-tooltip-warnings");
+
+		/**
+		 * Create element for ARH result
+		 *
+		 * @param {String} anonid
+		 * @param {String} labelValue
+		 * @returns {{box: Element, value: Element}}
+		 */
+		function createArh(anonid, labelValue) {
+			let box = document.createXULElement("hbox");
+			box.setAttribute("anonid", anonid);
+
+			let label = document.createXULElement("description");
+			label.classList.add("headerValue");
+			label.setAttribute("style", "text-align: right");
+			label.textContent = labelValue;
+
+			let value = document.createXULElement("description");
+			value.classList.add("headerValue");
+
+			box.appendChild(label);
+			box.appendChild(value);
+
+			return {
+				box: box,
+				value: value,
+			};
+		}
+
+		// ARH result
+		this._arhDkim = createArh("arhDkim", "DKIM:");
+		this._arhSpf = createArh("spf", "SPF:");
+		this._arhDmarc = createArh("dmarc", "DMARC:");
+
+		this._separator = document.createXULElement("separator");
+		this._separator.setAttribute("flex", "1");
+
+		this.appendChild(this._content);
+		this._content.appendChild(this._dkimValue);
+		this._content.appendChild(this._dkimWarningIcon);
+		this._content.appendChild(this._arhDkim.box);
+		this._content.appendChild(this._arhSpf.box);
+		this._content.appendChild(this._arhDmarc.box);
+		this._content.appendChild(this._separator);
+	}
+
+	/**
+	 * Set the DKIM result
+	 *
+	 * @memberof DKIMHeaderfield
+	 * @param {String} val
+	 */
+	set value(val) {
+		this._dkimValue.textContent = val;
+	}
+
+	/**
+	 * Set the DKIM warnings
+	 *
+	 * @memberof DKIMHeaderfield
+	 * @param {String[]} warnings
+	 */
+	set warnings(warnings) {
+		this.setAttribute("warnings", (warnings.length > 0).toString() );
+	}
+
+	/**
+	 * Set the SPF result
+	 *
+	 * @memberof DKIMHeaderfield
+	 * @param {String} val
+	 */
+	set spfValue(val) {
+		if (val) {
+			this.setAttribute("spf", "true");
+		} else {
+			this.setAttribute("spf", "false");
+		}
+		this._arhSpf.value.textContent = val;
+	}
+
+	/**
+	 * Set the DMARC result
+	 *
+	 * @memberof DKIMHeaderfield
+	 * @param {String} val
+	 */
+	set dmarcValue(val) {
+		if (val) {
+			this.setAttribute("dmarc", "true");
+		} else {
+			this.setAttribute("dmarc", "false");
+		}
+		this._arhDmarc.value.textContent = val;
+	}
+
+	/**
+	 * Set the DKIM result from the ARH
+	 *
+	 * @memberof DKIMHeaderfield
+	 * @param {String} val
+	 */
+	set arhDkimValue(val) {
+		if (val) {
+			this.setAttribute("arhDkim", "true");
+		} else {
+			this.setAttribute("arhDkim", "false");
+		}
+		this._arhDkim.value.textContent = val;
+	}
+}
+
+customElements.define("dkim-verifier-headerfield", DKIMHeaderfield);
+
+/**
+ * Base class for DKIM tooltips
+ */
+class DKIMTooltip extends XULPopupElement {
+	constructor() {
+		super();
+
+		// whether a separator should be added before the warnings
+		this._warningsSeparator = false;
+
+		// The DKIM result
+		this._value = document.createXULElement("label");
+		// A box containing the warnings
+		this._warningsBox = document.createXULElement("vbox");
+	}
+
+	/**
+	 * Set the DKIM result
+	 *
+	 * @memberof DKIMTooltip
+	 * @param {String} val
+	 */
+	set value(val) {
+		this._value.textContent = val;
+	}
+
+	/**
+	 * Set the warnings for the tooltip
+	 *
+	 * @memberof DKIMTooltip
+	 * @param {String[]} warnings
+	 */
+	set warnings(warnings) {
+		// delete old warnings from tooltips
+		while (this._warningsBox.firstChild) {
+			this._warningsBox.removeChild(this._warningsBox.firstChild);
+		}
+
+		if (this._warningsSeparator && warnings.length > 0) {
+			let sep = document.createXULElement("separator");
+			sep.setAttribute("class", "thin");
+			this._warningsBox.appendChild(sep);
+		}
+
+		// add warnings to warning tooltip
+		for (let w of warnings) {
+			let des;
+			des = document.createXULElement("description");
+			des.textContent = w;
+			this._warningsBox.appendChild(des);
+		}
+	}
+}
+
+/**
+ * Tooltip showing the DKIM warnings.
+ *
+ * @extends {DKIMTooltip}
+ */
+class DKIMWarningsTooltip extends DKIMTooltip {
+	constructor() {
+		super();
+
+		this.appendChild(this._warningsBox);
+	}
+}
+
+/**
+ * Tooltip showing both the DKIM result and the warnings.
+ * The tooltip contains the label "DKIM:".
+ *
+ * @extends {DKIMTooltip}
+ */
+class DKIMTooltipFrom extends DKIMTooltip {
+	constructor() {
+		super();
+
+		this._warningsSeparator = true;
+
+		// Outer box and label
+		this._outerBox = document.createXULElement("hbox");
+		this._outerBoxLabel = document.createXULElement("label");
+		this._outerBoxLabel.setAttribute("value", "DKIM:");
+
+		// The inner box, containing the DKIM result and optional the warnings
+		this._innerBox = document.createXULElement("vbox");
+		this._innerBox.setAttribute("flex", "1");
+
+		this.appendChild(this._outerBox);
+		this._outerBox.appendChild(this._outerBoxLabel);
+		this._outerBox.appendChild(this._innerBox);
+		this._innerBox.appendChild(this._value);
+		this._innerBox.appendChild(this._warningsBox);
+	}
+}
+
+/**
+ * Tooltip showing both the DKIM result and the warnings.
+ *
+ * @extends {DKIMTooltip}
+ */
+class DKIMTooltipStatus extends DKIMTooltip {
+	constructor() {
+		super();
+
+		this._warningsSeparator = true;
+
+		// The DKIM result
+		this._value = document.createXULElement("label");
+
+		this.appendChild(this._value);
+		this.appendChild(this._warningsBox);
+	}
+}
+
+customElements.define("dkim-tooltip-warnings", DKIMWarningsTooltip, { extends: 'tooltip' });
+customElements.define("dkim-tooltip-from", DKIMTooltipFrom, { extends: 'tooltip' });
+customElements.define("dkim-tooltip-status", DKIMTooltipStatus, { extends: 'tooltip' });
+
+/**
+ * DKIM statusbar
+ */
+class DKIMStatusbarpanel extends MozXULElement {
+	constructor() {
+		super();
+
+		this._label = document.createXULElement("label");
+		this._label.classList.add("statusbarpanel-text");
+		this._label.textContent = "DKIM:";
+
+		// DKIM result
+		this._dkimValue = document.createXULElement("label");
+		this._dkimValue.classList.add("statusbarpanel-text");
+		this._dkimValue.setAttribute("anonid", "statusValue");
+		this._dkimValue.setAttribute("context", "copyPopup");
+
+		// DKIM warning icon
+		this._dkimWarningIcon = document.createXULElement("image");
+		this._dkimWarningIcon.classList.add("alert-icon");
+		this._dkimWarningIcon.setAttribute("anonid", "warning-icon");
+		this._dkimWarningIcon.setAttribute("tooltip", "dkim-verifier-header-tooltip-warnings");
+
+		// DKIM status icon
+		this._dkimStatusIconBox = document.createXULElement("vbox");
+		let separatorTop = document.createXULElement("separator");
+		separatorTop.setAttribute("flex", "1");
+		separatorTop.style.height="0px";
+		let separatorBottom = separatorTop.cloneNode();
+		this._dkimStatusIcon = document.createXULElement("image");
+		this._dkimStatusIcon.setAttribute("anonid", "status-icon");
+		this._dkimStatusIcon.setAttribute("tooltip", "dkim-verifier-tooltip-status");
+		this._dkimStatusIconBox.appendChild(separatorTop);
+		this._dkimStatusIconBox.appendChild(this._dkimStatusIcon);
+		this._dkimStatusIconBox.appendChild(separatorBottom);
+
+		this.appendChild(this._label);
+		this.appendChild(this._dkimValue);
+		this.appendChild(this._dkimWarningIcon);
+		this.appendChild(this._dkimStatusIconBox);
+	}
+
+	/**
+	 * Set the DKIM result
+	 *
+	 * @memberof DKIMStatusbarpanel
+	 * @param {String} val
+	 */
+	set value(val) {
+		this._dkimValue.textContent = val;
+	}
+
+	/**
+	 * Set the DKIM warnings
+	 *
+	 * @memberof DKIMStatusbarpanel
+	 * @param {String[]} warnings
+	 */
+	set warnings(warnings) {
+		this.setAttribute("warnings", (warnings.length > 0).toString() );
+	}
+
+	/**
+	 * Set the current status of DKIM validation
+	 *
+	 * @memberof DKIMStatusbarpanel
+	 * @param {String} status
+	 */
+	set dkimStatus(status) {
+		this.setAttribute('dkimStatus', status);
+	}
+
+	/**
+	 * Set whether to only show an icon for the DKIM result
+	 *
+	 * @memberof DKIMStatusbarpanel
+	 * @param {Boolean} useIcons
+	 */
+	set useIcons(useIcons) {
+		this._dkimValue.hidden = useIcons;
+		this._dkimWarningIcon.hidden = useIcons;
+		this._dkimStatusIcon.hidden = !useIcons;
+  }
+}
+
+customElements.define("dkim-verifier-statusbarpanel", DKIMStatusbarpanel, {extends: 'statusbarpanel'});
 
 /*
  * DKIM Verifier display module
@@ -46,10 +393,16 @@ DKIM_Verifier.Display = (function() {
  */
 	const entry = "dkim-verifier";
 	var log = DKIM_Verifier.Logging.getLogger("Display");
-	/** @type {AuthResultElement} */
+	/** @type {DKIMHeaderfield} */
 	var header;
 	var row;
-	var headerTooltips;
+	/** @type {DKIMWarningsTooltip} */
+	var headerTooltipWarnings;
+	/** @type {DKIMTooltipFrom} */
+	var headerTooltipFrom;
+	/** @type {DKIMTooltipStatus} */
+	var statusbarTooltip;
+	/** @type {DKIMStatusbarpanel} */
 	var statusbarPanel;
 	var expandedFromBox;
 	var collapsed1LfromBox; // for CompactHeader addon
@@ -70,7 +423,8 @@ DKIM_Verifier.Display = (function() {
 	 * @return {void}
 	 */
 	function setValue(value) {
-		headerTooltips.value = value;
+		headerTooltipFrom.value = value;
+		statusbarTooltip.value = value;
 		statusbarPanel.value = value;
 	}
 	
@@ -82,7 +436,9 @@ DKIM_Verifier.Display = (function() {
 	 */
 	function setWarnings(warnings) {
 		header.warnings = warnings;
-		headerTooltips.warnings = warnings;
+		headerTooltipWarnings.warnings = warnings;
+		headerTooltipFrom.warnings = warnings;
+		statusbarTooltip.warnings = warnings;
 		statusbarPanel.warnings = warnings;
 	}
 	
@@ -96,7 +452,7 @@ DKIM_Verifier.Display = (function() {
 				return;
 			}
 			var emailValue = headerBox.emailAddresses.firstChild.
-				getPart("emailValue");
+				getElementsByClassName("emaillabel")[0];
 			if (status !== "clearHeader") {
 				emailValue.style.borderRadius = "3px";
 				emailValue.style.color = prefs.
@@ -130,14 +486,40 @@ DKIM_Verifier.Display = (function() {
 	 * @return {void}
 	 */
 	function setFaviconUrl(faviconUrl) {
-		expandedFromBox.dkimFaviconUrl = faviconUrl;
+		/**
+		 * Helper function to create and set properties of the favicon element
+		 *
+		 * @param {MozMailMultiEmailheaderfield} emailheaderfield
+		 * @param {string} url
+		 * @return {void}
+		 */
+		function setDkimFavicon(emailheaderfield, url) {
+			if (!emailheaderfield._dkimFavicon) {
+				emailheaderfield._dkimFavicon = document.createXULElement("description");
+				emailheaderfield._dkimFavicon.classList.add("headerValue");
+				emailheaderfield._dkimFavicon.setAttribute("anonid", "dkimFavicon");
+				emailheaderfield._dkimFavicon.setAttribute("tooltip", "dkim-verifier-header-tooltip-from");
+				// dummy text for align baseline
+				emailheaderfield._dkimFavicon.textContent = "";
+				emailheaderfield.longEmailAddresses.prepend(emailheaderfield._dkimFavicon);
+			}
+
+			emailheaderfield._dkimFavicon.style.backgroundImage = "url('" + url + "')";
+			if (url) {
+				emailheaderfield.setAttribute("dkimFavicon", "true");
+			} else {
+				emailheaderfield.setAttribute("dkimFavicon", "false");
+			}
+		}
+
+		setDkimFavicon(expandedFromBox, faviconUrl);
 
 		// for CompactHeader addon
 		if (collapsed1LfromBox) {
-			collapsed1LfromBox.dkimFaviconUrl = faviconUrl;
+			setDkimFavicon(collapsed1LfromBox, faviconUrl);
 		}
 		if (collapsed2LfromBox) {
-			collapsed2LfromBox.dkimFaviconUrl = faviconUrl;
+			setDkimFavicon(collapsed2LfromBox, faviconUrl);
 		}
 	}
 
@@ -289,7 +671,7 @@ var that = {
 	 */
 	setCollapsed: function Display_setCollapsed(state) {
 		function setDKIMFromTooltip(headerBox) {
-			var emailDisplayButton = headerBox.emailAddresses.boxObject.firstChild;
+			var emailDisplayButton = headerBox.emailAddresses.getElementsByClassName("emaillabel")[0];
 			if (emailDisplayButton) {
 				emailDisplayButton.tooltip = "dkim-verifier-header-tooltip-from";
 				emailDisplayButton.setAttribute("tooltiptextSaved", 
@@ -299,7 +681,7 @@ var that = {
 			}
 		}
 		function removeDKIMFromTooltip(headerBox) {
-			var emailDisplayButton = headerBox.emailAddresses.boxObject.firstChild;
+			var emailDisplayButton = headerBox.emailAddresses.getElementsByClassName("emaillabel")[0];
 			if (emailDisplayButton) {
 				if (emailDisplayButton.tooltip === "dkim-verifier-header-tooltip-from") {
 					emailDisplayButton.tooltip = "";
@@ -369,7 +751,16 @@ var that = {
 		try {
 			log.trace("startup begin");
 			// get xul elements
-			headerTooltips = document.getElementById("dkim-verifier-header-tooltips");
+			// @ts-ignore
+			headerTooltipWarnings = document.getElementById("dkim-verifier-header-tooltip-warnings");
+			console.assert(headerTooltipWarnings !== null, "dkim-verifier-header-tooltip-warnings not found");
+			// @ts-ignore
+			headerTooltipFrom = document.getElementById("dkim-verifier-header-tooltip-from");
+			console.assert(headerTooltipFrom !== null, "dkim-verifier-header-tooltip-from not found");
+			// @ts-ignore
+			statusbarTooltip = document.getElementById("dkim-verifier-tooltip-status");
+			console.assert(statusbarTooltip !== null, "dkim-verifier-tooltip-status not found");
+			// @ts-ignore
 			statusbarPanel = document.getElementById("dkim-verifier-statusbarpanel");
 			expandedFromBox = document.getElementById("expandedfromBox");
 			collapsed1LfromBox = document.getElementById("CompactHeader_collapsed1LfromBox");

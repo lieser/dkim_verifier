@@ -1,0 +1,643 @@
+{
+	// DKIM_STRINGS
+	"loading": {
+		"message": "Ellenőrzés…"
+	},
+	"SUCCESS": {
+		"message": "Érvényes (Aláírta: $1)"
+	},
+	"PERMFAIL": {
+		"message": "Érvénytelen ($1)"
+	},
+	"PERMFAIL_NO_REASON": {
+		"message": "Érvénytelen"
+	},
+	"TEMPFAIL": {
+		"message": "Ideiglenes érvényesítési hiba (Aláírás céljából $1)"
+	},
+	"NOSIG": {
+		"message": "Nincs aláírás"
+	},
+	"NOT_EMAIL": {
+		"message": "Az üzenet nem e-mail"
+	},
+	// DKIM_INTERNALERROR
+	"DKIM_INTERNALERROR": {
+		"message": "DKIM ellenőrző belső hiba"
+	},
+	"DKIM_INTERNALERROR_NAME": {
+		"message": "Belső hiba"
+	},
+	"DKIM_INTERNALERROR_DEFAULT": {
+		"message": "hiba"
+	},
+	"DKIM_INTERNALERROR_INCORRECT_EMAIL_FORMAT": {
+		"message": "Az e-mail hibás formázott"
+	},
+	// DKIM_INTERNALERROR - DNS
+	"DKIM_DNSERROR_UNKNOWN": {
+		"message": "A DNS-feloldó hibás"
+	},
+	"DKIM_DNSERROR_SERVER_ERROR": {
+		"message": "Hiba történt a DNS-kiszolgálóhoz való csatlakozáskor"
+	},
+	"DKIM_DNSERROR_DNSSEC_BOGUS": {
+		"message": "A DNS eredmény hamis"
+	},
+	// DKIM_SIGERROR
+	"DKIM_SIGERROR": {
+		"message": "DKIM aláírási hiba"
+	},
+	"DKIM_SIGERROR_DEFAULT": {
+		"message": "hiba"
+	},
+	// DKIM_SIGERROR - DKIM-Signature Header
+	"DKIM_SIGERROR_ILLFORMED": {
+		"message": "Az aláírás hibás formázott"
+	},
+	"DKIM_SIGERROR_UNSUPPORTED": {
+		"message": "Az aláírás verziója nem támogatott"
+	},
+	"DKIM_SIGERROR_ILLFORMED_TAGSPEC": {
+		"message": "Az aláírás hibás formázott"
+	},
+	"DKIM_SIGERROR_DUPLICATE_TAG": {
+		"message": "Az aláírás hibás formázott (kettős címke)"
+	},
+	"DKIM_SIGERROR_VERSION": {
+		"message": "A verzió nem támogatott"
+	},
+	"DKIM_SIGERROR_MISSING_V": {
+		"message": "A DKIM verzió hiányzik"
+	},
+	"DKIM_SIGERROR_ILLFORMED_V": {
+		"message": "A verziócímke hibás formázott"
+	},
+	"DKIM_SIGERROR_MISSING_A": {
+		"message": "Az aláírási algoritmus hiányzik"
+	},
+	"DKIM_SIGERROR_UNKNOWN_A": {
+		"message": "Az aláírás algoritmus nem támogatott"
+	},
+	"DKIM_SIGERROR_INSECURE_A": {
+		"message": "Az aláírás algoritmus nem biztonságos"
+	},
+	"DKIM_SIGERROR_ILLFORMED_A": {
+		"message": "Algoritmuscímke hibás formázott"
+	},
+	"DKIM_SIGERROR_MISSING_B": {
+		"message": "Az aláírás hiányzik"
+	},
+	"DKIM_SIGERROR_BADSIG": {
+		"message": "Az aláírás hibás"
+	},
+	"DKIM_SIGERROR_ILLFORMED_B": {
+		"message": "Az aláírás adatcímke hibás formázott"
+	},
+	"DKIM_SIGERROR_MISSING_BH": {
+		"message": "A törzshash hiányzik"
+	},
+	"DKIM_SIGERROR_CORRUPT_BH": {
+		"message": "Az e-mail módosult"
+	},
+	"DKIM_SIGERROR_ILLFORMED_BH": {
+		"message": "A törzshash címke hibás formázott"
+	},
+	"DKIM_SIGERROR_UNKNOWN_C_H": {
+		"message": "Kanonikálási algoritmus a fejléchez nem támogatott"
+	},
+	"DKIM_SIGERROR_UNKNOWN_C_B": {
+		"message": "Kanonikálási algoritmus a törzshöz nem támogatott"
+	},
+	"DKIM_SIGERROR_ILLFORMED_C": {
+		"message": "A kanonizációs címke hibás formázott"
+	},
+	"DKIM_SIGERROR_MISSING_D": {
+		"message": "Az SDID (Signing Domain Identifier – Aláíró tartomány azonosító) hiányzik"
+	},
+	"DKIM_SIGERROR_ILLFORMED_D": {
+		"message": "Az SDID-címke hibás formázott"
+	},
+	"DKIM_SIGERROR_MISSING_H": {
+		"message": "Az aláírt fejléc mezők hiányzók"
+	},
+	"DKIM_SIGERROR_MISSING_FROM": {
+		"message": "A feladó fejléc nincs aláírva"
+	},
+	"DKIM_SIGERROR_ILLFORMED_H": {
+		"message": "Az aláírt fejléc mezők címke hibás formázott"
+	},
+	"DKIM_SIGERROR_SUBDOMAIN_I": {
+		"message": "Az AUID nincs az SDID altartományéban"
+	},
+	"DKIM_SIGERROR_DOMAIN_I": {
+		"message": "Az AUID-nek ugyanabban a tartományban kell lennie, mint az SDID-nek (s-flag beállítva a kulcsrekordban)"
+	},
+	"DKIM_SIGERROR_ILLFORMED_I": {
+		"message": "Az AUID címke hibás formázott"
+	},
+	"DKIM_SIGERROR_TOOLARGE_L": {
+		"message": "Az e-mail rövidebb, mint amit a DKIM aláírásban megadtak"
+	},
+	"DKIM_SIGERROR_ILLFORMED_L": {
+		"message": "A törzshosszasság címke hibás formázott"
+	},
+	"DKIM_SIGERROR_UNKNOWN_Q": {
+		"message": "A nyilvános kulcs lekérdezésének módszerei nem támogatott"
+	},
+	"DKIM_SIGERROR_ILLFORMED_Q": {
+		"message": "A lekérdezési módszer címke hibás formázott"
+	},
+	"DKIM_SIGERROR_MISSING_S": {
+		"message": "Választócímke hiányzik"
+	},
+	"DKIM_SIGERROR_ILLFORMED_S": {
+		"message": "Választócímke hibás formázott"
+	},
+	"DKIM_SIGERROR_ILLFORMED_T": {
+		"message": "Aláírás időbélyegző hibás formázott"
+	},
+	"DKIM_SIGERROR_TIMESTAMPS": {
+		"message": "Az aláírás lejár az aláírás időbélyegzője előtt"
+	},
+	"DKIM_SIGERROR_ILLFORMED_X": {
+		"message": "Az aláírás lejárati címke hibás formázott"
+	},
+	"DKIM_SIGERROR_ILLFORMED_Z": {
+		"message": "A másolt fejléc mezők címke hibás formázott"
+	},
+	// DKIM_SIGERROR - key query
+	"DKIM_SIGERROR_NOKEY": {
+		"message": "A DNS-kiszolgálón nem található a DKIM-kulcs"
+	},
+	// DKIM_SIGERROR - Key record
+	"DKIM_SIGERROR_KEY_ILLFORMED": {
+		"message": "A DKIM kulcs hibás formázott"
+	},
+	"DKIM_SIGERROR_KEY_INVALID": {
+		"message": "Érvénytelen DKIM kulcs"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_TAGSPEC": {
+		"message": "A DKIM kulcs hibás formázott"
+	},
+	"DKIM_SIGERROR_KEY_DUPLICATE_TAG": {
+		"message": "A DKIM kulcs hibás formázott (megkettőzött címke)"
+	},
+	"DKIM_SIGERROR_KEY_INVALID_V": {
+		"message": "Érvénytelen változata a DKIM kulcs rögzítés"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_V": {
+		"message": "A DKIM kulcs verziócímke hibás formázott"
+	},
+	"DKIM_SIGERROR_KEY_HASHNOTINCLUDED": {
+		"message": "Rossz hash algoritmus a DKIM kulcsrögzítésben"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_H": {
+		"message": "A hash algoritmusok címkéje a DKIM kulcsban hibás formázott"
+	},
+	"DKIM_SIGERROR_KEY_UNKNOWN_K": {
+		"message": "A DKIM kulcs típusa nem támogatott"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_K": {
+		"message": "A DKIM kulcs típusú címke hibás formázott"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_N": {
+		"message": "Megjegyzéscímke a DKIM kulcsban hibás formázott"
+	},
+	"DKIM_SIGERROR_KEY_MISSING_P": {
+		"message": "A DKIM kulcs nem tartalmaz nyilvános kulcsot"
+	},
+	"DKIM_SIGERROR_KEY_REVOKED": {
+		"message": "A DKIM kulcs visszavonásra kerül"
+	},
+	"DKIM_SIGERROR_KEY_HASHMISMATCH": {
+		"message": "A DKIM kulcs nyilvános kulcsa hibás hash algoritmussal rendelkezik"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_P": {
+		"message": "Nyilvános kulcsú adatcímke a DKIM kulcsban hibás formázott"
+	},
+	"DKIM_SIGERROR_KEY_NOTEMAILKEY": {
+		"message": "A DKIM kulcs nem e-mail kulcs"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_S": {
+		"message": "A DKIM kulcs szolgáltatástípus-címkéje hibás formázott"
+	},
+	"DKIM_SIGERROR_KEY_TESTMODE": {
+		"message": "Az aláíró tartomány csak a DKIM tesztelését használja"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_T": {
+		"message": "A DKIM kulcsban található zászlócímkéje hibás formázott"
+	},
+	// DKIM_SIGERROR - key decode
+	"DKIM_SIGERROR_KEYDECODE": {
+		"message": "Nyilvános kulcsú adatcímke a DKIM kulcsban nem lehetett dekódolni"
+	},
+	// DKIM_SIGERROR - POLICY
+	"DKIM_POLICYERROR_MISSING_SIG": {
+		"message": "Alá kéne írni: $1"
+	},
+	"DKIM_POLICYERROR_KEYMISMATCH": {
+		"message": "A tárolt DKIM kulcs eltér a jelenlegiől"
+	},
+	"DKIM_POLICYERROR_KEY_INSECURE": {
+		"message": "A DKIM kulcsot a DNSSEC nem írja alá"
+	},
+	"DKIM_POLICYERROR_WRONG_SDID": {
+		"message": "Hibás aláíró (kéne: $1)"
+	},
+	// DKIM_SIGWARNING
+	"DKIM_SIGWARNING_SMALL_L": {
+		"message": "A teljes e-mailt nem írták alá"
+	},
+	"DKIM_SIGWARNING_EXPIRED": {
+		"message": "Az aláírás lejárt"
+	},
+	"DKIM_SIGWARNING_FUTURE": {
+		"message": "Aláírás a jövőben"
+	},
+	"DKIM_SIGWARNING_KEYSMALL": {
+		"message": "Az aláírás nem biztonságos (a kulcs mérete túl kicsi)"
+	},
+	"DKIM_SIGWARNING_KEY_IS_WEAK": {
+		"message": "Gyenge kulccsal aláírva"
+	},
+	"DKIM_SIGWARNING_FROM_NOT_IN_SDID": {
+		"message": "A feladó nem található az aláírási tartományban"
+	},
+	"DKIM_SIGWARNING_FROM_NOT_IN_AUID": {
+		"message": "A feladó nem egyezik a felhasználói azonosítóval"
+	},
+	// JSDNS
+	"TOO_MANY_HOPS": {
+		"message": "Túl sok komló."
+	},
+	"CONNECTION_REFUSED": {
+		"message": "A(z) $1 DNS-kiszolgáló elutasította a TCP-kapcsolatot."
+	},
+	"TIMED_OUT": {
+		"message": "A(z) $1 DNS-kiszolgáló lejárt egy TCP-kapcsolaton."
+	},
+	"SERVER_ERROR": {
+		"message": "Hiba történt a(z) $1 DNS-kiszolgálóhoz való csatlakozáskor."
+	},
+	"INCOMPLETE_RESPONSE": {
+		"message": "$1 hiányos válasz."
+	},
+	// ==================== Options window ====================
+	"options_prefwindow.title": {
+		"message": "DKIM ellenőrző beállításai"
+	},
+	// -------------------- General options --------------------
+	"options_general": {
+		"message": "Általános"
+	},
+	// ---------- General options tab ----------
+	"options_general.general": {
+		"message": "Általános"
+	},
+	"options_dkim.enable": {
+		"message": "Ellenőrizze a DKIM aláírásait"
+	},
+	"options_key.storing.value.0": {
+		"message": "Ne tárolja a DKIM kulcsokat"
+	},
+	"options_key.storing.value.1": {
+		"message": "Tárolja a DKIM kulcsokat"
+	},
+	"options_key.storing.value.2": {
+		"message": "Tárolja és hasonlítsa össze a DKIM kulcsokat a jelenlegi kulccsal"
+	},
+	"options_key.viewKeys": {
+		"message": "DKIM kulcsok"
+	},
+	"options_saveResult": {
+		"message": "Mentse el az ellenőrzés eredményét"
+	},
+	// ---------- DNS options tab ----------
+	"options_dns": {
+		"message": "DNS"
+	},
+	"options_dns.resolver": {
+		"message": "Megoldó"
+	},
+	"options_dns.resolver.value.1": {
+		"message": "JavaScript DNS könyvtár"
+	},
+	"options_dns.resolver.value.2": {
+		"message": "libunbound"
+	},
+	"options_dns.getNameserversFromOS": {
+		"message": "Szerezzen DNS-kiszolgálókat az operációs rendszer konfigurációjából"
+	},
+	"options_dns.nameserver": {
+		"message": "DNS-kiszolgálók (mondattan (EBNF): gép[\":\"kikötő]{\";\"gép[\":\"kikötő]} )"
+	},
+	"options_dns.timeout_connect": {
+		"message": "DNS-csatlakozás időtúllépése (másodperc)"
+	},
+	"options_dns.proxy.enable": {
+		"message": "Megbízott segítségével csatlakozzon a DNS-kiszolgálókhoz"
+	},
+	"options_dns.proxy.type": {
+		"message": "Megbízott típus:"
+	},
+	"options_dns.proxy.host": {
+		"message": "Megbízott-kiszolgáló:"
+	},
+	"options_dns.proxy.port": {
+		"message": "Kikötő:"
+	},
+	"options_dns.libunbound.path": {
+		"message": "Útvonal"
+	},
+	"options_dns.libunbound.path.relToProfileDir": {
+		"message": "Útvonal a profilkönyvtárhoz viszonyítva"
+	},
+	// ---------- Policy options tab ----------
+	"options_general.policy": {
+		"message": "Házirend"
+	},
+	"options_policy.signRules.enable": {
+		"message": "Ellenőrizze, hogy az e-mailt alá kell-e írni"
+	},
+	"options_policy.signRules.checkDefaultRules": {
+		"message": "Alapértelmezett szabályok használata"
+	},
+	"options_policy.signRules.autoAddRule.enable": {
+		"message": "Önműködően adjon hozzá szabályokat a megtekintett DKIM aláírt e-mailek alapján"
+	},
+	"options_policy.signRules.autoAddRule.onlyIfFromAddressInSDID": {
+		"message": "Csak akkor, ha a feladócím szerepel az SDID-ben"
+	},
+	"options_policy.signRules.autoAddRule.for.value.0": {
+		"message": "feladócímért"
+	},
+	"options_policy.signRules.autoAddRule.for.value.1": {
+		"message": "altartományért"
+	},
+	"options_policy.signRules.autoAddRule.for.value.2": {
+		"message": "alaptartományért"
+	},
+	"options_policy.signRules.sdid.allowSubDomains": {
+		"message": "SDID-altartományok engedélyezése"
+	},
+	"options_policy.signRules.error.wrong_sdid.asWarning": {
+		"message": "A helytelen SDID-t figyelmeztetésként kezelje, nem hibaként"
+	},
+	"options_viewSigners": {
+		"message": "Az aláírók szabályai"
+	},
+	"options_viewSignerDefaults": {
+		"message": "Alapértelmezett aláírói szabályok"
+	},
+	"options_policy.DMARC.shouldBeSigned.enable": {
+		"message": "A DMARC segítségével heurisztikusan meghatározhatja, hogy alá kell-e írni az e-mailt"
+	},
+	// -------------------- Display options --------------------
+	"options_display": {
+		"message": "Megjelenítés"
+	},
+	"options_showDKIMHeader": {
+		"message": "A DKIM fejléc megjelenítése"
+	},
+	"options_showDKIMFromTooltip": {
+		"message": "A DKIM eszköztipp megjelenítése a feladóért fejléchez"
+	},
+	"options_showDKIM.value.0": {
+		"message": "soha"
+	},
+	"options_showDKIM.value.10": {
+		"message": "érvényes DKIM aláírással rendelkező e-mail megtekintésekor"
+	},
+	"options_showDKIM.value.30": {
+		"message": "DKIM aláírással ellátott e-mailek megtekintésekor"
+	},
+	"options_showDKIM.value.40": {
+		"message": "e-mail megtekintésekor"
+	},
+	"options_showDKIM.value.50": {
+		"message": "üzenet megtekintésekor"
+	},
+	"options_colorFrom": {
+		"message": "A feladó fejléc kiemelésének engedélyezése"
+	},
+	"options_color": {
+		"message": "Szín"
+	},
+	"options_color.text": {
+		"message": "Szöveg:"
+	},
+	"options_color.background": {
+		"message": "Háttér:"
+	},
+	"options_color.success": {
+		"message": "Érvényes aláírás"
+	},
+	"options_color.warning": {
+		"message": "Érvényes aláírás figyelmeztetésekkel"
+	},
+	"options_color.permfail": {
+		"message": "Érvénytelen aláírás"
+	},
+	"options_color.tempfail": {
+		"message": "Ideiglenes hiba"
+	},
+	"options_color.nosig": {
+		"message": "Aláíratlan e-mail"
+	},
+	"options_display.favicon.show": {
+		"message": "Mutassa az ismert aláírási tartományok faviconját a feladócím előtt"
+	},
+	// -------------------- Advanced options --------------------
+	"options_advanced": {
+		"message": "Haladó"
+	},
+	"options_debug": {
+		"message": "A hibakeresés engedélyezése (Kimenetek és hibakeresési információk a hibakonzolhoz)"
+	},
+	"options_error.detailedReasons": {
+		"message": "A hiba okának részletes bemutatása"
+	},
+	"options_error.key_testmode.ignore": {
+		"message": "Ellenőrizze az aláírást, ha egy tartomány csak a DKIM-et teszteli"
+	},
+	"options_error.illformed_i.treatAs": {
+		"message": "Kezelje hibás formázott AUID-címkéje mint"
+	},
+	"options_error.illformed_s.treatAs": {
+		"message": "Kezelje hibás formázott választócímkéje mint"
+	},
+	"options_error.policy.key_insecure.treatAs": {
+		"message": "Kezelje a DNSSEC által nem biztosított DKIM kulcsot mint"
+	},
+	"options_error.algorithm.sign.rsa-sha1.treatAs": {
+		"message": "Kezelje az RSA-SHA1 jel algoritmust mint"
+	},
+	"options_error.algorithm.rsa.weakKeyLength.treatAs": {
+		"message": "Kezelje a gyenge RSA kulcsokat (<2048 bites) mint"
+	},
+	"options_error.treatAs.value.0": {
+		"message": "hiba"
+	},
+	"options_error.treatAs.value.1": {
+		"message": "figyelmeztetés"
+	},
+	"options_error.treatAs.value.2": {
+		"message": "semmi"
+	},
+	"options_display.keySecure": {
+		"message": "Jelölje meg a sikeres DNSSEC-érvényesítést egy zárral az SDID után"
+	},
+	"options_arh.read": {
+		"message": "Olvassa el a hitelesítési-eredmények fejlécet"
+	},
+	"options_arh.replaceAddonResult": {
+		"message": "A hitelesítési-eredmények fejléc elolvasása helyettesíti a kiegészítők ellenőrzését"
+	},
+	"options_arh.relaxedParsing": {
+		"message": "Próbálja meg elolvasni a nem RFC-kompatibilis hitelesítési-eredmények fejlécet"
+	},
+	"options_acc.dkim.enable": {
+		"message": "Ellenőrizze a DKIM aláírásait:"
+	},
+	"options_acc.arh.read": {
+		"message": "Olvassa el a hitelesítési-eredmények fejlécét:"
+	},
+	"options_acc.arh.allowedAuthserv": {
+		"message": "Megbízható hitelesítési-kiszolgálók:"
+	},
+	"options_acc.boolean.value.0": {
+		"message": "Alapértelmezett érték használata"
+	},
+	"options_acc.boolean.value.1": {
+		"message": "Igen"
+	},
+	"options_acc.boolean.value.2": {
+		"message": "Nem"
+	},
+	// -------------------- Account options --------------------
+	"about_name": {
+		"message": "DKIM ellenőrző (DKIM Verifier)",
+		"description": "Name of the add-on"
+	},
+	"about_summary": {
+		"message": "Ellenőrzi az e-mailek DKIM-aláírásait",
+		"description": "Short description of the add-on"
+	},
+	// ==================== Actions ====================
+	"dkim_verifier.reverifyDKIMSignature": {
+		"message": "DKIM aláírás újraellenőrzése"
+	},
+	"dkim_verifier.policyAddUserException": {
+		"message": "Alá kell írni kivétel hozzáadása"
+	},
+	"dkim_verifier.markKeyAsSecure": {
+		"message": "A DKIM kulcs biztonságosként jelölése"
+	},
+	"dkim_verifier.updateKey": {
+		"message": "DKIM kulcs frissítése"
+	},
+	// ==================== Table Views ====================
+	"treeviewKeys.treecol.SDID": {
+		"message": "SDID"
+	},
+	"treeviewKeys.treecol.selector": {
+		"message": "Választó"
+	},
+	"treeviewKeys.treecol.key": {
+		"message": "DKIM kulcs"
+	},
+	"treeviewKeys.treecol.insertedAt": {
+		"message": "Beszúrva"
+	},
+	"treeviewKeys.treecol.lastUsedAt": {
+		"message": "Utolsó használat"
+	},
+	"treeviewKeys.treecol.secure": {
+		"message": "DNSSEC"
+	},
+	"treeviewKeys.deleteSelectedRows": {
+		"message": "Kiválasztott kulcsok törlése"
+	},
+	"treeviewSigners.treecol.domain": {
+		"message": "Tartomány"
+	},
+	"treeviewSigners.treecol.listId": {
+		"message": "Listaazonosító"
+	},
+	"treeviewSigners.treecol.addr": {
+		"message": "Feladó"
+	},
+	"treeviewSigners.treecol.sdid": {
+		"message": "SDID"
+	},
+	"treeviewSigners.treecol.ruletype": {
+		"message": "Szabály típusa"
+	},
+	"treeviewSigners.treecol.priority": {
+		"message": "Sürgősség"
+	},
+	"treeviewSigners.treecol.enabled": {
+		"message": "Engedélyezve"
+	},
+	"treeviewSigners.addSignersRule": {
+		"message": "Szabály hozzáadása"
+	},
+	"treeviewSigners.deleteSelectedRows": {
+		"message": "Kiválasztott szabályok törlése"
+	},
+	"addSignersRule.title": {
+		"message": "Aláírók szabály hozzáadása"
+	},
+	"signRules.ruletype.SIGNED": {
+		"message": "Alá kell írni (1)"
+	},
+	"signRules.ruletype.NEUTRAL": {
+		"message": "Aláírható (2)"
+	},
+	"signRules.ruletype.HIDEFAIL": {
+		"message": "Az érvénytelen aláírás figyelmen kívül hagyása (3)"
+	},
+	"signRules.priorityMode.auto": {
+		"message": "Önműködően sürgősség kiválasztása"
+	},
+	"signRules.priorityMode.manual": {
+		"message": "Sürgősség beállítása"
+	},
+	"button.help": {
+		"message": "Súgó"
+	},
+	"signersRuleHelp.title": {
+		"message": "Aláírók szabályok súgó"
+	},
+	"domain.description": {
+		"message": "Összehangolják a feladócím alaptartományával. Például az „e-mail.példa.hu” alaptartománya az „példa.hu”."
+	},
+	"listId.description": {
+		"message": "Összehangolják a listaazonosítóval, ha az e-mailt e-mail listán vették át. Vegye figyelembe, hogy csak a „<” és „>” a listaazonosító fejlécében szereplő tényleges listaazonosító. Csak a tartomány vagy a listaazonosító egyezik egyidejűleg."
+	},
+	"addr.description": {
+		"message": "Összehangolják a feladó címmel. Használjon „*”-ot, hogy egyezzen meg nulla vagy több karaktert."
+	},
+	"sdid.description": {
+		"message": "Az a tartomány, amelyen az e-maileket alá kell írni. Ha ez üres, akkor minden SDID megengedett. Egynél több tartomány megadható, ha szóközzel elválasztják őket."
+	},
+	"ruletype.description": {
+		"message": "A szabály típusa."
+	},
+	"ruletype.1.description": {
+		"message": "Az e-mailt a megadott SDID-nek kell aláírnia."
+	},
+	"ruletype.2.description": {
+		"message": "Az e-mailt nem kell aláírni. Ha aláírják, akkor a megadott SDID-nek kell lennie."
+	},
+	"ruletype.3.description": {
+		"message": "Az e-mailt nem kell aláírni. Ha aláírják, akkor a megadott SDID-nek kell lennie. Ha az e-mail érvénytelen aláírással rendelkezik, akkor azt úgy kell kezelni, mintha nincs aláírás."
+	},
+	"priority.description": {
+		"message": "A szabály sürgőssége. Ha egynél több szabály egyezik, akkor a legmagasabb sürgősséggel rendelkező szabályt kell használni."
+	},
+	"enabled.description": {
+		"message": "0, ha szabály letiltva. 1, ha szabály engedélyezve."
+	}
+}

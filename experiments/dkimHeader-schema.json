@@ -1,0 +1,135 @@
+[
+	{
+		"namespace": "dkimHeader",
+		"functions": [
+			{
+				"name": "showDkimHeader",
+				"type": "function",
+				"description": "Set whether the DKIM heder should be shown",
+				"async": true,
+				"parameters": [
+					{
+						"name": "tabId",
+						"type": "number",
+						"description": "Tab id"
+					},
+					{
+						"name": "messageId",
+						"type": "number",
+						"description": "Message id"
+					},
+					{
+						"name": "show",
+						"type": "boolean",
+						"description": "True if the header should be shown"
+					}
+				]
+			},
+			{
+				"name": "showFromTooltip",
+				"type": "function",
+				"description": "Set whether the DKIM From tooltip should be shown",
+				"async": true,
+				"parameters": [
+					{
+						"name": "tabId",
+						"type": "number",
+						"description": "Tab id"
+					},
+					{
+						"name": "messageId",
+						"type": "number",
+						"description": "Message id"
+					},
+					{
+						"name": "show",
+						"type": "boolean",
+						"description": "True if the tooltip should be shown"
+					}
+				]
+			},
+			{
+				"name": "setDkimHeaderResult",
+				"type": "function",
+				"description": "Show the given DKIM result in the header",
+				"async": true,
+				"parameters": [
+					{
+						"name": "tabId",
+						"type": "number",
+						"description": "Tab id"
+					},
+					{
+						"name": "messageId",
+						"type": "number",
+						"description": "Message id"
+					},
+					{
+						"name": "result",
+						"type": "string",
+						"description": "DKIM result"
+					},
+					{
+						"name": "warnings",
+						"type": "array",
+						"items": {
+							"type": "string"
+						},
+						"description": "DKIM warnings"
+					},
+					{
+						"name": "faviconUrl",
+						"type": "string",
+						"description": "URL to the favicon to show"
+					},
+					{
+						"name": "arh",
+						"type": "object",
+						"properties": {
+							"dkim": {
+								"type": "string",
+								"optional": true
+							},
+							"spf": {
+								"type": "string",
+								"optional": true
+							},
+							"dmarc": {
+								"type": "string",
+								"optional": true
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "highlightFromAddress",
+				"type": "function",
+				"description": "Highlight the from address with the given text and background color",
+				"async": true,
+				"parameters": [
+					{
+						"name": "tabId",
+						"type": "number",
+						"description": "Tab id"
+					},
+					{
+						"name": "messageId",
+						"type": "number",
+						"description": "Message id"
+					},
+					{
+						"name": "color",
+						"type": "string",
+						"description": "text color"
+					},
+					{
+						"name": "backgroundColor",
+						"type": "string",
+						"description": "background color"
+					}
+				]
+			}
+		]
+	}
+]

@@ -1,0 +1,683 @@
+{
+	// DKIM_STRINGS
+	"loading": {
+		"message": "Validating…"
+	},
+	"SUCCESS": {
+		"message": "Valid (Signed by $1)"
+	},
+	"PERMFAIL": {
+		"message": "Invalid ($1)"
+	},
+	"PERMFAIL_NO_REASON": {
+		"message": "Invalid"
+	},
+	"TEMPFAIL": {
+		"message": "Temporary validation error (For signature by $1)"
+	},
+	"NOSIG": {
+		"message": "No Signature"
+	},
+	"NOT_EMAIL": {
+		"message": "Message is not an e-mail"
+	},
+	// DKIM_INTERNALERROR
+	"DKIM_INTERNALERROR": {
+		"message": "DKIM verifier internal error"
+	},
+	"DKIM_INTERNALERROR_NAME": {
+		"message": "Internal error"
+	},
+	"DKIM_INTERNALERROR_DEFAULT": {
+		"message": "error"
+	},
+	"DKIM_INTERNALERROR_INCORRECT_EMAIL_FORMAT": {
+		"message": "E-mail is not correctly formatted"
+	},
+	// DKIM_INTERNALERROR - DNS
+	"DKIM_DNSERROR_UNKNOWN": {
+		"message": "Error in the DNS resolver"
+	},
+	"DKIM_DNSERROR_SERVER_ERROR": {
+		"message": "Error connecting to the DNS server"
+	},
+	"DKIM_DNSERROR_DNSSEC_BOGUS": {
+		"message": "DNS result is bogus"
+	},
+	// DKIM_SIGERROR
+	"DKIM_SIGERROR": {
+		"message": "DKIM Signature Error"
+	},
+	"DKIM_SIGERROR_DEFAULT": {
+		"message": "error"
+	},
+	// DKIM_SIGERROR - DKIM-Signature Header
+	"DKIM_SIGERROR_ILLFORMED": {
+		"message": "Signature is ill-formed"
+	},
+	"DKIM_SIGERROR_UNSUPPORTED": {
+		"message": "Signature has an unsupported version"
+	},
+	"DKIM_SIGERROR_ILLFORMED_TAGSPEC": {
+		"message": "Signature is ill-formed"
+	},
+	"DKIM_SIGERROR_DUPLICATE_TAG": {
+		"message": "Signature is ill-formed (duplicate tag)"
+	},
+	"DKIM_SIGERROR_VERSION": {
+		"message": "Unsupported version"
+	},
+	"DKIM_SIGERROR_MISSING_V": {
+		"message": "DKIM version is missing"
+	},
+	"DKIM_SIGERROR_ILLFORMED_V": {
+		"message": "Version tag is ill-formed"
+	},
+	"DKIM_SIGERROR_MISSING_A": {
+		"message": "Missing signature algorithm"
+	},
+	"DKIM_SIGERROR_UNKNOWN_A": {
+		"message": "Unsupported signature algorithm"
+	},
+	"DKIM_SIGERROR_INSECURE_A": {
+		"message": "Insecure signature algorithm"
+	},
+	"DKIM_SIGERROR_ILLFORMED_A": {
+		"message": "Algorithm tag ill-formed"
+	},
+	"DKIM_SIGERROR_MISSING_B": {
+		"message": "Missing signature"
+	},
+	"DKIM_SIGERROR_BADSIG": {
+		"message": "Signature is wrong"
+	},
+	"DKIM_SIGERROR_ILLFORMED_B": {
+		"message": "Signature data tag is ill-formed"
+	},
+	"DKIM_SIGERROR_MISSING_BH": {
+		"message": "Missing body hash"
+	},
+	"DKIM_SIGERROR_CORRUPT_BH": {
+		"message": "E-Mail was modified"
+	},
+	"DKIM_SIGERROR_ILLFORMED_BH": {
+		"message": "Body hash tag is ill-formed"
+	},
+	"DKIM_SIGERROR_UNKNOWN_C_H": {
+		"message": "Unsupported canonicalization algorithm for header"
+	},
+	"DKIM_SIGERROR_UNKNOWN_C_B": {
+		"message": "Unsupported canonicalization algorithm for body"
+	},
+	"DKIM_SIGERROR_ILLFORMED_C": {
+		"message": "Canonicalization tag is ill-formed"
+	},
+	"DKIM_SIGERROR_MISSING_D": {
+		"message": "Missing Signing Domain Identifier (SDID)"
+	},
+	"DKIM_SIGERROR_ILLFORMED_D": {
+		"message": "SDID tag is ill-formed"
+	},
+	"DKIM_SIGERROR_MISSING_H": {
+		"message": "Missing signed header fields"
+	},
+	"DKIM_SIGERROR_MISSING_FROM": {
+		"message": "From header is not signed"
+	},
+	"DKIM_SIGERROR_ILLFORMED_H": {
+		"message": "Signed header fields tag is ill-formed"
+	},
+	"DKIM_SIGERROR_SUBDOMAIN_I": {
+		"message": "AUID is not in a subdomain of SDID"
+	},
+	"DKIM_SIGERROR_DOMAIN_I": {
+		"message": "AUID must be in the same domain as SDID (s-flag set in key record)"
+	},
+	"DKIM_SIGERROR_ILLFORMED_I": {
+		"message": "AUID tag is ill-formed"
+	},
+	"DKIM_SIGERROR_TOOLARGE_L": {
+		"message": "E-Mail is shorter than specified in the DKIM signature"
+	},
+	"DKIM_SIGERROR_ILLFORMED_L": {
+		"message": "Body length tag is ill-formed"
+	},
+	"DKIM_SIGERROR_UNKNOWN_Q": {
+		"message": "Unsupported query methods for public key retrieval"
+	},
+	"DKIM_SIGERROR_ILLFORMED_Q": {
+		"message": "Query method tag is ill-formed"
+	},
+	"DKIM_SIGERROR_MISSING_S": {
+		"message": "Missing selector tag"
+	},
+	"DKIM_SIGERROR_ILLFORMED_S": {
+		"message": "Selector tag is ill-formed"
+	},
+	"DKIM_SIGERROR_ILLFORMED_T": {
+		"message": "Signature timestamp tag is ill-formed"
+	},
+	"DKIM_SIGERROR_TIMESTAMPS": {
+		"message": "Signature expiration is before signature timestamp"
+	},
+	"DKIM_SIGERROR_ILLFORMED_X": {
+		"message": "Signature expiration tag is ill-formed"
+	},
+	"DKIM_SIGERROR_ILLFORMED_Z": {
+		"message": "Copied header fields tag is ill-formed"
+	},
+	// DKIM_SIGERROR - key query
+	"DKIM_SIGERROR_NOKEY": {
+		"message": "No DKIM key found in DNS server"
+	},
+	// DKIM_SIGERROR - Key record
+	"DKIM_SIGERROR_KEY_ILLFORMED": {
+		"message": "DKIM key is ill-formed"
+	},
+	"DKIM_SIGERROR_KEY_INVALID": {
+		"message": "DKIM key is invalid"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_TAGSPEC": {
+		"message": "DKIM key is ill-formed"
+	},
+	"DKIM_SIGERROR_KEY_DUPLICATE_TAG": {
+		"message": "DKIM key is ill-formed (duplicate tag)"
+	},
+	"DKIM_SIGERROR_KEY_INVALID_V": {
+		"message": "Invalid version of the DKIM key record"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_V": {
+		"message": "DKIM key version tag is ill-formed"
+	},
+	"DKIM_SIGERROR_KEY_HASHNOTINCLUDED": {
+		"message": "Wrong hash algorithm in DKIM key record"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_H": {
+		"message": "Hash algorithms tag in DKIM key is ill-formed"
+	},
+	"DKIM_SIGERROR_KEY_UNKNOWN_K": {
+		"message": "Unsupported DKIM key type"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_K": {
+		"message": "DKIM key type tag is ill-formed"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_N": {
+		"message": "Notes tag in DKIM key is ill-formed"
+	},
+	"DKIM_SIGERROR_KEY_MISSING_P": {
+		"message": "DKIM key contains no public key"
+	},
+	"DKIM_SIGERROR_KEY_REVOKED": {
+		"message": "DKIM key is revoked"
+	},
+	"DKIM_SIGERROR_KEY_HASHMISMATCH": {
+		"message": "Public key in DKIM key has wrong hash algorithm"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_P": {
+		"message": "Public key data tag in DKIM key is ill-formed"
+	},
+	"DKIM_SIGERROR_KEY_NOTEMAILKEY": {
+		"message": "DKIM key is not an e-mail key"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_S": {
+		"message": "Service Type tag in DKIM key is ill-formed"
+	},
+	"DKIM_SIGERROR_KEY_TESTMODE": {
+		"message": "The signing domain is only testing DKIM"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_T": {
+		"message": "Flags tag in DKIM key is ill-formed"
+	},
+	// DKIM_SIGERROR - key decode
+	"DKIM_SIGERROR_KEYDECODE": {
+		"message": "Public key in DKIM key couldn't be decoded"
+	},
+	// DKIM_SIGERROR - POLICY
+	"DKIM_POLICYERROR_MISSING_SIG": {
+		"message": "Should be signed by $1"
+	},
+	"DKIM_POLICYERROR_KEYMISMATCH": {
+		"message": "Stored DKIM key is different from the current one"
+	},
+	"DKIM_POLICYERROR_KEY_INSECURE": {
+		"message": "DKIM key is not signed by DNSSEC"
+	},
+	"DKIM_POLICYERROR_WRONG_SDID": {
+		"message": "Wrong signer (should be $1)"
+	},
+	// DKIM_SIGWARNING
+	"DKIM_SIGWARNING_SMALL_L": {
+		"message": "Not the entire e-mail is signed"
+	},
+	"DKIM_SIGWARNING_EXPIRED": {
+		"message": "Signature is expired"
+	},
+	"DKIM_SIGWARNING_FUTURE": {
+		"message": "Signature is in the future"
+	},
+	"DKIM_SIGWARNING_KEYSMALL": {
+		"message": "Signature is insecure (key size too small)"
+	},
+	"DKIM_SIGWARNING_KEY_IS_WEAK": {
+		"message": "Signed with a weak key"
+	},
+	"DKIM_SIGWARNING_FROM_NOT_IN_SDID": {
+		"message": "From is not in the signing domain"
+	},
+	"DKIM_SIGWARNING_FROM_NOT_IN_AUID": {
+		"message": "From does not match the user identifier"
+	},
+	// JSDNS
+	"TOO_MANY_HOPS": {
+		"message": "Too many hops."
+	},
+	"CONNECTION_REFUSED": {
+		"message": "DNS server $1 refused a TCP connection."
+	},
+	"TIMED_OUT": {
+		"message": "DNS server $1 timed out on a TCP connection."
+	},
+	"SERVER_ERROR": {
+		"message": "Error connecting to DNS server &1."
+	},
+	"INCOMPLETE_RESPONSE": {
+		"message": "Incomplete response from $1."
+	},
+	// ==================== Options window ====================
+	"options_prefwindow.title": {
+		"message": "DKIM Verifier Options"
+	},
+	// -------------------- General options --------------------
+	"options_general": {
+		"message": "General"
+	},
+	// ---------- General options tab ----------
+	"options_general.general": {
+		"message": "General"
+	},
+	"options_dkim.enable": {
+		"message": "Verify DKIM signatures"
+	},
+	"options_key.storing.value.0": {
+		"message": "Don't store DKIM keys"
+	},
+	"options_key.storing.value.1": {
+		"message": "Store DKIM keys"
+	},
+	"options_key.storing.value.2": {
+		"message": "Store and compare DKIM keys with the current key"
+	},
+	"options_key.viewKeys": {
+		"message": "DKIM keys"
+	},
+	"options_saveResult": {
+		"message": "Save result of the verification"
+	},
+	// ---------- DNS options tab ----------
+	"options_dns": {
+		"message": "DNS"
+	},
+	"options_dns.resolver": {
+		"message": "Resolver"
+	},
+	"options_dns.resolver.value.1": {
+		"message": "JavaScript DNS library"
+	},
+	"options_dns.resolver.value.2": {
+		"message": "libunbound"
+	},
+	"options_dns.getNameserversFromOS": {
+		"message": "Get DNS servers from OS configuration"
+	},
+	"options_dns.nameserver": {
+		"message": "DNS servers (Syntax (EBNF): host[\":\"port]{\";\"host[\":\"port]} )"
+	},
+	"options_dns.timeout_connect": {
+		"message": "DNS connect timeout (in seconds)"
+	},
+	"options_dns.proxy.enable": {
+		"message": "Use a Proxy to connect to the DNS servers"
+	},
+	"options_dns.proxy.type": {
+		"message": "Proxy type:"
+	},
+	"options_dns.proxy.host": {
+		"message": "Proxy server:"
+	},
+	"options_dns.proxy.port": {
+		"message": "Port:"
+	},
+	"options_dns.libunbound.nameserver": {
+		"message": "DNS servers (Syntax (EBNF): IP{\";\"IP} )"
+	},
+	"options_dns.libunbound.usageWarning": {
+		"message": "The libunbound resolver requires an externally installed library"
+	},
+	"options_dns.libunbound.path": {
+		"message": "Path"
+	},
+	"options_dns.libunbound.path.relToProfileDir": {
+		"message": "Path relative to profile directory"
+	},
+	// ---------- Policy options tab ----------
+	"options_general.policy": {
+		"message": "Policy"
+	},
+	"options_policy.signRules.enable": {
+		"message": "Check if e-mail should be signed"
+	},
+	"options_policy.signRules.checkDefaultRules": {
+		"message": "Use default rules"
+	},
+	"options_policy.signRules.autoAddRule.enable": {
+		"message": "Automatically add rules based on viewed DKIM signed e-mails"
+	},
+	"options_policy.signRules.autoAddRule.onlyIfFromAddressInSDID": {
+		"message": "Only if the From address is in the SDID"
+	},
+	"options_policy.signRules.autoAddRule.for.value.0": {
+		"message": "for From address"
+	},
+	"options_policy.signRules.autoAddRule.for.value.1": {
+		"message": "for subdomain"
+	},
+	"options_policy.signRules.autoAddRule.for.value.2": {
+		"message": "for base domain"
+	},
+	"options_policy.signRules.sdid.allowSubDomains": {
+		"message": "Allow also subdomains of the SDIDs"
+	},
+	"options_policy.signRules.error.wrong_sdid.asWarning": {
+		"message": "Treat wrong SDID as a warning instead of an error"
+	},
+	"options_viewSigners": {
+		"message": "Signers rules"
+	},
+	"options_viewSignerDefaults": {
+		"message": "Default signers rules"
+	},
+	"options_policy.DMARC.shouldBeSigned.enable": {
+		"message": "Use DMARC to heuristically determine if an e-mail should be signed"
+	},
+	// -------------------- Display options --------------------
+	"options_display": {
+		"message": "Display"
+	},
+	"options_showDKIMHeader": {
+		"message": "Show DKIM header"
+	},
+	"options_showDKIMFromTooltip": {
+		"message": "Show DKIM tooltip for From header"
+	},
+	"options_showDKIM.value.0": {
+		"message": "never"
+	},
+	"options_showDKIM.value.10": {
+		"message": "when an e-mail with a valid DKIM signature is viewed"
+	},
+	"options_showDKIM.value.30": {
+		"message": "when an e-mail with a DKIM signature is viewed"
+	},
+	"options_showDKIM.value.40": {
+		"message": "when an e-mail is viewed"
+	},
+	"options_showDKIM.value.50": {
+		"message": "when a message is viewed"
+	},
+	"options_colorFrom": {
+		"message": "Enable highlighting of From header"
+	},
+	"options_color": {
+		"message": "Color"
+	},
+	"options_color.text": {
+		"message": "Text:"
+	},
+	"options_color.background": {
+		"message": "Background:"
+	},
+	"options_color.success": {
+		"message": "Valid signature"
+	},
+	"options_color.warning": {
+		"message": "Valid signature with warnings"
+	},
+	"options_color.permfail": {
+		"message": "Invalid signature"
+	},
+	"options_color.tempfail": {
+		"message": "Temporary error"
+	},
+	"options_color.nosig": {
+		"message": "Unsigned e-mail"
+	},
+	"options_display.favicon.show": {
+		"message": "Show the favicon of known signing domains before the From address"
+	},
+	// -------------------- Advanced options --------------------
+	"options_advanced": {
+		"message": "Advanced"
+	},
+	"options_debug": {
+		"message": "Enable debugging (Outputs errors and debug info in the Error Console)"
+	},
+	"options_error.detailedReasons": {
+		"message": "Show detailed error reasons"
+	},
+	"options_error.key_testmode.ignore": {
+		"message": "Still verify the signature, if a domain is only testing DKIM"
+	},
+	"options_error.illformed_i.treatAs": {
+		"message": "Treat ill-formed AUID tag as"
+	},
+	"options_error.illformed_s.treatAs": {
+		"message": "Treat ill-formed selector tag as"
+	},
+	"options_error.policy.key_insecure.treatAs": {
+		"message": "Treat DKIM key not secured by DNSSEC as"
+	},
+	"options_error.algorithm.sign.rsa-sha1.treatAs": {
+		"message": "Treat RSA-SHA1 sign algorithm as"
+	},
+	"options_error.algorithm.rsa.weakKeyLength.treatAs": {
+		"message": "Treat weak RSA keys (<2048 bits) as"
+	},
+	"options_error.treatAs.value.0": {
+		"message": "error"
+	},
+	"options_error.treatAs.value.1": {
+		"message": "warning"
+	},
+	"options_error.treatAs.value.2": {
+		"message": "nothing"
+	},
+	"options_display.keySecure": {
+		"message": "Indicate successful DNSSEC validation with a lock after the SDID"
+	},
+	"options_arh.read": {
+		"message": "Read Authentication-Results header"
+	},
+	"options_arh.replaceAddonResult": {
+		"message": "Reading the Authentication-Results header replaces the add-ons verification"
+	},
+	"options_arh.relaxedParsing": {
+		"message": "Try to read non RFC compliant Authentication-Results header"
+	},
+	// -------------------- Account options --------------------
+	"options_account": {
+		"message": "Account",
+		"description": "Title for account specific options"
+	},
+	"options_acc.dkim.enable": {
+		"message": "Verify DKIM signatures:"
+	},
+	"options_acc.arh.read": {
+		"message": "Read Authentication-Results header:"
+	},
+	"options_acc.arh.allowedAuthserv": {
+		"message": "Trusted authentication servers:"
+	},
+	"options_acc.boolean.value.0": {
+		"message": "Use default value"
+	},
+	"options_acc.boolean.value.1": {
+		"message": "Yes"
+	},
+	"options_acc.boolean.value.2": {
+		"message": "No"
+	},
+	// -------------------- Account options --------------------
+	"about": {
+		"message": "About"
+	},
+	"about_name": {
+		"message": "DKIM Verifier",
+		"description": "Name of the add-on"
+	},
+	"about_summary": {
+		"message": "Verifies the DKIM-Signatures of e-mails.",
+		"description": "Short description of the add-on"
+	},
+	"about_homepage": {
+		"message": "Homepage"
+	},
+	"about_documentation": {
+		"message": "Documentation",
+		"description": "Link text for GitHub contributors page"
+	},
+	"about_contributors": {
+		"message": "GitHub contributors",
+		"description": "Link text for GitHub contributors page"
+	},
+	"about_translators": {
+		"message": "Translators:",
+		"description": "Heading for list of translators"
+	},
+	"about_dependencies": {
+		"message": "Included dependencies:",
+		"description": "Heading for list of included dependencies"
+	},
+	"about_by": {
+		"message": "by",
+		"description": "<dependency name> by <author>"
+	},
+	// ==================== Actions ====================
+	"dkim_verifier.reverifyDKIMSignature": {
+		"message": "Reverify DKIM Signature"
+	},
+	"dkim_verifier.policyAddUserException": {
+		"message": "Add must be signed exception"
+	},
+	"dkim_verifier.markKeyAsSecure": {
+		"message": "Mark DKIM key as secure"
+	},
+	"dkim_verifier.updateKey": {
+		"message": "Update DKIM key"
+	},
+	// ==================== Table Views ====================
+	"treeviewKeys.treecol.SDID": {
+		"message": "SDID"
+	},
+	"treeviewKeys.treecol.selector": {
+		"message": "Selector"
+	},
+	"treeviewKeys.treecol.key": {
+		"message": "DKIM key"
+	},
+	"treeviewKeys.treecol.insertedAt": {
+		"message": "Inserted"
+	},
+	"treeviewKeys.treecol.lastUsedAt": {
+		"message": "Last used"
+	},
+	"treeviewKeys.treecol.secure": {
+		"message": "DNSSEC"
+	},
+	"treeviewKeys.deleteSelectedRows": {
+		"message": "Delete selected keys"
+	},
+	"treeviewSigners.treecol.domain": {
+		"message": "Domain"
+	},
+	"treeviewSigners.treecol.listId": {
+		"message": "List-Id"
+	},
+	"treeviewSigners.treecol.addr": {
+		"message": "From"
+	},
+	"treeviewSigners.treecol.sdid": {
+		"message": "SDID"
+	},
+	"treeviewSigners.treecol.ruletype": {
+		"message": "Rule type"
+	},
+	"treeviewSigners.treecol.priority": {
+		"message": "Priority"
+	},
+	"treeviewSigners.treecol.enabled": {
+		"message": "Enabled"
+	},
+	"treeviewSigners.addSignersRule": {
+		"message": "Add rule"
+	},
+	"treeviewSigners.deleteSelectedRows": {
+		"message": "Delete selected rules"
+	},
+	"addSignersRule.title": {
+		"message": "Add signers rule"
+	},
+	"signRules.ruletype.SIGNED": {
+		"message": "Must be signed (1)"
+	},
+	"signRules.ruletype.NEUTRAL": {
+		"message": "Can be signed (2)"
+	},
+	"signRules.ruletype.HIDEFAIL": {
+		"message": "Ignore invalid signature (3)"
+	},
+	"signRules.priorityMode.auto": {
+		"message": "Automatically select priority"
+	},
+	"signRules.priorityMode.manual": {
+		"message": "Set priority to"
+	},
+	"button.cancel": {
+		"message": "Cancel"
+	},
+	"button.help": {
+		"message": "Help"
+	},
+	"signersRuleHelp.title": {
+		"message": "Signers rules help"
+	},
+	"domain.description": {
+		"message": "Will be matched against the base domain of the From address. For example, the base domain for 'email.example.co.uk' is 'example.co.uk'."
+	},
+	"listId.description": {
+		"message": "Will be matched against the list-id, if the e-mail was received through an e-mail list. Note that only the part between '<' and '>' of the List-Id header is the actual list-id. Only either the domain or the list-id is matched at the same time."
+	},
+	"addr.description": {
+		"message": "Will be matched against the From address. Use an '*' to match zero or more characters."
+	},
+	"sdid.description": {
+		"message": "The domain by which the e-mails should be signed. If this is left empty, every SDID is allowed. More than one domain can be specified by separating them with a space."
+	},
+	"ruletype.description": {
+		"message": "The type of the rule."
+	},
+	"ruletype.1.description": {
+		"message": "E-mail must be signed by the specified SDID."
+	},
+	"ruletype.2.description": {
+		"message": "E-mail doesn't have to be signed. If it is signed, it must be by the specified SDID."
+	},
+	"ruletype.3.description": {
+		"message": "E-mail doesn't have to be signed. If it is signed, it must be by the specified SDID. If the e-mail has an invalid signature, it is treated as having no signature."
+	},
+	"priority.description": {
+		"message": "The priority of the rule. If more than one rule matches, the one with the highest priority is used."
+	},
+	"enabled.description": {
+		"message": "1 if the rule is enabled, 0 if it is disabled."
+	}
+}

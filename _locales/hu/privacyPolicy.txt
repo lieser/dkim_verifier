@@ -1,0 +1,4 @@
+A kiegészítő DNS-kiszolgálót (alapértelmezett Google nyilvános DNS (8.8.8.8) vagy az operációs rendszerben konfigurált) lekérdezi az aláírásban megadott TXT-bevitelhez, amely tartalmazza az aláírás nyilvános kulcsát.
+Ez minden alkalommal meg fog történni a DKIM aláírással ellátott e-mailt tekintik meg.
+
+Ha a DMARC használata engedélyezve van, további DNS-keresések is elvégezhetők, akkor is, ha nem a DKIM aláírt e-maileket tekintik meg.

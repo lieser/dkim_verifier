@@ -1,0 +1,4 @@
+The Add-on queries a DNS Server (default Google Public DNS (8.8.8.8) or the one configured in the OS) for a TXT record specified in the signature, which contains the public key of the signature.
+This will happen every time an e-mail with a DKIM Signature is viewed.
+
+If the use of DMARC is enabled additional DNS lookups may be done, even if not DKIM signed e-mail are viewed.

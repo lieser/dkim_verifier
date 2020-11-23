@@ -1,0 +1,4 @@
+Ce module envoie des requêtes vers un serveur DNS (par défaut Google Public DNS (8.8.8.8) ou celui configuré sur l’OS) pour l’enregistrement spécifié dans la signature, qui contient la clé publique de la signature.
+Ceci arrive chaque fois qu’un courriel avec une signature DKIM est visualisé.
+
+si l’utilisation de DMARC est activée, des requêtes DNS additionnelles seront faites, même si le courriel visualisé n’est pas signé avec DKIM.

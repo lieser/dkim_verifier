@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<?xml-stylesheet href="chrome://dkim_verifier/skin/statusbarOverlay.css" type="text/css"?>
-<!DOCTYPE overlay SYSTEM "chrome://dkim_verifier/locale/xulstrings.dtd">
-<overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-	<statusbar id="status-bar">
-		<hbox insertbefore="unreadMessageCount" id="dkim-verifier-statusbarpanel"/>
-	</statusbar>
-</overlay>

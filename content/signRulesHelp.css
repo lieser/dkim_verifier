@@ -1,0 +1,12 @@
+.grid-row {
+	display: grid;
+	grid-template-columns: max-content auto;
+}
+
+div.cell {
+	padding: 5px;
+}
+
+div.header {
+	text-align: right;
+}

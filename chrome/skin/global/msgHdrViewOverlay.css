@@ -1,17 +1,11 @@
 @namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
 
-#expandeddkim-verifierBox {
-  -moz-binding: url(chrome://dkim_verifier/content/bindings.xml#dkim-verifier-box) !important;
+#expandeddkim-verifierBox > * {
   -moz-box-align: center;
 }
 
 #expandeddkim-verifierBox[warnings="true"]  [anonid="dkimWarningIcon"] {
   visibility: visible;
-}
-
-#dkim-verifier-header-tooltips {
-  -moz-binding: url(chrome://dkim_verifier/content/bindings.xml#dkim-verifier-header-tooltips-box) !important;
-  -moz-box-align: center;
 }
 
 #expandeddkim-verifierBox:not([spf="true"])  [anonid="spf"] {
@@ -26,11 +20,7 @@
   display: none;
 }
 
-mail-multi-emailHeaderField {
-  -moz-binding: url("chrome://dkim_verifier/content/bindings.xml#dkim-mail-multi-emailHeaderField") !important;
-}
-
-mail-multi-emailHeaderField:not([dkimFavicon="true"]) [anonid="dkimFavicon"] {
+mail-multi-emailheaderfield:not([dkimFavicon="true"]) [anonid="dkimFavicon"] {
   display: none;
 }
 
@@ -39,4 +29,13 @@ mail-multi-emailHeaderField [anonid="dkimFavicon"] {
   width: 1.5em;
   height: 1.5em;
   background-size: contain;
+}
+
+mail-multi-emailheaderfield [anonid="dkimFavicon"] {
+  min-width: 0px !important;
+  width: 1.5em;
+  height: 1.5em;
+  background-size: contain;
+  background-position: center center;
+  background-repeat: no-repeat;
 }

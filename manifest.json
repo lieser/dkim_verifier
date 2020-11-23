@@ -1,0 +1,118 @@
+{
+	"manifest_version": 2,
+	"name": "__MSG_about_name__",
+	"description": "__MSG_about_summary__",
+	"version": "4.0.0pre4",
+	"author": "Philippe Lieser",
+	"homepage_url": "https://github.com/lieser/dkim_verifier/wiki",
+	"default_locale": "en_US",
+	"applications": {
+		"gecko": {
+			"id": "dkim_verifier@pl",
+			"strict_min_version": "78.0"
+		}
+	},
+	"permissions": [
+		"accountsRead",
+		"messagesRead",
+		"storage",
+		"tabs"
+	],
+	"background": {
+		"page": "content/background.html"
+	},
+	"options_ui": {
+		"page": "content/options.html",
+		"open_in_tab": true
+	},
+	"icons": {
+		"32": "icon_32.png",
+		"64": "icon.png"
+	},
+	"experiment_apis": {
+		"dkimHeader": {
+			"schema": "experiments/dkimHeader-schema.json",
+			"parent": {
+				"scopes": [
+					"addon_parent"
+				],
+				"paths": [
+					[
+						"dkimHeader"
+					]
+				],
+				"script": "experiments/dkimHeader.js"
+			}
+		},
+		"jsdns": {
+			"schema": "experiments/jsdns-schema.json",
+			"parent": {
+				"scopes": [
+					"addon_parent"
+				],
+				"paths": [
+					[
+						"jsdns"
+					]
+				],
+				"script": "experiments/jsdns.js"
+			}
+		},
+		"libunbound": {
+			"schema": "experiments/libunbound-schema.json",
+			"parent": {
+				"scopes": [
+					"addon_parent"
+				],
+				"paths": [
+					[
+						"libunbound"
+					]
+				],
+				"script": "experiments/libunbound.js"
+			}
+		},
+		"mailUtils": {
+			"schema": "experiments/mailUtils-schema.json",
+			"parent": {
+				"scopes": [
+					"addon_parent"
+				],
+				"paths": [
+					[
+						"mailUtils"
+					]
+				],
+				"script": "experiments/mailUtils.js"
+			}
+		},
+		"migration": {
+			"schema": "experiments/migration-schema.json",
+			"parent": {
+				"scopes": [
+					"addon_parent"
+				],
+				"paths": [
+					[
+						"migration"
+					]
+				],
+				"script": "experiments/migration.js"
+			}
+		},
+		"storageMessage": {
+			"schema": "experiments/storageMessage-schema.json",
+			"parent": {
+				"scopes": [
+					"addon_parent"
+				],
+				"paths": [
+					[
+						"storageMessage"
+					]
+				],
+				"script": "experiments/storageMessage.js"
+			}
+		}
+	}
+}

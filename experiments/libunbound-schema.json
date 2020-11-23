@@ -1,0 +1,52 @@
+[
+	{
+		"namespace": "libunbound",
+		"functions": [
+			{
+				"name": "configure",
+				"type": "function",
+				"description": "Set preferences to use",
+				"async": true,
+				"parameters": [
+					{
+						"name": "getNameserversFromOS",
+						"type": "boolean"
+					},
+					{
+						"name": "nameServer",
+						"type": "string"
+					},
+					{
+						"name": "dnssecTrustAnchor",
+						"type": "string"
+					},
+					{
+						"name": "path",
+						"type": "string"
+					},
+					{
+						"name": "pathRelToProfileDir",
+						"type": "boolean"
+					},
+					{
+						"name": "debug",
+						"type": "boolean"
+					}
+				]
+			},
+			{
+				"name": "txt",
+				"type": "function",
+				"description": "Resolve a TXT DNS query.",
+				"async": true,
+				"parameters": [
+					{
+						"name": "name",
+						"type": "string",
+						"description": "DNS name to query"
+					}
+				]
+			}
+		]
+	}
+]
