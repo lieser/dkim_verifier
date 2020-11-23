@@ -347,6 +347,12 @@
 	"options_dns.proxy.port": {
 		"message": "Kikötő:"
 	},
+	"options_dns.libunbound.nameserver": {
+		"message": "DNS servers (Syntax (EBNF): IP{\";\"IP} )"
+	},
+	"options_dns.libunbound.usageWarning": {
+		"message": "The libunbound resolver requires an externally installed library"
+	},
 	"options_dns.libunbound.path": {
 		"message": "Útvonal"
 	},
@@ -497,6 +503,11 @@
 	"options_arh.relaxedParsing": {
 		"message": "Próbálja meg elolvasni a nem RFC-kompatibilis hitelesítési-eredmények fejlécet"
 	},
+	// -------------------- Account options --------------------
+	"options_account": {
+		"message": "Account",
+		"description": "Title for account specific options"
+	},
 	"options_acc.dkim.enable": {
 		"message": "Ellenőrizze a DKIM aláírásait:"
 	},
@@ -515,7 +526,10 @@
 	"options_acc.boolean.value.2": {
 		"message": "Nem"
 	},
-	// -------------------- Account options --------------------
+	// -------------------- About --------------------
+	"about": {
+		"message": "About"
+	},
 	"about_name": {
 		"message": "DKIM ellenőrző (DKIM Verifier)",
 		"description": "Name of the add-on"
@@ -523,6 +537,29 @@
 	"about_summary": {
 		"message": "Ellenőrzi az e-mailek DKIM-aláírásait",
 		"description": "Short description of the add-on"
+	},
+	"about_homepage": {
+		"message": "Homepage"
+	},
+	"about_documentation": {
+		"message": "Documentation",
+		"description": "Link text for GitHub documentation page"
+	},
+	"about_contributors": {
+		"message": "GitHub contributors",
+		"description": "Link text for GitHub contributors page"
+	},
+	"about_translators": {
+		"message": "Translators:",
+		"description": "Heading for list of translators"
+	},
+	"about_dependencies": {
+		"message": "Included dependencies:",
+		"description": "Heading for list of included dependencies"
+	},
+	"about_by": {
+		"message": "by",
+		"description": "<dependency name> by <author>"
 	},
 	// ==================== Actions ====================
 	"dkim_verifier.reverifyDKIMSignature": {
@@ -603,6 +640,9 @@
 	},
 	"signRules.priorityMode.manual": {
 		"message": "Sürgősség beállítása"
+	},
+	"button.cancel": {
+		"message": "Cancel"
 	},
 	"button.help": {
 		"message": "Súgó"
