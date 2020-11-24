@@ -347,6 +347,12 @@
 	"options_dns.proxy.port": {
 		"message": "ポート:"
 	},
+	"options_dns.libunbound.nameserver": {
+		"message": "DNS サーバ (書式 (EBNF): IP{\";\"IP} )"
+	},
+	"options_dns.libunbound.usageWarning": {
+		"message": "libunbound リゾルバの利用には外部ライブラリが必要です"
+	},
 	"options_dns.libunbound.path": {
 		"message": "パス"
 	},
@@ -497,6 +503,11 @@
 	"options_arh.relaxedParsing": {
 		"message": "RFC 非準拠の Authentication-Results ヘッダのパースを試みる"
 	},
+	// -------------------- Account options --------------------
+	"options_account": {
+		"message": "アカウント",
+		"description": "Title for account specific options"
+	},
 	"options_acc.dkim.enable": {
 		"message": "DKIM 署名の検証:"
 	},
@@ -516,6 +527,9 @@
 		"message": "いいえ"
 	},
 	// -------------------- Account options --------------------
+	"about": {
+		"message": "About"
+	},
 	"about_name": {
 		"message": "DKIM Verifier",
 		"description": "Name of the add-on"
@@ -523,6 +537,29 @@
 	"about_summary": {
 		"message": "メールの DKIM 署名を検証します。",
 		"description": "Short description of the add-on"
+	},
+	"about_homepage": {
+		"message": "ホームページ"
+	},
+	"about_documentation": {
+		"message": "ドキュメンテーション",
+		"description": "Link text for GitHub documentation page"
+	},
+	"about_contributors": {
+		"message": "GitHub 貢献者",
+		"description": "Link text for GitHub contributors page"
+	},
+	"about_translators": {
+		"message": "翻訳者:",
+		"description": "Heading for list of translators"
+	},
+	"about_dependencies": {
+		"message": "依存ライブラリ:",
+		"description": "Heading for list of included dependencies"
+	},
+	"about_by": {
+		"message": "by",
+		"description": "<dependency name> by <author>"
 	},
 	// ==================== Actions ====================
 	"dkim_verifier.reverifyDKIMSignature": {
@@ -603,6 +640,9 @@
 	},
 	"signRules.priorityMode.manual": {
 		"message": "優先度を手動指定"
+	},
+	"button.cancel": {
+		"message": "キャンセル"
 	},
 	"button.help": {
 		"message": "ヘルプ"
