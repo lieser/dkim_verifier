@@ -347,6 +347,12 @@
 	"options_dns.proxy.port": {
 		"message": "Kikötő:"
 	},
+	"options_dns.libunbound.nameserver": {
+		"message": "DNS-kiszolgálók (Szintaxis (EBNF): IP{\";\"IP} )"
+	},
+	"options_dns.libunbound.usageWarning": {
+		"message": "A libunbound felbontóhoz külsőleg telepített könyvtárra van szükség"
+	},
 	"options_dns.libunbound.path": {
 		"message": "Útvonal"
 	},
@@ -497,6 +503,11 @@
 	"options_arh.relaxedParsing": {
 		"message": "Próbálja meg elolvasni a nem RFC-kompatibilis hitelesítési-eredmények fejlécet"
 	},
+	// -------------------- Account options --------------------
+	"options_account": {
+		"message": "Fiók",
+		"description": "Title for account specific options"
+	},
 	"options_acc.dkim.enable": {
 		"message": "Ellenőrizze a DKIM aláírásait:"
 	},
@@ -515,7 +526,10 @@
 	"options_acc.boolean.value.2": {
 		"message": "Nem"
 	},
-	// -------------------- Account options --------------------
+	// -------------------- About --------------------
+	"about": {
+		"message": "Névjegy"
+	},
 	"about_name": {
 		"message": "DKIM ellenőrző (DKIM Verifier)",
 		"description": "Name of the add-on"
@@ -523,6 +537,29 @@
 	"about_summary": {
 		"message": "Ellenőrzi az e-mailek DKIM-aláírásait",
 		"description": "Short description of the add-on"
+	},
+	"about_homepage": {
+		"message": "Honlap"
+	},
+	"about_documentation": {
+		"message": "Dokumentáció",
+		"description": "Link text for GitHub documentation page"
+	},
+	"about_contributors": {
+		"message": "GitHub közreműködők",
+		"description": "Link text for GitHub contributors page"
+	},
+	"about_translators": {
+		"message": "Fordítók:",
+		"description": "Heading for list of translators"
+	},
+	"about_dependencies": {
+		"message": "Tartalmazott függőségek:",
+		"description": "Heading for list of included dependencies"
+	},
+	"about_by": {
+		"message": ":",
+		"description": "<dependency name> by <author>"
 	},
 	// ==================== Actions ====================
 	"dkim_verifier.reverifyDKIMSignature": {
@@ -603,6 +640,9 @@
 	},
 	"signRules.priorityMode.manual": {
 		"message": "Sürgősség beállítása"
+	},
+	"button.cancel": {
+		"message": "Mégse"
 	},
 	"button.help": {
 		"message": "Súgó"
