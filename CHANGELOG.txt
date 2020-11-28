@@ -7,6 +7,7 @@
  - libunbound resolver: Don't provide a default path
  - libunbound resolver: Improve options description
  - added about page in options
+ - added incomplete Swedish translation (by Phoenix)
  - updated default rules and favicons (#208, #209, #210)
 
 3.1.0 [2020-01-22]
