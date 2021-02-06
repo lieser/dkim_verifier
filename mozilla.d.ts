@@ -10,10 +10,7 @@ declare module Components {
     let classes: { readonly [key: string]: nsIJSCID };
     let interfaces: ComponentsInterfaces;
     let results: ComponentsResults;
-    let stack: nsIStackFrame;
     let utils: ComponentsUtils;
-
-    function isSuccessCode(returnCode: nsresult): boolean;
 
     interface ComponentsInterfaces {
         [key: string]: object;
@@ -34,7 +31,6 @@ declare module Components {
 
     interface ComponentsUtils {
         getGlobalForObject(obj: object): Window;
-        import(url: string, scope?: object): object;
         unload(url: string): void;
     }
 }
@@ -108,8 +104,6 @@ declare module ExtensionSupportM {
 /** JavaScript code module "resource://gre/modules/FileUtils.jsm" */
 declare module FileUtils {
     function File(path: string): nsIFile;
-
-    function openSafeFileOutputStream(file: nsIFile, modeFlags?: number): nsIFileOutputStream;
 }
 
 /** JavaScript code module "resource://gre/modules/osfile.jsm" */
@@ -132,18 +126,7 @@ declare module Services {
     const io: nsIIOService;
     const obs: nsIObserverService;
     const prefs: nsIPrefService;
-    const scriptloader: mozIJSSubScriptLoader;
-    const storage: mozIStorageService;
     const vc: nsIVersionComparator;
-
-    interface mozIJSSubScriptLoader {
-        loadSubScript(url: string, targetObj?: object, charset?: string): any;
-    }
-}
-
-/** JavaScript code module "resource://gre/modules/XPCOMUtils.jsm" */
-declare module XPCOMUtils {
-    function defineLazyModuleGetter(aObject: Object, aName: string, aResource: string, aSymbol?: string): void;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -156,33 +139,6 @@ interface amIAddonManagerStartup {
 interface nsIEffectiveTLDService {
     readonly getBaseDomain: (aURI: nsIURI, aAdditionalParts: number = 0) => string;
     readonly getBaseDomainFromHost: (aHost: string, aAdditionalParts: number = 0) => string;
-}
-
-interface mozIStorageBaseStatement extends mozIStorageBindingParams {
-    readonly finalize: () => void;
-}
-
-interface mozIStorageBindingParams {
-    readonly bindByName: (aName: string, aValue: any) => void;
-}
-
-interface mozIStorageConnection {
-    readonly close: () => void;
-    readonly createStatement: (aSQLStatement: string) => mozIStorageStatement;
-    readonly tableExists: (aTableName: string) => boolean;
-
-    readonly connectionReady: boolean;
-}
-
-interface mozIStorageService {
-    readonly openDatabase: (aDatabaseFile: nsIFile) => mozIStorageConnection;
-}
-
-interface mozIStorageStatement extends mozIStorageBaseStatement {
-    readonly executeStep: () => boolean;
-    readonly getString: (aIndex: number) => string;
-
-    readonly numEntries: number;
 }
 
 declare class MozXULElement extends XULElement { };
@@ -311,29 +267,6 @@ interface nsIIOService {
     newURI(aSpec: string, aOriginCharset: string | null, aBaseURI: nsIURI | null): nsIURI;
 }
 
-interface nsITreeSelection {
-    readonly getRangeAt: (i: number, /*out*/ min: nsITreeSelection_out_number, /*out*/max: nsITreeSelection_out_number) => void;
-    readonly getRangeCount: () => number;
-}
-
-interface nsITreeSelection_out_number {
-    value: number;
-}
-
-declare class nsITreeView {
-    selection: nsITreeSelection;
-}
-
-interface nsIStackFrame {
-    readonly caller: nsIStackFrame;
-    readonly filename: string;
-    readonly language: number;
-    readonly languageName: string;
-    readonly lineNumber: number;
-    readonly name: string;
-    readonly sourceLine: string;
-}
-
 interface nsIURI {
     readonly resolve: (relativePath: string) => string;
     readonly asciiHost: string;
@@ -364,8 +297,6 @@ interface nsIXULAppInfo {
 type nsresult = number;
 
 declare class XULElement extends HTMLElement { };
-
-declare class XULPopupElement extends XULElement { };
 
 ////////////////////////////////////////////////////////////////////////////////
 //// Thunderbird specific interfaces
