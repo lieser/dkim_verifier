@@ -151,4 +151,29 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo[0].propertys.header.b).to.be.equal("gfT/i2HB");
 		});
 	});
+	describe("DKIM results", function () {
+		it("AUID with local part", function () {
+			const res = ArhParser.parse(
+				"Authentication-Results: example.net;\r\n" +
+				'      dkim=pass header.i=dkim+foo-bar@example.github.com\r\n');
+
+			expect(res.authserv_id).to.be.equal("example.net");
+			expect(res.resinfo.length).to.be.equal(1);
+			expect(res.resinfo[0].method).to.be.equal("dkim");
+			expect(res.resinfo[0].result).to.be.equal("pass");
+			expect(res.resinfo[0].propertys.header.i).to.be.equal("dkim+foo-bar@example.github.com");
+		});
+		it("quoted SDID and AUID", function () {
+			const res = ArhParser.parse(
+				"Authentication-Results: example.net;\r\n" +
+				'      dkim=pass header.d="github.com" header.i="dkim+foo-bar@example.github.com"\r\n');
+
+			expect(res.authserv_id).to.be.equal("example.net");
+			expect(res.resinfo.length).to.be.equal(1);
+			expect(res.resinfo[0].method).to.be.equal("dkim");
+			expect(res.resinfo[0].result).to.be.equal("pass");
+			expect(res.resinfo[0].propertys.header.d).to.be.equal("github.com");
+			expect(res.resinfo[0].propertys.header.i).to.be.equal("dkim+foo-bar@example.github.com");
+		});
+	});
 });

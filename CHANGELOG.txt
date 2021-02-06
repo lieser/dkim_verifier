@@ -4,6 +4,7 @@
  - fixed incompatibility with Thunderbird 78 (#119)
  - removed option to show DKIM result in the statusbarpanel
  - Authentication-Results header: fixed parsing of version
+ - Authentication-Results header: fixed parsing of quoted SDID and AUID (#229, #234)
  - libunbound resolver: Don't provide a default path
  - libunbound resolver: Improve options description
  - added about page in options
