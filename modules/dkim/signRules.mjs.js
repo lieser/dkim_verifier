@@ -107,7 +107,7 @@ const AUTO_ADD_RULE_FOR = {
 /** @type {Deferred<void>?} */
 let defaultRulesLoaded = null;
 /** @type {DkimSignRuleDefault[]} */
-let defaultRules;
+let defaultRules = [];
 /** @type {Deferred<void>?} */
 let userRulesLoaded = null;
 let userRulesMaxId = 0;
@@ -403,6 +403,7 @@ export default class SignRules {
 	static clearRules() {
 		userRulesLoaded = null;
 		userRules = [];
+		userRulesMaxId = 0;
 		return browser.storage.local.remove("signRulesUser");
 	}
 
@@ -502,7 +503,8 @@ export default class SignRules {
 	 * @param {any} newValue
 	 * @returns {Promise<void>}
 	 */
-	static updateRule(id, propertyName, newValue) {
+	static async updateRule(id, propertyName, newValue) {
+		await loadUserRules();
 		const userRule = userRules.find(rule => rule.id === id);
 		if (!userRule) {
 			throw new Error(`Can not update non existing rule with id '${id}'`);
@@ -542,10 +544,11 @@ export default class SignRules {
 	 * @param {number} id
 	 * @returns {Promise<void>}
 	 */
-	static deleteRule(id) {
+	static async deleteRule(id) {
+		await loadUserRules();
 		const ruleIndex = userRules.findIndex(rule => rule.id === id);
 		if (ruleIndex === -1) {
-			throw new Error(`Can not update non existing rule with id '${id}'`);
+			throw new Error(`Can not delete non existing rule with id '${id}'`);
 		}
 		userRules.splice(ruleIndex, 1);
 		return storeUserRules();
