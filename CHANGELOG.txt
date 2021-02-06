@@ -5,6 +5,7 @@
  - removed option to show DKIM result in the statusbarpanel
  - Authentication-Results header: fixed parsing of version
  - Authentication-Results header: fixed parsing of quoted SDID and AUID (#229, #234)
+ - Authentication-Results header: fixed missing reason on fail resulting in error (#232)
  - libunbound resolver: Don't provide a default path
  - libunbound resolver: Improve options description
  - added about page in options

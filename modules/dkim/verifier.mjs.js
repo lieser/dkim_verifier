@@ -75,7 +75,7 @@ import prefs from "../preferences.mjs.js";
  *           Array of warning_objects.
  *           required if result="SUCCESS"
  * @property {String|undefined} [errorType]
- *           if result="PERMFAIL: DKIM_SigError.errorType
+ *           if result="PERMFAIL: DKIM_SigError.errorType or Undefined
  *           if result="TEMPFAIL: DKIM_InternalError.errorType or Undefined
  * @property {String[]|undefined} [errorStrParams]
  * @property {Boolean|undefined} [hideFail]
