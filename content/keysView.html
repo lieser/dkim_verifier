@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset='utf-8'>
+  <title data-i18n="options_key.viewKeys"></title>
+
+  <link rel='stylesheet' type='text/css' href="chrome://global/skin/in-content/common.css">
+
+  <link rel='stylesheet' type='text/css' href="./table.css">
+
+  <script type="module" src="./translation.mjs.js"></script>
+  <script type="module" src="./keysView.mjs.js"></script>
+</head>
+
+<body>
+  <div class="body">
+    <table id="keysTable">
+      <thead>
+        <tr>
+          <th data-name="sdid" data-i18n="treeviewKeys.treecol.SDID"></th>
+          <th data-name="selector" data-i18n="treeviewKeys.treecol.selector"></th>
+          <th data-name="key" data-i18n="treeviewKeys.treecol.key"></th>
+          <th data-name="insertedAt" data-i18n="treeviewKeys.treecol.insertedAt"></th>
+          <th data-name="lastUsedAt" data-i18n="treeviewKeys.treecol.lastUsedAt"></th>
+          <th data-name="secure" data-type="boolean" data-i18n="treeviewKeys.treecol.secure"></th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
+  <div class="footer">
+    <button id="deleteSelectedRows" data-i18n="treeviewKeys.deleteSelectedRows"></button>
+  </div>
+</body>
+
+</html>

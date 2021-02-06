@@ -1,7 +1,7 @@
 /**
  * Provides access to the add-ons preferences.
  *
- * Copyright (c) 2020 Philippe Lieser
+ * Copyright (c) 2020-2021 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -610,7 +610,9 @@ export class StorageLocalPreferences extends BasePreferences {
 		try {
 			const preferences = await ExtensionUtils.safeGetLocalStorage();
 			if (preferences) {
-				delete preferences.signRulesUser;
+				for (const dataStorageScope of StorageLocalPreferences.dataStorageScopes) {
+					delete preferences[dataStorageScope];
+				}
 				this._prefs = preferences;
 			}
 			browser.storage.onChanged.addListener((changes, areaName) => {
@@ -630,16 +632,33 @@ export class StorageLocalPreferences extends BasePreferences {
 	}
 
 	async clear() {
-		const signRulesUser = (await browser.storage.local.get("signRulesUser")).signRulesUser;
+		/** @type {{scope: string, data: any}[]} */
+		const dataStorages = [];
+		for (const dataStorageScope of StorageLocalPreferences.dataStorageScopes) {
+			const data = (await browser.storage.local.get(dataStorageScope))[dataStorageScope];
+			if (data) {
+				dataStorages.push({
+					scope: dataStorageScope,
+					data: data,
+				});
+			}
+		}
 
 		this._prefs = {};
 		await browser.storage.local.clear();
 
-		if (signRulesUser) {
-			await browser.storage.local.set({ signRulesUser: signRulesUser });
+		for (const dataStorage of dataStorages) {
+			await browser.storage.local.set({ [dataStorage.scope]: dataStorage.data });
 		}
 	}
 }
+/**
+ * List of scope names that contain other data than preferences in browser.storage
+ */
+StorageLocalPreferences.dataStorageScopes = [
+	"signRulesUser",
+	"keyStore"
+];
 
 const prefs = new StorageLocalPreferences();
 export default prefs;

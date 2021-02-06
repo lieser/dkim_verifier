@@ -3,7 +3,7 @@
  *  - JSDNS
  *  - libunbound
  *
- * Copyright (c) 2020 Philippe Lieser
+ * Copyright (c) 2020-2021 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -40,6 +40,26 @@ let jsdnsIsConfigured = null;
 /** @type {Promise<void>?} */
 let libunboundIsConfigured = null;
 
+let listenerAdded = false;
+function addPrefsListener() {
+	if (listenerAdded) {
+		return;
+	}
+	listenerAdded = true;
+	browser.storage.onChanged.addListener((changes, areaName) => {
+		if (areaName !== "local") {
+			return;
+		}
+		if (Object.keys(changes).some(name => name.startsWith("dns."))) {
+			jsdnsIsConfigured = null;
+			libunboundIsConfigured = null;
+		}
+		if (Object.keys(changes).some(name => name === "debug")) {
+			libunboundIsConfigured = null;
+		}
+	});
+}
+
 /**
  * Configure the JSDNS resolver if needed.
  *
@@ -48,6 +68,7 @@ let libunboundIsConfigured = null;
 function configureJsdns() {
 	if (!jsdnsIsConfigured) {
 		log.debug("configure jsdns");
+		addPrefsListener();
 		jsdnsIsConfigured = browser.jsdns.configure(
 			prefs["dns.getNameserversFromOS"],
 			prefs["dns.nameserver"],
@@ -72,6 +93,7 @@ function configureJsdns() {
 function configureLibunbound() {
 	if (!libunboundIsConfigured) {
 		log.debug("configure libunbound");
+		addPrefsListener();
 		libunboundIsConfigured = browser.libunbound.configure(
 			prefs["dns.getNameserversFromOS"],
 			prefs["dns.nameserver"],
@@ -83,19 +105,6 @@ function configureLibunbound() {
 	}
 	return libunboundIsConfigured;
 }
-
-browser.storage.onChanged.addListener((changes, areaName) => {
-	if (areaName !== "local") {
-		return;
-	}
-	if (Object.keys(changes).some(name => name.startsWith("dns."))) {
-		jsdnsIsConfigured = null;
-		libunboundIsConfigured = null;
-	}
-	if (Object.keys(changes).some(name => name === "debug")) {
-		libunboundIsConfigured = null;
-	}
-});
 
 export default class DNS {
 	static get RCODE() {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020 Philippe Lieser
+ * Copyright (c) 2020-2021 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -9,33 +9,38 @@
 
 // @ts-check
 
-import { DKIM_SigError } from "../../modules/error.mjs.js";
+import DNS from "../../modules/dns.mjs.js";
+import KeyStore from "../../modules/dkim/keyStore.mjs.js";
 import { setKeyFetchFunction } from "../../modules/dkim/verifier.mjs.js";
 
-const keys = {
-	"example.com": {
-		"brisbane": "v=DKIM1; p=" +
-			"MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDwIRP/UC3SBsEmGqZ9ZJW3/DkM" +
-			"oGeLnQg1fWn7/zYtIxN2SnFCjxOCKG9v3b4jYfcTNh5ijSsq631uBItLa7od+v/R" +
-			"tdC2UzJ1lWT947qR+Rcac2gbto/NMqJ0fzfVjH4OuKhitdY9tf6mcwGjaNBcWToI" +
-			"MmPSPDdQPNUYckcQ2QIDAQAB",
-	},
+/** @type {Object.<string, string|undefined>} */
+const txtRecords = {
+	"brisbane._domainkey.example.com": "v=DKIM1; p=" +
+		"MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDwIRP/UC3SBsEmGqZ9ZJW3/DkM" +
+		"oGeLnQg1fWn7/zYtIxN2SnFCjxOCKG9v3b4jYfcTNh5ijSsq631uBItLa7od+v/R" +
+		"tdC2UzJ1lWT947qR+Rcac2gbto/NMqJ0fzfVjH4OuKhitdY9tf6mcwGjaNBcWToI" +
+		"MmPSPDdQPNUYckcQ2QIDAQAB",
 };
 
-/** @type {import("../../modules/dkim/verifier.mjs.js").KeyFetchFunction} */
+/** @type {import("../../modules/dkim/keyStore.mjs.js").queryDnsTxtCallback} */
 // eslint-disable-next-line require-await
-async function getKey(sdid, selector) {
-	if (!keys[sdid]) {
-		throw new DKIM_SigError("DKIM_SIGERROR_NOKEY");
-	}
-	const key = keys[sdid][selector];
-	if (!key) {
-		throw new DKIM_SigError("DKIM_SIGERROR_NOKEY");
+async function queryDnsTxt(name) {
+	const record = txtRecords[name];
+	if (!record) {
+		return {
+			data: null,
+			rcode: DNS.RCODE.NXDomain,
+			secure: false,
+			bogus: false,
+		};
 	}
 	return {
-		key: key,
+		data: [record],
+		rcode: DNS.RCODE.NoError,
 		secure: false,
+		bogus: false,
 	};
 }
 
-setKeyFetchFunction(getKey);
+const keyStore = new KeyStore(queryDnsTxt);
+setKeyFetchFunction((...args) => keyStore.fetchKey(...args));

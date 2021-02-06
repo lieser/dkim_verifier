@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020 Philippe Lieser
+ * Copyright (c) 2020-2021 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -11,7 +11,8 @@
 ///<reference path="../../WebExtensions.d.ts" />
 /* eslint-env webextensions */
 
-import { migratePrefs, migrateSignRulesUser } from "../../modules/migration.mjs.js";
+import { migrateKeyStore, migratePrefs, migrateSignRulesUser } from "../../modules/migration.mjs.js";
+import { KeyDb } from "../../modules/dkim/keyStore.mjs.js";
 import SignRules from "../../modules/dkim/signRules.mjs.js";
 import expect from "../helpers/chaiUtils.mjs.js";
 import { hasWebExtensions } from "../helpers/initWebExtensions.mjs.js";
@@ -53,6 +54,7 @@ describe("migration [unittest]", function () {
 						"dkim.enable": 1,
 					},
 				}),
+				getDkimKeys: sinon.fake.rejects("not available"),
 				getSignRulesUser: sinon.fake.rejects("not available"),
 			};
 			await migratePrefs();
@@ -83,6 +85,7 @@ describe("migration [unittest]", function () {
 					"this.pref.does.not.exist": "foo",
 					"key.storing": 2,
 				}),
+				getDkimKeys: sinon.fake.rejects("not available"),
 				getAccountPrefs: sinon.fake.resolves({
 					account1: {
 						"dkim.enable": true,
@@ -117,6 +120,7 @@ describe("migration [unittest]", function () {
 						"arh.allowedAuthserv": "foo.com",
 					},
 				}),
+				getDkimKeys: sinon.fake.rejects("not available"),
 				getSignRulesUser: sinon.fake.rejects("not available"),
 			};
 			await prefs.setValue("dkim.enable", true);
@@ -134,12 +138,67 @@ describe("migration [unittest]", function () {
 						"arh.allowedAuthserv": "foo.com",
 					},
 				}),
+				getDkimKeys: sinon.fake.rejects("not available"),
 				getSignRulesUser: sinon.fake.rejects("not available"),
 			};
 			await SignRules.addException("foo@bar.com");
 			await migratePrefs();
 			expect(prefs["arh.read"]).to.be.equal(true);
 			expect(prefs["account.arh.allowedAuthserv"]("account1")).to.be.equal("foo.com");
+		});
+	});
+
+	describe("migration of keys", function () {
+		before(function () {
+			if (!hasWebExtensions) {
+				// eslint-disable-next-line no-invalid-this
+				this.skip();
+			}
+		});
+
+		beforeEach(async function () {
+			await KeyDb.clear();
+
+			browser.migration = {
+				getUserPrefs: sinon.fake.rejects("not available"),
+				getAccountPrefs: sinon.fake.rejects("not available"),
+				getDkimKeys: sinon.fake.resolves({
+					maxId: 1,
+					keys: [
+						{
+							id: 1,
+							sdid: "foo.com",
+							selector: "selector",
+							key: "key",
+							insertedAt: "2021-02-03",
+							lastUsedAt: "2021-02-03",
+							secure: false,
+						},
+					],
+				}),
+				getSignRulesUser: sinon.fake.rejects("not available"),
+			};
+		});
+
+		it("normal migration of keys", async function () {
+			await migrateKeyStore();
+
+			const res = await KeyDb.fetch("foo.com", "selector");
+			expect(res?.key).is.equal("key");
+		});
+		it("skip migration if keys already exist", async function () {
+			await KeyDb.store("bar.com", "selector", "key2", false);
+			await migrateKeyStore();
+
+			const res = await KeyDb.fetch("foo.com", "selector");
+			expect(res).is.null;
+		});
+		it("don't skip migration of keys if only preferences exist", async function () {
+			await prefs.setValue("dkim.enable", true);
+			await migrateKeyStore();
+
+			const res = await KeyDb.fetch("foo.com", "selector");
+			expect(res?.key).is.equal("key");
 		});
 	});
 
@@ -157,6 +216,7 @@ describe("migration [unittest]", function () {
 			browser.migration = {
 				getUserPrefs: sinon.fake.rejects("not available"),
 				getAccountPrefs: sinon.fake.rejects("not available"),
+				getDkimKeys: sinon.fake.rejects("not available"),
 				getSignRulesUser: sinon.fake.resolves({
 					maxId: 1,
 					rules: [
@@ -181,7 +241,7 @@ describe("migration [unittest]", function () {
 			warnings: []
 		};
 
-		it("normal migration", async function () {
+		it("normal migration of sign rules", async function () {
 			await migrateSignRulesUser();
 
 			const res = await SignRules.check(dkimNone, "bar@foo.com");
@@ -194,7 +254,7 @@ describe("migration [unittest]", function () {
 			const res = await SignRules.check(dkimNone, "bar@foo.com");
 			expect(res.result).is.equal("none");
 		});
-		it("don't skip migration if only preferences exist", async function () {
+		it("don't skip migration of sign rules if only preferences exist", async function () {
 			await prefs.setValue("dkim.enable", true);
 			await migrateSignRulesUser();
 

@@ -36,15 +36,13 @@
       <label class="checkbox" data-i18n="options_dkim.enable">
         <input type="checkbox" data-pref="dkim.enable">
       </label>
-      <div style="opacity: 0.5;">
+      <div>
         <select data-pref="key.storing">
           <option data-i18n="options_key.storing.value.0" value="0"></option>
           <option data-i18n="options_key.storing.value.1" value="1"></option>
           <option data-i18n="options_key.storing.value.2" value="2"></option>
         </select>
-        <button id="key.viewKeys" data-i18n="options_key.viewKeys"
-          oncommand="window.open('chrome://dkim_verifier/content/treeviewKeys.xul', 'dkimKeys', 'chrome,resizable,centerscreen,width=600,height=300,modal');">
-        </button>
+        <button id="key.viewKeys" data-i18n="options_key.viewKeys"></button>
       </div>
       <label class="checkbox" data-i18n="options_saveResult">
         <input type="checkbox" data-pref="saveResult">

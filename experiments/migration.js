@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020 Philippe Lieser
+ * Copyright (c) 2020-2021 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -105,6 +105,31 @@ this.migration = class extends ExtensionCommon.ExtensionAPI {
 					}
 					return Promise.resolve(accountPrefs);
 				},
+				getDkimKeys: async () => {
+					const conn = await this._openSqlite("dkimKey.sqlite");
+					if (!conn) {
+						return null;
+					}
+
+					const sqlRes = await conn.execute("SELECT * FROM keys");
+					await conn.close();
+
+					let maxId = 0;
+					/** @type {import("../modules/dkim/keyStore.mjs.js").StoredDkimKey[]} */
+					const keys = [];
+					for (const key of sqlRes) {
+						keys.push({
+							id: ++maxId,
+							sdid: key.getResultByName("SDID"),
+							selector: key.getResultByName("selector"),
+							key: key.getResultByName("key"),
+							insertedAt: key.getResultByName("insertedAt"),
+							lastUsedAt: key.getResultByName("lastUsedAt"),
+							secure: key.getResultByName("secure") === 1,
+						});
+					}
+					return { maxId: maxId, keys: keys };
+				},
 				getSignRulesUser: async () => {
 					const conn = await this._openSqlite("dkimPolicy.sqlite");
 					if (!conn) {
@@ -129,7 +154,7 @@ this.migration = class extends ExtensionCommon.ExtensionAPI {
 							enabled: rule.getResultByName("enabled") === 1,
 						});
 					}
-					return {maxId: maxId, rules: userRules};
+					return { maxId: maxId, rules: userRules };
 				}
 			},
 		};

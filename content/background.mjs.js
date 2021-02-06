@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020 Philippe Lieser
+ * Copyright (c) 2020-2021 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -12,10 +12,9 @@
 ///<reference path="../experiments/dkimHeader.d.ts" />
 /* eslint-env browser, webextensions */
 
-import { DKIM_InternalError, DKIM_SigError } from "../modules/error.mjs.js";
-import { migratePrefs, migrateSignRulesUser } from "../modules/migration.mjs.js";
+import KeyStore, { KeyDb } from "../modules/dkim/keyStore.mjs.js";
+import { migrateKeyStore, migratePrefs, migrateSignRulesUser } from "../modules/migration.mjs.js";
 import AuthVerifier from "../modules/AuthVerifier.mjs.js";
-import DNS from "../modules/dns.mjs.js";
 import Logging from "../modules/logging.mjs.js";
 import { initSignRulesProxy } from "../modules/dkim/signRules.mjs.js";
 import prefs from "../modules/preferences.mjs.js";
@@ -31,38 +30,14 @@ async function init() {
 
 	await migrateSignRulesUser();
 	initSignRulesProxy();
+
+	await migrateKeyStore();
+	const keyStore = new KeyStore();
+	setKeyFetchFunction((...args) => keyStore.fetchKey(...args));
+	KeyDb.initProxy();
 }
 const isInitialized = init();
 isInitialized.catch(error => log.fatal("Initializing failed with:", error));
-
-// eslint-disable-next-line valid-jsdoc
-/** @type {import("../modules/dkim/verifier.mjs.js").KeyFetchFunction} */
-async function getKey(sdid, selector) {
-	const dnsRes = await DNS.txt(`${selector}._domainkey.${sdid}`);
-	log.debug("dns result", dnsRes);
-
-	if (dnsRes.bogus) {
-		throw new DKIM_InternalError(null, "DKIM_DNSERROR_DNSSEC_BOGUS");
-	}
-	if (dnsRes.rcode !== DNS.RCODE.NoError && dnsRes.rcode !== DNS.RCODE.NXDomain) {
-		log.info("DNS query failed with result:", dnsRes);
-		throw new DKIM_InternalError(`rcode: ${dnsRes.rcode}`,
-			"DKIM_DNSERROR_SERVER_ERROR");
-	}
-	if (dnsRes.data === null || dnsRes.data[0] === "") {
-		throw new DKIM_SigError("DKIM_SIGERROR_NOKEY");
-	}
-
-	if (!dnsRes.data) {
-		throw new DKIM_SigError("DKIM_SIGERROR_NOKEY");
-	}
-	return {
-		key: dnsRes.data[0],
-		secure: dnsRes.secure,
-	};
-}
-
-setKeyFetchFunction(getKey);
 
 const SHOW = {
 	NEVER: 0,

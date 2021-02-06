@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020 Philippe Lieser
+ * Copyright (c) 2020-2021 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -401,6 +401,14 @@ async function initAccount() {
  * @returns {void}
  */
 function initButtons() {
+	const keysView = getElementById("key.viewKeys");
+	keysView.addEventListener("click", () => {
+		ExtensionUtils.createOrRaisePopup(
+			"./keysView.html",
+			browser.i18n.getMessage("options_key.viewKeys"),
+		);
+	});
+
 	const signRulesDefaultsView = getElementById("signRulesDefaultsView");
 	signRulesDefaultsView.addEventListener("click", () => {
 		ExtensionUtils.createOrRaisePopup(

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020 Philippe Lieser
+ * Copyright (c) 2020-2021 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -8,6 +8,7 @@
  */
 
 // @ts-check
+/* eslint-env webextensions */
 
 import SignRules from "../../modules/dkim/signRules.mjs.js";
 import { copy } from "../../modules/utils.mjs.js";
@@ -158,6 +159,17 @@ describe("Sign rules [unittest]", function () {
 			expect(res.result).is.equal("SUCCESS");
 			expect(res.warnings).to.be.an('array').
 				that.not.deep.includes({ name: "DKIM_SIGWARNING_FROM_NOT_IN_SDID" });
+		});
+		it("rules should survive clearing of preferences", async function () {
+			await SignRules.addRule("foo.com", null, "*", "foo.com", SignRules.TYPE.ALL);
+			const rules = (await browser.storage.local.get("signRulesUser")).signRulesUser;
+			await SignRules.clearRules();
+			await browser.storage.local.set({ signRulesUser: rules });
+
+			prefs.clear();
+
+			const res = await SignRules.check(dkimNone, "bar@foo.com");
+			expect(res.result).is.equal("PERMFAIL");
 		});
 	});
 	describe("outgoing mail", function () {
