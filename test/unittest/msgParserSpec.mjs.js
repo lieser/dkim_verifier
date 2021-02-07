@@ -218,12 +218,12 @@ describe("Message parser [unittest]", function () {
 			).to.be.equal("c@public.example");
 		});
 		it("RFC 5322 Appendix A - Obsolete", function () {
-			// Obsolete syntax is not supported and should fail
+			// Obsolete syntax is only partly supported
 
 			// Appendix A.6.1.  Obsolete Addressing
-			expect(() =>
+			expect(
 				MsgParser.parseFromHeader("From: Joe Q. Public <john.q.public@example.com>\r\n")
-			).to.throw();
+			).to.be.equal("john.q.public@example.com");
 			// Appendix A.6.3.  Obsolete White Space and Comments
 			expect(() =>
 				MsgParser.parseFromHeader("From  : John Doe <jdoe@machine(comment).  example>\r\n")
