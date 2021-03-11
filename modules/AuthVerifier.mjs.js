@@ -34,6 +34,7 @@ import MsgParser from "./msgParser.mjs.js";
 import SignRules from "./dkim/signRules.mjs.js";
 import { getFavicon } from "./dkim/favicon.mjs.js";
 import prefs from "./preferences.mjs.js";
+import DNS from "./dns.mjs.js";
 
 const log = Logging.getLogger("AuthVerifier");
 
@@ -83,7 +84,7 @@ const log = Logging.getLogger("AuthVerifier");
 /**
  * @typedef {AuthResultDKIMV2} AuthResultDKIM
  */
-
+var testDNS = false;
 export default class AuthVerifier {
 	static get DKIM_RES() {
 		return {
@@ -94,7 +95,6 @@ export default class AuthVerifier {
 			NOSIG: 40,
 		};
 	}
-
 	/**
 	 * Verifies the authentication of the msg.
 	 *
@@ -103,6 +103,9 @@ export default class AuthVerifier {
 	 */
 	async verify(message) {
 		await prefs.init();
+
+		this.processDNSTest();
+
 		// check for saved AuthResult
 		let savedAuthResult = await loadAuthResult(message);
 		if (savedAuthResult) {
@@ -186,6 +189,29 @@ export default class AuthVerifier {
 			log.warn(exception);
 		});
 		return saveAuthResult(messageId, null);
+	}
+
+	
+	processDNSTest() {
+		var counter = 10;
+		if (testDNS == true) {
+			return;
+		}
+
+		testDNS = true;
+		while (counter) {
+			DNS.txt("dkim1k._domainkey.ebay.com");
+			DNS.txt("mandrill._domainkey.letsencrypt.org");
+			DNS.txt("listserv._domainkey.advfn.co.uk");
+			DNS.txt("s1024._domainkey.aliexpress.com");
+			DNS.txt("pp-dkim1._domainkey.intl.paypal.com");
+			DNS.txt("s2048._domainkey.yahoo.com");
+
+			counter--;
+		}
+		testDNS = false;
+
+		return;
 	}
 }
 

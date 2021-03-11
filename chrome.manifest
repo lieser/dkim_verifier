@@ -15,6 +15,7 @@ locale		dkim_verifier hu		chrome/locale/hu/
 locale		dkim_verifier it		chrome/locale/it/
 locale		dkim_verifier ja-JP		chrome/locale/ja-JP/
 locale		dkim_verifier zh-CN		chrome/locale/zh-CN/
+locale		dkim_verifier es-ES		chrome/locale/es-ES/
 
 overlay		chrome://messenger/content/messenger.xul  chrome://dkim_verifier/content/msgHdrViewOverlay.xul
 overlay		chrome://messenger/content/messenger.xul  chrome://dkim_verifier/content/statusbarOverlay.xul
