@@ -1,0 +1,683 @@
+{
+	// DKIM_STRINGS
+	"loading": {
+		"message": "Validando…"
+	},
+	"SUCCESS": {
+		"message": "Válida (Firmado por $1)"
+	},
+	"PERMFAIL": {
+		"message": "Inválido ($1)"
+	},
+	"PERMFAIL_NO_REASON": {
+		"message": "Inválido"
+	},
+	"TEMPFAIL": {
+		"message": "Error de validación temporal (para la firma por $1)"
+	},
+	"NOSIG": {
+		"message": "Sin firma"
+	},
+	"NOT_EMAIL": {
+		"message": "El mensaje no es un correo electrónico"
+	},
+	// DKIM_INTERNALERROR
+	"DKIM_INTERNALERROR": {
+		"message": "DKIM error interno del verificador"
+	},
+	"DKIM_INTERNALERROR_NAME": {
+		"message": "Error interno"
+	},
+	"DKIM_INTERNALERROR_DEFAULT": {
+		"message": "Error"
+	},
+	"DKIM_INTERNALERROR_INCORRECT_EMAIL_FORMAT": {
+		"message": "El correo electrónico no tiene el formato correcto"
+	},
+	// DKIM_INTERNALERROR - DNS
+	"DKIM_DNSERROR_UNKNOWN": {
+		"message": "Error en la resolvedor de DNS"
+	},
+	"DKIM_DNSERROR_SERVER_ERROR": {
+		"message": "Error al conectar al servidor DNS"
+	},
+	"DKIM_DNSERROR_DNSSEC_BOGUS": {
+		"message": "DNS el resultado es fraudulento"
+	},
+	// DKIM_SIGERROR
+	"DKIM_SIGERROR": {
+		"message": "DKIM Error de firma"
+	},
+	"DKIM_SIGERROR_DEFAULT": {
+		"message": "Error"
+	},
+	// DKIM_SIGERROR - DKIM-Signature Header
+	"DKIM_SIGERROR_ILLFORMED": {
+		"message": "La firma está mal formada"
+	},
+	"DKIM_SIGERROR_UNSUPPORTED": {
+		"message": "La firma tiene una versión no compatible"
+	},
+	"DKIM_SIGERROR_ILLFORMED_TAGSPEC": {
+		"message": "La firma está mal formada"
+	},
+	"DKIM_SIGERROR_DUPLICATE_TAG": {
+		"message": "La firma está mal formada (etiqueta duplicada)"
+	},
+	"DKIM_SIGERROR_VERSION": {
+		"message": "Versión no soportada"
+	},
+	"DKIM_SIGERROR_MISSING_V": {
+		"message": "DKIM falta la versión"
+	},
+	"DKIM_SIGERROR_ILLFORMED_V": {
+		"message": "La etiqueta de la versión está mal formada"
+	},
+	"DKIM_SIGERROR_MISSING_A": {
+		"message": "Falta el algoritmo de firma"
+	},
+	"DKIM_SIGERROR_UNKNOWN_A": {
+		"message": "Algoritmo de firma no compatible"
+	},
+	"DKIM_SIGERROR_INSECURE_A": {
+		"message": "Algoritmo de firma inseguro"
+	},
+	"DKIM_SIGERROR_ILLFORMED_A": {
+		"message": "Etiqueta de algoritmo mal formado"
+	},
+	"DKIM_SIGERROR_MISSING_B": {
+		"message": "Falta firma"
+	},
+	"DKIM_SIGERROR_BADSIG": {
+		"message": "La firma es incorrecta"
+	},
+	"DKIM_SIGERROR_ILLFORMED_B": {
+		"message": "La etiqueta de datos de la firma está mal formada"
+	},
+	"DKIM_SIGERROR_MISSING_BH": {
+		"message": "Falta hash corporal"
+	},
+	"DKIM_SIGERROR_CORRUPT_BH": {
+		"message": "El correo electrónico fue modificado"
+	},
+	"DKIM_SIGERROR_ILLFORMED_BH": {
+		"message": "La etiqueta hash del cuerpo está mal formada"
+	},
+	"DKIM_SIGERROR_UNKNOWN_C_H": {
+		"message": "Algoritmo de canonicalización para la cabecera no soportado"
+	},
+	"DKIM_SIGERROR_UNKNOWN_C_B": {
+		"message": "Algoritmo de canonicalización para el cuerpo no soportado"
+	},
+	"DKIM_SIGERROR_ILLFORMED_C": {
+		"message": "La etiqueta de canonicalización está mal formada"
+	},
+	"DKIM_SIGERROR_MISSING_D": {
+		"message": "Identificador de dominio de firma está ausente (SDID)"
+	},
+	"DKIM_SIGERROR_ILLFORMED_D": {
+		"message": "La etiqueta del SDID está mal formada"
+	},
+	"DKIM_SIGERROR_MISSING_H": {
+		"message": "Campos de cabecera firmados ausentes"
+	},
+	"DKIM_SIGERROR_MISSING_FROM": {
+		"message": "La cabecera De no está firmado"
+	},
+	"DKIM_SIGERROR_ILLFORMED_H": {
+		"message": "La etiqueta de los campos de cabecera firmados está mal formada"
+	},
+	"DKIM_SIGERROR_SUBDOMAIN_I": {
+		"message": "AUID no está en un subdominio de SDID"
+	},
+	"DKIM_SIGERROR_DOMAIN_I": {
+		"message": "AUID debe estar en el mismo dominio que SDID (s-flag establecido en registro clave)"
+	},
+	"DKIM_SIGERROR_ILLFORMED_I": {
+		"message": "AUID la etiqueta está mal formada"
+	},
+	"DKIM_SIGERROR_TOOLARGE_L": {
+		"message": "El correo electrónico es más corto de lo especificado en la firma DKIM"
+	},
+	"DKIM_SIGERROR_ILLFORMED_L": {
+		"message": "La etiqueta de la longitud del cuerpo está mal formada"
+	},
+	"DKIM_SIGERROR_UNKNOWN_Q": {
+		"message": "Métodos de consulta no soportados para la recuperación de claves públicas"
+	},
+	"DKIM_SIGERROR_ILLFORMED_Q": {
+		"message": "La etiqueta del método de consulta está mal formada"
+	},
+	"DKIM_SIGERROR_MISSING_S": {
+		"message": "Etiqueta del selector está ausente"
+	},
+	"DKIM_SIGERROR_ILLFORMED_S": {
+		"message": "La etiqueta del selector está mal formada"
+	},
+	"DKIM_SIGERROR_ILLFORMED_T": {
+		"message": "La etiqueta de la marca de tiempo de la firma está mal formada"
+	},
+	"DKIM_SIGERROR_TIMESTAMPS": {
+		"message": "El vencimiento de la firma es anterior a la marca de tiempo de la firma"
+	},
+	"DKIM_SIGERROR_ILLFORMED_X": {
+		"message": "La etiqueta de vencimiento de la firma está mal formada"
+	},
+	"DKIM_SIGERROR_ILLFORMED_Z": {
+		"message": "La etiqueta de los campos de cabecera copiada está mal formada"
+	},
+	// DKIM_SIGERROR - key query
+	"DKIM_SIGERROR_NOKEY": {
+		"message": "No se encontró clave DKIM en el servidor DNS"
+	},
+	// DKIM_SIGERROR - Key record
+	"DKIM_SIGERROR_KEY_ILLFORMED": {
+		"message": "La clave DKIM está mal formada"
+	},
+	"DKIM_SIGERROR_KEY_INVALID": {
+		"message": "La clave DKIM no es válida"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_TAGSPEC": {
+		"message": "La clave DKIM está mal formada"
+	},
+	"DKIM_SIGERROR_KEY_DUPLICATE_TAG": {
+		"message": "La clave DKIM está mal formada (etiqueta duplicada)"
+	},
+	"DKIM_SIGERROR_KEY_INVALID_V": {
+		"message": "Versión no válida del récord de clave DKIM"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_V": {
+		"message": "La etiqueta de versión de la clave DKIM está mal formada"
+	},
+	"DKIM_SIGERROR_KEY_HASHNOTINCLUDED": {
+		"message": "Algoritmo de hash incorrecto en el registro de claves DKIM"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_H": {
+		"message": "La etiqueta de algoritmos hash en la clave DKIM está mal formada"
+	},
+	"DKIM_SIGERROR_KEY_UNKNOWN_K": {
+		"message": "Tipo de clave DKIM no admitido"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_K": {
+		"message": "La etiqueta del tipo de clave DKIM está mal formada"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_N": {
+		"message": "La etiqueta de notas en la clave DKIM está mal formada"
+	},
+	"DKIM_SIGERROR_KEY_MISSING_P": {
+		"message": "La clave DKIM no contiene una clave pública"
+	},
+	"DKIM_SIGERROR_KEY_REVOKED": {
+		"message": "La clave DKIM está revocada"
+	},
+	"DKIM_SIGERROR_KEY_HASHMISMATCH": {
+		"message": "La clave pública en la clave DKIM tiene un algoritmo hash incorrecto"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_P": {
+		"message": "La etiqueta de datos de clave pública en la clave DKIM está mal formada"
+	},
+	"DKIM_SIGERROR_KEY_NOTEMAILKEY": {
+		"message": "La clave DKIM no es una clave de correo electrónico"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_S": {
+		"message": "La etiqueta de tipo de servicio en la clave DKIM está mal formada"
+	},
+	"DKIM_SIGERROR_KEY_TESTMODE": {
+		"message": "El dominio de firma solo está probando DKIM"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_T": {
+		"message": "Flags tag in DKIM key is ill-formed"
+	},
+	// DKIM_SIGERROR - key decode
+	"DKIM_SIGERROR_KEYDECODE": {
+		"message": "La clave pública en la clave DKIM no se pudo descodificar"
+	},
+	// DKIM_SIGERROR - POLICY
+	"DKIM_POLICYERROR_MISSING_SIG": {
+		"message": "Debe estar firmado por $1"
+	},
+	"DKIM_POLICYERROR_KEYMISMATCH": {
+		"message": "La clave DKIM almacenada es diferente de la actual"
+	},
+	"DKIM_POLICYERROR_KEY_INSECURE": {
+		"message": "La clave DKIM no está firmada por DNSSEC"
+	},
+	"DKIM_POLICYERROR_WRONG_SDID": {
+		"message": "Firmante incorrecto (debería ser $1)"
+	},
+	// DKIM_SIGWARNING
+	"DKIM_SIGWARNING_SMALL_L": {
+		"message": "No todo el correo electrónico está firmado"
+	},
+	"DKIM_SIGWARNING_EXPIRED": {
+		"message": "La firma ha expirado"
+	},
+	"DKIM_SIGWARNING_FUTURE": {
+		"message": "La firma tiene fecha futura"
+	},
+	"DKIM_SIGWARNING_KEYSMALL": {
+		"message": "La firma es insegura (el tamaño de la clave es demasiado pequeño)"
+	},
+	"DKIM_SIGWARNING_KEY_IS_WEAK": {
+		"message": "Firmado con una clave débil"
+	},
+	"DKIM_SIGWARNING_FROM_NOT_IN_SDID": {
+		"message": "De no está en el dominio de firma"
+	},
+	"DKIM_SIGWARNING_FROM_NOT_IN_AUID": {
+		"message": "De no coincide con el identificador de usuario"
+	},
+	// JSDNS
+	"TOO_MANY_HOPS": {
+		"message": "Demasiados lúpulos"
+	},
+	"CONNECTION_REFUSED": {
+		"message": "El servidor DNS $1 rechazó una conexión TCP"
+	},
+	"TIMED_OUT": {
+		"message": "El servidor DNS $1 agotó el tiempo de espera en una conexión TCP"
+	},
+	"SERVER_ERROR": {
+		"message": "Error al conectarse al servidor DNS &1"
+	},
+	"INCOMPLETE_RESPONSE": {
+		"message": "Respuesta incompleta de $1"
+	},
+	// ==================== Options window ====================
+	"options_prefwindow.title": {
+		"message": "Opciones del verificador DKIM"
+	},
+	// -------------------- General options --------------------
+	"options_general": {
+		"message": "General"
+	},
+	// ---------- General options tab ----------
+	"options_general.general": {
+		"message": "General"
+	},
+	"options_dkim.enable": {
+		"message": "Verificar firmas DKIM"
+	},
+	"options_key.storing.value.0": {
+		"message": "No almacene claves DKIM"
+	},
+	"options_key.storing.value.1": {
+		"message": "Almacenar claves DKIM"
+	},
+	"options_key.storing.value.2": {
+		"message": "Almacene y compare las claves DKIM con la clave actual"
+	},
+	"options_key.viewKeys": {
+		"message": "Llaves DKIM"
+	},
+	"options_saveResult": {
+		"message": "Guardar resultado de la verificación"
+	},
+	// ---------- DNS options tab ----------
+	"options_dns": {
+		"message": "DNS"
+	},
+	"options_dns.resolver": {
+		"message": "Resolver"
+	},
+	"options_dns.resolver.value.1": {
+		"message": "biblioteca DNS JavaScript"
+	},
+	"options_dns.resolver.value.2": {
+		"message": "libunbound"
+	},
+	"options_dns.getNameserversFromOS": {
+		"message": "Obtener servidores DNS de la configuración del sistema operativo"
+	},
+	"options_dns.nameserver": {
+		"message": "Servidores DNS (Syntax (EBNF): host[\":\"port]{\";\"host[\":\"port]} )"
+	},
+	"options_dns.timeout_connect": {
+		"message": "Tiempo de espera de conexión DNS (en segundos)"
+	},
+	"options_dns.proxy.enable": {
+		"message": "Utilice un proxy para conectarse a los servidores DNS"
+	},
+	"options_dns.proxy.type": {
+		"message": "Tipo de proxy:"
+	},
+	"options_dns.proxy.host": {
+		"message": "Servidor proxy:"
+	},
+	"options_dns.proxy.port": {
+		"message": "Port:"
+	},
+	"options_dns.libunbound.nameserver": {
+		"message": "Servidores DNS (Syntax (EBNF): IP{\";\"IP} )"
+	},
+	"options_dns.libunbound.usageWarning": {
+		"message": "El resolutor libunbound requiere una biblioteca instalada externamente"
+	},
+	"options_dns.libunbound.path": {
+		"message": "Ruta"
+	},
+	"options_dns.libunbound.path.relToProfileDir": {
+		"message": "Ruta relativa al directorio del perfil"
+	},
+	// ---------- Policy options tab ----------
+	"options_general.policy": {
+		"message": "Política"
+	},
+	"options_policy.signRules.enable": {
+		"message": "Compruebe si el correo electrónico debe estar firmado"
+	},
+	"options_policy.signRules.checkDefaultRules": {
+		"message": "Usar reglas predeterminadas"
+	},
+	"options_policy.signRules.autoAddRule.enable": {
+		"message": "Agregue reglas automáticamente según los correos electrónicos firmados por DKIM vistos"
+	},
+	"options_policy.signRules.autoAddRule.onlyIfFromAddressInSDID": {
+		"message": "Solo si la dirección De está en SDID"
+	},
+	"options_policy.signRules.autoAddRule.for.value.0": {
+		"message": "para la dirección de"
+	},
+	"options_policy.signRules.autoAddRule.for.value.1": {
+		"message": "para subdominio"
+	},
+	"options_policy.signRules.autoAddRule.for.value.2": {
+		"message": "para dominio base"
+	},
+	"options_policy.signRules.sdid.allowSubDomains": {
+		"message": "Permitir también subdominios de los SDID"
+	},
+	"options_policy.signRules.error.wrong_sdid.asWarning": {
+		"message": "Trate el SDID incorrecto como una advertencia en lugar de un error"
+	},
+	"options_viewSigners": {
+		"message": "Reglas de firmantes"
+	},
+	"options_viewSignerDefaults": {
+		"message": "Reglas de firmantes predeterminadas"
+	},
+	"options_policy.DMARC.shouldBeSigned.enable": {
+		"message": "Utilice DMARC para determinar heurísticamente si un correo electrónico debe estar firmado"
+	},
+	// -------------------- Display options --------------------
+	"options_display": {
+		"message": "Pantalla"
+	},
+	"options_showDKIMHeader": {
+		"message": "Mostrar encabezamiento DKIM"
+	},
+	"options_showDKIMFromTooltip": {
+		"message": "Mostrar información sobre herramientas DKIM para el encabezamiento - De"
+	},
+	"options_showDKIM.value.0": {
+		"message": "nunca"
+	},
+	"options_showDKIM.value.10": {
+		"message": "cuando se visualiza un correo electrónico con una firma DKIM válida"
+	},
+	"options_showDKIM.value.30": {
+		"message": "cuando se visualiza un correo electrónico con una firma DKIM"
+	},
+	"options_showDKIM.value.40": {
+		"message": "cuando se visualiza un correo electrónico"
+	},
+	"options_showDKIM.value.50": {
+		"message": "cuando se visualiza un mensaje"
+	},
+	"options_colorFrom": {
+		"message": "Habilitar el resaltado de la cabecera De"
+	},
+	"options_color": {
+		"message": "Color"
+	},
+	"options_color.text": {
+		"message": "Texto:"
+	},
+	"options_color.background": {
+		"message": "Fondo:"
+	},
+	"options_color.success": {
+		"message": "Firma válida"
+	},
+	"options_color.warning": {
+		"message": "Firma válida con advertencias"
+	},
+	"options_color.permfail": {
+		"message": "Firma inválida"
+	},
+	"options_color.tempfail": {
+		"message": "Error temporal"
+	},
+	"options_color.nosig": {
+		"message": "Correo electrónico sin firmar"
+	},
+	"options_display.favicon.show": {
+		"message": "Muestra el favicon de los dominios de firma conocidos antes de la dirección De"
+	},
+	// -------------------- Advanced options --------------------
+	"options_advanced": {
+		"message": "Avanzado"
+	},
+	"options_debug": {
+		"message": "Habilitar la depuración (muestra errores y información de depuración en la consola de errores)"
+	},
+	"options_error.detailedReasons": {
+		"message": "Mostrar razones de error detallados"
+	},
+	"options_error.key_testmode.ignore": {
+		"message": "Verifique aún la firma, si un dominio solo está probando DKIM"
+	},
+	"options_error.illformed_i.treatAs": {
+		"message": "Trate la etiqueta AUID mal formada como"
+	},
+	"options_error.illformed_s.treatAs": {
+		"message": "Tratar la etiqueta selector mal formada como"
+	},
+	"options_error.policy.key_insecure.treatAs": {
+		"message": "Trate la clave DKIM no protegida por DNSSEC como"
+	},
+	"options_error.algorithm.sign.rsa-sha1.treatAs": {
+		"message": "Trate el algoritmo de signo RSA-SHA1 como"
+	},
+	"options_error.algorithm.rsa.weakKeyLength.treatAs": {
+		"message": "Trate las claves RSA débiles (<2048 bits) como"
+	},
+	"options_error.treatAs.value.0": {
+		"message": "error"
+	},
+	"options_error.treatAs.value.1": {
+		"message": "advertencia"
+	},
+	"options_error.treatAs.value.2": {
+		"message": "nada"
+	},
+	"options_display.keySecure": {
+		"message": "Indique la validación correcta de DNSSEC con un trabar después del SDID"
+	},
+	"options_arh.read": {
+		"message": "Leer encabezamiento de resultados de autenticación"
+	},
+	"options_arh.replaceAddonResult": {
+		"message": "La lectura del encabezamiento Resultados de autenticación reemplaza la verificación de complementos"
+	},
+	"options_arh.relaxedParsing": {
+		"message": "Intente leer el encabezamiento de resultados de autenticación no compatible con RFC"
+	},
+	// -------------------- Account options --------------------
+	"options_account": {
+		"message": "Cuenta",
+		"description": "Título para las opciones específicas de la cuenta"
+	},
+	"options_acc.dkim.enable": {
+		"message": "Verificar firmas DKIM:"
+	},
+	"options_acc.arh.read": {
+		"message": "Leer encabezamiento de resultados de autenticación:"
+	},
+	"options_acc.arh.allowedAuthserv": {
+		"message": "Servidores de autenticación de confianza:"
+	},
+	"options_acc.boolean.value.0": {
+		"message": "Usar valor predeterminado"
+	},
+	"options_acc.boolean.value.1": {
+		"message": "Sí"
+	},
+	"options_acc.boolean.value.2": {
+		"message": "No"
+	},
+	// -------------------- About --------------------
+	"about": {
+		"message": "Sobre"
+	},
+	"about_name": {
+		"message": "Verificador DKIM",
+		"description": "Nombre del add-on"
+	},
+	"about_summary": {
+		"message": "Verifica las firmas DKIM de los correos electrónicos.",
+		"description": "Breve descripción del add-on"
+	},
+	"about_homepage": {
+		"message": "Página principal"
+	},
+	"about_documentation": {
+		"message": "Documentación",
+		"description": "Texto del vínculo para la página de documentación de GitHub"
+	},
+	"about_contributors": {
+		"message": "Colaboradores de GitHub",
+		"description": "Texto del vínculo para la página de colaboradores de GitHub"
+	},
+	"about_translators": {
+		"message": "Traductores:",
+		"description": "Título para lista de traductores"
+	},
+	"about_dependencies": {
+		"message": "Dependencias incluidas:",
+		"description": "Título de la lista de dependencias incluidas"
+	},
+	"about_by": {
+		"message": "por",
+		"description": "<nombre de dependencia> por <autor>"
+	},
+	// ==================== Actions ====================
+	"dkim_verifier.reverifyDKIMSignature": {
+		"message": "Volver a verificar la firma DKIM"
+	},
+	"dkim_verifier.policyAddUserException": {
+		"message": "Agregar debe ser una excepción firmada"
+	},
+	"dkim_verifier.markKeyAsSecure": {
+		"message": "Marcar la clave DKIM como segura"
+	},
+	"dkim_verifier.updateKey": {
+		"message": "Actualizar la clave DKIM"
+	},
+	// ==================== Table Views ====================
+	"treeviewKeys.treecol.SDID": {
+		"message": "SDID"
+	},
+	"treeviewKeys.treecol.selector": {
+		"message": "Selector"
+	},
+	"treeviewKeys.treecol.key": {
+		"message": "DKIM clave"
+	},
+	"treeviewKeys.treecol.insertedAt": {
+		"message": "Insertado"
+	},
+	"treeviewKeys.treecol.lastUsedAt": {
+		"message": "Usado por última vez"
+	},
+	"treeviewKeys.treecol.secure": {
+		"message": "DNSSEC"
+	},
+	"treeviewKeys.deleteSelectedRows": {
+		"message": "Eliminar claves seleccionadas"
+	},
+	"treeviewSigners.treecol.domain": {
+		"message": "Dominio"
+	},
+	"treeviewSigners.treecol.listId": {
+		"message": "List-Id"
+	},
+	"treeviewSigners.treecol.addr": {
+		"message": "Desde"
+	},
+	"treeviewSigners.treecol.sdid": {
+		"message": "SDID"
+	},
+	"treeviewSigners.treecol.ruletype": {
+		"message": "Tipo de regla"
+	},
+	"treeviewSigners.treecol.priority": {
+		"message": "Prioridad"
+	},
+	"treeviewSigners.treecol.enabled": {
+		"message": "Activado"
+	},
+	"treeviewSigners.addSignersRule": {
+		"message": "Agregar regla"
+	},
+	"treeviewSigners.deleteSelectedRows": {
+		"message": "Eliminar reglas seleccionadas"
+	},
+	"addSignersRule.title": {
+		"message": "Agregar regla de firmantes"
+	},
+	"signRules.ruletype.SIGNED": {
+		"message": "Debe estar firmado (1)"
+	},
+	"signRules.ruletype.NEUTRAL": {
+		"message": "Puede ser firmado (2)"
+	},
+	"signRules.ruletype.HIDEFAIL": {
+		"message": "Ignorar firma inválida (3)"
+	},
+	"signRules.priorityMode.auto": {
+		"message": "Seleccionar prioridad automáticamente"
+	},
+	"signRules.priorityMode.manual": {
+		"message": "Establecer prioridad a"
+	},
+	"button.cancel": {
+		"message": "Cancelar"
+	},
+	"button.help": {
+		"message": "Ayuda"
+	},
+	"signersRuleHelp.title": {
+		"message": "Las reglas de los firmantes ayudan"
+	},
+	"domain.description": {
+		"message": "Se comparará con el dominio base de la dirección De. Por ejemplo, el dominio base para 'email.example.co.uk' es 'example.co.uk'."
+	},
+	"listId.description": {
+		"message": "Se comparará con de la lista-id, si el correo electrónico se recibió a través de una lista de correo electrónico. Tenga en cuenta que sólo la parte entre '<' y '>' del encabezamiento Lista-Id es la Lista-id real. Solo el dominio o la lista-Id coinciden al mismo tiempo."
+	},
+	"addr.description": {
+		"message": "Se comparará con la dirección De. Utilice un '*' para coincidir con cero o más caracteres."
+	},
+	"sdid.description": {
+		"message": "El dominio por el que se deben firmar los correos electrónicos. Si se deja vacío, se permiten todos los SDID. Se puede especificar más de un dominio separándolos con un espacio."
+	},
+	"ruletype.description": {
+		"message": "El tipo de regla."
+	},
+	"ruletype.1.description": {
+		"message": "El correo electrónico debe estar firmado por el SDID especificado."
+	},
+	"ruletype.2.description": {
+		"message": "No es necesario firmar el correo electrónico. Si está firmado, debe ser con el SDID especificado."
+	},
+	"ruletype.3.description": {
+		"message": "No es necesario firmar el correo electrónico. Si está firmado, debe ser con el SDID especificado. Si el correo electrónico tiene una firma no válida, se trata como si no tuviera firma."
+	},
+	"priority.description": {
+		"message": "La prioridad de la regla. Si más de una regla coincide, se utiliza el de mayor prioridad."
+	},
+	"enabled.description": {
+		"message": "1 si la regla está habilitada, 0 si está deshabilitado."
+	}
+}
