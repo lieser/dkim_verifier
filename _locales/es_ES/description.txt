@@ -1,9 +1,0 @@
-<a href="https://en.wikipedia.org/wiki/DomainKeys_Identified_Mail">DomainKeys Identified Mail (DKIM)</a> es un método que permite a los dominios firmar correos electrónicos. El Add-on verifica estas firmas DKIM y muestra el resultado en el encabezamiento del correo electrónico. De esta manera es posible ver qué dominio se atribuye la responsabilidad de un correo electrónico específico. La forma en que se muestra el resultado se puede cambiar en las opciones.
-
-Es importante tener en cuenta que un correo electrónico puede estar firmado por dominios arbitrarios. Por lo tanto, una firma DKIM válida por sí sola no es un indicador de un correo electrónico confiable. ¡Siempre verifique quién es el firmante para determinar si un correo electrónico es confiable!
-
-En algunos casos, la ausencia de una firma DKIM puede ser útil para identificar correos electrónicos fraudulentos. Si un dominio firma todos sus correos electrónicos con DKIM, la ausencia de una firma DKIM es un fuerte indicador de un correo electrónico falsificado.
-
-Para facilitar la comprobación de si un correo electrónico está firmado y por quién, el plugin apoya el uso de reglas de signos. Con las reglas de firma, es posible especificar que los correos electrónicos de un remitente particular debe estar siempre firmado por un dominio específico (también conocido como SDID). Más sobre reglas de firmas en https://github.com/lieser/dkim_verifier/wiki/Sign-rules.
-
-Puede encontrar una descripción de todas las opciones complementarias disponibles en https://github.com/lieser/dkim_verifier/wiki/Options.

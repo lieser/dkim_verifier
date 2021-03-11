@@ -205,7 +205,6 @@ var log = chromeConsole.createInstance({
  * @typedef {Object} DnsServer
  * @property {string} server - IP of server as string
  * @property {boolean} alive -  whether the server is alive
- * @property {string} statusChange -  datetime of status change - such as alive flag change.
  */
 
 // Preferences
@@ -241,8 +240,7 @@ function configureDNS(getNameserversFromOS, nameServer, timeoutConnect, proxy, a
 		if (element.trim() !== "") {
 			prefDnsRootNameServers.push({
 				server: element.trim(),
-				alive: true,
-				statusChange: new Date().toLocaleString() 
+				alive: true
 			});
 		}
 	});
@@ -394,8 +392,7 @@ function getOsDnsServers() {
 					if (element !== "") {
 						OS_DNS_ROOT_NAME_SERVERS.push({
 							server: element.trim(),
-							alive: true,
-							statusChange: new Date().toLocaleString()
+							alive: true
 						});
 					}
 				});
@@ -439,8 +436,7 @@ function getOsDnsServers() {
 				if (DNS_StartsWith(out_line.value, "nameserver ")) {
 					OS_DNS_ROOT_NAME_SERVERS.push({
 						server: out_line.value.substring("nameserver ".length).trim(),
-						alive: true,
-						statusChange: new Date().toLocaleString()
+						alive: true
 					});
 				}
 			} while (hasmore);
@@ -517,12 +513,10 @@ function queryDNSRecursive(server, host, recordtype, callback, callbackdata, hop
 		}
 
 		if (server === null) {
-			log.debug("No DNS Server alive");
-			log.info("DNS Servers state :", DNS_ROOT_NAME_SERVERS);
+			log.debug("no DNS Server alive");
 			if (AUTO_RESET_SERVER_ALIVE) {
 				servers.forEach(function (element /*, index, array*/) {
 					element.alive = true;
-					element.statusChange = new Date().toLocaleString()
 				});
 				log.debug("set all servers to alive");
 			}
@@ -584,9 +578,6 @@ function queryDNSRecursive(server, host, recordtype, callback, callbackdata, hop
 		readcount: 0,
 		responseHeader: "",
 		responseBody: "",
-		startTime: null,
-		stopTime: null,
-		processTimeMS: 0,
 		done: false,
 		/**
 		 * @param {string} data
@@ -594,12 +585,6 @@ function queryDNSRecursive(server, host, recordtype, callback, callbackdata, hop
 		 * @returns {void}
 		 */
 		finished: function (data, status) {
-			this.stopTime = new Date();
-			if (this.startTime !== null) {
-				this.processTimeMS = this.stopTime.getTime() - this.startTime.getTime();
-				log.debug(server + " TCP Socket Processing Time miliseconds: " + this.processTimeMS);
-			}
-
 			if (!server) {
 				server = "unknown";
 			}
@@ -630,7 +615,6 @@ function queryDNSRecursive(server, host, recordtype, callback, callbackdata, hop
 				if (servers !== undefined) {
 					// set current server to not alive
 					serverObj.alive = false;
-					serverObj.statusChange = new Date().toLocaleString();
 
 					// start query again for next server
 					queryDNSRecursive(null, host, recordtype, callback, callbackdata, hops, servers);
@@ -997,7 +981,6 @@ function DNS_readAllFromSocket(host, port, outputData, listener) {
 
 		var outstream = transport.openOutputStream(0, 0, 0);
 		outstream.write(outputData, outputData.length);
-		listener.startTime = new Date();
 
 		var stream = transport.openInputStream(0, 0, 0);
 		var instream = Components.classes["@mozilla.org/binaryinputstream;1"].
@@ -1008,9 +991,7 @@ function DNS_readAllFromSocket(host, port, outputData, listener) {
 		var dataListener = {
 			data: "",
 			// eslint-disable-next-line no-empty-function
-			onStartRequest: function (/* request, context */) {
-				//listener.startTime = new Date();
-			},
+			onStartRequest: function (/* request, context */) { },
 			onStopRequest: function (request, status) {
 				if (listener.finished !== null) {
 					listener.finished(this.data, status);
