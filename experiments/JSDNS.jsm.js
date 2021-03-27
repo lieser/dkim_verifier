@@ -4,7 +4,7 @@
  * Based on Joshua Tauberer's DNS LIBRARY IN JAVASCRIPT
  * from "Sender Verification Extension" version 0.9.0.6
  *
- * Version: 2.0.0 (31 May 2020)
+ * Version: 2.0.1 (27 March 2021)
  *
  * Copyright (c) 2013-2020 Philippe Lieser
  *
@@ -54,6 +54,10 @@
 /*
  * Changelog:
  * ==========
+ *
+ * 2.0.1
+ * -----
+ * - fixed incompatibility with Gecko 89
  *
  * 2.0.0
  * -----
@@ -971,7 +975,7 @@ function DNS_readAllFromSocket(host, port, outputData, listener) {
 		var transportService =
 			Cc["@mozilla.org/network/socket-transport-service;1"].
 				getService(Ci.nsISocketTransportService);
-		const transport = transportService.createTransport([], host, port, proxy);
+		const transport = transportService.createTransport([], host, port, proxy, null);
 
 		// change timeout for connection
 		transport.setTimeout(transport.TIMEOUT_CONNECT, timeout_connect);

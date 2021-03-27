@@ -148,6 +148,8 @@ interface nsIBinaryInputStream extends nsIInputStream {
     readonly setInputStream: (aInputStream: nsIInputStream) => void;
 }
 
+interface nsIDNSRecord { nsIDNSRecord: never };
+
 interface nsIEventTarget { nsIEventTarget: never }
 
 interface nsIInputStream {
@@ -194,7 +196,10 @@ interface nsISocketTransport extends nsITransport {
 }
 
 interface nsISocketTransportService {
-    readonly createTransport: (aSocketTypes: string[], aHost: string, aPort: number, aProxyInfo: nsIProxyInfo?) => nsISocketTransport
+    /**
+     * In TB 78 the nsIDNSRecord did not yet exist. Providing null does not cause an error.
+     */
+    readonly createTransport: (aSocketTypes: string[], aHost: string, aPort: number, aProxyInfo: nsIProxyInfo?, dnsRecord: nsIDNSRecord?) => nsISocketTransport
 }
 
 interface nsIStreamListener extends nsIRequestObserver {
