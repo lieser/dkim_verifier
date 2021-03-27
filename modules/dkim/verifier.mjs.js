@@ -39,25 +39,25 @@ import prefs from "../preferences.mjs.js";
  *           result version ("1.0" / "1.1")
  * @property {String} result
  *           "none" / "SUCCESS" / "PERMFAIL" / "TEMPFAIL"
- * @property {String=} [SDID]
+ * @property {String} [SDID]
  *           required if result="SUCCESS
- * @property {String=} [selector]
+ * @property {String} [selector]
  *           added in version 1.1
- * @property {String[]=} [warnings]
+ * @property {String[]} [warnings]
  *           required if result="SUCCESS
- * @property {String=} [errorType]
+ * @property {String} [errorType]
  *           if result="PERMFAIL: DKIM_SigError.errorType
  *           if result="TEMPFAIL: DKIM_InternalError.errorType or Undefined
- * @property {String=} [shouldBeSignedBy]
+ * @property {String} [shouldBeSignedBy]
  *           added in version 1.1
- * @property {Boolean=} [hideFail]
+ * @property {Boolean} [hideFail]
  *           added in  version 1.1
  */
 
 /**
  * @typedef {Object} dkimSigWarningV2
  * @property {string} name - Name of the warning
- * @property {(string|string[])[]|undefined} [params] - optional params for formatted string
+ * @property {(string|string[])[]} [params] - optional params for formatted string
  */
 
 /**
@@ -68,18 +68,18 @@ import prefs from "../preferences.mjs.js";
  *           result version ("2.0")
  * @property {String} result
  *           "none" / "SUCCESS" / "PERMFAIL" / "TEMPFAIL"
- * @property {String|undefined} [sdid]
- * @property {String|undefined} [auid]
- * @property {String|undefined} [selector]
- * @property {dkimSigWarningV2[]|undefined} [warnings]
+ * @property {String} [sdid]
+ * @property {String} [auid]
+ * @property {String} [selector]
+ * @property {dkimSigWarningV2[]} [warnings]
  *           Array of warning_objects.
  *           required if result="SUCCESS"
- * @property {String|undefined} [errorType]
+ * @property {String} [errorType]
  *           if result="PERMFAIL: DKIM_SigError.errorType or Undefined
  *           if result="TEMPFAIL: DKIM_InternalError.errorType or Undefined
- * @property {String[]|undefined} [errorStrParams]
- * @property {Boolean|undefined} [hideFail]
- * @property {Boolean|undefined} [keySecure]
+ * @property {String[]} [errorStrParams]
+ * @property {Boolean} [hideFail]
+ * @property {Boolean} [keySecure]
  */
 
 /**

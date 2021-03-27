@@ -39,9 +39,9 @@ const log = Logging.getLogger("AuthVerifier");
  * @property {String} version
  *           result version ("2.1")
  * @property {AuthResultDKIM[]} dkim
- * @property {ArhParserModule.ArhResInfo[]=} [spf]
- * @property {ArhParserModule.ArhResInfo[]=} [dmarc]
- * @property {{dkim?: AuthResultDKIM[]}=} [arh]
+ * @property {ArhParserModule.ArhResInfo[]} [spf]
+ * @property {ArhParserModule.ArhResInfo[]} [dmarc]
+ * @property {{dkim?: AuthResultDKIM[]}} [arh]
  *           added in version 2.1
  */
 /**
@@ -53,9 +53,9 @@ const log = Logging.getLogger("AuthVerifier");
  * @property {String} version
  *           result version ("3.0")
  * @property {VerifierModule.dkimSigResultV2[]} dkim
- * @property {ArhParserModule.ArhResInfo[]=} [spf]
- * @property {ArhParserModule.ArhResInfo[]=} [dmarc]
- * @property {{dkim?: VerifierModule.dkimSigResultV2[]}=} [arh]
+ * @property {ArhParserModule.ArhResInfo[]} [spf]
+ * @property {ArhParserModule.ArhResInfo[]} [dmarc]
+ * @property {{dkim?: VerifierModule.dkimSigResultV2[]}} [arh]
  */
 /**
  * @typedef {SavedAuthResultV3} SavedAuthResult
@@ -72,9 +72,9 @@ const log = Logging.getLogger("AuthVerifier");
  *           40: no sig
  * @property {String} result_str
  *           localized result string
- * @property {String[]=} [warnings_str]
+ * @property {String[]} [warnings_str]
  *           localized warnings
- * @property {String=} [favicon]
+ * @property {String} [favicon]
  *           url to the favicon of the sdid
  */
 /**
