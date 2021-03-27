@@ -1,4 +1,4 @@
-/*
+/**
  * General utility functions that do not have any dependencies.
  *
  * Copyright (c) 2013-2020 Philippe Lieser

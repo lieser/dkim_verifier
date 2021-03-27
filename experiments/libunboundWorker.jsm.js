@@ -1,4 +1,4 @@
-/*
+/**
  * A ChromeWorker wrapper for the libunbound DNS library.
  * Currently only the TXT resource record is completely supported.
  *

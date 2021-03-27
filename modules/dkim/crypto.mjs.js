@@ -1,7 +1,5 @@
 /**
- * crypto.mjs.js
- *
- * Version: 0.1.0 (02 February 2020)
+ * Unified crypto interface for Thunderbird/Browser and Node
  *
  * Copyright (c) 2020 Philippe Lieser
  *

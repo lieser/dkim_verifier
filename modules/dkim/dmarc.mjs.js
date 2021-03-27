@@ -1,4 +1,4 @@
-/*
+/**
  * Implements a very small part of DMARC to determined if an e-mail should
  * have a DKIM signature.
  *

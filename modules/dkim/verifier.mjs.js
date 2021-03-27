@@ -1,4 +1,4 @@
-/*
+/**
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  * Update done by RFC 8301 included https://tools.ietf.org/html/rfc8301

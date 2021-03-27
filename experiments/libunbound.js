@@ -1,4 +1,4 @@
-/*
+/**
  * Wrapper for the libunbound DNS library. The actual work is done in the
  * ChromeWorker libunboundWorker.jsm.js.
  *

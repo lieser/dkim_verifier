@@ -1,9 +1,5 @@
-/*
- * AuthVerifier.mjs.js
- *
+/**
  * Authentication Verifier.
- *
- * Version: 2.0.0pre1 (04 April 2020)
  *
  * Copyright (c) 2014-2020 Philippe Lieser
  *

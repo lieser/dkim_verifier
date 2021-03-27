@@ -1,4 +1,4 @@
-/*
+/**
  * Utility functions related to WebExtensions/MailExtensions.
  *
  * Copyright (c) 2020 Philippe Lieser

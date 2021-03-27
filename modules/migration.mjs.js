@@ -1,4 +1,4 @@
-/*
+/**
  * Migrates user data from the Legacy Overlay Extension.
  *
  * Copyright (c) 2020-2021 Philippe Lieser

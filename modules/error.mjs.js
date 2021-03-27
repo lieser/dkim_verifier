@@ -1,8 +1,4 @@
 /**
- * error.mjs.js
- *
- * Version: 0.1.0 (31 January 2020)
- *
  * Copyright (c) 2013-2019 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.

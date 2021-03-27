@@ -1,4 +1,4 @@
-/*
+/**
  * Wrapper to resolve DNS lookups via the following experiment libraries:
  *  - JSDNS
  *  - libunbound

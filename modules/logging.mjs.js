@@ -1,15 +1,11 @@
-/*
-* logging.mjs.js
-*
-* Version: 2.0.0pre1 (07 February 2020)
-*
-* Copyright (c) 2020 Philippe Lieser
-*
-* This software is licensed under the terms of the MIT License.
-*
-* The above copyright and license notice shall be
-* included in all copies or substantial portions of the Software.
-*/
+/**
+ * Copyright (c) 2020 Philippe Lieser
+ *
+ * This software is licensed under the terms of the MIT License.
+ *
+ * The above copyright and license notice shall be
+ * included in all copies or substantial portions of the Software.
+ */
 
 // @ts-check
 ///<reference path="./logging.d.ts" />

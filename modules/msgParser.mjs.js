@@ -1,4 +1,4 @@
-/*
+/**
  * Reads and parses a message.
  *
  * Copyright (c) 2014-2020 Philippe Lieser
