@@ -289,7 +289,9 @@ describe("preferences [unittest]", function () {
 			await pref.clear();
 			expect(fakeBrowser.storage.local.clear.calledOnce).to.be.true;
 			const storage = await browser.storage.local.get();
-			delete storage.signRulesUser;
+			for (const dataStorageScope of StorageLocalPreferences.dataStorageScopes) {
+				delete storage[dataStorageScope];
+			}
 			expect(storage).to.deep.equal({});
 			expect(
 				pref["dns.nameserver"]

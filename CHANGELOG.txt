@@ -1,15 +1,16 @@
 4.0.0pre4 [2020-11-23]
 ------------------
  - now requires at least Thunderbird 78
- - fixed incompatibility with Thunderbird 78 (#119)
+ - fixed incompatibility with Thunderbird 78 (#199)
  - removed option to show DKIM result in the statusbarpanel
  - Authentication-Results header: fixed parsing of version
  - Authentication-Results header: fixed parsing of quoted SDID and AUID (#229, #234)
  - Authentication-Results header: fixed missing reason on fail resulting in error (#232)
- - libunbound resolver: Don't provide a default path
- - libunbound resolver: Improve options description
+ - libunbound resolver: Don't provide a default path (#199)
+ - libunbound resolver: Improve options description (#199)
  - added about page in options
  - added incomplete Swedish translation (by Phoenix)
+ - added Spanish translation (by Peter O Brien) (#239)
  - updated default rules and favicons (#208, #209, #210)
 
 3.1.0 [2020-01-22]

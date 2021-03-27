@@ -68,9 +68,9 @@ class Deferred {
 	constructor() {
 		/** @type {Promise<T>} */
 		this.promise = new Promise((resolve, reject) => {
-			/** type {(reason: T) => void} */
+			/** @type {(reason: T) => void} */
 			this.resolve = resolve;
-			/** type {(reason: T) => void} */
+			/** @type {(reason: Error) => void} */
 			this.reject = reject;
 		});
 	}
