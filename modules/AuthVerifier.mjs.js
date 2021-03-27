@@ -28,6 +28,7 @@ import ArhParser, * as ArhParserModule from "./arhParser.mjs.js";
 import Verifier, * as VerifierModule from "./dkim/verifier.mjs.js";
 import { domainIsInDomain, getDomainFromAddr } from "./utils.mjs.js";
 import { DKIM_InternalError } from "./error.mjs.js";
+import DMARC from "./dkim/dmarc.mjs.js";
 import ExtensionUtils from "./extensionUtils.mjs.js";
 import Logging from "./logging.mjs.js";
 import MsgParser from "./msgParser.mjs.js";
@@ -85,6 +86,14 @@ const log = Logging.getLogger("AuthVerifier");
  */
 
 export default class AuthVerifier {
+	/**
+	 * @param {DMARC} [dmarc]
+	 */
+	constructor(dmarc) {
+		/** @private */
+		this._dmarc = dmarc ?? new DMARC();
+	}
+
 	static get DKIM_RES() {
 		return {
 			SUCCESS: 10,
@@ -128,7 +137,7 @@ export default class AuthVerifier {
 		}
 
 		// read Authentication-Results header
-		const arhResult = await getARHResult(message, msg.headerFields, msg.from, msg.listId, message.folder.accountId);
+		const arhResult = await getARHResult(message, msg.headerFields, msg.from, msg.listId, message.folder.accountId, this._dmarc);
 
 		if (arhResult) {
 			if (prefs["arh.replaceAddonResult"]) {
@@ -156,7 +165,7 @@ export default class AuthVerifier {
 				// verify DKIM signatures
 				const dkimResultV2 = await new Verifier().verify(msg);
 
-				await checkSignRules(message, dkimResultV2.signatures, msg.from, msg.listId);
+				await checkSignRules(message, dkimResultV2.signatures, msg.from, msg.listId, this._dmarc);
 				VerifierModule.sortSignatures(dkimResultV2.signatures, msg.from, msg.listId);
 
 				savedAuthResult.dkim = dkimResultV2.signatures;
@@ -197,9 +206,10 @@ export default class AuthVerifier {
  * @param {string} from
  * @param {string} listId
  * @param {string} account
+ * @param {DMARC} dmarc
  * @return {Promise<SavedAuthResult|Null>}
  */
-async function getARHResult(message, headers, from, listId, account) {
+async function getARHResult(message, headers, from, listId, account, dmarc) {
 	const arHeaders = headers.get("authentication-results");
 	if (!arHeaders || !prefs["account.arh.read"](account)) {
 		return null;
@@ -256,7 +266,7 @@ async function getARHResult(message, headers, from, listId, account) {
 	// if ARH result is replacing the add-ons,
 	// check SDID and AUID of DKIM results
 	if (prefs["arh.replaceAddonResult"]) {
-		await checkSignRules(message, dkimSigResults, from, listId);
+		await checkSignRules(message, dkimSigResults, from, listId, dmarc);
 	}
 
 	// sort signatures
@@ -378,10 +388,10 @@ async function loadAuthResult(message) {
  * @param {VerifierModule.dkimSigResultV2[]} dkimResults
  * @param {string} from
  * @param {string} listId
- * returns {Promise<VerifierModule.dkimSigResultV2[]>}
+ * @param {DMARC} dmarc
  * @returns {Promise<void>}
  */
-async function checkSignRules(message, dkimResults, from, listId) {
+async function checkSignRules(message, dkimResults, from, listId, dmarc) {
 	if (!prefs["policy.signRules.enable"]) {
 		return;
 	}
@@ -389,10 +399,11 @@ async function checkSignRules(message, dkimResults, from, listId) {
 	const isOutgoingCallback = () => {
 		return ExtensionUtils.isOutgoing(message, from);
 	};
+	const dmarcToUse = prefs["policy.DMARC.shouldBeSigned.enable"] ? dmarc : undefined;
 
 	for (let i = 0; i < dkimResults.length; i++) {
 		// eslint-disable-next-line require-atomic-updates
-		dkimResults[i] = await SignRules.check(dkimResults[i], from, listId, isOutgoingCallback);
+		dkimResults[i] = await SignRules.check(dkimResults[i], from, listId, isOutgoingCallback, dmarcToUse);
 	}
 }
 

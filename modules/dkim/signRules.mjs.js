@@ -209,13 +209,18 @@ function glob(str, pattern) {
 }
 
 /**
+ * @typedef { import("./dmarc.mjs.js").default } DMARC
+ */
+
+/**
  * Determinate if an e-mail by fromAddress should be signed
  *
  * @param {string} fromAddress
  * @param {string} [listId]
+ * @param {DMARC} [dmarc]
  * @returns {Promise<DKIMSignPolicy>}
  */
-async function checkIfShouldBeSigned(fromAddress, listId) {
+async function checkIfShouldBeSigned(fromAddress, listId, dmarc) {
 	await loadUserRules();
 	/** @type {(DkimSignRuleDefault|DkimSignRuleUser)[]} */
 	let matchedRules = userRules.filter(rule => {
@@ -247,7 +252,15 @@ async function checkIfShouldBeSigned(fromAddress, listId) {
 	/** @type {DkimSignRuleDefault|DkimSignRuleUser=} */
 	const rule = matchedRules.sort((a, b) => b.priority - a.priority)[0];
 	if (!rule) {
-		// TODO: DMARC
+		if (dmarc) {
+			const dmarcRes = await dmarc.shouldBeSigned(fromAddress);
+			return {
+				shouldBeSigned: dmarcRes.shouldBeSigned,
+				sdid: dmarcRes.sdid,
+				foundRule: false,
+				hideFail: false,
+			};
+		}
 		return {
 			shouldBeSigned: false,
 			sdid: [],
@@ -365,12 +378,13 @@ export default class SignRules {
 	 * @param {string} from
 	 * @param {string} [listId]
 	 * @param {function(void): Promise<boolean>} [isOutgoingCallback]
+	 * @param {DMARC} [dmarc]
 	 * @returns {Promise<VerifierModule.dkimSigResultV2>}
 	 */
-	static async check(dkimResult, from, listId, isOutgoingCallback) {
+	static async check(dkimResult, from, listId, isOutgoingCallback, dmarc) {
 		await prefs.init();
 
-		const policy = await checkIfShouldBeSigned(from, listId);
+		const policy = await checkIfShouldBeSigned(from, listId, dmarc);
 		log.debug("shouldBeSigned: ", policy);
 		if (dkimResult.result === "none") {
 			if (policy.shouldBeSigned && !(isOutgoingCallback && await isOutgoingCallback())) {

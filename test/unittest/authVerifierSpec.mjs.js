@@ -13,10 +13,12 @@
 /* eslint-disable camelcase */
 
 import AuthVerifier from "../../modules/AuthVerifier.mjs.js";
+import DMARC from "../../modules/dkim/dmarc.mjs.js";
 import MsgParser from "../../modules/msgParser.mjs.js";
 import expect from "../helpers/chaiUtils.mjs.js";
 import { hasWebExtensions } from "../helpers/initWebExtensions.mjs.js";
 import prefs from "../../modules/preferences.mjs.js";
+import { queryDnsTxt } from "../helpers/fetchKey.mjs.js";
 import { readTestFile } from "../helpers/testUtils.mjs.js";
 import sinon from "../helpers/sinonUtils.mjs.js";
 
@@ -216,6 +218,22 @@ describe("AuthVerifier [unittest]", function () {
 
 			res = await authVerifier.verify(fakePayPalMessage);
 			expect(res.dkim[0].result).to.be.equal("none");
+		});
+
+		it("DMARC", async function () {
+			const fakePayPalMessage = await createMessageHeader("fakePayPal.eml");
+			const dmarc = new DMARC(queryDnsTxt);
+			const verifier = new AuthVerifier(dmarc);
+			await prefs.setValue("policy.signRules.enable", true);
+			await prefs.setValue("policy.signRules.checkDefaultRules", false);
+			let res = await verifier.verify(fakePayPalMessage);
+			expect(res.dkim[0].result).to.be.equal("none");
+
+			await prefs.setValue("policy.DMARC.shouldBeSigned.enable", true);
+
+			res = await verifier.verify(fakePayPalMessage);
+			expect(res.dkim[0].result).to.be.equal("PERMFAIL");
+			expect(res.dkim[0].result_str).to.be.equal("Invalid (Should be signed by paypal.com)");
 		});
 	});
 	describe("ARH header", function () {

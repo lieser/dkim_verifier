@@ -20,11 +20,12 @@ const txtRecords = {
 		"oGeLnQg1fWn7/zYtIxN2SnFCjxOCKG9v3b4jYfcTNh5ijSsq631uBItLa7od+v/R" +
 		"tdC2UzJ1lWT947qR+Rcac2gbto/NMqJ0fzfVjH4OuKhitdY9tf6mcwGjaNBcWToI" +
 		"MmPSPDdQPNUYckcQ2QIDAQAB",
+	"_dmarc.paypal.com": "v=DMARC1; p=reject; rua=mailto:d@rua.agari.com; ruf=mailto:d@ruf.agari.com",
 };
 
 /** @type {import("../../modules/dkim/keyStore.mjs.js").queryDnsTxtCallback} */
 // eslint-disable-next-line require-await
-async function queryDnsTxt(name) {
+export async function queryDnsTxt(name) {
 	const record = txtRecords[name];
 	if (!record) {
 		return {
