@@ -13,21 +13,10 @@
 
 import ExtensionUtils from "../modules/extensionUtils.mjs.js";
 import Logging from "../modules/logging.mjs.js";
+import { getElementById } from "./domUtils.mjs.js";
 import prefs from "../modules/preferences.mjs.js";
 
 const log = Logging.getLogger("Options");
-
-/**
- * @param {string} id
- * @returns {HTMLElement}
- */
-function getElementById(id) {
-	const element = document.getElementById(id);
-	if (!element) {
-		throw new Error(`Could not find element with id '${id}'.`);
-	}
-	return element;
-}
 
 /**
  * Set the active pane to the given navigation selector

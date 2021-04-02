@@ -34,5 +34,6 @@ declare module browser {
             color: string,
             backgroundColor: string,
         ) => Promise<boolean>;
+        const reset: (tabId: number, messageId: number) => Promise<boolean>;
     }
 }

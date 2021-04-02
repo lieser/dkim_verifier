@@ -11,6 +11,7 @@
 
 // @ts-check
 ///<reference path="../../WebExtensions.d.ts" />
+///<reference path="../../RuntimeMessage.d.ts" />
 ///<reference path="../../experiments/mailUtils.d.ts" />
 /* eslint-env webextensions */
 /* eslint no-unused-vars: ["error", { "varsIgnorePattern": "VerifierModule" }] */
@@ -639,11 +640,16 @@ export default class SignRules {
  * @returns {void}
  */
 export function initSignRulesProxy() {
-	browser.runtime.onMessage.addListener((request, sender, /*sendResponse*/) => {
+	browser.runtime.onMessage.addListener((runtimeMessage, sender, /*sendResponse*/) => {
 		if (sender.id !== "dkim_verifier@pl") {
 			return;
 		}
-		if (typeof request !== 'object' || request === null) {
+		if (typeof runtimeMessage !== 'object' || runtimeMessage === null) {
+			return;
+		}
+		/** @type {RuntimeMessage.Messages} */
+		const request = runtimeMessage;
+		if (request.module !== "SignRules") {
 			return;
 		}
 		if (request.method === "getDefaultRules") {

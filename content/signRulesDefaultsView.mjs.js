@@ -13,18 +13,7 @@
 import DataTable from "./table.mjs.js";
 import ExtensionUtils from "../modules/extensionUtils.mjs.js";
 import SignRulesProxy from "../modules/dkim/signRulesProxy.mjs.js";
-
-/**
- * @param {string} id
- * @returns {HTMLElement}
- */
-function getElementById(id) {
-	const element = document.getElementById(id);
-	if (!element) {
-		throw new Error(`Could not find element with id '${id}'.`);
-	}
-	return element;
-}
+import { getElementById } from "./domUtils.mjs.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
 	const tableElement = getElementById("rulesTable");

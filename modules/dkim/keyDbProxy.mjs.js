@@ -12,17 +12,21 @@
 
 // @ts-check
 ///<reference path="../../WebExtensions.d.ts" />
+///<reference path="../../RuntimeMessage.d.ts" />
 /* eslint-env webextensions */
 
 export default class KeyDbProxy {
 	// eslint-disable-next-line valid-jsdoc
 	/**
-	 * @type {typeof import("./keyStore.mjs").KeyDb["getKeys"]}}
+	 * @type {typeof import("./keyStore.mjs.js").KeyDb["getKeys"]}}
 	 */
 	static getKeys() {
-		return browser.runtime.sendMessage({
-			method: "getKeys"
-		});
+		/** @type {RuntimeMessage.KeyDb.getKeys} */
+		const message = {
+			module: "KeyDb",
+			method: "getKeys",
+		};
+		return browser.runtime.sendMessage(message);
 	}
 
 	/**
@@ -34,14 +38,17 @@ export default class KeyDbProxy {
 	 * @returns {Promise<void>}
 	 */
 	static update(id, propertyName, newValue) {
-		return browser.runtime.sendMessage({
+		/** @type {RuntimeMessage.KeyDb.updateKey} */
+		const message = {
+			module: "KeyDb",
 			method: "updateKey",
 			parameters: {
 				id: id,
 				propertyName: propertyName,
 				newValue: newValue,
 			},
-		});
+		};
+		return browser.runtime.sendMessage(message);
 	}
 
 	/**
@@ -51,11 +58,14 @@ export default class KeyDbProxy {
 	 * @returns {Promise<void>}
 	 */
 	static delete(id) {
-		return browser.runtime.sendMessage({
+		/** @type {RuntimeMessage.KeyDb.deleteKey} */
+		const message = {
+			module: "KeyDb",
 			method: "deleteKey",
 			parameters: {
 				id: id,
 			},
-		});
+		};
+		return browser.runtime.sendMessage(message);
 	}
 }

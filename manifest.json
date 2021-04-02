@@ -29,6 +29,15 @@
 		"32": "icon_32.png",
 		"64": "icon.png"
 	},
+	"message_display_action": {
+		"browser_style": true,
+		"default_icon": {
+			"32": "icon_32.png",
+			"64": "icon.png"
+		},
+		"default_label": "DKIM",
+		"default_popup": "content/displayAction.html"
+	},
 	"experiment_apis": {
 		"dkimHeader": {
 			"schema": "experiments/dkimHeader-schema.json",

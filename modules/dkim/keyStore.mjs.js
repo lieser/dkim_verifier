@@ -12,6 +12,7 @@
 
 // @ts-check
 ///<reference path="../../WebExtensions.d.ts" />
+///<reference path="../../RuntimeMessage.d.ts" />
 /* eslint-env webextensions */
 
 import { DKIM_InternalError, DKIM_SigError } from "../error.mjs.js";
@@ -180,7 +181,6 @@ export class KeyDb {
 	 * @param {string} [selector]
 	 * @return {Promise<void>}
 	 */
-	// static async delete(sdid, selector) {
 	static async delete(id, sdid, selector) {
 		await KeyDb._loadKeys();
 		let keyIndex;
@@ -262,11 +262,16 @@ export class KeyDb {
 	 * @returns {void}
 	 */
 	static initProxy() {
-		browser.runtime.onMessage.addListener((request, sender, /*sendResponse*/) => {
+		browser.runtime.onMessage.addListener((runtimeMessage, sender, /*sendResponse*/) => {
 			if (sender.id !== "dkim_verifier@pl") {
 				return;
 			}
-			if (typeof request !== 'object' || request === null) {
+			if (typeof runtimeMessage !== 'object' || runtimeMessage === null) {
+				return;
+			}
+			/** @type {RuntimeMessage.Messages} */
+			const request = runtimeMessage;
+			if (request.module !== "KeyDb") {
 				return;
 			}
 			if (request.method === "getKeys") {

@@ -12,6 +12,7 @@
 
 import Logging from "../modules/logging.mjs.js";
 import SignRulesProxy from "../modules/dkim/signRulesProxy.mjs.js";
+import { getElementById } from "./domUtils.mjs.js";
 
 const log = Logging.getLogger("signRulesUserAdd");
 
@@ -21,18 +22,6 @@ async function closeCurrentWindow() {
 		throw new Error("Failed to get current window id");
 	}
 	await browser.windows.remove(windowId);
-}
-
-/**
- * @param {string} id
- * @returns {HTMLElement}
- */
-function getElementById(id) {
-	const element = document.getElementById(id);
-	if (!element) {
-		throw new Error(`Could not find element with id '${id}'.`);
-	}
-	return element;
 }
 
 /**

@@ -182,15 +182,11 @@ export default class AuthVerifier {
 	/**
 	 * Resets the stored authentication result of the msg.
 	 *
-	 * @param {any} messageId
+	 * @param {browser.messageDisplay.MessageHeader} message
 	 * @return {Promise<void>}
 	 */
-	resetResult(messageId) {
-		const promise = saveAuthResult(messageId, null);
-		promise.then(null, function onReject(exception) {
-			log.warn(exception);
-		});
-		return saveAuthResult(messageId, null);
+	static resetResult(message) {
+		return saveAuthResult(message, null);
 	}
 }
 

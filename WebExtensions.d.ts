@@ -62,6 +62,7 @@ declare module browser {
             tags: string[],
         }
 
+        const getDisplayedMessage: (tabId: number) => Promise<MessageHeader>;
         const onMessageDisplayed: Event<(tabId: { id: number, windowID: number }, message: MessageHeader) => void>,
     }
 }

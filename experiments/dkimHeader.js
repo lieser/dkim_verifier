@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020 Philippe Lieser
+ * Copyright (c) 2020-2021 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -753,13 +753,24 @@ class DkimResetMessageListener {
 		DkimResetMessageListener._mapping.delete(window);
 	}
 
-	onStartHeaders() {
-		const document = this.window.document;
+	/**
+	 * Reset the header in a specific document.
+	 *
+	 * @static
+	 * @param {Document} document
+	 * @returns {void}
+	 */
+	static reset(document) {
 		const dkimHeaderField = DKIMHeaderField.get(document);
 		dkimHeaderField.reset();
 		const dkimFavicon = DkimFavicon.get(document);
 		dkimFavicon.reset();
 		DkimFromAddress.reset(document);
+	}
+
+	onStartHeaders() {
+		const document = this.window.document;
+		DkimResetMessageListener.reset(document);
 	}
 	// eslint-disable-next-line no-empty-function
 	onEndHeaders() { }
@@ -916,7 +927,17 @@ this.dkimHeader = class extends ExtensionCommon.ExtensionAPI {
 					DkimFromAddress.setHighlightColor(document, color, backgroundColor);
 
 					return Promise.resolve(true);
-				}
+				},
+				reset: (tabId, messageId) => {
+					const document = this.getDocumentForCurrentMsg(tabId, messageId);
+					if (!document) {
+						return Promise.resolve(false);
+					}
+
+					DkimResetMessageListener.reset(document);
+
+					return Promise.resolve(true);
+				},
 			},
 		};
 	}
