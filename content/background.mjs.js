@@ -20,7 +20,6 @@ import AuthVerifier from "../modules/AuthVerifier.mjs.js";
 import Logging from "../modules/logging.mjs.js";
 import MsgParser from "../modules/msgParser.mjs.js";
 import prefs from "../modules/preferences.mjs.js";
-import { setKeyFetchFunction } from "../modules/dkim/verifier.mjs.js";
 
 const log = Logging.getLogger("background");
 
@@ -34,8 +33,6 @@ async function init() {
 	initSignRulesProxy();
 
 	await migrateKeyStore();
-	const keyStore = new KeyStore();
-	setKeyFetchFunction((...args) => keyStore.fetchKey(...args));
 	KeyDb.initProxy();
 }
 const isInitialized = init();

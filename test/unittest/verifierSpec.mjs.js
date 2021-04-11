@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020 Philippe Lieser
+ * Copyright (c) 2020-2021 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -10,11 +10,13 @@
 // @ts-check
 /* eslint no-unused-vars: ["error", { "varsIgnorePattern": "VerifierModule" }]*/
 
-import "../helpers/fetchKey.mjs.js";
+import "../helpers/dnsStub.mjs.js";
 import "../helpers/initWebExtensions.mjs.js";
 import Verifier, * as VerifierModule from "../../modules/dkim/verifier.mjs.js";
+import KeyStore from "../../modules/dkim/keyStore.mjs.js";
 import MsgParser from "../../modules/msgParser.mjs.js";
 import expect from "../helpers/chaiUtils.mjs.js";
+import { queryDnsTxt } from "../helpers/dnsStub.mjs.js";
 import { readTestFile } from "../helpers/testUtils.mjs.js";
 
 /**
@@ -35,7 +37,7 @@ async function verifyEmlFile(file) {
 		bodyPlain: msgParsed.body,
 		from: MsgParser.parseFromHeader(from[0]),
 	};
-	const verifier = new Verifier();
+	const verifier = new Verifier(new KeyStore(queryDnsTxt));
 	return verifier.verify(msg);
 }
 
@@ -82,7 +84,7 @@ describe("DKIM Verifier [unittest]", function () {
 				bodyPlain: msgParsed.body,
 				from: "foo@bar.com",
 			};
-			const verifier = new Verifier();
+			const verifier = new Verifier(new KeyStore(queryDnsTxt));
 			const res = await verifier.verify(msg);
 			expect(res.signatures.length).to.be.equal(1);
 			expect(res.signatures[0].result).to.be.equal("SUCCESS");

@@ -3,7 +3,7 @@
  * http://tools.ietf.org/html/rfc6376
  * Update done by RFC 8301 included https://tools.ietf.org/html/rfc8301
  *
- * Copyright (c) 2013-2020 Philippe Lieser
+ * Copyright (c) 2013-2021 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -27,6 +27,7 @@
 import { DKIM_InternalError, DKIM_SigError } from "../error.mjs.js";
 import { addrIsInDomain, stringEndsWith, stringEqual } from "../utils.mjs.js";
 import DkimCrypto from "./crypto.mjs.js";
+import KeyStore from "./keyStore.mjs.js";
 import Logging from "../logging.mjs.js";
 import RfcParser from "../rfcParser.mjs.js";
 import prefs from "../preferences.mjs.js";
@@ -115,31 +116,6 @@ const qp_hdr_value = `(?:(?:${RfcParser.FWS}|${hex_octet}|[!-:<>-{}-~])*)`;
 // Pattern for field-name as specified in Section 3.6.8 of RFC 5322 without ";"
 // used as hdr-name in RFC 6376
 const hdr_name = "(?:[!-9<-~]+)";
-
-/**
- * Callback for retrieving a DKIM key.
- *
- * @callback KeyFetchFunction
- * @param {string} sdid
- * @param {string} selector
- * @return {Promise<{key: string, secure: boolean}>} result
- * @throws {DKIM_SigError|DKIM_InternalError}
-*/
-
-// TODO: consider making it a member of Verifier
-// TODO: consider providing default implementation
-/** @type {KeyFetchFunction} */
-let getKey;
-
-/**
- * Set a callback function that will be used to retrieve the DKIM key.
- *
- * @param {KeyFetchFunction} keyFetchFunction
- * @returns {void}
- */
-export function setKeyFetchFunction(keyFetchFunction) {
-	getKey = keyFetchFunction;
-}
 
 /**
  * Parse and represent the raw DKIM-Signature header.
@@ -984,11 +960,12 @@ class DkimSignature {
 	/**
 	 * Verifying a single DKIM signature
 	 *
+	 * @param {KeyStore} keyStore
 	 * @return {Promise<dkimSigResultV2>}
 	 * @throws DKIM_SigError
 	 * @throws DKIM_InternalError
 	 */
-	async verifySignature() { // eslint-disable-line complexity
+	async verifySignature(keyStore) { // eslint-disable-line complexity
 		// warning if from is not in SDID or AUID
 		if (!addrIsInDomain(this._msg.from, this._header.d)) {
 			this._header.warnings.push({ name: "DKIM_SIGWARNING_FROM_NOT_IN_SDID" });
@@ -1020,7 +997,7 @@ class DkimSignature {
 		}
 
 		log.trace("Receiving DNS key for DKIM-Signature ...");
-		const keyQueryResult = await getKey(this._header.d, this._header.s);
+		const keyQueryResult = await keyStore.fetchKey(this._header.d, this._header.s);
 		log.trace("Received DNS key for DKIM-Signature");
 
 		// if key is not signed by DNSSEC
@@ -1123,6 +1100,14 @@ class DkimSignature {
  */
 export default class Verifier {
 	/**
+	 * @param {KeyStore} [keyStore]
+	 */
+	constructor(keyStore) {
+		/** @private */
+		this._keyStore = keyStore ?? new KeyStore();
+	}
+
+	/**
 	 * Create a DKIM fail result for an exception.
 	 *
 	 * @private
@@ -1200,7 +1185,7 @@ export default class Verifier {
 				dkimHeader = new DkimSignatureHeader(dkimSignatureHeaders[iDKIMSignatureIdx]);
 				log.debug(`Parsed DKIM-Signature ${iDKIMSignatureIdx + 1}:`, dkimHeader);
 				const dkimSignature = new DkimSignature(msg, dkimHeader);
-				sigRes = await dkimSignature.verifySignature();
+				sigRes = await dkimSignature.verifySignature(this._keyStore);
 				log.debug(`Verified DKIM-Signature ${iDKIMSignatureIdx + 1}`);
 			} catch (e) {
 				sigRes = Verifier._handleException(e, dkimHeader);

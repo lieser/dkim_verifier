@@ -13,6 +13,7 @@
 // @ts-check
 ///<reference path="../../WebExtensions.d.ts" />
 ///<reference path="../../RuntimeMessage.d.ts" />
+///<reference path="../dns.d.ts" />
 /* eslint-env webextensions */
 
 import { DKIM_InternalError, DKIM_SigError } from "../error.mjs.js";
@@ -297,10 +298,6 @@ export class KeyDb {
  * @typedef {object} DkimKeyResult
  * @property {string} key - DKIM key in its textual Representation.
  * @property {boolean} secure
- */
-
-/**
- * @typedef { typeof DNS.txt } queryDnsTxtCallback
  */
 
 /**

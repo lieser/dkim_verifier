@@ -1,7 +1,7 @@
 /**
  * Authentication Verifier.
  *
- * Copyright (c) 2014-2020 Philippe Lieser
+ * Copyright (c) 2014-2021 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -83,9 +83,12 @@ const log = Logging.getLogger("AuthVerifier");
 
 export default class AuthVerifier {
 	/**
+	 * @param {Verifier} [dkimVerifier]
 	 * @param {DMARC} [dmarc]
 	 */
-	constructor(dmarc) {
+	constructor(dkimVerifier, dmarc) {
+		/** @private */
+		this._dkimVerifier = dkimVerifier ?? new Verifier();
 		/** @private */
 		this._dmarc = dmarc ?? new DMARC();
 	}
@@ -159,7 +162,7 @@ export default class AuthVerifier {
 		if (!savedAuthResult.dkim || savedAuthResult.dkim.length === 0) {
 			if (prefs["account.dkim.enable"](message.folder.accountId)) {
 				// verify DKIM signatures
-				const dkimResultV2 = await new Verifier().verify(msg);
+				const dkimResultV2 = await this._dkimVerifier.verify(msg);
 
 				await checkSignRules(message, dkimResultV2.signatures, msg.from, listId, this._dmarc);
 				sortSignatures(dkimResultV2.signatures, msg.from, listId);

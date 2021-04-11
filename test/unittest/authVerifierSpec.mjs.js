@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020 Philippe Lieser
+ * Copyright (c) 2020-2021 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -14,11 +14,13 @@
 
 import AuthVerifier from "../../modules/AuthVerifier.mjs.js";
 import DMARC from "../../modules/dkim/dmarc.mjs.js";
+import KeyStore from "../../modules/dkim/keyStore.mjs.js";
 import MsgParser from "../../modules/msgParser.mjs.js";
+import Verifier from "../../modules/dkim/verifier.mjs.js";
 import expect from "../helpers/chaiUtils.mjs.js";
 import { hasWebExtensions } from "../helpers/initWebExtensions.mjs.js";
 import prefs from "../../modules/preferences.mjs.js";
-import { queryDnsTxt } from "../helpers/fetchKey.mjs.js";
+import { queryDnsTxt } from "../helpers/dnsStub.mjs.js";
 import { readTestFile } from "../helpers/testUtils.mjs.js";
 import sinon from "../helpers/sinonUtils.mjs.js";
 
@@ -62,7 +64,8 @@ async function createMessageHeader(file) {
 }
 
 describe("AuthVerifier [unittest]", function () {
-	const authVerifier = new AuthVerifier();
+	const dkimVerifier = new Verifier(new KeyStore(queryDnsTxt));
+	const authVerifier = new AuthVerifier(dkimVerifier);
 
 	before(async function () {
 		if (!hasWebExtensions) {
@@ -223,7 +226,7 @@ describe("AuthVerifier [unittest]", function () {
 		it("DMARC", async function () {
 			const fakePayPalMessage = await createMessageHeader("fakePayPal.eml");
 			const dmarc = new DMARC(queryDnsTxt);
-			const verifier = new AuthVerifier(dmarc);
+			const verifier = new AuthVerifier(dkimVerifier, dmarc);
 			await prefs.setValue("policy.signRules.enable", true);
 			await prefs.setValue("policy.signRules.checkDefaultRules", false);
 			let res = await verifier.verify(fakePayPalMessage);

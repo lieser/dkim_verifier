@@ -14,6 +14,7 @@
 
 // @ts-check
 ///<reference path="../../experiments/mailUtils.d.ts" />
+///<reference path="../dns.d.ts" />
 /* eslint-env webextensions */
 /* eslint-disable no-magic-numbers */
 /* eslint-disable no-use-before-define */
@@ -26,10 +27,6 @@ import { getDomainFromAddr } from "../utils.mjs.js";
 import prefs from "../preferences.mjs.js";
 
 const log = Logging.getLogger("DMARC");
-
-/**
- * @typedef { typeof DNS.txt } queryDnsTxtCallback
- */
 
 export default class DMARC {
 	/**
