@@ -422,4 +422,4 @@ document.addEventListener("DOMContentLoaded", () => {
 	initAccount().
 		catch(e => log.fatal("Unexpected error in initAccount():", e));
 	initButtons();
-});
+}, { once: true });

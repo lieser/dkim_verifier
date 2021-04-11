@@ -114,4 +114,4 @@ document.addEventListener("DOMContentLoaded", () => {
 	cancel.addEventListener("click", () => {
 		onCancel();
 	});
-});
+}, { once: true });

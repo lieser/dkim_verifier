@@ -22,4 +22,4 @@ document.addEventListener("DOMContentLoaded", () => {
 			element.insertAdjacentText("beforeend", browser.i18n.getMessage(messageName));
 		}
 	}
-});
+}, { once: true });

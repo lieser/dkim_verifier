@@ -46,4 +46,4 @@ document.addEventListener("DOMContentLoaded", async () => {
 	deleteSelectedRows.addEventListener("click", () => {
 		table.deleteSelectedRows();
 	});
-});
+}, { once: true });

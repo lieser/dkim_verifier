@@ -32,4 +32,4 @@ document.addEventListener("DOMContentLoaded", async () => {
 			browser.i18n.getMessage("signersRuleHelp.title"),
 		);
 	});
-});
+}, { once: true });
