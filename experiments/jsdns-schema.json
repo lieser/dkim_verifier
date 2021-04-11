@@ -41,6 +41,10 @@
 					{
 						"name": "autoResetServerAlive",
 						"type": "boolean"
+					},
+					{
+						"name": "debug",
+						"type": "boolean"
 					}
 				]
 			},

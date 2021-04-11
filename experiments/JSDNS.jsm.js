@@ -4,9 +4,9 @@
  * Based on Joshua Tauberer's DNS LIBRARY IN JAVASCRIPT
  * from "Sender Verification Extension" version 0.9.0.6
  *
- * Version: 2.0.1 (27 March 2021)
+ * Version: 2.1.0 (11 April 2021)
  *
- * Copyright (c) 2013-2020 Philippe Lieser
+ * Copyright (c) 2013-2021 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -54,6 +54,10 @@
 /*
  * Changelog:
  * ==========
+ *
+ * 2.1.0
+ * -----
+ * - add configure debug preference
  *
  * 2.0.1
  * -----
@@ -201,7 +205,6 @@ const chromeConsole = console;
 var log = chromeConsole.createInstance({
 	prefix: LOG_NAME,
 	maxLogLevel: "Warn",
-	maxLogLevelPref: "extensions.dkim_verifier.experiments.logging",
 });
 
 
@@ -233,10 +236,21 @@ var AUTO_RESET_SERVER_ALIVE = false;
  * @param {number} timeoutConnect
  * @param {{ enable: boolean, type: string, host: string, port: number }} proxy
  * @param {boolean} autoResetServerAlive
+ * @param {boolean} debug
  * @returns {void}
  */
-function configureDNS(getNameserversFromOS, nameServer, timeoutConnect, proxy, autoResetServerAlive) {
+function configureDNS(getNameserversFromOS, nameServer, timeoutConnect, proxy, autoResetServerAlive, debug) {
 	"use strict";
+
+	/** @type {Parameters<typeof chromeConsole.createInstance>[0]["maxLogLevel"]} */
+	let maxLogLevel = "Warn";
+	if (debug) {
+		maxLogLevel = "All";
+	}
+	log = chromeConsole.createInstance({
+		prefix: LOG_NAME,
+		maxLogLevel: maxLogLevel,
+	});
 
 	/** @type {DnsServer[]} */
 	const prefDnsRootNameServers = [];

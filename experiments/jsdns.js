@@ -60,8 +60,8 @@ this.jsdns = class extends ExtensionCommon.ExtensionAPI {
 		this.extension.callOnClose(this);
 		return {
 			jsdns: {
-				configure(getNameserversFromOS, nameServer, timeoutConnect, proxy, autoResetServerAlive) {
-					JSDNS.configureDNS(getNameserversFromOS, nameServer, timeoutConnect, proxy, autoResetServerAlive);
+				configure(getNameserversFromOS, nameServer, timeoutConnect, proxy, autoResetServerAlive, debug) {
+					JSDNS.configureDNS(getNameserversFromOS, nameServer, timeoutConnect, proxy, autoResetServerAlive, debug);
 					return Promise.resolve();
 				},
 				txt(name) {

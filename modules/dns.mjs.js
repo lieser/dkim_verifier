@@ -55,6 +55,7 @@ function addPrefsListener() {
 			libunboundIsConfigured = null;
 		}
 		if (Object.keys(changes).some(name => name === "debug")) {
+			jsdnsIsConfigured = null;
 			libunboundIsConfigured = null;
 		}
 	});
@@ -80,6 +81,7 @@ function configureJsdns() {
 				port: prefs["dns.proxy.port"],
 			},
 			prefs["dns.jsdns.autoResetServerAlive"],
+			prefs.debug,
 		);
 	}
 	return jsdnsIsConfigured;
