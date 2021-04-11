@@ -72,7 +72,7 @@ function getWebDigestName(algorithm) {
  * Converts a string to an ArrayBuffer.
  * Characters >255 have their hi-byte silently ignored.
  *
- * @param {string} str - b64 encoded string
+ * @param {string} str - binary string
  * @returns {ArrayBuffer}
  */
 function strToArrayBuffer(str) {

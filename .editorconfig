@@ -11,11 +11,7 @@ insert_final_newline = true
 [*.d.ts]
 indent_style = space
 
-[*.{xml,html}]
-indent_style = space
-indent_size = 2
-
-[chrome\content\options.xul]
+[*.{html}]
 indent_style = space
 indent_size = 2
 
