@@ -12,7 +12,7 @@
 /* eslint-env webextensions */
 /* eslint-disable camelcase */
 
-import AuthVerifier from "../../modules/AuthVerifier.mjs.js";
+import AuthVerifier from "../../modules/authVerifier.mjs.js";
 import DMARC from "../../modules/dkim/dmarc.mjs.js";
 import KeyStore from "../../modules/dkim/keyStore.mjs.js";
 import MsgParser from "../../modules/msgParser.mjs.js";
@@ -77,7 +77,7 @@ describe("AuthVerifier [unittest]", function () {
 	});
 
 	describe("saving of results", function () {
-		/** @type {import("../../modules/dkim/verifier.mjs.js").dkimResultV1|import("../../modules/AuthVerifier.mjs.js").AuthResultV2|import("../../modules/AuthVerifier.mjs.js").SavedAuthResultV3} */
+		/** @type {import("../../modules/dkim/verifier.mjs.js").dkimResultV1|import("../../modules/authVerifier.mjs.js").AuthResultV2|import("../../modules/authVerifier.mjs.js").SavedAuthResultV3} */
 		let storedData;
 
 		before(async function () {

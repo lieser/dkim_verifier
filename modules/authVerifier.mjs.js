@@ -10,7 +10,7 @@
  */
 
 // @ts-check
-///<reference path="./AuthVerifier.d.ts" />
+///<reference path="./authVerifier.d.ts" />
 ///<reference path="../WebExtensions.d.ts" />
 ///<reference path="../experiments/storageMessage.d.ts" />
 /* eslint-env webextensions */

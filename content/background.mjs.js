@@ -16,7 +16,7 @@
 import KeyStore, { KeyDb } from "../modules/dkim/keyStore.mjs.js";
 import SignRules, { initSignRulesProxy } from "../modules/dkim/signRules.mjs.js";
 import { migrateKeyStore, migratePrefs, migrateSignRulesUser } from "../modules/migration.mjs.js";
-import AuthVerifier from "../modules/AuthVerifier.mjs.js";
+import AuthVerifier from "../modules/authVerifier.mjs.js";
 import Logging from "../modules/logging.mjs.js";
 import MsgParser from "../modules/msgParser.mjs.js";
 import prefs from "../modules/preferences.mjs.js";
@@ -42,7 +42,7 @@ isInitialized.catch(error => log.fatal("Initializing failed with:", error));
  * A cache of the current results displayed in the tabs.
  * Needed for the actions triggered by the user in the display header.
  */
-/** @type {Map.<number, import("../modules/AuthVerifier.mjs.js").AuthResult>} */
+/** @type {Map.<number, import("../modules/authVerifier.mjs.js").AuthResult>} */
 const displayedResultsCache = new Map();
 browser.tabs.onRemoved.addListener((tabId) => {
 	displayedResultsCache.delete(tabId);
