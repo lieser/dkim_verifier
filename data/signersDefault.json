@@ -173,8 +173,8 @@
 			"domain": "babelzilla.org",
 			"addr": "*",
 			"sdid": "babelzilla.org",
-			"ruletype": "ALL",
-			"priority": "DEFAULT_RULE_ALL"
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_NEUTRAL"
 		}, {
 			"domain": "balsamico.shop",
 			"addr": "*",
@@ -404,6 +404,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "deutschebahn.com",
+			"addr": "*",
+			"sdid": "deutschebahn.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "deutschepost.de",
 			"addr": "*",
 			"sdid": "deutschepost.de",
@@ -433,6 +439,30 @@
 			"sdid": "discordapp.com mailgun.discordapp.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "dkms.de",
+			"addr": "*",
+			"sdid": "dkms.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "dkms.de",
+			"addr": "*@email.dkms.de",
+			"sdid": "dkms.de email.dkms.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
+			"domain": "dkms.de",
+			"addr": "*@medizin.dkms.de",
+			"sdid": "dkms.de medizin.dkms.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
+			"domain": "dkms.de",
+			"addr": "*@newsletter.dkms.de",
+			"sdid": "dkms.de newsletter.dkms.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
 			"domain": "dnswl.org",
 			"addr": "*",
@@ -851,6 +881,12 @@
 			"domain": "huk24.de",
 			"addr": "*",
 			"sdid": "huk24.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "huk24-info.de",
+			"addr": "*",
+			"sdid": "huk24-info.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -1523,6 +1559,12 @@
 			"domain": "thenewsletterplugin.com",
 			"addr": "*",
 			"sdid": "thenewsletterplugin.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "thunderbird.net",
+			"addr": "*",
+			"sdid": "thunderbird.net discuss.thunderbird.net",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
