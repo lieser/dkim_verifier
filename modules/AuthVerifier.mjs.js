@@ -22,7 +22,7 @@ export const moduleVersion = "2.0.0";
 
 import ArhParser, * as ArhParserModule from "./arhParser.mjs.js";
 import Verifier, * as VerifierModule from "./dkim/verifier.mjs.js";
-import { domainIsInDomain, getDomainFromAddr } from "./utils.mjs.js";
+import { addrIsInDomain2, domainIsInDomain, getDomainFromAddr } from "./utils.mjs.js";
 import { DKIM_InternalError } from "./error.mjs.js";
 import DMARC from "./dkim/dmarc.mjs.js";
 import ExtensionUtils from "./extensionUtils.mjs.js";
@@ -125,15 +125,15 @@ export default class AuthVerifier {
 			headerFields: msgParsed.headers,
 			bodyPlain: msgParsed.body,
 			from: MsgParser.parseFromHeader(fromHeader[0]),
-			listId: "",
 		};
-		const listId = msgParsed.headers.get("list-id");
-		if (listId) {
-			msg.listId = MsgParser.parseListIdHeader(listId[0]);
+		const listIdHeader = msgParsed.headers.get("list-id");
+		let listId = "";
+		if (listIdHeader) {
+			listId = MsgParser.parseListIdHeader(listIdHeader[0]);
 		}
 
 		// read Authentication-Results header
-		const arhResult = await getARHResult(message, msg.headerFields, msg.from, msg.listId, message.folder.accountId, this._dmarc);
+		const arhResult = await getARHResult(message, msg.headerFields, msg.from, listId, message.folder.accountId, this._dmarc);
 
 		if (arhResult) {
 			if (prefs["arh.replaceAddonResult"]) {
@@ -161,8 +161,8 @@ export default class AuthVerifier {
 				// verify DKIM signatures
 				const dkimResultV2 = await new Verifier().verify(msg);
 
-				await checkSignRules(message, dkimResultV2.signatures, msg.from, msg.listId, this._dmarc);
-				VerifierModule.sortSignatures(dkimResultV2.signatures, msg.from, msg.listId);
+				await checkSignRules(message, dkimResultV2.signatures, msg.from, listId, this._dmarc);
+				sortSignatures(dkimResultV2.signatures, msg.from, listId);
 
 				savedAuthResult.dkim = dkimResultV2.signatures;
 			} else {
@@ -262,7 +262,7 @@ async function getARHResult(message, headers, from, listId, account, dmarc) {
 	}
 
 	// sort signatures
-	VerifierModule.sortSignatures(dkimSigResults, from);
+	sortSignatures(dkimSigResults, from);
 
 	const savedAuthResult = {
 		version: "3.0",
@@ -397,6 +397,118 @@ async function checkSignRules(message, dkimResults, from, listId, dmarc) {
 		// eslint-disable-next-line require-atomic-updates
 		dkimResults[i] = await SignRules.check(dkimResults[i], from, listId, isOutgoingCallback, dmarcToUse);
 	}
+}
+
+/**
+ * Sort the given DKIM signatures.
+ *
+ * @param {VerifierModule.dkimSigResultV2[]} signatures
+ * @param {string} from
+ * @param {string} [listId]
+ * @return {void}
+ */
+function sortSignatures(signatures, from, listId) {
+	/**
+	 * @param {VerifierModule.dkimSigResultV2} sig1
+	 * @param {VerifierModule.dkimSigResultV2} sig2
+	 * @returns {number}
+	 */
+	function result_compare(sig1, sig2) {
+		if (sig1.result === sig2.result) {
+			return 0;
+		}
+
+		if (sig1.result === "SUCCESS") {
+			return -1;
+		} else if (sig2.result === "SUCCESS") {
+			return 1;
+		}
+
+		if (sig1.result === "TEMPFAIL") {
+			return -1;
+		} else if (sig2.result === "TEMPFAIL") {
+			return 1;
+		}
+
+		if (sig1.result === "PERMFAIL") {
+			return -1;
+		} else if (sig2.result === "PERMFAIL") {
+			return 1;
+		}
+
+		throw new DKIM_InternalError(`result_compare: sig1.result: ${sig1.result}; sig2.result: ${sig2.result}`);
+	}
+
+	/**
+	 * @param {VerifierModule.dkimSigResultV2} sig1
+	 * @param {VerifierModule.dkimSigResultV2} sig2
+	 * @returns {number}
+	 */
+	function warnings_compare(sig1, sig2) {
+		if (sig1.result !== "SUCCESS") {
+			return 0;
+		}
+		if (!sig1.warnings || sig1.warnings.length === 0) {
+			// sig1 has no warnings
+			if (!sig2.warnings || sig2.warnings.length === 0) {
+				// both signatures have no warnings
+				return 0;
+			}
+			// sig2 has warnings
+			return -1;
+		}
+		// sig1 has warnings
+		if (!sig2.warnings || sig2.warnings.length === 0) {
+			// sig2 has no warnings
+			return 1;
+		}
+		// both signatures have warnings
+		return 0;
+	}
+
+	/**
+	 * @param {VerifierModule.dkimSigResultV2} sig1
+	 * @param {VerifierModule.dkimSigResultV2} sig2
+	 * @returns {number}
+	 */
+	function sdid_compare(sig1, sig2) {
+		if (sig1.sdid === sig2.sdid) {
+			return 0;
+		}
+
+		if (sig1.sdid && addrIsInDomain2(from, sig1.sdid)) {
+			return -1;
+		} else if (sig2.sdid && addrIsInDomain2(from, sig2.sdid)) {
+			return 1;
+		}
+
+		if (listId) {
+			if (sig1.sdid && domainIsInDomain(listId, sig1.sdid)) {
+				return -1;
+			} else if (sig2.sdid && domainIsInDomain(listId, sig2.sdid)) {
+				return 1;
+			}
+		}
+
+		return 0;
+	}
+
+	signatures.sort(function (sig1, sig2) {
+		let cmp;
+		cmp = result_compare(sig1, sig2);
+		if (cmp !== 0) {
+			return cmp;
+		}
+		cmp = warnings_compare(sig1, sig2);
+		if (cmp !== 0) {
+			return cmp;
+		}
+		cmp = sdid_compare(sig1, sig2);
+		if (cmp !== 0) {
+			return cmp;
+		}
+		return -1;
+	});
 }
 
 /**

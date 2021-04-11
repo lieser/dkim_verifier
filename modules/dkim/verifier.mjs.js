@@ -24,8 +24,8 @@
 /* eslint-disable camelcase */
 /* eslint-disable no-magic-numbers */
 
-import {DKIM_InternalError, DKIM_SigError} from "../error.mjs.js";
-import {addrIsInDomain, addrIsInDomain2, domainIsInDomain, stringEndsWith, stringEqual} from "../utils.mjs.js";
+import { DKIM_InternalError, DKIM_SigError } from "../error.mjs.js";
+import { addrIsInDomain, stringEndsWith, stringEqual } from "../utils.mjs.js";
 import DkimCrypto from "./crypto.mjs.js";
 import Logging from "../logging.mjs.js";
 import RfcParser from "../rfcParser.mjs.js";
@@ -141,24 +141,25 @@ export function setKeyFetchFunction(keyFetchFunction) {
 	getKey = keyFetchFunction;
 }
 
-class DkimSignature {
+/**
+ * Parse and represent the raw DKIM-Signature header.
+ */
+class DkimSignatureHeader {
 	/**
-	 * parse the DKIM-Signature header field
-	 * header field is specified in Section 3.5 of RFC 6376
+	 * Parse the DKIM-Signature header field.
+	 * The header field is specified in Section 3.5 of RFC 6376.
 	 *
 	 * @param {string} dkimSignatureHeader
 	 */
-	constructor( dkimSignatureHeader ) {
+	constructor(dkimSignatureHeader) {
 		this.original_header = dkimSignatureHeader;
 		/** @type {dkimSigWarningV2[]} */
 		this.warnings = [];
-		/** @type {boolean=} */
-		this.keySecure = undefined;
 
 		// strip DKIM-Signature header name
-		let dkimHeader = dkimSignatureHeader.replace(/^DKIM-Signature[ \t]*:/i,"");
+		let dkimHeader = dkimSignatureHeader.replace(/^DKIM-Signature[ \t]*:/i, "");
 		// strip the \r\n at the end
-		dkimHeader = dkimHeader.substr(0, dkimHeader.length-2);
+		dkimHeader = dkimHeader.substr(0, dkimHeader.length - 2);
 		// parse tag-value list
 		const tagMap = RfcParser.parseTagValueList(dkimHeader);
 		if (tagMap === -1) {
@@ -171,60 +172,61 @@ class DkimSignature {
 		}
 
 		// Version
-		this.v = DkimSignature._parseVersion(tagMap);
+		this.v = DkimSignatureHeader._parseVersion(tagMap);
 
-		const signatureAlgorithms = DkimSignature._parseSignatureAlgorithms(tagMap, this.warnings);
+		const signatureAlgorithms = DkimSignatureHeader._parseSignatureAlgorithms(tagMap, this.warnings);
 		// signature algorithm (signing part)
 		this.a_sig = signatureAlgorithms.signature;
 		// signature algorithm (hashing part)
 		this.a_hash = signatureAlgorithms.hash;
 
-		const signatureData = DkimSignature._parseSignatureData(tagMap);
+		const signatureData = DkimSignatureHeader._parseSignatureData(tagMap);
 		// signature (unfolded)
 		this.b = signatureData.b;
 		// signature (still folded)
 		this.b_folded = signatureData.bFolded;
 
 		// body hash
-		this.bh = DkimSignature._parseBodyHash(tagMap);
+		this.bh = DkimSignatureHeader._parseBodyHash(tagMap);
 
-		const canonicalization = DkimSignature._parseCanonicalization(tagMap);
+		const canonicalization = DkimSignatureHeader._parseCanonicalization(tagMap);
 		// canonicalization for header
 		this.c_header = canonicalization.header;
 		// canonicalization for body
 		this.c_body = canonicalization.body;
 
 		// Signing Domain Identifier (SDID) claiming responsibility
-		this.d = DkimSignature._parseSdid(tagMap);
+		this.d = DkimSignatureHeader._parseSdid(tagMap);
 
 		// array of Signed header fields
-		this.h_array = DkimSignature._parseSignedHeaders(tagMap);
+		this.h_array = DkimSignatureHeader._parseSignedHeaders(tagMap);
 
-		const auid = DkimSignature._parseAuid(tagMap, this.d, this.warnings);
+		const auid = DkimSignatureHeader._parseAuid(tagMap, this.d, this.warnings);
 		// Agent or User Identifier (AUID) on behalf of which the SDID is taking responsibility
 		this.i = auid.auid;
 		// domain part of AUID
 		this.i_domain = auid.auidDomain;
 
 		// Body length count
-		this.l = DkimSignature._parseBodyLength(tagMap);
+		this.l = DkimSignatureHeader._parseBodyLength(tagMap);
 
 		// query methods for public key retrieval
-		this.q = DkimSignature._parseQueryMethod(tagMap);
+		this.q = DkimSignatureHeader._parseQueryMethod(tagMap);
 
 		// selector
-		this.s = DkimSignature._parseSelector(tagMap, this.warnings);
+		this.s = DkimSignatureHeader._parseSelector(tagMap, this.warnings);
 
 		// Signature Timestamp
-		this.t = DkimSignature._parseSignatureTimestamp(tagMap);
+		this.t = DkimSignatureHeader._parseSignatureTimestamp(tagMap);
 		// Signature Expiration
-		this.x = DkimSignature._parseSignatureExpiration(tagMap, this.t);
+		this.x = DkimSignatureHeader._parseSignatureExpiration(tagMap, this.t);
 
 		// Copied header fields
-		this.z = DkimSignature._parseCopiedHeaders(tagMap);
+		this.z = DkimSignatureHeader._parseCopiedHeaders(tagMap);
 	}
 
 	/**
+	 * @private
 	 * @param {Map<string, string>} tagMap
 	 * @returns {string}
 	 */
@@ -242,6 +244,7 @@ class DkimSignature {
 	}
 
 	/**
+	 * @private
 	 * @param {Map<string, string>} tagMap
 	 * @param {dkimSigWarningV2[]} warnings
 	 * @returns {{signature: string, hash: string}}
@@ -282,6 +285,7 @@ class DkimSignature {
 	}
 
 	/**
+	 * @private
 	 * @param {Map<string, string>} tagMap
 	 * @returns {{b: string, bFolded: string}}
 	 */
@@ -292,12 +296,13 @@ class DkimSignature {
 			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_B");
 		}
 		return {
-			b: signatureDataTag[0].replace(new RegExp(RfcParser.FWS,"g"), ""),
+			b: signatureDataTag[0].replace(new RegExp(RfcParser.FWS, "g"), ""),
 			bFolded: signatureDataTag[0],
 		};
 	}
 
 	/**
+	 * @private
 	 * @param {Map<string, string>} tagMap
 	 * @returns {string}
 	 */
@@ -307,10 +312,11 @@ class DkimSignature {
 		if (bodyHashTag === null) {
 			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_BH");
 		}
-		return bodyHashTag[0].replace(new RegExp(RfcParser.FWS,"g"), "");
+		return bodyHashTag[0].replace(new RegExp(RfcParser.FWS, "g"), "");
 	}
 
 	/**
+	 * @private
 	 * @param {Map<string, string>} tagMap
 	 * @returns {{header: string, body: string}}
 	 */
@@ -352,6 +358,7 @@ class DkimSignature {
 	}
 
 	/**
+	 * @private
 	 * @param {Map<string, string>} tagMap
 	 * @returns {string}
 	 */
@@ -365,6 +372,7 @@ class DkimSignature {
 	}
 
 	/**
+	 * @private
 	 * @param {Map<string, string>} tagMap
 	 * @returns {string[]}
 	 */
@@ -375,11 +383,11 @@ class DkimSignature {
 		if (signedHeadersTag === null) {
 			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_H");
 		}
-		const signedHeaderFields = signedHeadersTag[0].replace(new RegExp(RfcParser.FWS,"g"), "");
+		const signedHeaderFields = signedHeadersTag[0].replace(new RegExp(RfcParser.FWS, "g"), "");
 		// get the header field names and store them in lower case in an array
 		const signedHeaderFieldsArray = signedHeaderFields.split(":").
-			map(function (x) {return x.trim().toLowerCase();}).
-			filter(function (x) {return x;});
+			map(function (x) { return x.trim().toLowerCase(); }).
+			filter(function (x) { return x; });
 		// check that the from header is included
 		if (signedHeaderFieldsArray.indexOf("from") === -1) {
 			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_FROM");
@@ -388,6 +396,7 @@ class DkimSignature {
 	}
 
 	/**
+	 * @private
 	 * @param {Map<string, string>} tagMap
 	 * @param {string} sdid
 	 * @param {dkimSigWarningV2[]} warnings
@@ -457,9 +466,7 @@ class DkimSignature {
 		try {
 			AUIDTag = RfcParser.parseTagValue(tagMap, "i", sig_i_tag);
 		} catch (exception) {
-			if (exception instanceof DKIM_SigError &&
-				exception.errorType === "DKIM_SIGERROR_ILLFORMED_I")
-			{
+			if (exception instanceof DKIM_SigError && exception.errorType === "DKIM_SIGERROR_ILLFORMED_I") {
 				switch (prefs["error.illformed_i.treatAs"]) {
 					case 0: // error
 						throw exception;
@@ -493,6 +500,7 @@ class DkimSignature {
 	}
 
 	/**
+	 * @private
 	 * @param {Map<string, string>} tagMap
 	 * @returns {number?}
 	 */
@@ -506,6 +514,7 @@ class DkimSignature {
 	}
 
 	/**
+	 * @private
 	 * @param {Map<string, string>} tagMap
 	 * @returns {string}
 	 */
@@ -524,6 +533,7 @@ class DkimSignature {
 	}
 
 	/**
+	 * @private
 	 * @param {Map<string, string>} tagMap
 	 * @param {dkimSigWarningV2[]} warnings
 	 * @returns {string}
@@ -534,9 +544,7 @@ class DkimSignature {
 		try {
 			SelectorTag = RfcParser.parseTagValue(tagMap, "s", `${RfcParser.sub_domain}(?:\\.${RfcParser.sub_domain})*`);
 		} catch (exception) {
-			if (exception instanceof DKIM_SigError &&
-				exception.errorType === "DKIM_SIGERROR_ILLFORMED_S")
-			{
+			if (exception instanceof DKIM_SigError && exception.errorType === "DKIM_SIGERROR_ILLFORMED_S") {
 				// try to parse selector in a more relaxed way
 				const sub_domain_ = "(?:[A-Za-z0-9_](?:[A-Za-z0-9_-]*[A-Za-z0-9_])?)";
 				SelectorTag = RfcParser.parseTagValue(tagMap, "s", `${sub_domain_}(?:\\.${sub_domain_})*`);
@@ -544,7 +552,7 @@ class DkimSignature {
 					case 0: // error
 						throw exception;
 					case 1: // warning
-						warnings.push({name: "DKIM_SIGERROR_ILLFORMED_S"});
+						warnings.push({ name: "DKIM_SIGERROR_ILLFORMED_S" });
 						break;
 					case 2: // ignore
 						break;
@@ -562,6 +570,7 @@ class DkimSignature {
 	}
 
 	/**
+	 * @private
 	 * @param {Map<string, string>} tagMap
 	 * @returns {number?}
 	 */
@@ -576,6 +585,7 @@ class DkimSignature {
 	}
 
 	/**
+	 * @private
 	 * @param {Map<string, string>} tagMap
 	 * @param {number?} signatureTimestamp
 	 * @returns {number?}
@@ -596,26 +606,30 @@ class DkimSignature {
 	}
 
 	/**
+	 * @private
 	 * @param {Map<string, string>} tagMap
 	 * @returns {string?}
 	 */
 	static _parseCopiedHeaders(tagMap) {
 		// get Copied header fields (dkim-quoted-printable, but see description; OPTIONAL, default is null)
 		const hdr_name_FWS = `(?:(?:[!-9<-~]${RfcParser.FWS}?)+)`;
-		const sig_z_tag_copy = `${hdr_name_FWS+RfcParser.FWS}?:${qp_hdr_value}`;
+		const sig_z_tag_copy = `${hdr_name_FWS + RfcParser.FWS}?:${qp_hdr_value}`;
 		const sig_z_tag = `${sig_z_tag_copy}(\\|${RfcParser.FWS}?${sig_z_tag_copy})*`;
 		const CopyHeaderFieldsTag = RfcParser.parseTagValue(tagMap, "z", sig_z_tag);
 		if (CopyHeaderFieldsTag === null) {
 			return null;
 		}
-		return CopyHeaderFieldsTag[0].replace(new RegExp(RfcParser.FWS,"g"), "");
+		return CopyHeaderFieldsTag[0].replace(new RegExp(RfcParser.FWS, "g"), "");
 	}
 }
 
+/**
+ * Parse and represent the raw DKIM key record.
+ */
 class DkimKey {
 	/**
-	 * parse the DKIM key record
-	 * key record is specified in Section 3.6.1 of RFC 6376
+	 * Parse the DKIM key record.
+	 * The key record is specified in Section 3.6.1 of RFC 6376.
 	 *
 	 * @param {string} DkimKeyRecord
 	 */
@@ -648,6 +662,7 @@ class DkimKey {
 	}
 
 	/**
+	 * @private
 	 * @param {Map<string, string>} tagMap
 	 * @returns {string}
 	 */
@@ -664,6 +679,7 @@ class DkimKey {
 	}
 
 	/**
+	 * @private
 	 * @param {Map<string, string>} tagMap
 	 * @returns {string[]|null}
 	 */
@@ -675,10 +691,11 @@ class DkimKey {
 		if (algorithmTag === null) {
 			return null;
 		}
-		return algorithmTag[0].split(":").map(s => s.trim()).filter(function (x) {return x;});
+		return algorithmTag[0].split(":").map(s => s.trim()).filter(function (x) { return x; });
 	}
 
 	/**
+	 * @private
 	 * @param {Map<string, string>} tagMap
 	 * @returns {string}
 	 */
@@ -693,6 +710,7 @@ class DkimKey {
 	}
 
 	/**
+	 * @private
 	 * @param {Map<string, string>} tagMap
 	 * @returns {string?}
 	 */
@@ -708,6 +726,7 @@ class DkimKey {
 	}
 
 	/**
+	 * @private
 	 * @param {Map<string, string>} tagMap
 	 * @returns {string}
 	 */
@@ -725,6 +744,7 @@ class DkimKey {
 	}
 
 	/**
+	 * @private
 	 * @param {Map<string, string>} tagMap
 	 * @returns {string}
 	 */
@@ -744,6 +764,7 @@ class DkimKey {
 	}
 
 	/**
+	 * @private
 	 * @param {Map<string, string>} tagMap
 	 * @returns {string[]}
 	 */
@@ -756,40 +777,56 @@ class DkimKey {
 			return [];
 		}
 		// get the flags and store them in an array
-		return flagsTag[0].split(":").map(s => s.trim()).filter(function (x) {return x;});
+		return flagsTag[0].split(":").map(s => s.trim()).filter(function (x) { return x; });
 	}
 }
+
+/**
+ * A single DKIM signature that can be verified.
+ */
+class DkimSignature {
+	/**
+	 * @param {Msg} msg
+	 * @param {DkimSignatureHeader} header
+	 */
+	constructor(msg, header) {
+		/** @private */
+		this._msg = msg;
+		/** @private */
+		this._header = header;
+	}
 
 	/**
 	 * canonicalize a single header field using the relaxed algorithm
 	 * specified in Section 3.4.2 of RFC 6376
 	 *
+	 * @private
 	 * @param {string} headerField
 	 * @returns {string}
 	 */
-	function canonicalizationHeaderFieldRelaxed(headerField) {
+	static _canonicalizationHeaderFieldRelaxed(headerField) {
 		// Convert header field name (not the header field values) to lowercase
 		let headerCanonicalized = headerField.replace(
 			/^\S[^:]*/,
-			function(match) {
+			function (match) {
 				return match.toLowerCase();
 			}
 		);
 
 		// Unfold header field continuation lines
-		headerCanonicalized = headerCanonicalized.replace(/\r\n[ \t]/g," ");
+		headerCanonicalized = headerCanonicalized.replace(/\r\n[ \t]/g, " ");
 
 		// Convert all sequences of one or more WSP characters to a single SP character.
 		// WSP characters here include those before and after a line folding boundary.
-		headerCanonicalized = headerCanonicalized.replace(/[ \t]+/g," ");
+		headerCanonicalized = headerCanonicalized.replace(/[ \t]+/g, " ");
 
 		// Delete all WSP characters at the end of each unfolded header field value.
-		headerCanonicalized = headerCanonicalized.replace(/[ \t]+\r\n/,"\r\n");
+		headerCanonicalized = headerCanonicalized.replace(/[ \t]+\r\n/, "\r\n");
 
 		// Delete any WSP characters remaining before and after the colon
 		// separating the header field name from the header field value.
 		// The colon separator MUST be retained.
-		headerCanonicalized = headerCanonicalized.replace(/[ \t]*:[ \t]*/,":");
+		headerCanonicalized = headerCanonicalized.replace(/[ \t]*:[ \t]*/, ":");
 
 		return headerCanonicalized;
 	}
@@ -798,15 +835,16 @@ class DkimKey {
 	 * canonicalize the body using the simple algorithm
 	 * specified in Section 3.4.3 of RFC 6376
 	 *
+	 * @private
 	 * @param {string} body
 	 * @returns {string}
 	 */
-	function canonicalizationBodySimple(body) {
+	static _canonicalizationBodySimple(body) {
 		// Ignore all empty lines at the end of the message body
 		// If there is no body or no trailing CRLF on the message body, a CRLF is added
 		// for some reason /(\r\n)*$/ doesn't work all the time
 		// (especially in large strings; matching only last "\r\n")
-		const bodyCanonicalized = body.replace(/((\r\n)+)?$/,"\r\n");
+		const bodyCanonicalized = body.replace(/((\r\n)+)?$/, "\r\n");
 
 		return bodyCanonicalized;
 	}
@@ -815,20 +853,21 @@ class DkimKey {
 	 * canonicalize the body using the relaxed algorithm
 	 * specified in Section 3.4.4 of RFC 6376
 	 *
+	 * @private
 	 * @param {string} body
 	 * @returns {string}
 	 */
-	function canonicalizationBodyRelaxed(body) {
+	static _canonicalizationBodyRelaxed(body) {
 		// Ignore all whitespace at the end of lines
-		let bodyCanonicalized = body.replace(/[ \t]+\r\n/g,"\r\n");
+		let bodyCanonicalized = body.replace(/[ \t]+\r\n/g, "\r\n");
 		// Reduce all sequences of WSP within a line to a single SP character
-		bodyCanonicalized = bodyCanonicalized.replace(/[ \t]+/g," ");
+		bodyCanonicalized = bodyCanonicalized.replace(/[ \t]+/g, " ");
 
 		// Ignore all empty lines at the end of the message body
 		// If the body is non-empty but does not end with a CRLF, a CRLF is added
 		// for some reason /(\r\n)*$/ doesn't work all the time
 		// (especially in large strings; matching only last "\r\n")
-		bodyCanonicalized = bodyCanonicalized.replace(/((\r\n)+)?$/,"\r\n");
+		bodyCanonicalized = bodyCanonicalized.replace(/((\r\n)+)?$/, "\r\n");
 
 		// If only one \r\n rests, there were only empty lines or body was empty.
 		if (bodyCanonicalized === "\r\n") {
@@ -841,42 +880,42 @@ class DkimKey {
 	 * Computing the Message Hash for the body
 	 * specified in Section 3.7 of RFC 6376
 	 *
-	 * @param {Msg} msg
-	 * @param {DkimSignature} DKIMSignature
+	 * @private
 	 * @returns {Promise<string>}
 	 */
-	async function computeBodyHash(msg, DKIMSignature) {
+	async _computeBodyHash() {
 		// canonicalize body
 		let bodyCanon;
-		switch (DKIMSignature.c_body) {
+		switch (this._header.c_body) {
 			case "simple":
-				bodyCanon = canonicalizationBodySimple(msg.bodyPlain);
+				bodyCanon = DkimSignature._canonicalizationBodySimple(this._msg.bodyPlain);
 				break;
 			case "relaxed":
-				bodyCanon = canonicalizationBodyRelaxed(msg.bodyPlain);
+				bodyCanon = DkimSignature._canonicalizationBodyRelaxed(this._msg.bodyPlain);
 				break;
 			default:
 				throw new DKIM_InternalError("unsupported canonicalization algorithm got parsed");
 		}
+
 		// if a body length count is given
-		if (DKIMSignature.l !== null) {
+		if (this._header.l !== null) {
 			// check the value of the body length tag
-			if (DKIMSignature.l > bodyCanon.length) {
+			if (this._header.l > bodyCanon.length) {
 				// length tag exceeds body size
 				log.debug(`bodyCanon.length: ${bodyCanon.length}`);
 				throw new DKIM_SigError("DKIM_SIGERROR_TOOLARGE_L");
-			} else if (DKIMSignature.l < bodyCanon.length){
+			} else if (this._header.l < bodyCanon.length) {
 				// length tag smaller when body size
-				DKIMSignature.warnings.push({name: "DKIM_SIGWARNING_SMALL_L"});
+				this._header.warnings.push({ name: "DKIM_SIGWARNING_SMALL_L" });
 				log.debug("Warning: DKIM_SIGWARNING_SMALL_L");
 			}
 
 			// truncated body to the length specified in the "l=" tag
-			bodyCanon = bodyCanon.substr(0, DKIMSignature.l);
+			bodyCanon = bodyCanon.substr(0, this._header.l);
 		}
 
 		// compute body hash
-		const bodyHash = await DkimCrypto.digest(DKIMSignature.a_hash, bodyCanon);
+		const bodyHash = await DkimCrypto.digest(this._header.a_hash, bodyCanon);
 		return bodyHash;
 	}
 
@@ -884,22 +923,21 @@ class DkimKey {
 	 * Computing the input for the header Hash
 	 * specified in Section 3.7 of RFC 6376
 	 *
-	 * @param {Msg} msg
-	 * @param {DkimSignature} DKIMSignature
+	 * @private
 	 * @returns {string}
 	 */
-	function computeHeaderHashInput(msg, DKIMSignature) {
+	_computeHeaderHashInput() {
 		let hashInput = "";
 
 		// set header canonicalization algorithm
 		let headerCanonAlgo;
-		switch (DKIMSignature.c_header) {
+		switch (this._header.c_header) {
 			case "simple":
 				// @ts-expect-error
-				headerCanonAlgo = function (headerField) {return headerField;};
+				headerCanonAlgo = function (headerField) { return headerField; };
 				break;
 			case "relaxed":
-				headerCanonAlgo = canonicalizationHeaderFieldRelaxed;
+				headerCanonAlgo = DkimSignature._canonicalizationHeaderFieldRelaxed;
 				break;
 			default:
 				throw new DKIM_InternalError("unsupported canonicalization algorithm (header) got parsed");
@@ -908,16 +946,16 @@ class DkimKey {
 		// copy header fields
 		/** @type {Map<string, string[]>} */
 		const headerFields = new Map();
-		for (const [key, val] of msg.headerFields) {
+		for (const [key, val] of this._msg.headerFields) {
 			headerFields.set(key, val.slice());
 		}
 
 		// get header fields specified by the "h=" tag
 		// and join their canonicalized form
-		for(let i = 0; i < DKIMSignature.h_array.length; i++) {
+		for (let i = 0; i < this._header.h_array.length; i++) {
 			// if multiple instances of the same header field are signed
 			// include them in reverse order (from bottom to top)
-			const headerFieldArray = headerFields.get(DKIMSignature.h_array[i]);
+			const headerFieldArray = headerFields.get(this._header.h_array[i]);
 			// nonexisting header field MUST be treated as the null string
 			if (headerFieldArray !== undefined) {
 				const headerField = headerFieldArray.pop();
@@ -929,10 +967,10 @@ class DkimKey {
 
 		// add DKIM-Signature header to the hash input
 		// with the value of the "b=" tag (including all surrounding whitespace) deleted
-		const pos_bTag = DKIMSignature.original_header.indexOf(DKIMSignature.b_folded);
-		let tempBegin = DKIMSignature.original_header.substr(0, pos_bTag);
+		const pos_bTag = this._header.original_header.indexOf(this._header.b_folded);
+		let tempBegin = this._header.original_header.substr(0, pos_bTag);
 		tempBegin = tempBegin.replace(new RegExp(`${RfcParser.FWS}?$`), "");
-		let tempEnd = DKIMSignature.original_header.substr(pos_bTag+DKIMSignature.b_folded.length);
+		let tempEnd = this._header.original_header.substr(pos_bTag + this._header.b_folded.length);
 		tempEnd = tempEnd.replace(new RegExp(`^${RfcParser.FWS}?`), "");
 		let temp = tempBegin + tempEnd;
 		// canonicalized using the header canonicalization algorithm specified in the "c=" tag
@@ -944,95 +982,45 @@ class DkimKey {
 	}
 
 	/**
-	 * handles Exception
-	 *
-	 * @param {Error} e
-	 * @param {DkimSignature|Object.<string, undefined>} [dkimSignature]
-	 * @return {dkimSigResultV2}
-	 */
-	function handleException(e, dkimSignature = {} ) {
-		if (e instanceof DKIM_SigError) {
-			// return result
-			const result = {
-				version : "2.0",
-				result : "PERMFAIL",
-				sdid : dkimSignature.d,
-				auid : dkimSignature.i,
-				selector : dkimSignature.s,
-				errorType : e.errorType,
-				errorStrParams : e.errorStrParams,
-				hideFail : e.errorType === "DKIM_SIGERROR_KEY_TESTMODE",
-				keySecure : dkimSignature.keySecure,
-			};
-
-			log.warn(e);
-
-			return result;
-		}
-		// return result
-		/** @type {dkimSigResultV2} */
-		const result = {
-			version : "2.0",
-			result : "TEMPFAIL",
-			sdid : dkimSignature.d,
-			auid : dkimSignature.i,
-			selector : dkimSignature.s,
-		};
-
-		if (e instanceof DKIM_InternalError) {
-			result.errorType = e.errorType;
-			log.error(e);
-		} else {
-			log.fatal(e);
-		}
-
-		return result;
-	}
-
-	/**
 	 * Verifying a single DKIM signature
 	 *
-	 * @param {Msg} msg
-	 * @param {DkimSignature} DKIMSignature
 	 * @return {Promise<dkimSigResultV2>}
 	 * @throws DKIM_SigError
 	 * @throws DKIM_InternalError
 	 */
-	async function verifySignature(msg, DKIMSignature) { // eslint-disable-line complexity
+	async verifySignature() { // eslint-disable-line complexity
 		// warning if from is not in SDID or AUID
-		if (!addrIsInDomain(msg.from, DKIMSignature.d)) {
-			DKIMSignature.warnings.push({ name: "DKIM_SIGWARNING_FROM_NOT_IN_SDID" });
+		if (!addrIsInDomain(this._msg.from, this._header.d)) {
+			this._header.warnings.push({ name: "DKIM_SIGWARNING_FROM_NOT_IN_SDID" });
 			log.debug("Warning: DKIM_SIGWARNING_FROM_NOT_IN_SDID");
-		} else if (!stringEndsWith(msg.from, DKIMSignature.i)) {
-			DKIMSignature.warnings.push({ name: "DKIM_SIGWARNING_FROM_NOT_IN_AUID" });
+		} else if (!stringEndsWith(this._msg.from, this._header.i)) {
+			this._header.warnings.push({ name: "DKIM_SIGWARNING_FROM_NOT_IN_AUID" });
 			log.debug("Warning: DKIM_SIGWARNING_FROM_NOT_IN_AUID");
 		}
 
 		const time = Math.round(Date.now() / 1000);
 		// warning if signature expired
-		if (DKIMSignature.x !== null && DKIMSignature.x < time) {
-			DKIMSignature.warnings.push({name: "DKIM_SIGWARNING_EXPIRED"});
+		if (this._header.x !== null && this._header.x < time) {
+			this._header.warnings.push({ name: "DKIM_SIGWARNING_EXPIRED" });
 			log.debug("Warning: DKIM_SIGWARNING_EXPIRED");
 		}
 		// warning if signature in future
-		if (DKIMSignature.t !== null && DKIMSignature.t > time) {
-			DKIMSignature.warnings.push({name: "DKIM_SIGWARNING_FUTURE"});
+		if (this._header.t !== null && this._header.t > time) {
+			this._header.warnings.push({ name: "DKIM_SIGWARNING_FUTURE" });
 			log.debug("Warning: DKIM_SIGWARNING_FUTURE");
 		}
 
 		// Compute the Message hash for the body
-		const bodyHash = await computeBodyHash(msg, DKIMSignature);
+		const bodyHash = await this._computeBodyHash();
 		log.debug("computed body hash:", bodyHash);
 
 		// compare body hash
-		if (bodyHash !== DKIMSignature.bh) {
+		if (bodyHash !== this._header.bh) {
 			throw new DKIM_SigError("DKIM_SIGERROR_CORRUPT_BH");
 		}
 
 		log.trace("Receiving DNS key for DKIM-Signature ...");
-		const keyQueryResult = await getKey(DKIMSignature.d, DKIMSignature.s);
-		// eslint-disable-next-line require-atomic-updates
-		DKIMSignature.keySecure = keyQueryResult.secure;
+		const keyQueryResult = await getKey(this._header.d, this._header.s);
 		log.trace("Received DNS key for DKIM-Signature");
 
 		// if key is not signed by DNSSEC
@@ -1041,7 +1029,7 @@ class DkimKey {
 				case 0: // error
 					throw new DKIM_SigError("DKIM_POLICYERROR_KEY_INSECURE");
 				case 1: // warning
-					DKIMSignature.warnings.push({name: "DKIM_POLICYERROR_KEY_INSECURE"});
+					this._header.warnings.push({ name: "DKIM_POLICYERROR_KEY_INSECURE" });
 					log.debug("Warning: DKIM_POLICYERROR_KEY_INSECURE");
 					break;
 				case 2: // ignore
@@ -1057,17 +1045,17 @@ class DkimKey {
 		// check that the testing flag is not set
 		if (dkimKey.t_array.indexOf("y") !== -1) {
 			if (prefs["error.key_testmode.ignore"]) {
-				DKIMSignature.warnings.push({name: "DKIM_SIGERROR_KEY_TESTMODE"});
+				this._header.warnings.push({ name: "DKIM_SIGERROR_KEY_TESTMODE" });
 				log.debug("Warning: DKIM_SIGERROR_KEY_TESTMODE");
 			} else {
-				throw new DKIM_SigError( "DKIM_SIGERROR_KEY_TESTMODE" );
+				throw new DKIM_SigError("DKIM_SIGERROR_KEY_TESTMODE");
 			}
 		}
 
 		// if s flag is set in DKIM key record
 		// AUID must be from the same domain as SDID (and not a subdomain)
 		if (dkimKey.t_array.indexOf("s") !== -1 &&
-		    !stringEqual(DKIMSignature.i_domain, DKIMSignature.d)) {
+			!stringEqual(this._header.i_domain, this._header.d)) {
 			throw new DKIM_SigError("DKIM_SIGERROR_DOMAIN_I");
 		}
 
@@ -1075,19 +1063,19 @@ class DkimKey {
 		// the hash algorithm implied by the "a=" tag in the DKIM-Signature header field
 		// must be included in the contents of the "h=" tag
 		if (dkimKey.h_array &&
-		    dkimKey.h_array.indexOf(DKIMSignature.a_hash) === -1) {
-			throw new DKIM_SigError( "DKIM_SIGERROR_KEY_HASHNOTINCLUDED" );
+			dkimKey.h_array.indexOf(this._header.a_hash) === -1) {
+			throw new DKIM_SigError("DKIM_SIGERROR_KEY_HASHNOTINCLUDED");
 		}
 
 		// Compute the input for the header hash
-		const headerHashInput = computeHeaderHashInput(msg,DKIMSignature);
+		const headerHashInput = this._computeHeaderHashInput();
 		log.debug(`Header hash input:\n${headerHashInput}`);
 
 		// verify Signature
 		const [isValid, keyLength] = await DkimCrypto.verifyRSA(
 			dkimKey.p,
-			DKIMSignature.a_hash,
-			DKIMSignature.b,
+			this._header.a_hash,
+			this._header.b,
 			headerHashInput
 		);
 		if (!isValid) {
@@ -1097,7 +1085,7 @@ class DkimKey {
 		if (keyLength < 1024) {
 			// error if key is too short
 			log.debug(`rsa key size: ${keyLength}`);
-			throw new DKIM_SigError( "DKIM_SIGWARNING_KEYSMALL" );
+			throw new DKIM_SigError("DKIM_SIGWARNING_KEYSMALL");
 		} else if (keyLength < 2048) {
 			// weak key
 			log.debug(`rsa key size: ${keyLength}`);
@@ -1105,7 +1093,7 @@ class DkimKey {
 				case 0: // error
 					throw new DKIM_SigError("DKIM_SIGWARNING_KEY_IS_WEAK");
 				case 1: // warning
-					DKIMSignature.warnings.push({name: "DKIM_SIGWARNING_KEY_IS_WEAK"});
+					this._header.warnings.push({ name: "DKIM_SIGWARNING_KEY_IS_WEAK" });
 					log.debug("Warning: DKIM_SIGWARNING_KEY_IS_WEAK");
 					break;
 				case 2: // ignore
@@ -1118,26 +1106,75 @@ class DkimKey {
 		// return result
 		log.trace("Everything is fine");
 		const verification_result = {
-			version : "2.0",
-			result : "SUCCESS",
-			sdid : DKIMSignature.d,
-			auid : DKIMSignature.i,
-			selector : DKIMSignature.s,
-			warnings : DKIMSignature.warnings,
-			keySecure : keyQueryResult.secure,
+			version: "2.0",
+			result: "SUCCESS",
+			sdid: this._header.d,
+			auid: this._header.i,
+			selector: this._header.s,
+			warnings: this._header.warnings,
+			keySecure: keyQueryResult.secure,
 		};
 		return verification_result;
+	}
+}
+
+/**
+ * Verifies all DKIM signatures in a message.
+ */
+export default class Verifier {
+	/**
+	 * Create a DKIM fail result for an exception.
+	 *
+	 * @private
+	 * @param {Error} e
+	 * @param {DkimSignatureHeader|Object.<string, undefined>} dkimSignature
+	 * @return {dkimSigResultV2}
+	 */
+	static _handleException(e, dkimSignature = {}) {
+		if (e instanceof DKIM_SigError) {
+			const result = {
+				version: "2.0",
+				result: "PERMFAIL",
+				sdid: dkimSignature.d,
+				auid: dkimSignature.i,
+				selector: dkimSignature.s,
+				errorType: e.errorType,
+				errorStrParams: e.errorStrParams,
+				hideFail: e.errorType === "DKIM_SIGERROR_KEY_TESTMODE",
+			};
+
+			log.warn(e);
+
+			return result;
+		}
+		/** @type {dkimSigResultV2} */
+		const result = {
+			version: "2.0",
+			result: "TEMPFAIL",
+			sdid: dkimSignature.d,
+			auid: dkimSignature.i,
+			selector: dkimSignature.s,
+		};
+
+		if (e instanceof DKIM_InternalError) {
+			result.errorType = e.errorType;
+			log.error(e);
+		} else {
+			log.fatal(e);
+		}
+
+		return result;
 	}
 
 	/**
 	 * processes signatures
 	 *
+	 * @private
 	 * @param {Msg} msg
 	 * @return {Promise<dkimSigResultV2[]>}
 	 */
-	async function processSignatures(msg) {
+	async _processSignatures(msg) {
 		let iDKIMSignatureIdx = 0;
-		let dkimSignature;
 		// contains the result of all DKIM-Signatures which have been verified
 		/** @type {dkimSigResultV2[]} */
 		const sigResults = [];
@@ -1155,21 +1192,22 @@ class DkimKey {
 		// SHOULD NOT be reordered and SHOULD be prepended to the message."
 		//
 		// The first added signature is verified first.
-		for (iDKIMSignatureIdx = dkimSignatureHeaders.length - 1;
-		     iDKIMSignatureIdx >=0; iDKIMSignatureIdx--) {
+		for (iDKIMSignatureIdx = dkimSignatureHeaders.length - 1; iDKIMSignatureIdx >= 0; iDKIMSignatureIdx--) {
+			let dkimHeader;
 			let sigRes;
 			try {
-				log.debug(`Verifying DKIM-Signature ${iDKIMSignatureIdx+1} ...`);
-				dkimSignature = new DkimSignature(dkimSignatureHeaders[iDKIMSignatureIdx]);
-				log.debug(`Parsed DKIM-Signature ${iDKIMSignatureIdx+1}:`, dkimSignature);
-				sigRes = await verifySignature(msg, dkimSignature);
-				log.debug(`Verified DKIM-Signature ${iDKIMSignatureIdx+1}`);
-			} catch(e) {
-				sigRes = handleException(e, dkimSignature);
-				log.debug(`Exception on DKIM-Signature ${iDKIMSignatureIdx+1}`);
+				log.debug(`Verifying DKIM-Signature ${iDKIMSignatureIdx + 1} ...`);
+				dkimHeader = new DkimSignatureHeader(dkimSignatureHeaders[iDKIMSignatureIdx]);
+				log.debug(`Parsed DKIM-Signature ${iDKIMSignatureIdx + 1}:`, dkimHeader);
+				const dkimSignature = new DkimSignature(msg, dkimHeader);
+				sigRes = await dkimSignature.verifySignature();
+				log.debug(`Verified DKIM-Signature ${iDKIMSignatureIdx + 1}`);
+			} catch (e) {
+				sigRes = Verifier._handleException(e, dkimHeader);
+				log.debug(`Exception on DKIM-Signature ${iDKIMSignatureIdx + 1}`);
 			}
 
-			log.trace(`Adding DKIM-Signature ${iDKIMSignatureIdx+1} result to result list`);
+			log.trace(`Adding DKIM-Signature ${iDKIMSignatureIdx + 1} result to result list`);
 			sigResults.push(sigRes);
 		}
 
@@ -1180,32 +1218,31 @@ class DkimKey {
 	 * Checks if at least on signature exists.
 	 * If not, adds one to signatures with result "no sig"
 	 *
+	 * @private
 	 * @param {Msg} msg
 	 * @param {dkimSigResultV2[]} signatures
 	 * @return {void}
 	 */
-	function checkForSignatureExistence(msg, signatures) {
+	static _checkForSignatureExistence(msg, signatures) {
 		// check if a DKIM signature exists
 		if (signatures.length === 0) {
 			const dkimSigResultV2 = {
-					version: "2.0",
-					result: "none",
+				version: "2.0",
+				result: "none",
 			};
 			signatures.push(dkimSigResultV2);
 		}
 	}
 
-export default class Verifier {
 	/**
 	 * @typedef {Object} Msg
 	 * @property {Map<String, String[]>} headerFields
 	 * @property {String} bodyPlain
 	 * @property {String} from
-	 * @property {String} listId
 	 */
 
 	/**
-	 * Verifies the message given message.
+	 * Verifies the DKIM signatures in the given message.
 	 *
 	 * @param {Msg} msg
 	 * @return {Promise<dkimResultV2>}
@@ -1215,11 +1252,9 @@ export default class Verifier {
 			await prefs.init();
 			const res = {
 				version: "2.0",
-				signatures: await processSignatures(msg),
+				signatures: await this._processSignatures(msg),
 			};
-			checkForSignatureExistence(msg, res.signatures);
-			// eslint-disable-next-line no-use-before-define
-			sortSignatures(res.signatures, msg.from, msg.listId);
+			Verifier._checkForSignatureExistence(msg, res.signatures);
 			return res;
 		})();
 		promise.then(null, function onReject(exception) {
@@ -1229,163 +1264,3 @@ export default class Verifier {
 	}
 }
 
-	/**
-	 * Creates a message object given the msgURI.
-	 *
-	 * @param {String} msgURI
-	 * @return {Promise<Msg>}
-	 */
-	function createMsg(msgURI) {
-		const promise = (async () => {
-			// read msg
-			/** @type {Msg} */
-			const msg = await MsgReader.read(msgURI);
-			msg.msgURI = msgURI;
-
-			// parse the header
-			msg.headerFields = MsgReader.parseHeader(msg.headerPlain);
-
-			const msgHeaderParser = Cc["@mozilla.org/messenger/headerparser;1"].
-				createInstance(Ci.nsIMsgHeaderParser);
-
-			// get last from address
-			if (msg.headerFields.has("from")) {
-				// @ts-ignore
-				const numFrom = msg.headerFields.get("from").length;
-				// @ts-ignore
-				let author = msg.headerFields.get("from")[numFrom-1];
-				author = author.replace(/^From[ \t]*:/i,"");
-				msg.from = msgHeaderParser.extractHeaderAddressMailboxes(author);
-			} else {
-				throw new DKIM_InternalError("E-Mail has no from address");
-			}
-
-			// get list-id
-			if (msg.headerFields.has("list-id")) {
-				// @ts-ignore
-				msg.listId = msg.headerFields.get("list-id")[0];
-				msg.listId = msgHeaderParser.extractHeaderAddressMailboxes(msg.listId);
-			}
-
-			// check if msg should be signed by DKIM
-			msg.DKIMSignPolicy = await Policy.shouldBeSigned(msg.from, msg.listId);
-
-			return msg;
-		})();
-		promise.then(null, function onReject(exception) {
-			log.warn("createMsg failed", exception);
-		});
-		return promise;
-	}
-
-	/**
-	 * Sorts the given signatures.
-	 *
-	 * @param {dkimSigResultV2[]} signatures
-	 * @param {string} from
-	 * @param {string} [listId]
-	 * @return {void}
-	 */
-	export function sortSignatures(signatures, from, listId) {
-		/**
-		 * @param {dkimSigResultV2} sig1
-		 * @param {dkimSigResultV2} sig2
-		 * @returns {number}
-		 */
-		function result_compare(sig1, sig2) {
-			if (sig1.result === sig2.result) {
-				return 0;
-			}
-
-			if (sig1.result === "SUCCESS") {
-				return -1;
-			} else if (sig2.result === "SUCCESS") {
-				return 1;
-			}
-
-			if (sig1.result === "TEMPFAIL") {
-				return -1;
-			} else if (sig2.result === "TEMPFAIL") {
-				return 1;
-			}
-
-			if (sig1.result === "PERMFAIL") {
-				return -1;
-			} else if (sig2.result === "PERMFAIL") {
-				return 1;
-			}
-
-			throw new DKIM_InternalError(`result_compare: sig1.result: ${sig1.result}; sig2.result: ${sig2.result}`);
-		}
-
-		/**
-		 * @param {dkimSigResultV2} sig1
-		 * @param {dkimSigResultV2} sig2
-		 * @returns {number}
-		 */
-		function warnings_compare(sig1, sig2) {
-			if (sig1.result !== "SUCCESS") {
-				return 0;
-			}
-			if (!sig1.warnings || sig1.warnings.length === 0) {
-				// sig1 has no warnings
-				if (!sig2.warnings || sig2.warnings.length === 0) {
-					// both signatures have no warnings
-					return 0;
-				}
-				// sig2 has warnings
-				return -1;
-			}
-			// sig1 has warnings
-			if (!sig2.warnings || sig2.warnings.length === 0) {
-				// sig2 has no warnings
-				return 1;
-			}
-			// both signatures have warnings
-			return 0;
-		}
-
-		/**
-		 * @param {dkimSigResultV2} sig1
-		 * @param {dkimSigResultV2} sig2
-		 * @returns {number}
-		 */
-		function sdid_compare(sig1, sig2) {
-			if (sig1.sdid === sig2.sdid) {
-				return 0;
-			}
-
-			if (sig1.sdid && addrIsInDomain2(from, sig1.sdid)) {
-				return -1;
-			} else if (sig2.sdid && addrIsInDomain2(from, sig2.sdid)) {
-				return 1;
-			}
-
-			if (listId) {
-				if (sig1.sdid && domainIsInDomain(listId, sig1.sdid)) {
-					return -1;
-				} else if (sig2.sdid && domainIsInDomain(listId, sig2.sdid)) {
-					return 1;
-				}
-			}
-
-			return 0;
-		}
-
-		signatures.sort(function (sig1, sig2) {
-			let cmp;
-			cmp = result_compare(sig1, sig2);
-			if (cmp !== 0) {
-				return cmp;
-			}
-			cmp = warnings_compare(sig1, sig2);
-			if (cmp !== 0) {
-				return cmp;
-			}
-			cmp = sdid_compare(sig1, sig2);
-			if (cmp !== 0) {
-				return cmp;
-			}
-			return -1;
-		});
-	}
