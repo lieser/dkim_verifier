@@ -83,7 +83,7 @@ export class KeyDb {
 		}
 
 		storedKey.lastUsedAt = dateToString(new Date());
-		await KeyDb._storeKeys(true);
+		KeyDb._storeKeys(true).catch(error => log.fatal("Storing keys failed", error));
 
 		log.debug("got key from storage");
 		return { key: storedKey.key, secure: storedKey.secure };
@@ -344,7 +344,8 @@ export default class KeyStore {
 					return key;
 				}
 				key = await this._getKeyFromDNS(sdid, selector);
-				KeyDb.store(sdid, selector, key.key, key.secure);
+				KeyDb.store(sdid, selector, key.key, key.secure).
+					catch(error => log.fatal("Storing keys failed", error));
 				return key;
 			}
 			// store DKIM keys and compare with current key
@@ -357,7 +358,8 @@ export default class KeyStore {
 					}
 					keyDns.secure = keyDns.secure || keyStored.secure;
 				} else {
-					KeyDb.store(sdid, selector, keyDns.key, keyDns.secure);
+					KeyDb.store(sdid, selector, keyDns.key, keyDns.secure).
+						catch(error => log.fatal("Storing keys failed", error));
 				}
 				return keyDns;
 			}
