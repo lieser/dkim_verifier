@@ -30,7 +30,6 @@
 		"64": "icon.png"
 	},
 	"message_display_action": {
-		"browser_style": true,
 		"default_icon": {
 			"32": "icon_32.png",
 			"64": "icon.png"

@@ -11,7 +11,7 @@ insert_final_newline = true
 [*.d.ts]
 indent_style = space
 
-[*.{html}]
+[*.html]
 indent_style = space
 indent_size = 2
 
