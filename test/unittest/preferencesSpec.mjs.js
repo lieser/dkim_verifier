@@ -307,7 +307,6 @@ describe("preferences [unittest]", function () {
 		it("pref should change on storage update", async function () {
 			try {
 				fakeBrowser.storage.local.set.callsFake(async items => {
-					console.error("set.callsFake - 111");
 					await fakeBrowser.storage.local._set(items, undefined);
 
 					/** @type {Object.<string, {oldValue: any, newValue: any}>} */
