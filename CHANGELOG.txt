@@ -1,3 +1,13 @@
+2.2.1 [2021-04-08]
+------------------
+ - Added integration with Silvermel and Charamel themes for favicons (#254 by dodmi)
+
+Backports (by dodmi):
+ - Authentication-Results header: fixed parsing of version (#253)
+ - Authentication-Results header: fixed parsing of quoted SDID and AUID (#229, #234, #253)
+ - Authentication-Results header: fixed missing reason on fail resulting in error (#232, #252)
+ - Updated default rules and favicons (#255)
+
 2.2.0 [2020-01-19]
 ------------------
  - Authentication-Results header: fix relaxed parsing option and trailing ";"
