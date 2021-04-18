@@ -1,4 +1,4 @@
-4.0.0pre4 [2020-11-23]
+4.0.0 [2021-04-18]
 ------------------
  - now requires at least Thunderbird 78
  - fixed incompatibility with Thunderbird 78 (#199)
