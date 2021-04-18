@@ -1,6 +1,6 @@
 /**
  * dkim.js - DKIM Verifier Extension for Mozilla Thunderbird
- * 
+ *
  * Verifies the DKIM signature if a new message is viewed,
  * and displays the result.
  *
@@ -35,12 +35,12 @@ const PREF_BRANCH = "extensions.dkim_verifier.";
  */
 DKIM_Verifier.Display = (function() {
 	"use strict";
-	
+
 /*
  * preferences
  */
 	var prefs = Services.prefs.getBranch(PREF_BRANCH);
-	
+
  /*
  * private variables
  */
@@ -65,7 +65,7 @@ DKIM_Verifier.Display = (function() {
 
 	/**
 	 * Sets the result value for headerTooltips and statusbar panel.
-	 * 
+	 *
 	 * @param {String} value
 	 * @return {void}
 	 */
@@ -73,10 +73,10 @@ DKIM_Verifier.Display = (function() {
 		headerTooltips.value = value;
 		statusbarPanel.value = value;
 	}
-	
+
 	/**
 	 * Sets the warnings for header, headerTooltips and statusbar panel.
-	 * 
+	 *
 	 * @param {String[]} warnings
 	 * @return {void}
 	 */
@@ -85,7 +85,7 @@ DKIM_Verifier.Display = (function() {
 		headerTooltips.warnings = warnings;
 		statusbarPanel.warnings = warnings;
 	}
-	
+
 	/*
 	 * highlight header
 	 */
@@ -108,7 +108,7 @@ DKIM_Verifier.Display = (function() {
 				emailValue.style.backgroundColor = "";
 			}
 		}
-		
+
 		// highlight or reset header
 		if (prefs.getBoolPref("colorFrom") || status === "clearHeader") {
 			highlightEmailAddresses(expandedFromBox);
@@ -125,19 +125,50 @@ DKIM_Verifier.Display = (function() {
 
 	/**
 	 * Sets the url to the favicon. Empty string to reset it.
-	 * 
+	 *
 	 * @param {String} faviconUrl
 	 * @return {void}
 	 */
 	function setFaviconUrl(faviconUrl) {
-		expandedFromBox.dkimFaviconUrl = faviconUrl;
 
-		// for CompactHeader addon
-		if (collapsed1LfromBox) {
-			collapsed1LfromBox.dkimFaviconUrl = faviconUrl;
-		}
-		if (collapsed2LfromBox) {
-			collapsed2LfromBox.dkimFaviconUrl = faviconUrl;
+		let activeTheme = Services.prefs.getBranch("general.skins.").getCharPref("selectedSkin");
+
+		if (activeTheme && activeTheme.match(/^silvermel|charamel$/i)) {
+		// using the theme's contact icon for the DKIM symbol
+			if (faviconUrl === "") {
+				expandedFromBox.style.backgroundImage = '';
+				expandedFromBox.style.backgroundSize = '';
+				if (collapsed1LfromBox) {
+					collapsed1LfromBox.style.backgroundImage = '';
+					collapsed1LfromBox.style.backgroundSize = '';
+				}
+				if (collapsed2LfromBox) {
+					collapsed2LfromBox.style.backgroundImage = '';
+					collapsed2LfromBox.style.backgroundSize = '';
+				}
+			} else {
+				expandedFromBox.style.backgroundImage = 'url("'+faviconUrl+'")';
+				expandedFromBox.style.backgroundSize = '16px 16px';
+				if (collapsed1LfromBox) {
+					collapsed1LfromBox.style.backgroundImage = 'url("'+faviconUrl+'")';
+					collapsed1LfromBox.style.backgroundSize = '16px 16px';
+				}
+				if (collapsed2LfromBox) {
+					collapsed2LfromBox.style.backgroundImage = 'url("'+faviconUrl+'")';
+					collapsed2LfromBox.style.backgroundSize = '16px 16px';
+				}
+			}
+		} else {
+		// default behavior for all skins: using DKIM verifier icon
+			expandedFromBox.dkimFaviconUrl = faviconUrl;
+
+			// for CompactHeader addon
+			if (collapsed1LfromBox) {
+				collapsed1LfromBox.dkimFaviconUrl = faviconUrl;
+			}
+			if (collapsed2LfromBox) {
+				collapsed2LfromBox.dkimFaviconUrl = faviconUrl;
+			}
 		}
 	}
 
@@ -170,10 +201,10 @@ DKIM_Verifier.Display = (function() {
 			log.fatal(e);
 		}
 	}
-		
+
 	/**
 	 * display result
-	 * 
+	 *
 	 * @param {IAuthVerifier.IAuthResult} result
 	 * @return {void}
 	 */
@@ -259,12 +290,12 @@ DKIM_Verifier.Display = (function() {
 		}
 		log.trace("displayResult end");
 	}
-	
+
 var that = {
 /*
  * public methods/variables
  */
- 
+
 	/*
 	 * Initializes the DKIM header entry
 	 */
@@ -280,7 +311,7 @@ var that = {
 		header = view.enclosingBox;
 		row = view.enclosingRow;
 	},
-	
+
 	/*
 	 * Sets visibility of DKIM header, DKIM statusbar panel and DKIM tooltip
 	 * based on current state and preferences.
@@ -292,7 +323,7 @@ var that = {
 			var emailDisplayButton = headerBox.emailAddresses.boxObject.firstChild;
 			if (emailDisplayButton) {
 				emailDisplayButton.tooltip = "dkim-verifier-header-tooltip-from";
-				emailDisplayButton.setAttribute("tooltiptextSaved", 
+				emailDisplayButton.setAttribute("tooltiptextSaved",
 					emailDisplayButton.getAttribute("tooltiptext")
 				);
 				emailDisplayButton.removeAttribute("tooltiptext");
@@ -303,7 +334,7 @@ var that = {
 			if (emailDisplayButton) {
 				if (emailDisplayButton.tooltip === "dkim-verifier-header-tooltip-from") {
 					emailDisplayButton.tooltip = "";
-					emailDisplayButton.setAttribute("tooltiptext", 
+					emailDisplayButton.setAttribute("tooltiptext",
 						emailDisplayButton.getAttribute("tooltiptextSaved")
 					);
 				}
@@ -313,28 +344,28 @@ var that = {
 		// DKIM header
 		if (prefs.getIntPref("showDKIMHeader") >= state ) {
 			// show DKIM header
-			
+
 			if (row.collapsed === true) {
 				row.collapsed = false;
 				syncGridColumnWidths();
 			}
 		} else {
 			// don't show DKIM header
-			
+
 			if (row.collapsed === false) {
 				row.collapsed = true;
 				syncGridColumnWidths();
 			}
 		}
-		
+
 		// DKIM statusbar panel
 		if (prefs.getIntPref("showDKIMStatusbarpanel") >= state ) {
 			// show DKIM statusbar panel
-			
+
 			statusbarPanel.hidden = false;
 		} else {
 			// don't show DKIM statusbar panel
-			
+
 			statusbarPanel.hidden = true;
 		}
 
@@ -440,7 +471,7 @@ var that = {
 	shutdown : function Display_shutdown() {
 		// remove preference observer
 		prefs.removeObserver("", that);
-		
+
 		// remove event listener for message display
 		var pos = gMessageListeners.indexOf(that);
 		if (pos !== -1) {
@@ -484,7 +515,7 @@ var that = {
 			log.fatal(e);
 		}
 	},
-	
+
 	/*
 	 * Initializes the header and statusbarpanel
 	 * gets called after onStartHeaders
@@ -569,15 +600,15 @@ var that = {
 				return;
 			}
 			that.setCollapsed(DKIM_Verifier.PREF.SHOW.DKIM_VALID);
-			
+
 			// get msg uri
 			var msgURI = gFolderDisplay.selectedMessageUris[0];
 			// get msgHdr
 			var msgHdr = gFolderDisplay.selectedMessage;
-			
+
 			// get authentication result
 			let authResult = await DKIM_Verifier.AuthVerifier.verify(msgHdr, msgURI);
-			
+
 			// only show result if it's for the currently viewed message
 			var currentMsgURI = gFolderDisplay.selectedMessageUris[0];
 			if (currentMsgURI === msgURI) {
@@ -597,7 +628,7 @@ var that = {
 	onOutput: function Display_onOutput(headerEntry, headerValue) {
 		header.value = headerValue;
 	},
-	
+
 	/*
 	 * Reverify DKIM Signature
 	 */
@@ -629,7 +660,7 @@ var that = {
 			var from = msgHeaderParser.extractHeaderAddressMailboxes(mime2DecodedAuthor);
 
 			await DKIM_Verifier.Policy.addUserException(from);
-			
+
 			that.reverify();
 		})();
 		promise.then(null, function onReject(exception) {
@@ -645,7 +676,7 @@ var that = {
 			log.trace("markKeyAsSecure Task");
 			await DKIM_Verifier.Key.markKeyAsSecure(
 				header.dkimResults[0].sdid, header.dkimResults[0].selector);
-			
+
 			that.reverify();
 		})();
 		promise.then(null, function onReject(exception) {
@@ -663,7 +694,7 @@ var that = {
 				await DKIM_Verifier.Key.deleteKey(
 					dkimResult.sdid, dkimResult.selector);
 			}
-			
+
 			that.reverify();
 		})();
 		promise.then(null, function onReject(exception) {
@@ -676,13 +707,13 @@ return that;
 
 addEventListener("load", function dkim_load() {
 	"use strict";
-	
+
 	removeEventListener("load", dkim_load, false);
 	DKIM_Verifier.Display.startup();
 }, false);
 addEventListener("unload", function dkim_unload() {
 	"use strict";
-	
+
 	removeEventListener("unload", dkim_unload, false);
 	DKIM_Verifier.Display.shutdown();
 }, false);
