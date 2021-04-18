@@ -133,7 +133,7 @@ DKIM_Verifier.Display = (function() {
 
 		let activeTheme = Services.prefs.getBranch("general.skins.").getCharPref("selectedSkin");
 
-		if (activeTheme && activeTheme.match(/^silvermel|charamel$/i)) {
+		if (activeTheme && activeTheme.match(/^(?:silvermel|charamel)$/i)) {
 		// using the theme's contact icon for the DKIM symbol
 			if (faviconUrl === "") {
 				expandedFromBox.style.backgroundImage = '';
