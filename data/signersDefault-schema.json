@@ -5,6 +5,12 @@
 	"description": "Contains the default sign rules for the DKIM Verifier Thunderbird add-on",
 	"type": "object",
 	"properties": {
+		"versionTable": {
+			"type": "number"
+		},
+		"versionData": {
+			"type": "number"
+		},
 		"rules": {
 			"type": "array",
 			"items": {
@@ -100,6 +106,8 @@
 		}
 	},
 	"required": [
+		"versionTable",
+		"versionData",
 		"rules"
 	]
 }
