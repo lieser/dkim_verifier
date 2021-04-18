@@ -206,6 +206,12 @@
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_NEUTRAL"
 		}, {
+			"domain": "bett1.de",
+			"addr": "*",
+			"sdid": "bett1.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "betterplace.org",
 			"addr": "*",
 			"sdid": "betterplace.org",
@@ -485,6 +491,12 @@
 			"domain": "dnswl.org",
 			"addr": "*",
 			"sdid": "dnswl.org",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "docmorris.de",
+			"addr": "*",
+			"sdid": "docmorris.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -995,6 +1007,12 @@
 			"domain": "immowelt.de",
 			"addr": "*",
 			"sdid": "immowelt.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "impfportal-niedersachsen.de",
+			"addr": "*",
+			"sdid": "impfportal-niedersachsen.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
