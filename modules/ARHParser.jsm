@@ -95,7 +95,6 @@ const local_part_p = `(?:${dot_atom_p}|${quoted_string_p})`;
 // token as specified in Section 5.1 of RFC 2045.
 const token_p = "[^ \\x00-\\x1F\\x7F()<>@,;:\\\\\"/[\\]?=]+";
 // "value" as specified in Section 5.1 of RFC 2045.
-const value_p = `(?:${token_p}|${quoted_string_p})`;
 const value_cp = `(?:(${token_p})|${quoted_string_cp})`;
 // domain-name as specified in Section 3.5 of RFC 6376 [DKIM].
 const domain_name_p = `(?:${sub_domain_p}(?:\\.${sub_domain_p})+)`;
@@ -145,7 +144,7 @@ let ARHParser = {
 		let reg_match;
 
 		// get authserv-id and authres-version
-		reg_match = match(authresHeaderRef, `${value_cp}(?:${CFWS_p}([0-9]+)${CFWS_op} )?`);
+		reg_match = match(authresHeaderRef, `${value_cp}(?:${CFWS_p}([0-9]+)${CFWS_op})?`);
 		res.authserv_id = reg_match[1] || reg_match[2];
 		if (reg_match[3]) {
 			res.authres_version = parseInt(reg_match[3], 10);
@@ -224,14 +223,14 @@ function parseResinfo(str) {
 	}
 
 	// get propspec (optional)
-	let pvalue_p = `${value_p}|(?:(?:${local_part_p}?@)?${domain_name_p})`;
+	let pvalue_p = `${value_cp}|((?:${local_part_p}?@)?${domain_name_p})`;
 	if (prefs.getBoolPref("relaxedParsing")) {
 		// allow "/" in the header.b (or other) property, even if it is not in a quoted-string
-		pvalue_p += "|[^ \\x00-\\x1F\\x7F()<>@,;:\\\\\"[\\]?=]+";
+		pvalue_p += "|([^ \\x00-\\x1F\\x7F()<>@,;:\\\\\"[\\]?=]+)";
 	}
 	const special_smtp_verb_p = "mailfrom|rcptto";
 	const property_p = `${special_smtp_verb_p}|${Keyword_p}`;
-	const propspec_p = `(${Keyword_p})${CFWS_op}\\.${CFWS_op}(${property_p})${CFWS_op}=${CFWS_op}(${pvalue_p})`;
+	const propspec_p = `(${Keyword_p})${CFWS_op}\\.${CFWS_op}(${property_p})${CFWS_op}=${CFWS_op}(?:${pvalue_p})`;
 	res.propertys = {};
 	res.propertys.smtp = {};
 	res.propertys.header = {};
@@ -243,7 +242,7 @@ function parseResinfo(str) {
 			property = {};
 			res.propertys[reg_match[1]] = property;
 		}
-		property[reg_match[2]] = reg_match[3];
+		property[reg_match[2]] = reg_match[3] ? reg_match[3] : (reg_match[4] ? reg_match[4] : (reg_match[5] ? reg_match[5] : reg_match[6]));
 	}
 
 	log.trace(res.toSource());
