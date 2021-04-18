@@ -94,8 +94,8 @@ const PREF_BRANCH = "extensions.dkim_verifier.";
  *           added in version 1.1
  * @property {String[]} [warnings]
  *           required if result="SUCCESS
- * @property {String} [errorType]
- *           if result="PERMFAIL: DKIM_SigError.errorType
+ * @property {String|undefined} [errorType]
+ *           if result="PERMFAIL: DKIM_SigError.errorType or Undefined
  *           if result="TEMPFAIL: DKIM_InternalError.errorType or Undefined
  * @property {String} [shouldBeSignedBy]
  *           added in version 1.1
