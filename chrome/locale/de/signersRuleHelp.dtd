@@ -1,12 +1,12 @@
-<!ENTITY signersRuleHelp.title "Signierregeln Hilfe">
+<!ENTITY signersRuleHelp.title "Hilfe für Signierregeln">
 
-<!ENTITY domain.description "Wird mit der Basis-Domain der Absenderadresse vergleichen. Die Basis-Domain von zum Beispiel 'email.example.co.uk' ist 'excample.co.uk'.">
-<!ENTITY listID.description "Wird mit der List-ID verglichen, falls die E-Mail über eine E-Mail-Liste empfangen wurde. Beachte das nur der Teil zwischen '&lt;' und '&gt;' von dem List-ID Header die eigentliche List-ID ist. Von der Basis-Domain und der List-ID wird nur eins gleichzeitig verglichen.">
-<!ENTITY addr.description "Wird mit der Absenderadresse vergleichen. Ein '*' entspricht Null oder mehr Zeichen.">
-<!ENTITY sdid.description "Die Domain von der die E-Mail signiert seien sollte. Falls nicht angegeben, ist jede SDID erlaubt. Mehr als eine Domain kann angegeben werden, indem Sie durch Leerzeichen getrennt werden.">
-<!ENTITY ruletype.description "Der Regeltype.">
+<!ENTITY domain.description "Wird mit der Basis-Domain der Absenderadresse verglichen. Die Basis-Domain von 'email.example.co.uk' ist zum Beispiel 'example.co.uk'.">
+<!ENTITY listID.description "Wird mit der List-ID verglichen, falls die E-Mail über eine E-Mail-Liste empfangen wurde. Beachten Sie, dass nur der Teil zwischen '&lt;' und '&gt;' aus der List-ID-Kopfzeile die eigentliche List-ID ist. Es wird entweder Basis-Domain oder List-ID verglichen.">
+<!ENTITY addr.description "Wird mit der Absenderadresse verglichen. Ein '*' entspricht keinem oder mehreren Zeichen.">
+<!ENTITY sdid.description "Die Domain von der die E-Mail signiert sein sollte. Falls nicht angegeben, ist jede SDID erlaubt. Mehrere Domains können angegeben werden, indem sie durch Leerzeichen getrennt werden.">
+<!ENTITY ruletype.description "Mögliche Regeltypen">
 <!ENTITY ruletype.1.description "E-Mail muss von der spezifizierten SDID signiert sein.">
-<!ENTITY ruletype.2.description "E-Mail muss nicht signiert sein. Falls Sie signiert ist, muss Sie von der spezifizierten SDID signiert sein.">
-<!ENTITY ruletype.3.description "E-Mail muss nicht signiert sein. Falls Sie signiert ist, muss Sie von der spezifizierten SDID signiert sein. Wenn die Signatur ungültig ist, wird die E-Mails als nicht signiert behandelt.">
-<!ENTITY priority.description "Die Priorität der Regel. Falls mehr als eine Regel passt, wird die mit der höchsten Priorität genommen.">
-<!ENTITY enabled.description "1 falls die Regel aktiviert ist, 0 falls die Regel deaktiviert ist.">
+<!ENTITY ruletype.2.description "E-Mail kann signiert sein. Falls Sie signiert ist, muss Sie von der spezifizierten SDID signiert sein.">
+<!ENTITY ruletype.3.description "E-Mail kann signiert sein. Falls Sie signiert ist, muss Sie von der spezifizierten SDID signiert sein. Wenn die Signatur ungültig ist, wird die E-Mails als nicht signiert behandelt.">
+<!ENTITY priority.description "Priorität der Regel: Falls mehr als eine Regel passt, wird die Regel mit der höchsten Priorität verwendet.">
+<!ENTITY enabled.description "1, falls die Regel aktiviert ist. 0, falls die Regel deaktiviert ist.">

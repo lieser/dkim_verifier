@@ -3,13 +3,13 @@
 <!ENTITY dkim_verifier.header.dmarc "DMARC:">
 <!ENTITY dkim_verifier.statusbar.title "DKIM:">
 
-<!ENTITY dkim_verifier.reverifyDKIMSignature.label "Überprüfe DKIM Signatur neu">
-<!ENTITY dkim_verifier.policyAddUserException.label "Füge Ausnahme für muss signiert sein hinzu">
-<!ENTITY dkim_verifier.markKeyAsSecure.label "Markiere DKIM Schlüssel als sicher">
-<!ENTITY dkim_verifier.updateKey.label "Aktualisiere DKIM Schlüssel">
+<!ENTITY dkim_verifier.reverifyDKIMSignature.label "Prüfe DKIM-Signatur erneut">
+<!ENTITY dkim_verifier.policyAddUserException.label "Füge Ausnahme für 'muss signiert sein' hinzu">
+<!ENTITY dkim_verifier.markKeyAsSecure.label "Markiere DKIM-Schlüssel als sicher">
+<!ENTITY dkim_verifier.updateKey.label "Aktualisiere DKIM-Schlüssel">
 
 
-<!ENTITY treeviewKeys.title "DKIM Schlüssel">
+<!ENTITY treeviewKeys.title "DKIM-Schlüssel">
 <!ENTITY treeviewKeys.treecol.SDID.label "SDID">
 <!ENTITY treeviewKeys.treecol.selector.label "Selector">
 <!ENTITY treeviewKeys.treecol.key.label "DKIM Schlüssel">
@@ -23,19 +23,19 @@
 <!ENTITY treeviewSigners.treecol.listID.label "List-Id">
 <!ENTITY treeviewSigners.treecol.addr.label "Von">
 <!ENTITY treeviewSigners.treecol.sdid.label "SDID">
-<!ENTITY treeviewSigners.treecol.ruletype.label "Regeltype">
+<!ENTITY treeviewSigners.treecol.ruletype.label "Regeltyp">
 <!ENTITY treeviewSigners.treecol.priority.label "Priorität">
 <!ENTITY treeviewSigners.treecol.enabled.label "Aktiviert">
 <!ENTITY treeviewSigners.addSignersRule.label "Füge Regel hinzu">
 <!ENTITY treeviewSigners.deleteSelectedRows.label "Entferne markierte Regeln">
 
-<!ENTITY treeviewSignersDefault.title "Standard Signierregeln">
+<!ENTITY treeviewSignersDefault.title "Standard-Signierregeln">
 
 <!ENTITY addSignersRule.title "Füge Signierregeln hinzu">
 <!ENTITY signRules.ruletype.SIGNED.label "Muss signiert sein (1)">
 <!ENTITY signRules.ruletype.NEUTRAL.label "Kann signiert sein (2)">
 <!ENTITY signRules.ruletype.HIDEFAIL.label "Ignoriere ungültige Signatur (3)">
 <!ENTITY signRules.priorityMode.auto.label "Priorität automatisch bestimmen">
-<!ENTITY signRules.priorityMode.manual.label "Setzte Priorität auf">
+<!ENTITY signRules.priorityMode.manual.label "Setze Priorität auf">
 
 <!ENTITY button.help.label "Hilfe">
