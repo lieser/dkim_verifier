@@ -1,7 +1,7 @@
 {
 	"$schema": "./signersDefault-schema.json",
 	"versionTable": 1,
-	"versionData": 29,
+	"versionData": 30,
 	"rules": [
 		{
 			"domain": "1und1.de",
@@ -28,15 +28,15 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
-			"domain": "activesearchresults.com",
-			"addr": "*",
-			"sdid": "activesearchresults.com",
-			"ruletype": "ALL",
-			"priority": "DEFAULT_RULE_ALL"
-		}, {
 			"domain": "active.com",
 			"addr": "*",
 			"sdid": "",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "activesearchresults.com",
+			"addr": "*",
+			"sdid": "activesearchresults.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -184,6 +184,12 @@
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_NEUTRAL"
 		}, {
+			"domain": "bahn.de",
+			"addr": "*",
+			"sdid": "bahn.de",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_NEUTRAL"
+		}, {
 			"domain": "balsamico.shop",
 			"addr": "*",
 			"sdid": "balsamico.shop",
@@ -201,12 +207,6 @@
 			"sdid": "battle.net",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
-		}, {
-			"domain": "bahn.de",
-			"addr": "*",
-			"sdid": "bahn.de",
-			"ruletype": "NEUTRAL",
-			"priority": "DEFAULT_RULE_NEUTRAL"
 		}, {
 			"domain": "bett1.de",
 			"addr": "*",
@@ -262,12 +262,6 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
-			"domain": "buhl-newsletter.de",
-			"addr": "*",
-			"sdid": "buhl-newsletter.de",
-			"ruletype": "ALL",
-			"priority": "DEFAULT_RULE_ALL"
-		}, {
 			"domain": "booking.com",
 			"addr": "*",
 			"sdid": "booking.com",
@@ -316,6 +310,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
+			"domain": "buhl-newsletter.de",
+			"addr": "*",
+			"sdid": "buhl-newsletter.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "bund.net",
 			"addr": "*",
 			"sdid": "bund.net",
@@ -325,6 +325,12 @@
 			"domain": "buyon.com",
 			"addr": "*",
 			"sdid": "buyon.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "cacf-festgeld.de",
+			"addr": "*@service.cacf-festgeld.de",
+			"sdid": "service.cacf-festgeld.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -382,15 +388,15 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
-			"domain": "coursera.org",
-			"addr": "*",
-			"sdid": "coursera.org",
-			"ruletype": "ALL",
-			"priority": "DEFAULT_RULE_ALL"
-		}, {
 			"domain": "couchsurfing.com",
 			"addr": "*",
 			"sdid": "couchsurfing.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "coursera.org",
+			"addr": "*",
+			"sdid": "coursera.org",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -412,15 +418,21 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "datev.de",
+			"addr": "*",
+			"sdid": "datev.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "decathlon.it",
 			"addr": "*@email.decathlon.it",
 			"sdid": "decathlon.it email.decathlon.it",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
-			"domain": "datev.de",
-			"addr": "*",
-			"sdid": "datev.de",
+			"domain": "degussa-bank.de",
+			"addr": "*@degussa-bank.de",
+			"sdid": "degussa-bank.de degba.onmicrosoft.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -706,6 +718,12 @@
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "fiduciagad.de",
+			"addr": "*@fiduciagad.de",
+			"sdid": "fiduciagad.de",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_NEUTRAL"
+		}, {
 			"domain": "fielmann.de",
 			"addr": "*@account.fielmann.de",
 			"sdid": "fielmann.de account.fielmann.de",
@@ -790,15 +808,15 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
-			"domain": "gelsh.it",
-			"addr": "*",
-			"sdid": "gelsh.it",
-			"ruletype": "ALL",
-			"priority": "DEFAULT_RULE_ALL"
-		}, {
 			"domain": "gellersen.de",
 			"addr": "*",
 			"sdid": "gellersen.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "gelsh.it",
+			"addr": "*",
+			"sdid": "gelsh.it",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -940,6 +958,24 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "heise.de",
+			"addr": "*",
+			"sdid": "heise.de",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "heise.de",
+			"addr": "*@infoservice.heise.de",
+			"sdid": "heise.de infoservice.heise.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
+			"domain": "heise.de",
+			"addr": "*@newsletter.heise.de",
+			"sdid": "heise.de newsletter.heise.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
 			"domain": "here.com",
 			"addr": "*",
 			"sdid": "here.com",
@@ -994,12 +1030,6 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
-			"domain": "instantsystems.se",
-			"addr": "*",
-			"sdid": "instantsystems.se",
-			"ruletype": "ALL",
-			"priority": "DEFAULT_RULE_ALL"
-		}, {
 			"domain": "immobilienscout24.de",
 			"addr": "*",
 			"sdid": "immobilienscout24.de",
@@ -1018,6 +1048,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "impfzentren.bayern",
+			"addr": "*@impfzentren.bayern",
+			"sdid": "impfzentren.bayern",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "inail.it",
 			"addr": "*",
 			"sdid": "inail.it",
@@ -1030,6 +1066,18 @@
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_NEUTRAL"
 		}, {
+			"domain": "ing.de",
+			"addr": "*@ing.de",
+			"sdid": "ing.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "ing.de",
+			"addr": "*@info.ing.de",
+			"sdid": "info.ing.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "instagram.com",
 			"addr": "*",
 			"sdid": "instagram.com",
@@ -1041,6 +1089,12 @@
 			"sdid": "instagram.com mail.instagram.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
+			"domain": "instantsystems.se",
+			"addr": "*",
+			"sdid": "instantsystems.se",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
 		}, {
 			"domain": "ionos.de",
 			"addr": "*",
@@ -1107,24 +1161,6 @@
 			"sdid": "kycsafe.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
-		}, {
-			"domain": "heise.de",
-			"addr": "*",
-			"sdid": "heise.de",
-			"ruletype": "NEUTRAL",
-			"priority": "DEFAULT_RULE_ALL"
-		}, {
-			"domain": "heise.de",
-			"addr": "*@infoservice.heise.de",
-			"sdid": "heise.de infoservice.heise.de",
-			"ruletype": "ALL",
-			"priority": "DEFAULT_RULE_ALL_2"
-		}, {
-			"domain": "heise.de",
-			"addr": "*@newsletter.heise.de",
-			"sdid": "heise.de newsletter.heise.de",
-			"ruletype": "ALL",
-			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
 			"domain": "leagueoflegends.com",
 			"addr": "*@email.leagueoflegends.com",
@@ -1461,6 +1497,12 @@
 			"sdid": "preventivi.it mup.preventivi.it",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL0"
+		}, {
+			"domain": "psd-muenchen.de",
+			"addr": "*@news.psd-muenchen.de",
+			"sdid": "news.psd-muenchen.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
 		}, {
 			"domain": "qantas.com.au",
 			"addr": "*@yourbooking.qantas.com.au",
