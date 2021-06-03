@@ -327,6 +327,12 @@
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
 			"domain": "cacf-festgeld.de",
+			"addr": "*",
+			"sdid": "cacf-festgeld.de",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_NEUTRAL"
+		}, {
+			"domain": "cacf-festgeld.de",
 			"addr": "*@service.cacf-festgeld.de",
 			"sdid": "service.cacf-festgeld.de",
 			"ruletype": "ALL",
@@ -429,7 +435,7 @@
 			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
 			"domain": "degussa-bank.de",
-			"addr": "*@degussa-bank.de",
+			"addr": "*",
 			"sdid": "degussa-bank.de degba.onmicrosoft.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
@@ -717,7 +723,7 @@
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
 			"domain": "fiduciagad.de",
-			"addr": "*@fiduciagad.de",
+			"addr": "*",
 			"sdid": "fiduciagad.de",
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_NEUTRAL"
@@ -1047,7 +1053,7 @@
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
 			"domain": "impfzentren.bayern",
-			"addr": "*@impfzentren.bayern",
+			"addr": "*",
 			"sdid": "impfzentren.bayern",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
@@ -1065,14 +1071,8 @@
 			"priority": "DEFAULT_RULE_NEUTRAL"
 		}, {
 			"domain": "ing.de",
-			"addr": "*@ing.de",
-			"sdid": "ing.de",
-			"ruletype": "ALL",
-			"priority": "DEFAULT_RULE_ALL"
-		}, {
-			"domain": "ing.de",
-			"addr": "*@info.ing.de",
-			"sdid": "info.ing.de",
+			"addr": "*",
+			"sdid": "info.ing.de ing.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -1497,8 +1497,8 @@
 			"priority": "DEFAULT_RULE_ALL0"
 		}, {
 			"domain": "psd-muenchen.de",
-			"addr": "*@news.psd-muenchen.de",
-			"sdid": "news.psd-muenchen.de",
+			"addr": "*",
+			"sdid": "news.psd-muenchen.de psd-muenchen.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
