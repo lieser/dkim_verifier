@@ -332,13 +332,13 @@
 			"addr": "*",
 			"sdid": "cacf-festgeld.de",
 			"ruletype": "NEUTRAL",
-			"priority": "DEFAULT_RULE_NEUTRAL"
+			"priority": "DEFAULT_RULE_ALL"
 		}, {
 			"domain": "cacf-festgeld.de",
 			"addr": "*@service.cacf-festgeld.de",
 			"sdid": "service.cacf-festgeld.de",
 			"ruletype": "ALL",
-			"priority": "DEFAULT_RULE_ALL"
+			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
 			"domain": "campact.de",
 			"addr": "*",
