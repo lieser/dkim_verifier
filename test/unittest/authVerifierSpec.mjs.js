@@ -346,5 +346,11 @@ describe("AuthVerifier [unittest]", function () {
 			expect(res.dkim[0].result).to.be.equal("PERMFAIL");
 			expect(res.dkim[0].result_str).to.be.equal("From address is ill-formed");
 		});
+
+		it("ill-formed list-id is ignored", async function () {
+			const message = await createMessageHeader("rfc6376-A.2-ill_formed-list_id.eml");
+			const res = await authVerifier.verify(message);
+			expect(res.dkim[0].result).to.be.equal("SUCCESS");
+		});
 	});
 });

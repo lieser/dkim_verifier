@@ -147,7 +147,11 @@ export default class AuthVerifier {
 		const listIdHeader = msgParsed.headers.get("list-id");
 		let listId = "";
 		if (listIdHeader) {
-			listId = MsgParser.parseListIdHeader(listIdHeader[0]);
+			try {
+				listId = MsgParser.parseListIdHeader(listIdHeader[0]);
+			} catch (error) {
+				log.error("Ignoring error in parsing of list-id header", error);
+			}
 		}
 
 		// read Authentication-Results header
