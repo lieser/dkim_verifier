@@ -1,3 +1,5 @@
+ - show proper error message on ill-formed from (#238)
+
 4.0.0 [2021-04-18]
 ------------------
  - now requires at least Thunderbird 78

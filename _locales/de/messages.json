@@ -34,6 +34,9 @@
 	"DKIM_INTERNALERROR_INCORRECT_EMAIL_FORMAT": {
 		"message": "E-Mail ist nicht richtig formatiert"
 	},
+	"DKIM_INTERNALERROR_INCORRECT_FROM": {
+		"message": "Absenderadresse ist falsch formatiert"
+	},
 	// DKIM_INTERNALERROR - DNS
 	"DKIM_DNSERROR_UNKNOWN": {
 		"message": "Fehler im DNS-Resolver"

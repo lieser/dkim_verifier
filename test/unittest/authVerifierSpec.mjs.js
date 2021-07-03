@@ -46,6 +46,20 @@ function createFakeMessageHeader() {
 }
 
 /**
+ * @param {Map<string, string[]>} headers
+ * @param {string} name
+ * @returns {string[]}
+ */
+function extractHeaderValue(headers, name) {
+	const completeHeaders = headers.get(name);
+	if (completeHeaders === undefined) {
+		return [];
+	}
+	return completeHeaders.map(header =>
+		header.substr(name.length + ": ".length).slice(0, -"\r\n".length));
+}
+
+/**
  * @param {string} file - path to file relative to test data directory
  * @returns {Promise<browser.messageDisplay.MessageHeader>}
  */
@@ -53,12 +67,12 @@ async function createMessageHeader(file) {
 	const fakeMessageHeader = createFakeMessageHeader();
 	const msgPlain = await readTestFile(file);
 	const msgParsed = MsgParser.parseMsg(msgPlain);
-	fakeMessageHeader.author = (msgParsed.headers.get("from") ?? [])[0];
-	fakeMessageHeader.recipients = msgParsed.headers.get("to") ?? [];
-	fakeMessageHeader.subject = (msgParsed.headers.get("subject") ?? [])[0];
+	fakeMessageHeader.author = extractHeaderValue(msgParsed.headers, "from")[0];
+	fakeMessageHeader.recipients = extractHeaderValue(msgParsed.headers, "to");
+	fakeMessageHeader.subject = extractHeaderValue(msgParsed.headers, "subject")[0];
 	browser.messages = {
 		getRaw: sinon.fake.resolves(msgPlain),
-		getFull: sinon.fake.throws("no fake for browser.messages.messages"),
+		getFull: sinon.fake.throws("no fake for browser.messages.getFull"),
 	};
 	return fakeMessageHeader;
 }
@@ -73,6 +87,9 @@ describe("AuthVerifier [unittest]", function () {
 			this.skip();
 		}
 		await prefs.init();
+	});
+
+	beforeEach(async function () {
 		await prefs.clear();
 	});
 
@@ -80,7 +97,7 @@ describe("AuthVerifier [unittest]", function () {
 		/** @type {import("../../modules/dkim/verifier.mjs.js").dkimResultV1|import("../../modules/authVerifier.mjs.js").AuthResultV2|import("../../modules/authVerifier.mjs.js").SavedAuthResultV3} */
 		let storedData;
 
-		before(async function () {
+		beforeEach(async function () {
 			await prefs.setValue("saveResult", true);
 
 			browser.storageMessage = {
@@ -192,11 +209,8 @@ describe("AuthVerifier [unittest]", function () {
 			expect(res.dmarc && res.dmarc[0].result).to.be.equal("pass");
 		});
 	});
-	describe("sign rules", function () {
-		beforeEach(async function () {
-			await prefs.clear();
-		});
 
+	describe("sign rules", function () {
 		it("unsigned PayPal message", async function () {
 			const fakePayPalMessage = await createMessageHeader("fakePayPal.eml");
 			let res = await authVerifier.verify(fakePayPalMessage);
@@ -239,11 +253,8 @@ describe("AuthVerifier [unittest]", function () {
 			expect(res.dkim[0].result_str).to.be.equal("Invalid (Should be signed by paypal.com)");
 		});
 	});
-	describe("ARH header", function () {
-		beforeEach(async function () {
-			await prefs.clear();
-		});
 
+	describe("ARH header", function () {
 		it("spf and dkim result", async function () {
 			const message = await createMessageHeader("rfc6376-A.2-arh-valid.eml");
 			let res = await authVerifier.verify(message);
@@ -325,6 +336,15 @@ describe("AuthVerifier [unittest]", function () {
 				expect(res.dkim[0].result).to.be.equal("PERMFAIL");
 				expect(res.dkim[0].result_str).to.be.equal("Invalid");
 			});
+		});
+	});
+
+	describe("invalid messages", function () {
+		it("ill-formed from shows proper error message", async function () {
+			const message = await createMessageHeader("ill_formed-from.eml");
+			const res = await authVerifier.verify(message);
+			expect(res.dkim[0].result).to.be.equal("PERMFAIL");
+			expect(res.dkim[0].result_str).to.be.equal("From address is ill-formed");
 		});
 	});
 });

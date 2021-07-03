@@ -124,10 +124,25 @@ export default class AuthVerifier {
 		if (!fromHeader) {
 			throw new Error("message does not contain a from header");
 		}
+		let from;
+		try {
+			from = MsgParser.parseFromHeader(fromHeader[0]);
+		} catch (error) {
+			log.error("Parsing of from header failed", error);
+			return Promise.resolve({
+				version: "2.1",
+				dkim: [{
+					version: "2.0",
+					result: "PERMFAIL",
+					res_num: 30,
+					result_str: browser.i18n.getMessage("DKIM_INTERNALERROR_INCORRECT_FROM"),
+				}],
+			});
+		}
 		const msg = {
 			headerFields: msgParsed.headers,
 			bodyPlain: msgParsed.body,
-			from: MsgParser.parseFromHeader(fromHeader[0]),
+			from: from,
 		};
 		const listIdHeader = msgParsed.headers.get("list-id");
 		let listId = "";
@@ -774,7 +789,7 @@ function SavedAuthResult_to_AuthResult(savedAuthResult) {
 }
 
 /**
- * Convert AuthResultV2 to dkimSigResultV2
+ * Convert AuthResultDKIMV2 to dkimSigResultV2
  *
  * @param {AuthResultDKIMV2} authResultDKIM
  * @return {VerifierModule.dkimSigResultV2} dkimSigResultV2
