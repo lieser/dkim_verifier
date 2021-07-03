@@ -97,6 +97,18 @@ describe("Sign rules [unittest]", function () {
 			res = await SignRules.check(dkimNone, "bar@foo.com", "list@foo.com");
 			expect(res.result).is.equal("PERMFAIL");
 		});
+		it("empty or not given list-id should not match", async function () {
+			let res = await SignRules.check(dkimNone, "bar@example.com", "");
+			expect(res.result).is.equal("none");
+
+			await SignRules.addRule(null, "", "*", "foo.com", SignRules.TYPE.ALL);
+
+			res = await SignRules.check(dkimNone, "bar@foo.com", "");
+			expect(res.result).is.equal("none");
+
+			res = await SignRules.check(dkimNone, "bar@foo.com", null);
+			expect(res.result).is.equal("none");
+		});
 		it("match address using glob", async function () {
 			await SignRules.addRule("foo.com", null, "*@a.foo.com", "foo.com", SignRules.TYPE.ALL);
 
@@ -174,19 +186,19 @@ describe("Sign rules [unittest]", function () {
 	});
 	describe("outgoing mail", function () {
 		it("outgoing mail must not be signed", async function () {
-			let res = await SignRules.check(dkimNone, "bar@paypal.com", "", () => Promise.resolve(false));
+			let res = await SignRules.check(dkimNone, "bar@paypal.com", null, () => Promise.resolve(false));
 			expect(res.result).is.equal("PERMFAIL");
-			res = await SignRules.check(dkimNone, "bar@paypal.com", "", () => Promise.resolve(true));
+			res = await SignRules.check(dkimNone, "bar@paypal.com", null, () => Promise.resolve(true));
 			expect(res.result).is.equal("none");
 		});
 		it("check that callback is not called unnecessarily", async function () {
 			const callback = sinon.fake.rejects("should not be called");
 
-			let res = await SignRules.check(dkimNone, "bar@test.com", "", callback);
+			let res = await SignRules.check(dkimNone, "bar@test.com", null, callback);
 			expect(res.result).is.equal("none");
 			expect(callback.notCalled).to.be.true;
 
-			res = await SignRules.check(dkimSuccessPayPal, "bar@paypal.com", "", callback);
+			res = await SignRules.check(dkimSuccessPayPal, "bar@paypal.com", null, callback);
 			expect(res.result).is.equal("SUCCESS");
 			expect(callback.notCalled).to.be.true;
 		});

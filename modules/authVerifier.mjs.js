@@ -145,7 +145,7 @@ export default class AuthVerifier {
 			from: from,
 		};
 		const listIdHeader = msgParsed.headers.get("list-id");
-		let listId = "";
+		let listId = null;
 		if (listIdHeader) {
 			try {
 				listId = MsgParser.parseListIdHeader(listIdHeader[0]);
@@ -218,7 +218,7 @@ export default class AuthVerifier {
  * @param {browser.messageDisplay.MessageHeader} message
  * @param {Map<string, string[]>} headers
  * @param {string} from
- * @param {string} listId
+ * @param {string?} listId
  * @param {string} account
  * @param {DMARC} dmarc
  * @return {Promise<SavedAuthResult|Null>}
@@ -401,7 +401,7 @@ async function loadAuthResult(message) {
  * @param {browser.messageDisplay.MessageHeader} message
  * @param {VerifierModule.dkimSigResultV2[]} dkimResults
  * @param {string} from
- * @param {string} listId
+ * @param {string?} listId
  * @param {DMARC} dmarc
  * @returns {Promise<void>}
  */
@@ -426,7 +426,7 @@ async function checkSignRules(message, dkimResults, from, listId, dmarc) {
  *
  * @param {VerifierModule.dkimSigResultV2[]} signatures
  * @param {string} from
- * @param {string} [listId]
+ * @param {string?} listId
  * @return {void}
  */
 function sortSignatures(signatures, from, listId) {

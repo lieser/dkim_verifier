@@ -217,7 +217,7 @@ function glob(str, pattern) {
  * Determinate if an e-mail by fromAddress should be signed
  *
  * @param {string} fromAddress
- * @param {string} [listId]
+ * @param {string?} [listId]
  * @param {DMARC} [dmarc]
  * @returns {Promise<DKIMSignPolicy>}
  */
@@ -377,7 +377,7 @@ export default class SignRules {
 	 *
 	 * @param {VerifierModule.dkimSigResultV2} dkimResult
 	 * @param {string} from
-	 * @param {string} [listId]
+	 * @param {string?} [listId]
 	 * @param {function(void): Promise<boolean>} [isOutgoingCallback]
 	 * @param {DMARC} [dmarc]
 	 * @returns {Promise<VerifierModule.dkimSigResultV2>}
