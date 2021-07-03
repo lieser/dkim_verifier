@@ -284,7 +284,7 @@ async function getARHResult(message, headers, from, listId, account, dmarc) {
 	}
 
 	// sort signatures
-	sortSignatures(dkimSigResults, from);
+	sortSignatures(dkimSigResults, from, listId);
 
 	const savedAuthResult = {
 		version: "3.0",
@@ -529,7 +529,7 @@ function sortSignatures(signatures, from, listId) {
 		if (cmp !== 0) {
 			return cmp;
 		}
-		return -1;
+		return 0;
 	});
 }
 

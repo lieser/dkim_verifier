@@ -291,8 +291,6 @@ describe("AuthVerifier [unittest]", function () {
 			});
 
 			it("DKIM pass with only SDID", async function () {
-				await prefs.setValue("arh.read", true);
-
 				const message = await createMessageHeader("rfc6376-A.2-arh-valid.eml");
 				const res = await authVerifier.verify(message);
 				expect(res.dkim[0].result).to.be.equal("SUCCESS");
@@ -301,8 +299,6 @@ describe("AuthVerifier [unittest]", function () {
 				expect(res.dkim[0].auid).to.be.equal("@example.com");
 			});
 			it("DKIM pass with only AUID", async function () {
-				await prefs.setValue("arh.read", true);
-
 				const message = await createMessageHeader("rfc6376-A.2-arh-valid-auid.eml");
 				const res = await authVerifier.verify(message);
 				expect(res.dkim[0].result).to.be.equal("SUCCESS");
@@ -311,8 +307,6 @@ describe("AuthVerifier [unittest]", function () {
 				expect(res.dkim[0].auid).to.be.equal("joe@football.example.com");
 			});
 			it("DKIM pass with both SDID and AUID", async function () {
-				await prefs.setValue("arh.read", true);
-
 				const message = await createMessageHeader("rfc6376-A.2-arh-valid-sdid_and_auid.eml");
 				const res = await authVerifier.verify(message);
 				expect(res.dkim[0].result).to.be.equal("SUCCESS");
@@ -321,20 +315,26 @@ describe("AuthVerifier [unittest]", function () {
 				expect(res.dkim[0].auid).to.be.equal("joe@football.example.com");
 			});
 			it("DKIM fail with reason", async function () {
-				await prefs.setValue("arh.read", true);
-
 				const message = await createMessageHeader("rfc6376-A.2-arh-failed.eml");
 				const res = await authVerifier.verify(message);
 				expect(res.dkim[0].result).to.be.equal("PERMFAIL");
 				expect(res.dkim[0].result_str).to.be.equal("Invalid (bad signature)");
 			});
 			it("DKIM fail without reason", async function () {
-				await prefs.setValue("arh.read", true);
-
 				const message = await createMessageHeader("rfc6376-A.2-arh-failed-no_reason.eml");
 				const res = await authVerifier.verify(message);
 				expect(res.dkim[0].result).to.be.equal("PERMFAIL");
 				expect(res.dkim[0].result_str).to.be.equal("Invalid");
+			});
+			it("DKIM results should be sorted", async function () {
+				const message = await createMessageHeader("arh-multiple_dkim_results.eml");
+				const res = await authVerifier.verify(message);
+				expect(res.dkim[0].result).to.be.equal("SUCCESS");
+				expect(res.dkim[0].sdid).to.be.equal("example.com");
+				expect(res.dkim[1].result).to.be.equal("SUCCESS");
+				expect(res.dkim[1].sdid).to.be.equal("example.org");
+				expect(res.dkim[2].result).to.be.equal("SUCCESS");
+				expect(res.dkim[2].sdid).to.be.equal("unrelated.org");
 			});
 		});
 	});

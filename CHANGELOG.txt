@@ -1,5 +1,6 @@
  - show proper error message on ill-formed from (#238)
  - ignore ill-formed list-id (#262)
+ - Authentication-Results header: fixed sorting of DKIM results in regards to list id
 
 4.0.0 [2021-04-18]
 ------------------
