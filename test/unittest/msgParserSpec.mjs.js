@@ -316,5 +316,13 @@ describe("Message parser [unittest]", function () {
 				MsgParser.parseListIdHeader('List-Id: "<fake.list.com>" <list-header.nisto.com>\r\n')
 			).to.be.equal("list-header.nisto.com");
 		});
+		it("invalid headers", function () {
+			expect( () =>
+				MsgParser.parseListIdHeader('List-Id: missing-angle-brackets.example.com')
+			).to.throw();
+			expect( () =>
+				MsgParser.parseListIdHeader('List-Id: <foo@example.com>\r\n')
+			).to.throw();
+		});
 	});
 });
