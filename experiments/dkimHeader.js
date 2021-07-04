@@ -9,8 +9,8 @@
 
 // @ts-check
 ///<reference path="./dkimHeader.d.ts" />
-///<reference path="../mozilla.d.ts" />
-///<reference path="../mozillaDom.d.ts" />
+///<reference path="./mozilla.d.ts" />
+///<reference path="./mozillaDom.d.ts" />
 /* eslint-env worker */
 /* global ChromeUtils, Components, ExtensionCommon */
 

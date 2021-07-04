@@ -9,7 +9,7 @@
 
 // @ts-check
 ///<reference path="./mailUtils.d.ts" />
-///<reference path="../mozilla.d.ts" />
+///<reference path="./mozilla.d.ts" />
 /* eslint-env worker */
 /* global ChromeUtils, Components, ExtensionCommon */
 

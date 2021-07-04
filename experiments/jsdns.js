@@ -10,7 +10,7 @@
 
 // @ts-check
 ///<reference path="./jsdns.d.ts" />
-///<reference path="../mozilla.d.ts" />
+///<reference path="./mozilla.d.ts" />
 /* eslint-env worker */
 /* global ChromeUtils, Components, ExtensionCommon */
 

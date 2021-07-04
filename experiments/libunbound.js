@@ -12,7 +12,7 @@
 
 // @ts-check
 ///<reference path="./libunbound.d.ts" />
-///<reference path="../mozilla.d.ts" />
+///<reference path="./mozilla.d.ts" />
 /* eslint-env worker */
 /* global ChromeUtils, ChromeWorker, Components, ExtensionCommon */
 
