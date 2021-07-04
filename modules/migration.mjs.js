@@ -20,6 +20,11 @@ import Logging from "./logging.mjs.js";
 
 const log = Logging.getLogger("Migration");
 
+/**
+ * Migrate old preferences from about:config.
+ *
+ * @returns {Promise<void>}
+ */
 export async function migratePrefs() {
 	const preferences = await ExtensionUtils.safeGetLocalStorage();
 	if (preferences) {
@@ -63,6 +68,11 @@ export async function migratePrefs() {
 	}
 }
 
+/**
+ * Migrate old sign rules of the user.
+ *
+ * @returns {Promise<void>}
+ */
 export async function migrateSignRulesUser() {
 	const storage = await ExtensionUtils.safeGetLocalStorage();
 	if (storage && storage.signRulesUser) {
@@ -76,6 +86,11 @@ export async function migrateSignRulesUser() {
 	}
 }
 
+/**
+ * Migrate old stored DKIM keys.
+ *
+ * @returns {Promise<void>}
+ */
 export async function migrateKeyStore() {
 	const storage = await ExtensionUtils.safeGetLocalStorage();
 	if (storage && storage.keyStore) {

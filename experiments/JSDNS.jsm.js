@@ -283,15 +283,14 @@ function configureDNS(getNameserversFromOS, nameServer, timeoutConnect, proxy, a
 }
 
 /**
- * Remove Duplicates from Array
+ * Remove Duplicates from an Array.
  *
- * from http://stackoverflow.com/questions/9229645/remove-duplicates-from-javascript-array/9229821#9229821
+ * From http://stackoverflow.com/questions/9229645/remove-duplicates-from-javascript-array/9229821#9229821.
  *
  * @template T
  * @param {T[]} ary
- * @param {function(T): string} key
- *        Function to generate key from element
- * @return {T[]}
+ * @param {function(T): string} key - Function to generate key from element
+ * @returns {T[]}
  */
 function arrayUniqBy(ary, key) {
 	"use strict";
@@ -309,9 +308,9 @@ function arrayUniqBy(ary, key) {
 }
 
 /**
- * get DNS Servers from OS configuration
+ * Get DNS Servers from OS configuration.
  *
- * @return {DnsServer[]}
+ * @returns {DnsServer[]}
  */
 function getOsDnsServers() {
 	"use strict";
@@ -481,7 +480,7 @@ function getOsDnsServers() {
  * @param {T} callbackdata
  * @param {string|string[]} [queryError]
  * @param {number} [rcode]
- * @return {void}
+ * @returns {void}
  */
 
 /**
@@ -962,7 +961,7 @@ function DNS_octetToStr(octet) {
 }
 
 /**
- * This comes from http://xulplanet.com/tutorials/mozsdk/sockets.php
+ * This comes from http://xulplanet.com/tutorials/mozsdk/sockets.php.
  *
  * @param {string} host
  * @param {number} port

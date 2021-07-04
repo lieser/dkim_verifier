@@ -14,7 +14,7 @@ import { getFavicon } from "../../modules/dkim/favicon.mjs.js";
 import { hasWebExtensions } from "../helpers/initWebExtensions.mjs.js";
 
 /**
- * Get the fake URL of an icon
+ * Get the fake URL of an icon.
  *
  * @param {string} fileName
  * @returns {string}

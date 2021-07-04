@@ -92,7 +92,7 @@ export default class Logging {
 	}
 
 	/**
-	 * Get a logger with the given optional name
+	 * Get a logger with the given optional name.
 	 *
 	 * @static
 	 * @param {string|void} loggerName

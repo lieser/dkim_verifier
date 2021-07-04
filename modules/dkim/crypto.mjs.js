@@ -11,6 +11,7 @@
 
 // @ts-check
 /* eslint-env browser, node */
+/* eslint-disable jsdoc/require-returns-check */
 
 import { DKIM_SigError } from "../error.mjs.js";
 import Logging from "../logging.mjs.js";
@@ -42,7 +43,7 @@ class DkimCryptoI {
 	 * @param {string} digestAlgorithm - sha1 / sha256
 	 * @param {string} signature - b64 encoded signature
 	 * @param {string} data - data whose signature is to be verified (binary string)
-	 * @return {Promise<[Boolean, number]>} - valid, key length
+	 * @returns {Promise<[boolean, number]>} - valid, key length
 	 * @throws DKIM_SigError
 	 * @memberof DkimCryptoI
 	 */
@@ -115,7 +116,7 @@ class DkimCryptoWeb extends DkimCryptoI {
 	 * @param {string} digestAlgorithm - sha1 / sha256
 	 * @param {string} signature - b64 encoded signature
 	 * @param {string} data - data whose signature is to be verified (binary string)
-	 * @return {Promise<[Boolean, number]>} - valid, key length
+	 * @returns {Promise<[boolean, number]>} - valid, key length
 	 * @throws DKIM_SigError
 	 * @memberof DkimCryptoI
 	 */
@@ -177,7 +178,7 @@ class DkimCryptoNode extends DkimCryptoI {
 	 * @param {string} digestAlgorithm - sha1 / sha256
 	 * @param {string} signature - b64 encoded signature
 	 * @param {string} data - data whose signature is to be verified (binary string)
-	 * @return {Promise<[Boolean, number]>} - valid, key length
+	 * @returns {Promise<[boolean, number]>} - valid, key length
 	 * @throws DKIM_SigError
 	 * @memberof DkimCryptoI
 	 */

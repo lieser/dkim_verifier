@@ -13,6 +13,7 @@
 ///<reference path="../WebExtensions.d.ts" />
 /* eslint-env webextensions */
 /* eslint no-magic-numbers: "off" */
+/* eslint-disable jsdoc/match-description */
 
 import { Deferred } from "./utils.mjs.js";
 import ExtensionUtils from "./extensionUtils.mjs.js";
@@ -28,13 +29,13 @@ export class BasePreferences {
 	/**
 	 * @callback ValueGetter
 	 * @param {string} name
-	 * @return {boolean|number|string|undefined}
+	 * @returns {boolean|number|string|undefined}
 	 */
 	/**
 	 * @callback ValueSetter
 	 * @param {string} name
 	 * @param {boolean|number|string} value
-	 * @return {Promise<void>}
+	 * @returns {Promise<void>}
 	 */
 
 	/**
@@ -297,9 +298,9 @@ export class BasePreferences {
 		return this._tryGetBoolValue("dns.proxy.enable", false);
 	}
 	/**
-	* - socks
-	* - socks4
-	*/
+	 * - socks
+	 * - socks4
+	 */
 	get "dns.proxy.type"() {
 		return this._tryGetStringValue("dns.proxy.type", "socks");
 	}

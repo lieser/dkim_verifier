@@ -17,7 +17,7 @@ describe("ExtensionUtils [unittest]", () => {
 	describe("isOutgoing", () => {
 		/**
 		 * @param {string} accountId
-		 * @param {string=} folderType
+		 * @param {string} [folderType]
 		 * @returns {browser.messageDisplay.MessageHeader}
 		 */
 		function createFakeMessageHeader(accountId, folderType) {

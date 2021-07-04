@@ -81,9 +81,8 @@ export default class RfcParser {
 	 * Parses a Tag=Value list.
 	 * Specified in Section 3.2 of RFC 6376.
 	 *
-	 * @param {String} str
-	 *
-	 * @return {Map<String, String>|Number} Map
+	 * @param {string} str
+	 * @returns {Map<string, string>|number} Map
 	 *                       -1 if a tag-spec is ill-formed
 	 *                       -2 duplicate tag names
 	 */
@@ -98,7 +97,7 @@ export default class RfcParser {
 		}
 
 		const array = str.split(";");
-		/** @type {Map<String, String>} */
+		/** @type {Map<string, string>} */
 		const map = new Map();
 		for (const elem of array) {
 			// get tag name and value
@@ -126,13 +125,11 @@ export default class RfcParser {
 	/**
 	 * Parse a tag value stored in a Map.
 	 *
-	 * @param {Map<String, String>} map
-	 * @param {String} tagName name of the tag
-	 * @param {String} patternTagValue Pattern for the tag-value
-	 * @param {Number} [expType=1] Type of exception to throw. 1 for DKIM header, 2 for DKIM key, 3 for general.
-	 *
-	 * @return {RegExpMatchArray|Null} The match from the RegExp if tag_name exists, otherwise null
-	 *
+	 * @param {Map<string, string>} map
+	 * @param {string} tagName - name of the tag
+	 * @param {string} patternTagValue - Pattern for the tag-value
+	 * @param {number} [expType] - Type of exception to throw. 1 for DKIM header, 2 for DKIM key, 3 for general.
+	 * @returns {RegExpMatchArray|null} The match from the RegExp if tag_name exists, otherwise null
 	 * @throws {DKIM_SigError|DKIM_InternalError} Throws if tag_value does not match.
 	 */
 	static parseTagValue(map, tagName, patternTagValue, expType = 1) {

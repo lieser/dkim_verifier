@@ -16,9 +16,7 @@ export class DKIM_SigError extends Error {
 	/**
 	 * DKIM signature error.
 	 *
-	 * @constructor
-	 *
-	 * @param {String} errorType
+	 * @param {string} errorType
 	 * @param {any[]} [errorStrParams]
 	 */
 	constructor(errorType, errorStrParams = []) {
@@ -39,12 +37,10 @@ export class DKIM_SigError extends Error {
  */
 export class DKIM_InternalError extends Error {
 	/**
-	 * DKIM internal error
+	 * DKIM internal error.
 	 *
-	 * @constructor
-	 *
-	 * @param {String|null} [message]
-	 * @param {String} [errorType]
+	 * @param {string|null} [message]
+	 * @param {string} [errorType]
 	 */
 	constructor(message, errorType) {
 		// super(message ||

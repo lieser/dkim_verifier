@@ -30,32 +30,32 @@ var { OS } = ChromeUtils.import("resource://gre/modules/osfile.jsm");
  * Does differ from the original ub_result a bit.
  *
  * @typedef {Object} ub_result
- * @property {String} qname
+ * @property {string} qname
  *           text string, original question
- * @property {Number} qtype
+ * @property {number} qtype
  *           type code asked for
- * @property {Number} qclass
+ * @property {number} qclass
  *           class code (CLASS IN (internet))
  * @property {Object[]} data
  *           Array of converted rdata items. Empty for unsupported RR types.
  *           Currently supported types: TXT
- * @property {Number[][]} data_raw
+ * @property {number[][]} data_raw
  *           Array of rdata items as byte array
- * @property {String} canonname
+ * @property {string} canonname
  *           canonical name of result (empty string if missing in response)
- * @property {Number} rcode
+ * @property {number} rcode
  *           additional error code in case of no data
- * @property {Boolean} havedata
+ * @property {boolean} havedata
  *           true if there is data
- * @property {Boolean} nxdomain
+ * @property {boolean} nxdomain
  *           true if nodata because name does not exist
- * @property {Boolean} secure
+ * @property {boolean} secure
  *           true if result is secure.
- * @property {Boolean} bogus
+ * @property {boolean} bogus
  *           true if a security failure happened.
- * @property {String} why_bogus
+ * @property {string} why_bogus
  *           string with error if bogus
- * @property {Number} ttl
+ * @property {number} ttl
  *           number of seconds the result is valid
  */
 
@@ -101,9 +101,9 @@ class LibunboundWorker {
 	}
 
 	/**
-	 * Load library
+	 * Load library.
 	 *
-	 * @return {Promise<void>}
+	 * @returns {Promise<void>}
 	 */
 	load() {
 		/** @type {Deferred<void>} */
@@ -133,9 +133,9 @@ class LibunboundWorker {
 	}
 
 	/**
-	 * Updates ctx by deleting old an creating new
+	 * Updates ctx by deleting the old an creating a new one.
 	 *
-	 * @return {Promise<void>}
+	 * @returns {Promise<void>}
 	 */
 	updateCtx() {
 		/** @type {Deferred<void>} */
@@ -186,12 +186,11 @@ class LibunboundWorker {
 	/**
 	 * Perform resolution of the target name.
 	 *
-	 * @param {String} name
-	 * @param {Number} [rrtype=LibunboundWorker.Constants.RR_TYPE_A]
-	 *
-	 * @return {Promise<ub_result>}
+	 * @param {string} name
+	 * @param {number} rrtype
+	 * @returns {Promise<ub_result>}
 	 */
-	resolve(name, rrtype = LibunboundWorker.Constants.RR_TYPE_A) {
+	resolve(name, rrtype) {
 		/** @type {Deferred<ub_result>} */
 		const defer = new Deferred();
 		// @ts-ignore
@@ -208,9 +207,10 @@ class LibunboundWorker {
 	}
 
 	/**
-	 * Handle the callbacks from the ChromeWorker
+	 * Handle the callbacks from the ChromeWorker.
+	 *
 	 * @param {Libunbound.WorkerResponse} msg
-	 * @return {void}
+	 * @returns {void}
 	 */
 	_onmessage(msg) {
 		try {

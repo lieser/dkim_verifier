@@ -23,6 +23,11 @@ import prefs from "../modules/preferences.mjs.js";
 
 const log = Logging.getLogger("background");
 
+/**
+ * Initialize the add-on.
+ *
+ * @returns {Promise<void>}
+ */
 async function init() {
 	await Logging.initLogLevelFromPrefs();
 

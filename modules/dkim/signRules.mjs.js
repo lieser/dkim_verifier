@@ -214,7 +214,7 @@ function glob(str, pattern) {
  */
 
 /**
- * Determinate if an e-mail by fromAddress should be signed
+ * Determinate if an e-mail by fromAddress should be signed.
  *
  * @param {string} fromAddress
  * @param {string?} [listId]
@@ -479,7 +479,7 @@ export default class SignRules {
 	}
 
 	/**
-	 * Adds neutral rule for fromAddress with priority USERINSERT_RULE_NEUTRAL
+	 * Adds neutral rule for fromAddress with priority USERINSERT_RULE_NEUTRAL.
 	 *
 	 * @param {string} fromAddress
 	 * @returns {Promise<void>}
@@ -570,7 +570,7 @@ export default class SignRules {
 	}
 
 	/**
-	 * Adds should be signed rule if no enabled rule for fromAddress is found
+	 * Adds should be signed rule if no enabled rule for fromAddress is found.
 	 *
 	 * @param {string} fromAddress
 	 * @param {VerifierModule.dkimSigResultV2} dkimResult

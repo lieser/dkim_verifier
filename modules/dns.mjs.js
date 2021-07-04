@@ -41,6 +41,11 @@ let jsdnsIsConfigured = null;
 let libunboundIsConfigured = null;
 
 let listenerAdded = false;
+/**
+ * Add Listener to monitor preference changes for the DNS resolvers.
+ *
+ * @returns {void}
+ */
 function addPrefsListener() {
 	if (listenerAdded) {
 		return;
@@ -123,7 +128,7 @@ export default class DNS {
 	/**
 	 * Perform TXT resolution of the target name.
 	 *
-	 * @param {String} name
+	 * @param {string} name
 	 * @returns {Promise<DnsTxtResult>}
 	 */
 	static async txt(name) {

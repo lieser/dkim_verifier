@@ -166,12 +166,11 @@ let ub_strerror;
 /**
  * Perform resolution of the target name.
  *
- * @param {String} name
- * @param {Number} [rrtype=libunbound.Constants.RR_TYPE_A]
- *
- * @return {ub_result}
+ * @param {string} name
+ * @param {number} rrtype
+ * @returns {ub_result}
  */
-function resolve(name, rrtype = Constants.RR_TYPE_A) {
+function resolve(name, rrtype) {
 	if (!ub_resolve) {
 		throw new Error("libunbound not correctly initialized (ub_resolve missing)");
 	}
@@ -281,11 +280,11 @@ function resolve(name, rrtype = Constants.RR_TYPE_A) {
 }
 
 /**
- * Load library
+ * Load library.
  *
- * @param {String} paths paths to libraries to load, separated by ";". Last is libunbound.
- * @return {void}
-*/
+ * @param {string} paths - paths to libraries to load, separated by ";". Last is libunbound.
+ * @returns {void}
+ */
 function load(paths) {
 	// if library was already loaded, do a cleanup first before reloading it
 	if (lib) {
@@ -394,14 +393,14 @@ function load(paths) {
 }
 
 /**
- * updates ctx by deleting old an creating new
+ * Updates ctx by deleting the old an creating a new one.
  *
- * @param {String|undefined} conf
- * @param {Number|undefined} debuglevel
- * @param {Boolean} getNameserversFromOS
- * @param {String[]} nameservers
- * @param {String[]} trustAnchors
- * @return {void}
+ * @param {string|undefined} conf
+ * @param {number|undefined} debuglevel
+ * @param {boolean} getNameserversFromOS
+ * @param {string[]} nameservers
+ * @param {string[]} trustAnchors
+ * @returns {void}
  */
 function update_ctx(conf, debuglevel, getNameserversFromOS, nameservers, trustAnchors) {
 	if (!ub_ctx_create) {
@@ -467,9 +466,10 @@ function update_ctx(conf, debuglevel, getNameserversFromOS, nameservers, trustAn
 }
 
 /**
- * Handle the requests from libunbound.jsm
+ * Handle the requests from libunbound.jsm.
+ *
  * @param {Libunbound.WorkerRequest} msg
- * @return {void}
+ * @returns {void}
  */
 onmessage = function (msg) {
 	try {

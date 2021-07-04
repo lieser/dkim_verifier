@@ -36,7 +36,7 @@ const log = Logging.getLogger("AuthVerifier");
 
 /**
  * @typedef {Object} AuthResultV2
- * @property {String} version
+ * @property {string} version
  *           result version ("2.1")
  * @property {AuthResultDKIM[]} dkim
  * @property {ArhParserModule.ArhResInfo[]} [spf]
@@ -50,7 +50,7 @@ const log = Logging.getLogger("AuthVerifier");
 
 /**
  * @typedef {Object} SavedAuthResultV3
- * @property {String} version
+ * @property {string} version
  *           result version ("3.0")
  * @property {VerifierModule.dkimSigResultV2[]} dkim
  * @property {ArhParserModule.ArhResInfo[]} [spf]
@@ -64,17 +64,17 @@ const log = Logging.getLogger("AuthVerifier");
 /**
  * @typedef {IAuthVerifier.AuthResultDKIMV2} AuthResultDKIMV2
  * extends dkimSigResultV2
- * @property {Number} res_num
+ * @property {number} res_num
  *           10: SUCCESS
  *           20: TEMPFAIL
  *           30: PERMFAIL
  *           35: PERMFAIL treat as no sig
  *           40: no sig
- * @property {String} result_str
+ * @property {string} result_str
  *           localized result string
- * @property {String[]} [warnings_str]
+ * @property {string[]} [warnings_str]
  *           localized warnings
- * @property {String} [favicon]
+ * @property {string} [favicon]
  *           url to the favicon of the sdid
  */
 /**
@@ -107,7 +107,7 @@ export default class AuthVerifier {
 	 * Verifies the authentication of the msg.
 	 *
 	 * @param {browser.messageDisplay.MessageHeader} message
-	 * @return {Promise<AuthResult>}
+	 * @returns {Promise<AuthResult>}
 	 */
 	async verify(message) {
 		await prefs.init();
@@ -205,7 +205,7 @@ export default class AuthVerifier {
 	 * Resets the stored authentication result of the msg.
 	 *
 	 * @param {browser.messageDisplay.MessageHeader} message
-	 * @return {Promise<void>}
+	 * @returns {Promise<void>}
 	 */
 	static resetResult(message) {
 		return saveAuthResult(message, null);
@@ -221,7 +221,7 @@ export default class AuthVerifier {
  * @param {string?} listId
  * @param {string} account
  * @param {DMARC} dmarc
- * @return {Promise<SavedAuthResult|Null>}
+ * @returns {Promise<SavedAuthResult|null>}
  */
 async function getARHResult(message, headers, from, listId, account, dmarc) {
 	const arHeaders = headers.get("authentication-results");
@@ -297,11 +297,11 @@ async function getARHResult(message, headers, from, listId, account, dmarc) {
 }
 
 /**
- * Save authentication result
+ * Save authentication result.
  *
  * @param {browser.messageDisplay.MessageHeader} message
- * @param {SavedAuthResult|Null} savedAuthResult
- * @return {Promise<void>}
+ * @param {SavedAuthResult|null} savedAuthResult
+ * @returns {Promise<void>}
  */
 async function saveAuthResult(message, savedAuthResult) {
 	// don't save result if disabled or message is external
@@ -324,10 +324,10 @@ async function saveAuthResult(message, savedAuthResult) {
 }
 
 /**
- * Get saved authentication result
+ * Get saved authentication result.
  *
  * @param {browser.messageDisplay.MessageHeader} message
- * @return {Promise<SavedAuthResult|null>} savedAuthResult
+ * @returns {Promise<SavedAuthResult|null>} savedAuthResult
  */
 async function loadAuthResult(message) {
 	// don't load result if disabled or message is external
@@ -427,10 +427,12 @@ async function checkSignRules(message, dkimResults, from, listId, dmarc) {
  * @param {VerifierModule.dkimSigResultV2[]} signatures
  * @param {string} from
  * @param {string?} listId
- * @return {void}
+ * @returns {void}
  */
 function sortSignatures(signatures, from, listId) {
 	/**
+	 * Compare the results of two signatures.
+	 *
 	 * @param {VerifierModule.dkimSigResultV2} sig1
 	 * @param {VerifierModule.dkimSigResultV2} sig2
 	 * @returns {number}
@@ -462,6 +464,8 @@ function sortSignatures(signatures, from, listId) {
 	}
 
 	/**
+	 * Compare the warnings of two signatures.
+	 *
 	 * @param {VerifierModule.dkimSigResultV2} sig1
 	 * @param {VerifierModule.dkimSigResultV2} sig2
 	 * @returns {number}
@@ -489,6 +493,8 @@ function sortSignatures(signatures, from, listId) {
 	}
 
 	/**
+	 * Compare the SDIDs of two signatures in regards to the from and list-id header.
+	 *
 	 * @param {VerifierModule.dkimSigResultV2} sig1
 	 * @param {VerifierModule.dkimSigResultV2} sig2
 	 * @returns {number}
@@ -534,10 +540,10 @@ function sortSignatures(signatures, from, listId) {
 }
 
 /**
- * Convert DKIM ARHresinfo to dkimResult
+ * Convert DKIM ARHresinfo to dkimResult.
  *
  * @param {ArhParserModule.ArhResInfo} arhDKIM
- * @return {VerifierModule.dkimSigResultV2}
+ * @returns {VerifierModule.dkimSigResultV2}
  */
 function arhDKIM_to_dkimSigResultV2(arhDKIM) {
 	/** @type {VerifierModule.dkimSigResultV2} */
@@ -590,10 +596,10 @@ function arhDKIM_to_dkimSigResultV2(arhDKIM) {
 }
 
 /**
- * Convert dkimResultV1 to dkimSigResultV2
+ * Convert dkimResultV1 to dkimSigResultV2.
  *
  * @param {VerifierModule.dkimResultV1} dkimResultV1
- * @return {VerifierModule.dkimSigResultV2}
+ * @returns {VerifierModule.dkimSigResultV2}
  */
 function dkimResultV1_to_dkimSigResultV2(dkimResultV1) {
 	/** @type {VerifierModule.dkimSigResultV2} */
@@ -623,10 +629,10 @@ function dkimResultV1_to_dkimSigResultV2(dkimResultV1) {
 }
 
 /**
- * Convert dkimSigResultV2 to AuthResultDKIM
+ * Convert dkimSigResultV2 to AuthResultDKIM.
  *
  * @param {VerifierModule.dkimSigResultV2} dkimSigResult
- * @return {AuthResultDKIM}
+ * @returns {AuthResultDKIM}
  * @throws DKIM_InternalError
  */
 function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-line complexity
@@ -766,10 +772,10 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 }
 
 /**
- * Convert SavedAuthResult to AuthResult
+ * Convert SavedAuthResult to AuthResult.
  *
  * @param {SavedAuthResult} savedAuthResult
- * @return {Promise<AuthResult>} authResult
+ * @returns {Promise<AuthResult>} authResult
  */
 function SavedAuthResult_to_AuthResult(savedAuthResult) {
 	/** @type {AuthResult} */
@@ -793,10 +799,10 @@ function SavedAuthResult_to_AuthResult(savedAuthResult) {
 }
 
 /**
- * Convert AuthResultDKIMV2 to dkimSigResultV2
+ * Convert AuthResultDKIMV2 to dkimSigResultV2.
  *
  * @param {AuthResultDKIMV2} authResultDKIM
- * @return {VerifierModule.dkimSigResultV2} dkimSigResultV2
+ * @returns {VerifierModule.dkimSigResultV2} dkimSigResultV2
  */
 function AuthResultDKIMV2_to_dkimSigResultV2(authResultDKIM) {
 	/** @type {VerifierModule.dkimSigResultV2} */
@@ -817,7 +823,7 @@ function AuthResultDKIMV2_to_dkimSigResultV2(authResultDKIM) {
  * Add favicons to the DKIM results.
  *
  * @param {AuthResult} authResult
- * @return {Promise<AuthResult>} authResult
+ * @returns {Promise<AuthResult>} authResult
  */
 async function addFavicons(authResult) {
 	if (!prefs["display.favicon.show"]) {

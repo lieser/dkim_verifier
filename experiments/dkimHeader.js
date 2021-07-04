@@ -50,9 +50,9 @@ class DKIMTooltip {
 	}
 
 	/**
-	 * Set the warnings for the tooltip
+	 * Set the warnings for the tooltip.
 	 *
-	 * @param {String[]} warnings
+	 * @param {string[]} warnings
 	 * @memberof DKIMTooltip
 	 */
 	set warnings(warnings) {
@@ -83,7 +83,7 @@ class DKIMTooltip {
 /**
  * Tooltip showing the DKIM warnings.
  *
- * @extends {DKIMTooltip}
+ * @augments {DKIMTooltip}
  */
 class DKIMWarningsTooltip extends DKIMTooltip {
 	/**
@@ -107,7 +107,7 @@ class DKIMWarningsTooltip extends DKIMTooltip {
  * Tooltip showing both the DKIM result and the warnings.
  * The tooltip contains the label "DKIM:".
  *
- * @extends {DKIMTooltip}
+ * @augments {DKIMTooltip}
  */
 class DkimResultTooltip extends DKIMTooltip {
 	/**
@@ -144,9 +144,9 @@ class DkimResultTooltip extends DKIMTooltip {
 	}
 
 	/**
-	 * Set the DKIM result
+	 * Set the DKIM result.
 	 *
-	 * @param {String} val
+	 * @param {string} val
 	 * @memberof DKIMTooltip
 	 */
 	set value(val) {
@@ -202,10 +202,10 @@ class DKIMHeaderField {
 		this.element._dkimWarningIcon.style.marginLeft = "1ex";
 
 		/**
-		 * Create element for ARH result
+		 * Create element for ARH result.
 		 *
-		 * @param {String} anonid
-		 * @param {String} labelValue
+		 * @param {string} anonid
+		 * @param {string} labelValue
 		 * @returns {{box: XULElement, value: XULElement}}
 		 */
 		function createArh(anonid, labelValue) {
@@ -249,9 +249,9 @@ class DKIMHeaderField {
 	}
 
 	/**
-	 * Set the DKIM result
+	 * Set the DKIM result.
 	 *
-	 * @param {String} val
+	 * @param {string} val
 	 * @memberof DKIMHeaderField
 	 */
 	set value(val) {
@@ -259,9 +259,9 @@ class DKIMHeaderField {
 	}
 
 	/**
-	 * Set the DKIM warnings
+	 * Set the DKIM warnings.
 	 *
-	 * @param {String[]} warnings
+	 * @param {string[]} warnings
 	 * @memberof DKIMHeaderField
 	 */
 	set warnings(warnings) {
@@ -274,9 +274,9 @@ class DKIMHeaderField {
 	}
 
 	/**
-	 * Set the SPF result
+	 * Set the SPF result.
 	 *
-	 * @param {String} val
+	 * @param {string} val
 	 * @memberof DKIMHeaderField
 	 */
 	set spfValue(val) {
@@ -289,9 +289,9 @@ class DKIMHeaderField {
 	}
 
 	/**
-	 * Set the DMARC result
+	 * Set the DMARC result.
 	 *
-	 * @param {String} val
+	 * @param {string} val
 	 * @memberof DKIMHeaderField
 	 */
 	set dmarcValue(val) {
@@ -304,9 +304,9 @@ class DKIMHeaderField {
 	}
 
 	/**
-	 * Set the DKIM result from the ARH
+	 * Set the DKIM result from the ARH.
 	 *
-	 * @param {String} val
+	 * @param {string} val
 	 * @memberof DKIMHeaderField
 	 */
 	set arhDkimValue(val) {
@@ -351,6 +351,7 @@ DKIMHeaderField._id = "expandedDkim-verifierBox";
 class DkimHeaderRow {
 	/**
 	 * Creates an instance of DkimHeaderRow.
+	 *
 	 * @param {Document} document
 	 * @param {XULElement|void} element - optional underlying element, will be created if not given
 	 * @memberof DkimHeaderRow
@@ -379,7 +380,7 @@ class DkimHeaderRow {
 	}
 
 	/**
-	 * Set whether the DKIM heder should be shown
+	 * Set whether the DKIM heder should be shown.
 	 *
 	 * @param {boolean} show
 	 * @returns {void}
@@ -498,7 +499,7 @@ class DkimFavicon {
 	/**
 	 * Set the DKIM result.
 	 *
-	 * @param {String} val
+	 * @param {string} val
 	 * @memberof DkimFavicon
 	 */
 	set value(val) {
@@ -508,7 +509,7 @@ class DkimFavicon {
 	/**
 	 * Set the DKIM warnings.
 	 *
-	 * @param {String[]} warnings
+	 * @param {string[]} warnings
 	 * @memberof DkimFavicon
 	 */
 	set warnings(warnings) {
@@ -518,8 +519,8 @@ class DkimFavicon {
 	/**
 	 * Sets the url to the favicon. Empty string to reset it.
 	 *
-	 * @param {String} faviconUrl
-	 * @return {void}
+	 * @param {string} faviconUrl
+	 * @returns {void}
 	 * @memberof DkimFavicon
 	 */
 	setFaviconUrl(faviconUrl) {
@@ -600,7 +601,8 @@ DkimFavicon._idTooltip = "dkim-verifier-header-tooltip-from";
  */
 class DkimFromAddress {
 	/**
-	 * Get the element containing the from address (without the following star)
+	 * Get the element containing the from address (without the following star).
+	 *
 	 * @static
 	 * @param {Document} document
 	 * @returns {XULElement?}
@@ -632,6 +634,7 @@ class DkimFromAddress {
 
 	/**
 	 * Set the text and background color of the from address.
+	 *
 	 * @param {Document} document
 	 * @param {string} color
 	 * @param {string} backgroundColor
@@ -648,7 +651,7 @@ class DkimFromAddress {
 	}
 
 	/**
-	 * Set whether the DKIM heder should be shown
+	 * Set whether the DKIM heder should be shown.
 	 *
 	 * @param {Document} document
 	 * @param {boolean} show
@@ -684,6 +687,7 @@ class DkimFromAddress {
 
 	/**
 	 * Reset the DKIM specific modifications of the from address.
+	 *
 	 * @param {Document} document
 	 * @returns {void}
 	 */

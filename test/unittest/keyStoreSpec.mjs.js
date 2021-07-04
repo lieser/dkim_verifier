@@ -100,7 +100,6 @@ describe("Key store [unittest]", function () {
 			secure: false,
 			bogus: false,
 		});
-		// eslint-disable-next-line valid-jsdoc
 		/** @type {typeof DNS.txt} */
 		const queryDnsTxt = name => {
 			switch (name) {

@@ -14,6 +14,9 @@
 
 import { getElementById } from "./domUtils.mjs.js";
 
+/**
+ * @returns {Promise<number>}
+ */
 async function getCurrentTabId() {
 	const tab = await browser.tabs.query({ currentWindow: true, active: true });
 	const tabId = tab[0].id;

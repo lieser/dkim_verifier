@@ -39,7 +39,6 @@ export default class SignRulesProxy {
 		};
 	}
 
-	// eslint-disable-next-line valid-jsdoc
 	/**
 	 * @returns {Promise<import("./signRules.mjs.js").DkimSignRuleDefault[]>}
 	 */
@@ -52,7 +51,6 @@ export default class SignRulesProxy {
 		return browser.runtime.sendMessage(message);
 	}
 
-	// eslint-disable-next-line valid-jsdoc
 	/**
 	 * @returns {Promise<import("./signRules.mjs.js").DkimSignRuleUser[]>}
 	 */

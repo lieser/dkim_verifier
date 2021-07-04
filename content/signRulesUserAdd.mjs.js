@@ -16,6 +16,9 @@ import { getElementById } from "./domUtils.mjs.js";
 
 const log = Logging.getLogger("signRulesUserAdd");
 
+/**
+ * @returns {Promise<void>}
+ */
 async function closeCurrentWindow() {
 	const windowId = (await browser.windows.getCurrent()).id;
 	if (windowId === undefined) {
@@ -60,6 +63,9 @@ function getCheckbox(id) {
 	return inputElement.checked;
 }
 
+/**
+ * @returns {Promise<void>}
+ */
 async function onAccept() {
 	try {
 		const domain = getInputValue("domain");
@@ -85,10 +91,16 @@ async function onAccept() {
 	}
 }
 
+/**
+ * @returns {void}
+ */
 function onCancel() {
 	closeCurrentWindow();
 }
 
+/**
+ * @returns {void}
+ */
 function updatePriorityMode() {
 	const priorityElement = getElementById("priority");
 	if (!(priorityElement instanceof HTMLInputElement)) {

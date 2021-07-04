@@ -355,6 +355,9 @@ describe("preferences [unittest]", function () {
 		it("test multiple pref changes at the same time", async function () {
 			/** @type {Object.<string, any>[]} */
 			const storageCalls = [];
+			/**
+			 * @returns {void}
+			 */
 			function triggerListener() {
 				const items = storageCalls.shift();
 				if (!items) {

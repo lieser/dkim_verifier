@@ -72,7 +72,7 @@ export class KeyDb {
 	 *
 	 * @param {string} sdid
 	 * @param {string} selector
-	 * @return {Promise<DkimKeyResult|null>} The key if it's in the storage; null otherwise
+	 * @returns {Promise<DkimKeyResult|null>} The key if it's in the storage; null otherwise
 	 */
 	static async fetch(sdid, selector) {
 		await KeyDb._loadKeys();
@@ -94,9 +94,9 @@ export class KeyDb {
 	 *
 	 * @param {string} sdid
 	 * @param {string} selector
-	 * @param {string} key DKIM key
-	 * @param {Boolean} secure
-	 * @return {Promise<void>}
+	 * @param {string} key - DKIM key
+	 * @param {boolean} secure
+	 * @returns {Promise<void>}
 	 */
 	static async store(sdid, selector, key, secure) {
 		await KeyDb._loadKeys();
@@ -119,7 +119,7 @@ export class KeyDb {
 	 *
 	 * @param {string} sdid
 	 * @param {string} selector
-	 * @return {Promise<void>}
+	 * @returns {Promise<void>}
 	 */
 	static async markAsSecure(sdid, selector) {
 		await KeyDb._loadKeys();
@@ -180,7 +180,7 @@ export class KeyDb {
 	 * @param {number?} id
 	 * @param {string} [sdid]
 	 * @param {string} [selector]
-	 * @return {Promise<void>}
+	 * @returns {Promise<void>}
 	 */
 	static async delete(id, sdid, selector) {
 		await KeyDb._loadKeys();
@@ -330,7 +330,7 @@ export default class KeyStore {
 	 *
 	 * @param {string} sdid
 	 * @param {string} selector
-	 * @return {Promise<DkimKeyResult>}
+	 * @returns {Promise<DkimKeyResult>}
 	 */
 	async fetchKey(sdid, selector) {
 		switch (prefs["key.storing"]) {
@@ -374,7 +374,7 @@ export default class KeyStore {
 	 * @private
 	 * @param {string} sdid
 	 * @param {string} selector
-	 * @return {Promise<DkimKeyResult>}
+	 * @returns {Promise<DkimKeyResult>}
 	 */
 	async _getKeyFromDNS(sdid, selector) {
 		const dnsRes = await this._queryDnsTxt(`${selector}._domainkey.${sdid}`);

@@ -30,7 +30,10 @@ this.mailUtils = class extends ExtensionCommon.ExtensionAPI {
 		return {
 			mailUtils: {
 				/**
-				 * Returns the base domain for an e-mail address
+				 * Returns the base domain for an e-mail address.
+				 *
+				 * @param {string} addr
+				 * @returns {Promise<string>}
 				 */
 				// eslint-disable-next-line require-await
 				getBaseDomainFromAddr: async (addr) => {

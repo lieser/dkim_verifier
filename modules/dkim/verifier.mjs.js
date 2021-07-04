@@ -36,22 +36,22 @@ import prefs from "../preferences.mjs.js";
  * The result of the verification (Version 1).
  *
  * @typedef {Object} dkimResultV1
- * @property {String} version
+ * @property {string} version
  *           result version ("1.0" / "1.1")
- * @property {String} result
+ * @property {string} result
  *           "none" / "SUCCESS" / "PERMFAIL" / "TEMPFAIL"
- * @property {String} [SDID]
+ * @property {string} [SDID]
  *           required if result="SUCCESS
- * @property {String} [selector]
+ * @property {string} [selector]
  *           added in version 1.1
- * @property {String[]} [warnings]
+ * @property {string[]} [warnings]
  *           required if result="SUCCESS
- * @property {String} [errorType]
+ * @property {string} [errorType]
  *           if result="PERMFAIL: DKIM_SigError.errorType
  *           if result="TEMPFAIL: DKIM_InternalError.errorType or Undefined
- * @property {String} [shouldBeSignedBy]
+ * @property {string} [shouldBeSignedBy]
  *           added in version 1.1
- * @property {Boolean} [hideFail]
+ * @property {boolean} [hideFail]
  *           added in  version 1.1
  */
 
@@ -65,29 +65,29 @@ import prefs from "../preferences.mjs.js";
  * The result of the verification of a single DKIM signature (Version 2).
  *
  * @typedef {Object} dkimSigResultV2
- * @property {String} version
+ * @property {string} version
  *           result version ("2.0")
- * @property {String} result
+ * @property {string} result
  *           "none" / "SUCCESS" / "PERMFAIL" / "TEMPFAIL"
- * @property {String} [sdid]
- * @property {String} [auid]
- * @property {String} [selector]
+ * @property {string} [sdid]
+ * @property {string} [auid]
+ * @property {string} [selector]
  * @property {dkimSigWarningV2[]} [warnings]
  *           Array of warning_objects.
  *           required if result="SUCCESS"
- * @property {String} [errorType]
+ * @property {string} [errorType]
  *           if result="PERMFAIL: DKIM_SigError.errorType or Undefined
  *           if result="TEMPFAIL: DKIM_InternalError.errorType or Undefined
- * @property {String[]} [errorStrParams]
- * @property {Boolean} [hideFail]
- * @property {Boolean} [keySecure]
+ * @property {string[]} [errorStrParams]
+ * @property {boolean} [hideFail]
+ * @property {boolean} [keySecure]
  */
 
 /**
  * The result of the verification (Version 2).
  *
  * @typedef {Object} dkimResultV2
- * @property {String} version
+ * @property {string} version
  *           result version ("2.0")
  * @property {dkimSigResultV2[]} signatures
  */
@@ -773,8 +773,8 @@ class DkimSignature {
 	}
 
 	/**
-	 * canonicalize a single header field using the relaxed algorithm
-	 * specified in Section 3.4.2 of RFC 6376
+	 * Canonicalize a single header field using the relaxed algorithm
+	 * specified in Section 3.4.2 of RFC 6376.
 	 *
 	 * @private
 	 * @param {string} headerField
@@ -808,8 +808,8 @@ class DkimSignature {
 	}
 
 	/**
-	 * canonicalize the body using the simple algorithm
-	 * specified in Section 3.4.3 of RFC 6376
+	 * Canonicalize the body using the simple algorithm
+	 * specified in Section 3.4.3 of RFC 6376.
 	 *
 	 * @private
 	 * @param {string} body
@@ -826,8 +826,8 @@ class DkimSignature {
 	}
 
 	/**
-	 * canonicalize the body using the relaxed algorithm
-	 * specified in Section 3.4.4 of RFC 6376
+	 * Canonicalize the body using the relaxed algorithm
+	 * specified in Section 3.4.4 of RFC 6376.
 	 *
 	 * @private
 	 * @param {string} body
@@ -854,7 +854,7 @@ class DkimSignature {
 
 	/**
 	 * Computing the Message Hash for the body
-	 * specified in Section 3.7 of RFC 6376
+	 * specified in Section 3.7 of RFC 6376.
 	 *
 	 * @private
 	 * @returns {Promise<string>}
@@ -897,7 +897,7 @@ class DkimSignature {
 
 	/**
 	 * Computing the input for the header Hash
-	 * specified in Section 3.7 of RFC 6376
+	 * specified in Section 3.7 of RFC 6376.
 	 *
 	 * @private
 	 * @returns {string}
@@ -958,10 +958,10 @@ class DkimSignature {
 	}
 
 	/**
-	 * Verifying a single DKIM signature
+	 * Verifying a single DKIM signature.
 	 *
 	 * @param {KeyStore} keyStore
-	 * @return {Promise<dkimSigResultV2>}
+	 * @returns {Promise<dkimSigResultV2>}
 	 * @throws DKIM_SigError
 	 * @throws DKIM_InternalError
 	 */
@@ -1113,7 +1113,7 @@ export default class Verifier {
 	 * @private
 	 * @param {Error} e
 	 * @param {DkimSignatureHeader|Object.<string, undefined>} dkimSignature
-	 * @return {dkimSigResultV2}
+	 * @returns {dkimSigResultV2}
 	 */
 	static _handleException(e, dkimSignature = {}) {
 		if (e instanceof DKIM_SigError) {
@@ -1152,11 +1152,11 @@ export default class Verifier {
 	}
 
 	/**
-	 * processes signatures
+	 * Processes signatures.
 	 *
 	 * @private
 	 * @param {Msg} msg
-	 * @return {Promise<dkimSigResultV2[]>}
+	 * @returns {Promise<dkimSigResultV2[]>}
 	 */
 	async _processSignatures(msg) {
 		let iDKIMSignatureIdx = 0;
@@ -1201,12 +1201,12 @@ export default class Verifier {
 
 	/**
 	 * Checks if at least on signature exists.
-	 * If not, adds one to signatures with result "no sig"
+	 * If not, adds one to signatures with result "no sig".
 	 *
 	 * @private
 	 * @param {Msg} msg
 	 * @param {dkimSigResultV2[]} signatures
-	 * @return {void}
+	 * @returns {void}
 	 */
 	static _checkForSignatureExistence(msg, signatures) {
 		// check if a DKIM signature exists
@@ -1221,16 +1221,16 @@ export default class Verifier {
 
 	/**
 	 * @typedef {Object} Msg
-	 * @property {Map<String, String[]>} headerFields
-	 * @property {String} bodyPlain
-	 * @property {String} from
+	 * @property {Map<string, string[]>} headerFields
+	 * @property {string} bodyPlain
+	 * @property {string} from
 	 */
 
 	/**
 	 * Verifies the DKIM signatures in the given message.
 	 *
 	 * @param {Msg} msg
-	 * @return {Promise<dkimResultV2>}
+	 * @returns {Promise<dkimResultV2>}
 	 */
 	verify(msg) {
 		const promise = (async () => {

@@ -20,11 +20,11 @@ const log = Logging.getLogger("msgParser");
 
 export default class MsgParser {
 	/**
-	 * Parse given message into parsed header and body
+	 * Parse given message into parsed header and body.
 	 *
 	 * @static
 	 * @param {string} msg
-	 * @return {{headers: Map<string, string[]>, body: string}}
+	 * @returns {{headers: Map<string, string[]>, body: string}}
 	 * @throws DKIM_InternalError
 	 * @memberof MsgParser
 	 */
@@ -74,8 +74,8 @@ export default class MsgParser {
 	 * Parses the header of a message.
 	 *
 	 * @static
-	 * @param {String} headerPlain
-	 * @return {Map<string, string[]>}
+	 * @param {string} headerPlain
+	 * @returns {Map<string, string[]>}
 	 *          key - header name in lower case
 	 *          value - array of complete headers, including the header name at the beginning
 	 * @memberof MsgParser

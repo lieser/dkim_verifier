@@ -16,8 +16,9 @@
 /* eslint-env webextensions */
 
 export default class KeyDbProxy {
-	// eslint-disable-next-line valid-jsdoc
 	/**
+	 * Get all stored keys.
+	 *
 	 * @type {typeof import("./keyStore.mjs.js").KeyDb["getKeys"]}}
 	 */
 	static getKeys() {
