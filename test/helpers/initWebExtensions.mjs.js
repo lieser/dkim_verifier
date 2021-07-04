@@ -75,7 +75,7 @@ before(async function () {
 		} else {
 			fakeBrowser = browserFake(options);
 		}
-		// @ts-ignore
+		// @ts-expect-error
 		globalThis.browser = fakeBrowser;
 		hasWebExtensions = true;
 	} catch (e) {

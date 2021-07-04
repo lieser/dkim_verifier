@@ -37,12 +37,12 @@ class DKIMTooltip {
 		this._warningsSeparator = false;
 
 		if (element) {
-			// @ts-ignore
+			// @ts-expect-error
 			this.element = element;
 			return;
 		}
 		/** @type {DKIMTooltipElement} */
-		// @ts-ignore
+		// @ts-expect-error
 		this.element = document.createXULElement("tooltip");
 
 		// A box containing the warnings
@@ -170,19 +170,19 @@ class DKIMHeaderField {
 	 */
 	constructor(document, element) {
 		if (element) {
-			// @ts-ignore
+			// @ts-expect-error
 			this.element = element;
 			this._dkimWarningTooltip = new DKIMWarningsTooltip(document, this.element._dkimWarningTooltip);
 			return;
 		}
 		/** @type {DKIMHeaderFieldElement} */
-		// @ts-ignore
+		// @ts-expect-error
 		this.element = document.createXULElement("hbox");
 
 		this.element.id = DKIMHeaderField._id;
 		this.element.classList.add("headerValueBox");
 		this.element.setAttribute("context", "copyPopup");
-		// @ts-ignore
+		// @ts-expect-error
 		this.element.style.MozBoxAlign = "center";
 
 		// DKIM result
@@ -465,14 +465,14 @@ class DkimFavicon {
 	 */
 	constructor(document, element) {
 		if (element) {
-			// @ts-ignore
+			// @ts-expect-error
 			this.element = element;
 			this._dkimTooltipFrom = new DkimResultTooltip(document, this.element._dkimTooltipFromElement);
 			return;
 		}
 
 		/** @type {DKIMFaviconElement} */
-		// @ts-ignore
+		// @ts-expect-error
 		this.element = document.createXULElement("description");
 
 		this.element.id = DkimFavicon._id;
@@ -565,7 +565,7 @@ class DkimFavicon {
 	static add(document) {
 		const headerRow = new DkimFavicon(document);
 		/** @type {MozMailMultiEmailheaderfield|null} */
-		// @ts-ignore
+		// @ts-expect-error
 		const expandedFromBox = document.getElementById("expandedfromBox");
 		if (!expandedFromBox) {
 			throw Error("Could not find the expandedFromBox element");
@@ -609,21 +609,21 @@ class DkimFromAddress {
 	 */
 	static _getFromAddress(document) {
 		/** @type {MozMailMultiEmailheaderfield?} */
-		// @ts-ignore
+		// @ts-expect-error
 		const expandedFromBox = document.getElementById("expandedfromBox");
 		if (!expandedFromBox) {
 			console.debug("DKIM: from address not found (no expandedfromBox)");
 			return null;
 		}
 		/** @type {XULElement?} */
-		// @ts-ignore
+		// @ts-expect-error
 		const mailEmailadress = expandedFromBox.emailAddresses.firstChild;
 		if (!mailEmailadress) {
 			console.debug("DKIM: from address not found (no firstChild)");
 			return null;
 		}
 		/** @type {XULElement|undefined} */
-		// @ts-ignore
+		// @ts-expect-error
 		const emailValue = mailEmailadress.getElementsByClassName("emaillabel")[0];
 		if (!emailValue) {
 			console.debug("DKIM: from address not found (no emaillabel)");

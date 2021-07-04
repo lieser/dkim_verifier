@@ -16,7 +16,7 @@
 
 "use strict";
 
-// @ts-ignore
+// @ts-expect-error
 // eslint-disable-next-line no-var
 var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 

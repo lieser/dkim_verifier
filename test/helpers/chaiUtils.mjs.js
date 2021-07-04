@@ -10,7 +10,7 @@
 // @ts-check
 
 /** @type {Chai.ExpectStatic} */
-// @ts-ignore
+// @ts-expect-error
 const expect = globalThis.expect;
 export default expect;
 

@@ -807,13 +807,13 @@ function SavedAuthResult_to_AuthResult(savedAuthResult) {
 function AuthResultDKIMV2_to_dkimSigResultV2(authResultDKIM) {
 	/** @type {VerifierModule.dkimSigResultV2} */
 	const dkimSigResult = authResultDKIM;
-	// @ts-ignore
+	// @ts-expect-error
 	dkimSigResult.res_num = undefined;
-	// @ts-ignore
+	// @ts-expect-error
 	dkimSigResult.result_str = undefined;
-	// @ts-ignore
+	// @ts-expect-error
 	dkimSigResult.warnings_str = undefined;
-	// @ts-ignore
+	// @ts-expect-error
 	dkimSigResult.favicon = undefined;
 	return dkimSigResult;
 }

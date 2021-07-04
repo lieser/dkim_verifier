@@ -187,20 +187,14 @@ var EXPORTED_SYMBOLS = [
 	"JSDNS"
 ];
 
-// @ts-ignore
-const Cc = Components.classes;
-// @ts-ignore
-const Ci = Components.interfaces;
 
-
-// @ts-ignore
 const LOG_NAME = "DKIM_Verifier.JSDNS";
 
 
 var JSDNS = {};
 
 /** @type {ChromeConsole} */
-// @ts-ignore
+// @ts-expect-error
 const chromeConsole = console;
 var log = chromeConsole.createInstance({
 	prefix: LOG_NAME,
@@ -418,7 +412,7 @@ function getOsDnsServers() {
 		} catch (e) {
 			log.error("Error reading Registry: " + e + "\n" + e.stack);
 		} finally {
-			// @ts-ignore
+			// @ts-expect-error
 			if (registry) {
 				registry.close();
 			}
@@ -464,7 +458,7 @@ function getOsDnsServers() {
 		} catch (e) {
 			log.error("Error reading resolv.conf: " + e + "\n" + e.stack);
 
-			// @ts-ignore
+			// @ts-expect-error
 			if (stream_filestream) {
 				stream_filestream.close();
 			}
@@ -975,8 +969,8 @@ function DNS_readAllFromSocket(host, port, outputData, listener) {
 	try {
 		var proxy = null;
 		if (PROXY_CONFIG.enable) {
-			var pps = Cc["@mozilla.org/network/protocol-proxy-service;1"].
-				getService(Ci.nsIProtocolProxyService);
+			var pps = Components.classes["@mozilla.org/network/protocol-proxy-service;1"].
+				getService(Components.interfaces.nsIProtocolProxyService);
 			proxy = pps.newProxyInfo(
 				PROXY_CONFIG.type,
 				PROXY_CONFIG.host,
@@ -986,8 +980,8 @@ function DNS_readAllFromSocket(host, port, outputData, listener) {
 		}
 
 		var transportService =
-			Cc["@mozilla.org/network/socket-transport-service;1"].
-				getService(Ci.nsISocketTransportService);
+			Components.classes["@mozilla.org/network/socket-transport-service;1"].
+				getService(Components.interfaces.nsISocketTransportService);
 		const transport = transportService.createTransport([], host, port, proxy, null);
 
 		// change timeout for connection

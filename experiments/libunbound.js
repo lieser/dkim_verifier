@@ -18,10 +18,10 @@
 
 "use strict";
 
-// @ts-ignore
+// @ts-expect-error
 // eslint-disable-next-line no-var
 var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
-// @ts-ignore
+// @ts-expect-error
 // eslint-disable-next-line no-var
 var { OS } = ChromeUtils.import("resource://gre/modules/osfile.jsm");
 
@@ -84,7 +84,7 @@ class LibunboundWorker {
 
 		/** @type {Libunbound.LibunboundWorker} */
 		this.worker =
-			//@ts-ignore
+			//@ts-expect-error
 			new ChromeWorker("chrome://dkim_verifier/content/libunboundWorker.jsm.js");
 		this.worker.onmessage = (msg) => this._onmessage(msg);
 
@@ -108,7 +108,7 @@ class LibunboundWorker {
 	load() {
 		/** @type {Deferred<void>} */
 		const defer = new Deferred();
-		// @ts-ignore
+		// @ts-expect-error
 		this._openCalls.set(++this._maxCallId, defer);
 
 		/** @type {string} */
@@ -140,7 +140,7 @@ class LibunboundWorker {
 	updateCtx() {
 		/** @type {Deferred<void>} */
 		const defer = new Deferred();
-		// @ts-ignore
+		// @ts-expect-error
 		this._openCalls.set(++this._maxCallId, defer);
 
 		// read config file if specified
@@ -193,7 +193,7 @@ class LibunboundWorker {
 	resolve(name, rrtype) {
 		/** @type {Deferred<ub_result>} */
 		const defer = new Deferred();
-		// @ts-ignore
+		// @ts-expect-error
 		this._openCalls.set(++this._maxCallId, defer);
 
 		this.worker.postMessage({
@@ -217,7 +217,7 @@ class LibunboundWorker {
 			// handle log messages
 			if (msg.data.type && msg.data.type === "log") {
 				/** @type {Libunbound.Log} */
-				// @ts-ignore
+				// @ts-expect-error
 				const logMsg = msg.data;
 				switch (logMsg.subType) {
 					case "error":
@@ -240,13 +240,13 @@ class LibunboundWorker {
 				return;
 			}
 			/** @type {Libunbound.Response} */
-			// @ts-ignore
+			// @ts-expect-error
 			const response = msg.data;
 
 			let exception;
 			if (response.type && response.type === "error") {
 				/** @type {Libunbound.Exception} */
-				// @ts-ignore
+				// @ts-expect-error
 				const ex = response;
 				exception = new Error(`Error in libunboundWorker: ${ex.message}; subType: ${ex.subType}; stack: ${ex.stack}`);
 			}
@@ -266,7 +266,7 @@ class LibunboundWorker {
 				return;
 			}
 			/** @type {Libunbound.Result} */
-			// @ts-ignore
+			// @ts-expect-error
 			const res = response;
 			defer.resolve(res.result);
 		} catch (e) {
@@ -427,7 +427,7 @@ this.libunbound = class extends ExtensionCommon.ExtensionAPI {
 		this.libunboundWorker.worker.terminate();
 
 		this.chromeHandle.destruct();
-		// @ts-ignore
+		// @ts-expect-error
 		this.chromeHandle = null;
 
 		Services.obs.notifyObservers(null, "startupcache-invalidate");

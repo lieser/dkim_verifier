@@ -103,7 +103,7 @@ export default class Logging {
 		const name = loggerName ? `${LOG_NAME}.${loggerName}` : `${LOG_NAME}`;
 		const logger = new Logger(name);
 		Logging._loggers.push(logger);
-		// @ts-ignore
+		// @ts-expect-error
 		return logger;
 	}
 

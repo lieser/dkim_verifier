@@ -138,7 +138,7 @@ class DkimCryptoWeb extends DkimCryptoI {
 			throw new DKIM_SigError("DKIM_SIGERROR_KEYDECODE");
 		}
 		/** @type {RsaHashedKeyGenParams} */
-		// @ts-ignore
+		// @ts-expect-error
 		const rsaKeyParams = cryptoKey.algorithm;
 		const valid = await crypto.subtle.verify(
 			"RSASSA-PKCS1-v1_5",

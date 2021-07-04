@@ -22,7 +22,6 @@
 
 
 const log_prefix = "libunboundWorker: ";
-// @ts-ignore
 const postLog = {
 	/**
 	 * @param {string} msg
@@ -62,7 +61,6 @@ const postLog = {
 	},
 };
 
-// @ts-ignore
 const Constants = {
 	RR_TYPE_A: 1,
 	RR_TYPE_A6: 38,
@@ -480,21 +478,21 @@ onmessage = function (msg) {
 			switch (msg.data.method) {
 				case "resolve": {
 					/** @type {Libunbound.ResolveRequest} */
-					// @ts-ignore
+					// @ts-expect-error
 					const req = msg.data;
 					res = resolve(req.name, req.rrtype);
 					break;
 				}
 				case "load": {
 					/** @type {Libunbound.LoadRequest} */
-					// @ts-ignore
+					// @ts-expect-error
 					const req = msg.data;
 					load(req.path);
 					break;
 				}
 				case "update_ctx": {
 					/** @type {Libunbound.UpdateCtxRequest} */
-					// @ts-ignore
+					// @ts-expect-error
 					const req = msg.data;
 					update_ctx(req.conf, req.debuglevel,
 						req.getNameserversFromOS, req.nameservers,
@@ -521,7 +519,7 @@ onmessage = function (msg) {
 			});
 		}
 	} catch (e) {
-		// @ts-ignore
+		// @ts-expect-error
 		dump(`${e}\n`);
 		postLog.error(`Exception: ${e}; stack: ${e.stack}`);
 	}
