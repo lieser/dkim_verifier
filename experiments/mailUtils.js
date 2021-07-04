@@ -9,13 +9,13 @@
 
 // @ts-check
 ///<reference path="./mailUtils.d.ts" />
-///<reference path="../mozilla.d.ts" />
+///<reference path="./mozilla.d.ts" />
 /* eslint-env worker */
 /* global ChromeUtils, Components, ExtensionCommon */
 
 "use strict";
 
-// @ts-ignore
+// @ts-expect-error
 // eslint-disable-next-line no-var
 var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
@@ -30,7 +30,10 @@ this.mailUtils = class extends ExtensionCommon.ExtensionAPI {
 		return {
 			mailUtils: {
 				/**
-				 * Returns the base domain for an e-mail address
+				 * Returns the base domain for an e-mail address.
+				 *
+				 * @param {string} addr
+				 * @returns {Promise<string>}
 				 */
 				// eslint-disable-next-line require-await
 				getBaseDomainFromAddr: async (addr) => {

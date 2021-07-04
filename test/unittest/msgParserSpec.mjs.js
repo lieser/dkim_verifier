@@ -51,13 +51,13 @@ describe("Message parser [unittest]", function () {
 			expect(msg.body).to.be.equal(msgBody);
 
 			expect(msg.headers.has("received")).to.be.true;
-			// @ts-ignore
+			// @ts-expect-error
 			expect(msg.headers.get("received").length).to.be.equal(1);
 
 			expect(msg.headers.has("subject")).to.be.true;
-			// @ts-ignore
+			// @ts-expect-error
 			expect(msg.headers.get("subject").length).to.be.equal(1);
-			// @ts-ignore
+			// @ts-expect-error
 			expect(msg.headers.get("subject")[0]).to.be.equal("Subject: Is dinner ready?\r\n");
 		});
 		it("parse LF", function () {
@@ -65,9 +65,9 @@ describe("Message parser [unittest]", function () {
 			expect(msg.body).to.be.equal(msgBody);
 
 			expect(msg.headers.has("subject")).to.be.true;
-			// @ts-ignore
+			// @ts-expect-error
 			expect(msg.headers.get("subject").length).to.be.equal(1);
-			// @ts-ignore
+			// @ts-expect-error
 			expect(msg.headers.get("subject")[0]).to.be.equal("Subject: Is dinner ready?\r\n");
 		});
 		it("parse CR", function () {
@@ -75,9 +75,9 @@ describe("Message parser [unittest]", function () {
 			expect(msg.body).to.be.equal(msgBody);
 
 			expect(msg.headers.has("subject")).to.be.true;
-			// @ts-ignore
+			// @ts-expect-error
 			expect(msg.headers.get("subject").length).to.be.equal(1);
-			// @ts-ignore
+			// @ts-expect-error
 			expect(msg.headers.get("subject")[0]).to.be.equal("Subject: Is dinner ready?\r\n");
 		});
 
@@ -86,11 +86,11 @@ describe("Message parser [unittest]", function () {
 			expect(msg.body).to.be.equal(msgBody);
 
 			expect(msg.headers.has("received")).to.be.true;
-			// @ts-ignore
+			// @ts-expect-error
 			expect(msg.headers.get("received").length).to.be.equal(2);
-			// @ts-ignore
+			// @ts-expect-error
 			expect(msg.headers.get("received")[0]).to.be.equal("Received: foo\r\n");
-			// @ts-ignore
+			// @ts-expect-error
 			expect(msg.headers.get("received")[1]).to.have.string('\r\n      by submitserver.example.com');
 		});
 
@@ -315,6 +315,14 @@ describe("Message parser [unittest]", function () {
 			expect(
 				MsgParser.parseListIdHeader('List-Id: "<fake.list.com>" <list-header.nisto.com>\r\n')
 			).to.be.equal("list-header.nisto.com");
+		});
+		it("invalid headers", function () {
+			expect( () =>
+				MsgParser.parseListIdHeader('List-Id: missing-angle-brackets.example.com')
+			).to.throw();
+			expect( () =>
+				MsgParser.parseListIdHeader('List-Id: <foo@example.com>\r\n')
+			).to.throw();
 		});
 	});
 });

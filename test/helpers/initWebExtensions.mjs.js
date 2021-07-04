@@ -25,7 +25,7 @@ export let fakeBrowser;
 ExtensionUtils.readFile = readTextFile;
 
 /**
- * Parse a JSON file that contains comments in the form of "//…"
+ * Parse a JSON file that contains comments in the form of "//…".
  *
  * @param {string} data
  * @returns {any}
@@ -39,10 +39,10 @@ function jsonParse(data) {
 }
 
 /**
- * Returns the base domain for an e-mail address
+ * Returns the base domain for an e-mail address.
  *
  * @param {string} addr
- * @return {Promise<string>}
+ * @returns {Promise<string>}
  */
 function getBaseDomainFromAddr(addr) {
 	const publicSuffixList = [
@@ -75,7 +75,7 @@ before(async function () {
 		} else {
 			fakeBrowser = browserFake(options);
 		}
-		// @ts-ignore
+		// @ts-expect-error
 		globalThis.browser = fakeBrowser;
 		hasWebExtensions = true;
 	} catch (e) {

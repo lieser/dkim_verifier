@@ -128,23 +128,23 @@ describe("preferences [unittest]", function () {
 		});
 		it("throw if not exist", function () {
 			expect(
-				// @ts-ignore
+				// @ts-expect-error
 				() => pref["policy.xxx"]
 			).to.throw;
 			expect(
-				// @ts-ignore
+				// @ts-expect-error
 				() => pref["policy.xxx.yyy"]
 			).to.throw;
 			expect(
-				// @ts-ignore
+				// @ts-expect-error
 				() => pref["policy.signRules"]
 			).to.throw;
 			expect(
-				// @ts-ignore
+				// @ts-expect-error
 				() => pref["policy.signRules.xxx"]
 			).to.throw;
 			expect(
-				// @ts-ignore
+				// @ts-expect-error
 				() => pref["policy.signRules"]
 			).to.throw;
 		});
@@ -355,6 +355,9 @@ describe("preferences [unittest]", function () {
 		it("test multiple pref changes at the same time", async function () {
 			/** @type {Object.<string, any>[]} */
 			const storageCalls = [];
+			/**
+			 * @returns {void}
+			 */
 			function triggerListener() {
 				const items = storageCalls.shift();
 				if (!items) {

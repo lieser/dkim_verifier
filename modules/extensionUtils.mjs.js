@@ -25,7 +25,7 @@ const log = Logging.getLogger("ExtensionUtils");
  * @param {string} title
  * @param {number} [height]
  * @param {number} [width]
- * @return {Promise<browser.windows.Window>}
+ * @returns {Promise<browser.windows.Window>}
  */
 async function createOrRaisePopup(url, title, height = undefined, width = undefined) {
 	const popupWindows = await browser.windows.getAll({
@@ -84,7 +84,7 @@ async function isOutgoing(message, fromAddr) {
  * Reads a file included in the extension as a string.
  *
  * @param {string} path - path inside the extension of the file to read
- * @return {Promise<string>}
+ * @returns {Promise<string>}
  */
 async function readFile(path) {
 	const url = browser.runtime.getURL(path);
@@ -96,8 +96,8 @@ async function readFile(path) {
 
 /**
  * Wrapper around browser.storage.local.get() to workaround the following issues:
- * - TransactionInactiveError resulting in PRomise never being resolved
- * - Getting rejected with "An unexpected error occurred"
+ * - TransactionInactiveError resulting in Promise never being resolved.
+ * - Getting rejected with "An unexpected error occurred".
  *
  * @returns {Promise<Object.<string, any>>}
  */

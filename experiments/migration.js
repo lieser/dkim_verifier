@@ -9,13 +9,13 @@
 
 // @ts-check
 ///<reference path="./migration.d.ts" />
-///<reference path="../mozilla.d.ts" />
+///<reference path="./mozilla.d.ts" />
 /* eslint-env worker */
 /* global ChromeUtils, ExtensionCommon */
 
 "use strict";
 
-// @ts-ignore
+// @ts-expect-error
 // eslint-disable-next-line no-var
 var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 // eslint-disable-next-line no-var

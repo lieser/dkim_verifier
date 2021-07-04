@@ -35,8 +35,7 @@ export class Deferred {
  *
  * @param {string} addr
  * @param {string} domain
- *
- * @return {boolean}
+ * @returns {boolean}
  */
 export function addrIsInDomain(addr, domain) {
 	return stringEndsWith(addr, `@${domain}`) ||
@@ -49,8 +48,7 @@ export function addrIsInDomain(addr, domain) {
  *
  * @param {string} addr
  * @param {string} domain
- *
- * @return {boolean}
+ * @returns {boolean}
  */
 export function addrIsInDomain2(addr, domain) {
 	return stringEndsWith(addr, `@${domain}`) ||
@@ -63,7 +61,7 @@ export function addrIsInDomain2(addr, domain) {
  *
  * @template T
  * @param {T} src
- * @return {T}
+ * @returns {T}
  */
 export function copy(src) {
 	return JSON.parse(JSON.stringify(src));
@@ -74,8 +72,7 @@ export function copy(src) {
  *
  * @param {string} domain1
  * @param {string} domain2
- *
- * @return {boolean}
+ * @returns {boolean}
  */
 export function domainIsInDomain(domain1, domain2) {
 	return stringEqual(domain1, domain2) ||
@@ -83,11 +80,10 @@ export function domainIsInDomain(domain1, domain2) {
 }
 
 /**
- * Returns the full domain for an e-mail address
+ * Returns the full domain for an e-mail address.
  *
  * @param {string} addr
- *
- * @return {string}
+ * @returns {string}
  */
 export function getDomainFromAddr(addr) {
 	return addr.substr(addr.lastIndexOf("@")+1);
@@ -121,7 +117,7 @@ export async function promiseWithTimeout(ms, promise) {
  * Sleep for <ms> milliseconds.
  *
  * @param {number} ms
- * @return {Promise<void>}
+ * @returns {Promise<void>}
  */
 export function sleep(ms) {
 	return new Promise(resolve => setTimeout(resolve, ms));
@@ -133,8 +129,7 @@ export function sleep(ms) {
  *
  * @param {string} str
  * @param {string} x
- *
- * @return {boolean}
+ * @returns {boolean}
  */
 export function stringEndsWith(str, x) {
 	const index = str.toLowerCase().lastIndexOf(x.toLowerCase());
@@ -147,8 +142,7 @@ export function stringEndsWith(str, x) {
  *
  * @param {string} str1
  * @param {string} str2
- *
- * @return {boolean}
+ * @returns {boolean}
  */
 export function stringEqual(str1, str2) {
 	return str1.toLowerCase() === str2.toLowerCase();
@@ -157,11 +151,10 @@ export function stringEqual(str1, str2) {
 /**
  * Get the type an object as a string.
  *
- * From https://javascriptweblog.wordpress.com/2011/08/08/fixing-the-javascript-typeof-operator/
+ * From https://javascriptweblog.wordpress.com/2011/08/08/fixing-the-javascript-typeof-operator/.
  *
  * @param {any} obj
- *
- * @return {string}
+ * @returns {string}
  */
 export function toType(obj) {
 	const typeMatch = Object.prototype.toString.call(obj).match(/\s([a-zA-Z]+)/);

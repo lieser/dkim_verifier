@@ -187,20 +187,14 @@ var EXPORTED_SYMBOLS = [
 	"JSDNS"
 ];
 
-// @ts-ignore
-const Cc = Components.classes;
-// @ts-ignore
-const Ci = Components.interfaces;
 
-
-// @ts-ignore
 const LOG_NAME = "DKIM_Verifier.JSDNS";
 
 
 var JSDNS = {};
 
 /** @type {ChromeConsole} */
-// @ts-ignore
+// @ts-expect-error
 const chromeConsole = console;
 var log = chromeConsole.createInstance({
 	prefix: LOG_NAME,
@@ -283,15 +277,14 @@ function configureDNS(getNameserversFromOS, nameServer, timeoutConnect, proxy, a
 }
 
 /**
- * Remove Duplicates from Array
+ * Remove Duplicates from an Array.
  *
- * from http://stackoverflow.com/questions/9229645/remove-duplicates-from-javascript-array/9229821#9229821
+ * From http://stackoverflow.com/questions/9229645/remove-duplicates-from-javascript-array/9229821#9229821.
  *
  * @template T
  * @param {T[]} ary
- * @param {function(T): string} key
- *        Function to generate key from element
- * @return {T[]}
+ * @param {function(T): string} key - Function to generate key from element
+ * @returns {T[]}
  */
 function arrayUniqBy(ary, key) {
 	"use strict";
@@ -309,9 +302,9 @@ function arrayUniqBy(ary, key) {
 }
 
 /**
- * get DNS Servers from OS configuration
+ * Get DNS Servers from OS configuration.
  *
- * @return {DnsServer[]}
+ * @returns {DnsServer[]}
  */
 function getOsDnsServers() {
 	"use strict";
@@ -419,7 +412,7 @@ function getOsDnsServers() {
 		} catch (e) {
 			log.error("Error reading Registry: " + e + "\n" + e.stack);
 		} finally {
-			// @ts-ignore
+			// @ts-expect-error
 			if (registry) {
 				registry.close();
 			}
@@ -465,7 +458,7 @@ function getOsDnsServers() {
 		} catch (e) {
 			log.error("Error reading resolv.conf: " + e + "\n" + e.stack);
 
-			// @ts-ignore
+			// @ts-expect-error
 			if (stream_filestream) {
 				stream_filestream.close();
 			}
@@ -481,7 +474,7 @@ function getOsDnsServers() {
  * @param {T} callbackdata
  * @param {string|string[]} [queryError]
  * @param {number} [rcode]
- * @return {void}
+ * @returns {void}
  */
 
 /**
@@ -962,7 +955,7 @@ function DNS_octetToStr(octet) {
 }
 
 /**
- * This comes from http://xulplanet.com/tutorials/mozsdk/sockets.php
+ * This comes from http://xulplanet.com/tutorials/mozsdk/sockets.php.
  *
  * @param {string} host
  * @param {number} port
@@ -976,8 +969,8 @@ function DNS_readAllFromSocket(host, port, outputData, listener) {
 	try {
 		var proxy = null;
 		if (PROXY_CONFIG.enable) {
-			var pps = Cc["@mozilla.org/network/protocol-proxy-service;1"].
-				getService(Ci.nsIProtocolProxyService);
+			var pps = Components.classes["@mozilla.org/network/protocol-proxy-service;1"].
+				getService(Components.interfaces.nsIProtocolProxyService);
 			proxy = pps.newProxyInfo(
 				PROXY_CONFIG.type,
 				PROXY_CONFIG.host,
@@ -987,8 +980,8 @@ function DNS_readAllFromSocket(host, port, outputData, listener) {
 		}
 
 		var transportService =
-			Cc["@mozilla.org/network/socket-transport-service;1"].
-				getService(Ci.nsISocketTransportService);
+			Components.classes["@mozilla.org/network/socket-transport-service;1"].
+				getService(Components.interfaces.nsISocketTransportService);
 		const transport = transportService.createTransport([], host, port, proxy, null);
 
 		// change timeout for connection

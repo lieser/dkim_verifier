@@ -9,8 +9,8 @@
 
 // @ts-check
 ///<reference path="./dkimHeader.d.ts" />
-///<reference path="../mozilla.d.ts" />
-///<reference path="../mozillaDom.d.ts" />
+///<reference path="./mozilla.d.ts" />
+///<reference path="./mozillaDom.d.ts" />
 /* eslint-env worker */
 /* global ChromeUtils, Components, ExtensionCommon */
 
@@ -37,12 +37,12 @@ class DKIMTooltip {
 		this._warningsSeparator = false;
 
 		if (element) {
-			// @ts-ignore
+			// @ts-expect-error
 			this.element = element;
 			return;
 		}
 		/** @type {DKIMTooltipElement} */
-		// @ts-ignore
+		// @ts-expect-error
 		this.element = document.createXULElement("tooltip");
 
 		// A box containing the warnings
@@ -50,9 +50,9 @@ class DKIMTooltip {
 	}
 
 	/**
-	 * Set the warnings for the tooltip
+	 * Set the warnings for the tooltip.
 	 *
-	 * @param {String[]} warnings
+	 * @param {string[]} warnings
 	 * @memberof DKIMTooltip
 	 */
 	set warnings(warnings) {
@@ -83,7 +83,7 @@ class DKIMTooltip {
 /**
  * Tooltip showing the DKIM warnings.
  *
- * @extends {DKIMTooltip}
+ * @augments {DKIMTooltip}
  */
 class DKIMWarningsTooltip extends DKIMTooltip {
 	/**
@@ -107,7 +107,7 @@ class DKIMWarningsTooltip extends DKIMTooltip {
  * Tooltip showing both the DKIM result and the warnings.
  * The tooltip contains the label "DKIM:".
  *
- * @extends {DKIMTooltip}
+ * @augments {DKIMTooltip}
  */
 class DkimResultTooltip extends DKIMTooltip {
 	/**
@@ -144,9 +144,9 @@ class DkimResultTooltip extends DKIMTooltip {
 	}
 
 	/**
-	 * Set the DKIM result
+	 * Set the DKIM result.
 	 *
-	 * @param {String} val
+	 * @param {string} val
 	 * @memberof DKIMTooltip
 	 */
 	set value(val) {
@@ -170,19 +170,19 @@ class DKIMHeaderField {
 	 */
 	constructor(document, element) {
 		if (element) {
-			// @ts-ignore
+			// @ts-expect-error
 			this.element = element;
 			this._dkimWarningTooltip = new DKIMWarningsTooltip(document, this.element._dkimWarningTooltip);
 			return;
 		}
 		/** @type {DKIMHeaderFieldElement} */
-		// @ts-ignore
+		// @ts-expect-error
 		this.element = document.createXULElement("hbox");
 
 		this.element.id = DKIMHeaderField._id;
 		this.element.classList.add("headerValueBox");
 		this.element.setAttribute("context", "copyPopup");
-		// @ts-ignore
+		// @ts-expect-error
 		this.element.style.MozBoxAlign = "center";
 
 		// DKIM result
@@ -202,10 +202,10 @@ class DKIMHeaderField {
 		this.element._dkimWarningIcon.style.marginLeft = "1ex";
 
 		/**
-		 * Create element for ARH result
+		 * Create element for ARH result.
 		 *
-		 * @param {String} anonid
-		 * @param {String} labelValue
+		 * @param {string} anonid
+		 * @param {string} labelValue
 		 * @returns {{box: XULElement, value: XULElement}}
 		 */
 		function createArh(anonid, labelValue) {
@@ -249,9 +249,9 @@ class DKIMHeaderField {
 	}
 
 	/**
-	 * Set the DKIM result
+	 * Set the DKIM result.
 	 *
-	 * @param {String} val
+	 * @param {string} val
 	 * @memberof DKIMHeaderField
 	 */
 	set value(val) {
@@ -259,9 +259,9 @@ class DKIMHeaderField {
 	}
 
 	/**
-	 * Set the DKIM warnings
+	 * Set the DKIM warnings.
 	 *
-	 * @param {String[]} warnings
+	 * @param {string[]} warnings
 	 * @memberof DKIMHeaderField
 	 */
 	set warnings(warnings) {
@@ -274,9 +274,9 @@ class DKIMHeaderField {
 	}
 
 	/**
-	 * Set the SPF result
+	 * Set the SPF result.
 	 *
-	 * @param {String} val
+	 * @param {string} val
 	 * @memberof DKIMHeaderField
 	 */
 	set spfValue(val) {
@@ -289,9 +289,9 @@ class DKIMHeaderField {
 	}
 
 	/**
-	 * Set the DMARC result
+	 * Set the DMARC result.
 	 *
-	 * @param {String} val
+	 * @param {string} val
 	 * @memberof DKIMHeaderField
 	 */
 	set dmarcValue(val) {
@@ -304,9 +304,9 @@ class DKIMHeaderField {
 	}
 
 	/**
-	 * Set the DKIM result from the ARH
+	 * Set the DKIM result from the ARH.
 	 *
-	 * @param {String} val
+	 * @param {string} val
 	 * @memberof DKIMHeaderField
 	 */
 	set arhDkimValue(val) {
@@ -351,6 +351,7 @@ DKIMHeaderField._id = "expandedDkim-verifierBox";
 class DkimHeaderRow {
 	/**
 	 * Creates an instance of DkimHeaderRow.
+	 *
 	 * @param {Document} document
 	 * @param {XULElement|void} element - optional underlying element, will be created if not given
 	 * @memberof DkimHeaderRow
@@ -379,7 +380,7 @@ class DkimHeaderRow {
 	}
 
 	/**
-	 * Set whether the DKIM heder should be shown
+	 * Set whether the DKIM heder should be shown.
 	 *
 	 * @param {boolean} show
 	 * @returns {void}
@@ -464,14 +465,14 @@ class DkimFavicon {
 	 */
 	constructor(document, element) {
 		if (element) {
-			// @ts-ignore
+			// @ts-expect-error
 			this.element = element;
 			this._dkimTooltipFrom = new DkimResultTooltip(document, this.element._dkimTooltipFromElement);
 			return;
 		}
 
 		/** @type {DKIMFaviconElement} */
-		// @ts-ignore
+		// @ts-expect-error
 		this.element = document.createXULElement("description");
 
 		this.element.id = DkimFavicon._id;
@@ -498,7 +499,7 @@ class DkimFavicon {
 	/**
 	 * Set the DKIM result.
 	 *
-	 * @param {String} val
+	 * @param {string} val
 	 * @memberof DkimFavicon
 	 */
 	set value(val) {
@@ -508,7 +509,7 @@ class DkimFavicon {
 	/**
 	 * Set the DKIM warnings.
 	 *
-	 * @param {String[]} warnings
+	 * @param {string[]} warnings
 	 * @memberof DkimFavicon
 	 */
 	set warnings(warnings) {
@@ -518,8 +519,8 @@ class DkimFavicon {
 	/**
 	 * Sets the url to the favicon. Empty string to reset it.
 	 *
-	 * @param {String} faviconUrl
-	 * @return {void}
+	 * @param {string} faviconUrl
+	 * @returns {void}
 	 * @memberof DkimFavicon
 	 */
 	setFaviconUrl(faviconUrl) {
@@ -564,7 +565,7 @@ class DkimFavicon {
 	static add(document) {
 		const headerRow = new DkimFavicon(document);
 		/** @type {MozMailMultiEmailheaderfield|null} */
-		// @ts-ignore
+		// @ts-expect-error
 		const expandedFromBox = document.getElementById("expandedfromBox");
 		if (!expandedFromBox) {
 			throw Error("Could not find the expandedFromBox element");
@@ -600,28 +601,29 @@ DkimFavicon._idTooltip = "dkim-verifier-header-tooltip-from";
  */
 class DkimFromAddress {
 	/**
-	 * Get the element containing the from address (without the following star)
+	 * Get the element containing the from address (without the following star).
+	 *
 	 * @static
 	 * @param {Document} document
 	 * @returns {XULElement?}
 	 */
 	static _getFromAddress(document) {
 		/** @type {MozMailMultiEmailheaderfield?} */
-		// @ts-ignore
+		// @ts-expect-error
 		const expandedFromBox = document.getElementById("expandedfromBox");
 		if (!expandedFromBox) {
 			console.debug("DKIM: from address not found (no expandedfromBox)");
 			return null;
 		}
 		/** @type {XULElement?} */
-		// @ts-ignore
+		// @ts-expect-error
 		const mailEmailadress = expandedFromBox.emailAddresses.firstChild;
 		if (!mailEmailadress) {
 			console.debug("DKIM: from address not found (no firstChild)");
 			return null;
 		}
 		/** @type {XULElement|undefined} */
-		// @ts-ignore
+		// @ts-expect-error
 		const emailValue = mailEmailadress.getElementsByClassName("emaillabel")[0];
 		if (!emailValue) {
 			console.debug("DKIM: from address not found (no emaillabel)");
@@ -632,6 +634,7 @@ class DkimFromAddress {
 
 	/**
 	 * Set the text and background color of the from address.
+	 *
 	 * @param {Document} document
 	 * @param {string} color
 	 * @param {string} backgroundColor
@@ -648,7 +651,7 @@ class DkimFromAddress {
 	}
 
 	/**
-	 * Set whether the DKIM heder should be shown
+	 * Set whether the DKIM heder should be shown.
 	 *
 	 * @param {Document} document
 	 * @param {boolean} show
@@ -684,6 +687,7 @@ class DkimFromAddress {
 
 	/**
 	 * Reset the DKIM specific modifications of the from address.
+	 *
 	 * @param {Document} document
 	 * @returns {void}
 	 */

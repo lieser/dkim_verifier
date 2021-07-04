@@ -10,18 +10,19 @@
 
 // @ts-check
 ///<reference path="./jsdns.d.ts" />
-///<reference path="../mozilla.d.ts" />
+///<reference path="./mozilla.d.ts" />
 /* eslint-env worker */
 /* global ChromeUtils, Components, ExtensionCommon */
 
 "use strict";
 
-// @ts-ignore
+// @ts-expect-error
 // eslint-disable-next-line no-var
 var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 /**
- * From https://javascriptweblog.wordpress.com/2011/08/08/fixing-the-javascript-typeof-operator/
+ * From https://javascriptweblog.wordpress.com/2011/08/08/fixing-the-javascript-typeof-operator/.
+ *
  * @param {any} obj
  * @returns {string}
  */
@@ -65,7 +66,6 @@ this.jsdns = class extends ExtensionCommon.ExtensionAPI {
 					return Promise.resolve();
 				},
 				txt(name) {
-					// eslint-disable-next-line valid-jsdoc
 					/** @type {QueryDnsCallback<{resolve: function(browser.jsdns.TxtResult): void, reject: function(Error): void}>} */
 					function dnsCallback(dnsResult, defer, queryError, rcode) {
 						try {

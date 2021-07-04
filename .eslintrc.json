@@ -1,7 +1,11 @@
 {
     "root": true,
+    "plugins": [
+        "jsdoc"
+    ],
     "extends": [
-        "eslint:recommended"
+        "eslint:recommended",
+        "plugin:jsdoc/recommended"
     ],
     "env": {
         "es2020": true
@@ -10,6 +14,11 @@
         "ecmaVersion": 2020,
         "ecmaFeatures": {},
         "sourceType": "script"
+    },
+    "settings": {
+        "jsdoc": {
+            "mode": "typescript"
+        }
     },
     "globals": {
         "globalThis": "readonly"
@@ -24,13 +33,6 @@
             }
         ],
         "require-atomic-updates": "warn",
-        "valid-jsdoc": [
-            "warn",
-            {
-                "requireParamDescription": false,
-                "requireReturnDescription": false
-            }
-        ],
         // Best Practices
         "array-callback-return": "warn",
         "block-scoped-var": "warn",
@@ -133,7 +135,24 @@
         "prefer-spread": "warn",
         "prefer-template": "warn",
         "sort-imports": "warn",
-        "template-curly-spacing": "warn"
+        "template-curly-spacing": "warn",
+        // JSDoc
+        "jsdoc/check-line-alignment": "warn",
+        "jsdoc/match-description": "warn",
+        "jsdoc/no-bad-blocks": "warn",
+        "jsdoc/no-defaults": "warn",
+        "jsdoc/no-undefined-types": "off",
+        "jsdoc/require-asterisk-prefix": "warn",
+        "jsdoc/require-hyphen-before-param-description": "warn",
+        "jsdoc/require-param-description": "off",
+        "jsdoc/require-property-description": "off",
+        "jsdoc/require-returns": [
+            "warn",
+            {
+                "checkGetters": false
+            }
+        ],
+        "jsdoc/require-returns-description": "off"
     },
     "reportUnusedDisableDirectives": true
 }

@@ -41,7 +41,7 @@ export default class DMARC {
 	 * Tries to determinate with DMARC if an e-mail should be signed.
 	 *
 	 * @param {string} fromAddress
-	 * @return {Promise<{shouldBeSigned: boolean, sdid: string[]}>}
+	 * @returns {Promise<{shouldBeSigned: boolean, sdid: string[]}>}
 	 *         .shouldBeSigned true if fromAddress should be signed
 	 *         .sdid Signing Domain Identifier
 	 */
@@ -124,7 +124,7 @@ export default class DMARC {
  *
  * @param {string} fromAddress
  * @param {queryDnsTxtCallback} queryDnsTxt
- * @return {Promise<DMARCPolicy|null>}
+ * @returns {Promise<DMARCPolicy|null>}
  * @throws {DKIM_InternalError}
  */
 async function getDMARCPolicy(fromAddress, queryDnsTxt) {
@@ -206,7 +206,7 @@ async function getDMARCPolicy(fromAddress, queryDnsTxt) {
  *
  * @param {string} domain
  * @param {queryDnsTxtCallback} queryDnsTxt
- * @return {Promise<DMARCRecord|null>}
+ * @returns {Promise<DMARCRecord|null>}
  * @throws {DKIM_InternalError}
  */
 async function getDMARCRecord(domain, queryDnsTxt) {
@@ -239,7 +239,7 @@ async function getDMARCRecord(domain, queryDnsTxt) {
  * Parse the DMARC Policy Record.
  *
  * @param {string} DMARCRecordStr
- * @return {DMARCRecord}
+ * @returns {DMARCRecord}
  * @throws {DKIM_InternalError}
  */
 function parseDMARCRecord(DMARCRecordStr) {

@@ -34,6 +34,9 @@
 	"DKIM_INTERNALERROR_INCORRECT_EMAIL_FORMAT": {
 		"message": "E-mail is not correctly formatted"
 	},
+	"DKIM_INTERNALERROR_INCORRECT_FROM": {
+		"message": "From address is ill-formed"
+	},
 	// DKIM_INTERNALERROR - DNS
 	"DKIM_DNSERROR_UNKNOWN": {
 		"message": "Error in the DNS resolver"

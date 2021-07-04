@@ -103,11 +103,11 @@ const domain_name_p = RfcParser.domain_name;
 
 export default class ArhParser {
 	/**
-	 *  Parses an Authentication-Results header.
+	 * Parses an Authentication-Results header.
 	 *
-	 *  @param {string} authResHeader Authentication-Results header
-	 *  @param {boolean} [relaxedParsing] Enable relaxed parsing
-	 *  @return {ArhHeader} Parsed Authentication-Results header
+	 * @param {string} authResHeader - Authentication-Results header
+	 * @param {boolean} [relaxedParsing] - Enable relaxed parsing
+	 * @returns {ArhHeader} Parsed Authentication-Results header
 	 */
 	static parse(authResHeader, relaxedParsing = false) {
 		// remove header name
@@ -148,11 +148,11 @@ export default class ArhParser {
 }
 
 /**
- *  Parses the next resinfo in str. The parsed part of str is removed from str.
+ * Parses the next resinfo in str. The parsed part of str is removed from str.
  *
- *  @param {RefString} str
- *  @param {boolean} relaxedParsing Enable relaxed parsing
- *  @return {ArhResInfo|null} Parsed resinfo
+ * @param {RefString} str
+ * @param {boolean} relaxedParsing - Enable relaxed parsing
+ * @returns {ArhResInfo|null} Parsed resinfo
  */
 function parseResInfo(str, relaxedParsing) {
 	log.trace("parse str: ", str);
@@ -230,7 +230,7 @@ function parseResInfo(str, relaxedParsing) {
 class RefString {
 	/**
 	 * Object wrapper around a string.
-	 * @constructor
+	 *
 	 * @param {string} s
 	 */
 	constructor(s) {
@@ -254,15 +254,15 @@ class RefString {
 }
 
 /**
- *  Matches a pattern to the beginning of str.
- *  Adds CFWS_op to the beginning of pattern.
- *  pattern must be followed by string end, ";" or CFWS_p.
- *  Removes the found match from str.
+ * Matches a pattern to the beginning of str.
+ * Adds CFWS_op to the beginning of pattern.
+ * pattern must be followed by string end, ";" or CFWS_p.
+ * Removes the found match from str.
  *
- *  @param {RefString} str
- *  @param {string} pattern
- *  @return {string[]} An Array, containing the matches
- *  @throws if match no match found
+ * @param {RefString} str
+ * @param {string} pattern
+ * @returns {string[]} An Array, containing the matches
+ * @throws if match no match found
  */
 function match(str, pattern) {
 	const reg_match = match_o(str, pattern);
@@ -274,14 +274,14 @@ function match(str, pattern) {
 }
 
 /**
- *  Tries to matches a pattern to the beginning of str.
- *  Adds CFWS_op to the beginning of pattern.
- *  pattern must be followed by string end, ";" or CFWS_p.
- *  If match is found, removes it from str.
+ * Tries to matches a pattern to the beginning of str.
+ * Adds CFWS_op to the beginning of pattern.
+ * pattern must be followed by string end, ";" or CFWS_p.
+ * If match is found, removes it from str.
  *
- *  @param {RefString} str
- *  @param {string} pattern
- *  @return {string[]|Null} Null if no match for the pattern is found, else
+ * @param {RefString} str
+ * @param {string} pattern
+ * @returns {string[]|null} Null if no match for the pattern is found, else
  *                        an Array, containing the matches
  */
 function match_o(str, pattern) {

@@ -19,7 +19,7 @@ import prefs from "../modules/preferences.mjs.js";
 const log = Logging.getLogger("Options");
 
 /**
- * Set the active pane to the given navigation selector
+ * Set the active pane to the given navigation selector.
  *
  * @param {HTMLElement} navSelector
  * @returns {void}
@@ -81,6 +81,11 @@ function initNavigation() {
 	}
 }
 
+/**
+ * Update disabled states based on selected key storing.
+ *
+ * @returns {void}
+ */
 function updateKeyStoring() {
 	/** @type {HTMLSelectElement|null} */
 	const keyStoring = document.querySelector("[data-pref='key.storing']");
@@ -95,6 +100,11 @@ function updateKeyStoring() {
 	viewKeys.disabled = parseInt(keyStoring.value, 10) === 0;
 }
 
+/**
+ * Update which DNS resolver settings are shown.
+ *
+ * @returns {void}
+ */
 function updateDnsResolver() {
 	/** @type {HTMLSelectElement|null} */
 	const dnsResolver = document.querySelector("[data-pref='dns.resolver']");
@@ -109,6 +119,11 @@ function updateDnsResolver() {
 	}
 }
 
+/**
+ * Update disabled states based on if the proxy is enabled.
+ *
+ * @returns {void}
+ */
 function updateDnsProxy() {
 	/** @type {HTMLInputElement|null} */
 	const dnsProxyEnable = document.querySelector("[data-pref='dns.proxy.enable']");
@@ -123,12 +138,22 @@ function updateDnsProxy() {
 	dnsProxy.disabled = !dnsProxyEnable.checked;
 }
 
+/**
+ * Updates the visibility of the usage warning for libunbound.
+ *
+ * @returns {void}
+ */
 function updateDnsLibunboundWarning() {
 	const highlightUsageWarning = prefs["dns.libunbound.path"].trim() === "";
 	const usageWarning = getElementById("libunbound.usageWarning");
 	usageWarning.dataset.highlight = highlightUsageWarning.toString();
 }
 
+/**
+ * Update disabled states based on if sign rules are enabled.
+ *
+ * @returns {void}
+ */
 function updatePolicySignRulesEnable() {
 	/** @type {HTMLInputElement|null} */
 	const policySignRulesEnable = document.querySelector("[data-pref='policy.signRules.enable']");
@@ -143,6 +168,11 @@ function updatePolicySignRulesEnable() {
 	policySignRules.disabled = !policySignRulesEnable.checked;
 }
 
+/**
+ * Update disabled states based on if auto adding of sign rules is enabled.
+ *
+ * @returns {void}
+ */
 function updatePolicyAutoAddRuleEnable() {
 	/** @type {HTMLInputElement|null} */
 	const policySignRulesAutoAddRuleEnable =
