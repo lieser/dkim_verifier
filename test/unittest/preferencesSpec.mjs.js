@@ -416,6 +416,7 @@ describe("preferences [unittest]", function () {
 				fakeBrowser.storage.local.get.callsFake(fakeBrowser.storage.local._get);
 			}
 		});
+		// eslint-disable-next-line mocha/no-skipped-tests
 		xit("safeGetLocalStorage - single timeout", async function () {
 			// eslint-disable-next-line no-invalid-this
 			this.timeout(5000);
@@ -439,6 +440,7 @@ describe("preferences [unittest]", function () {
 				fakeBrowser.storage.local.get.callsFake(fakeBrowser.storage.local._get);
 			}
 		});
+		// eslint-disable-next-line mocha/no-skipped-tests
 		xit("safeGetLocalStorage - complete timeout", async function () {
 			// eslint-disable-next-line no-invalid-this
 			this.timeout(20000);

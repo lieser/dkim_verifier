@@ -13,8 +13,8 @@ import ExtensionUtils from "../../modules/extensionUtils.mjs.js";
 import expect from "../helpers/chaiUtils.mjs.js";
 import sinon from "../helpers/sinonUtils.mjs.js";
 
-describe("ExtensionUtils [unittest]", () => {
-	describe("isOutgoing", () => {
+describe("ExtensionUtils [unittest]", function () {
+	describe("isOutgoing", function () {
 		/**
 		 * @param {string} accountId
 		 * @param {string} [folderType]
