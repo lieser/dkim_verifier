@@ -114,7 +114,12 @@ describe("Key store [unittest]", function () {
 					});
 			}
 		};
-		const fakeQueryDnsTxt = sinon.stub();
+
+		/** @type {sinon.SinonStub} */
+		let fakeQueryDnsTxt;
+		before(function () {
+			fakeQueryDnsTxt = sinon.stub();
+		});
 
 		beforeEach(function () {
 			fakeQueryDnsTxt.reset();

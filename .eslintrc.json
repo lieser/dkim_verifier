@@ -1,11 +1,13 @@
 {
     "root": true,
     "plugins": [
-        "jsdoc"
+        "jsdoc",
+        "mocha"
     ],
     "extends": [
         "eslint:recommended",
-        "plugin:jsdoc/recommended"
+        "plugin:jsdoc/recommended",
+        "plugin:mocha/recommended"
     ],
     "env": {
         "es2020": true
@@ -152,7 +154,9 @@
                 "checkGetters": false
             }
         ],
-        "jsdoc/require-returns-description": "off"
+        "jsdoc/require-returns-description": "off",
+        // Mocha
+        "mocha/no-return-from-async": "warn"
     },
     "reportUnusedDisableDirectives": true
 }
