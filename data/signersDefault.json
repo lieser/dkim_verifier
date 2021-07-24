@@ -1,12 +1,12 @@
 {
 	"$schema": "./signersDefault-schema.json",
 	"versionTable": 1,
-	"versionData": 30,
+	"versionData": 31,
 	"rules": [
 		{
 			"domain": "1und1.de",
 			"addr": "*",
-			"sdid": "1und1.de",
+			"sdid": "1und1.de 1and1.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -61,6 +61,12 @@
 			"domain": "airbnb.com",
 			"addr": "*",
 			"sdid": "airbnb.com email.airbnb.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "aktion-deutschland-hilft.de",
+			"addr": "*@e-newsletter.aktion-deutschland-hilft.de",
+			"sdid": "aktion-deutschland-hilft.de e-newsletter.aktion-deutschland-hilft.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -208,6 +214,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "bauen.de",
+			"addr": "*",
+			"sdid": "bauen.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "bett1.de",
 			"addr": "*",
 			"sdid": "bett1.de",
@@ -217,6 +229,18 @@
 			"domain": "betterplace.org",
 			"addr": "*",
 			"sdid": "betterplace.org",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "bigbank.de",
+			"addr": "*",
+			"sdid": "bigbank.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "bigbank.eu",
+			"addr": "*",
+			"sdid": "bigbank.eu",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -259,6 +283,12 @@
 			"domain": "bni-hamburg.de",
 			"addr": "*",
 			"sdid": "bni-hamburg.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "bnitm.de",
+			"addr": "*",
+			"sdid": "bnitm.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -382,6 +412,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "comdirect.de",
+			"addr": "*@news-sib.comdirect.de",
+			"sdid": "comdirect.de.png news-sib.comdirect.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "conad.com",
 			"addr": "*",
 			"sdid": "conad.com",
@@ -391,6 +427,12 @@
 			"domain": "congstarnews.de",
 			"addr": "*",
 			"sdid": "congstarnews.de int.congstar-nl.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "cordongroup.com",
+			"addr": "*",
+			"sdid": "cordongroup.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -676,6 +718,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "expert-commerce.de",
+			"addr": "*",
+			"sdid": "expert-commerce.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "f-secure.com",
 			"addr": "*",
 			"sdid": "f-secure.com",
@@ -742,6 +790,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
+			"domain": "finanztip.de",
+			"addr": "*",
+			"sdid": "finanztip.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "finya.de",
 			"addr": "*",
 			"sdid": "finya.de",
@@ -765,6 +819,12 @@
 			"sdid": "flybe.com",
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_NEUTRAL"
+		}, {
+			"domain": "flytit.no",
+			"addr": "*",
+			"sdid": "flytit.no",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
 		}, {
 			"domain": "ford.com",
 			"addr": "*",
@@ -958,6 +1018,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "hapro.no",
+			"addr": "*",
+			"sdid": "hapro.no",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "haveibeenpwned.com",
 			"addr": "*",
 			"sdid": "haveibeenpwned.com",
@@ -1144,6 +1210,18 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "klarna-festgeld.de",
+			"addr": "*",
+			"sdid": "klarna-festgeld.de",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "klarna-festgeld.de",
+			"addr": "*@service.klarna-festgeld.de",
+			"sdid": "service.klarna-festgeld.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
 			"domain": "kuketz-blog.de",
 			"addr": "*",
 			"sdid": "kuketz-security.de",
@@ -1231,6 +1309,12 @@
 			"domain": "mensa.de",
 			"addr": "*",
 			"sdid": "mensa.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "mercedes-benz.de",
+			"addr": "*@newsletter.mercedes-benz.de",
+			"sdid": "mercedes-benz.de newsletter.mercedes-benz.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -1341,6 +1425,18 @@
 			"sdid": "neuronation.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "nextron-systems.com",
+			"addr": "*",
+			"sdid": "nextron-systems.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "nextron-systems.com",
+			"addr": "*@news.nextron-systems.com",
+			"sdid": "nextron-systems.com news.nextron-systems.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
 			"domain": "nexway.com",
 			"addr": "*",
@@ -1456,6 +1552,12 @@
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_NEUTRAL"
 		}, {
+			"domain": "peek-und-cloppenburg.de",
+			"addr": "*",
+			"sdid": "peek-und-cloppenburg.de news.peek-und-cloppenburg.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "perdue.com",
 			"addr": "*",
 			"sdid": "perdue.com",
@@ -1500,13 +1602,31 @@
 		}, {
 			"domain": "psd-muenchen.de",
 			"addr": "*",
-			"sdid": "news.psd-muenchen.de psd-muenchen.de",
-			"ruletype": "ALL",
+			"sdid": "psd-muenchen.de",
+			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "psd-muenchen.de",
+			"addr": "*@news.psd-muenchen.de",
+			"sdid": "news.psd-muenchen.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
 			"domain": "qantas.com.au",
 			"addr": "*@yourbooking.qantas.com.au",
 			"sdid": "yourbooking.qantas.com.au",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "ratepay.de",
+			"addr": "*",
+			"sdid": "ratepay.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "rcibanque.com",
+			"addr": "*",
+			"sdid": "rcibanque.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -1579,6 +1699,12 @@
 			"domain": "sgrservizi.it",
 			"addr": "*",
 			"sdid": "sgrservizi.it",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "shareit.com",
+			"addr": "*",
+			"sdid": "shareit.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -1678,6 +1804,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "stage-entertainment.de",
+			"addr": "*@news.stage-entertainment.de",
+			"sdid": "stage-entertainment.de news.stage-entertainment.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "steampowered.com",
 			"addr": "*",
 			"sdid": "steampowered.com",
@@ -1707,6 +1839,12 @@
 			"sdid": "suse.com email.suse.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
+			"domain": "teburio.de",
+			"addr": "*@mg.teburio.de",
+			"sdid": "teburio.de mg.teburio.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
 		}, {
 			"domain": "telekom.de",
 			"addr": "*",
@@ -1864,9 +2002,21 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "ups.com",
+			"addr": "*",
+			"sdid": "ups.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "uslowrates.com",
 			"addr": "*",
 			"sdid": "uslowrates.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "vbl.de",
+			"addr": "*",
+			"sdid": "vbl.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -1881,6 +2031,12 @@
 			"sdid": "videolan.org",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "voelkner.de",
+			"addr": "*",
+			"sdid": "voelkner.de",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_NEUTRAL"
 		}, {
 			"domain": "wetransfer.com",
 			"addr": "*",
@@ -1939,6 +2095,12 @@
 			"domain": "xda-developers.com",
 			"addr": "*",
 			"sdid": "xda-developers.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "xxxlutz.de",
+			"addr": "*",
+			"sdid": "xxxlutz.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
