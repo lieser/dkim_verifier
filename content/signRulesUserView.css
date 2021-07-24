@@ -1,0 +1,35 @@
+#rulesTable {
+	table-layout: auto;
+}
+
+td[data-column-name="domain"] {
+	width: 10em;
+	max-width: max(10em, 15vw);
+}
+
+td[data-column-name="listId"] {
+	width: 10em;
+	max-width: max(10em, 10vw);
+}
+
+td[data-column-name="addr"] {
+	width: 7em;
+	max-width: max(7em, 10vw);
+}
+
+td[data-column-name="sdid"] {
+	width: 7em;
+	max-width: max(7em, 10vw);
+}
+
+td[data-column-name="type"] {
+	width: 1em;
+}
+
+td[data-column-name="priority"] {
+	width: 1em;
+}
+
+td[data-column-name="enabled"] {
+	width: 1em;
+}

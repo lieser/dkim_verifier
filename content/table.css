@@ -1,6 +1,7 @@
 table {
 	border-collapse: collapse;
 	margin: 20px;
+	width: calc(100% - 40px);
 }
 
 th {
@@ -10,6 +11,8 @@ th {
 th, td {
 	border-inline: 1px solid var(--in-content-box-border-color);
 	padding: 3px 4px;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 tr:nth-child(even) {
