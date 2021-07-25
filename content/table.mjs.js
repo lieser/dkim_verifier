@@ -10,7 +10,6 @@
  */
 
 // @ts-check
-/* eslint-env browser */
 
 class TableCellEditable extends HTMLTableCellElement {
 	constructor() {

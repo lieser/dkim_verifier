@@ -10,7 +10,7 @@
 // @ts-check
 ///<reference path="../WebExtensions.d.ts" />
 ///<reference path="../RuntimeMessage.d.ts" />
-/* eslint-env browser, webextensions */
+/* eslint-env webextensions */
 
 import { getElementById } from "./domUtils.mjs.js";
 

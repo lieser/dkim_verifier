@@ -8,7 +8,7 @@
  */
 
 // @ts-check
-/* eslint-env browser, webextensions */
+/* eslint-env webextensions */
 
 import DataTable from "./table.mjs.js";
 import ExtensionUtils from "../modules/extensionUtils.mjs.js";

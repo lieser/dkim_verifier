@@ -8,7 +8,7 @@
  */
 
 // @ts-check
-/* eslint-env browser, webextensions */
+/* eslint-env webextensions */
 
 import Logging from "../modules/logging.mjs.js";
 import SignRulesProxy from "../modules/dkim/signRulesProxy.mjs.js";

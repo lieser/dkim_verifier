@@ -8,7 +8,7 @@
  */
 
 // @ts-check
-/* eslint-env browser, webextensions */
+/* eslint-env webextensions */
 /* eslint-disable no-magic-numbers */
 
 import DataTable from "./table.mjs.js";

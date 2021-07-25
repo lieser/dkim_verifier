@@ -11,7 +11,7 @@
 ///<reference path="../WebExtensions.d.ts" />
 ///<reference path="../RuntimeMessage.d.ts" />
 ///<reference path="../experiments/dkimHeader.d.ts" />
-/* eslint-env browser, webextensions */
+/* eslint-env webextensions */
 
 import KeyStore, { KeyDb } from "../modules/dkim/keyStore.mjs.js";
 import SignRules, { initSignRulesProxy } from "../modules/dkim/signRules.mjs.js";

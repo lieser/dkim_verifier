@@ -9,7 +9,7 @@
 
 // @ts-check
 ///<reference path="../WebExtensions.d.ts" />
-/* eslint-env browser, webextensions */
+/* eslint-env webextensions */
 
 import ExtensionUtils from "../modules/extensionUtils.mjs.js";
 import Logging from "../modules/logging.mjs.js";
