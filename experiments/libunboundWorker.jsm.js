@@ -13,10 +13,9 @@
 // @ts-check
 ///<reference path="./ctypes.d.ts" />
 ///<reference path="./libunbound.d.ts" />
+/* eslint-env mozilla/chrome-worker, mozilla/jsm */
 /* eslint-disable camelcase */
 /* eslint no-global-assign: ["error", {"exceptions": ["onmessage"]}] */
-/* global ctypes, onmessage, postMessage, dump */
-/* exported onmessage */
 
 "use strict";
 

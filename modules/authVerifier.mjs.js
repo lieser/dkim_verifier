@@ -250,7 +250,7 @@ async function getARHResult(message, headers, from, listId, account, dmarc) {
 		const allowedAuthserv = prefs["account.arh.allowedAuthserv"](account).
 			split(" ").
 			filter(server => server);
-		if (allowedAuthserv.length > 0 &&
+		if (allowedAuthserv.length &&
 			!allowedAuthserv.some(server => {
 				if (arh.authserv_id === server) {
 					return true;

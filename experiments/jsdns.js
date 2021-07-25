@@ -11,8 +11,7 @@
 // @ts-check
 ///<reference path="./jsdns.d.ts" />
 ///<reference path="./mozilla.d.ts" />
-/* eslint-env worker */
-/* global ChromeUtils, Components, ExtensionCommon */
+/* global ExtensionCommon */
 
 "use strict";
 
@@ -112,7 +111,7 @@ this.jsdns = class extends ExtensionCommon.ExtensionAPI {
 	}
 
 	close() {
-		Components.utils.unload(this.extension.rootURI.resolve("experiments/JSDNS.jsm.js"));
+		Cu.unload(this.extension.rootURI.resolve("experiments/JSDNS.jsm.js"));
 		Services.obs.notifyObservers(null, "startupcache-invalidate");
 	}
 };

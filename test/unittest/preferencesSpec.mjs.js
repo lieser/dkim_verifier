@@ -386,7 +386,7 @@ describe("preferences [unittest]", function () {
 				await pref.setValue("color.nosig.background", "red");
 				await pref.setValue("dns.proxy.port", 1111);
 
-				while (storageCalls.length > 0) {
+				while (storageCalls.length) {
 					triggerListener();
 				}
 
