@@ -641,7 +641,7 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 	const authResultDKIM = dkimSigResult;
 	switch (dkimSigResult.result) {
 		case "SUCCESS": {
-			authResultDKIM.res_num = 10;
+			authResultDKIM.res_num = AuthVerifier.DKIM_RES.SUCCESS;
 			let keySecureStr = "";
 			if (dkimSigResult.keySecure &&
 				prefs["display.keySecure"]) {
@@ -658,7 +658,7 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 			break;
 		}
 		case "TEMPFAIL":
-			authResultDKIM.res_num = 20;
+			authResultDKIM.res_num = AuthVerifier.DKIM_RES.TEMPFAIL;
 			authResultDKIM.result_str =
 				(dkimSigResult.errorType &&
 					browser.i18n.getMessage(dkimSigResult.errorType, dkimSigResult.errorStrParams)) ||
@@ -667,9 +667,9 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 			break;
 		case "PERMFAIL": {
 			if (dkimSigResult.hideFail) {
-				authResultDKIM.res_num = 35;
+				authResultDKIM.res_num = AuthVerifier.DKIM_RES.PERMFAIL_NOSIG;
 			} else {
-				authResultDKIM.res_num = 30;
+				authResultDKIM.res_num = AuthVerifier.DKIM_RES.PERMFAIL;
 			}
 			let errorType = dkimSigResult.errorType;
 			let errorMsg;
@@ -761,7 +761,7 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 			break;
 		}
 		case "none":
-			authResultDKIM.res_num = 40;
+			authResultDKIM.res_num = AuthVerifier.DKIM_RES.NOSIG;
 			authResultDKIM.result_str = browser.i18n.getMessage("NOSIG");
 			break;
 		default:
