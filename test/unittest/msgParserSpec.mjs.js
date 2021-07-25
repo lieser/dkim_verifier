@@ -145,6 +145,9 @@ describe("Message parser [unittest]", function () {
 				expect(
 					MsgParser.parseFromHeader(`From: "this is from foo" <foo@example.com>\r\n`)
 				).to.be.equal("foo@example.com");
+				expect(
+					MsgParser.parseFromHeader(`From: "bar@bad.com" <foo@example.com>\r\n`)
+				).to.be.equal("foo@example.com");
 			});
 			it("with comment", function () {
 				expect(
