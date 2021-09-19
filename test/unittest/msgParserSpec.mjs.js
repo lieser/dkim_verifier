@@ -326,6 +326,9 @@ describe("Message parser [unittest]", function () {
 			expect( () =>
 				MsgParser.parseListIdHeader('List-Id: <foo@example.com>\r\n')
 			).to.throw();
+			expect( () =>
+				MsgParser.parseListIdHeader('List-Id: 123 <foo newsletter>\r\n')
+			).to.throw();
 		});
 	});
 });
