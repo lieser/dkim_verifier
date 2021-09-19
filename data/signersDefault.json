@@ -764,6 +764,12 @@
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_NEUTRAL"
 		}, {
+			"domain": "flytit.no",
+			"addr": "*",
+			"sdid": "flytit.no",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "ford.com",
 			"addr": "*",
 			"sdid": "ford.com",
@@ -953,6 +959,12 @@
 			"domain": "gumtree.com.au",
 			"addr": "*",
 			"sdid": "gumtree.com.au",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "hapro.no",
+			"addr": "*",
+			"sdid": "hapro.no",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
