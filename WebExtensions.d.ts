@@ -63,6 +63,17 @@ declare module browser {
         }
 
         const getDisplayedMessage: (tabId: number) => Promise<MessageHeader>;
-        const onMessageDisplayed: Event<(tabId: { id: number, windowID: number }, message: MessageHeader) => void>,
+        const onMessageDisplayed: Event<(tabId: messenger.tabs.Tab, message: MessageHeader) => void>,
+        const onMessagesDisplayed: Event<(tabId: messenger.tabs.Tab, message: MessageHeader[]) => void>,
+    }
+}
+
+declare module messenger {
+    declare module tabs {
+        interface Tab {
+            id: number,
+            windowID: number,
+            url?: string,
+        }
     }
 }

@@ -72,6 +72,8 @@ const log = Logging.getLogger("AuthVerifier");
  *           40: no sig
  * @property {string} result_str
  *           localized result string
+ * @property {string} [error_str]
+ *           localized error string
  * @property {string[]} [warnings_str]
  *           localized warnings
  * @property {string} [favicon]
@@ -751,6 +753,7 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 					browser.i18n.getMessage(errorType,
 						dkimSigResult.errorStrParams) ||
 					errorType;
+				authResultDKIM.error_str = errorMsg;
 			}
 			if (errorMsg) {
 				authResultDKIM.result_str = browser.i18n.getMessage("PERMFAIL",

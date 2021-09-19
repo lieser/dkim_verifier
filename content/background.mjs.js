@@ -20,6 +20,7 @@ import AuthVerifier from "../modules/authVerifier.mjs.js";
 import Logging from "../modules/logging.mjs.js";
 import MsgParser from "../modules/msgParser.mjs.js";
 import prefs from "../modules/preferences.mjs.js";
+import verifyMessageForConversation from "../modules/conversation.mjs.js";
 
 const log = Logging.getLogger("background");
 
@@ -149,6 +150,10 @@ async function verifyMessage(tabId, message) {
 browser.messageDisplay.onMessageDisplayed.addListener(async (tab, message) => {
 	try {
 		await isInitialized;
+		if (tab.url?.startsWith("chrome://conversations/")) {
+			// Conversation view is handled in onMessagesDisplayed
+			return;
+		}
 		displayedResultsCache.delete(tab.id);
 
 		// Nothing to verify if msg is RSS feed or news
@@ -179,6 +184,25 @@ browser.messageDisplay.onMessageDisplayed.addListener(async (tab, message) => {
 		browser.dkimHeader.showDkimHeader(tab.id, message.id, true);
 		browser.dkimHeader.setDkimHeaderResult(
 			tab.id, message.id, browser.i18n.getMessage("DKIM_INTERNALERROR_NAME"), [], "", {});
+	}
+});
+
+/**
+ * Triggered then multiple new message are viewed.
+ * Will start the verification for Conversations if needed.
+ */
+browser.messageDisplay.onMessagesDisplayed.addListener(async (tab, messages) => {
+	try {
+		await isInitialized;
+		if (tab.url?.startsWith("chrome://conversations/")) {
+			for (const message of messages) {
+				await verifyMessageForConversation(message);
+			}
+			return;
+		}
+		// Normal Thunderbird view ("classic") is handled in onMessageDisplayed
+	} catch (e) {
+		log.fatal("Unexpected error during onMessagesDisplayed", e);
 	}
 });
 

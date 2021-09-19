@@ -21,6 +21,18 @@
 	"NOT_EMAIL": {
 		"message": "Keine E-Mail"
 	},
+	"SUCCESS_TAG": {
+		"message": "DKIM signiert durch $1",
+		"description": "Tag shown in Conversation add-on for valid mail. Should be kept short."
+	},
+	"TEMPFAIL_TAG": {
+		"message": "DKIM Fehler",
+		"description": "Tag shown in Conversation add-on for temporary failure. Should be kept short."
+	},
+	"PERMFAIL_TAG": {
+		"message": "DKIM ungültig",
+		"description": "Tag shown in Conversation add-on for invalid mail. Should be kept short."
+	},
 	// DKIM_INTERNALERROR
 	"DKIM_INTERNALERROR": {
 		"message": "DKIM Verifier: Interner Fehler"
