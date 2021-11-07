@@ -203,4 +203,84 @@ describe("Sign rules [unittest]", function () {
 			expect(callback.notCalled).to.be.true;
 		});
 	});
+	describe("import / export", function () {
+		it("export rules", async function () {
+			await SignRules.addRule("foo.com", null, "*", "foo.com", SignRules.TYPE.ALL);
+			await SignRules.addRule("bar.com", null, "*", "bar.com", SignRules.TYPE.ALL);
+
+			const exportedRules = await SignRules.exportUserRules();
+			expect(exportedRules.dataId).is.equal("DkimExportedUserSignRules");
+			expect(exportedRules.dataFormatVersion).is.equal(1);
+			expect(exportedRules.rules.length).is.equal(2);
+			expect(exportedRules.rules[0]).is.deep.equal({
+				domain: "foo.com",
+				listId: "",
+				addr: "*",
+				sdid: "foo.com",
+				type: SignRules.TYPE.ALL,
+				priority: SignRules.PRIORITY.USERINSERT_RULE_ALL,
+				enabled: true,
+			});
+			expect(exportedRules.rules[1]).is.deep.equal({
+				domain: "bar.com",
+				listId: "",
+				addr: "*",
+				sdid: "bar.com",
+				type: SignRules.TYPE.ALL,
+				priority: SignRules.PRIORITY.USERINSERT_RULE_ALL,
+				enabled: true,
+			});
+		});
+		it("import rules", async function () {
+			const exportedRules = {
+				dataId: 'DkimExportedUserSignRules',
+				dataFormatVersion: 1,
+				rules: [
+					{
+						domain: 'foo.com',
+						listId: '',
+						addr: '*',
+						sdid: 'foo.com',
+						type: 1,
+						priority: 3100,
+						enabled: true
+					},
+					{
+						domain: 'bar.com',
+						listId: '',
+						addr: '*',
+						sdid: 'bar.com',
+						type: 1,
+						priority: 3100,
+						enabled: true
+					},
+				]
+			};
+
+			let res = await SignRules.check(dkimNone, "bar@foo.com");
+			expect(res.result).is.equal("none");
+
+			await SignRules.importUserRules(exportedRules);
+
+			res = await SignRules.check(dkimNone, "bar@foo.com");
+			expect(res.result).is.equal("PERMFAIL");
+		});
+		it("importing deletes existing rules", async function () {
+			const exportedRules = {
+				dataId: 'DkimExportedUserSignRules',
+				dataFormatVersion: 1,
+				rules: [
+				]
+			};
+
+			await SignRules.addRule("foo.com", null, "*", "foo.com", SignRules.TYPE.ALL);
+			let res = await SignRules.check(dkimNone, "bar@foo.com");
+			expect(res.result).is.equal("PERMFAIL");
+
+			await SignRules.importUserRules(exportedRules);
+
+			res = await SignRules.check(dkimNone, "bar@foo.com");
+			expect(res.result).is.equal("none");
+		});
+	});
 });

@@ -14,7 +14,7 @@
 import DataTable from "./table.mjs.js";
 import ExtensionUtils from "../modules/extensionUtils.mjs.js";
 import SignRulesProxy from "../modules/dkim/signRulesProxy.mjs.js";
-import { getElementById } from "./domUtils.mjs.js";
+import { getElementById, uploadJsonData } from "./domUtils.mjs.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
 	const tableElement = getElementById("rulesTable");
@@ -65,5 +65,23 @@ document.addEventListener("DOMContentLoaded", async () => {
 			"./signRulesHelp.html",
 			browser.i18n.getMessage("signersRuleHelp.title"),
 		);
+	});
+
+	const exportRules = getElementById("exportRules");
+	exportRules.addEventListener("click", async () => {
+		const exportedUserRules = await SignRulesProxy.exportUserRules();
+		ExtensionUtils.downloadDataAsJSON(exportedUserRules, "dkim_sign_rules");
+	});
+
+	const importRules = getElementById("importRules");
+	importRules.addEventListener("click", async () => {
+		try {
+			// TODO: warn user about overriding existing rules
+			const data = await uploadJsonData();
+			await SignRulesProxy.importUserRules(data);
+		} catch (error) {
+			// TODO: show visible error message to user
+			console.error("Error importing sing rules.", error);
+		}
 	});
 }, { once: true });

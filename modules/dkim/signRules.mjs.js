@@ -73,6 +73,28 @@ const AUTO_ADD_RULE_FOR = {
 };
 
 /**
+ * Exported DKIM user signing rule.
+ *
+ * @typedef {object} DkimExportedUserSignRule
+ * @property {string} domain
+ * @property {string} listId
+ * @property {string} addr
+ * @property {string} sdid - space separated list of SDIDs
+ * @property {number} type
+ * @property {number} priority
+ * @property {boolean} enabled
+ */
+
+/**
+ * Exported DKIM user signing rules.
+ *
+ * @typedef {object} DkimExportedUserSignRules
+ * @property {"DkimExportedUserSignRules"} dataId
+ * @property {1} dataFormatVersion
+ * @property {DkimExportedUserSignRule[]} rules
+ */
+
+/**
  * DKIM user signing rule.
  *
  * @typedef {object} DkimSignRuleUser
@@ -373,6 +395,56 @@ export default class SignRules {
 	}
 
 	/**
+	 * Get the user sign rules in the export format.
+	 *
+	 * @returns {Promise<DkimExportedUserSignRules>}
+	 */
+	static async exportUserRules() {
+		/** @type {{id?: number, domain: string, listId: string, addr: string, sdid: string, type: number, priority: number, enabled: boolean }[]} */
+		const rules = copy(await this.getUserRules());
+		rules.map(rule => { delete rule.id; return rule; });
+		return {
+			dataId: "DkimExportedUserSignRules",
+			dataFormatVersion: 1,
+			rules,
+		};
+	}
+
+	/**
+	 * Import the given user sign rules.
+	 * Existing rules will be overridden.
+	 *
+	 * @param {{dataId: string, dataFormatVersion: number}} data
+	 * @returns {Promise<void>}
+	 */
+	static async importUserRules(data) {
+		if (data.dataId !== "DkimExportedUserSignRules") {
+			// TODO: proper translated error message
+			log.error(data.dataId);
+			throw new Error("Unknown data");
+		}
+		if (data.dataFormatVersion !== 1) {
+			// TODO: proper translated error message
+			throw new Error("Unsupported format of exported rules");
+		}
+		/** @type {DkimExportedUserSignRules} */
+		// @ts-expect-error
+		const exportedRules = data;
+
+		// Costly but easy way to ensure a race condition with loading the rules does not happen.
+		await loadUserRules();
+
+		let maxId = 0;
+		userRules = exportedRules.rules.map(rule => ({ id: ++maxId, ...rule }));
+		userRulesMaxId = maxId;
+
+		await storeUserRules();
+
+		browser.runtime.sendMessage({ event: "ruleAdded" }).
+			catch(error => log.debug("Error sending ruleAdded event", error));
+	}
+
+	/**
 	 * Checks the DKIM result against the sign rules.
 	 *
 	 * @param {VerifierModule.dkimSigResultV2} dkimResult
@@ -657,6 +729,14 @@ export function initSignRulesProxy() {
 		if (request.method === "getUserRules") {
 			// eslint-disable-next-line consistent-return
 			return SignRules.getUserRules();
+		}
+		if (request.method === "exportUserRules") {
+			// eslint-disable-next-line consistent-return
+			return SignRules.exportUserRules();
+		}
+		if (request.method === "importUserRules") {
+			// eslint-disable-next-line consistent-return
+			return SignRules.importUserRules(request.parameters.data);
 		}
 		if (request.method === "updateRule") {
 			// eslint-disable-next-line consistent-return

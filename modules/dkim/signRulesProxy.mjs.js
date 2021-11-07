@@ -64,6 +64,39 @@ export default class SignRulesProxy {
 	}
 
 	/**
+	 * Get the user sign rules in the export format.
+	 *
+	 * @returns {Promise<import("./signRules.mjs.js").DkimExportedUserSignRules>}
+	 */
+	static exportUserRules() {
+		/** @type {RuntimeMessage.SignRules.exportUserRules} */
+		const message = {
+			module: "SignRules",
+			method: "exportUserRules",
+		};
+		return browser.runtime.sendMessage(message);
+	}
+
+	/**
+	 * Import the given user sign rules.
+	 * Existing rules will be overridden.
+	 *
+	 * @param {any} data
+	 * @returns {Promise<void>}
+	 */
+	static importUserRules(data) {
+		/** @type {RuntimeMessage.SignRules.importUserRules} */
+		const message = {
+			module: "SignRules",
+			method: "importUserRules",
+			parameters: {
+				data,
+			},
+		};
+		return browser.runtime.sendMessage(message);
+	}
+
+	/**
 	 * Add user rule.
 	 *
 	 * @param {string?} domain

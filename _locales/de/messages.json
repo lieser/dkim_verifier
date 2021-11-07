@@ -638,6 +638,14 @@
 	"treeviewSigners.deleteSelectedRows": {
 		"message": "Entferne markierte Regeln"
 	},
+	"treeviewSigners.exportRules": {
+		"message": "Regeln exportieren",
+		"description": "Button for exporting sign rules"
+	},
+	"treeviewSigners.importRules": {
+		"message": "Regeln importieren",
+		"description": "Button for importing sign rules"
+	},
 	"addSignersRule.title": {
 		"message": "Füge Signierregeln hinzu"
 	},

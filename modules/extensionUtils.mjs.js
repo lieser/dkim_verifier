@@ -13,7 +13,7 @@
 ///<reference path="../WebExtensions.d.ts" />
 /* eslint-env browser, webextensions */
 
-import { promiseWithTimeout, sleep } from "./utils.mjs.js";
+import { dateToString, promiseWithTimeout, sleep } from "./utils.mjs.js";
 import Logging from "./logging.mjs.js";
 
 const log = Logging.getLogger("ExtensionUtils");
@@ -43,6 +43,22 @@ async function createOrRaisePopup(url, title, height = undefined, width = undefi
 		allowScriptsToClose: true,
 		height: height,
 		width: width,
+	});
+}
+
+/**
+ * Download data as JSON.
+ *
+ * @param {object} data
+ * @param {string} dataName
+ * @returns {void}
+ */
+function downloadDataAsJSON(data, dataName) {
+	const jsonBlob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+	browser.downloads.download({
+		'url': URL.createObjectURL(jsonBlob),
+		'filename': `${dataName}_${dateToString(new Date())}.json`,
+		'saveAs': true,
 	});
 }
 
@@ -128,9 +144,10 @@ async function safeGetLocalStorage() {
 }
 
 const ExtensionUtils = {
-	createOrRaisePopup: createOrRaisePopup,
-	isOutgoing: isOutgoing,
-	safeGetLocalStorage: safeGetLocalStorage,
-	readFile: readFile,
+	createOrRaisePopup,
+	downloadDataAsJSON,
+	isOutgoing,
+	safeGetLocalStorage,
+	readFile,
 };
 export default ExtensionUtils;
