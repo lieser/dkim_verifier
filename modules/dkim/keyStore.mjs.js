@@ -18,21 +18,11 @@
 
 import { DKIM_InternalError, DKIM_SigError } from "../error.mjs.js";
 import DNS from "../dns.mjs.js";
-import { Deferred } from "../utils.mjs.js";
+import { dateToString, Deferred } from "../utils.mjs.js";
 import Logging from "../logging.mjs.js";
 import prefs from "../preferences.mjs.js";
 
 const log = Logging.getLogger("KeyStore");
-
-/**
- * Get the date as a string in the form of `YYYY-MM-DD`
- *
- * @param {Date} date
- * @returns {string}
- */
-function dateToString(date) {
-	return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
-}
 
 /**
  * @typedef {object} StoredDkimKey
