@@ -412,12 +412,12 @@ export default class SignRules {
 
 	/**
 	 * Import the given user sign rules.
-	 * Existing rules will be overridden.
 	 *
 	 * @param {{dataId: string, dataFormatVersion: number}} data
+	 * @param {boolean} replace
 	 * @returns {Promise<void>}
 	 */
-	static async importUserRules(data) {
+	static async importUserRules(data, replace) {
 		if (data.dataId !== "DkimExportedUserSignRules") {
 			// TODO: proper translated error message
 			log.error(data.dataId);
@@ -434,8 +434,12 @@ export default class SignRules {
 		// Costly but easy way to ensure a race condition with loading the rules does not happen.
 		await loadUserRules();
 
-		let maxId = 0;
-		userRules = exportedRules.rules.map(rule => ({ id: ++maxId, ...rule }));
+		let maxId = userRulesMaxId;
+		if (replace) {
+			maxId = 0;
+			userRules = [];
+		}
+		userRules = userRules.concat(exportedRules.rules.map(rule => ({ id: ++maxId, ...rule })));
 		userRulesMaxId = maxId;
 
 		await storeUserRules();
@@ -736,7 +740,7 @@ export function initSignRulesProxy() {
 		}
 		if (request.method === "importUserRules") {
 			// eslint-disable-next-line consistent-return
-			return SignRules.importUserRules(request.parameters.data);
+			return SignRules.importUserRules(request.parameters.data, request.parameters.replace);
 		}
 		if (request.method === "updateRule") {
 			// eslint-disable-next-line consistent-return

@@ -1,0 +1,54 @@
+/**
+ * This is intended to be used together with TB's internal classes:
+ * - dialogBox
+ * - dialogTitleBar
+ * - dialogTitle
+ * - dialogFrame
+ *
+ * For it to work, import "chrome://messenger/skin/preferences/preferences.css"
+ */
+
+.modalOverlay {
+	/* Hidden by default - set to flex to show */
+	display: none;
+	/* Stay in place, covering the complete window */
+	position: fixed;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	/* Sit on top, making the rest opaque */
+	z-index: 1;
+	background-color: rgba(0, 0, 0, 0.5);
+	/* Center content */
+	justify-content: center;
+	align-content: center;
+	/* Enable scroll if needed */
+	overflow: auto;
+}
+
+/* make TB's .dialogBox work for us */
+.customDialogBox {
+	display: block;
+	margin-top: auto;
+	margin-bottom: auto;
+	margin-left: 20px;
+	margin-right: 20px;
+	font-size: unset;
+}
+
+/* make TB's .dialogTitle work for us */
+.customDialogTitle {
+	display: block;
+}
+
+/* make TB's .dialogFrame work for us */
+.customDialogFrame {
+	height: auto;
+	width: auto;
+}
+
+.dialogButtonBox {
+	display: flex;
+	justify-content: end;
+}

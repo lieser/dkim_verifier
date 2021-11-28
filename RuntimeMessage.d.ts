@@ -25,6 +25,7 @@ namespace RuntimeMessage {
             readonly method: "importUserRules";
             readonly parameters: {
                 readonly data: any,
+                readonly replace: boolean,
             }
         }
 

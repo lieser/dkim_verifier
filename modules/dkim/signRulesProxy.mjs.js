@@ -79,18 +79,19 @@ export default class SignRulesProxy {
 
 	/**
 	 * Import the given user sign rules.
-	 * Existing rules will be overridden.
 	 *
 	 * @param {any} data
+	 * @param {boolean} replace
 	 * @returns {Promise<void>}
 	 */
-	static importUserRules(data) {
+	static importUserRules(data, replace) {
 		/** @type {RuntimeMessage.SignRules.importUserRules} */
 		const message = {
 			module: "SignRules",
 			method: "importUserRules",
 			parameters: {
 				data,
+				replace,
 			},
 		};
 		return browser.runtime.sendMessage(message);

@@ -646,6 +646,18 @@
 		"message": "Regeln importieren",
 		"description": "Button for importing sign rules"
 	},
+	"importRules.replaceQuestion": {
+		"message": "Sollen die importierten Regeln zu den existierenden Regeln hinzugefügt werden, oder die existierenden Regeln ersetzen?",
+		"description": "Question asked in import dialog"
+	},
+	"importRules.addRules": {
+		"message": "Füge Regeln hinzu",
+		"description": "Button in import dialog for adding rules to existing rules"
+	},
+	"importRules.replaceRules": {
+		"message": "Ersetze Regeln",
+		"description": "Button in import dialog for replacing existing rules"
+	},
 	"addSignersRule.title": {
 		"message": "Füge Signierregeln hinzu"
 	},

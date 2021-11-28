@@ -260,12 +260,12 @@ describe("Sign rules [unittest]", function () {
 			let res = await SignRules.check(dkimNone, "bar@foo.com");
 			expect(res.result).is.equal("none");
 
-			await SignRules.importUserRules(exportedRules);
+			await SignRules.importUserRules(exportedRules, true);
 
 			res = await SignRules.check(dkimNone, "bar@foo.com");
 			expect(res.result).is.equal("PERMFAIL");
 		});
-		it("importing deletes existing rules", async function () {
+		it("importing rules in replace mode", async function () {
 			const exportedRules = {
 				dataId: 'DkimExportedUserSignRules',
 				dataFormatVersion: 1,
@@ -277,10 +277,39 @@ describe("Sign rules [unittest]", function () {
 			let res = await SignRules.check(dkimNone, "bar@foo.com");
 			expect(res.result).is.equal("PERMFAIL");
 
-			await SignRules.importUserRules(exportedRules);
+			await SignRules.importUserRules(exportedRules, true);
 
 			res = await SignRules.check(dkimNone, "bar@foo.com");
 			expect(res.result).is.equal("none");
+		});
+		it("importing rules in add mode", async function () {
+			const exportedRules = {
+				dataId: 'DkimExportedUserSignRules',
+				dataFormatVersion: 1,
+				rules: [
+					{
+						domain: 'bar.com',
+						listId: '',
+						addr: '*',
+						sdid: 'bar.com',
+						type: 1,
+						priority: 3100,
+						enabled: true
+					},
+				]
+			};
+
+			await SignRules.addRule("foo.com", null, "*", "foo.com", SignRules.TYPE.ALL);
+			let res = await SignRules.check(dkimNone, "user@foo.com");
+			expect(res.result).is.equal("PERMFAIL");
+
+			await SignRules.importUserRules(exportedRules, false);
+
+			res = await SignRules.check(dkimNone, "user@foo.com");
+			expect(res.result).is.equal("PERMFAIL");
+
+			res = await SignRules.check(dkimNone, "user@bar.com");
+			expect(res.result).is.equal("PERMFAIL");
 		});
 	});
 });
