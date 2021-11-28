@@ -2,6 +2,7 @@
  - show proper error message on ill-formed from (#238)
  - ignore ill-formed List-Id (#262) and fix parsing of List-Id
  - Authentication-Results header: fixed sorting of DKIM results in regards to list id
+ - fixed options styling for Thunderbird 91
  - updated default rules and favicons (#274)
 
 4.0.0 [2021-04-18]

@@ -22,12 +22,15 @@ nav.nav-main>div[pane] {
 }
 
 nav.nav-main>div[pane][selected] {
-	color: var(--in-content-category-text-selected);
-	border-left-color: var(--in-content-border-highlight)
+	/* TB 78 backup: --in-content-category-text-selected */
+	color: var(--in-content-accent-color, var(--in-content-category-text-selected));
+	/* TB 78 backup: --in-content-border-highlight */
+	border-left-color: var(--in-content-accent-color, var(--in-content-border-highlight));
 }
 
 nav.nav-main>div[pane]:hover {
-	background-color: var(--in-content-category-background-selected-hover);
+	background-color: var(--in-content-button-background-hover);
+	color: var(--in-content-button-text-color-hover);
 }
 
 nav.nav-section {
@@ -48,12 +51,13 @@ nav.nav-section>div[pane] {
 }
 
 nav.nav-section>div[pane][selected] {
-	background-color: var(--in-content-box-background-hover);
-	border-bottom-color: var(--in-content-border-highlight);
+	background-color: var(--in-content-button-background);
+	/* TB 78 backup: --in-content-border-highlight */
+	border-bottom-color: var(--in-content-accent-color, var(--in-content-border-highlight));
 }
 
 nav.nav-section>div[pane]:hover {
-	background-color: var(--in-content-box-background-hover);
+	background-color: var(--in-content-button-background);
 }
 
 main {
@@ -99,7 +103,9 @@ fieldset:disabled label {
 	max-width: 40%;
 	margin: 2px 0px;
 	margin-inline-end: 8px;
-	border: 1px solid var(--in-content-box-border-color);
+	/* --in-content-box-border-color does not work in TB 91 unless layout.css.color-mix.enable is set */
+	/* border: 1px solid var(--in-content-box-border-color); */
+	border: 1px solid currentColor;
 	border-radius: 2px;
 	background-color: var(--in-content-box-background);
 }
@@ -110,12 +116,29 @@ fieldset:disabled label {
 	user-select: none;
 }
 
+/**
+ * --in-content-item-hover does not work in TB 91 unless layout.css.color-mix.enable is set.
+ * As an alternative, we use an ::after opacity trick.
+ * See also https://www.designcise.com/web/tutorial/how-to-apply-css-opacity-to-background-color-only
 .account-selection-item:hover {
 	background-color: var(--in-content-item-hover);
 }
+*/
+.account-selection-item:not([selected]):hover::after {
+	content: '';
+	width: 100%;
+	height: 100%;
+	background-color: var(--in-content-item-selected);
+	opacity: 0.2;
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 1;
+}
 
 .account-selection-item[selected] {
-	color: var(--in-content-selected-text);
+	/* TB 78 backup: --in-content-selected-text */
+	color: var(--in-content-item-selected-text, var(--in-content-selected-text));
 	background-color: var(--in-content-item-selected)
 }
 
