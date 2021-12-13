@@ -32,8 +32,7 @@
 	},
 	"message_display_action": {
 		"default_icon": {
-			"32": "icon_32.png",
-			"64": "icon.png"
+			"16": "signature.svg"
 		},
 		"default_label": "DKIM",
 		"default_popup": "content/displayAction.html"
