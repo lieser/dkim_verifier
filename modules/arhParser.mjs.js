@@ -1,7 +1,7 @@
 /**
  * Parser for the Authentication-Results header as specified in RFC 7601.
  *
- * Copyright (c) 2014-2020 Philippe Lieser
+ * Copyright (c) 2014-2021 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *

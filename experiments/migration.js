@@ -10,8 +10,7 @@
 // @ts-check
 ///<reference path="./migration.d.ts" />
 ///<reference path="./mozilla.d.ts" />
-/* eslint-env worker */
-/* global ChromeUtils, ExtensionCommon */
+/* global ExtensionCommon */
 
 "use strict";
 
@@ -99,7 +98,7 @@ this.migration = class extends ExtensionCommon.ExtensionAPI {
 						const server = mailPrefs.getCharPref(`account.${account}.server`);
 						const dkimAccountPrefs = Services.prefs.getBranch(`mail.server.${server}.dkim_verifier.`);
 						const prefs = this._getChildPrefs(dkimAccountPrefs);
-						if (Object.keys(prefs).length > 0) {
+						if (Object.keys(prefs).length) {
 							accountPrefs[account] = prefs;
 						}
 					}

@@ -68,6 +68,16 @@ export function copy(src) {
 }
 
 /**
+ * Get the date as a string in the form of `YYYY-MM-DD`
+ *
+ * @param {Date} date
+ * @returns {string}
+ */
+export function dateToString(date) {
+	return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
+/**
  * Returns true if domain1 is the same or a subdomain of domain2.
  *
  * @param {string} domain1
@@ -86,7 +96,7 @@ export function domainIsInDomain(domain1, domain2) {
  * @returns {string}
  */
 export function getDomainFromAddr(addr) {
-	return addr.substr(addr.lastIndexOf("@")+1);
+	return addr.substr(addr.lastIndexOf("@") + 1);
 }
 
 /**

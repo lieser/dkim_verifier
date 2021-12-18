@@ -365,7 +365,7 @@ class DkimSignatureHeader {
 			map(function (x) { return x.trim().toLowerCase(); }).
 			filter(function (x) { return x; });
 		// check that the from header is included
-		if (signedHeaderFieldsArray.indexOf("from") === -1) {
+		if (!signedHeaderFieldsArray.includes("from")) {
 			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_FROM");
 		}
 		return signedHeaderFieldsArray;
@@ -1020,7 +1020,7 @@ class DkimSignature {
 		log.debug("Parsed DKIM-Key:", dkimKey);
 
 		// check that the testing flag is not set
-		if (dkimKey.t_array.indexOf("y") !== -1) {
+		if (dkimKey.t_array.includes("y")) {
 			if (prefs["error.key_testmode.ignore"]) {
 				this._header.warnings.push({ name: "DKIM_SIGERROR_KEY_TESTMODE" });
 				log.debug("Warning: DKIM_SIGERROR_KEY_TESTMODE");
@@ -1031,7 +1031,7 @@ class DkimSignature {
 
 		// if s flag is set in DKIM key record
 		// AUID must be from the same domain as SDID (and not a subdomain)
-		if (dkimKey.t_array.indexOf("s") !== -1 &&
+		if (dkimKey.t_array.includes("s") &&
 			!stringEqual(this._header.i_domain, this._header.d)) {
 			throw new DKIM_SigError("DKIM_SIGERROR_DOMAIN_I");
 		}
@@ -1040,7 +1040,7 @@ class DkimSignature {
 		// the hash algorithm implied by the "a=" tag in the DKIM-Signature header field
 		// must be included in the contents of the "h=" tag
 		if (dkimKey.h_array &&
-			dkimKey.h_array.indexOf(this._header.a_hash) === -1) {
+			!dkimKey.h_array.includes(this._header.a_hash)) {
 			throw new DKIM_SigError("DKIM_SIGERROR_KEY_HASHNOTINCLUDED");
 		}
 

@@ -72,6 +72,8 @@ const log = Logging.getLogger("AuthVerifier");
  *           40: no sig
  * @property {string} result_str
  *           localized result string
+ * @property {string} [error_str]
+ *           localized error string
  * @property {string[]} [warnings_str]
  *           localized warnings
  * @property {string} [favicon]
@@ -250,7 +252,7 @@ async function getARHResult(message, headers, from, listId, account, dmarc) {
 		const allowedAuthserv = prefs["account.arh.allowedAuthserv"](account).
 			split(" ").
 			filter(server => server);
-		if (allowedAuthserv.length > 0 &&
+		if (allowedAuthserv.length &&
 			!allowedAuthserv.some(server => {
 				if (arh.authserv_id === server) {
 					return true;
@@ -641,7 +643,7 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 	const authResultDKIM = dkimSigResult;
 	switch (dkimSigResult.result) {
 		case "SUCCESS": {
-			authResultDKIM.res_num = 10;
+			authResultDKIM.res_num = AuthVerifier.DKIM_RES.SUCCESS;
 			let keySecureStr = "";
 			if (dkimSigResult.keySecure &&
 				prefs["display.keySecure"]) {
@@ -658,7 +660,7 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 			break;
 		}
 		case "TEMPFAIL":
-			authResultDKIM.res_num = 20;
+			authResultDKIM.res_num = AuthVerifier.DKIM_RES.TEMPFAIL;
 			authResultDKIM.result_str =
 				(dkimSigResult.errorType &&
 					browser.i18n.getMessage(dkimSigResult.errorType, dkimSigResult.errorStrParams)) ||
@@ -667,9 +669,9 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 			break;
 		case "PERMFAIL": {
 			if (dkimSigResult.hideFail) {
-				authResultDKIM.res_num = 35;
+				authResultDKIM.res_num = AuthVerifier.DKIM_RES.PERMFAIL_NOSIG;
 			} else {
-				authResultDKIM.res_num = 30;
+				authResultDKIM.res_num = AuthVerifier.DKIM_RES.PERMFAIL;
 			}
 			let errorType = dkimSigResult.errorType;
 			let errorMsg;
@@ -751,6 +753,7 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 					browser.i18n.getMessage(errorType,
 						dkimSigResult.errorStrParams) ||
 					errorType;
+				authResultDKIM.error_str = errorMsg;
 			}
 			if (errorMsg) {
 				authResultDKIM.result_str = browser.i18n.getMessage("PERMFAIL",
@@ -761,7 +764,7 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 			break;
 		}
 		case "none":
-			authResultDKIM.res_num = 40;
+			authResultDKIM.res_num = AuthVerifier.DKIM_RES.NOSIG;
 			authResultDKIM.result_str = browser.i18n.getMessage("NOSIG");
 			break;
 		default:

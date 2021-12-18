@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020 Philippe Lieser
+ * Copyright (c) 2020-2021 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -144,6 +144,9 @@ describe("Message parser [unittest]", function () {
 			it("with simple quoted-string as display-name", function () {
 				expect(
 					MsgParser.parseFromHeader(`From: "this is from foo" <foo@example.com>\r\n`)
+				).to.be.equal("foo@example.com");
+				expect(
+					MsgParser.parseFromHeader(`From: "bar@bad.com" <foo@example.com>\r\n`)
 				).to.be.equal("foo@example.com");
 			});
 			it("with comment", function () {
@@ -322,6 +325,9 @@ describe("Message parser [unittest]", function () {
 			).to.throw();
 			expect( () =>
 				MsgParser.parseListIdHeader('List-Id: <foo@example.com>\r\n')
+			).to.throw();
+			expect( () =>
+				MsgParser.parseListIdHeader('List-Id: 123 <foo newsletter>\r\n')
 			).to.throw();
 		});
 	});

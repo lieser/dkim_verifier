@@ -21,6 +21,18 @@
 	"NOT_EMAIL": {
 		"message": "Keine E-Mail"
 	},
+	"SUCCESS_TAG": {
+		"message": "DKIM signiert durch $1",
+		"description": "Tag shown in Conversation add-on for valid mail. Should be kept short."
+	},
+	"TEMPFAIL_TAG": {
+		"message": "DKIM Fehler",
+		"description": "Tag shown in Conversation add-on for temporary failure. Should be kept short."
+	},
+	"PERMFAIL_TAG": {
+		"message": "DKIM ungültig",
+		"description": "Tag shown in Conversation add-on for invalid mail. Should be kept short."
+	},
 	// DKIM_INTERNALERROR
 	"DKIM_INTERNALERROR": {
 		"message": "DKIM Verifier: Interner Fehler"
@@ -625,6 +637,26 @@
 	},
 	"treeviewSigners.deleteSelectedRows": {
 		"message": "Entferne markierte Regeln"
+	},
+	"treeviewSigners.exportRules": {
+		"message": "Regeln exportieren",
+		"description": "Button for exporting sign rules"
+	},
+	"treeviewSigners.importRules": {
+		"message": "Regeln importieren",
+		"description": "Button for importing sign rules"
+	},
+	"importRules.replaceQuestion": {
+		"message": "Sollen die importierten Regeln zu den existierenden Regeln hinzugefügt werden, oder die existierenden Regeln ersetzen?",
+		"description": "Question asked in import dialog"
+	},
+	"importRules.addRules": {
+		"message": "Füge Regeln hinzu",
+		"description": "Button in import dialog for adding rules to existing rules"
+	},
+	"importRules.replaceRules": {
+		"message": "Ersetze Regeln",
+		"description": "Button in import dialog for replacing existing rules"
 	},
 	"addSignersRule.title": {
 		"message": "Füge Signierregeln hinzu"

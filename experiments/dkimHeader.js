@@ -11,8 +11,7 @@
 ///<reference path="./dkimHeader.d.ts" />
 ///<reference path="./mozilla.d.ts" />
 ///<reference path="./mozillaDom.d.ts" />
-/* eslint-env worker */
-/* global ChromeUtils, Components, ExtensionCommon */
+/* global ExtensionCommon */
 
 "use strict";
 
@@ -58,14 +57,14 @@ class DKIMTooltip {
 	set warnings(warnings) {
 		// delete old warnings from tooltips
 		while (this.element._warningsBox.firstChild) {
-			this.element._warningsBox.removeChild(this.element._warningsBox.firstChild);
+			this.element._warningsBox.firstChild.remove();
 		}
 
 		if (!this.element.ownerDocument) {
 			throw Error("Underlying element of DKIMTooltip does not contain ownerDocument");
 		}
 
-		if (this._warningsSeparator && warnings.length > 0) {
+		if (this._warningsSeparator && warnings.length) {
 			const sep = this.element.ownerDocument.createXULElement("separator");
 			sep.setAttribute("class", "thin");
 			this.element._warningsBox.appendChild(sep);
@@ -265,7 +264,7 @@ class DKIMHeaderField {
 	 * @memberof DKIMHeaderField
 	 */
 	set warnings(warnings) {
-		if (warnings.length > 0) {
+		if (warnings.length) {
 			this.element._dkimWarningIcon.style.display = "";
 		} else {
 			this.element._dkimWarningIcon.style.display = "none";
@@ -858,7 +857,7 @@ this.dkimHeader = class extends ExtensionCommon.ExtensionAPI {
 	 */
 	getDocumentForCurrentMsg(tabId, messageId) {
 		const target = ExtensionParent.apiManager.global.tabTracker.getTab(tabId);
-		const window = Components.utils.getGlobalForObject(target);
+		const window = Cu.getGlobalForObject(target);
 		const msg = this.extension.messageManager.convert(
 			window.gFolderDisplay.selectedMessage);
 		if (msg.id !== messageId) {

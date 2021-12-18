@@ -17,6 +17,18 @@ namespace RuntimeMessage {
             readonly method: "getUserRules";
         }
 
+        interface exportUserRules extends SignRulesMessage {
+            readonly method: "exportUserRules";
+        }
+
+        interface importUserRules extends SignRulesMessage {
+            readonly method: "importUserRules";
+            readonly parameters: {
+                readonly data: any,
+                readonly replace: boolean,
+            }
+        }
+
         interface addRule extends SignRulesMessage {
             readonly method: "addRule";
             readonly parameters: {
@@ -46,7 +58,7 @@ namespace RuntimeMessage {
             }
         }
 
-        type Messages = getDefaultRules | getUserRules | addRule | updateRule | deleteRule;
+        type Messages = getDefaultRules | getUserRules | exportUserRules | importUserRules | addRule | updateRule | deleteRule;
     }
 
     namespace KeyDb {

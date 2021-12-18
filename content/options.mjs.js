@@ -9,7 +9,7 @@
 
 // @ts-check
 ///<reference path="../WebExtensions.d.ts" />
-/* eslint-env browser, webextensions */
+/* eslint-env webextensions */
 
 import ExtensionUtils from "../modules/extensionUtils.mjs.js";
 import Logging from "../modules/logging.mjs.js";
@@ -407,7 +407,11 @@ async function initAccount() {
 		};
 		items.push(item);
 
-		accountSelectionBox.appendChild(item);
+		// Parent needed for ::after opacity trick
+		const parent = document.createElement("div");
+		parent.style.position = "relative";
+		parent.appendChild(item);
+		accountSelectionBox.appendChild(parent);
 	}
 
 	// select first account at start

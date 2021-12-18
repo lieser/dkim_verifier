@@ -34,6 +34,10 @@ declare module Components {
         unload(url: string): void;
     }
 }
+declare const Cc: typeof Components.classes;
+declare const Ci: typeof Components.interfaces;
+declare const Cr: typeof Components.results;
+declare const Cu: typeof Components.utils;
 
 /**
  * The `console` global in Chrome context allows creating ConsoleInstance
@@ -269,7 +273,7 @@ interface nsIProxyInfo { nsIProxyInfo: never };
 type nsIObserver = object;
 
 interface nsIIOService {
-    newURI(aSpec: string, aOriginCharset: string | null, aBaseURI: nsIURI | null): nsIURI;
+    newURI(aSpec: string, aOriginCharset?: string | null, aBaseURI?: nsIURI | null): nsIURI;
 }
 
 interface nsIURI {

@@ -2,7 +2,7 @@
  * Proxy to a singleton SignRules to avoid problems with race conditions
  * when accessing browser.storage.local.
  *
- * Copyright (c) 2020 Philippe Lieser
+ * Copyright (c) 2020-2021 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -59,6 +59,40 @@ export default class SignRulesProxy {
 		const message = {
 			module: "SignRules",
 			method: "getUserRules"
+		};
+		return browser.runtime.sendMessage(message);
+	}
+
+	/**
+	 * Get the user sign rules in the export format.
+	 *
+	 * @returns {Promise<import("./signRules.mjs.js").DkimExportedUserSignRules>}
+	 */
+	static exportUserRules() {
+		/** @type {RuntimeMessage.SignRules.exportUserRules} */
+		const message = {
+			module: "SignRules",
+			method: "exportUserRules",
+		};
+		return browser.runtime.sendMessage(message);
+	}
+
+	/**
+	 * Import the given user sign rules.
+	 *
+	 * @param {any} data
+	 * @param {boolean} replace
+	 * @returns {Promise<void>}
+	 */
+	static importUserRules(data, replace) {
+		/** @type {RuntimeMessage.SignRules.importUserRules} */
+		const message = {
+			module: "SignRules",
+			method: "importUserRules",
+			parameters: {
+				data,
+				replace,
+			},
 		};
 		return browser.runtime.sendMessage(message);
 	}

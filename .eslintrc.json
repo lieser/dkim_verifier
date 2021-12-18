@@ -2,7 +2,8 @@
     "root": true,
     "plugins": [
         "jsdoc",
-        "mocha"
+        "mocha",
+        "mozilla"
     ],
     "extends": [
         "eslint:recommended",
@@ -15,7 +16,7 @@
     "parserOptions": {
         "ecmaVersion": 2020,
         "ecmaFeatures": {},
-        "sourceType": "script"
+        "sourceType": "module"
     },
     "settings": {
         "jsdoc": {
@@ -156,7 +157,17 @@
         ],
         "jsdoc/require-returns-description": "off",
         // Mocha
-        "mocha/no-return-from-async": "warn"
+        "mocha/no-return-from-async": "warn",
+        // Mozilla
+        "mozilla/avoid-removeChild": "warn",
+        "mozilla/consistent-if-bracing": "warn",
+        "mozilla/no-compare-against-boolean-literals": "warn",
+        "mozilla/no-useless-removeEventListener": "warn",
+        "mozilla/prefer-boolean-length-check": "warn",
+        "mozilla/prefer-formatValues": "warn",
+        "mozilla/use-includes-instead-of-indexOf": "warn",
+        "mozilla/use-ownerGlobal": "warn",
+        "mozilla/use-returnValue": "warn"
     },
     "reportUnusedDisableDirectives": true
 }

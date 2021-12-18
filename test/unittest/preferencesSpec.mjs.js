@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020 Philippe Lieser
+ * Copyright (c) 2020-2021 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -386,7 +386,7 @@ describe("preferences [unittest]", function () {
 				await pref.setValue("color.nosig.background", "red");
 				await pref.setValue("dns.proxy.port", 1111);
 
-				while (storageCalls.length > 0) {
+				while (storageCalls.length) {
 					triggerListener();
 				}
 

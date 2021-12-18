@@ -8,7 +8,7 @@
  */
 
 // @ts-check
-/* eslint-env browser, webextensions */
+/* eslint-env webextensions */
 
 /**
  * Add translations to document

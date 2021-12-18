@@ -1,7 +1,7 @@
 /**
  * RegExp pattern for ABNF definitions in various RFCs.
  *
- * Copyright (c) 2020 Philippe Lieser
+ * Copyright (c) 2020-2021 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *

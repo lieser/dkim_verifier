@@ -13,8 +13,7 @@
 // @ts-check
 ///<reference path="./libunbound.d.ts" />
 ///<reference path="./mozilla.d.ts" />
-/* eslint-env worker */
-/* global ChromeUtils, ChromeWorker, Components, ExtensionCommon */
+/* global ExtensionCommon */
 
 "use strict";
 
@@ -348,9 +347,9 @@ this.libunbound = class extends ExtensionCommon.ExtensionAPI {
 	constructor(extension) {
 		super(extension);
 
-		const aomStartup = Components.classes[
+		const aomStartup = Cc[
 			"@mozilla.org/addons/addon-manager-startup;1"
-		].getService(Components.interfaces.amIAddonManagerStartup);
+		].getService(Ci.amIAddonManagerStartup);
 		const manifestURI = Services.io.newURI(
 			"manifest.json",
 			null,

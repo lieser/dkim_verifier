@@ -13,6 +13,7 @@
 import {
 	addrIsInDomain,
 	addrIsInDomain2,
+	dateToString,
 	domainIsInDomain,
 	getDomainFromAddr,
 	promiseWithTimeout,
@@ -88,6 +89,17 @@ describe("utils [unittest]", function () {
 			expect(
 				addrIsInDomain2("bar.com", "bar.com")
 			).to.be.false;
+		});
+	});
+
+	describe("dateToString", function () {
+		it("Double digit month an day", function () {
+			const date = new Date(2021, 11, 21);
+			expect(dateToString(date)).to.be.equal("2021-12-21");
+		});
+		it("Single digit month an day", function () {
+			const date = new Date(2021, 8, 6);
+			expect(dateToString(date)).to.be.equal("2021-09-06");
 		});
 	});
 

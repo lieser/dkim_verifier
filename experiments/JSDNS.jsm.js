@@ -171,7 +171,6 @@
 
 //@ts-check
 // options for ESLint
-/* eslint-env worker */
 /* eslint-disable prefer-template */
 /* eslint-disable no-use-before-define */
 /* eslint-disable camelcase */
@@ -179,8 +178,7 @@
 /* eslint strict: ["warn", "function"] */
 /* eslint complexity: "off" */
 /* eslint no-magic-numbers: "off" */
-/* global Components */
-/* exported EXPORTED_SYMBOLS, JSDNS */
+/* eslint mozilla/mark-exported-symbols-as-used: "error" */
 
 
 var EXPORTED_SYMBOLS = [
@@ -312,7 +310,7 @@ function getOsDnsServers() {
 	/** @type {DnsServer[]} */
 	const OS_DNS_ROOT_NAME_SERVERS = [];
 
-	if ("@mozilla.org/windows-registry-key;1" in Components.classes) {
+	if ("@mozilla.org/windows-registry-key;1" in Cc) {
 		// Firefox 1.5 or newer on Windows
 		// Try getting a nameserver from the windows registry
 		var reg;
@@ -321,9 +319,9 @@ function getOsDnsServers() {
 		var registryLinkage;
 		var registryInterfaces;
 		try {
-			var registry_class = Components.classes["@mozilla.org/windows-registry-key;1"];
+			var registry_class = Cc["@mozilla.org/windows-registry-key;1"];
 			var registry_object = registry_class.createInstance();
-			registry = registry_object.QueryInterface(Components.interfaces.nsIWindowsRegKey);
+			registry = registry_object.QueryInterface(Ci.nsIWindowsRegKey);
 
 			registry.open(registry.ROOT_KEY_LOCAL_MACHINE,
 				"SYSTEM\\CurrentControlSet",
@@ -431,14 +429,14 @@ function getOsDnsServers() {
 		/** @type {nsIFileInputStream} */
 		var stream_filestream;
 		try {
-			var resolvconf = Components.classes["@mozilla.org/file/local;1"].createInstance(Components.interfaces.nsIFile);
+			var resolvconf = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
 			resolvconf.initWithPath("/etc/resolv.conf");
 
-			var stream = Components.classes["@mozilla.org/network/file-input-stream;1"].createInstance();
-			stream_filestream = stream.QueryInterface(Components.interfaces.nsIFileInputStream);
+			var stream = Cc["@mozilla.org/network/file-input-stream;1"].createInstance();
+			stream_filestream = stream.QueryInterface(Ci.nsIFileInputStream);
 			stream_filestream.init(resolvconf, 0, 0, 0); // don't know what the flags are...
 
-			var stream_reader = stream.QueryInterface(Components.interfaces.nsILineInputStream);
+			var stream_reader = stream.QueryInterface(Ci.nsILineInputStream);
 
 			var out_line = { value: "" };
 			var hasmore = false;
@@ -610,7 +608,7 @@ function queryDNSRecursive(server, host, recordtype, callback, callbackdata, hop
 					if (servers === undefined) {
 						callback(null, callbackdata, ["TIMED_OUT", server]);
 					}
-				} else if (status === Components.results.NS_ERROR_NET_TIMEOUT) {
+				} else if (status === Cr.NS_ERROR_NET_TIMEOUT) {
 					log.debug("Resolving " + host + "/" + recordtype + ": DNS server " + server + " timed out on a TCP connection (NS_ERROR_NET_TIMEOUT).");
 					if (servers === undefined) {
 						callback(null, callbackdata, ["TIMED_OUT", server]);
@@ -650,7 +648,7 @@ function queryDNSRecursive(server, host, recordtype, callback, callbackdata, hop
 
 			this.readcount += data.length;
 
-			while (this.responseHeader.length < 14 && data.length > 0) {
+			while (this.responseHeader.length < 14 && data.length) {
 				this.responseHeader += data.charAt(0);
 				data = data.substr(1);
 			}
@@ -674,7 +672,7 @@ function queryDNSRecursive(server, host, recordtype, callback, callbackdata, hop
 	// allow server to be either a hostname or hostname:port
 	var server_hostname = server;
 	var port = 53;
-	if (server.indexOf(':') !== -1) {
+	if (server.includes(':')) {
 		server_hostname = server.substring(0, server.indexOf(':'));
 		port = parseInt(server.substring(server.indexOf(':') + 1), 10);
 	}
@@ -889,7 +887,7 @@ function DNS_getRDData(str, server, host, recordtype, callback, callbackdata, ho
 		}
 	}
 
-	if (results.length > 0) {
+	if (results.length) {
 		// We have an answer.
 		callback(results, callbackdata);
 
@@ -969,8 +967,8 @@ function DNS_readAllFromSocket(host, port, outputData, listener) {
 	try {
 		var proxy = null;
 		if (PROXY_CONFIG.enable) {
-			var pps = Components.classes["@mozilla.org/network/protocol-proxy-service;1"].
-				getService(Components.interfaces.nsIProtocolProxyService);
+			var pps = Cc["@mozilla.org/network/protocol-proxy-service;1"].
+				getService(Ci.nsIProtocolProxyService);
 			proxy = pps.newProxyInfo(
 				PROXY_CONFIG.type,
 				PROXY_CONFIG.host,
@@ -980,8 +978,8 @@ function DNS_readAllFromSocket(host, port, outputData, listener) {
 		}
 
 		var transportService =
-			Components.classes["@mozilla.org/network/socket-transport-service;1"].
-				getService(Components.interfaces.nsISocketTransportService);
+			Cc["@mozilla.org/network/socket-transport-service;1"].
+				getService(Ci.nsISocketTransportService);
 		const transport = transportService.createTransport([], host, port, proxy, null);
 
 		// change timeout for connection
@@ -994,8 +992,8 @@ function DNS_readAllFromSocket(host, port, outputData, listener) {
 		outstream.write(outputData, outputData.length);
 
 		var stream = transport.openInputStream(0, 0, 0);
-		var instream = Components.classes["@mozilla.org/binaryinputstream;1"].
-			createInstance(Components.interfaces.nsIBinaryInputStream);
+		var instream = Cc["@mozilla.org/binaryinputstream;1"].
+			createInstance(Ci.nsIBinaryInputStream);
 		instream.setInputStream(stream);
 
 		/** @type {nsIStreamListener & {data: string}} */
@@ -1026,9 +1024,8 @@ function DNS_readAllFromSocket(host, port, outputData, listener) {
 			}
 		};
 
-		var pump = Components.
-			classes["@mozilla.org/network/input-stream-pump;1"].
-			createInstance(Components.interfaces.nsIInputStreamPump);
+		var pump = Cc["@mozilla.org/network/input-stream-pump;1"].
+			createInstance(Ci.nsIInputStreamPump);
 		pump.init(stream, 0, 0, false);
 		pump.asyncRead(dataListener, null);
 	} catch (ex) {
