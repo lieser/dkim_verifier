@@ -230,6 +230,18 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "bigbank.de",
+			"addr": "*",
+			"sdid": "bigbank.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "bigbank.eu",
+			"addr": "*",
+			"sdid": "bigbank.eu",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "billpay.de",
 			"addr": "*",
 			"sdid": "billpay.de",
@@ -1196,6 +1208,18 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "klarna-festgeld.de",
+			"addr": "*",
+			"sdid": "klarna-festgeld.de",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "klarna-festgeld.de",
+			"addr": "*@service.klarna-festgeld.de",
+			"sdid": "service.klarna-festgeld.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
 			"domain": "kuketz-blog.de",
 			"addr": "*",
 			"sdid": "kuketz-security.de",
@@ -1576,9 +1600,15 @@
 		}, {
 			"domain": "psd-muenchen.de",
 			"addr": "*",
-			"sdid": "news.psd-muenchen.de psd-muenchen.de",
-			"ruletype": "ALL",
+			"sdid": "psd-muenchen.de",
+			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "psd-muenchen.de",
+			"addr": "*@news.psd-muenchen.de",
+			"sdid": "news.psd-muenchen.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
 			"domain": "qantas.com.au",
 			"addr": "*@yourbooking.qantas.com.au",
@@ -1589,6 +1619,12 @@
 			"domain": "ratepay.de",
 			"addr": "*",
 			"sdid": "ratepay.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "rcibanque.com",
+			"addr": "*",
+			"sdid": "rcibanque.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
