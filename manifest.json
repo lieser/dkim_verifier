@@ -16,6 +16,7 @@
 		"accountsRead",
 		"downloads",
 		"messagesRead",
+		"notifications",
 		"storage",
 		"tabs"
 	],

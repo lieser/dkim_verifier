@@ -49,6 +49,18 @@
 	"DKIM_INTERNALERROR_INCORRECT_FROM": {
 		"message": "From address is ill-formed"
 	},
+	"ERROR_IMPORT_RULES": {
+		"message": "Importing of sign rules failed.",
+		"description": "Error title if importing of sign rules failed."
+	},
+	"ERROR_IMPORT_RULES_UNKNOWN_DATA": {
+		"message": "The format of the imported file is invalid.",
+		"description": "Error message if the user tries to import some unknown data as sign rules."
+	},
+	"ERROR_IMPORT_RULES_UNSUPPORTED_FORMAT": {
+		"message": "The format of the sign rules has an unsupported version.",
+		"description": "Error message if the sign rules the user tried to import have an unsupported format."
+	},
 	// DKIM_INTERNALERROR - DNS
 	"DKIM_DNSERROR_UNKNOWN": {
 		"message": "Error in the DNS resolver"

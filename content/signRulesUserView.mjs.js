@@ -11,10 +11,31 @@
 /* eslint-env webextensions */
 /* eslint-disable no-magic-numbers */
 
+import { getElementById, uploadJsonData } from "./domUtils.mjs.js";
 import DataTable from "./table.mjs.js";
 import ExtensionUtils from "../modules/extensionUtils.mjs.js";
 import SignRulesProxy from "../modules/dkim/signRulesProxy.mjs.js";
-import { getElementById, uploadJsonData } from "./domUtils.mjs.js";
+
+/**
+ * Notify the user about an error importing the sign rules.
+ *
+ * @param {unknown} error
+ */
+function showImportError(error) {
+	console.error("Error importing sing rules.", error);
+	let message;
+	if (error instanceof Error) {
+		message = browser.i18n.getMessage(error.message);
+	}
+	if (!message) {
+		message = browser.i18n.getMessage("DKIM_INTERNALERROR_DEFAULT");
+	}
+	browser.notifications.create({
+		type: "basic",
+		title: browser.i18n.getMessage("ERROR_IMPORT_RULES"),
+		message,
+	});
+}
 
 document.addEventListener("DOMContentLoaded", async () => {
 	const tableElement = getElementById("rulesTable");
@@ -86,8 +107,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 			const data = await uploadJsonData();
 			await SignRulesProxy.importUserRules(data, false);
 		} catch (error) {
-			// TODO: show visible error message to user
-			console.error("Error importing sing rules.", error);
+			showImportError(error);
 		}
 	});
 
@@ -98,8 +118,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 			const data = await uploadJsonData();
 			await SignRulesProxy.importUserRules(data, true);
 		} catch (error) {
-			// TODO: show visible error message to user
-			console.error("Error importing sing rules.", error);
+			showImportError(error);
 		}
 	});
 
