@@ -419,13 +419,10 @@ export default class SignRules {
 	 */
 	static async importUserRules(data, replace) {
 		if (data.dataId !== "DkimExportedUserSignRules") {
-			// TODO: proper translated error message
-			log.error(data.dataId);
-			throw new Error("Unknown data");
+			throw new Error("ERROR_IMPORT_RULES_UNKNOWN_DATA");
 		}
 		if (data.dataFormatVersion !== 1) {
-			// TODO: proper translated error message
-			throw new Error("Unsupported format of exported rules");
+			throw new Error("ERROR_IMPORT_RULES_UNSUPPORTED_FORMAT");
 		}
 		/** @type {DkimExportedUserSignRules} */
 		// @ts-expect-error
@@ -762,5 +759,7 @@ export function initSignRulesProxy() {
 			// eslint-disable-next-line consistent-return
 			return SignRules.deleteRule(request.parameters.id);
 		}
+		log.error("Proxy receiver got unknown request.", request);
+		throw new Error("SignRules proxy got unknown request.");
 	});
 }

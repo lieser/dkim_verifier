@@ -49,6 +49,18 @@
 	"DKIM_INTERNALERROR_INCORRECT_FROM": {
 		"message": "Absenderadresse ist falsch formatiert"
 	},
+	"ERROR_IMPORT_RULES": {
+		"message": "Importieren der Signierregeln ist fehlgeschlagen.",
+		"description": "Error title if importing of sign rules failed."
+	},
+	"ERROR_IMPORT_RULES_UNKNOWN_DATA": {
+		"message": "Das Format der importierten Datei ist ungültig.",
+		"description": "Error message if the user tries to import some unknown data as sign rules."
+	},
+	"ERROR_IMPORT_RULES_UNSUPPORTED_FORMAT": {
+		"message": "Das Format der Signierregeln hat eine nicht unterschtützte Version.",
+		"description": "Error message if the sign rules the user tried to import have an unsupported format."
+	},
 	// DKIM_INTERNALERROR - DNS
 	"DKIM_DNSERROR_UNKNOWN": {
 		"message": "Fehler im DNS-Resolver"
