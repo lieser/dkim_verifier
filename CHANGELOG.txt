@@ -1,3 +1,4 @@
+ - fixed incompatibility with Thunderbird 96 (#279)
  - Re-added support for Thunderbird Conversations add-on (#203)
  - show proper error message on ill-formed from (#238)
  - ignore ill-formed List-Id (#262) and fix parsing of List-Id
