@@ -1,4 +1,4 @@
-interface DKIMHeaderFieldElement extends XULElement {
+interface DKIMHeaderFieldElement extends HTMLDivElement {
     _dkimValue: XULElement
     _dkimWarningIcon: XULElement
     _dkimWarningTooltip: DKIMTooltipElement
