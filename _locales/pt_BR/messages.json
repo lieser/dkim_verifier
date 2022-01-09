@@ -22,13 +22,13 @@
 		"message": "A mensagem não é um e-mail"
 	},
 	"SUCCESS_TAG": {
-		"message": "DKIM assinado por $1",
+		"message": "DKIM assinado por $1"
 	},
 	"TEMPFAIL_TAG": {
-		"message": "Erro DKIM",
+		"message": "Erro DKIM"
 	},
 	"PERMFAIL_TAG": {
-		"message": "DKIM inválido",
+		"message": "DKIM inválido"
 	},
 	// DKIM_INTERNALERROR
 	"DKIM_INTERNALERROR": {
@@ -47,13 +47,13 @@
 		"message": "O endereço 'De' está malformado"
 	},
 	"ERROR_IMPORT_RULES": {
-		"message": "Importação das regras de assinatura falhou.",
+		"message": "Importação das regras de assinatura falhou."
 	},
 	"ERROR_IMPORT_RULES_UNKNOWN_DATA": {
-		"message": "O formato do arquivo importado é inválido.",
+		"message": "O formato do arquivo importado é inválido."
 	},
 	"ERROR_IMPORT_RULES_UNSUPPORTED_FORMAT": {
-		"message": "O formato das regras de assinatura tem uma versão não suportada.",
+		"message": "O formato das regras de assinatura tem uma versão não suportada."
 	},
 	// DKIM_INTERNALERROR - DNS
 	"DKIM_DNSERROR_UNKNOWN": {
@@ -526,7 +526,7 @@
 	},
 	// -------------------- Account options --------------------
 	"options_account": {
-		"message": "Conta",
+		"message": "Conta"
 	},
 	"options_acc.dkim.enable": {
 		"message": "Verificar assinaturas DKIM:"
@@ -551,28 +551,28 @@
 		"message": "Sobre"
 	},
 	"about_name": {
-		"message": "Verificador DKIM",
+		"message": "Verificador DKIM"
 	},
 	"about_summary": {
-		"message": "Verifica as assinaturas DKIM de e-mails.",
+		"message": "Verifica as assinaturas DKIM de e-mails."
 	},
 	"about_homepage": {
 		"message": "Página inicial"
 	},
 	"about_documentation": {
-		"message": "Documentação",
+		"message": "Documentação"
 	},
 	"about_contributors": {
-		"message": "Contribuidores do GitHub",
+		"message": "Contribuidores do GitHub"
 	},
 	"about_translators": {
-		"message": "Tradutores:",
+		"message": "Tradutores:"
 	},
 	"about_dependencies": {
-		"message": "Dependências incluídas:",
+		"message": "Dependências incluídas:"
 	},
 	"about_by": {
-		"message": "por",
+		"message": "por"
 	},
 	// ==================== Actions ====================
 	"dkim_verifier.reverifyDKIMSignature": {
@@ -637,19 +637,19 @@
 		"message": "Excluir regras selecionadas"
 	},
 	"treeviewSigners.exportRules": {
-		"message": "Exportar regras",
+		"message": "Exportar regras"
 	},
 	"treeviewSigners.importRules": {
-		"message": "Importar regras",
+		"message": "Importar regras"
 	},
 	"importRules.replaceQuestion": {
-		"message": "As regras importadas devem ser adicionadas às regras existentes ou substituir as regras existentes?",
+		"message": "As regras importadas devem ser adicionadas às regras existentes ou substituir as regras existentes?"
 	},
 	"importRules.addRules": {
-		"message": "Adicionar regras",
+		"message": "Adicionar regras"
 	},
 	"importRules.replaceRules": {
-		"message": "Substituir regras",
+		"message": "Substituir regras"
 	},
 	"addSignersRule.title": {
 		"message": "Adicionar regra de signatários"
