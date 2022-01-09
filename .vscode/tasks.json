@@ -6,7 +6,7 @@
 		{
 			"label": "Build xpi",
 			"type": "shell",
-			"command": "rm ./dkim_verifier@pl.xpi; & \\\"$($Env:ProgramFiles)/7-Zip/7z.exe\\\" a -tzip -mx1 dkim_verifier@pl.xpi '-i!_locales/*/*.json' '-i!content/*.html' '-i!content/*.css' '-i!content/*.js' ./data/ '-i!experiments/*.js' '-i!experiments/*.json' '-i!modules/*.js' '-i!modules/dkim/*.js' ./CHANGELOG.txt ./icon.png ./icon_32.png ./LICENSE.txt ./manifest.json ./README.md ./THIRDPARTY_LICENSE.txt",
+			"command": "rm ./dkim_verifier@pl.xpi; & \\\"$($Env:ProgramFiles)/7-Zip/7z.exe\\\" a -tzip -mx1 dkim_verifier@pl.xpi '-i!_locales/*/*.json' '-i!content/*.html' '-i!content/*.css' '-i!content/*.js' ./data/ '-i!experiments/*.js' '-i!experiments/*.json' '-i!modules/*.js' '-i!modules/dkim/*.js' ./CHANGELOG.txt ./icon.svg ./icon-white.svg ./LICENSE.txt ./manifest.json ./README.md ./THIRDPARTY_LICENSE.txt",
 			"problemMatcher": [],
 			"group": {
 				"kind": "build",

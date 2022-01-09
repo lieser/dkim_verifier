@@ -28,14 +28,23 @@
 		"open_in_tab": true
 	},
 	"icons": {
-		"32": "icon_32.png",
-		"64": "icon.png"
+		"32": "icon.svg",
+		"64": "icon.svg"
 	},
 	"message_display_action": {
-		"default_icon": {
-			"32": "icon_32.png",
-			"64": "icon.png"
-		},
+		"default_icon": "icon.svg",
+		"theme_icons": [
+			{
+				"dark": "icon.svg",
+				"light": "icon-white.svg",
+				"size": 16
+			},
+			{
+				"dark": "icon.svg",
+				"light": "icon-white.svg",
+				"size": 32
+			}
+		],
 		"default_label": "DKIM",
 		"default_popup": "content/displayAction.html"
 	},
