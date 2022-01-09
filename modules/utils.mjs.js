@@ -24,7 +24,7 @@ export class Deferred {
 		this.promise = new Promise((resolve, reject) => {
 			/** @type {(reason: T) => void} */
 			this.resolve = resolve;
-			/** @type {(reason: Error) => void} */
+			/** @type {(reason: any) => void} */
 			this.reject = reject;
 		});
 	}
@@ -109,7 +109,7 @@ export function getDomainFromAddr(addr) {
  */
 export async function promiseWithTimeout(ms, promise) {
 	let timeoutId;
-	const timeout = new Promise((resolve, reject) => {
+	const timeout = new Promise((_resolve, reject) => {
 		timeoutId = setTimeout(() => {
 			reject(new Error(`Timed out after ${ms} ms.`));
 		}, ms);
@@ -168,7 +168,7 @@ export function stringEqual(str1, str2) {
  */
 export function toType(obj) {
 	const typeMatch = Object.prototype.toString.call(obj).match(/\s([a-zA-Z]+)/);
-	if (!typeMatch) {
+	if (!typeMatch || !typeMatch[1]) {
 		throw new Error(`Failed to get type for ${obj}`);
 	}
 	return typeMatch[1];

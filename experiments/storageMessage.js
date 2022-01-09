@@ -29,11 +29,10 @@ this.storageMessage = class extends ExtensionCommon.ExtensionAPI {
 	}
 
 	/**
-	 * @param {ExtensionCommon.Context} context
+	 * @param {ExtensionCommon.Context} _context
 	 * @returns {{storageMessage: browser.storageMessage}}
 	 */
-	// eslint-disable-next-line no-unused-vars
-	getAPI(context) {
+	getAPI(_context) {
 		return {
 			storageMessage: {
 				set: (messageId, key, value) => {

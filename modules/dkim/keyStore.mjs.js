@@ -17,8 +17,8 @@
 /* eslint-env webextensions */
 
 import { DKIM_InternalError, DKIM_SigError } from "../error.mjs.js";
+import { Deferred, dateToString } from "../utils.mjs.js";
 import DNS from "../dns.mjs.js";
-import { dateToString, Deferred } from "../utils.mjs.js";
 import Logging from "../logging.mjs.js";
 import prefs from "../preferences.mjs.js";
 
@@ -187,7 +187,7 @@ export class KeyDb {
 		}
 		const deletedKey = storedKeys.splice(keyIndex, 1);
 		await KeyDb._storeKeys(notify);
-		log.debug(`deleted key (${deletedKey[0].sdid}, ${deletedKey[0].selector}) from storage`);
+		log.debug(`deleted key (${deletedKey[0]?.sdid}, ${deletedKey[0]?.selector}) from storage`);
 	}
 
 	/**
@@ -277,6 +277,8 @@ export class KeyDb {
 				// eslint-disable-next-line consistent-return
 				return KeyDb.delete(request.parameters.id);
 			}
+			log.error("KeyDb proxy receiver got unknown request.", request);
+			throw new Error("KeyDb proxy receiver got unknown request.");
 		});
 	}
 
@@ -378,7 +380,7 @@ export default class KeyStore {
 			throw new DKIM_InternalError(`rcode: ${dnsRes.rcode}`,
 				"DKIM_DNSERROR_SERVER_ERROR");
 		}
-		if (dnsRes.data === null || dnsRes.data[0] === "") {
+		if (dnsRes.data === null || !dnsRes.data[0]) {
 			throw new DKIM_SigError("DKIM_SIGERROR_NOKEY");
 		}
 

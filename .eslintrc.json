@@ -35,6 +35,12 @@
                 "nestedBinaryExpressions": false
             }
         ],
+        "no-unused-vars": [
+            "error",
+            {
+                "argsIgnorePattern": "^_"
+            }
+        ],
         "require-atomic-updates": "warn",
         // Best Practices
         "array-callback-return": "warn",

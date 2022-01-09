@@ -35,6 +35,7 @@ export function expectAsyncDkimSigError(promise, errorType) {
 				try {
 					expect.fail(`${value}`, errorType, "expected a DKIM_SigError to be thrown, got a value instead");
 				} catch (e) {
+					// @ts-expect-error
 					e.showDiff = true;
 					reject(e);
 				}
@@ -49,6 +50,7 @@ export function expectAsyncDkimSigError(promise, errorType) {
 					}
 					expect.fail(`${reason}`, errorType, "expected a DKIM_SigError to be thrown, got a different Error instead");
 				} catch (e) {
+					// @ts-expect-error
 					e.showDiff = true;
 					reject(e);
 				}

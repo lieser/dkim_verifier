@@ -123,7 +123,7 @@ export default class AuthVerifier {
 		const rawMessage = await browser.messages.getRaw(message.id);
 		const msgParsed = MsgParser.parseMsg(rawMessage);
 		const fromHeader = msgParsed.headers.get("from");
-		if (!fromHeader) {
+		if (!fromHeader || !fromHeader[0]) {
 			throw new Error("message does not contain a from header");
 		}
 		let from;
@@ -148,7 +148,7 @@ export default class AuthVerifier {
 		};
 		const listIdHeader = msgParsed.headers.get("list-id");
 		let listId = null;
-		if (listIdHeader) {
+		if (listIdHeader && listIdHeader[0]) {
 			try {
 				listId = MsgParser.parseListIdHeader(listIdHeader[0]);
 			} catch (error) {
@@ -238,11 +238,11 @@ async function getARHResult(message, headers, from, listId, account, dmarc) {
 	let arhSPF = [];
 	/** @type {ArhParserModule.ArhResInfo[]} */
 	let arhDMARC = [];
-	for (let i = 0; i < arHeaders.length; i++) {
+	for (const header of arHeaders) {
 		/** @type {ArhParserModule.ArhHeader} */
 		let arh;
 		try {
-			arh = ArhParser.parse(arHeaders[i], prefs["arh.relaxedParsing"]);
+			arh = ArhParser.parse(header, prefs["arh.relaxedParsing"]);
 		} catch (exception) {
 			log.error("Ignoring error in parsing of ARH", exception);
 			continue;
@@ -315,7 +315,7 @@ async function saveAuthResult(message, savedAuthResult) {
 		// reset result
 		log.debug("reset AuthResult result");
 		await browser.storageMessage.set(message.id, "dkim_verifier@pl-result", "");
-	} else if (savedAuthResult.dkim[0].result === "TEMPFAIL") {
+	} else if (savedAuthResult.dkim[0]?.result === "TEMPFAIL") {
 		// don't save result if DKIM result is a TEMPFAIL
 		log.debug("result not saved because DKIM result is a TEMPFAIL");
 	} else {
@@ -419,7 +419,9 @@ async function checkSignRules(message, dkimResults, from, listId, dmarc) {
 
 	for (let i = 0; i < dkimResults.length; i++) {
 		// eslint-disable-next-line require-atomic-updates
-		dkimResults[i] = await SignRules.check(dkimResults[i], from, listId, isOutgoingCallback, dmarcToUse);
+		dkimResults[i] = await SignRules.check(
+			// eslint-disable-next-line no-extra-parens
+			/** @type {VerifierModule.dkimSigResultV2} */(dkimResults[i]), from, listId, isOutgoingCallback, dmarcToUse);
 	}
 }
 
@@ -832,7 +834,7 @@ async function addFavicons(authResult) {
 	if (!prefs["display.favicon.show"]) {
 		return authResult;
 	}
-	if (authResult.dkim[0].res_num !== AuthVerifier.DKIM_RES.SUCCESS) {
+	if (authResult.dkim[0]?.res_num !== AuthVerifier.DKIM_RES.SUCCESS) {
 		return authResult;
 	}
 	for (const dkim of authResult.dkim) {

@@ -26,12 +26,12 @@ class DkimCryptoI {
 	 * Generate a hash.
 	 *
 	 * @static
-	 * @param {string} algorithm - sha1 / sha256
-	 * @param {string} message - binary string
+	 * @param {string} _algorithm - sha1 / sha256
+	 * @param {string} _message - binary string
 	 * @returns {Promise<string>} b64 encoded hash
 	 * @memberof DkimCryptoI
 	 */
-	static digest(algorithm, message) { // eslint-disable-line no-unused-vars
+	static digest(_algorithm, _message) {
 		throw new Error("Not implemented");
 	}
 
@@ -39,15 +39,15 @@ class DkimCryptoI {
 	 * Verify an RSA signature.
 	 *
 	 * @static
-	 * @param {string} key - b64 encoded RSA key in ASN.1 DER format
-	 * @param {string} digestAlgorithm - sha1 / sha256
-	 * @param {string} signature - b64 encoded signature
-	 * @param {string} data - data whose signature is to be verified (binary string)
+	 * @param {string} _key - b64 encoded RSA key in ASN.1 DER format
+	 * @param {string} _digestAlgorithm - sha1 / sha256
+	 * @param {string} _signature - b64 encoded signature
+	 * @param {string} _data - data whose signature is to be verified (binary string)
 	 * @returns {Promise<[boolean, number]>} - valid, key length
 	 * @throws DKIM_SigError
 	 * @memberof DkimCryptoI
 	 */
-	static verifyRSA(key, digestAlgorithm, signature, data) { // eslint-disable-line no-unused-vars
+	static verifyRSA(_key, _digestAlgorithm, _signature, _data) {
 		throw new Error("Not implemented");
 	}
 }
@@ -94,6 +94,7 @@ class DkimCryptoWeb extends DkimCryptoI {
 	 * Generate a hash.
 	 *
 	 * @static
+	 * @override
 	 * @param {string} algorithm - sha1 / sha256
 	 * @param {string} message - binary string
 	 * @returns {Promise<string>} b64 encoded hash
@@ -112,6 +113,7 @@ class DkimCryptoWeb extends DkimCryptoI {
 	 * Verify an RSA signature.
 	 *
 	 * @static
+	 * @override
 	 * @param {string} key - b64 encoded RSA key in ASN.1 DER encoded SubjectPublicKeyInfo
 	 * @param {string} digestAlgorithm - sha1 / sha256
 	 * @param {string} signature - b64 encoded signature
@@ -158,6 +160,7 @@ class DkimCryptoNode extends DkimCryptoI {
 	 * Generate a hash.
 	 *
 	 * @static
+	 * @override
 	 * @param {string} algorithm - sha1 / sha256
 	 * @param {string} message - binary string
 	 * @returns {Promise<string>} b64 encoded hash
@@ -174,6 +177,7 @@ class DkimCryptoNode extends DkimCryptoI {
 	 * Verify an RSA signature.
 	 *
 	 * @static
+	 * @override
 	 * @param {string} key - b64 encoded RSA key in ASN.1 DER encoded SubjectPublicKeyInfo
 	 * @param {string} digestAlgorithm - sha1 / sha256
 	 * @param {string} signature - b64 encoded signature

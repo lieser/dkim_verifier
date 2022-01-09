@@ -13,6 +13,6 @@ declare module IAuthVerifier {
         result_str: string; // localized result string
         error_str?: string; // localized error string
         warnings_str?: string[]; // localized warnings
-        favicon?: string; // url to the favicon of the sdid
+        favicon?: string | undefined; // url to the favicon of the sdid
     }
 }

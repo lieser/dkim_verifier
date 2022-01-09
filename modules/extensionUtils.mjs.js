@@ -37,13 +37,19 @@ async function createOrRaisePopup(url, title, height = undefined, width = undefi
 		await browser.windows.update(popupWindow.id, { focused: true });
 		return popupWindow;
 	}
-	return browser.windows.create({
+	/** @type {Parameters<browser.windows.create>[0]} */
+	const createData = {
 		url: url,
 		type: "popup",
 		allowScriptsToClose: true,
-		height: height,
-		width: width,
-	});
+	};
+	if (height) {
+		createData.height = height;
+	}
+	if (width) {
+		createData.width = width;
+	}
+	return browser.windows.create(createData);
 }
 
 /**

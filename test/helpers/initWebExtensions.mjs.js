@@ -11,6 +11,7 @@
  */
 
 // @ts-check
+/* eslint-disable mocha/no-exports */
 
 import ExtensionUtils from "../../modules/extensionUtils.mjs.js";
 import prefs from "../../modules/preferences.mjs.js";
@@ -58,6 +59,7 @@ function getBaseDomainFromAddr(addr) {
 	return Promise.resolve(baseDomain);
 }
 
+// eslint-disable-next-line mocha/no-top-level-hooks, mocha/no-hooks-for-single-case
 before(async function () {
 	try {
 		const { default: browserFake } = await import("webextensions-api-fake");

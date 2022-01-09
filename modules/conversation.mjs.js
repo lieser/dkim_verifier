@@ -81,6 +81,9 @@ const verifier = new AuthVerifier();
  */
 export default async function verifyMessage(MessageHeader) {
 	const res = await verifier.verify(MessageHeader);
+	if (!res.dkim[0]) {
+		throw new Error("Result does not contain a DKIM result.");
+	}
 
 	/** @type {Severity} */
 	let severity;
