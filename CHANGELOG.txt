@@ -1,12 +1,25 @@
-4.0.0pre4 [2020-11-23]
+ - fixed incompatibility with Thunderbird 96 (#279)
+ - Re-added support for Thunderbird Conversations add-on (#203)
+ - show proper error message on ill-formed from (#238)
+ - ignore ill-formed List-Id (#262) and fix parsing of List-Id
+ - Authentication-Results header: fixed sorting of DKIM results in regards to list id
+ - fixed options styling for Thunderbird 91
+ - added Brazilian Portuguese translation (by David BrazSan) (#283)
+ - updated default rules and favicons (#274)
+
+4.0.0 [2021-04-18]
 ------------------
  - now requires at least Thunderbird 78
- - fixed incompatibility with Thunderbird 78 (#119)
+ - fixed incompatibility with Thunderbird 78 (#199)
  - removed option to show DKIM result in the statusbarpanel
  - Authentication-Results header: fixed parsing of version
- - libunbound resolver: Don't provide a default path
- - libunbound resolver: Improve options description
+ - Authentication-Results header: fixed parsing of quoted SDID and AUID (#229, #234)
+ - Authentication-Results header: fixed missing reason on fail resulting in error (#232)
+ - libunbound resolver: Don't provide a default path (#199)
+ - libunbound resolver: Improve options description (#199)
  - added about page in options
+ - added incomplete Swedish translation (by Phoenix)
+ - added Spanish translation (by Peter O Brien) (#239)
  - updated default rules and favicons (#208, #209, #210)
 
 3.1.0 [2020-01-22]

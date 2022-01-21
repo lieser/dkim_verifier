@@ -1,7 +1,5 @@
 /**
- * crypto.mjs.js
- *
- * Version: 0.1.0 (02 February 2020)
+ * Unified crypto interface for Thunderbird/Browser and Node
  *
  * Copyright (c) 2020 Philippe Lieser
  *
@@ -13,6 +11,7 @@
 
 // @ts-check
 /* eslint-env browser, node */
+/* eslint-disable jsdoc/require-returns-check */
 
 import { DKIM_SigError } from "../error.mjs.js";
 import Logging from "../logging.mjs.js";
@@ -27,12 +26,12 @@ class DkimCryptoI {
 	 * Generate a hash.
 	 *
 	 * @static
-	 * @param {string} algorithm - sha1 / sha256
-	 * @param {string} message - binary string
+	 * @param {string} _algorithm - sha1 / sha256
+	 * @param {string} _message - binary string
 	 * @returns {Promise<string>} b64 encoded hash
 	 * @memberof DkimCryptoI
 	 */
-	static digest(algorithm, message) { // eslint-disable-line no-unused-vars
+	static digest(_algorithm, _message) {
 		throw new Error("Not implemented");
 	}
 
@@ -40,15 +39,15 @@ class DkimCryptoI {
 	 * Verify an RSA signature.
 	 *
 	 * @static
-	 * @param {string} key - b64 encoded RSA key in ASN.1 DER format
-	 * @param {string} digestAlgorithm - sha1 / sha256
-	 * @param {string} signature - b64 encoded signature
-	 * @param {string} data - data whose signature is to be verified (binary string)
-	 * @return {Promise<[Boolean, number]>} - valid, key length
+	 * @param {string} _key - b64 encoded RSA key in ASN.1 DER format
+	 * @param {string} _digestAlgorithm - sha1 / sha256
+	 * @param {string} _signature - b64 encoded signature
+	 * @param {string} _data - data whose signature is to be verified (binary string)
+	 * @returns {Promise<[boolean, number]>} - valid, key length
 	 * @throws DKIM_SigError
 	 * @memberof DkimCryptoI
 	 */
-	static verifyRSA(key, digestAlgorithm, signature, data) { // eslint-disable-line no-unused-vars
+	static verifyRSA(_key, _digestAlgorithm, _signature, _data) {
 		throw new Error("Not implemented");
 	}
 }
@@ -74,7 +73,7 @@ function getWebDigestName(algorithm) {
  * Converts a string to an ArrayBuffer.
  * Characters >255 have their hi-byte silently ignored.
  *
- * @param {string} str - b64 encoded string
+ * @param {string} str - binary string
  * @returns {ArrayBuffer}
  */
 function strToArrayBuffer(str) {
@@ -95,6 +94,7 @@ class DkimCryptoWeb extends DkimCryptoI {
 	 * Generate a hash.
 	 *
 	 * @static
+	 * @override
 	 * @param {string} algorithm - sha1 / sha256
 	 * @param {string} message - binary string
 	 * @returns {Promise<string>} b64 encoded hash
@@ -113,11 +113,12 @@ class DkimCryptoWeb extends DkimCryptoI {
 	 * Verify an RSA signature.
 	 *
 	 * @static
+	 * @override
 	 * @param {string} key - b64 encoded RSA key in ASN.1 DER encoded SubjectPublicKeyInfo
 	 * @param {string} digestAlgorithm - sha1 / sha256
 	 * @param {string} signature - b64 encoded signature
 	 * @param {string} data - data whose signature is to be verified (binary string)
-	 * @return {Promise<[Boolean, number]>} - valid, key length
+	 * @returns {Promise<[boolean, number]>} - valid, key length
 	 * @throws DKIM_SigError
 	 * @memberof DkimCryptoI
 	 */
@@ -139,7 +140,7 @@ class DkimCryptoWeb extends DkimCryptoI {
 			throw new DKIM_SigError("DKIM_SIGERROR_KEYDECODE");
 		}
 		/** @type {RsaHashedKeyGenParams} */
-		// @ts-ignore
+		// @ts-expect-error
 		const rsaKeyParams = cryptoKey.algorithm;
 		const valid = await crypto.subtle.verify(
 			"RSASSA-PKCS1-v1_5",
@@ -159,6 +160,7 @@ class DkimCryptoNode extends DkimCryptoI {
 	 * Generate a hash.
 	 *
 	 * @static
+	 * @override
 	 * @param {string} algorithm - sha1 / sha256
 	 * @param {string} message - binary string
 	 * @returns {Promise<string>} b64 encoded hash
@@ -175,11 +177,12 @@ class DkimCryptoNode extends DkimCryptoI {
 	 * Verify an RSA signature.
 	 *
 	 * @static
+	 * @override
 	 * @param {string} key - b64 encoded RSA key in ASN.1 DER encoded SubjectPublicKeyInfo
 	 * @param {string} digestAlgorithm - sha1 / sha256
 	 * @param {string} signature - b64 encoded signature
 	 * @param {string} data - data whose signature is to be verified (binary string)
-	 * @return {Promise<[Boolean, number]>} - valid, key length
+	 * @returns {Promise<[boolean, number]>} - valid, key length
 	 * @throws DKIM_SigError
 	 * @memberof DkimCryptoI
 	 */

@@ -1,7 +1,7 @@
-/*
+/**
  * Parser for the Authentication-Results header as specified in RFC 7601.
  *
- * Copyright (c) 2014-2020 Philippe Lieser
+ * Copyright (c) 2014-2021 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -66,7 +66,6 @@ const local_part_p = `(?:${dot_atom_p}|${quoted_string_p})`;
 // token as specified in Section 5.1 of RFC 2045.
 const token_p = "[^ \\x00-\\x1F\\x7F()<>@,;:\\\\\"/[\\]?=]+";
 // "value" as specified in Section 5.1 of RFC 2045.
-const value_p = `(?:${token_p}|${quoted_string_p})`;
 const value_cp = `(?:(${token_p})|${quoted_string_cp})`;
 // domain-name as specified in Section 3.5 of RFC 6376 [DKIM].
 const domain_name_p = RfcParser.domain_name;
@@ -92,23 +91,23 @@ const domain_name_p = RfcParser.domain_name;
  * @property {number} method_version
  * @property {string} result
  *           none|pass|fail|softfail|policy|neutral|temperror|permerror
- * @property {string=} [reason]
+ * @property {string} [reason]
  * @property {ArhProperties} propertys
  * property {ArhProperty} propertys.smtp
  * property {ArhProperty} propertys.header
  * property {ArhProperty} propertys.body
  * property {ArhProperty} propertys.policy
- * property {ArhProperty=} [propertys._Keyword_]
+ * property {ArhProperty} [propertys._Keyword_]
  *           ArhResInfo can also include other propertys besides the aboves.
  */
 
 export default class ArhParser {
 	/**
-	 *  Parses an Authentication-Results header.
+	 * Parses an Authentication-Results header.
 	 *
-	 *  @param {string} authResHeader Authentication-Results header
-	 *  @param {boolean} [relaxedParsing] Enable relaxed parsing
-	 *  @return {ArhHeader} Parsed Authentication-Results header
+	 * @param {string} authResHeader - Authentication-Results header
+	 * @param {boolean} [relaxedParsing] - Enable relaxed parsing
+	 * @returns {ArhHeader} Parsed Authentication-Results header
 	 */
 	static parse(authResHeader, relaxedParsing = false) {
 		// remove header name
@@ -122,7 +121,11 @@ export default class ArhParser {
 
 		// get authserv-id and authres-version
 		reg_match = match(authResHeaderRef, `${value_cp}(?:${CFWS_p}([0-9]+)${CFWS_op})?`);
-		res.authserv_id = reg_match[1] || reg_match[2];
+		const authserv_id = reg_match[1] ?? reg_match[2];
+		if (!authserv_id) {
+			throw new Error("Error matching the ARH authserv-id.");
+		}
+		res.authserv_id = authserv_id;
 		if (reg_match[3]) {
 			res.authres_version = parseInt(reg_match[3], 10);
 		} else {
@@ -149,11 +152,11 @@ export default class ArhParser {
 }
 
 /**
- *  Parses the next resinfo in str. The parsed part of str is removed from str.
+ * Parses the next resinfo in str. The parsed part of str is removed from str.
  *
- *  @param {RefString} str
- *  @param {boolean} relaxedParsing Enable relaxed parsing
- *  @return {ArhResInfo|null} Parsed resinfo
+ * @param {RefString} str
+ * @param {boolean} relaxedParsing - Enable relaxed parsing
+ * @returns {ArhResInfo|null} Parsed resinfo
  */
 function parseResInfo(str, relaxedParsing) {
 	log.trace("parse str: ", str);
@@ -183,6 +186,12 @@ function parseResInfo(str, relaxedParsing) {
 		}
 		throw exception;
 	}
+	if (!reg_match[1]) {
+		throw new Error("Error matching the ARH method.");
+	}
+	if (!reg_match[3]) {
+		throw new Error("Error matching the ARH result.");
+	}
 	res.method = reg_match[1];
 	if (reg_match[2]) {
 		res.method_version = parseInt(reg_match[2], 10);
@@ -199,26 +208,32 @@ function parseResInfo(str, relaxedParsing) {
 	}
 
 	// get propspec (optional)
-	let pvalue_p = `${value_p}|(?:(?:${local_part_p}?@)?${domain_name_p})`;
+	let pvalue_p = `${value_cp}|((?:${local_part_p}?@)?${domain_name_p})`;
 	if (relaxedParsing) {
 		// allow "/" in the header.b (or other) property, even if it is not in a quoted-string
-		pvalue_p += "|[^ \\x00-\\x1F\\x7F()<>@,;:\\\\\"[\\]?=]+";
+		pvalue_p += "|([^ \\x00-\\x1F\\x7F()<>@,;:\\\\\"[\\]?=]+)";
 	}
 	const special_smtp_verb_p = "mailfrom|rcptto";
 	const property_p = `${special_smtp_verb_p}|${Keyword_p}`;
-	const propspec_p = `(${Keyword_p})${CFWS_op}\\.${CFWS_op}(${property_p})${CFWS_op}=${CFWS_op}(${pvalue_p})`;
+	const propspec_p = `(${Keyword_p})${CFWS_op}\\.${CFWS_op}(${property_p})${CFWS_op}=${CFWS_op}(?:${pvalue_p})`;
 	res.propertys = {};
 	res.propertys.smtp = {};
 	res.propertys.header = {};
 	res.propertys.body = {};
 	res.propertys.policy = {};
 	while ((reg_match = match_o(str, propspec_p)) !== null) {
+		if (!reg_match[1]) {
+			throw new Error("Error matching the ARH property name.");
+		}
+		if (!reg_match[2]) {
+			throw new Error("Error matching the ARH property sub-name.");
+		}
 		let property = res.propertys[reg_match[1]];
 		if (!property) {
 			property = {};
 			res.propertys[reg_match[1]] = property;
 		}
-		property[reg_match[2]] = reg_match[3];
+		property[reg_match[2]] = reg_match[3] ?? reg_match[4] ?? reg_match[5] ?? reg_match[6];
 	}
 
 	log.trace("parseResInfo res:", res);
@@ -231,7 +246,7 @@ function parseResInfo(str, relaxedParsing) {
 class RefString {
 	/**
 	 * Object wrapper around a string.
-	 * @constructor
+	 *
 	 * @param {string} s
 	 */
 	constructor(s) {
@@ -255,15 +270,15 @@ class RefString {
 }
 
 /**
- *  Matches a pattern to the beginning of str.
- *  Adds CFWS_op to the beginning of pattern.
- *  pattern must be followed by string end, ";" or CFWS_p.
- *  Removes the found match from str.
+ * Matches a pattern to the beginning of str.
+ * Adds CFWS_op to the beginning of pattern.
+ * pattern must be followed by string end, ";" or CFWS_p.
+ * Removes the found match from str.
  *
- *  @param {RefString} str
- *  @param {string} pattern
- *  @return {string[]} An Array, containing the matches
- *  @throws if match no match found
+ * @param {RefString} str
+ * @param {string} pattern
+ * @returns {string[]} An Array, containing the matches
+ * @throws if match no match found
  */
 function match(str, pattern) {
 	const reg_match = match_o(str, pattern);
@@ -275,21 +290,21 @@ function match(str, pattern) {
 }
 
 /**
- *  Tries to matches a pattern to the beginning of str.
- *  Adds CFWS_op to the beginning of pattern.
- *  pattern must be followed by string end, ";" or CFWS_p.
- *  If match is found, removes it from str.
+ * Tries to matches a pattern to the beginning of str.
+ * Adds CFWS_op to the beginning of pattern.
+ * pattern must be followed by string end, ";" or CFWS_p.
+ * If match is found, removes it from str.
  *
- *  @param {RefString} str
- *  @param {string} pattern
- *  @return {string[]|Null} Null if no match for the pattern is found, else
+ * @param {RefString} str
+ * @param {string} pattern
+ * @returns {string[]|null} Null if no match for the pattern is found, else
  *                        an Array, containing the matches
  */
 function match_o(str, pattern) {
 	const regexp = new RegExp(`^${CFWS_op}(?:${pattern})` +
 		`(?:(?:${CFWS_op}\r\n$)|(?=;)|(?=${CFWS_p}))`);
 	const reg_match = str.match(regexp);
-	if (reg_match === null) {
+	if (reg_match === null || !reg_match[0]) {
 		return null;
 	}
 	log.trace("matched: ", JSON.stringify(reg_match[0]));

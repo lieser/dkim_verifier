@@ -1,7 +1,7 @@
-/*
+/**
  * Reads and parses a message.
  *
- * Copyright (c) 2014-2020 Philippe Lieser
+ * Copyright (c) 2014-2021 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -20,11 +20,11 @@ const log = Logging.getLogger("msgParser");
 
 export default class MsgParser {
 	/**
-	 * Parse given message into parsed header and body
+	 * Parse given message into parsed header and body.
 	 *
 	 * @static
 	 * @param {string} msg
-	 * @return {{headers: Map<string, string[]>, body: string}}
+	 * @returns {{headers: Map<string, string[]>, body: string}}
 	 * @throws DKIM_InternalError
 	 * @memberof MsgParser
 	 */
@@ -74,8 +74,8 @@ export default class MsgParser {
 	 * Parses the header of a message.
 	 *
 	 * @static
-	 * @param {String} headerPlain
-	 * @return {Map<string, string[]>}
+	 * @param {string} headerPlain
+	 * @returns {Map<string, string[]>}
 	 *          key - header name in lower case
 	 *          value - array of complete headers, including the header name at the beginning
 	 * @memberof MsgParser
@@ -87,14 +87,14 @@ export default class MsgParser {
 		const headerArray = headerPlain.split(/\r\n(?=\S|$)/);
 
 		// store valid fields under header field name (in lower case) in an array
-		for (let i = 0; i < headerArray.length; i++) {
-			const hNameMatch = headerArray[i].match(/[!-9;-~]+(?=:)/);
-			if (hNameMatch !== null) {
+		for (const header of headerArray) {
+			const hNameMatch = header.match(/[!-9;-~]+(?=:)/);
+			if (hNameMatch !== null && hNameMatch[0]) {
 				const hName = hNameMatch[0].toLowerCase();
 				if (!headerFields.has(hName)) {
 					headerFields.set(hName, []);
 				}
-				headerFields.get(hName).push(`${headerArray[i]}\r\n`);
+				headerFields.get(hName).push(`${header}\r\n`);
 			}
 		}
 
@@ -182,10 +182,10 @@ export default class MsgParser {
 		}
 		const headerValue = header.substr(headerStart.length);
 
-		const listId = `${RfcParser.dot_atom_text}.(?:${RfcParser.dot_atom_text}`;
+		const listId = `${RfcParser.dot_atom_text}\\.${RfcParser.dot_atom_text}`;
 		// Note: adapted according to Errata ID: 3951
-		const regExpMatch = headerValue.match(new RegExp(`^(?:${RfcParser.phrase}|${RfcParser.CFWS})?<(${listId}))>\r\n$`));
-		if (regExpMatch !== null) {
+		const regExpMatch = headerValue.match(new RegExp(`^(?:${RfcParser.phrase}|${RfcParser.CFWS})?<(${listId})>\r\n$`));
+		if (regExpMatch !== null && regExpMatch[1]) {
 			return regExpMatch[1];
 		}
 		throw new Error("Cannot extract the list identifier from the List-Id header.");

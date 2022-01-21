@@ -1,7 +1,7 @@
 /**
  * RegExp pattern for ABNF definitions in various RFCs.
  *
- * Copyright (c) 2020 Philippe Lieser
+ * Copyright (c) 2020-2021 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -45,8 +45,8 @@ export default class RfcParser {
 	//// 3.2.3.  Atom
 	static get atext() { return "[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]"; }
 	static get atom() { return `(?:${this.CFWS_op}${this.atext}+${this.CFWS_op})`; }
-	// Note: helper only, not part of the RFC: an atom without the optional surrounding CFWS
-	static get atom_b() { return `(?:${this.atext}+)`; }
+	// Note: helper only, not part of the RFC: an atom without the optional surrounding CFWS. dot is included for obs-phrase
+	static get atom_b_obs() { return `(?:(?:${this.atext}|\\.)+)`; }
 	static get dot_atom_text() { return `(?:${this.atext}+(?:\\.${this.atext}+)*)`; }
 	static get dot_atom() { return `(?:${this.CFWS_op}${this.dot_atom_text}${this.CFWS_op})`; }
 	//// 3.2.4.  Quoted Strings
@@ -56,8 +56,8 @@ export default class RfcParser {
 	static get quoted_string() { return `(?:${this.CFWS_op}"(?:${this.FWS_op}${this.qcontent})*${this.FWS_op}"${this.CFWS_op})`; }
 	//// 3.2.5.  Miscellaneous Tokens
 	static get word() { return `(?:${this.atom}|${this.quoted_string})`; }
-	// Note: helper only, not part of the RFC: chain of word without whitespace between
-	static get word_chain() { return `(?:(?:${this.atom_b}|(?:${this.atom_b}?${this.quoted_string})+${this.atom_b}?))`; }
+	// Note: helper only, not part of the RFC: chain of word (including dot for obs-phrase) without whitespace between, or quoted string chain
+	static get word_chain() { return `(?:(?:${this.atom_b_obs}|(?:${this.atom_b_obs}?${this.quoted_string})+${this.atom_b_obs}?))`; }
 	// Note: this is incomplete (obs-phrase is missing)
 	// Note: this is rewritten to avoid backtracking issues (in RFC specified as `1*word / obs-phrase`)
 	static get phrase() { return `(?:${this.CFWS_op}${this.word_chain}(?:${this.CFWS}${this.word_chain})*${this.CFWS_op})`; }
@@ -81,9 +81,8 @@ export default class RfcParser {
 	 * Parses a Tag=Value list.
 	 * Specified in Section 3.2 of RFC 6376.
 	 *
-	 * @param {String} str
-	 *
-	 * @return {Map<String, String>|Number} Map
+	 * @param {string} str
+	 * @returns {Map<string, string>|number} Map
 	 *                       -1 if a tag-spec is ill-formed
 	 *                       -2 duplicate tag names
 	 */
@@ -98,14 +97,14 @@ export default class RfcParser {
 		}
 
 		const array = str.split(";");
-		/** @type {Map<String, String>} */
+		/** @type {Map<string, string>} */
 		const map = new Map();
 		for (const elem of array) {
 			// get tag name and value
 			const tmp = elem.match(new RegExp(
 				`^${this.FWS}?(${tagName})${this.FWS}?=${this.FWS}?(${tagValue})${this.FWS}?$`
 			));
-			if (tmp === null) {
+			if (tmp === null || !tmp[1] || !tmp[2]) {
 				return -1;
 			}
 			const name = tmp[1];
@@ -126,13 +125,11 @@ export default class RfcParser {
 	/**
 	 * Parse a tag value stored in a Map.
 	 *
-	 * @param {Map<String, String>} map
-	 * @param {String} tagName name of the tag
-	 * @param {String} patternTagValue Pattern for the tag-value
-	 * @param {Number} [expType=1] Type of exception to throw. 1 for DKIM header, 2 for DKIM key, 3 for general.
-	 *
-	 * @return {RegExpMatchArray|Null} The match from the RegExp if tag_name exists, otherwise null
-	 *
+	 * @param {Map<string, string>} map
+	 * @param {string} tagName - name of the tag
+	 * @param {string} patternTagValue - Pattern for the tag-value
+	 * @param {number} [expType] - Type of exception to throw. 1 for DKIM header, 2 for DKIM key, 3 for general.
+	 * @returns {[string, ...string[]]|null} The match from the RegExp if tag_name exists, otherwise null
 	 * @throws {DKIM_SigError|DKIM_InternalError} Throws if tag_value does not match.
 	 */
 	static parseTagValue(map, tagName, patternTagValue, expType = 1) {
@@ -155,6 +152,7 @@ export default class RfcParser {
 			}
 		}
 
+		// @ts-expect-error
 		return res;
 	}
 }

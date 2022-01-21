@@ -1,4 +1,4 @@
-/*
+/**
  * Wrapper for the libunbound DNS library. The actual work is done in the
  * ChromeWorker libunboundWorker.jsm.js.
  *
@@ -12,16 +12,15 @@
 
 // @ts-check
 ///<reference path="./libunbound.d.ts" />
-///<reference path="../mozilla.d.ts" />
-/* eslint-env worker */
-/* global ChromeUtils, ChromeWorker, Components, ExtensionCommon */
+///<reference path="./mozilla.d.ts" />
+/* global ExtensionCommon */
 
 "use strict";
 
-// @ts-ignore
+// @ts-expect-error
 // eslint-disable-next-line no-var
 var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
-// @ts-ignore
+// @ts-expect-error
 // eslint-disable-next-line no-var
 var { OS } = ChromeUtils.import("resource://gre/modules/osfile.jsm");
 
@@ -30,32 +29,32 @@ var { OS } = ChromeUtils.import("resource://gre/modules/osfile.jsm");
  * Does differ from the original ub_result a bit.
  *
  * @typedef {Object} ub_result
- * @property {String} qname
+ * @property {string} qname
  *           text string, original question
- * @property {Number} qtype
+ * @property {number} qtype
  *           type code asked for
- * @property {Number} qclass
+ * @property {number} qclass
  *           class code (CLASS IN (internet))
  * @property {Object[]} data
  *           Array of converted rdata items. Empty for unsupported RR types.
  *           Currently supported types: TXT
- * @property {Number[][]} data_raw
+ * @property {number[][]} data_raw
  *           Array of rdata items as byte array
- * @property {String} canonname
+ * @property {string} canonname
  *           canonical name of result (empty string if missing in response)
- * @property {Number} rcode
+ * @property {number} rcode
  *           additional error code in case of no data
- * @property {Boolean} havedata
+ * @property {boolean} havedata
  *           true if there is data
- * @property {Boolean} nxdomain
+ * @property {boolean} nxdomain
  *           true if nodata because name does not exist
- * @property {Boolean} secure
+ * @property {boolean} secure
  *           true if result is secure.
- * @property {Boolean} bogus
+ * @property {boolean} bogus
  *           true if a security failure happened.
- * @property {String} why_bogus
+ * @property {string} why_bogus
  *           string with error if bogus
- * @property {Number} ttl
+ * @property {number} ttl
  *           number of seconds the result is valid
  */
 
@@ -68,9 +67,9 @@ class Deferred {
 	constructor() {
 		/** @type {Promise<T>} */
 		this.promise = new Promise((resolve, reject) => {
-			/** type {(reason: T) => void} */
+			/** @type {(reason: T) => void} */
 			this.resolve = resolve;
-			/** type {(reason: T) => void} */
+			/** @type {(reason: Error) => void} */
 			this.reject = reject;
 		});
 	}
@@ -84,7 +83,7 @@ class LibunboundWorker {
 
 		/** @type {Libunbound.LibunboundWorker} */
 		this.worker =
-			//@ts-ignore
+			//@ts-expect-error
 			new ChromeWorker("chrome://dkim_verifier/content/libunboundWorker.jsm.js");
 		this.worker.onmessage = (msg) => this._onmessage(msg);
 
@@ -101,14 +100,14 @@ class LibunboundWorker {
 	}
 
 	/**
-	 * Load library
+	 * Load library.
 	 *
-	 * @return {Promise<void>}
+	 * @returns {Promise<void>}
 	 */
 	load() {
 		/** @type {Deferred<void>} */
 		const defer = new Deferred();
-		// @ts-ignore
+		// @ts-expect-error
 		this._openCalls.set(++this._maxCallId, defer);
 
 		/** @type {string} */
@@ -133,14 +132,14 @@ class LibunboundWorker {
 	}
 
 	/**
-	 * Updates ctx by deleting old an creating new
+	 * Updates ctx by deleting the old an creating a new one.
 	 *
-	 * @return {Promise<void>}
+	 * @returns {Promise<void>}
 	 */
 	updateCtx() {
 		/** @type {Deferred<void>} */
 		const defer = new Deferred();
-		// @ts-ignore
+		// @ts-expect-error
 		this._openCalls.set(++this._maxCallId, defer);
 
 		// read config file if specified
@@ -186,15 +185,14 @@ class LibunboundWorker {
 	/**
 	 * Perform resolution of the target name.
 	 *
-	 * @param {String} name
-	 * @param {Number} [rrtype=LibunboundWorker.Constants.RR_TYPE_A]
-	 *
-	 * @return {Promise<ub_result>}
+	 * @param {string} name
+	 * @param {number} rrtype
+	 * @returns {Promise<ub_result>}
 	 */
-	resolve(name, rrtype = LibunboundWorker.Constants.RR_TYPE_A) {
+	resolve(name, rrtype) {
 		/** @type {Deferred<ub_result>} */
 		const defer = new Deferred();
-		// @ts-ignore
+		// @ts-expect-error
 		this._openCalls.set(++this._maxCallId, defer);
 
 		this.worker.postMessage({
@@ -208,16 +206,17 @@ class LibunboundWorker {
 	}
 
 	/**
-	 * Handle the callbacks from the ChromeWorker
+	 * Handle the callbacks from the ChromeWorker.
+	 *
 	 * @param {Libunbound.WorkerResponse} msg
-	 * @return {void}
+	 * @returns {void}
 	 */
 	_onmessage(msg) {
 		try {
 			// handle log messages
 			if (msg.data.type && msg.data.type === "log") {
 				/** @type {Libunbound.Log} */
-				// @ts-ignore
+				// @ts-expect-error
 				const logMsg = msg.data;
 				switch (logMsg.subType) {
 					case "error":
@@ -240,13 +239,13 @@ class LibunboundWorker {
 				return;
 			}
 			/** @type {Libunbound.Response} */
-			// @ts-ignore
+			// @ts-expect-error
 			const response = msg.data;
 
 			let exception;
 			if (response.type && response.type === "error") {
 				/** @type {Libunbound.Exception} */
-				// @ts-ignore
+				// @ts-expect-error
 				const ex = response;
 				exception = new Error(`Error in libunboundWorker: ${ex.message}; subType: ${ex.subType}; stack: ${ex.stack}`);
 			}
@@ -266,7 +265,7 @@ class LibunboundWorker {
 				return;
 			}
 			/** @type {Libunbound.Result} */
-			// @ts-ignore
+			// @ts-expect-error
 			const res = response;
 			defer.resolve(res.result);
 		} catch (e) {
@@ -348,9 +347,12 @@ this.libunbound = class extends ExtensionCommon.ExtensionAPI {
 	constructor(extension) {
 		super(extension);
 
-		const aomStartup = Components.classes[
+		const aomStartup = Cc[
 			"@mozilla.org/addons/addon-manager-startup;1"
-		].getService(Components.interfaces.amIAddonManagerStartup);
+		]?.getService(Ci.amIAddonManagerStartup);
+		if (!aomStartup) {
+			throw new Error("Failed to get amIAddonManagerStartup");
+		}
 		const manifestURI = Services.io.newURI(
 			"manifest.json",
 			null,
@@ -365,11 +367,10 @@ this.libunbound = class extends ExtensionCommon.ExtensionAPI {
 	}
 
 	/**
-	 * @param {ExtensionCommon.Context} context
+	 * @param {ExtensionCommon.Context} _context
 	 * @returns {{libunbound: browser.libunbound}}
 	 */
-	// eslint-disable-next-line no-unused-vars
-	getAPI(context) {
+	getAPI(_context) {
 		const RCODE = {
 			NoError: 0, // No Error [RFC1035]
 			FormErr: 1, // Format Error [RFC1035]
@@ -427,7 +428,7 @@ this.libunbound = class extends ExtensionCommon.ExtensionAPI {
 		this.libunboundWorker.worker.terminate();
 
 		this.chromeHandle.destruct();
-		// @ts-ignore
+		// @ts-expect-error
 		this.chromeHandle = null;
 
 		Services.obs.notifyObservers(null, "startupcache-invalidate");

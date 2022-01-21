@@ -26,7 +26,7 @@ declare module browser {
     declare module folder {
         interface MailFolder {
             accountId: string,
-            type?: string,
+            type?: string | undefined,
         }
     }
 
@@ -62,6 +62,18 @@ declare module browser {
             tags: string[],
         }
 
-        const onMessageDisplayed: Event<(tabId: { id: number, windowID: number }, message: MessageHeader) => void>,
+        const getDisplayedMessage: (tabId: number) => Promise<MessageHeader>;
+        const onMessageDisplayed: Event<(tabId: messenger.tabs.Tab, message: MessageHeader) => void>,
+        const onMessagesDisplayed: Event<(tabId: messenger.tabs.Tab, message: MessageHeader[]) => void>,
+    }
+}
+
+declare module messenger {
+    declare module tabs {
+        interface Tab {
+            id: number,
+            windowID: number,
+            url?: string,
+        }
     }
 }

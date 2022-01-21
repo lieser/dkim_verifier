@@ -10,24 +10,24 @@
 
 // @ts-check
 ///<reference path="./jsdns.d.ts" />
-///<reference path="../mozilla.d.ts" />
-/* eslint-env worker */
-/* global ChromeUtils, Components, ExtensionCommon */
+///<reference path="./mozilla.d.ts" />
+/* global ExtensionCommon */
 
 "use strict";
 
-// @ts-ignore
+// @ts-expect-error
 // eslint-disable-next-line no-var
 var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 /**
- * From https://javascriptweblog.wordpress.com/2011/08/08/fixing-the-javascript-typeof-operator/
+ * From https://javascriptweblog.wordpress.com/2011/08/08/fixing-the-javascript-typeof-operator/.
+ *
  * @param {any} obj
  * @returns {string}
  */
 function toType(obj) {
 	const typeMatch = Object.prototype.toString.call(obj).match(/\s([a-zA-Z]+)/);
-	if (!typeMatch) {
+	if (!typeMatch || !typeMatch[1]) {
 		throw new Error(`Failed to get type for ${obj}`);
 	}
 	return typeMatch[1];
@@ -60,13 +60,12 @@ this.jsdns = class extends ExtensionCommon.ExtensionAPI {
 		this.extension.callOnClose(this);
 		return {
 			jsdns: {
-				configure(getNameserversFromOS, nameServer, timeoutConnect, proxy, autoResetServerAlive) {
-					JSDNS.configureDNS(getNameserversFromOS, nameServer, timeoutConnect, proxy, autoResetServerAlive);
+				configure(getNameserversFromOS, nameServer, timeoutConnect, proxy, autoResetServerAlive, debug) {
+					JSDNS.configureDNS(getNameserversFromOS, nameServer, timeoutConnect, proxy, autoResetServerAlive, debug);
 					return Promise.resolve();
 				},
 				txt(name) {
-					// eslint-disable-next-line valid-jsdoc
-					/** @type {QueryDnsCallback<{resolve: function(browser.jsdns.TxtResult): void, reject: function(Error): void}>} */
+					/** @type {QueryDnsCallback<{resolve: function(browser.jsdns.TxtResult): void, reject: function(unknown): void}>} */
 					function dnsCallback(dnsResult, defer, queryError, rcode) {
 						try {
 							let resRcode = RCODE.NoError;
@@ -77,7 +76,7 @@ this.jsdns = class extends ExtensionCommon.ExtensionAPI {
 								let error = "";
 								if (typeof queryError === "string") {
 									error = context.extension.localeData.localizeMessage(queryError);
-								} else if (toType(queryError) === "Array") {
+								} else if (toType(queryError) === "Array" && queryError[0]) {
 									error = context.extension.localeData.localizeMessage(queryError[0], queryError[1]);
 								}
 								if (!error) {
@@ -112,7 +111,7 @@ this.jsdns = class extends ExtensionCommon.ExtensionAPI {
 	}
 
 	close() {
-		Components.utils.unload(this.extension.rootURI.resolve("experiments/JSDNS.jsm.js"));
+		Cu.unload(this.extension.rootURI.resolve("experiments/JSDNS.jsm.js"));
 		Services.obs.notifyObservers(null, "startupcache-invalidate");
 	}
 };

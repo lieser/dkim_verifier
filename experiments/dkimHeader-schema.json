@@ -129,6 +129,24 @@
 						"description": "background color"
 					}
 				]
+			},
+			{
+				"name": "reset",
+				"type": "function",
+				"description": "Reset the header",
+				"async": true,
+				"parameters": [
+					{
+						"name": "tabId",
+						"type": "number",
+						"description": "Tab id"
+					},
+					{
+						"name": "messageId",
+						"type": "number",
+						"description": "Message id"
+					}
+				]
 			}
 		]
 	}

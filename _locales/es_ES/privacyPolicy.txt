@@ -1,0 +1,4 @@
+El Add-on consulta un servidor DNS (DNS público de Google predeterminado (8.8.8.8) o el configurado en el OS) para un récord TXT especificado en la firma, que contiene la clave pública de la firma.
+Esto sucederá cada vez que se vea un correo electrónico con una firma DKIM.
+
+Si el uso de DMARC está habilitado, se pueden realizar búsquedas de DNS adicionales, incluso si el correo electrónico no tiene firma DKIM.

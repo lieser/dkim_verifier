@@ -1,7 +1,14 @@
 {
     "root": true,
+    "plugins": [
+        "jsdoc",
+        "mocha",
+        "mozilla"
+    ],
     "extends": [
-        "eslint:recommended"
+        "eslint:recommended",
+        "plugin:jsdoc/recommended",
+        "plugin:mocha/recommended"
     ],
     "env": {
         "es2020": true
@@ -9,7 +16,12 @@
     "parserOptions": {
         "ecmaVersion": 2020,
         "ecmaFeatures": {},
-        "sourceType": "script"
+        "sourceType": "module"
+    },
+    "settings": {
+        "jsdoc": {
+            "mode": "typescript"
+        }
     },
     "globals": {
         "globalThis": "readonly"
@@ -23,14 +35,13 @@
                 "nestedBinaryExpressions": false
             }
         ],
-        "require-atomic-updates": "warn",
-        "valid-jsdoc": [
-            "warn",
+        "no-unused-vars": [
+            "error",
             {
-                "requireParamDescription": false,
-                "requireReturnDescription": false
+                "argsIgnorePattern": "^_"
             }
         ],
+        "require-atomic-updates": "warn",
         // Best Practices
         "array-callback-return": "warn",
         "block-scoped-var": "warn",
@@ -133,7 +144,36 @@
         "prefer-spread": "warn",
         "prefer-template": "warn",
         "sort-imports": "warn",
-        "template-curly-spacing": "warn"
+        "template-curly-spacing": "warn",
+        // JSDoc
+        "jsdoc/check-line-alignment": "warn",
+        "jsdoc/match-description": "warn",
+        "jsdoc/no-bad-blocks": "warn",
+        "jsdoc/no-defaults": "warn",
+        "jsdoc/no-undefined-types": "off",
+        "jsdoc/require-asterisk-prefix": "warn",
+        "jsdoc/require-hyphen-before-param-description": "warn",
+        "jsdoc/require-param-description": "off",
+        "jsdoc/require-property-description": "off",
+        "jsdoc/require-returns": [
+            "warn",
+            {
+                "checkGetters": false
+            }
+        ],
+        "jsdoc/require-returns-description": "off",
+        // Mocha
+        "mocha/no-return-from-async": "warn",
+        // Mozilla
+        "mozilla/avoid-removeChild": "warn",
+        "mozilla/consistent-if-bracing": "warn",
+        "mozilla/no-compare-against-boolean-literals": "warn",
+        "mozilla/no-useless-removeEventListener": "warn",
+        "mozilla/prefer-boolean-length-check": "warn",
+        "mozilla/prefer-formatValues": "warn",
+        "mozilla/use-includes-instead-of-indexOf": "warn",
+        "mozilla/use-ownerGlobal": "warn",
+        "mozilla/use-returnValue": "warn"
     },
     "reportUnusedDisableDirectives": true
 }

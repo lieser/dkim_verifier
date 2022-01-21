@@ -1,8 +1,4 @@
 /**
- * error.mjs.js
- *
- * Version: 0.1.0 (31 January 2020)
- *
  * Copyright (c) 2013-2019 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
@@ -20,9 +16,7 @@ export class DKIM_SigError extends Error {
 	/**
 	 * DKIM signature error.
 	 *
-	 * @constructor
-	 *
-	 * @param {String} errorType
+	 * @param {string} errorType
 	 * @param {any[]} [errorStrParams]
 	 */
 	constructor(errorType, errorStrParams = []) {
@@ -34,7 +28,8 @@ export class DKIM_SigError extends Error {
 		this.name = "DKIM_SigError";
 		this.errorType = errorType;
 		this.errorStrParams = errorStrParams;
-		this.stack = this.stack.substring(this.stack.indexOf('\n')+1);
+		// @ts-expect-error
+		this.stack = this.stack.substring(this.stack.indexOf('\n') + 1);
 	}
 }
 
@@ -43,14 +38,12 @@ export class DKIM_SigError extends Error {
  */
 export class DKIM_InternalError extends Error {
 	/**
-	 * DKIM internal error
+	 * DKIM internal error.
 	 *
-	 * @constructor
-	 *
-	 * @param {String|null} [message]
-	 * @param {String} [errorType]
+	 * @param {string|null} [_message]
+	 * @param {string} [errorType]
 	 */
-	constructor(message, errorType) {
+	constructor(_message, errorType) {
 		// super(message ||
 		// 	tryGetString(dkimStrings, errorType) ||
 		// 	errorType ||
@@ -59,6 +52,7 @@ export class DKIM_InternalError extends Error {
 		super(errorType);
 		this.name = "DKIM_InternalError";
 		this.errorType = errorType;
-		this.stack = this.stack.substring(this.stack.indexOf('\n')+1);
+		// @ts-expect-error
+		this.stack = this.stack.substring(this.stack.indexOf('\n') + 1);
 	}
 }

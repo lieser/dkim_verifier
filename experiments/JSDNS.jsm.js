@@ -4,9 +4,9 @@
  * Based on Joshua Tauberer's DNS LIBRARY IN JAVASCRIPT
  * from "Sender Verification Extension" version 0.9.0.6
  *
- * Version: 2.0.0 (31 May 2020)
+ * Version: 2.1.0 (11 April 2021)
  *
- * Copyright (c) 2013-2020 Philippe Lieser
+ * Copyright (c) 2013-2021 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -54,6 +54,14 @@
 /*
  * Changelog:
  * ==========
+ *
+ * 2.1.0
+ * -----
+ * - add configure debug preference
+ *
+ * 2.0.1
+ * -----
+ * - fixed incompatibility with Gecko 89
  *
  * 2.0.0
  * -----
@@ -163,7 +171,6 @@
 
 //@ts-check
 // options for ESLint
-/* eslint-env worker */
 /* eslint-disable prefer-template */
 /* eslint-disable no-use-before-define */
 /* eslint-disable camelcase */
@@ -171,33 +178,25 @@
 /* eslint strict: ["warn", "function"] */
 /* eslint complexity: "off" */
 /* eslint no-magic-numbers: "off" */
-/* global Components */
-/* exported EXPORTED_SYMBOLS, JSDNS */
+/* eslint mozilla/mark-exported-symbols-as-used: "error" */
 
 
 var EXPORTED_SYMBOLS = [
 	"JSDNS"
 ];
 
-// @ts-ignore
-const Cc = Components.classes;
-// @ts-ignore
-const Ci = Components.interfaces;
 
-
-// @ts-ignore
 const LOG_NAME = "DKIM_Verifier.JSDNS";
 
 
 var JSDNS = {};
 
 /** @type {ChromeConsole} */
-// @ts-ignore
+// @ts-expect-error
 const chromeConsole = console;
 var log = chromeConsole.createInstance({
 	prefix: LOG_NAME,
 	maxLogLevel: "Warn",
-	maxLogLevelPref: "extensions.dkim_verifier.experiments.logging",
 });
 
 
@@ -229,10 +228,21 @@ var AUTO_RESET_SERVER_ALIVE = false;
  * @param {number} timeoutConnect
  * @param {{ enable: boolean, type: string, host: string, port: number }} proxy
  * @param {boolean} autoResetServerAlive
+ * @param {boolean} debug
  * @returns {void}
  */
-function configureDNS(getNameserversFromOS, nameServer, timeoutConnect, proxy, autoResetServerAlive) {
+function configureDNS(getNameserversFromOS, nameServer, timeoutConnect, proxy, autoResetServerAlive, debug) {
 	"use strict";
+
+	/** @type {Parameters<typeof chromeConsole.createInstance>[0]["maxLogLevel"]} */
+	let maxLogLevel = "Warn";
+	if (debug) {
+		maxLogLevel = "All";
+	}
+	log = chromeConsole.createInstance({
+		prefix: LOG_NAME,
+		maxLogLevel: maxLogLevel,
+	});
 
 	/** @type {DnsServer[]} */
 	const prefDnsRootNameServers = [];
@@ -265,15 +275,14 @@ function configureDNS(getNameserversFromOS, nameServer, timeoutConnect, proxy, a
 }
 
 /**
- * Remove Duplicates from Array
+ * Remove Duplicates from an Array.
  *
- * from http://stackoverflow.com/questions/9229645/remove-duplicates-from-javascript-array/9229821#9229821
+ * From http://stackoverflow.com/questions/9229645/remove-duplicates-from-javascript-array/9229821#9229821.
  *
  * @template T
  * @param {T[]} ary
- * @param {function(T): string} key
- *        Function to generate key from element
- * @return {T[]}
+ * @param {function(T): string} key - Function to generate key from element
+ * @returns {T[]}
  */
 function arrayUniqBy(ary, key) {
 	"use strict";
@@ -291,9 +300,9 @@ function arrayUniqBy(ary, key) {
 }
 
 /**
- * get DNS Servers from OS configuration
+ * Get DNS Servers from OS configuration.
  *
- * @return {DnsServer[]}
+ * @returns {DnsServer[]}
  */
 function getOsDnsServers() {
 	"use strict";
@@ -301,7 +310,7 @@ function getOsDnsServers() {
 	/** @type {DnsServer[]} */
 	const OS_DNS_ROOT_NAME_SERVERS = [];
 
-	if ("@mozilla.org/windows-registry-key;1" in Components.classes) {
+	if ("@mozilla.org/windows-registry-key;1" in Cc) {
 		// Firefox 1.5 or newer on Windows
 		// Try getting a nameserver from the windows registry
 		var reg;
@@ -310,9 +319,9 @@ function getOsDnsServers() {
 		var registryLinkage;
 		var registryInterfaces;
 		try {
-			var registry_class = Components.classes["@mozilla.org/windows-registry-key;1"];
+			var registry_class = Cc["@mozilla.org/windows-registry-key;1"];
 			var registry_object = registry_class.createInstance();
-			registry = registry_object.QueryInterface(Components.interfaces.nsIWindowsRegKey);
+			registry = registry_object.QueryInterface(Ci.nsIWindowsRegKey);
 
 			registry.open(registry.ROOT_KEY_LOCAL_MACHINE,
 				"SYSTEM\\CurrentControlSet",
@@ -401,7 +410,7 @@ function getOsDnsServers() {
 		} catch (e) {
 			log.error("Error reading Registry: " + e + "\n" + e.stack);
 		} finally {
-			// @ts-ignore
+			// @ts-expect-error
 			if (registry) {
 				registry.close();
 			}
@@ -420,14 +429,14 @@ function getOsDnsServers() {
 		/** @type {nsIFileInputStream} */
 		var stream_filestream;
 		try {
-			var resolvconf = Components.classes["@mozilla.org/file/local;1"].createInstance(Components.interfaces.nsIFile);
+			var resolvconf = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
 			resolvconf.initWithPath("/etc/resolv.conf");
 
-			var stream = Components.classes["@mozilla.org/network/file-input-stream;1"].createInstance();
-			stream_filestream = stream.QueryInterface(Components.interfaces.nsIFileInputStream);
+			var stream = Cc["@mozilla.org/network/file-input-stream;1"].createInstance();
+			stream_filestream = stream.QueryInterface(Ci.nsIFileInputStream);
 			stream_filestream.init(resolvconf, 0, 0, 0); // don't know what the flags are...
 
-			var stream_reader = stream.QueryInterface(Components.interfaces.nsILineInputStream);
+			var stream_reader = stream.QueryInterface(Ci.nsILineInputStream);
 
 			var out_line = { value: "" };
 			var hasmore = false;
@@ -447,7 +456,7 @@ function getOsDnsServers() {
 		} catch (e) {
 			log.error("Error reading resolv.conf: " + e + "\n" + e.stack);
 
-			// @ts-ignore
+			// @ts-expect-error
 			if (stream_filestream) {
 				stream_filestream.close();
 			}
@@ -463,7 +472,7 @@ function getOsDnsServers() {
  * @param {T} callbackdata
  * @param {string|string[]} [queryError]
  * @param {number} [rcode]
- * @return {void}
+ * @returns {void}
  */
 
 /**
@@ -599,7 +608,7 @@ function queryDNSRecursive(server, host, recordtype, callback, callbackdata, hop
 					if (servers === undefined) {
 						callback(null, callbackdata, ["TIMED_OUT", server]);
 					}
-				} else if (status === Components.results.NS_ERROR_NET_TIMEOUT) {
+				} else if (status === Cr.NS_ERROR_NET_TIMEOUT) {
 					log.debug("Resolving " + host + "/" + recordtype + ": DNS server " + server + " timed out on a TCP connection (NS_ERROR_NET_TIMEOUT).");
 					if (servers === undefined) {
 						callback(null, callbackdata, ["TIMED_OUT", server]);
@@ -639,7 +648,7 @@ function queryDNSRecursive(server, host, recordtype, callback, callbackdata, hop
 
 			this.readcount += data.length;
 
-			while (this.responseHeader.length < 14 && data.length > 0) {
+			while (this.responseHeader.length < 14 && data.length) {
 				this.responseHeader += data.charAt(0);
 				data = data.substr(1);
 			}
@@ -663,7 +672,7 @@ function queryDNSRecursive(server, host, recordtype, callback, callbackdata, hop
 	// allow server to be either a hostname or hostname:port
 	var server_hostname = server;
 	var port = 53;
-	if (server.indexOf(':') !== -1) {
+	if (server.includes(':')) {
 		server_hostname = server.substring(0, server.indexOf(':'));
 		port = parseInt(server.substring(server.indexOf(':') + 1), 10);
 	}
@@ -878,7 +887,7 @@ function DNS_getRDData(str, server, host, recordtype, callback, callbackdata, ho
 		}
 	}
 
-	if (results.length > 0) {
+	if (results.length) {
 		// We have an answer.
 		callback(results, callbackdata);
 
@@ -944,7 +953,7 @@ function DNS_octetToStr(octet) {
 }
 
 /**
- * This comes from http://xulplanet.com/tutorials/mozsdk/sockets.php
+ * This comes from http://xulplanet.com/tutorials/mozsdk/sockets.php.
  *
  * @param {string} host
  * @param {number} port
@@ -971,7 +980,7 @@ function DNS_readAllFromSocket(host, port, outputData, listener) {
 		var transportService =
 			Cc["@mozilla.org/network/socket-transport-service;1"].
 				getService(Ci.nsISocketTransportService);
-		const transport = transportService.createTransport([], host, port, proxy);
+		const transport = transportService.createTransport([], host, port, proxy, null);
 
 		// change timeout for connection
 		transport.setTimeout(transport.TIMEOUT_CONNECT, timeout_connect);
@@ -983,8 +992,8 @@ function DNS_readAllFromSocket(host, port, outputData, listener) {
 		outstream.write(outputData, outputData.length);
 
 		var stream = transport.openInputStream(0, 0, 0);
-		var instream = Components.classes["@mozilla.org/binaryinputstream;1"].
-			createInstance(Components.interfaces.nsIBinaryInputStream);
+		var instream = Cc["@mozilla.org/binaryinputstream;1"].
+			createInstance(Ci.nsIBinaryInputStream);
 		instream.setInputStream(stream);
 
 		/** @type {nsIStreamListener & {data: string}} */
@@ -1015,9 +1024,8 @@ function DNS_readAllFromSocket(host, port, outputData, listener) {
 			}
 		};
 
-		var pump = Components.
-			classes["@mozilla.org/network/input-stream-pump;1"].
-			createInstance(Components.interfaces.nsIInputStreamPump);
+		var pump = Cc["@mozilla.org/network/input-stream-pump;1"].
+			createInstance(Ci.nsIInputStreamPump);
 		pump.init(stream, 0, 0, false);
 		pump.asyncRead(dataListener, null);
 	} catch (ex) {

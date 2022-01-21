@@ -1,0 +1,30 @@
+#keysTable {
+	table-layout: auto;
+}
+
+td[data-column-name="sdid"] {
+	width: 10em;
+	max-width: max(10em, 30vw);
+}
+
+td[data-column-name="selector"] {
+	width: 10em;
+	max-width: max(10em, 20vw);
+}
+
+td[data-column-name="key"] {
+	white-space: nowrap;
+	max-width: 5em;
+}
+
+td[data-column-name="insertedAt"] {
+	width: 7em;
+}
+
+td[data-column-name="lastUsedAt"] {
+	width: 7em;
+}
+
+td[data-column-name="secure"] {
+	width: 1em;
+}

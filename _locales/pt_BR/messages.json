@@ -1,0 +1,711 @@
+{
+	// DKIM_STRINGS
+	"loading": {
+		"message": "Validando…"
+	},
+	"SUCCESS": {
+		"message": "Válido (Assinado por $1)"
+	},
+	"PERMFAIL": {
+		"message": "Inválido ($1)"
+	},
+	"PERMFAIL_NO_REASON": {
+		"message": "Inválido"
+	},
+	"TEMPFAIL": {
+		"message": "Erro temporário de validação (Para assinatura de $1)"
+	},
+	"NOSIG": {
+		"message": "Sem assinatura"
+	},
+	"NOT_EMAIL": {
+		"message": "A mensagem não é um e-mail"
+	},
+	"SUCCESS_TAG": {
+		"message": "DKIM assinado por $1"
+	},
+	"TEMPFAIL_TAG": {
+		"message": "Erro DKIM"
+	},
+	"PERMFAIL_TAG": {
+		"message": "DKIM inválido"
+	},
+	// DKIM_INTERNALERROR
+	"DKIM_INTERNALERROR": {
+		"message": "Erro interno do verificador DKIM"
+	},
+	"DKIM_INTERNALERROR_NAME": {
+		"message": "Erro interno"
+	},
+	"DKIM_INTERNALERROR_DEFAULT": {
+		"message": "erro"
+	},
+	"DKIM_INTERNALERROR_INCORRECT_EMAIL_FORMAT": {
+		"message": "O e-mail não está formatado corretamente"
+	},
+	"DKIM_INTERNALERROR_INCORRECT_FROM": {
+		"message": "O endereço 'De' está malformado"
+	},
+	"ERROR_IMPORT_RULES": {
+		"message": "Importação das regras de assinatura falhou."
+	},
+	"ERROR_IMPORT_RULES_UNKNOWN_DATA": {
+		"message": "O formato do arquivo importado é inválido."
+	},
+	"ERROR_IMPORT_RULES_UNSUPPORTED_FORMAT": {
+		"message": "O formato das regras de assinatura tem uma versão não suportada."
+	},
+	// DKIM_INTERNALERROR - DNS
+	"DKIM_DNSERROR_UNKNOWN": {
+		"message": "Erro no resolvedor DNS"
+	},
+	"DKIM_DNSERROR_SERVER_ERROR": {
+		"message": "Erro ao conectar ao servidor DNS"
+	},
+	"DKIM_DNSERROR_DNSSEC_BOGUS": {
+		"message": "O resultado DNS é falso"
+	},
+	// DKIM_SIGERROR
+	"DKIM_SIGERROR": {
+		"message": "Erro de assinatura DKIM"
+	},
+	"DKIM_SIGERROR_DEFAULT": {
+		"message": "erro"
+	},
+	// DKIM_SIGERROR - DKIM-Signature Header
+	"DKIM_SIGERROR_ILLFORMED": {
+		"message": "Assinatura malformada"
+	},
+	"DKIM_SIGERROR_UNSUPPORTED": {
+		"message": "A assinatura tem uma versão não suportada"
+	},
+	"DKIM_SIGERROR_ILLFORMED_TAGSPEC": {
+		"message": "Assinatura malformada"
+	},
+	"DKIM_SIGERROR_DUPLICATE_TAG": {
+		"message": "Assinatura malformada (etiqueta duplicada)"
+	},
+	"DKIM_SIGERROR_VERSION": {
+		"message": "Versão não suportada"
+	},
+	"DKIM_SIGERROR_MISSING_V": {
+		"message": "Falta a versão DKIM"
+	},
+	"DKIM_SIGERROR_ILLFORMED_V": {
+		"message": "A etiqueta de versão malformada"
+	},
+	"DKIM_SIGERROR_MISSING_A": {
+		"message": "Algoritmo de assinatura ausente"
+	},
+	"DKIM_SIGERROR_UNKNOWN_A": {
+		"message": "Algoritmo de assinatura não suportado"
+	},
+	"DKIM_SIGERROR_INSECURE_A": {
+		"message": "Algoritmo de assinatura inseguro"
+	},
+	"DKIM_SIGERROR_ILLFORMED_A": {
+		"message": "A etiqueta de algoritmo malformada"
+	},
+	"DKIM_SIGERROR_MISSING_B": {
+		"message": "Assinatura ausente"
+	},
+	"DKIM_SIGERROR_BADSIG": {
+		"message": "Assinatura errada"
+	},
+	"DKIM_SIGERROR_ILLFORMED_B": {
+		"message": "A etiqueta de dados de assinatura malformada"
+	},
+	"DKIM_SIGERROR_MISSING_BH": {
+		"message": "Falta hash de corpo"
+	},
+	"DKIM_SIGERROR_CORRUPT_BH": {
+		"message": "E-mail foi modificado"
+	},
+	"DKIM_SIGERROR_ILLFORMED_BH": {
+		"message": "A etiqueta do hash de corpo está malformado"
+	},
+	"DKIM_SIGERROR_UNKNOWN_C_H": {
+		"message": "Algoritmo de canonização não suportado para cabeçalho"
+	},
+	"DKIM_SIGERROR_UNKNOWN_C_B": {
+		"message": "Algoritmo de canonização não suportado para o corpo"
+	},
+	"DKIM_SIGERROR_ILLFORMED_C": {
+		"message": "A etiqueta de canonização está malformada"
+	},
+	"DKIM_SIGERROR_MISSING_D": {
+		"message": "Missing Signing Domain Identifier (SDID)"
+	},
+	"DKIM_SIGERROR_ILLFORMED_D": {
+		"message": "A  etiqueta SDID está malformada"
+	},
+	"DKIM_SIGERROR_MISSING_H": {
+		"message": "Campos de cabeçalho assinados ausentes"
+	},
+	"DKIM_SIGERROR_MISSING_FROM": {
+		"message": "Cabeçalho De não assinado"
+	},
+	"DKIM_SIGERROR_ILLFORMED_H": {
+		"message": "A etiqueta de campos de cabeçalho assinados malformada"
+	},
+	"DKIM_SIGERROR_SUBDOMAIN_I": {
+		"message": "AUID não está em um subdomínio de SDID"
+	},
+	"DKIM_SIGERROR_DOMAIN_I": {
+		"message": "AUID deve estar no mesmo domínio que SDID (s-flag definido no registro de chave)"
+	},
+	"DKIM_SIGERROR_ILLFORMED_I": {
+		"message": "A etiqueta AUID malformada"
+	},
+	"DKIM_SIGERROR_TOOLARGE_L": {
+		"message": "O e-mail é mais curto do que o especificado na assinatura DKIM"
+	},
+	"DKIM_SIGERROR_ILLFORMED_L": {
+		"message": "A etiqueta de comprimento de corpo malformada"
+	},
+	"DKIM_SIGERROR_UNKNOWN_Q": {
+		"message": "Métodos de consulta (Query) não é suportados para recuperação de chave pública"
+	},
+	"DKIM_SIGERROR_ILLFORMED_Q": {
+		"message": " A etiqueta do método de consulta (Query) está malformada"
+	},
+	"DKIM_SIGERROR_MISSING_S": {
+		"message": "A etiqueta do seletor ausente"
+	},
+	"DKIM_SIGERROR_ILLFORMED_S": {
+		"message": "A etiqueta do seletor está malformada"
+	},
+	"DKIM_SIGERROR_ILLFORMED_T": {
+		"message": "A etiquetade do carimbo de data/hora de assinatura malformada"
+	},
+	"DKIM_SIGERROR_TIMESTAMPS": {
+		"message": "A expiração da assinatura é anterior ao carimbo de data/hora da assinatura"
+	},
+	"DKIM_SIGERROR_ILLFORMED_X": {
+		"message": "A etiqueta de expiração da assinatura está malformada"
+	},
+	"DKIM_SIGERROR_ILLFORMED_Z": {
+		"message": "A etiqueta dos campos do cabeçalho copiados está malformada"
+	},
+	// DKIM_SIGERROR - key query
+	"DKIM_SIGERROR_NOKEY": {
+		"message": "Nenhuma chave DKIM encontrada no servidor DNS"
+	},
+	// DKIM_SIGERROR - Key record
+	"DKIM_SIGERROR_KEY_ILLFORMED": {
+		"message": "A chave DKIM está malformado"
+	},
+	"DKIM_SIGERROR_KEY_INVALID": {
+		"message": "A chave DKIM é inválida"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_TAGSPEC": {
+		"message": "A chave DKIM está malformada"
+	},
+	"DKIM_SIGERROR_KEY_DUPLICATE_TAG": {
+		"message": "A chave DKIM está malformada (etiqueta duplicada)"
+	},
+	"DKIM_SIGERROR_KEY_INVALID_V": {
+		"message": "Versão inválida do registro da chave DKIM"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_V": {
+		"message": "A etiqueta da versão da chave DKIM está malformada"
+	},
+	"DKIM_SIGERROR_KEY_HASHNOTINCLUDED": {
+		"message": "Algoritmo hash está errado no registro da chave DKIM"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_H": {
+		"message": "A etiqueta do algoritmos de hash na chave DKIM está malformada"
+	},
+	"DKIM_SIGERROR_KEY_UNKNOWN_K": {
+		"message": "Tipo de chave DKIM não suportado"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_K": {
+		"message": "A etiqueta de tipo de chave DKIM está malformada"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_N": {
+		"message": "A etiqueta de notas na chave DKIM está malformada"
+	},
+	"DKIM_SIGERROR_KEY_MISSING_P": {
+		"message": "A chave DKIM não contém nenhuma chave pública"
+	},
+	"DKIM_SIGERROR_KEY_REVOKED": {
+		"message": "A chave DKIM foi revogada"
+	},
+	"DKIM_SIGERROR_KEY_HASHMISMATCH": {
+		"message": "A chave pública na chave DKIM tem um algoritmo de hash errado"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_P": {
+		"message": "A etiqueta de dados da chave pública na chave DKIM está malformada"
+	},
+	"DKIM_SIGERROR_KEY_NOTEMAILKEY": {
+		"message": "A chave DKIM não é uma chave de e-mail"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_S": {
+		"message": "A etiqueta de tipo de serviço na chave DKIM está malformada"
+	},
+	"DKIM_SIGERROR_KEY_TESTMODE": {
+		"message": "O domínio de assinatura está testando apenas DKIM"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_T": {
+		"message": "A etiqueta sinalizadores na chave DKIM está malformada"
+	},
+	// DKIM_SIGERROR - key decode
+	"DKIM_SIGERROR_KEYDECODE": {
+		"message": "A chave pública na chave DKIM não pôde ser decodificada"
+	},
+	// DKIM_SIGERROR - POLICY
+	"DKIM_POLICYERROR_MISSING_SIG": {
+		"message": "Deve ser assinado por $1"
+	},
+	"DKIM_POLICYERROR_KEYMISMATCH": {
+		"message": "A chave DKIM armazenada é diferente da atual"
+	},
+	"DKIM_POLICYERROR_KEY_INSECURE": {
+		"message": "A chave DKIM não é assinada por DNSSEC"
+	},
+	"DKIM_POLICYERROR_WRONG_SDID": {
+		"message": "Signatário errado (deveria ser $1)"
+	},
+	// DKIM_SIGWARNING
+	"DKIM_SIGWARNING_SMALL_L": {
+		"message": "Nem todo o e-mail está assinado"
+	},
+	"DKIM_SIGWARNING_EXPIRED": {
+		"message": "A assinatura expirou"
+	},
+	"DKIM_SIGWARNING_FUTURE": {
+		"message": "A assinatura está no futuro"
+	},
+	"DKIM_SIGWARNING_KEYSMALL": {
+		"message": "A assinatura é insegura (tamanho da chave muito pequeno)"
+	},
+	"DKIM_SIGWARNING_KEY_IS_WEAK": {
+		"message": "A assinado com uma chave fraca"
+	},
+	"DKIM_SIGWARNING_FROM_NOT_IN_SDID": {
+		"message": "'De' não está no domínio de assinatura"
+	},
+	"DKIM_SIGWARNING_FROM_NOT_IN_AUID": {
+		"message": "'De' não corresponde ao identificador do usuário"
+	},
+	// JSDNS
+	"TOO_MANY_HOPS": {
+		"message": "Muitos saltos."
+	},
+	"CONNECTION_REFUSED": {
+		"message": "O servidor DNS $1 recusou uma conexão TCP."
+	},
+	"TIMED_OUT": {
+		"message": "O servidor DNS $1 atingiu o tempo limite em uma conexão TCP."
+	},
+	"SERVER_ERROR": {
+		"message": "Erro ao conectar ao servidor DNS &1."
+	},
+	"INCOMPLETE_RESPONSE": {
+		"message": "Resposta incompleta de $1."
+	},
+	// ==================== Options window ====================
+	"options_prefwindow.title": {
+		"message": "Opções do Verificador DKIM"
+	},
+	// -------------------- General options --------------------
+	"options_general": {
+		"message": "Geral"
+	},
+	// ---------- General options tab ----------
+	"options_general.general": {
+		"message": "Geral"
+	},
+	"options_dkim.enable": {
+		"message": "Verificar assinaturas DKIM"
+	},
+	"options_key.storing.value.0": {
+		"message": "Não armazenar chaves DKIM"
+	},
+	"options_key.storing.value.1": {
+		"message": "Armazenar chaves DKIM"
+	},
+	"options_key.storing.value.2": {
+		"message": "Armazene e compare as chaves DKIM com a chave atual"
+	},
+	"options_key.viewKeys": {
+		"message": "Chaves DKIM"
+	},
+	"options_saveResult": {
+		"message": "Salvar resultado da verificação"
+	},
+	// ---------- DNS options tab ----------
+	"options_dns": {
+		"message": "DNS"
+	},
+	"options_dns.resolver": {
+		"message": "Resolvesor"
+	},
+	"options_dns.resolver.value.1": {
+		"message": "Biblioteca DNS JavaScript"
+	},
+	"options_dns.resolver.value.2": {
+		"message": "libunbound"
+	},
+	"options_dns.getNameserversFromOS": {
+		"message": "Obter servidores DNS da configuração do Sistema Operacional"
+	},
+	"options_dns.nameserver": {
+		"message": "Servidores DNS (Sintaxe (EBNF): host[\":\"porta]{\";\"host[\":\"porta]} )"
+	},
+	"options_dns.timeout_connect": {
+		"message": "Tempo limite de conexão do DNS (em segundos)"
+	},
+	"options_dns.proxy.enable": {
+		"message": "Usar um proxy para se conectar aos servidores DNS"
+	},
+	"options_dns.proxy.type": {
+		"message": "Tipo de proxy:"
+	},
+	"options_dns.proxy.host": {
+		"message": "Servidor proxy:"
+	},
+	"options_dns.proxy.port": {
+		"message": "Porta:"
+	},
+	"options_dns.libunbound.nameserver": {
+		"message": "Servidores DNS (Sintaxe (EBNF): IP {\";\"IP})"
+	},
+	"options_dns.libunbound.usageWarning": {
+		"message": "O resolvedor libunbound requer uma biblioteca instalada externamente"
+	},
+	"options_dns.libunbound.path": {
+		"message": "Caminho"
+	},
+	"options_dns.libunbound.path.relToProfileDir": {
+		"message": "Caminho relativo ao diretório do perfil"
+	},
+	// ---------- Policy options tab ----------
+	"options_general.policy": {
+		"message": "Política"
+	},
+	"options_policy.signRules.enable": {
+		"message": "Verifique se o e-mail deve ser assinado"
+	},
+	"options_policy.signRules.checkDefaultRules": {
+		"message": "Usar regras padrão"
+	},
+	"options_policy.signRules.autoAddRule.enable": {
+		"message": "Adicionar regras automaticamente com base em e-mails assinados DKIM visualizados"
+	},
+	"options_policy.signRules.autoAddRule.onlyIfFromAddressInSDID": {
+		"message": " Somente se o endereço 'De' estiver no SDID"
+	},
+	"options_policy.signRules.autoAddRule.for.value.0": {
+		"message": "para endereço 'De'"
+	},
+	"options_policy.signRules.autoAddRule.for.value.1": {
+		"message": "para subdomínio"
+	},
+	"options_policy.signRules.autoAddRule.for.value.2": {
+		"message": "para domínio base"
+	},
+	"options_policy.signRules.sdid.allowSubDomains": {
+		"message": "Permitir também subdomínios dos SDIDs"
+	},
+	"options_policy.signRules.error.wrong_sdid.asWarning": {
+		"message": "Tratar o SDID errado como um aviso em vez de um erro"
+	},
+	"options_viewSigners": {
+		"message": "Regras dos signatários"
+	},
+	"options_viewSignerDefaults": {
+		"message": "Regras de signatários padrão"
+	},
+	"options_policy.DMARC.shouldBeSigned.enable": {
+		"message": "Usar DMARC para determinar heuristicamente se um e-mail deve ser assinado"
+	},
+	// -------------------- Display options --------------------
+	"options_display": {
+		"message": "Exibição"
+	},
+	"options_showDKIMHeader": {
+		"message": "Mostrar cabeçalho DKIM"
+	},
+	"options_showDKIMFromTooltip": {
+		"message": "Mostrar dica de ferramenta DKIM para cabeçalho 'De'"
+	},
+	"options_showDKIM.value.0": {
+		"message": "Nunca"
+	},
+	"options_showDKIM.value.10": {
+		"message": "quando um e-mail com uma assinatura DKIM válida é visualizado"
+	},
+	"options_showDKIM.value.30": {
+		"message": "quando um e-mail com assinatura DKIM é visualizado"
+	},
+	"options_showDKIM.value.40": {
+		"message": "quando um e-mail é visto"
+	},
+	"options_showDKIM.value.50": {
+		"message": "quando uma mensagem é vista"
+	},
+	"options_colorFrom": {
+		"message": "Ativar destaque do cabeçalho 'De'"
+	},
+	"options_color": {
+		"message": "Cor"
+	},
+	"options_color.text": {
+		"message": "Texto:"
+	},
+	"options_color.background": {
+		"message": "Fundo:"
+	},
+	"options_color.success": {
+		"message": "Assinatura válida"
+	},
+	"options_color.warning": {
+		"message": "Assinatura válida com avisos"
+	},
+	"options_color.permfail": {
+		"message": "Assinatura inválida"
+	},
+	"options_color.tempfail": {
+		"message": "Erro temporário"
+	},
+	"options_color.nosig": {
+		"message": "E-mail não assinado"
+	},
+	"options_display.favicon.show": {
+		"message": "Mostrar o favicon de domínios de assinatura conhecidos antes do endereço 'De'"
+	},
+	// -------------------- Advanced options --------------------
+	"options_advanced": {
+		"message": "Avançado"
+	},
+	"options_debug": {
+		"message": "Ativar depuração (exibe erros e informações de depuração no Console de erro)"
+	},
+	"options_error.detailedReasons": {
+		"message": "Mostrar motivos detalhados do erro"
+	},
+	"options_error.key_testmode.ignore": {
+		"message": "Ainda verificar a assinatura, se um domínio estiver apenas testando DKIM"
+	},
+	"options_error.illformed_i.treatAs": {
+		"message": "Tratar a etiqueta AUID malformada como"
+	},
+	"options_error.illformed_s.treatAs": {
+		"message": "Tratar a etiqueta do seletor malformada como"
+	},
+	"options_error.policy.key_insecure.treatAs": {
+		"message": "Tratar chave DKIM não protegida por DNSSEC como"
+	},
+	"options_error.algorithm.sign.rsa-sha1.treatAs": {
+		"message": "Tratar algoritmo de sinal RSA-SHA1 como"
+	},
+	"options_error.algorithm.rsa.weakKeyLength.treatAs": {
+		"message": "Tratar chaves RSA fracas (<2048 bits) como"
+	},
+	"options_error.treatAs.value.0": {
+		"message": "erro"
+	},
+	"options_error.treatAs.value.1": {
+		"message": "aviso"
+	},
+	"options_error.treatAs.value.2": {
+		"message": "nada"
+	},
+	"options_display.keySecure": {
+		"message": "Indica validação DNSSEC bem-sucedida com um bloqueio após o SDID"
+	},
+	"options_arh.read": {
+		"message": "Ler cabeçalho de resultados de autenticação"
+	},
+	"options_arh.replaceAddonResult": {
+		"message": "Ler o cabeçalho de Resultados de Autenticação e substitui a verificação de add-ons"
+	},
+	"options_arh.relaxedParsing": {
+		"message": "Tente ler o cabeçalho de Resultados de Autenticação não compatível com RFC"
+	},
+	// -------------------- Account options --------------------
+	"options_account": {
+		"message": "Conta"
+	},
+	"options_acc.dkim.enable": {
+		"message": "Verificar assinaturas DKIM:"
+	},
+	"options_acc.arh.read": {
+		"message": "Ler cabeçalho de Resultados de Autenticação:"
+	},
+	"options_acc.arh.allowedAuthserv": {
+		"message": "Servidores de autenticação confiáveis:"
+	},
+	"options_acc.boolean.value.0": {
+		"message": "Usar valor padrão"
+	},
+	"options_acc.boolean.value.1": {
+		"message": "Sim"
+	},
+	"options_acc.boolean.value.2": {
+		"message": "Não"
+	},
+	// -------------------- About --------------------
+	"about": {
+		"message": "Sobre"
+	},
+	"about_name": {
+		"message": "Verificador DKIM"
+	},
+	"about_summary": {
+		"message": "Verifica as assinaturas DKIM de e-mails."
+	},
+	"about_homepage": {
+		"message": "Página inicial"
+	},
+	"about_documentation": {
+		"message": "Documentação"
+	},
+	"about_contributors": {
+		"message": "Contribuidores do GitHub"
+	},
+	"about_translators": {
+		"message": "Tradutores:"
+	},
+	"about_dependencies": {
+		"message": "Dependências incluídas:"
+	},
+	"about_by": {
+		"message": "por"
+	},
+	// ==================== Actions ====================
+	"dkim_verifier.reverifyDKIMSignature": {
+		"message": "Reverificar Assinatura DKIM"
+	},
+	"dkim_verifier.policyAddUserException": {
+		"message": "Adicionar à exceção deve ser assinada"
+	},
+	"dkim_verifier.markKeyAsSecure": {
+		"message": "Marcar chave DKIM como segura"
+	},
+	"dkim_verifier.updateKey": {
+		"message": "Atualizar chave DKIM"
+	},
+	// ==================== Table Views ====================
+	"treeviewKeys.treecol.SDID": {
+		"message": "SDID"
+	},
+	"treeviewKeys.treecol.selector": {
+		"message": "Seletor"
+	},
+	"treeviewKeys.treecol.key": {
+		"message": "Chave DKIM"
+	},
+	"treeviewKeys.treecol.insertedAt": {
+		"message": "Inserido"
+	},
+	"treeviewKeys.treecol.lastUsedAt": {
+		"message": "Usado pela última vez"
+	},
+	"treeviewKeys.treecol.secure": {
+		"message": "DNSSEC"
+	},
+	"treeviewKeys.deleteSelectedRows": {
+		"message": "Excluir chaves selecionadas"
+	},
+	"treeviewSigners.treecol.domain": {
+		"message": "Domínio"
+	},
+	"treeviewSigners.treecol.listId": {
+		"message": "id da lista"
+	},
+	"treeviewSigners.treecol.addr": {
+		"message": "De"
+	},
+	"treeviewSigners.treecol.sdid": {
+		"message": "SDID"
+	},
+	"treeviewSigners.treecol.ruletype": {
+		"message": "Tipo de regra"
+	},
+	"treeviewSigners.treecol.priority": {
+		"message": "Prioridade"
+	},
+	"treeviewSigners.treecol.enabled": {
+		"message": "Ativado"
+	},
+	"treeviewSigners.addSignersRule": {
+		"message": "Adicionar regra"
+	},
+	"treeviewSigners.deleteSelectedRows": {
+		"message": "Excluir regras selecionadas"
+	},
+	"treeviewSigners.exportRules": {
+		"message": "Exportar regras"
+	},
+	"treeviewSigners.importRules": {
+		"message": "Importar regras"
+	},
+	"importRules.replaceQuestion": {
+		"message": "As regras importadas devem ser adicionadas às regras existentes ou substituir as regras existentes?"
+	},
+	"importRules.addRules": {
+		"message": "Adicionar regras"
+	},
+	"importRules.replaceRules": {
+		"message": "Substituir regras"
+	},
+	"addSignersRule.title": {
+		"message": "Adicionar regra de signatários"
+	},
+	"signRules.ruletype.SIGNED": {
+		"message": "Deve ser assinado (1)"
+	},
+	"signRules.ruletype.NEUTRAL": {
+		"message": "Pode ser assinado (2)"
+	},
+	"signRules.ruletype.HIDEFAIL": {
+		"message": "Ignorar assinatura inválida (3)"
+	},
+	"signRules.priorityMode.auto": {
+		"message": "Selecionar prioridade automaticamente"
+	},
+	"signRules.priorityMode.manual": {
+		"message": "Definir prioridade para"
+	},
+	"button.cancel": {
+		"message": "Cancelar"
+	},
+	"button.help": {
+		"message": "Ajuda"
+	},
+	"signersRuleHelp.title": {
+		"message": "Ajuda de regras de signatários"
+	},
+	"domain.description": {
+		"message": "Será comparada com o domínio base do endereço 'De'. Por exemplo, o domínio base para 'email.example.co.uk' é 'example.co.uk'."
+	},
+	"listId.description": {
+		"message": "Será comparado com o id da lista, se o e-mail foi recebido através de uma lista de e-mail. Observe que apenas a parte entre '<' e '>' do cabeçalho List-Id é o list-id real. Apenas o domínio ou o id da lista são correspondidos ao mesmo tempo."
+	},
+	"addr.description": {
+		"message": "Será comparado com o endereço 'De'. Use um '*' para corresponder a zero ou mais caracteres."
+	},
+	"sdid.description": {
+		"message": "O domínio pelo qual os e-mails devem ser assinados. Se for deixado em branco, todos os SDID serão permitidos. Mais de um domínio pode ser especificado, separando-os com um espaço."
+	},
+	"ruletype.description": {
+		"message": "O tipo de regra."
+	},
+	"ruletype.1.description": {
+		"message": "O e-mail deve ser assinado pelo SDID especificado."
+	},
+	"ruletype.2.description": {
+		"message": "O e-mail não precisa ser assinado. Se estiver assinado, deve ser pelo SDID especificado."
+	},
+	"ruletype.3.description": {
+		"message": "O e-mail não precisa ser assinado. Se estiver assinado, deve ser pelo SDID especificado. Se o e-mail tiver uma assinatura inválida, será tratado como se não tivesse assinatura."
+	},
+	"priority.description": {
+		"message": "A prioridade da regra. Se mais de uma regra corresponder, aquela com a prioridade mais alta será usada."
+	},
+	"enabled.description": {
+		"message": "1 se a regra estiver ativada, 0 se estiver desativada."
+	}
+}

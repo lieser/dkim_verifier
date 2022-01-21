@@ -1,4 +1,4 @@
-interface DKIMHeaderFieldElement extends XULElement {
+interface DKIMHeaderFieldElement extends HTMLDivElement {
     _dkimValue: XULElement
     _dkimWarningIcon: XULElement
     _dkimWarningTooltip: DKIMTooltipElement
@@ -34,5 +34,6 @@ declare module browser {
             color: string,
             backgroundColor: string,
         ) => Promise<boolean>;
+        const reset: (tabId: number, messageId: number) => Promise<boolean>;
     }
 }

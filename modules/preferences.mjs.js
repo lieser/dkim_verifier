@@ -1,7 +1,7 @@
 /**
  * Provides access to the add-ons preferences.
  *
- * Copyright (c) 2020 Philippe Lieser
+ * Copyright (c) 2020-2021 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -13,6 +13,7 @@
 ///<reference path="../WebExtensions.d.ts" />
 /* eslint-env webextensions */
 /* eslint no-magic-numbers: "off" */
+/* eslint-disable jsdoc/match-description */
 
 import { Deferred } from "./utils.mjs.js";
 import ExtensionUtils from "./extensionUtils.mjs.js";
@@ -28,13 +29,13 @@ export class BasePreferences {
 	/**
 	 * @callback ValueGetter
 	 * @param {string} name
-	 * @return {boolean|number|string|undefined}
+	 * @returns {boolean|number|string|undefined}
 	 */
 	/**
 	 * @callback ValueSetter
 	 * @param {string} name
 	 * @param {boolean|number|string} value
-	 * @return {Promise<void>}
+	 * @returns {Promise<void>}
 	 */
 
 	/**
@@ -297,9 +298,9 @@ export class BasePreferences {
 		return this._tryGetBoolValue("dns.proxy.enable", false);
 	}
 	/**
-	* - socks
-	* - socks4
-	*/
+	 * - socks
+	 * - socks4
+	 */
 	get "dns.proxy.type"() {
 		return this._tryGetStringValue("dns.proxy.type", "socks");
 	}
@@ -601,6 +602,9 @@ export class StorageLocalPreferences extends BasePreferences {
 		this._prefs = {};
 	}
 
+	/**
+	 * @override
+	 */
 	async init() {
 		if (this._isInitializedDeferred) {
 			return this._isInitializedDeferred.promise;
@@ -610,7 +614,9 @@ export class StorageLocalPreferences extends BasePreferences {
 		try {
 			const preferences = await ExtensionUtils.safeGetLocalStorage();
 			if (preferences) {
-				delete preferences.signRulesUser;
+				for (const dataStorageScope of StorageLocalPreferences.dataStorageScopes) {
+					delete preferences[dataStorageScope];
+				}
 				this._prefs = preferences;
 			}
 			browser.storage.onChanged.addListener((changes, areaName) => {
@@ -629,17 +635,37 @@ export class StorageLocalPreferences extends BasePreferences {
 		return this._isInitializedDeferred.promise;
 	}
 
+	/**
+	 * @override
+	 */
 	async clear() {
-		const signRulesUser = (await browser.storage.local.get("signRulesUser")).signRulesUser;
+		/** @type {{scope: string, data: any}[]} */
+		const dataStorages = [];
+		for (const dataStorageScope of StorageLocalPreferences.dataStorageScopes) {
+			const data = (await browser.storage.local.get(dataStorageScope))[dataStorageScope];
+			if (data) {
+				dataStorages.push({
+					scope: dataStorageScope,
+					data: data,
+				});
+			}
+		}
 
 		this._prefs = {};
 		await browser.storage.local.clear();
 
-		if (signRulesUser) {
-			await browser.storage.local.set({ signRulesUser: signRulesUser });
+		for (const dataStorage of dataStorages) {
+			await browser.storage.local.set({ [dataStorage.scope]: dataStorage.data });
 		}
 	}
 }
+/**
+ * List of scope names that contain other data than preferences in browser.storage
+ */
+StorageLocalPreferences.dataStorageScopes = [
+	"signRulesUser",
+	"keyStore"
+];
 
 const prefs = new StorageLocalPreferences();
 export default prefs;

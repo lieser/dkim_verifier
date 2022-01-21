@@ -8,7 +8,7 @@
  */
 
 // @ts-check
-/* eslint-env browser, webextensions */
+/* eslint-env webextensions */
 
 /**
  * Add translations to document
@@ -22,4 +22,4 @@ document.addEventListener("DOMContentLoaded", () => {
 			element.insertAdjacentText("beforeend", browser.i18n.getMessage(messageName));
 		}
 	}
-});
+}, { once: true });

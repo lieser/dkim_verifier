@@ -21,6 +21,18 @@
 	"NOT_EMAIL": {
 		"message": "Il messaggio non è un’email"
 	},
+	"SUCCESS_TAG": {
+		"message": "DKIM firmato da $1",
+		"description": "Il tag mostrato nell’estensione Conversazione quando un’email è valida. Dovrebbe essere breve."
+	},
+	"TEMPFAIL_TAG": {
+		"message": "Errore DKIM",
+		"description": "Il tag mostrato nell’estensione Conversazione in caso di problemi temporanei. Dovrebbe essere breve."
+	},
+	"PERMFAIL_TAG": {
+		"message": "DKIM non valido",
+		"description": "Il tag mostrato nell’estensione Conversazione quando un’email non è valida. Dovrebbe essere breve."
+	},
 	// DKIM_INTERNALERROR
 	"DKIM_INTERNALERROR": {
 		"message": "Errore interno di DKIM verifier"
@@ -33,6 +45,21 @@
 	},
 	"DKIM_INTERNALERROR_INCORRECT_EMAIL_FORMAT": {
 		"message": "L’email non è formattata correttamente"
+	},
+	"DKIM_INTERNALERROR_INCORRECT_FROM": {
+		"message": "L’indirizzo del mittente ha una sintassi errata"
+	},
+	"ERROR_IMPORT_RULES": {
+		"message": "L’importazione delle regole sulle firme è fallita.",
+		"description": "Titolo dell’errore mostrato se l’importazione delle regole delle firme fallisce."
+	},
+	"ERROR_IMPORT_RULES_UNKNOWN_DATA": {
+		"message": "Il formato del file importato non è valido.",
+		"description": "Messaggio d’errore mostrato se l’utente prova a importare come regole delle firme dei dati sconosciuti."
+	},
+	"ERROR_IMPORT_RULES_UNSUPPORTED_FORMAT": {
+		"message": "Il formato delle regole delle firme è in una versione non supportata.",
+		"description": "Messaggio d’errore mostrato le regole delle firme che l’utente ha provato a importare è un un formato non supportato."
 	},
 	// DKIM_INTERNALERROR - DNS
 	"DKIM_DNSERROR_UNKNOWN": {
@@ -92,10 +119,10 @@
 		"message": "Firma errata"
 	},
 	"DKIM_SIGERROR_ILLFORMED_B": {
-		"message": "Dati del tag della firma con sintassi errata"
+		"message": "Tag dei dati della firma con sintassi errata"
 	},
 	"DKIM_SIGERROR_MISSING_BH": {
-		"message": "Manca firma del corpo"
+		"message": "Firma del corpo mancante"
 	},
 	"DKIM_SIGERROR_CORRUPT_BH": {
 		"message": "L’email è stata modificata"
@@ -172,10 +199,10 @@
 	},
 	// DKIM_SIGERROR - Key record
 	"DKIM_SIGERROR_KEY_ILLFORMED": {
-		"message": "La chiave DKIM ha una sintassi errata"
+		"message": "Chiave DKIM con sintassi errata"
 	},
 	"DKIM_SIGERROR_KEY_INVALID": {
-		"message": "La chiave DKIM non è valida"
+		"message": "Chiave DKIM non valida"
 	},
 	"DKIM_SIGERROR_KEY_ILLFORMED_TAGSPEC": {
 		"message": "Chiave DKIM con sintassi errata"
@@ -184,13 +211,13 @@
 		"message": "Chiave DKIM con sintassi errata (tag duplicato)"
 	},
 	"DKIM_SIGERROR_KEY_INVALID_V": {
-		"message": "Versione del record della chiave DKIM"
+		"message": "Versione non valida del record della chiave DKIM"
 	},
 	"DKIM_SIGERROR_KEY_ILLFORMED_V": {
 		"message": "Tag versione chiave DKIM con sintassi errata"
 	},
 	"DKIM_SIGERROR_KEY_HASHNOTINCLUDED": {
-		"message": "Algoritmo firma errato nel record della chiave DKIM"
+		"message": "Algoritmo di firma errato nel record della chiave DKIM"
 	},
 	"DKIM_SIGERROR_KEY_ILLFORMED_H": {
 		"message": "Tag algoritmi di firma con sintassi errata nella chiave DKIM"
@@ -211,7 +238,7 @@
 		"message": "Chiave DKIM revocata"
 	},
 	"DKIM_SIGERROR_KEY_HASHMISMATCH": {
-		"message": "Chiave pubblica DKIM con algoritmo di firma errato"
+		"message": "Chiave pubblica nella chiave DKIM con algoritmo di firma errato"
 	},
 	"DKIM_SIGERROR_KEY_ILLFORMED_P": {
 		"message": "Tag dati della chiave pubblica nella chiave DKIM con sintassi errata"
@@ -265,7 +292,7 @@
 		"message": "Mittente non nel dominio della firma"
 	},
 	"DKIM_SIGWARNING_FROM_NOT_IN_AUID": {
-		"message": "Il mittente non corrisponde all’identificativo utente"
+		"message": "Mittente non corrispondente all’identificativo utente"
 	},
 	// JSDNS
 	"TOO_MANY_HOPS": {
@@ -275,7 +302,7 @@
 		"message": "Il server DNS $1 ha rifiutato una connessione TCP."
 	},
 	"TIMED_OUT": {
-		"message": "Una connessione TCP al server server DNS $1 è scaduta."
+		"message": "Una connessione TCP al server DNS $1 è scaduta."
 	},
 	"SERVER_ERROR": {
 		"message": "Errore durante la connessione al server DNS $1."
@@ -299,7 +326,7 @@
 		"message": "Verifica le firme DKIM"
 	},
 	"options_key.storing.value.0": {
-		"message": "Non salvare le chiavi DNS"
+		"message": "Non salvare le chiavi DKIM"
 	},
 	"options_key.storing.value.1": {
 		"message": "Salva le chiavi DKIM"
@@ -346,6 +373,12 @@
 	},
 	"options_dns.proxy.port": {
 		"message": "Porta:"
+	},
+	"options_dns.libunbound.nameserver": {
+		"message": "Server DNS (sintassi (EBNF): IP{\";\"IP} )"
+	},
+	"options_dns.libunbound.usageWarning": {
+		"message": "Il risolutore libunbound richiede una libreria installata esternamente"
 	},
 	"options_dns.libunbound.path": {
 		"message": "Percorso"
@@ -471,7 +504,7 @@
 		"message": "Considera chiavi DKIM non firmate da DNSSEC come"
 	},
 	"options_error.algorithm.sign.rsa-sha1.treatAs": {
-		"message": "Considera algoritmo di firma rsa-sha1 come"
+		"message": "Considera algoritmo di firma RSA-SHA1 come"
 	},
 	"options_error.algorithm.rsa.weakKeyLength.treatAs": {
 		"message": "Considera chiavi RSA deboli (<2048 bit) come"
@@ -486,7 +519,7 @@
 		"message": "niente"
 	},
 	"options_display.keySecure": {
-		"message": "Indica una validazione DNSSEC avvenuta con successo con un blocco dopo il SDID"
+		"message": "Indica una validazione DNSSEC avvenuta con successo con un lucchetto dopo il SDID"
 	},
 	"options_arh.read": {
 		"message": "Leggi l’intestazione Authentication-Results"
@@ -496,6 +529,11 @@
 	},
 	"options_arh.relaxedParsing": {
 		"message": "Prova a caricare intestazioni Authentication-Results non conformi all’RFC"
+	},
+	// -------------------- Account options --------------------
+	"options_account": {
+		"message": "Account",
+		"description": "Title for account specific options"
 	},
 	"options_acc.dkim.enable": {
 		"message": "Verifica le firme DKIM:"
@@ -515,7 +553,10 @@
 	"options_acc.boolean.value.2": {
 		"message": "No"
 	},
-	// -------------------- Account options --------------------
+	// -------------------- About --------------------
+	"about": {
+		"message": "Informazioni su"
+	},
 	"about_name": {
 		"message": "DKIM Verifier",
 		"description": "Name of the add-on"
@@ -523,6 +564,29 @@
 	"about_summary": {
 		"message": "Verifica la firma DKIM di un’email.",
 		"description": "Short description of the add-on"
+	},
+	"about_homepage": {
+		"message": "Homepage"
+	},
+	"about_documentation": {
+		"message": "Documentazione",
+		"description": "Link text for GitHub documentation page"
+	},
+	"about_contributors": {
+		"message": "Collaboratori GitHub",
+		"description": "Link text for GitHub contributors page"
+	},
+	"about_translators": {
+		"message": "Traduttori:",
+		"description": "Heading for list of translators"
+	},
+	"about_dependencies": {
+		"message": "Dipendenze incluse:",
+		"description": "Heading for list of included dependencies"
+	},
+	"about_by": {
+		"message": "di",
+		"description": "<dependency name> by <author>"
 	},
 	// ==================== Actions ====================
 	"dkim_verifier.reverifyDKIMSignature": {
@@ -532,7 +596,7 @@
 		"message": "Aggiungi eccezione firma richiesta"
 	},
 	"dkim_verifier.markKeyAsSecure": {
-		"message": "Contrassegna firma DKIM come sicura"
+		"message": "Contrassegna chiave DKIM come sicura"
 	},
 	"dkim_verifier.updateKey": {
 		"message": "Aggiorna chiave DKIM"
@@ -586,6 +650,26 @@
 	"treeviewSigners.deleteSelectedRows": {
 		"message": "Rimuovi regole selezionate"
 	},
+	"treeviewSigners.exportRules": {
+		"message": "Esporta regole",
+		"description": "Pulsante per esportare le regole delle firme"
+	},
+	"treeviewSigners.importRules": {
+		"message": "Importa regole",
+		"description": "Pulsante per importare le regole delle firme"
+	},
+	"importRules.replaceQuestion": {
+		"message": "Le regole importate vanno aggiunte a quelle esistenti o devono sostituirle?",
+		"description": "Domanda fatta nella finestra di dialogo dell’importazione"
+	},
+	"importRules.addRules": {
+		"message": "Aggiungi regole",
+		"description": "Pulsante nella finestra di dialogo dell’importazione per aggiungere regole a quelle esistenti"
+	},
+	"importRules.replaceRules": {
+		"message": "Sustituisci regole",
+		"description": "Pulsante nella finestra di dialogo dell’importazione per sostituire le regole esistenti"
+	},
 	"addSignersRule.title": {
 		"message": "Aggiungi regole firmatari"
 	},
@@ -603,6 +687,9 @@
 	},
 	"signRules.priorityMode.manual": {
 		"message": "Imposta priorità a"
+	},
+	"button.cancel": {
+		"message": "Annulla"
 	},
 	"button.help": {
 		"message": "Aiuto"

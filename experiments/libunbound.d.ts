@@ -38,8 +38,8 @@ namespace Libunbound {
         getNameserversFromOS: boolean,
         nameservers: string[],
         trustAnchors: string[],
-        conf?: string,
-        debuglevel?: number,
+        conf?: string | undefined,
+        debuglevel?: number| undefined,
     }
     interface WorkerRequest extends MessageEvent {
         data: Request;

@@ -10,7 +10,7 @@
 // @ts-check
 
 /** @type {Chai.ExpectStatic} */
-// @ts-ignore
+// @ts-expect-error
 const expect = globalThis.expect;
 export default expect;
 
@@ -21,7 +21,7 @@ import Logging from "../../modules/logging.mjs.js";
 Logging.setLogLevel(Logging.Level.Fatal);
 
 /**
- * Assert that the given promise is rejected with a certain type of DKIM_SigError
+ * Assert that the given promise is rejected with a certain type of DKIM_SigError.
  *
  * @param {Promise<any>} promise
  * @param {string} errorType -  expected error type
@@ -35,6 +35,7 @@ export function expectAsyncDkimSigError(promise, errorType) {
 				try {
 					expect.fail(`${value}`, errorType, "expected a DKIM_SigError to be thrown, got a value instead");
 				} catch (e) {
+					// @ts-expect-error
 					e.showDiff = true;
 					reject(e);
 				}
@@ -49,6 +50,7 @@ export function expectAsyncDkimSigError(promise, errorType) {
 					}
 					expect.fail(`${reason}`, errorType, "expected a DKIM_SigError to be thrown, got a different Error instead");
 				} catch (e) {
+					// @ts-expect-error
 					e.showDiff = true;
 					reject(e);
 				}

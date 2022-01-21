@@ -11,6 +11,7 @@
  */
 
 // @ts-check
+/* eslint-disable mocha/no-exports */
 
 import ExtensionUtils from "../../modules/extensionUtils.mjs.js";
 import prefs from "../../modules/preferences.mjs.js";
@@ -25,7 +26,7 @@ export let fakeBrowser;
 ExtensionUtils.readFile = readTextFile;
 
 /**
- * Parse a JSON file that contains comments in the form of "//…"
+ * Parse a JSON file that contains comments in the form of "//…".
  *
  * @param {string} data
  * @returns {any}
@@ -39,10 +40,10 @@ function jsonParse(data) {
 }
 
 /**
- * Returns the base domain for an e-mail address
+ * Returns the base domain for an e-mail address.
  *
  * @param {string} addr
- * @return {Promise<string>}
+ * @returns {Promise<string>}
  */
 function getBaseDomainFromAddr(addr) {
 	const publicSuffixList = [
@@ -58,6 +59,7 @@ function getBaseDomainFromAddr(addr) {
 	return Promise.resolve(baseDomain);
 }
 
+// eslint-disable-next-line mocha/no-top-level-hooks, mocha/no-hooks-for-single-case
 before(async function () {
 	try {
 		const { default: browserFake } = await import("webextensions-api-fake");
@@ -75,7 +77,7 @@ before(async function () {
 		} else {
 			fakeBrowser = browserFake(options);
 		}
-		// @ts-ignore
+		// @ts-expect-error
 		globalThis.browser = fakeBrowser;
 		hasWebExtensions = true;
 	} catch (e) {

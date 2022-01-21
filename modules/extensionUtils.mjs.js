@@ -1,4 +1,4 @@
-/*
+/**
  * Utility functions related to WebExtensions/MailExtensions.
  *
  * Copyright (c) 2020 Philippe Lieser
@@ -13,7 +13,7 @@
 ///<reference path="../WebExtensions.d.ts" />
 /* eslint-env browser, webextensions */
 
-import { promiseWithTimeout, sleep } from "./utils.mjs.js";
+import { dateToString, promiseWithTimeout, sleep } from "./utils.mjs.js";
 import Logging from "./logging.mjs.js";
 
 const log = Logging.getLogger("ExtensionUtils");
@@ -25,7 +25,7 @@ const log = Logging.getLogger("ExtensionUtils");
  * @param {string} title
  * @param {number} [height]
  * @param {number} [width]
- * @return {Promise<browser.windows.Window>}
+ * @returns {Promise<browser.windows.Window>}
  */
 async function createOrRaisePopup(url, title, height = undefined, width = undefined) {
 	const popupWindows = await browser.windows.getAll({
@@ -37,12 +37,34 @@ async function createOrRaisePopup(url, title, height = undefined, width = undefi
 		await browser.windows.update(popupWindow.id, { focused: true });
 		return popupWindow;
 	}
-	return browser.windows.create({
+	/** @type {Parameters<browser.windows.create>[0]} */
+	const createData = {
 		url: url,
 		type: "popup",
 		allowScriptsToClose: true,
-		height: height,
-		width: width,
+	};
+	if (height) {
+		createData.height = height;
+	}
+	if (width) {
+		createData.width = width;
+	}
+	return browser.windows.create(createData);
+}
+
+/**
+ * Download data as JSON.
+ *
+ * @param {object} data
+ * @param {string} dataName
+ * @returns {void}
+ */
+function downloadDataAsJSON(data, dataName) {
+	const jsonBlob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+	browser.downloads.download({
+		'url': URL.createObjectURL(jsonBlob),
+		'filename': `${dataName}_${dateToString(new Date())}.json`,
+		'saveAs': true,
 	});
 }
 
@@ -84,7 +106,7 @@ async function isOutgoing(message, fromAddr) {
  * Reads a file included in the extension as a string.
  *
  * @param {string} path - path inside the extension of the file to read
- * @return {Promise<string>}
+ * @returns {Promise<string>}
  */
 async function readFile(path) {
 	const url = browser.runtime.getURL(path);
@@ -96,8 +118,8 @@ async function readFile(path) {
 
 /**
  * Wrapper around browser.storage.local.get() to workaround the following issues:
- * - TransactionInactiveError resulting in PRomise never being resolved
- * - Getting rejected with "An unexpected error occurred"
+ * - TransactionInactiveError resulting in Promise never being resolved.
+ * - Getting rejected with "An unexpected error occurred".
  *
  * @returns {Promise<Object.<string, any>>}
  */
@@ -128,9 +150,10 @@ async function safeGetLocalStorage() {
 }
 
 const ExtensionUtils = {
-	createOrRaisePopup: createOrRaisePopup,
-	isOutgoing: isOutgoing,
-	safeGetLocalStorage: safeGetLocalStorage,
-	readFile: readFile,
+	createOrRaisePopup,
+	downloadDataAsJSON,
+	isOutgoing,
+	safeGetLocalStorage,
+	readFile,
 };
 export default ExtensionUtils;

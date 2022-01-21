@@ -10,7 +10,6 @@
  */
 
 // @ts-check
-/* eslint-env browser */
 
 class TableCellEditable extends HTMLTableCellElement {
 	constructor() {
@@ -120,22 +119,25 @@ export default class DataTable {
 	 * @param {number} rowId
 	 * @param {string} columnName
 	 * @param {string|number|boolean} value
-	 * @return {Promise<void>}
+	 * @returns {Promise<void>}
 	 */
 	/**
 	 * @callback DeleteRowCallback
 	 * @param {number} rowId
-	 * @return {Promise<void>}
+	 * @returns {Promise<void>}
 	 */
 
 	/**
-	* @param {HTMLTableElement} tableElement
-	* @param {boolean} [editable]
-	* @param {UpdateCellValueCallback} [updatedCellValueCallback]
-	* @param {DeleteRowCallback} [deleteRowCallback]
-	*/
+	 * @param {HTMLTableElement} tableElement
+	 * @param {boolean} [editable]
+	 * @param {UpdateCellValueCallback} [updatedCellValueCallback]
+	 * @param {DeleteRowCallback} [deleteRowCallback]
+	 */
 	constructor(tableElement, editable = false, updatedCellValueCallback = undefined, deleteRowCallback = undefined) {
 		this._tbody = tableElement.getElementsByTagName("tbody")[0];
+		if (!this._tbody) {
+			throw new Error("No tbody element found.");
+		}
 		this._isEditable = editable;
 		this._isEditing = false;
 		this._updatedCellValueCallback = updatedCellValueCallback;
@@ -155,12 +157,14 @@ export default class DataTable {
 	 */
 	showData(data, sortOrder) {
 		if (sortOrder) {
-			data.sort((a,b) => {
+			data.sort((a, b) => {
 				for (const column of sortOrder) {
-					if (a[column] < b[column]) {
+					const aColumn = a[column] ?? "";
+					const bColumn = b[column] ?? "";
+					if (aColumn < bColumn) {
 						return -1;
 					}
-					if (a[column] > b[column]) {
+					if (aColumn > bColumn) {
 						return 1;
 					}
 				}

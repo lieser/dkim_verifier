@@ -2,7 +2,7 @@
  * Proxy to a singleton SignRules to avoid problems with race conditions
  * when accessing browser.storage.local.
  *
- * Copyright (c)2020 Philippe Lieser
+ * Copyright (c) 2020-2021 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -12,6 +12,7 @@
 
 // @ts-check
 ///<reference path="../../WebExtensions.d.ts" />
+///<reference path="../../RuntimeMessage.d.ts" />
 /* eslint-env webextensions */
 
 export default class SignRulesProxy {
@@ -38,24 +39,62 @@ export default class SignRulesProxy {
 		};
 	}
 
-	// eslint-disable-next-line valid-jsdoc
 	/**
-	 * @returns {Promise<import("./signRules.mjs").DkimSignRuleDefault[]>}
+	 * @returns {Promise<import("./signRules.mjs.js").DkimSignRuleDefault[]>}
 	 */
 	static getDefaultRules() {
-		return browser.runtime.sendMessage({
+		/** @type {RuntimeMessage.SignRules.getDefaultRules} */
+		const message = {
+			module: "SignRules",
 			method: "getDefaultRules"
-		});
+		};
+		return browser.runtime.sendMessage(message);
 	}
 
-	// eslint-disable-next-line valid-jsdoc
 	/**
-	 * @returns {Promise<import("./signRules.mjs").DkimSignRuleUser[]>}
+	 * @returns {Promise<import("./signRules.mjs.js").DkimSignRuleUser[]>}
 	 */
 	static getUserRules() {
-		return browser.runtime.sendMessage({
+		/** @type {RuntimeMessage.SignRules.getUserRules} */
+		const message = {
+			module: "SignRules",
 			method: "getUserRules"
-		});
+		};
+		return browser.runtime.sendMessage(message);
+	}
+
+	/**
+	 * Get the user sign rules in the export format.
+	 *
+	 * @returns {Promise<import("./signRules.mjs.js").DkimExportedUserSignRules>}
+	 */
+	static exportUserRules() {
+		/** @type {RuntimeMessage.SignRules.exportUserRules} */
+		const message = {
+			module: "SignRules",
+			method: "exportUserRules",
+		};
+		return browser.runtime.sendMessage(message);
+	}
+
+	/**
+	 * Import the given user sign rules.
+	 *
+	 * @param {any} data
+	 * @param {boolean} replace
+	 * @returns {Promise<void>}
+	 */
+	static importUserRules(data, replace) {
+		/** @type {RuntimeMessage.SignRules.importUserRules} */
+		const message = {
+			module: "SignRules",
+			method: "importUserRules",
+			parameters: {
+				data,
+				replace,
+			},
+		};
+		return browser.runtime.sendMessage(message);
 	}
 
 	/**
@@ -71,7 +110,9 @@ export default class SignRulesProxy {
 	 * @returns {Promise<void>}
 	 */
 	static addRule(domain, listId, addr, sdid, type, priority, enabled) {
-		return browser.runtime.sendMessage({
+		/** @type {RuntimeMessage.SignRules.addRule} */
+		const message = {
+			module: "SignRules",
 			method: "addRule",
 			parameters: {
 				domain: domain,
@@ -82,7 +123,8 @@ export default class SignRulesProxy {
 				priority: priority,
 				enabled: enabled,
 			},
-		});
+		};
+		return browser.runtime.sendMessage(message);
 	}
 
 	/**
@@ -94,14 +136,17 @@ export default class SignRulesProxy {
 	 * @returns {Promise<void>}
 	 */
 	static updateRule(id, propertyName, newValue) {
-		return browser.runtime.sendMessage({
+		/** @type {RuntimeMessage.SignRules.updateRule} */
+		const message = {
+			module: "SignRules",
 			method: "updateRule",
 			parameters: {
 				id: id,
 				propertyName: propertyName,
 				newValue: newValue,
 			},
-		});
+		};
+		return browser.runtime.sendMessage(message);
 	}
 
 	/**
@@ -111,11 +156,14 @@ export default class SignRulesProxy {
 	 * @returns {Promise<void>}
 	 */
 	static deleteRule(id) {
-		return browser.runtime.sendMessage({
+		/** @type {RuntimeMessage.SignRules.deleteRule} */
+		const message = {
+			module: "SignRules",
 			method: "deleteRule",
 			parameters: {
 				id: id,
 			},
-		});
+		};
+		return browser.runtime.sendMessage(message);
 	}
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020 Philippe Lieser
+ * Copyright (c) 2020-2021 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -9,28 +9,17 @@
 
 // @ts-check
 ///<reference path="../WebExtensions.d.ts" />
-/* eslint-env browser, webextensions */
+/* eslint-env webextensions */
 
 import ExtensionUtils from "../modules/extensionUtils.mjs.js";
 import Logging from "../modules/logging.mjs.js";
+import { getElementById } from "./domUtils.mjs.js";
 import prefs from "../modules/preferences.mjs.js";
 
 const log = Logging.getLogger("Options");
 
 /**
- * @param {string} id
- * @returns {HTMLElement}
- */
-function getElementById(id) {
-	const element = document.getElementById(id);
-	if (!element) {
-		throw new Error(`Could not find element with id '${id}'.`);
-	}
-	return element;
-}
-
-/**
- * Set the active pane to the given navigation selector
+ * Set the active pane to the given navigation selector.
  *
  * @param {HTMLElement} navSelector
  * @returns {void}
@@ -81,6 +70,9 @@ function initNavigation() {
 	for (const navElement of navElements) {
 		/** @type {HTMLElement[]} */
 		const navSelectors = Array.from(navElement.querySelectorAll(":scope>[pane]"));
+		if (!navSelectors[0]) {
+			throw new Error("No nav selector found under nav element.");
+		}
 		// initialize the navigation to the first navigation selector
 		setNavigation(navSelectors[0]);
 		// add navigation callback to click event
@@ -92,6 +84,11 @@ function initNavigation() {
 	}
 }
 
+/**
+ * Update disabled states based on selected key storing.
+ *
+ * @returns {void}
+ */
 function updateKeyStoring() {
 	/** @type {HTMLSelectElement|null} */
 	const keyStoring = document.querySelector("[data-pref='key.storing']");
@@ -106,6 +103,11 @@ function updateKeyStoring() {
 	viewKeys.disabled = parseInt(keyStoring.value, 10) === 0;
 }
 
+/**
+ * Update which DNS resolver settings are shown.
+ *
+ * @returns {void}
+ */
 function updateDnsResolver() {
 	/** @type {HTMLSelectElement|null} */
 	const dnsResolver = document.querySelector("[data-pref='dns.resolver']");
@@ -120,6 +122,11 @@ function updateDnsResolver() {
 	}
 }
 
+/**
+ * Update disabled states based on if the proxy is enabled.
+ *
+ * @returns {void}
+ */
 function updateDnsProxy() {
 	/** @type {HTMLInputElement|null} */
 	const dnsProxyEnable = document.querySelector("[data-pref='dns.proxy.enable']");
@@ -134,12 +141,22 @@ function updateDnsProxy() {
 	dnsProxy.disabled = !dnsProxyEnable.checked;
 }
 
+/**
+ * Updates the visibility of the usage warning for libunbound.
+ *
+ * @returns {void}
+ */
 function updateDnsLibunboundWarning() {
 	const highlightUsageWarning = prefs["dns.libunbound.path"].trim() === "";
 	const usageWarning = getElementById("libunbound.usageWarning");
 	usageWarning.dataset.highlight = highlightUsageWarning.toString();
 }
 
+/**
+ * Update disabled states based on if sign rules are enabled.
+ *
+ * @returns {void}
+ */
 function updatePolicySignRulesEnable() {
 	/** @type {HTMLInputElement|null} */
 	const policySignRulesEnable = document.querySelector("[data-pref='policy.signRules.enable']");
@@ -154,6 +171,11 @@ function updatePolicySignRulesEnable() {
 	policySignRules.disabled = !policySignRulesEnable.checked;
 }
 
+/**
+ * Update disabled states based on if auto adding of sign rules is enabled.
+ *
+ * @returns {void}
+ */
 function updatePolicyAutoAddRuleEnable() {
 	/** @type {HTMLInputElement|null} */
 	const policySignRulesAutoAddRuleEnable =
@@ -388,11 +410,15 @@ async function initAccount() {
 		};
 		items.push(item);
 
-		accountSelectionBox.appendChild(item);
+		// Parent needed for ::after opacity trick
+		const parent = document.createElement("div");
+		parent.style.position = "relative";
+		parent.appendChild(item);
+		accountSelectionBox.appendChild(parent);
 	}
 
 	// select first account at start
-	items[0].click();
+	items[0]?.click();
 }
 
 /**
@@ -401,6 +427,14 @@ async function initAccount() {
  * @returns {void}
  */
 function initButtons() {
+	const keysView = getElementById("key.viewKeys");
+	keysView.addEventListener("click", () => {
+		ExtensionUtils.createOrRaisePopup(
+			"./keysView.html",
+			browser.i18n.getMessage("options_key.viewKeys"),
+		);
+	});
+
 	const signRulesDefaultsView = getElementById("signRulesDefaultsView");
 	signRulesDefaultsView.addEventListener("click", () => {
 		ExtensionUtils.createOrRaisePopup(
@@ -425,4 +459,4 @@ document.addEventListener("DOMContentLoaded", () => {
 	initAccount().
 		catch(e => log.fatal("Unexpected error in initAccount():", e));
 	initButtons();
-});
+}, { once: true });

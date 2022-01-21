@@ -1,0 +1,274 @@
+{
+	// DKIM_STRINGS
+	"loading": {
+		"message": "Validerar..."
+	},
+	"SUCCESS": {
+		"message": "Giltig (signerad av $1)"
+	},
+	"PERMFAIL": {
+		"message": "Ogiltig ($1)"
+	},
+	"PERMFAIL_NO_REASON": {
+		"message": "Ogiltig"
+	},
+	"TEMPFAIL": {
+		"message": "Tillfälligt valideringsfel (för signaturen av $1)"
+	},
+	"NOSIG": {
+		"message": "Ingen signatur"
+	},
+	"NOT_EMAIL": {
+		"message": "Meddelandet är inte ett e-postmeddelande"
+	},
+	// DKIM_INTERNALERROR
+	"DKIM_INTERNALERROR_NAME": {
+		"message": "Internt fel"
+	},
+	"DKIM_INTERNALERROR_DEFAULT": {
+		"message": "fel"
+	},
+	"DKIM_INTERNALERROR_INCORRECT_EMAIL_FORMAT": {
+		"message": "E-postmeddelandet är inte formaterat på rätt sätt"
+	},
+	// DKIM_INTERNALERROR - DNS
+	// DKIM_SIGERROR
+	"DKIM_SIGERROR_DEFAULT": {
+		"message": "fel"
+	},
+	// DKIM_SIGERROR - DKIM-Signature Header
+	"DKIM_SIGERROR_MISSING_V": {
+		"message": "DKIM-versionen saknas"
+	},
+	"DKIM_SIGERROR_MISSING_B": {
+		"message": "Signatur saknas"
+	},
+	"DKIM_SIGERROR_BADSIG": {
+		"message": "Signaturen är fel"
+	},
+	"DKIM_SIGERROR_CORRUPT_BH": {
+		"message": "E-postmeddelandet ändrades"
+	},
+	// DKIM_SIGERROR - key query
+	// DKIM_SIGERROR - Key record
+	// DKIM_SIGERROR - key decode
+	// DKIM_SIGERROR - POLICY
+	"DKIM_POLICYERROR_MISSING_SIG": {
+		"message": "Bör signeras av $1"
+	},
+	// DKIM_SIGWARNING
+	// JSDNS
+	"TOO_MANY_HOPS": {
+		"message": "För många hopp."
+	},
+	"CONNECTION_REFUSED": {
+		"message": "DNS-servern $1 nekade en TCP-anslutning."
+	},
+	"SERVER_ERROR": {
+		"message": "Fel uppstod vid anslutning till DNS-servern $1."
+	},
+	"INCOMPLETE_RESPONSE": {
+		"message": "Ofullständigt svar från $1."
+	},
+	// ==================== Options window ====================
+	"options_prefwindow.title": {
+		"message": "Inställningar för DKIM Verifier"
+	},
+	// -------------------- General options --------------------
+	"options_general": {
+		"message": "Allmänt"
+	},
+	// ---------- General options tab ----------
+	"options_general.general": {
+		"message": "Allmänt"
+	},
+	"options_dkim.enable": {
+		"message": "Verifiera DKIM-signaturer"
+	},
+	"options_key.storing.value.0": {
+		"message": "Lagra inte DKIM-nycklar"
+	},
+	"options_key.storing.value.1": {
+		"message": "Lagra DKIM-nycklar"
+	},
+	"options_key.viewKeys": {
+		"message": "DKIM-nycklar"
+	},
+	"options_saveResult": {
+		"message": "Spara verifieringens resultat"
+	},
+	// ---------- DNS options tab ----------
+	"options_dns": {
+		"message": "DNS"
+	},
+	"options_dns.resolver.value.2": {
+		"message": "libunbound"
+	},
+	"options_dns.proxy.type": {
+		"message": "Proxytyp:"
+	},
+	"options_dns.proxy.host": {
+		"message": "Proxyserver:"
+	},
+	"options_dns.proxy.port": {
+		"message": "Port:"
+	},
+	"options_dns.libunbound.path": {
+		"message": "Sökväg"
+	},
+	// ---------- Policy options tab ----------
+	"options_general.policy": {
+		"message": "Policy"
+	},
+	"options_policy.signRules.enable": {
+		"message": "Kontrollera om e-postmeddelanden bör vara signerade"
+	},
+	"options_policy.signRules.checkDefaultRules": {
+		"message": "Använd standardregler"
+	},
+	"options_policy.signRules.autoAddRule": {
+		"message": "Lägg automatiskt till regler baserat på lästa DKIM-signerade e-postmeddelanden"
+	},
+	"options_policy.signRules.autoAddRule.for.value.1": {
+		"message": "för underdomän"
+	},
+	"options_policy.signRules.autoAddRule.for.value.2": {
+		"message": "för grunddomän"
+	},
+	// -------------------- Display options --------------------
+	"options_display": {
+		"message": "Visning"
+	},
+	"options_showDKIM.value.0": {
+		"message": "aldrig"
+	},
+	"options_showDKIM.value.40": {
+		"message": "när ett e-postmeddelande läses"
+	},
+	"options_showDKIM.value.50": {
+		"message": "när ett meddelande läses"
+	},
+	"options_color": {
+		"message": "Färg"
+	},
+	"options_color.text": {
+		"message": "Text:"
+	},
+	"options_color.background": {
+		"message": "Bakgrund:"
+	},
+	"options_color.success": {
+		"message": "Giltig signatur"
+	},
+	"options_color.warning": {
+		"message": "Giltig signatur med varningar"
+	},
+	"options_color.permfail": {
+		"message": "Ogiltig signatur"
+	},
+	"options_color.tempfail": {
+		"message": "Tillfälligt fel"
+	},
+	"options_color.nosig": {
+		"message": "Osignerat e-postmeddelande"
+	},
+	// -------------------- Advanced options --------------------
+	"options_advanced": {
+		"message": "Avancerat"
+	},
+	"options_error.detailedReasons": {
+		"message": "Visa detaljerade felorsaker"
+	},
+	// -------------------- Account options --------------------
+	"options_acc.dkim.enable": {
+		"message": "Verifiera DKIM-signaturer:"
+	},
+	"options_acc.arh.allowedAuthserv": {
+		"message": "Pålitliga autentiseringsservrar:"
+	},
+	"options_acc.boolean.value.0": {
+		"message": "Använd standardvärde"
+	},
+	"options_acc.boolean.value.1": {
+		"message": "Ja"
+	},
+	"options_acc.boolean.value.2": {
+		"message": "Nej"
+	},
+	// -------------------- About --------------------
+	"about_summary": {
+		"message": "Verifierar DKIM-signaturen för e-postmeddelande.",
+		"description": "Short description of the add-on"
+	},
+	// ==================== Actions ====================
+	"dkim_verifier.updateKey": {
+		"message": "Uppdatera DKIM-nyckel"
+	},
+	// ==================== Table Views ====================
+	"treeviewKeys.treecol.SDID": {
+		"message": "SDID"
+	},
+	"treeviewKeys.treecol.key": {
+		"message": "DKIM-nyckel"
+	},
+	"treeviewKeys.treecol.insertedAt": {
+		"message": "Infogad"
+	},
+	"treeviewKeys.treecol.lastUsedAt": {
+		"message": "Senast använd"
+	},
+	"treeviewKeys.treecol.secure": {
+		"message": "DNSSEC"
+	},
+	"treeviewKeys.deleteSelectedRows": {
+		"message": "Radera valda nycklar"
+	},
+	"treeviewSigners.treecol.domain": {
+		"message": "Domän"
+	},
+	"treeviewSigners.treecol.listID": {
+		"message": "List-ID"
+	},
+	"treeviewSigners.treecol.addr": {
+		"message": "Från"
+	},
+	"treeviewSigners.treecol.sdid": {
+		"message": "SDID"
+	},
+	"treeviewSigners.treecol.ruletype": {
+		"message": "Regeltyp"
+	},
+	"treeviewSigners.treecol.priority": {
+		"message": "Prioritet"
+	},
+	"treeviewSigners.treecol.enabled": {
+		"message": "Aktiverad"
+	},
+	"treeviewSigners.addSignersRule": {
+		"message": "Lägg till regel"
+	},
+	"addSignersRule.title": {
+		"message": "Lägg till signaturregel"
+	},
+	"signRules.ruletype.SIGNED": {
+		"message": "Måste vara signerad (1)"
+	},
+	"signRules.ruletype.NEUTRAL": {
+		"message": "Kan signeras (2)"
+	},
+	"signRules.priorityMode.manual": {
+		"message": "Ändra prioritet till"
+	},
+	"button.help": {
+		"message": "Hjälp"
+	},
+	"ruletype.description": {
+		"message": "Regelns typ."
+	},
+	"ruletype.1.description": {
+		"message": "E-postmeddelande måste vara signerade med angivet SDID."
+	},
+	"enabled.description": {
+		"message": "1 om regeln är aktiverad, 0 om den är inaktiverad."
+	}
+}

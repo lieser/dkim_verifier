@@ -17,6 +17,13 @@
 				"parameters": []
 			},
 			{
+				"name": "getDkimKeys",
+				"type": "function",
+				"description": "Get the stored DKIM keys",
+				"async": true,
+				"parameters": []
+			},
+			{
 				"name": "getSignRulesUser",
 				"type": "function",
 				"description": "Get users sign rules",

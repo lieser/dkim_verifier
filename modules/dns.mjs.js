@@ -1,9 +1,9 @@
-/*
+/**
  * Wrapper to resolve DNS lookups via the following experiment libraries:
  *  - JSDNS
  *  - libunbound
  *
- * Copyright (c) 2020 Philippe Lieser
+ * Copyright (c) 2020-2021 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -40,6 +40,32 @@ let jsdnsIsConfigured = null;
 /** @type {Promise<void>?} */
 let libunboundIsConfigured = null;
 
+let listenerAdded = false;
+/**
+ * Add Listener to monitor preference changes for the DNS resolvers.
+ *
+ * @returns {void}
+ */
+function addPrefsListener() {
+	if (listenerAdded) {
+		return;
+	}
+	listenerAdded = true;
+	browser.storage.onChanged.addListener((changes, areaName) => {
+		if (areaName !== "local") {
+			return;
+		}
+		if (Object.keys(changes).some(name => name.startsWith("dns."))) {
+			jsdnsIsConfigured = null;
+			libunboundIsConfigured = null;
+		}
+		if (Object.keys(changes).some(name => name === "debug")) {
+			jsdnsIsConfigured = null;
+			libunboundIsConfigured = null;
+		}
+	});
+}
+
 /**
  * Configure the JSDNS resolver if needed.
  *
@@ -48,6 +74,7 @@ let libunboundIsConfigured = null;
 function configureJsdns() {
 	if (!jsdnsIsConfigured) {
 		log.debug("configure jsdns");
+		addPrefsListener();
 		jsdnsIsConfigured = browser.jsdns.configure(
 			prefs["dns.getNameserversFromOS"],
 			prefs["dns.nameserver"],
@@ -59,6 +86,7 @@ function configureJsdns() {
 				port: prefs["dns.proxy.port"],
 			},
 			prefs["dns.jsdns.autoResetServerAlive"],
+			prefs.debug,
 		);
 	}
 	return jsdnsIsConfigured;
@@ -72,6 +100,7 @@ function configureJsdns() {
 function configureLibunbound() {
 	if (!libunboundIsConfigured) {
 		log.debug("configure libunbound");
+		addPrefsListener();
 		libunboundIsConfigured = browser.libunbound.configure(
 			prefs["dns.getNameserversFromOS"],
 			prefs["dns.nameserver"],
@@ -83,19 +112,6 @@ function configureLibunbound() {
 	}
 	return libunboundIsConfigured;
 }
-
-browser.storage.onChanged.addListener((changes, areaName) => {
-	if (areaName !== "local") {
-		return;
-	}
-	if (Object.keys(changes).some(name => name.startsWith("dns."))) {
-		jsdnsIsConfigured = null;
-		libunboundIsConfigured = null;
-	}
-	if (Object.keys(changes).some(name => name === "debug")) {
-		libunboundIsConfigured = null;
-	}
-});
 
 export default class DNS {
 	static get RCODE() {
@@ -112,7 +128,7 @@ export default class DNS {
 	/**
 	 * Perform TXT resolution of the target name.
 	 *
-	 * @param {String} name
+	 * @param {string} name
 	 * @returns {Promise<DnsTxtResult>}
 	 */
 	static async txt(name) {

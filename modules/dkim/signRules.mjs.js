@@ -1,7 +1,7 @@
 /**
  * Check DKIM signing rules.
  *
- * Copyright (c) 2013-2018;2020 Philippe Lieser
+ * Copyright (c) 2013-2018;2020-2021 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -11,6 +11,7 @@
 
 // @ts-check
 ///<reference path="../../WebExtensions.d.ts" />
+///<reference path="../../RuntimeMessage.d.ts" />
 ///<reference path="../../experiments/mailUtils.d.ts" />
 /* eslint-env webextensions */
 /* eslint no-unused-vars: ["error", { "varsIgnorePattern": "VerifierModule" }] */
@@ -72,6 +73,28 @@ const AUTO_ADD_RULE_FOR = {
 };
 
 /**
+ * Exported DKIM user signing rule.
+ *
+ * @typedef {object} DkimExportedUserSignRule
+ * @property {string} domain
+ * @property {string} listId
+ * @property {string} addr
+ * @property {string} sdid - space separated list of SDIDs
+ * @property {number} type
+ * @property {number} priority
+ * @property {boolean} enabled
+ */
+
+/**
+ * Exported DKIM user signing rules.
+ *
+ * @typedef {object} DkimExportedUserSignRules
+ * @property {"DkimExportedUserSignRules"} dataId
+ * @property {1} dataFormatVersion
+ * @property {DkimExportedUserSignRule[]} rules
+ */
+
+/**
  * DKIM user signing rule.
  *
  * @typedef {object} DkimSignRuleUser
@@ -107,7 +130,7 @@ const AUTO_ADD_RULE_FOR = {
 /** @type {Deferred<void>?} */
 let defaultRulesLoaded = null;
 /** @type {DkimSignRuleDefault[]} */
-let defaultRules;
+let defaultRules = [];
 /** @type {Deferred<void>?} */
 let userRulesLoaded = null;
 let userRulesMaxId = 0;
@@ -209,13 +232,18 @@ function glob(str, pattern) {
 }
 
 /**
- * Determinate if an e-mail by fromAddress should be signed
+ * @typedef { import("./dmarc.mjs.js").default } DMARC
+ */
+
+/**
+ * Determinate if an e-mail by fromAddress should be signed.
  *
  * @param {string} fromAddress
- * @param {string} [listId]
+ * @param {string?} [listId]
+ * @param {DMARC} [dmarc]
  * @returns {Promise<DKIMSignPolicy>}
  */
-async function checkIfShouldBeSigned(fromAddress, listId) {
+async function checkIfShouldBeSigned(fromAddress, listId, dmarc) {
 	await loadUserRules();
 	/** @type {(DkimSignRuleDefault|DkimSignRuleUser)[]} */
 	let matchedRules = userRules.filter(rule => {
@@ -247,7 +275,15 @@ async function checkIfShouldBeSigned(fromAddress, listId) {
 	/** @type {DkimSignRuleDefault|DkimSignRuleUser=} */
 	const rule = matchedRules.sort((a, b) => b.priority - a.priority)[0];
 	if (!rule) {
-		// TODO: DMARC
+		if (dmarc) {
+			const dmarcRes = await dmarc.shouldBeSigned(fromAddress);
+			return {
+				shouldBeSigned: dmarcRes.shouldBeSigned,
+				sdid: dmarcRes.sdid,
+				foundRule: false,
+				hideFail: false,
+			};
+		}
 		return {
 			shouldBeSigned: false,
 			sdid: [],
@@ -359,18 +395,70 @@ export default class SignRules {
 	}
 
 	/**
+	 * Get the user sign rules in the export format.
+	 *
+	 * @returns {Promise<DkimExportedUserSignRules>}
+	 */
+	static async exportUserRules() {
+		/** @type {{id?: number, domain: string, listId: string, addr: string, sdid: string, type: number, priority: number, enabled: boolean }[]} */
+		const rules = copy(await this.getUserRules());
+		rules.map(rule => { delete rule.id; return rule; });
+		return {
+			dataId: "DkimExportedUserSignRules",
+			dataFormatVersion: 1,
+			rules,
+		};
+	}
+
+	/**
+	 * Import the given user sign rules.
+	 *
+	 * @param {{dataId: string, dataFormatVersion: number}} data
+	 * @param {boolean} replace
+	 * @returns {Promise<void>}
+	 */
+	static async importUserRules(data, replace) {
+		if (data.dataId !== "DkimExportedUserSignRules") {
+			throw new Error("ERROR_IMPORT_RULES_UNKNOWN_DATA");
+		}
+		if (data.dataFormatVersion !== 1) {
+			throw new Error("ERROR_IMPORT_RULES_UNSUPPORTED_FORMAT");
+		}
+		/** @type {DkimExportedUserSignRules} */
+		// @ts-expect-error
+		const exportedRules = data;
+
+		// Costly but easy way to ensure a race condition with loading the rules does not happen.
+		await loadUserRules();
+
+		let maxId = userRulesMaxId;
+		if (replace) {
+			maxId = 0;
+			userRules = [];
+		}
+		userRules = userRules.concat(exportedRules.rules.map(rule => ({ id: ++maxId, ...rule })));
+		userRulesMaxId = maxId;
+
+		await storeUserRules();
+
+		browser.runtime.sendMessage({ event: "ruleAdded" }).
+			catch(error => log.debug("Error sending ruleAdded event", error));
+	}
+
+	/**
 	 * Checks the DKIM result against the sign rules.
 	 *
 	 * @param {VerifierModule.dkimSigResultV2} dkimResult
 	 * @param {string} from
-	 * @param {string} [listId]
+	 * @param {string?} [listId]
 	 * @param {function(void): Promise<boolean>} [isOutgoingCallback]
+	 * @param {DMARC} [dmarc]
 	 * @returns {Promise<VerifierModule.dkimSigResultV2>}
 	 */
-	static async check(dkimResult, from, listId, isOutgoingCallback) {
+	static async check(dkimResult, from, listId, isOutgoingCallback, dmarc) {
 		await prefs.init();
 
-		const policy = await checkIfShouldBeSigned(from, listId);
+		const policy = await checkIfShouldBeSigned(from, listId, dmarc);
 		log.debug("shouldBeSigned: ", policy);
 		if (dkimResult.result === "none") {
 			if (policy.shouldBeSigned && !(isOutgoingCallback && await isOutgoingCallback())) {
@@ -403,6 +491,7 @@ export default class SignRules {
 	static clearRules() {
 		userRulesLoaded = null;
 		userRules = [];
+		userRulesMaxId = 0;
 		return browser.storage.local.remove("signRulesUser");
 	}
 
@@ -463,7 +552,7 @@ export default class SignRules {
 	}
 
 	/**
-	 * Adds neutral rule for fromAddress with priority USERINSERT_RULE_NEUTRAL
+	 * Adds neutral rule for fromAddress with priority USERINSERT_RULE_NEUTRAL.
 	 *
 	 * @param {string} fromAddress
 	 * @returns {Promise<void>}
@@ -502,7 +591,8 @@ export default class SignRules {
 	 * @param {any} newValue
 	 * @returns {Promise<void>}
 	 */
-	static updateRule(id, propertyName, newValue) {
+	static async updateRule(id, propertyName, newValue) {
+		await loadUserRules();
 		const userRule = userRules.find(rule => rule.id === id);
 		if (!userRule) {
 			throw new Error(`Can not update non existing rule with id '${id}'`);
@@ -542,17 +632,18 @@ export default class SignRules {
 	 * @param {number} id
 	 * @returns {Promise<void>}
 	 */
-	static deleteRule(id) {
+	static async deleteRule(id) {
+		await loadUserRules();
 		const ruleIndex = userRules.findIndex(rule => rule.id === id);
 		if (ruleIndex === -1) {
-			throw new Error(`Can not update non existing rule with id '${id}'`);
+			throw new Error(`Can not delete non existing rule with id '${id}'`);
 		}
 		userRules.splice(ruleIndex, 1);
 		return storeUserRules();
 	}
 
 	/**
-	 * Adds should be signed rule if no enabled rule for fromAddress is found
+	 * Adds should be signed rule if no enabled rule for fromAddress is found.
 	 *
 	 * @param {string} fromAddress
 	 * @param {VerifierModule.dkimSigResultV2} dkimResult
@@ -604,8 +695,6 @@ export default class SignRules {
 				}
 				await SignRules.addRule(domain, null, fromAddressToAdd, sdid, RULE_TYPE.ALL, PRIORITY.AUTOINSERT_RULE_ALL);
 			}
-
-			log.trace("signedBy Task end");
 		})();
 		promise.then(null, function onReject(exception) {
 			// Failure!  We can inspect or report the exception.
@@ -622,11 +711,16 @@ export default class SignRules {
  * @returns {void}
  */
 export function initSignRulesProxy() {
-	browser.runtime.onMessage.addListener((request, sender, /*sendResponse*/) => {
+	browser.runtime.onMessage.addListener((runtimeMessage, sender, /*sendResponse*/) => {
 		if (sender.id !== "dkim_verifier@pl") {
 			return;
 		}
-		if (typeof request !== 'object' || request === null) {
+		if (typeof runtimeMessage !== 'object' || runtimeMessage === null) {
+			return;
+		}
+		/** @type {RuntimeMessage.Messages} */
+		const request = runtimeMessage;
+		if (request.module !== "SignRules") {
 			return;
 		}
 		if (request.method === "getDefaultRules") {
@@ -636,6 +730,14 @@ export function initSignRulesProxy() {
 		if (request.method === "getUserRules") {
 			// eslint-disable-next-line consistent-return
 			return SignRules.getUserRules();
+		}
+		if (request.method === "exportUserRules") {
+			// eslint-disable-next-line consistent-return
+			return SignRules.exportUserRules();
+		}
+		if (request.method === "importUserRules") {
+			// eslint-disable-next-line consistent-return
+			return SignRules.importUserRules(request.parameters.data, request.parameters.replace);
 		}
 		if (request.method === "updateRule") {
 			// eslint-disable-next-line consistent-return
@@ -657,5 +759,7 @@ export function initSignRulesProxy() {
 			// eslint-disable-next-line consistent-return
 			return SignRules.deleteRule(request.parameters.id);
 		}
+		log.error("SignRules proxy receiver got unknown request.", request);
+		throw new Error("SignRules proxy receiver got unknown request.");
 	});
 }

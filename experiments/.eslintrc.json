@@ -1,0 +1,33 @@
+{
+    "plugins": [
+        "mozilla"
+    ],
+    "env": {
+        "mozilla/privileged": true
+    },
+    "parserOptions": {
+        "sourceType": "script"
+    },
+    "globals": {
+        "Cc": false,
+        "Ci": false,
+        "Cr": false,
+        "Cu": false
+    },
+    "rules": {
+        "mozilla/no-define-cc-etc": "warn",
+        "mozilla/no-throw-cr-literal": "warn",
+        "mozilla/no-useless-parameters": "warn",
+        "mozilla/reject-chromeutils-import-params": "warn",
+        "mozilla/reject-importGlobalProperties": [
+            "warn",
+            "allownonwebidl"
+        ],
+        "mozilla/rejects-requires-await": "warn",
+        "mozilla/use-cc-etc": "warn",
+        "mozilla/use-chromeutils-generateqi": "warn",
+        "mozilla/use-chromeutils-import": "warn",
+        "mozilla/use-default-preference-values": "warn",
+        "mozilla/use-services": "warn"
+    }
+}

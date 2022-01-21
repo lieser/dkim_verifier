@@ -2,9 +2,6 @@
     "env": {
         "mocha": true
     },
-    "parserOptions": {
-        "sourceType": "module"
-    },
     "rules": {
         "no-magic-numbers": "off",
         "no-unused-expressions": "off"

@@ -10,11 +10,19 @@
 // @ts-check
 /* eslint-env browser, node */
 
+/**
+ * @returns {boolean}
+ */
 function isNodeJs() {
 	return typeof window === 'undefined';
 }
 
 let rootDirPath = "";
+/**
+ * Get the path to the root directory of this repository in NodeJS.
+ *
+ * @returns {Promise<string>}
+ */
 async function rootDir() {
 	if (rootDirPath) {
 		return rootDirPath;

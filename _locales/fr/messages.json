@@ -347,6 +347,12 @@
 	"options_dns.proxy.port": {
 		"message": "Port :"
 	},
+	"options_dns.libunbound.nameserver": {
+		"message": "Serveur DNS (Syntaxe (EBNF): IP{\";\"IP} )"
+	},
+	"options_dns.libunbound.usageWarning": {
+		"message": "le résolveur libunbound requière une librairie externe qui doit être installée"
+	},
 	"options_dns.libunbound.path": {
 		"message": "Chemin"
 	},
@@ -497,6 +503,10 @@
 	"options_arh.relaxedParsing": {
 		"message": "Essayer de lire une entête Authentication-Results non conforme à la RFC"
 	},
+	"options_account": {
+		"message": "Comptes",
+		"description": "Titre pour l'option spécifique du compte"
+	},
 	"options_acc.dkim.enable": {
 		"message": "Vérifier les signatures DKIM:"
 	},
@@ -516,6 +526,9 @@
 		"message": "Non"
 	},
 	// -------------------- Account options --------------------
+	"about": {
+		"message": "A Propos"
+	},
 	"about_name": {
 		"message": "Vérificateur DKIM",
 		"description": "Name of the add-on"
@@ -523,6 +536,29 @@
 	"about_summary": {
 		"message": "Vérifie la signature DKIM des courriels.",
 		"description": "Short description of the add-on"
+	},
+	"about_homepage": {
+		"message": "Accueil"
+	},
+	"about_documentation": {
+		"message": "Documentation",
+		"description": "Lien pour la page de documentation GitHub"
+	},
+	"about_contributors": {
+		"message": "Contributeur GitHub",
+		"description": "Lien pour la page des contributeur GitHub"
+	},
+	"about_translators": {
+		"message": "Traducteurs:",
+		"description": "Titre pour la liste des contributeurs"
+	},
+	"about_dependencies": {
+		"message": "Dépendances incluses:",
+		"description": "Titre pour la liste des dépendances incluses"
+	},
+	"about_by": {
+		"message": "par",
+		"description": "<dependency name> par <author>"
 	},
 	// ==================== Actions ====================
 	"dkim_verifier.reverifyDKIMSignature": {
@@ -603,6 +639,9 @@
 	},
 	"signRules.priorityMode.manual": {
 		"message": "Mettre la priorité à"
+	},
+	"button.cancel": {
+		"message": "Annuler"
 	},
 	"button.help": {
 		"message": "Aide"

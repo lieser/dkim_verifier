@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020 Philippe Lieser
+ * Copyright (c) 2020-2021 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -128,23 +128,23 @@ describe("preferences [unittest]", function () {
 		});
 		it("throw if not exist", function () {
 			expect(
-				// @ts-ignore
+				// @ts-expect-error
 				() => pref["policy.xxx"]
 			).to.throw;
 			expect(
-				// @ts-ignore
+				// @ts-expect-error
 				() => pref["policy.xxx.yyy"]
 			).to.throw;
 			expect(
-				// @ts-ignore
+				// @ts-expect-error
 				() => pref["policy.signRules"]
 			).to.throw;
 			expect(
-				// @ts-ignore
+				// @ts-expect-error
 				() => pref["policy.signRules.xxx"]
 			).to.throw;
 			expect(
-				// @ts-ignore
+				// @ts-expect-error
 				() => pref["policy.signRules"]
 			).to.throw;
 		});
@@ -289,7 +289,9 @@ describe("preferences [unittest]", function () {
 			await pref.clear();
 			expect(fakeBrowser.storage.local.clear.calledOnce).to.be.true;
 			const storage = await browser.storage.local.get();
-			delete storage.signRulesUser;
+			for (const dataStorageScope of StorageLocalPreferences.dataStorageScopes) {
+				delete storage[dataStorageScope];
+			}
 			expect(storage).to.deep.equal({});
 			expect(
 				pref["dns.nameserver"]
@@ -305,7 +307,6 @@ describe("preferences [unittest]", function () {
 		it("pref should change on storage update", async function () {
 			try {
 				fakeBrowser.storage.local.set.callsFake(async items => {
-					console.error("set.callsFake - 111");
 					await fakeBrowser.storage.local._set(items, undefined);
 
 					/** @type {Object.<string, {oldValue: any, newValue: any}>} */
@@ -354,6 +355,9 @@ describe("preferences [unittest]", function () {
 		it("test multiple pref changes at the same time", async function () {
 			/** @type {Object.<string, any>[]} */
 			const storageCalls = [];
+			/**
+			 * @returns {void}
+			 */
 			function triggerListener() {
 				const items = storageCalls.shift();
 				if (!items) {
@@ -382,7 +386,7 @@ describe("preferences [unittest]", function () {
 				await pref.setValue("color.nosig.background", "red");
 				await pref.setValue("dns.proxy.port", 1111);
 
-				while (storageCalls.length > 0) {
+				while (storageCalls.length) {
 					triggerListener();
 				}
 
@@ -412,6 +416,7 @@ describe("preferences [unittest]", function () {
 				fakeBrowser.storage.local.get.callsFake(fakeBrowser.storage.local._get);
 			}
 		});
+		// eslint-disable-next-line mocha/no-skipped-tests
 		xit("safeGetLocalStorage - single timeout", async function () {
 			// eslint-disable-next-line no-invalid-this
 			this.timeout(5000);
@@ -435,6 +440,7 @@ describe("preferences [unittest]", function () {
 				fakeBrowser.storage.local.get.callsFake(fakeBrowser.storage.local._get);
 			}
 		});
+		// eslint-disable-next-line mocha/no-skipped-tests
 		xit("safeGetLocalStorage - complete timeout", async function () {
 			// eslint-disable-next-line no-invalid-this
 			this.timeout(20000);

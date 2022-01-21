@@ -7,7 +7,6 @@
     // words - list of words to be always considered correct
     "words": [
         "anonid",
-        "appender",
         "atext",
         "AUID",
         "blogspot",
@@ -22,7 +21,6 @@
         "DMARC",
         "dnssec",
         "endregion",
-        "esversion",
         "favicons",
         "googlecode",
         "hbox",
@@ -40,7 +38,6 @@
         "rcode",
         "rdata",
         "s",
-        "scriptable",
         "SDID",
         "SIGERROR",
         "smtp",
@@ -48,7 +45,6 @@
         "stringbundle",
         "subdomain",
         "subdomains",
-        "tabmail",
         "tagspec",
         "temperror",
         "TEMPFAIL",
@@ -68,7 +64,6 @@
         "ALPHADIGITPS",
         "AUTOINSERT_RULE_",
         "USERINSERT_RULE_",
-        "collapsed[12]LfromBox",
         "DKIMV2",
         "DKIM_DMARCERROR_",
         "DKIM_DMARCERROR_ILLFORMED_",
@@ -90,12 +85,9 @@
         "DQUOTE",
         "JSDNS",
         "SDIDs",
-        "STATUSBARPANEL",
         // mozilla
-        "@mozilla.org/intl/scriptableunicodeconverter",
         "nsIURI",
         "osfile.jsm",
-        "XPCOMUtils",
         // general
         "IntelliSense"
     ]

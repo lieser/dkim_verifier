@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020 Philippe Lieser
+ * Copyright (c) 2020-2021 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -51,13 +51,13 @@ describe("Message parser [unittest]", function () {
 			expect(msg.body).to.be.equal(msgBody);
 
 			expect(msg.headers.has("received")).to.be.true;
-			// @ts-ignore
+			// @ts-expect-error
 			expect(msg.headers.get("received").length).to.be.equal(1);
 
 			expect(msg.headers.has("subject")).to.be.true;
-			// @ts-ignore
+			// @ts-expect-error
 			expect(msg.headers.get("subject").length).to.be.equal(1);
-			// @ts-ignore
+			// @ts-expect-error
 			expect(msg.headers.get("subject")[0]).to.be.equal("Subject: Is dinner ready?\r\n");
 		});
 		it("parse LF", function () {
@@ -65,9 +65,9 @@ describe("Message parser [unittest]", function () {
 			expect(msg.body).to.be.equal(msgBody);
 
 			expect(msg.headers.has("subject")).to.be.true;
-			// @ts-ignore
+			// @ts-expect-error
 			expect(msg.headers.get("subject").length).to.be.equal(1);
-			// @ts-ignore
+			// @ts-expect-error
 			expect(msg.headers.get("subject")[0]).to.be.equal("Subject: Is dinner ready?\r\n");
 		});
 		it("parse CR", function () {
@@ -75,9 +75,9 @@ describe("Message parser [unittest]", function () {
 			expect(msg.body).to.be.equal(msgBody);
 
 			expect(msg.headers.has("subject")).to.be.true;
-			// @ts-ignore
+			// @ts-expect-error
 			expect(msg.headers.get("subject").length).to.be.equal(1);
-			// @ts-ignore
+			// @ts-expect-error
 			expect(msg.headers.get("subject")[0]).to.be.equal("Subject: Is dinner ready?\r\n");
 		});
 
@@ -86,11 +86,11 @@ describe("Message parser [unittest]", function () {
 			expect(msg.body).to.be.equal(msgBody);
 
 			expect(msg.headers.has("received")).to.be.true;
-			// @ts-ignore
+			// @ts-expect-error
 			expect(msg.headers.get("received").length).to.be.equal(2);
-			// @ts-ignore
+			// @ts-expect-error
 			expect(msg.headers.get("received")[0]).to.be.equal("Received: foo\r\n");
-			// @ts-ignore
+			// @ts-expect-error
 			expect(msg.headers.get("received")[1]).to.have.string('\r\n      by submitserver.example.com');
 		});
 
@@ -144,6 +144,9 @@ describe("Message parser [unittest]", function () {
 			it("with simple quoted-string as display-name", function () {
 				expect(
 					MsgParser.parseFromHeader(`From: "this is from foo" <foo@example.com>\r\n`)
+				).to.be.equal("foo@example.com");
+				expect(
+					MsgParser.parseFromHeader(`From: "bar@bad.com" <foo@example.com>\r\n`)
 				).to.be.equal("foo@example.com");
 			});
 			it("with comment", function () {
@@ -218,12 +221,12 @@ describe("Message parser [unittest]", function () {
 			).to.be.equal("c@public.example");
 		});
 		it("RFC 5322 Appendix A - Obsolete", function () {
-			// Obsolete syntax is not supported and should fail
+			// Obsolete syntax is only partly supported
 
 			// Appendix A.6.1.  Obsolete Addressing
-			expect(() =>
+			expect(
 				MsgParser.parseFromHeader("From: Joe Q. Public <john.q.public@example.com>\r\n")
-			).to.throw();
+			).to.be.equal("john.q.public@example.com");
 			// Appendix A.6.3.  Obsolete White Space and Comments
 			expect(() =>
 				MsgParser.parseFromHeader("From  : John Doe <jdoe@machine(comment).  example>\r\n")
@@ -315,6 +318,17 @@ describe("Message parser [unittest]", function () {
 			expect(
 				MsgParser.parseListIdHeader('List-Id: "<fake.list.com>" <list-header.nisto.com>\r\n')
 			).to.be.equal("list-header.nisto.com");
+		});
+		it("invalid headers", function () {
+			expect( () =>
+				MsgParser.parseListIdHeader('List-Id: missing-angle-brackets.example.com')
+			).to.throw();
+			expect( () =>
+				MsgParser.parseListIdHeader('List-Id: <foo@example.com>\r\n')
+			).to.throw();
+			expect( () =>
+				MsgParser.parseListIdHeader('List-Id: 123 <foo newsletter>\r\n')
+			).to.throw();
 		});
 	});
 });

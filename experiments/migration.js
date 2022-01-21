@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020 Philippe Lieser
+ * Copyright (c) 2020-2021 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -9,13 +9,12 @@
 
 // @ts-check
 ///<reference path="./migration.d.ts" />
-///<reference path="../mozilla.d.ts" />
-/* eslint-env worker */
-/* global ChromeUtils, ExtensionCommon */
+///<reference path="./mozilla.d.ts" />
+/* global ExtensionCommon */
 
 "use strict";
 
-// @ts-ignore
+// @ts-expect-error
 // eslint-disable-next-line no-var
 var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 // eslint-disable-next-line no-var
@@ -79,11 +78,10 @@ this.migration = class extends ExtensionCommon.ExtensionAPI {
 	}
 
 	/**
-	 * @param {ExtensionCommon.Context} context
+	 * @param {ExtensionCommon.Context} _context
 	 * @returns {{migration: browser.migration}}
 	 */
-	// eslint-disable-next-line no-unused-vars
-	getAPI(context) {
+	getAPI(_context) {
 		return {
 			migration: {
 				getUserPrefs: () => {
@@ -99,11 +97,36 @@ this.migration = class extends ExtensionCommon.ExtensionAPI {
 						const server = mailPrefs.getCharPref(`account.${account}.server`);
 						const dkimAccountPrefs = Services.prefs.getBranch(`mail.server.${server}.dkim_verifier.`);
 						const prefs = this._getChildPrefs(dkimAccountPrefs);
-						if (Object.keys(prefs).length > 0) {
+						if (Object.keys(prefs).length) {
 							accountPrefs[account] = prefs;
 						}
 					}
 					return Promise.resolve(accountPrefs);
+				},
+				getDkimKeys: async () => {
+					const conn = await this._openSqlite("dkimKey.sqlite");
+					if (!conn) {
+						return null;
+					}
+
+					const sqlRes = await conn.execute("SELECT * FROM keys");
+					await conn.close();
+
+					let maxId = 0;
+					/** @type {import("../modules/dkim/keyStore.mjs.js").StoredDkimKey[]} */
+					const keys = [];
+					for (const key of sqlRes) {
+						keys.push({
+							id: ++maxId,
+							sdid: key.getResultByName("SDID"),
+							selector: key.getResultByName("selector"),
+							key: key.getResultByName("key"),
+							insertedAt: key.getResultByName("insertedAt"),
+							lastUsedAt: key.getResultByName("lastUsedAt"),
+							secure: key.getResultByName("secure") === 1,
+						});
+					}
+					return { maxId: maxId, keys: keys };
 				},
 				getSignRulesUser: async () => {
 					const conn = await this._openSqlite("dkimPolicy.sqlite");
@@ -129,7 +152,7 @@ this.migration = class extends ExtensionCommon.ExtensionAPI {
 							enabled: rule.getResultByName("enabled") === 1,
 						});
 					}
-					return {maxId: maxId, rules: userRules};
+					return { maxId: maxId, rules: userRules };
 				}
 			},
 		};

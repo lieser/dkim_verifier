@@ -1,4 +1,4 @@
-/*
+/**
  * A ChromeWorker wrapper for the libunbound DNS library.
  * Currently only the TXT resource record is completely supported.
  *
@@ -13,16 +13,14 @@
 // @ts-check
 ///<reference path="./ctypes.d.ts" />
 ///<reference path="./libunbound.d.ts" />
+/* eslint-env mozilla/chrome-worker, mozilla/jsm */
 /* eslint-disable camelcase */
 /* eslint no-global-assign: ["error", {"exceptions": ["onmessage"]}] */
-/* global ctypes, onmessage, postMessage, dump */
-/* exported onmessage */
 
 "use strict";
 
 
 const log_prefix = "libunboundWorker: ";
-// @ts-ignore
 const postLog = {
 	/**
 	 * @param {string} msg
@@ -62,7 +60,6 @@ const postLog = {
 	},
 };
 
-// @ts-ignore
 const Constants = {
 	RR_TYPE_A: 1,
 	RR_TYPE_A6: 38,
@@ -166,12 +163,11 @@ let ub_strerror;
 /**
  * Perform resolution of the target name.
  *
- * @param {String} name
- * @param {Number} [rrtype=libunbound.Constants.RR_TYPE_A]
- *
- * @return {ub_result}
+ * @param {string} name
+ * @param {number} rrtype
+ * @returns {ub_result}
  */
-function resolve(name, rrtype = Constants.RR_TYPE_A) {
+function resolve(name, rrtype) {
 	if (!ub_resolve) {
 		throw new Error("libunbound not correctly initialized (ub_resolve missing)");
 	}
@@ -211,6 +207,7 @@ function resolve(name, rrtype = Constants.RR_TYPE_A) {
 			/** @type {number[]} */
 			const rdata = new Array(tmp.length);
 			for (let i = 0; i < tmp.length; i++) {
+				// @ts-expect-error
 				rdata[i] = tmp[i];
 			}
 			data_raw.push(rdata);
@@ -226,6 +223,7 @@ function resolve(name, rrtype = Constants.RR_TYPE_A) {
 					// read all <character-string>s
 					while (i < rdata.length) {
 						// get length of current <character-string>
+						// @ts-expect-error
 						j = rdata[i];
 						i += 1;
 						// read current <character-string>
@@ -281,11 +279,11 @@ function resolve(name, rrtype = Constants.RR_TYPE_A) {
 }
 
 /**
- * Load library
+ * Load library.
  *
- * @param {String} paths paths to libraries to load, separated by ";". Last is libunbound.
- * @return {void}
-*/
+ * @param {string} paths - paths to libraries to load, separated by ";". Last is libunbound.
+ * @returns {void}
+ */
 function load(paths) {
 	// if library was already loaded, do a cleanup first before reloading it
 	if (lib) {
@@ -310,7 +308,7 @@ function load(paths) {
 		postLog.debug(`loading dependency: ${libDepPath}`);
 		libDeps.push(ctypes.open(libDepPath));
 	}
-	const path = libPaths.slice(-1)[0];
+	const path = libPaths.slice(-1)[0] ?? "";
 	postLog.debug(`loading libunbound: ${path}`);
 	lib = ctypes.open(path);
 
@@ -394,14 +392,14 @@ function load(paths) {
 }
 
 /**
- * updates ctx by deleting old an creating new
+ * Updates ctx by deleting the old an creating a new one.
  *
- * @param {String|undefined} [conf]
- * @param {Number|undefined} [debuglevel]
- * @param {Boolean} getNameserversFromOS
- * @param {String[]} nameservers
- * @param {String[]} trustAnchors
- * @return {void}
+ * @param {string|undefined} conf
+ * @param {number|undefined} debuglevel
+ * @param {boolean} getNameserversFromOS
+ * @param {string[]} nameservers
+ * @param {string[]} trustAnchors
+ * @returns {void}
  */
 function update_ctx(conf, debuglevel, getNameserversFromOS, nameservers, trustAnchors) {
 	if (!ub_ctx_create) {
@@ -426,40 +424,35 @@ function update_ctx(conf, debuglevel, getNameserversFromOS, nameservers, trustAn
 	// read config file if specified
 	if (conf) {
 		if ((retval = ub_ctx_config(ctx, conf)) !== 0) {
-			throw new Error(`error in ub_ctx_config: ${
-				ub_strerror(retval).readString()}. errno: ${ctypes.errno}`);
+			throw new Error(`error in ub_ctx_config: ${ub_strerror(retval).readString()}. errno: ${ctypes.errno}`);
 		}
 	}
 
 	// set debuglevel if specified
 	if (debuglevel) {
 		if ((retval = ub_ctx_debuglevel(ctx, debuglevel)) !== 0) {
-			throw new Error(`error in ub_ctx_debuglevel: ${
-				ub_strerror(retval).readString()}. errno: ${ctypes.errno}`);
+			throw new Error(`error in ub_ctx_debuglevel: ${ub_strerror(retval).readString()}. errno: ${ctypes.errno}`);
 		}
 	}
 
 	// get DNS servers form OS
 	if (getNameserversFromOS) {
 		if ((retval = ub_ctx_resolvconf(ctx, null)) !== 0) {
-			throw new Error(`error in ub_ctx_resolvconf: ${
-				ub_strerror(retval).readString()}. errno: ${ctypes.errno}`);
+			throw new Error(`error in ub_ctx_resolvconf: ${ub_strerror(retval).readString()}. errno: ${ctypes.errno}`);
 		}
 	}
 
 	// set additional DNS servers
 	nameservers.forEach(function (element /*, index, array*/) {
 		if ((retval = ub_ctx_set_fwd(ctx, element.trim())) !== 0) {
-			throw new Error(`error in ub_ctx_set_fwd: ${
-				ub_strerror(retval).readString()}. errno: ${ctypes.errno}`);
+			throw new Error(`error in ub_ctx_set_fwd: ${ub_strerror(retval).readString()}. errno: ${ctypes.errno}`);
 		}
 	});
 
 	// add root trust anchors
 	trustAnchors.forEach(function (element /*, index, array*/) {
 		if ((retval = ub_ctx_add_ta(ctx, element.trim())) !== 0) {
-			throw new Error(`error in ub_ctx_add_ta: ${
-				ub_strerror(retval).readString()}. errno: ${ctypes.errno}`);
+			throw new Error(`error in ub_ctx_add_ta: ${ub_strerror(retval).readString()}. errno: ${ctypes.errno}`);
 		}
 	});
 
@@ -467,9 +460,10 @@ function update_ctx(conf, debuglevel, getNameserversFromOS, nameservers, trustAn
 }
 
 /**
- * Handle the requests from libunbound.jsm
+ * Handle the requests from libunbound.jsm.
+ *
  * @param {Libunbound.WorkerRequest} msg
- * @return {void}
+ * @returns {void}
  */
 onmessage = function (msg) {
 	try {
@@ -480,21 +474,21 @@ onmessage = function (msg) {
 			switch (msg.data.method) {
 				case "resolve": {
 					/** @type {Libunbound.ResolveRequest} */
-					// @ts-ignore
+					// @ts-expect-error
 					const req = msg.data;
 					res = resolve(req.name, req.rrtype);
 					break;
 				}
 				case "load": {
 					/** @type {Libunbound.LoadRequest} */
-					// @ts-ignore
+					// @ts-expect-error
 					const req = msg.data;
 					load(req.path);
 					break;
 				}
 				case "update_ctx": {
 					/** @type {Libunbound.UpdateCtxRequest} */
-					// @ts-ignore
+					// @ts-expect-error
 					const req = msg.data;
 					update_ctx(req.conf, req.debuglevel,
 						req.getNameserversFromOS, req.nameservers,
@@ -511,18 +505,21 @@ onmessage = function (msg) {
 				result: res,
 			});
 		} catch (exception) {
+			// @ts-expect-error
 			postLog.debug(`Posting exception back to main script: ${exception}; stack: ${exception.stack}`);
 			postMessage({
 				type: "error",
 				subType: "DKIM_DNSERROR_UNKNOWN",
 				callId: msg.data.callId,
 				message: `libunboundWorker: ${exception}`,
+				// @ts-expect-error
 				stack: exception.stack,
 			});
 		}
 	} catch (e) {
-		// @ts-ignore
+		// @ts-expect-error
 		dump(`${e}\n`);
+		// @ts-expect-error
 		postLog.error(`Exception: ${e}; stack: ${e.stack}`);
 	}
 };

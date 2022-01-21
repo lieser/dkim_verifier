@@ -20,8 +20,8 @@ let favicons;
 /**
  * Get the URL to the favicon of the sdid, if available.
  *
- * @param {String} sdid
- * @return {Promise<String|undefined>} url to favicon
+ * @param {string} sdid
+ * @returns {Promise<string|undefined>} url to favicon
  */
 export async function getFavicon(sdid) {
 	if (!favicons) {
