@@ -21,6 +21,18 @@
 	"NOT_EMAIL": {
 		"message": "メッセージはメールではありません"
 	},
+	"SUCCESS_TAG": {
+		"message": "DKIM $1 が署名",
+		"description": "Conversation アドオンで有効なメール用のタグ。簡潔にすること。"
+	},
+	"TEMPFAIL_TAG": {
+		"message": "DKIM エラー",
+		"description": "Conversation アドオンで一時的なエラー用のタグ。簡潔にすること。"
+	},
+	"PERMFAIL_TAG": {
+		"message": "DKIM 無効",
+		"description": "Conversation アドオンで無効なメール用のタグ。簡潔にすること。"
+	},
 	// DKIM_INTERNALERROR
 	"DKIM_INTERNALERROR": {
 		"message": "DKIM verifier 内部エラー"
@@ -33,6 +45,21 @@
 	},
 	"DKIM_INTERNALERROR_INCORRECT_EMAIL_FORMAT": {
 		"message": "メールの形式が不正です"
+	},
+	"DKIM_INTERNALERROR_INCORRECT_FROM": {
+		"message": "差出人アドレスが不正"
+	},
+	"ERROR_IMPORT_RULES": {
+		"message": "署名ルールのインポートに失敗しました。",
+		"description": "署名ルールのインポートに失敗した際のエラータイトル。"
+	},
+	"ERROR_IMPORT_RULES_UNKNOWN_DATA": {
+		"message": "インポートしたファイルの形式が無効です。",
+		"description": "ユーザーが署名ルールとして不明なデータをインポートしようとした際のエラーメッセージ。"
+	},
+	"ERROR_IMPORT_RULES_UNSUPPORTED_FORMAT": {
+		"message": "署名ルールの形式にサポート外のバージョンが含まれています。",
+		"description": "ユーザーがサポート対象外のバージョンを含む署名ルールをインポートしようとした際のエラーメッセージ。"
 	},
 	// DKIM_INTERNALERROR - DNS
 	"DKIM_DNSERROR_UNKNOWN": {
@@ -622,6 +649,26 @@
 	},
 	"treeviewSigners.deleteSelectedRows": {
 		"message": "選択したルールを削除"
+	},
+	"treeviewSigners.exportRules": {
+		"message": "エクスポートルール",
+		"description": "署名ルールをエクスポートするためのボタン"
+	},
+	"treeviewSigners.importRules": {
+		"message": "インポートルール",
+		"description": "署名ルールをインポートするためのボタン"
+	},
+	"importRules.replaceQuestion": {
+		"message": "インポートするルールを既存のルールに追加しますか？ 上書きしますか？",
+		"description": "インポートダイアログで確認される質問"
+	},
+	"importRules.addRules": {
+		"message": "ルールを追加",
+		"description": "既存のルールにルールを追加するためのインポートダイアログのボタン"
+	},
+	"importRules.replaceRules": {
+		"message": "ルールを上書き",
+		"description": "既存のルールを上書きするためのインポートダイアログのボタン"
 	},
 	"addSignersRule.title": {
 		"message": "署名者ルールを追加"
