@@ -23,15 +23,15 @@
 	},
 	"SUCCESS_TAG": {
 		"message": "DKIM firmato da $1",
-		"description": "Il tag mostrato nell’estensione Conversazione quando un’email è valida. Dovrebbe essere breve."
+		"description": "Tag shown in Conversation add-on for valid mail. Should be kept short."
 	},
 	"TEMPFAIL_TAG": {
 		"message": "Errore DKIM",
-		"description": "Il tag mostrato nell’estensione Conversazione in caso di problemi temporanei. Dovrebbe essere breve."
+		"description": "Tag shown in Conversation add-on for temporary failure. Should be kept short."
 	},
 	"PERMFAIL_TAG": {
 		"message": "DKIM non valido",
-		"description": "Il tag mostrato nell’estensione Conversazione quando un’email non è valida. Dovrebbe essere breve."
+		"description": "Tag shown in Conversation add-on for invalid mail. Should be kept short."
 	},
 	// DKIM_INTERNALERROR
 	"DKIM_INTERNALERROR": {
@@ -51,15 +51,15 @@
 	},
 	"ERROR_IMPORT_RULES": {
 		"message": "L’importazione delle regole sulle firme è fallita.",
-		"description": "Titolo dell’errore mostrato se l’importazione delle regole delle firme fallisce."
+		"description": "Error title if importing of sign rules failed."
 	},
 	"ERROR_IMPORT_RULES_UNKNOWN_DATA": {
 		"message": "Il formato del file importato non è valido.",
-		"description": "Messaggio d’errore mostrato se l’utente prova a importare come regole delle firme dei dati sconosciuti."
+		"description": "Error message if the user tries to import some unknown data as sign rules."
 	},
 	"ERROR_IMPORT_RULES_UNSUPPORTED_FORMAT": {
 		"message": "Il formato delle regole delle firme è in una versione non supportata.",
-		"description": "Messaggio d’errore mostrato le regole delle firme che l’utente ha provato a importare è un un formato non supportato."
+		"description": "Error message if the sign rules the user tried to import have an unsupported format."
 	},
 	// DKIM_INTERNALERROR - DNS
 	"DKIM_DNSERROR_UNKNOWN": {
@@ -652,23 +652,23 @@
 	},
 	"treeviewSigners.exportRules": {
 		"message": "Esporta regole",
-		"description": "Pulsante per esportare le regole delle firme"
+		"description": "Button for exporting sign rules"
 	},
 	"treeviewSigners.importRules": {
 		"message": "Importa regole",
-		"description": "Pulsante per importare le regole delle firme"
+		"description": "Button for importing sign rules"
 	},
 	"importRules.replaceQuestion": {
 		"message": "Le regole importate vanno aggiunte a quelle esistenti o devono sostituirle?",
-		"description": "Domanda fatta nella finestra di dialogo dell’importazione"
+		"description": "Question asked in import dialog"
 	},
 	"importRules.addRules": {
 		"message": "Aggiungi regole",
-		"description": "Pulsante nella finestra di dialogo dell’importazione per aggiungere regole a quelle esistenti"
+		"description": "Button in import dialog for adding rules to existing rules"
 	},
 	"importRules.replaceRules": {
 		"message": "Sustituisci regole",
-		"description": "Pulsante nella finestra di dialogo dell’importazione per sostituire le regole esistenti"
+		"description": "Button in import dialog for replacing existing rules"
 	},
 	"addSignersRule.title": {
 		"message": "Aggiungi regole firmatari"
