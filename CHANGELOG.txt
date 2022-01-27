@@ -6,6 +6,7 @@
  - fixed options styling for Thunderbird 91
  - added Brazilian Portuguese translation (by David BrazSan) (#283)
  - updated default rules and favicons (#274)
+ - updated default rules and favicons (#263, #266, #274, #281, #284)
 
 4.0.0 [2021-04-18]
 ------------------
