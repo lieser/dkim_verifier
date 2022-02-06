@@ -1462,7 +1462,13 @@ var that = {
 				// @ts-ignore
 				let author = msg.headerFields.get("from")[numFrom-1];
 				author = author.replace(/^From[ \t]*:/i,"");
-				msg.from = msgHeaderParser.extractHeaderAddressMailboxes(author);
+				let from;
+				try {
+					from = msgHeaderParser.extractHeaderAddressMailboxes(author);
+				} catch (error) {
+					throw new DKIM_InternalError("From address is ill-formed",	"DKIM_INTERNALERROR_INCORRECT_FROM");
+				}
+				msg.from = from;
 			} else {
 				throw new DKIM_InternalError("E-Mail has no from address");
 			}
@@ -1470,8 +1476,14 @@ var that = {
 			// get list-id
 			if (msg.headerFields.has("list-id")) {
 				// @ts-ignore
-				msg.listId = msg.headerFields.get("list-id")[0];
-				msg.listId = msgHeaderParser.extractHeaderAddressMailboxes(msg.listId);
+				let listId = "";
+				try {
+					listId = msg.headerFields.get("list-id")[0];
+					listId = msgHeaderParser.extractHeaderAddressMailboxes(listId);
+				} catch (error) {
+					log.error("Ignoring error in parsing of list-id header", error);
+				}
+				msg.listId = listId;
 			}
 
 			// check if msg should be signed by DKIM
