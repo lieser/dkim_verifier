@@ -106,7 +106,6 @@ function updatePriorityMode() {
 	if (!(priorityElement instanceof HTMLInputElement)) {
 		throw new Error(`Element with id 'priority' is not an HTMLInputElement`);
 	}
-	console.log("priorityMode:", getRadioGroupValue("priorityMode"));
 	priorityElement.disabled = getRadioGroupValue("priorityMode") === "1";
 }
 
