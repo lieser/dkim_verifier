@@ -1,7 +1,7 @@
 {
 	"$schema": "./signersDefault-schema.json",
 	"versionTable": 1,
-	"versionData": 31,
+	"versionData": 32,
 	"rules": [
 		{
 			"domain": "1und1.de",
@@ -69,6 +69,12 @@
 			"sdid": "aktion-deutschland-hilft.de e-newsletter.aktion-deutschland-hilft.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "aktion-deutschland-hilft.de",
+			"addr": "postmaster@aktion-deutschland-hilft.de",
+			"sdid": "aktion-deutschland-hilft.de",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_NEUTRAL"
 		}, {
 			"domain": "aliexpress.com",
 			"addr": "*",
@@ -286,6 +292,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "bni-hamburg.de",
+			"addr": "MAILER-DAEMON@mailhost.bni-hamburg.de",
+			"sdid": "bni-hamburg.de",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_NEUTRAL"
+ 		}, {
 			"domain": "bnitm.de",
 			"addr": "*",
 			"sdid": "bnitm.de",
@@ -382,6 +394,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "carglass.de",
+			"addr": "postmaster@carglass.de",
+			"sdid": "carglass.de",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_NEUTRAL"
+ 		}, {
 			"domain": "checktls.com",
 			"addr": "*",
 			"sdid": "checktls.com",
@@ -496,6 +514,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "deutschebahn.com",
+			"addr": "MAILER-DAEMON@deutschebahn.com",
+			"sdid": "deutschebahn.com",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_NEUTRAL"
+ 		}, {
 			"domain": "deutschepost.de",
 			"addr": "*",
 			"sdid": "deutschepost.de",
@@ -510,7 +534,7 @@
 		}, {
 			"domain": "dhl.de",
 			"addr": "*",
-			"sdid": "dhl.de info.dhl.de",
+			"sdid": "dhl.de info.dhl.de mailing2.dhl.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -736,6 +760,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
+			"domain": "f-secure.com",
+			"addr": "postmaster@F-Secure.com",
+			"sdid": "f-secure.com",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_NEUTRAL"
+ 		}, {
 			"domain": "facebook.com",
 			"addr": "*@support.facebook.com",
 			"sdid": "facebook.com support.facebook.com",
@@ -874,6 +904,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "ftcommunity.de",
+			"addr": "MAILER-DAEMON@ftcommunity.de",
+			"sdid": "ftcommunity.de",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_NEUTRAL"
+ 		}, {
 			"domain": "gellersen.de",
 			"addr": "*",
 			"sdid": "gellersen.de",
@@ -934,6 +970,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL0"
 		}, {
+			"domain": "gmx.de",
+			"addr": "*",
+			"sdid": "gmx.de gmx.net",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_NEUTRAL"
+ 		}, {
 			"domain": "gmx.net",
 			"addr": "*@sicher.gmx.net",
 			"sdid": "gmx.net sicher.gmx.net",
@@ -1054,6 +1096,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "herzstiftung.de",
+			"addr": "*@news.herzstiftung.de",
+			"sdid": "herzstiftung.de news.herzstiftung.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+ 		}, {
 			"domain": "homeaffairs.gov.au",
 			"addr": "*",
 			"sdid": "homeaffairs.gov.au",
@@ -1174,6 +1222,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "ironman.com",
+			"addr": "postmaster@ironman.com",
+			"sdid": "ironman.com",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_NEUTRAL"
+ 		}, {
 			"domain": "italotreno.it",
 			"addr": "*@news.italotreno.it",
 			"sdid": "italotreno.it news.italotreno.it",
@@ -1390,6 +1444,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "mycommerce.com",
+			"addr": "*",
+			"sdid": "mycommerce.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+ 		}, {
 			"domain": "myfritz.net",
 			"addr": "*",
 			"sdid": "myfritz.net",
@@ -1570,6 +1630,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "peterhahn.de",
+			"addr": "postmaster@peterhahn.de",
+			"sdid": "peterhahn.de",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_NEUTRAL"
+ 		}, {
 			"domain": "pimkie.com",
 			"addr": "*@news.pimkie.com",
 			"sdid": "pimkie.com news.pimkie.com",
