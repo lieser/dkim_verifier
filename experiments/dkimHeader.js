@@ -370,9 +370,9 @@ class DkimHeaderRow {
 	 */
 	show(show) {
 		if (show) {
-			this.element.style.visibility = "";
+			this.element.style.display = "";
 		} else {
-			this.element.style.visibility = "collapse";
+			this.element.style.display = "none";
 		}
 		// Trigger the OnResizeExpandedHeaderView() function from Thunderbird
 		// to recalculate the height on the expandedHeaderView element.
