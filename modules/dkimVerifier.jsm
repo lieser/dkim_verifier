@@ -591,7 +591,7 @@ var Verifier = (function() {
 			map(function (x) {return x.trim().toLowerCase();}).
 			filter(function (x) {return x;});
 		// check that the from header is included
-		if (DKIMSignature.h_array.indexOf("from") === -1) {
+		if (!DKIMSignature.h_array.includes("from")) {
 			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_FROM");
 		}
 
@@ -1173,7 +1173,7 @@ var Verifier = (function() {
 		log.debug("Parsed DKIM-Key: " + DKIMSignature.DKIMKey.toSource());
 
 		// check that the testing flag is not set
-		if (DKIMSignature.DKIMKey.t_array.indexOf("y") !== -1) {
+		if (DKIMSignature.DKIMKey.t_array.includes("y")) {
 			if (prefs.getBoolPref("error.key_testmode.ignore")) {
 				DKIMSignature.warnings.push({name: "DKIM_SIGERROR_KEY_TESTMODE"});
 				log.debug("Warning: DKIM_SIGERROR_KEY_TESTMODE");
@@ -1184,7 +1184,7 @@ var Verifier = (function() {
 
 		// if s flag is set in DKIM key record
 		// AUID must be from the same domain as SDID (and not a subdomain)
-		if (DKIMSignature.DKIMKey.t_array.indexOf("s") !== -1 &&
+		if (DKIMSignature.DKIMKey.t_array.includes("s") &&
 		    !stringEqual(DKIMSignature.i_domain, DKIMSignature.d)) {
 			throw new DKIM_SigError("DKIM_SIGERROR_DOMAIN_I");
 		}
@@ -1193,7 +1193,7 @@ var Verifier = (function() {
 		// the hash algorithm implied by the "a=" tag in the DKIM-Signature header field
 		// must be included in the contents of the "h=" tag
 		if (DKIMSignature.DKIMKey.h_array &&
-		    DKIMSignature.DKIMKey.h_array.indexOf(DKIMSignature.a_hash) === -1) {
+		    (!DKIMSignature.DKIMKey.h_array.includes(DKIMSignature.a_hash))) {
 			throw new DKIM_SigError( "DKIM_SIGERROR_KEY_HASHNOTINCLUDED" );
 		}
 		
