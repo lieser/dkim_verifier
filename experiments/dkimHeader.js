@@ -56,9 +56,7 @@ class DKIMTooltip {
 	 */
 	set warnings(warnings) {
 		// delete old warnings from tooltips
-		while (this.element._warningsBox.firstChild) {
-			this.element._warningsBox.firstChild.remove();
-		}
+		this.element._warningsBox.replaceChildren();
 
 		if (!this.element.ownerDocument) {
 			throw Error("Underlying element of DKIMTooltip does not contain ownerDocument");
