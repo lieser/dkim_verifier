@@ -1,3 +1,5 @@
+4.1.0 [2021-12-xx]
+------------------
  - fixed incompatibility with Thunderbird 96 (#279)
  - Re-added support for Thunderbird Conversations add-on (#203)
  - show proper error message on ill-formed from (#238)
@@ -6,6 +8,8 @@
  - fixed options styling for Thunderbird 91
  - added Brazilian Portuguese translation (by David BrazSan) (#283)
  - updated default rules and favicons (#274)
+ - Add ability to export/import sign rules (#220)
+ - Fix layout issues in table views (Sign rules / stored keys) (#248)
  - updated default rules and favicons (#263, #266, #274, #281, #284)
 
 4.0.0 [2021-04-18]
