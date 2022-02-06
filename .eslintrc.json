@@ -27,36 +27,40 @@
         "globalThis": "readonly"
     },
     "rules": {
-        // Possible Errors
-        "no-extra-parens": [
-            "warn",
-            "all",
-            {
-                "nestedBinaryExpressions": false
-            }
-        ],
+        // Possible Problems
+        "array-callback-return": "warn",
+        "no-constructor-return": "warn",
         "no-unused-vars": [
             "error",
             {
                 "argsIgnorePattern": "^_"
             }
         ],
+        "no-self-compare": "warn",
+        "no-unmodified-loop-condition": "warn",
+        "no-use-before-define": "error",
         "require-atomic-updates": "warn",
-        // Best Practices
-        "array-callback-return": "warn",
+        // Suggestions
         "block-scoped-var": "warn",
+        "camelcase": [
+            "warn",
+            {
+                "allow": [
+                    "DKIM_InternalError",
+                    "DKIM_SigError"
+                ]
+            }
+        ],
         "complexity": "warn",
         "consistent-return": "warn",
         "curly": "warn",
         "default-case": "warn",
         "default-param-last": "warn",
-        "dot-location": "warn",
         "dot-notation": "warn",
         "eqeqeq": "warn",
         "guard-for-in": "warn",
         "no-alert": "error",
         "no-caller": "warn",
-        "no-constructor-return": "warn",
         "no-div-regex": "warn",
         "no-else-return": "warn",
         "no-empty-function": "warn",
@@ -70,6 +74,7 @@
         "no-implied-eval": "error",
         "no-invalid-this": "warn",
         "no-iterator": "warn",
+        "no-label-var": "warn",
         "no-labels": "warn",
         "no-lone-blocks": "warn",
         "no-loop-func": "warn",
@@ -86,7 +91,6 @@
                 ]
             }
         ],
-        "no-multi-spaces": "warn",
         "no-multi-str": "warn",
         "no-new": "warn",
         "no-new-func": "warn",
@@ -97,54 +101,47 @@
         "no-return-assign": "warn",
         "no-return-await": "warn",
         "no-script-url": "warn",
-        "no-self-compare": "warn",
         "no-sequences": "warn",
+        "no-shadow": "warn",
         "no-throw-literal": "warn",
-        "no-unmodified-loop-condition": "warn",
         "no-unused-expressions": "warn",
         "no-useless-call": "warn",
         "no-useless-concat": "warn",
         "no-useless-return": "warn",
+        "no-var": "warn",
         "no-void": "warn",
         "no-warning-comments": "warn",
+        "prefer-const": "warn",
+        "prefer-numeric-literals": "warn",
         "prefer-promise-reject-errors": "warn",
+        "prefer-rest-params": "warn",
+        "prefer-spread": "warn",
+        "prefer-template": "warn",
         "radix": "warn",
         "require-await": "warn",
-        "wrap-iife": "warn",
-        "yoda": "warn",
-        // Strict Mode
+        "sort-imports": "warn",
         "strict": [
             "warn",
             "global"
         ],
-        // Variables
-        "no-label-var": "warn",
-        "no-shadow": "warn",
-        "no-use-before-define": "error",
-        // Stylistic Issues
-        "camelcase": [
+        "yoda": "warn",
+        // Layout & Formatting
+        "dot-location": "warn",
+        "no-extra-parens": [
             "warn",
+            "all",
             {
-                "allow": [
-                    "DKIM_InternalError",
-                    "DKIM_SigError"
-                ]
+                "nestedBinaryExpressions": false
             }
         ],
         "no-mixed-spaces-and-tabs": [
             "warn",
             "smart-tabs"
         ],
+        "no-multi-spaces": "warn",
         "semi": "warn",
-        // ECMAScript 6
-        "no-var": "warn",
-        "prefer-const": "warn",
-        "prefer-numeric-literals": "warn",
-        "prefer-rest-params": "warn",
-        "prefer-spread": "warn",
-        "prefer-template": "warn",
-        "sort-imports": "warn",
         "template-curly-spacing": "warn",
+        "wrap-iife": "warn",
         // JSDoc
         "jsdoc/check-line-alignment": "warn",
         "jsdoc/match-description": "warn",
