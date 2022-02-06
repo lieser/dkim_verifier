@@ -46,7 +46,15 @@ export class BasePreferences {
 	 * @memberof BasePreferences
 	 */
 	constructor(valueGetter, valueSetter) {
+		/**
+		 * @protected
+		 * @type {Object.<string, boolean|number|string|undefined>}
+		 */
+		this._prefs = {};
+
+		/** @private */
 		this._valueGetter = valueGetter;
+		/** @private */
 		this._valueSetter = valueSetter;
 	}
 
@@ -71,6 +79,7 @@ export class BasePreferences {
 	}
 
 	/**
+	 * @private
 	 * @param {string} name
 	 * @param {boolean} defaultValue
 	 * @returns {boolean}
@@ -88,6 +97,7 @@ export class BasePreferences {
 	}
 
 	/**
+	 * @private
 	 * @param {string} name
 	 * @param {number} defaultValue
 	 * @returns {number}
@@ -105,6 +115,7 @@ export class BasePreferences {
 	}
 
 	/**
+	 * @private
 	 * @param {string} name
 	 * @param {string} defaultValue
 	 * @returns {string}
@@ -509,6 +520,7 @@ export class BasePreferences {
 	/**
 	 * Get an boolean account preference that has a global default.
 	 *
+	 * @private
 	 * @param {string} name
 	 * @param {string} account
 	 * @returns {boolean}
@@ -568,8 +580,6 @@ export class ObjPreferences extends BasePreferences {
 			(name) => { return this._prefs[name]; },
 			(name, value) => { this._prefs[name] = value; return Promise.resolve(); },
 		);
-		/** @type {Object.<string, boolean|number|string|undefined>} */
-		this._prefs = {};
 	}
 }
 
@@ -597,9 +607,8 @@ export class StorageLocalPreferences extends BasePreferences {
 				return promise;
 			},
 		);
+		/** @private */
 		this._isInitialized = false;
-		/** @type {Object.<string, boolean|number|string|undefined>} */
-		this._prefs = {};
 	}
 
 	/**
@@ -609,7 +618,10 @@ export class StorageLocalPreferences extends BasePreferences {
 		if (this._isInitializedDeferred) {
 			return this._isInitializedDeferred.promise;
 		}
-		/** @type {Deferred<void>} */
+		/**
+		 * @private
+		 * @type {Deferred<void>}
+		 */
 		this._isInitializedDeferred = new Deferred();
 		try {
 			const preferences = await ExtensionUtils.safeGetLocalStorage();

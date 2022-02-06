@@ -77,8 +77,12 @@ class Deferred {
 
 class LibunboundWorker {
 	constructor() {
+		/** @private */
 		this._maxCallId = 0;
-		/** @type {Map<number, Deferred<ub_result|void>>} */
+		/**
+		 * @private
+		 * @type {Map<number, Deferred<ub_result|void>>}
+		 */
 		this._openCalls = new Map();
 
 		/** @type {Libunbound.LibunboundWorker} */
@@ -208,6 +212,7 @@ class LibunboundWorker {
 	/**
 	 * Handle the callbacks from the ChromeWorker.
 	 *
+	 * @private
 	 * @param {Libunbound.WorkerResponse} msg
 	 * @returns {void}
 	 */
