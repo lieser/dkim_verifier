@@ -1,17 +1,32 @@
 {
+    // https://www.staging-typescript.org/tsconfig#compilerOptions
     "compilerOptions": {
         "module": "esnext",
         "target": "es2020",
         "lib": [
             "es2020",
-            "dom"
+            "dom",
         ],
+        // Type Checking
         "strict": true,
-        "isolatedModules": true,
+        "exactOptionalPropertyTypes": true,
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitOverride": true,
+        "noImplicitReturns": true,
+        // conflict with ESLint dot-notation
+        // "noPropertyAccessFromIndexSignature": true,
+        "noUncheckedIndexedAccess": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        // Modules
+        "moduleResolution": "node",
+        // JavaScript Support
         "checkJs": true,
-        "moduleResolution": "node"
+        // Interop Constraints
+        "forceConsistentCasingInFileNames": true,
+        "isolatedModules": true,
     },
     "exclude": [
-        "node_modules"
-    ]
+        "node_modules",
+    ],
 }

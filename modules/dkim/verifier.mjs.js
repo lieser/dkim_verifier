@@ -235,6 +235,9 @@ class DkimSignatureHeader {
 		if (algorithmTag === null) {
 			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_A");
 		}
+		if (!algorithmTag[1] || !algorithmTag[2]) {
+			throw new DKIM_InternalError("Error matching the a-tag.");
+		}
 		if (algorithmTag[0] === "rsa-sha256") {
 			return {
 				signature: algorithmTag[1],
@@ -463,6 +466,9 @@ class DkimSignatureHeader {
 				auid: `@${sdid}`,
 				auidDomain: sdid,
 			};
+		}
+		if (!AUIDTag[1]) {
+			throw new DKIM_InternalError("Error matching the i-tag.");
 		}
 		const auid = AUIDTag[0];
 		const auidDomain = AUIDTag[1];
@@ -928,10 +934,10 @@ class DkimSignature {
 
 		// get header fields specified by the "h=" tag
 		// and join their canonicalized form
-		for (let i = 0; i < this._header.h_array.length; i++) {
+		for (const header of this._header.h_array) {
 			// if multiple instances of the same header field are signed
 			// include them in reverse order (from bottom to top)
-			const headerFieldArray = headerFields.get(this._header.h_array[i]);
+			const headerFieldArray = headerFields.get(header);
 			// nonexisting header field MUST be treated as the null string
 			if (headerFieldArray !== undefined) {
 				const headerField = headerFieldArray.pop();
@@ -1111,7 +1117,7 @@ export default class Verifier {
 	 * Create a DKIM fail result for an exception.
 	 *
 	 * @private
-	 * @param {Error} e
+	 * @param {unknown} e
 	 * @param {DkimSignatureHeader|Object.<string, undefined>} dkimSignature
 	 * @returns {dkimSigResultV2}
 	 */
@@ -1182,7 +1188,7 @@ export default class Verifier {
 			let sigRes;
 			try {
 				log.debug(`Verifying DKIM-Signature ${iDKIMSignatureIdx + 1} ...`);
-				dkimHeader = new DkimSignatureHeader(dkimSignatureHeaders[iDKIMSignatureIdx]);
+				dkimHeader = new DkimSignatureHeader(dkimSignatureHeaders[iDKIMSignatureIdx] ?? "");
 				log.debug(`Parsed DKIM-Signature ${iDKIMSignatureIdx + 1}:`, dkimHeader);
 				const dkimSignature = new DkimSignature(msg, dkimHeader);
 				sigRes = await dkimSignature.verifySignature(this._keyStore);
@@ -1204,11 +1210,10 @@ export default class Verifier {
 	 * If not, adds one to signatures with result "no sig".
 	 *
 	 * @private
-	 * @param {Msg} msg
 	 * @param {dkimSigResultV2[]} signatures
 	 * @returns {void}
 	 */
-	static _checkForSignatureExistence(msg, signatures) {
+	static _checkForSignatureExistence(signatures) {
 		// check if a DKIM signature exists
 		if (signatures.length === 0) {
 			const dkimSigResultV2 = {
@@ -1239,7 +1244,7 @@ export default class Verifier {
 				version: "2.0",
 				signatures: await this._processSignatures(msg),
 			};
-			Verifier._checkForSignatureExistence(msg, res.signatures);
+			Verifier._checkForSignatureExistence(res.signatures);
 			return res;
 		})();
 		promise.then(null, function onReject(exception) {

@@ -33,11 +33,9 @@ export function uploadJsonData() {
 	const inputElement = document.createElement("input");
 	inputElement.type = "file";
 	inputElement.accept = "application/json";
-	inputElement.addEventListener("change", (event) => {
+	inputElement.addEventListener("change", (_event) => {
 		try {
-			console.log("event:", event);
-			console.log("files:", inputElement.files);
-			if (!inputElement.files) {
+			if (!inputElement.files || !inputElement.files[0]) {
 				throw new Error("Input element has no file");
 			}
 

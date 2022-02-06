@@ -70,6 +70,9 @@ function initNavigation() {
 	for (const navElement of navElements) {
 		/** @type {HTMLElement[]} */
 		const navSelectors = Array.from(navElement.querySelectorAll(":scope>[pane]"));
+		if (!navSelectors[0]) {
+			throw new Error("No nav selector found under nav element.");
+		}
 		// initialize the navigation to the first navigation selector
 		setNavigation(navSelectors[0]);
 		// add navigation callback to click event
@@ -415,7 +418,7 @@ async function initAccount() {
 	}
 
 	// select first account at start
-	items[0].click();
+	items[0]?.click();
 }
 
 /**

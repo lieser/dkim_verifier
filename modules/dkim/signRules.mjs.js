@@ -759,7 +759,7 @@ export function initSignRulesProxy() {
 			// eslint-disable-next-line consistent-return
 			return SignRules.deleteRule(request.parameters.id);
 		}
-		log.error("Proxy receiver got unknown request.", request);
-		throw new Error("SignRules proxy got unknown request.");
+		log.error("SignRules proxy receiver got unknown request.", request);
+		throw new Error("SignRules proxy receiver got unknown request.");
 	});
 }

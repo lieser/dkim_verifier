@@ -28,7 +28,8 @@ export class DKIM_SigError extends Error {
 		this.name = "DKIM_SigError";
 		this.errorType = errorType;
 		this.errorStrParams = errorStrParams;
-		this.stack = this.stack.substring(this.stack.indexOf('\n')+1);
+		// @ts-expect-error
+		this.stack = this.stack.substring(this.stack.indexOf('\n') + 1);
 	}
 }
 
@@ -39,10 +40,10 @@ export class DKIM_InternalError extends Error {
 	/**
 	 * DKIM internal error.
 	 *
-	 * @param {string|null} [message]
+	 * @param {string|null} [_message]
 	 * @param {string} [errorType]
 	 */
-	constructor(message, errorType) {
+	constructor(_message, errorType) {
 		// super(message ||
 		// 	tryGetString(dkimStrings, errorType) ||
 		// 	errorType ||
@@ -51,6 +52,7 @@ export class DKIM_InternalError extends Error {
 		super(errorType);
 		this.name = "DKIM_InternalError";
 		this.errorType = errorType;
-		this.stack = this.stack.substring(this.stack.indexOf('\n')+1);
+		// @ts-expect-error
+		this.stack = this.stack.substring(this.stack.indexOf('\n') + 1);
 	}
 }

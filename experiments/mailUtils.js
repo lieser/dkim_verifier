@@ -21,11 +21,10 @@ var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 // eslint-disable-next-line no-invalid-this
 this.mailUtils = class extends ExtensionCommon.ExtensionAPI {
 	/**
-	 * @param {ExtensionCommon.Context} context
+	 * @param {ExtensionCommon.Context} _context
 	 * @returns {{mailUtils: browser.mailUtils}}
 	 */
-	// eslint-disable-next-line no-unused-vars
-	getAPI(context) {
+	getAPI(_context) {
 		return {
 			mailUtils: {
 				/**
@@ -44,6 +43,7 @@ this.mailUtils = class extends ExtensionCommon.ExtensionAPI {
 						// domains like "blogspot.co.uk", "blogspot.com", "googlecode.com"
 						// are on the public suffix list, but should be valid base domains
 						// because e-mails may be send from them
+						// @ts-expect-error
 						if (e.result === Cr.NS_ERROR_INSUFFICIENT_DOMAIN_LEVELS) {
 							// add "invalid" subdomain to avoid error
 							const invalidSub = "invalid.";

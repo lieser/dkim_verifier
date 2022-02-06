@@ -80,6 +80,9 @@ async function verifyMessage(tabId, message) {
 
 		const verifier = new AuthVerifier();
 		const res = await verifier.verify(message);
+		if (!res.dkim[0]) {
+			throw new Error("Result does not contain a DKIM result.");
+		}
 		displayedResultsCache.set(tabId, res);
 		const warnings = res.dkim[0].warnings_str || [];
 		/** @type {Parameters<typeof browser.dkimHeader.setDkimHeaderResult>[5]} */
@@ -113,8 +116,7 @@ async function verifyMessage(tabId, message) {
 		if (prefs.colorFrom) {
 			switch (res.dkim[0].res_num) {
 				case AuthVerifier.DKIM_RES.SUCCESS: {
-					const dkim = res.dkim[0];
-					if (!dkim.warnings_str || dkim.warnings_str.length === 0) {
+					if (!res.dkim[0].warnings_str || res.dkim[0].warnings_str.length === 0) {
 						browser.dkimHeader.highlightFromAddress(tabId, message.id, prefs["color.success.text"], prefs["color.success.background"]);
 					} else {
 						browser.dkimHeader.highlightFromAddress(tabId, message.id, prefs["color.warning.text"], prefs["color.warning.background"]);
@@ -219,19 +221,19 @@ class DisplayAction {
 	static queryButtonState(tabId) {
 		const res = displayedResultsCache.get(tabId);
 		const keyStored = prefs["key.storing"] !== KeyStore.KEY_STORING.DISABLED &&
-			res?.dkim[0].sdid !== undefined && res?.dkim[0].selector !== undefined;
+			res?.dkim[0]?.sdid !== undefined && res?.dkim[0].selector !== undefined;
 		/** @type {RuntimeMessage.DisplayAction.queryButtonStateResult} */
 		const state = {
 			reverifyDKIMSignature: res !== undefined,
 			policyAddUserException:
-				res?.dkim[0].errorType === "DKIM_POLICYERROR_MISSING_SIG" ||
-				res?.dkim[0].errorType === "DKIM_POLICYERROR_WRONG_SDID" || (
-					res?.dkim[0].warnings !== undefined &&
+				res?.dkim[0]?.errorType === "DKIM_POLICYERROR_MISSING_SIG" ||
+				res?.dkim[0]?.errorType === "DKIM_POLICYERROR_WRONG_SDID" || (
+					res?.dkim[0]?.warnings !== undefined &&
 					res?.dkim[0].warnings.findIndex((e) => {
 						return e.name === "DKIM_POLICYERROR_WRONG_SDID";
 					}) !== -1
 				),
-			markKeyAsSecure: keyStored && res?.dkim[0].keySecure === false,
+			markKeyAsSecure: keyStored && res?.dkim[0]?.keySecure === false,
 			updateKey: keyStored,
 		};
 		return state;
@@ -285,8 +287,8 @@ class DisplayAction {
 	 */
 	static async markKeyAsSecure(tabId) {
 		const res = displayedResultsCache.get(tabId);
-		const sdid = res?.dkim[0].sdid;
-		const selector = res?.dkim[0].selector;
+		const sdid = res?.dkim[0]?.sdid;
+		const selector = res?.dkim[0]?.selector;
 		if (sdid === undefined || selector === undefined) {
 			log.error("Can not mark key as secure, result does not contain an sdid or selector", res);
 			return;
@@ -357,4 +359,6 @@ browser.runtime.onMessage.addListener((runtimeMessage, sender, /*sendResponse*/)
 		// eslint-disable-next-line consistent-return
 		return promise;
 	}
+	log.error("DisplayAction receiver got unknown request.", request);
+	throw new Error("DisplayAction receiver got unknown request.");
 });

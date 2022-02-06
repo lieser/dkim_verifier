@@ -349,7 +349,10 @@ this.libunbound = class extends ExtensionCommon.ExtensionAPI {
 
 		const aomStartup = Cc[
 			"@mozilla.org/addons/addon-manager-startup;1"
-		].getService(Ci.amIAddonManagerStartup);
+		]?.getService(Ci.amIAddonManagerStartup);
+		if (!aomStartup) {
+			throw new Error("Failed to get amIAddonManagerStartup");
+		}
 		const manifestURI = Services.io.newURI(
 			"manifest.json",
 			null,
@@ -364,11 +367,10 @@ this.libunbound = class extends ExtensionCommon.ExtensionAPI {
 	}
 
 	/**
-	 * @param {ExtensionCommon.Context} context
+	 * @param {ExtensionCommon.Context} _context
 	 * @returns {{libunbound: browser.libunbound}}
 	 */
-	// eslint-disable-next-line no-unused-vars
-	getAPI(context) {
+	getAPI(_context) {
 		const RCODE = {
 			NoError: 0, // No Error [RFC1035]
 			FormErr: 1, // Format Error [RFC1035]

@@ -87,14 +87,14 @@ export default class MsgParser {
 		const headerArray = headerPlain.split(/\r\n(?=\S|$)/);
 
 		// store valid fields under header field name (in lower case) in an array
-		for (let i = 0; i < headerArray.length; i++) {
-			const hNameMatch = headerArray[i].match(/[!-9;-~]+(?=:)/);
-			if (hNameMatch !== null) {
+		for (const header of headerArray) {
+			const hNameMatch = header.match(/[!-9;-~]+(?=:)/);
+			if (hNameMatch !== null && hNameMatch[0]) {
 				const hName = hNameMatch[0].toLowerCase();
 				if (!headerFields.has(hName)) {
 					headerFields.set(hName, []);
 				}
-				headerFields.get(hName).push(`${headerArray[i]}\r\n`);
+				headerFields.get(hName).push(`${header}\r\n`);
 			}
 		}
 
@@ -185,7 +185,7 @@ export default class MsgParser {
 		const listId = `${RfcParser.dot_atom_text}\\.${RfcParser.dot_atom_text}`;
 		// Note: adapted according to Errata ID: 3951
 		const regExpMatch = headerValue.match(new RegExp(`^(?:${RfcParser.phrase}|${RfcParser.CFWS})?<(${listId})>\r\n$`));
-		if (regExpMatch !== null) {
+		if (regExpMatch !== null && regExpMatch[1]) {
 			return regExpMatch[1];
 		}
 		throw new Error("Cannot extract the list identifier from the List-Id header.");

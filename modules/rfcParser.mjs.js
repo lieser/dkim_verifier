@@ -104,7 +104,7 @@ export default class RfcParser {
 			const tmp = elem.match(new RegExp(
 				`^${this.FWS}?(${tagName})${this.FWS}?=${this.FWS}?(${tagValue})${this.FWS}?$`
 			));
-			if (tmp === null) {
+			if (tmp === null || !tmp[1] || !tmp[2]) {
 				return -1;
 			}
 			const name = tmp[1];
@@ -129,7 +129,7 @@ export default class RfcParser {
 	 * @param {string} tagName - name of the tag
 	 * @param {string} patternTagValue - Pattern for the tag-value
 	 * @param {number} [expType] - Type of exception to throw. 1 for DKIM header, 2 for DKIM key, 3 for general.
-	 * @returns {RegExpMatchArray|null} The match from the RegExp if tag_name exists, otherwise null
+	 * @returns {[string, ...string[]]|null} The match from the RegExp if tag_name exists, otherwise null
 	 * @throws {DKIM_SigError|DKIM_InternalError} Throws if tag_value does not match.
 	 */
 	static parseTagValue(map, tagName, patternTagValue, expType = 1) {
@@ -152,6 +152,7 @@ export default class RfcParser {
 			}
 		}
 
+		// @ts-expect-error
 		return res;
 	}
 }

@@ -602,6 +602,9 @@ export class StorageLocalPreferences extends BasePreferences {
 		this._prefs = {};
 	}
 
+	/**
+	 * @override
+	 */
 	async init() {
 		if (this._isInitializedDeferred) {
 			return this._isInitializedDeferred.promise;
@@ -632,6 +635,9 @@ export class StorageLocalPreferences extends BasePreferences {
 		return this._isInitializedDeferred.promise;
 	}
 
+	/**
+	 * @override
+	 */
 	async clear() {
 		/** @type {{scope: string, data: any}[]} */
 		const dataStorages = [];

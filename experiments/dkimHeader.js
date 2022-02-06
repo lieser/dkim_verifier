@@ -919,11 +919,10 @@ this.dkimHeader = class extends ExtensionCommon.ExtensionAPI {
 	}
 
 	/**
-	 * @param {ExtensionCommon.Context} context
+	 * @param {ExtensionCommon.Context} _context
 	 * @returns {{dkimHeader: browser.dkimHeader}}
 	 */
-	// eslint-disable-next-line no-unused-vars
-	getAPI(context) {
+	getAPI(_context) {
 		return {
 			dkimHeader: {
 				showDkimHeader: (tabId, messageId, show) => {

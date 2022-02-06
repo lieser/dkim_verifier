@@ -207,6 +207,7 @@ function resolve(name, rrtype) {
 			/** @type {number[]} */
 			const rdata = new Array(tmp.length);
 			for (let i = 0; i < tmp.length; i++) {
+				// @ts-expect-error
 				rdata[i] = tmp[i];
 			}
 			data_raw.push(rdata);
@@ -222,6 +223,7 @@ function resolve(name, rrtype) {
 					// read all <character-string>s
 					while (i < rdata.length) {
 						// get length of current <character-string>
+						// @ts-expect-error
 						j = rdata[i];
 						i += 1;
 						// read current <character-string>
@@ -306,7 +308,7 @@ function load(paths) {
 		postLog.debug(`loading dependency: ${libDepPath}`);
 		libDeps.push(ctypes.open(libDepPath));
 	}
-	const path = libPaths.slice(-1)[0];
+	const path = libPaths.slice(-1)[0] ?? "";
 	postLog.debug(`loading libunbound: ${path}`);
 	lib = ctypes.open(path);
 
@@ -422,40 +424,35 @@ function update_ctx(conf, debuglevel, getNameserversFromOS, nameservers, trustAn
 	// read config file if specified
 	if (conf) {
 		if ((retval = ub_ctx_config(ctx, conf)) !== 0) {
-			throw new Error(`error in ub_ctx_config: ${
-				ub_strerror(retval).readString()}. errno: ${ctypes.errno}`);
+			throw new Error(`error in ub_ctx_config: ${ub_strerror(retval).readString()}. errno: ${ctypes.errno}`);
 		}
 	}
 
 	// set debuglevel if specified
 	if (debuglevel) {
 		if ((retval = ub_ctx_debuglevel(ctx, debuglevel)) !== 0) {
-			throw new Error(`error in ub_ctx_debuglevel: ${
-				ub_strerror(retval).readString()}. errno: ${ctypes.errno}`);
+			throw new Error(`error in ub_ctx_debuglevel: ${ub_strerror(retval).readString()}. errno: ${ctypes.errno}`);
 		}
 	}
 
 	// get DNS servers form OS
 	if (getNameserversFromOS) {
 		if ((retval = ub_ctx_resolvconf(ctx, null)) !== 0) {
-			throw new Error(`error in ub_ctx_resolvconf: ${
-				ub_strerror(retval).readString()}. errno: ${ctypes.errno}`);
+			throw new Error(`error in ub_ctx_resolvconf: ${ub_strerror(retval).readString()}. errno: ${ctypes.errno}`);
 		}
 	}
 
 	// set additional DNS servers
 	nameservers.forEach(function (element /*, index, array*/) {
 		if ((retval = ub_ctx_set_fwd(ctx, element.trim())) !== 0) {
-			throw new Error(`error in ub_ctx_set_fwd: ${
-				ub_strerror(retval).readString()}. errno: ${ctypes.errno}`);
+			throw new Error(`error in ub_ctx_set_fwd: ${ub_strerror(retval).readString()}. errno: ${ctypes.errno}`);
 		}
 	});
 
 	// add root trust anchors
 	trustAnchors.forEach(function (element /*, index, array*/) {
 		if ((retval = ub_ctx_add_ta(ctx, element.trim())) !== 0) {
-			throw new Error(`error in ub_ctx_add_ta: ${
-				ub_strerror(retval).readString()}. errno: ${ctypes.errno}`);
+			throw new Error(`error in ub_ctx_add_ta: ${ub_strerror(retval).readString()}. errno: ${ctypes.errno}`);
 		}
 	});
 
@@ -508,18 +505,21 @@ onmessage = function (msg) {
 				result: res,
 			});
 		} catch (exception) {
+			// @ts-expect-error
 			postLog.debug(`Posting exception back to main script: ${exception}; stack: ${exception.stack}`);
 			postMessage({
 				type: "error",
 				subType: "DKIM_DNSERROR_UNKNOWN",
 				callId: msg.data.callId,
 				message: `libunboundWorker: ${exception}`,
+				// @ts-expect-error
 				stack: exception.stack,
 			});
 		}
 	} catch (e) {
 		// @ts-expect-error
 		dump(`${e}\n`);
+		// @ts-expect-error
 		postLog.error(`Exception: ${e}; stack: ${e.stack}`);
 	}
 };

@@ -26,7 +26,7 @@ declare module browser {
     declare module folder {
         interface MailFolder {
             accountId: string,
-            type?: string,
+            type?: string | undefined,
         }
     }
 

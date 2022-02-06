@@ -21,6 +21,18 @@
 	"NOT_EMAIL": {
 		"message": "Il messaggio non è un’email"
 	},
+	"SUCCESS_TAG": {
+		"message": "DKIM firmato da $1",
+		"description": "Tag shown in Conversation add-on for valid mail. Should be kept short."
+	},
+	"TEMPFAIL_TAG": {
+		"message": "Errore DKIM",
+		"description": "Tag shown in Conversation add-on for temporary failure. Should be kept short."
+	},
+	"PERMFAIL_TAG": {
+		"message": "DKIM non valido",
+		"description": "Tag shown in Conversation add-on for invalid mail. Should be kept short."
+	},
 	// DKIM_INTERNALERROR
 	"DKIM_INTERNALERROR": {
 		"message": "Errore interno di DKIM verifier"
@@ -33,6 +45,21 @@
 	},
 	"DKIM_INTERNALERROR_INCORRECT_EMAIL_FORMAT": {
 		"message": "L’email non è formattata correttamente"
+	},
+	"DKIM_INTERNALERROR_INCORRECT_FROM": {
+		"message": "L’indirizzo del mittente ha una sintassi errata"
+	},
+	"ERROR_IMPORT_RULES": {
+		"message": "L’importazione delle regole sulle firme è fallita.",
+		"description": "Error title if importing of sign rules failed."
+	},
+	"ERROR_IMPORT_RULES_UNKNOWN_DATA": {
+		"message": "Il formato del file importato non è valido.",
+		"description": "Error message if the user tries to import some unknown data as sign rules."
+	},
+	"ERROR_IMPORT_RULES_UNSUPPORTED_FORMAT": {
+		"message": "Il formato delle regole delle firme è in una versione non supportata.",
+		"description": "Error message if the sign rules the user tried to import have an unsupported format."
 	},
 	// DKIM_INTERNALERROR - DNS
 	"DKIM_DNSERROR_UNKNOWN": {
@@ -622,6 +649,26 @@
 	},
 	"treeviewSigners.deleteSelectedRows": {
 		"message": "Rimuovi regole selezionate"
+	},
+	"treeviewSigners.exportRules": {
+		"message": "Esporta regole",
+		"description": "Button for exporting sign rules"
+	},
+	"treeviewSigners.importRules": {
+		"message": "Importa regole",
+		"description": "Button for importing sign rules"
+	},
+	"importRules.replaceQuestion": {
+		"message": "Le regole importate vanno aggiunte a quelle esistenti o devono sostituirle?",
+		"description": "Question asked in import dialog"
+	},
+	"importRules.addRules": {
+		"message": "Aggiungi regole",
+		"description": "Button in import dialog for adding rules to existing rules"
+	},
+	"importRules.replaceRules": {
+		"message": "Sustituisci regole",
+		"description": "Button in import dialog for replacing existing rules"
 	},
 	"addSignersRule.title": {
 		"message": "Aggiungi regole firmatari"

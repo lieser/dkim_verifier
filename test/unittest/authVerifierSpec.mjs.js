@@ -67,9 +67,9 @@ async function createMessageHeader(file) {
 	const fakeMessageHeader = createFakeMessageHeader();
 	const msgPlain = await readTestFile(file);
 	const msgParsed = MsgParser.parseMsg(msgPlain);
-	fakeMessageHeader.author = extractHeaderValue(msgParsed.headers, "from")[0];
+	fakeMessageHeader.author = extractHeaderValue(msgParsed.headers, "from")[0] ?? "";
 	fakeMessageHeader.recipients = extractHeaderValue(msgParsed.headers, "to");
-	fakeMessageHeader.subject = extractHeaderValue(msgParsed.headers, "subject")[0];
+	fakeMessageHeader.subject = extractHeaderValue(msgParsed.headers, "subject")[0] ?? "";
 	browser.messages = {
 		getRaw: sinon.fake.resolves(msgPlain),
 		getFull: sinon.fake.throws("no fake for browser.messages.getFull"),
@@ -112,9 +112,9 @@ describe("AuthVerifier [unittest]", function () {
 				result: "none",
 			};
 			let res = await authVerifier.verify(createFakeMessageHeader());
-			expect(res.dkim[0].res_num).to.be.equal(40);
-			expect(res.dkim[0].result).to.be.equal("none");
-			expect(res.dkim[0].result_str).to.be.equal("No Signature");
+			expect(res.dkim[0]?.res_num).to.be.equal(40);
+			expect(res.dkim[0]?.result).to.be.equal("none");
+			expect(res.dkim[0]?.result_str).to.be.equal("No Signature");
 
 			storedData = {
 				version: "1.1",
@@ -124,10 +124,10 @@ describe("AuthVerifier [unittest]", function () {
 				warnings: ["DKIM_SIGWARNING_EXPIRED"]
 			};
 			res = await authVerifier.verify(createFakeMessageHeader());
-			expect(res.dkim[0].res_num).to.be.equal(10);
-			expect(res.dkim[0].result).to.be.equal("SUCCESS");
-			expect(res.dkim[0].result_str).to.be.equal("Valid (Signed by test.com)");
-			expect(res.dkim[0].warnings_str).to.be.deep.equal(["Signature is expired"]);
+			expect(res.dkim[0]?.res_num).to.be.equal(10);
+			expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
+			expect(res.dkim[0]?.result_str).to.be.equal("Valid (Signed by test.com)");
+			expect(res.dkim[0]?.warnings_str).to.be.deep.equal(["Signature is expired"]);
 		});
 
 		it("loading AuthResultV2", async function () {
@@ -139,8 +139,8 @@ describe("AuthVerifier [unittest]", function () {
 				}],
 			};
 			let res = await authVerifier.verify(createFakeMessageHeader());
-			expect(res.dkim[0].res_num).to.be.equal(40);
-			expect(res.dkim[0].result).to.be.equal("none");
+			expect(res.dkim[0]?.res_num).to.be.equal(40);
+			expect(res.dkim[0]?.result).to.be.equal("none");
 
 			storedData = {
 				version: "2.0",
@@ -165,14 +165,14 @@ describe("AuthVerifier [unittest]", function () {
 				}],
 			};
 			res = await authVerifier.verify(createFakeMessageHeader());
-			expect(res.dkim[0].res_num).to.be.equal(10);
-			expect(res.dkim[0].result).to.be.equal("SUCCESS");
-			expect(res.dkim[0].result_str).to.be.equal("Valid (Signed by bad.com)");
-			expect(res.dkim[0].sdid).to.be.equal("bad.com");
-			expect(res.dkim[0].warnings_str).to.be.deep.equal(["Wrong signer (should be test.com)"]);
+			expect(res.dkim[0]?.res_num).to.be.equal(10);
+			expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
+			expect(res.dkim[0]?.result_str).to.be.equal("Valid (Signed by bad.com)");
+			expect(res.dkim[0]?.sdid).to.be.equal("bad.com");
+			expect(res.dkim[0]?.warnings_str).to.be.deep.equal(["Wrong signer (should be test.com)"]);
 
-			expect(res.spf && res.spf[0].result).to.be.equal("pass");
-			expect(res.dmarc && res.dmarc[0].result).to.be.equal("fail");
+			expect(res.spf && res.spf[0]?.result).to.be.equal("pass");
+			expect(res.dmarc && res.dmarc[0]?.result).to.be.equal("fail");
 		});
 
 		it("loading SavedAuthResultV3", async function () {
@@ -184,8 +184,8 @@ describe("AuthVerifier [unittest]", function () {
 				}],
 			};
 			let res = await authVerifier.verify(createFakeMessageHeader());
-			expect(res.dkim[0].res_num).to.be.equal(40);
-			expect(res.dkim[0].result).to.be.equal("none");
+			expect(res.dkim[0]?.res_num).to.be.equal(40);
+			expect(res.dkim[0]?.result).to.be.equal("none");
 
 			storedData = {
 				version: "3.0",
@@ -202,11 +202,11 @@ describe("AuthVerifier [unittest]", function () {
 				}],
 			};
 			res = await authVerifier.verify(createFakeMessageHeader());
-			expect(res.dkim[0].res_num).to.be.equal(30);
-			expect(res.dkim[0].result).to.be.equal("PERMFAIL");
-			expect(res.dkim[0].result_str).to.be.equal("Invalid (Signature has an unsupported version)");
+			expect(res.dkim[0]?.res_num).to.be.equal(30);
+			expect(res.dkim[0]?.result).to.be.equal("PERMFAIL");
+			expect(res.dkim[0]?.result_str).to.be.equal("Invalid (Signature has an unsupported version)");
 
-			expect(res.dmarc && res.dmarc[0].result).to.be.equal("pass");
+			expect(res.dmarc && res.dmarc[0]?.result).to.be.equal("pass");
 		});
 	});
 
@@ -214,13 +214,13 @@ describe("AuthVerifier [unittest]", function () {
 		it("unsigned PayPal message", async function () {
 			const fakePayPalMessage = await createMessageHeader("fakePayPal.eml");
 			let res = await authVerifier.verify(fakePayPalMessage);
-			expect(res.dkim[0].result).to.be.equal("none");
+			expect(res.dkim[0]?.result).to.be.equal("none");
 
 			await prefs.setValue("policy.signRules.enable", true);
 
 			res = await authVerifier.verify(fakePayPalMessage);
-			expect(res.dkim[0].result).to.be.equal("PERMFAIL");
-			expect(res.dkim[0].result_str).to.be.equal("Invalid (Should be signed by paypal.com)");
+			expect(res.dkim[0]?.result).to.be.equal("PERMFAIL");
+			expect(res.dkim[0]?.result_str).to.be.equal("Invalid (Should be signed by paypal.com)");
 		});
 
 		it("outgoing mail", async function () {
@@ -228,13 +228,13 @@ describe("AuthVerifier [unittest]", function () {
 			const fakePayPalMessage = await createMessageHeader("fakePayPal.eml");
 
 			let res = await authVerifier.verify(fakePayPalMessage);
-			expect(res.dkim[0].result).to.be.equal("PERMFAIL");
-			expect(res.dkim[0].result_str).to.be.equal("Invalid (Should be signed by paypal.com)");
+			expect(res.dkim[0]?.result).to.be.equal("PERMFAIL");
+			expect(res.dkim[0]?.result_str).to.be.equal("Invalid (Should be signed by paypal.com)");
 
 			fakePayPalMessage.folder.type = "sent";
 
 			res = await authVerifier.verify(fakePayPalMessage);
-			expect(res.dkim[0].result).to.be.equal("none");
+			expect(res.dkim[0]?.result).to.be.equal("none");
 		});
 
 		it("DMARC", async function () {
@@ -244,13 +244,13 @@ describe("AuthVerifier [unittest]", function () {
 			await prefs.setValue("policy.signRules.enable", true);
 			await prefs.setValue("policy.signRules.checkDefaultRules", false);
 			let res = await verifier.verify(fakePayPalMessage);
-			expect(res.dkim[0].result).to.be.equal("none");
+			expect(res.dkim[0]?.result).to.be.equal("none");
 
 			await prefs.setValue("policy.DMARC.shouldBeSigned.enable", true);
 
 			res = await verifier.verify(fakePayPalMessage);
-			expect(res.dkim[0].result).to.be.equal("PERMFAIL");
-			expect(res.dkim[0].result_str).to.be.equal("Invalid (Should be signed by paypal.com)");
+			expect(res.dkim[0]?.result).to.be.equal("PERMFAIL");
+			expect(res.dkim[0]?.result_str).to.be.equal("Invalid (Should be signed by paypal.com)");
 		});
 	});
 
@@ -258,19 +258,19 @@ describe("AuthVerifier [unittest]", function () {
 		it("spf and dkim result", async function () {
 			const message = await createMessageHeader("rfc6376-A.2-arh-valid.eml");
 			let res = await authVerifier.verify(message);
-			expect(res.dkim[0].result).to.be.equal("SUCCESS");
+			expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
 			expect(res.spf).to.be.equal(undefined);
 
 			await prefs.setValue("dkim.enable", false);
 
 			res = await authVerifier.verify(message);
-			expect(res.dkim[0].result).to.be.equal("none");
+			expect(res.dkim[0]?.result).to.be.equal("none");
 
 			await prefs.setValue("arh.read", true);
 
 			res = await authVerifier.verify(message);
-			expect(res.dkim[0].result).to.be.equal("SUCCESS");
-			expect((res.spf ?? [])[0].result).to.be.equal("pass");
+			expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
+			expect((res.spf ?? [])[0]?.result).to.be.equal("pass");
 		});
 		it("relaxed parsing", async function () {
 			const message = await createMessageHeader("rfc6376-A.2-arh-valid_relaxed.eml");
@@ -282,7 +282,7 @@ describe("AuthVerifier [unittest]", function () {
 			await prefs.setValue("arh.relaxedParsing", true);
 
 			res = await authVerifier.verify(message);
-			expect((res.spf ?? [])[0].result).to.be.equal("pass");
+			expect((res.spf ?? [])[0]?.result).to.be.equal("pass");
 		});
 		describe("Converting of ARH result to DKIM result", function () {
 			beforeEach(async function () {
@@ -293,48 +293,48 @@ describe("AuthVerifier [unittest]", function () {
 			it("DKIM pass with only SDID", async function () {
 				const message = await createMessageHeader("rfc6376-A.2-arh-valid.eml");
 				const res = await authVerifier.verify(message);
-				expect(res.dkim[0].result).to.be.equal("SUCCESS");
-				expect(res.dkim[0].result_str).to.be.equal("Valid (Signed by example.com)");
-				expect(res.dkim[0].sdid).to.be.equal("example.com");
-				expect(res.dkim[0].auid).to.be.equal("@example.com");
+				expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
+				expect(res.dkim[0]?.result_str).to.be.equal("Valid (Signed by example.com)");
+				expect(res.dkim[0]?.sdid).to.be.equal("example.com");
+				expect(res.dkim[0]?.auid).to.be.equal("@example.com");
 			});
 			it("DKIM pass with only AUID", async function () {
 				const message = await createMessageHeader("rfc6376-A.2-arh-valid-auid.eml");
 				const res = await authVerifier.verify(message);
-				expect(res.dkim[0].result).to.be.equal("SUCCESS");
-				expect(res.dkim[0].result_str).to.be.equal("Valid (Signed by football.example.com)");
-				expect(res.dkim[0].sdid).to.be.equal("football.example.com");
-				expect(res.dkim[0].auid).to.be.equal("joe@football.example.com");
+				expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
+				expect(res.dkim[0]?.result_str).to.be.equal("Valid (Signed by football.example.com)");
+				expect(res.dkim[0]?.sdid).to.be.equal("football.example.com");
+				expect(res.dkim[0]?.auid).to.be.equal("joe@football.example.com");
 			});
 			it("DKIM pass with both SDID and AUID", async function () {
 				const message = await createMessageHeader("rfc6376-A.2-arh-valid-sdid_and_auid.eml");
 				const res = await authVerifier.verify(message);
-				expect(res.dkim[0].result).to.be.equal("SUCCESS");
-				expect(res.dkim[0].result_str).to.be.equal("Valid (Signed by example.com)");
-				expect(res.dkim[0].sdid).to.be.equal("example.com");
-				expect(res.dkim[0].auid).to.be.equal("joe@football.example.com");
+				expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
+				expect(res.dkim[0]?.result_str).to.be.equal("Valid (Signed by example.com)");
+				expect(res.dkim[0]?.sdid).to.be.equal("example.com");
+				expect(res.dkim[0]?.auid).to.be.equal("joe@football.example.com");
 			});
 			it("DKIM fail with reason", async function () {
 				const message = await createMessageHeader("rfc6376-A.2-arh-failed.eml");
 				const res = await authVerifier.verify(message);
-				expect(res.dkim[0].result).to.be.equal("PERMFAIL");
-				expect(res.dkim[0].result_str).to.be.equal("Invalid (bad signature)");
+				expect(res.dkim[0]?.result).to.be.equal("PERMFAIL");
+				expect(res.dkim[0]?.result_str).to.be.equal("Invalid (bad signature)");
 			});
 			it("DKIM fail without reason", async function () {
 				const message = await createMessageHeader("rfc6376-A.2-arh-failed-no_reason.eml");
 				const res = await authVerifier.verify(message);
-				expect(res.dkim[0].result).to.be.equal("PERMFAIL");
-				expect(res.dkim[0].result_str).to.be.equal("Invalid");
+				expect(res.dkim[0]?.result).to.be.equal("PERMFAIL");
+				expect(res.dkim[0]?.result_str).to.be.equal("Invalid");
 			});
 			it("DKIM results should be sorted", async function () {
 				const message = await createMessageHeader("arh-multiple_dkim_results.eml");
 				const res = await authVerifier.verify(message);
-				expect(res.dkim[0].result).to.be.equal("SUCCESS");
-				expect(res.dkim[0].sdid).to.be.equal("example.com");
-				expect(res.dkim[1].result).to.be.equal("SUCCESS");
-				expect(res.dkim[1].sdid).to.be.equal("example.org");
-				expect(res.dkim[2].result).to.be.equal("SUCCESS");
-				expect(res.dkim[2].sdid).to.be.equal("unrelated.org");
+				expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
+				expect(res.dkim[0]?.sdid).to.be.equal("example.com");
+				expect(res.dkim[1]?.result).to.be.equal("SUCCESS");
+				expect(res.dkim[1]?.sdid).to.be.equal("example.org");
+				expect(res.dkim[2]?.result).to.be.equal("SUCCESS");
+				expect(res.dkim[2]?.sdid).to.be.equal("unrelated.org");
 			});
 		});
 	});
@@ -343,14 +343,14 @@ describe("AuthVerifier [unittest]", function () {
 		it("ill-formed from shows proper error message", async function () {
 			const message = await createMessageHeader("ill_formed-from.eml");
 			const res = await authVerifier.verify(message);
-			expect(res.dkim[0].result).to.be.equal("PERMFAIL");
-			expect(res.dkim[0].result_str).to.be.equal("From address is ill-formed");
+			expect(res.dkim[0]?.result).to.be.equal("PERMFAIL");
+			expect(res.dkim[0]?.result_str).to.be.equal("From address is ill-formed");
 		});
 
 		it("ill-formed list-id is ignored", async function () {
 			const message = await createMessageHeader("rfc6376-A.2-ill_formed-list_id.eml");
 			const res = await authVerifier.verify(message);
-			expect(res.dkim[0].result).to.be.equal("SUCCESS");
+			expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
 		});
 	});
 });

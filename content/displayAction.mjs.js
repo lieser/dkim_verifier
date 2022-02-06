@@ -19,7 +19,7 @@ import { getElementById } from "./domUtils.mjs.js";
  */
 async function getCurrentTabId() {
 	const tab = await browser.tabs.query({ currentWindow: true, active: true });
-	const tabId = tab[0].id;
+	const tabId = tab[0]?.id;
 	if (tabId === undefined) {
 		throw new Error("active tab has no id");
 	}
