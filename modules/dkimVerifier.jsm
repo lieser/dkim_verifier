@@ -383,7 +383,7 @@ var Verifier = (function() {
 			tmp = elem.match(new RegExp(
 				"^"+pattFWS+"?("+tag_name+")"+pattFWS+"?="+pattFWS+"?("+tag_value+")"+pattFWS+"?$"
 			));
-			if (tmp === null) {
+			if (tmp === null || !tmp[1] || !tmp[2]) {
 				return -1;
 			}
 			name = tmp[1];
@@ -506,6 +506,9 @@ var Verifier = (function() {
 		if (algorithmTag === null) {
 			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_A");
 		}
+		if (!algorithmTag[1] || !algorithmTag[2]) {
+			throw new DKIM_InternalError("Error matching the a-tag.");
+		}
 		if (algorithmTag[0] === "rsa-sha256") {
 			DKIMSignature.a_sig = algorithmTag[1];
 			DKIMSignature.a_hash = algorithmTag[2];
@@ -591,7 +594,7 @@ var Verifier = (function() {
 			map(function (x) {return x.trim().toLowerCase();}).
 			filter(function (x) {return x;});
 		// check that the from header is included
-		if (DKIMSignature.h_array.indexOf("from") === -1) {
+		if (!DKIMSignature.h_array.includes("from")) {
 			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_FROM");
 		}
 
@@ -681,6 +684,9 @@ var Verifier = (function() {
 			DKIMSignature.i = "@"+DKIMSignature.d;
 			DKIMSignature.i_domain = DKIMSignature.d;
 		} else {
+			if (!AUIDTag[1]) {
+				throw new DKIM_InternalError("Error matching the i-tag.");
+			}
 			DKIMSignature.i = AUIDTag[0];
 			DKIMSignature.i_domain = AUIDTag[1];
 			if (!stringEndsWith(DKIMSignature.i_domain, DKIMSignature.d)) {
@@ -1173,7 +1179,7 @@ var Verifier = (function() {
 		log.debug("Parsed DKIM-Key: " + DKIMSignature.DKIMKey.toSource());
 
 		// check that the testing flag is not set
-		if (DKIMSignature.DKIMKey.t_array.indexOf("y") !== -1) {
+		if (DKIMSignature.DKIMKey.t_array.includes("y")) {
 			if (prefs.getBoolPref("error.key_testmode.ignore")) {
 				DKIMSignature.warnings.push({name: "DKIM_SIGERROR_KEY_TESTMODE"});
 				log.debug("Warning: DKIM_SIGERROR_KEY_TESTMODE");
@@ -1184,7 +1190,7 @@ var Verifier = (function() {
 
 		// if s flag is set in DKIM key record
 		// AUID must be from the same domain as SDID (and not a subdomain)
-		if (DKIMSignature.DKIMKey.t_array.indexOf("s") !== -1 &&
+		if (DKIMSignature.DKIMKey.t_array.includes("s") &&
 		    !stringEqual(DKIMSignature.i_domain, DKIMSignature.d)) {
 			throw new DKIM_SigError("DKIM_SIGERROR_DOMAIN_I");
 		}
@@ -1193,7 +1199,7 @@ var Verifier = (function() {
 		// the hash algorithm implied by the "a=" tag in the DKIM-Signature header field
 		// must be included in the contents of the "h=" tag
 		if (DKIMSignature.DKIMKey.h_array &&
-		    DKIMSignature.DKIMKey.h_array.indexOf(DKIMSignature.a_hash) === -1) {
+		    (!DKIMSignature.DKIMKey.h_array.includes(DKIMSignature.a_hash))) {
 			throw new DKIM_SigError( "DKIM_SIGERROR_KEY_HASHNOTINCLUDED" );
 		}
 		
@@ -1462,7 +1468,13 @@ var that = {
 				// @ts-ignore
 				let author = msg.headerFields.get("from")[numFrom-1];
 				author = author.replace(/^From[ \t]*:/i,"");
-				msg.from = msgHeaderParser.extractHeaderAddressMailboxes(author);
+				let from;
+				try {
+					from = msgHeaderParser.extractHeaderAddressMailboxes(author);
+				} catch (error) {
+					throw new DKIM_InternalError("From address is ill-formed",	"DKIM_INTERNALERROR_INCORRECT_FROM");
+				}
+				msg.from = from;
 			} else {
 				throw new DKIM_InternalError("E-Mail has no from address");
 			}
@@ -1470,8 +1482,14 @@ var that = {
 			// get list-id
 			if (msg.headerFields.has("list-id")) {
 				// @ts-ignore
-				msg.listId = msg.headerFields.get("list-id")[0];
-				msg.listId = msgHeaderParser.extractHeaderAddressMailboxes(msg.listId);
+				let listId = "";
+				try {
+					listId = msg.headerFields.get("list-id")[0];
+					listId = msgHeaderParser.extractHeaderAddressMailboxes(listId);
+				} catch (error) {
+					log.error("Ignoring error in parsing of list-id header", error);
+				}
+				msg.listId = listId;
 			}
 
 			// check if msg should be signed by DKIM

@@ -145,7 +145,11 @@ let ARHParser = {
 
 		// get authserv-id and authres-version
 		reg_match = match(authresHeaderRef, `${value_cp}(?:${CFWS_p}([0-9]+)${CFWS_op})?`);
-		res.authserv_id = reg_match[1] || reg_match[2];
+		const authserv_id = reg_match[1] || reg_match[2];
+		if (!authserv_id) {
+			throw new Error("Error matching the ARH authserv-id.");
+		}
+		res.authserv_id = authserv_id;
 		if (reg_match[3]) {
 			res.authres_version = parseInt(reg_match[3], 10);
 		} else {
@@ -207,6 +211,12 @@ function parseResinfo(str) {
 		}
 		throw exception;
 	}
+	if (!reg_match[1]) {
+		throw new Error("Error matching the ARH method.");
+	}
+	if (!reg_match[3]) {
+		throw new Error("Error matching the ARH result.");
+	}
 	res.method = reg_match[1];
 	if (reg_match[2]) {
 		res.method_version = parseInt(reg_match[2], 10);
@@ -237,6 +247,12 @@ function parseResinfo(str) {
 	res.propertys.body = {};
 	res.propertys.policy = {};
 	while ((reg_match = match_o(str, propspec_p)) !== null) {
+		if (!reg_match[1]) {
+			throw new Error("Error matching the ARH property name.");
+		}
+		if (!reg_match[2]) {
+			throw new Error("Error matching the ARH property sub-name.");
+		}		
 		let property = res.propertys[reg_match[1]];
 		if (!property) {
 			property = {};
@@ -306,7 +322,7 @@ function match(str, pattern) {
 function match_o(str, pattern) {
 	const regexp = new RegExp(`^${CFWS_op}(?:${pattern})(?:(?:${CFWS_op}\r\n$)|(?=;)|(?=${CFWS_p}))`);
 	const reg_match = str.match(regexp);
-	if (reg_match === null) {
+	if (reg_match === null || !reg_match[0]) {
 		return null;
 	}
 	log.trace("matched: " + reg_match[0].toSource());

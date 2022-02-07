@@ -340,7 +340,7 @@ function saveAuthResult(msgHdr, savedAuthResult) {
 			// reset result
 			log.debug("reset AuthResult result");
 			msgHdr.setStringProperty("dkim_verifier@pl-result", "");
-		} else if (savedAuthResult.dkim[0].result === "TEMPFAIL") {
+		} else if (savedAuthResult.dkim[0] && savedAuthResult.dkim[0].result === "TEMPFAIL") {
 			// don't save result if DKIM result is a TEMPFAIL
 			log.debug("result not saved because DKIM result is a TEMPFAIL");
 		} else {
@@ -512,7 +512,7 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 	let authResultDKIM = dkimSigResult;
 	switch(dkimSigResult.result) {
 		case "SUCCESS": {
-			authResultDKIM.res_num = 10;
+			authResultDKIM.res_num = AuthVerifier.DKIM_RES.SUCCESS;
 			let keySecureStr = "";
 			if (dkimSigResult.keySecure &&
 			    prefs.getBoolPref("display.keySecure")) {
@@ -526,7 +526,7 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 			break;
 		}
 		case "TEMPFAIL":
-			authResultDKIM.res_num = 20;
+			authResultDKIM.res_num = AuthVerifier.DKIM_RES.TEMPFAIL;
 			authResultDKIM.result_str =
 				tryGetFormattedString(dkimStrings, dkimSigResult.errorType,
 					dkimSigResult.errorStrParams) ||
@@ -535,9 +535,9 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 			break;
 		case "PERMFAIL": {
 			if (dkimSigResult.hideFail) {
-				authResultDKIM.res_num = 35;
+				authResultDKIM.res_num = AuthVerifier.DKIM_RES.PERMFAIL_NOSIG;
 			} else {
-				authResultDKIM.res_num = 30;
+				authResultDKIM.res_num = AuthVerifier.DKIM_RES.PERMFAIL;
 			}
 			let errorType = dkimSigResult.errorType;
 			let errorMsg;
@@ -615,6 +615,7 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 				tryGetFormattedString(dkimStrings, errorType,
 					dkimSigResult.errorStrParams) ||
 				errorType;
+				authResultDKIM.error_str = errorMsg;
 			}			
 			if (errorMsg) {
 				authResultDKIM.result_str = dkimStrings.getFormattedString("PERMFAIL",
@@ -625,7 +626,7 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 			break;
 		}
 		case "none":
-			authResultDKIM.res_num = 40;
+			authResultDKIM.res_num = AuthVerifier.DKIM_RES.NOSIG;
 			authResultDKIM.result_str = dkimStrings.getString("NOSIG");
 			break;
 		default:
