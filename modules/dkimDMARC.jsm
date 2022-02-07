@@ -273,7 +273,7 @@ async function getDMARCRecord(domain) {
 	}
 	
 	// try to parse DMARC Record if record was found in DNS Server
-	if (result.data !== null) {
+	if (result.data !== null && result.data[0]) {
 		try {
 			dmarcRecord = parseDMARCRecord(result.data[0]);
 		} catch (e) {

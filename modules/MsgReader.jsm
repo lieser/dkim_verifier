@@ -179,7 +179,7 @@ var MsgReader = {
 		for(var i = 0; i < headerArray.length; i++) {
 			// store fields under header field name (in lower case) in an array
 			hName = headerArray[i].match(/[!-9;-~]+(?=:)/);
-			if (hName !== null) {
+			if (hName !== null && hName[0]) {
 				hName = hName[0].toLowerCase();
 				if (!headerFields.has(hName)) {
 					headerFields.set(hName, []);
