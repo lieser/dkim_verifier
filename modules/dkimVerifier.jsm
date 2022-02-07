@@ -383,7 +383,7 @@ var Verifier = (function() {
 			tmp = elem.match(new RegExp(
 				"^"+pattFWS+"?("+tag_name+")"+pattFWS+"?="+pattFWS+"?("+tag_value+")"+pattFWS+"?$"
 			));
-			if (tmp === null) {
+			if (tmp === null || !tmp[1] || !tmp[2]) {
 				return -1;
 			}
 			name = tmp[1];
@@ -505,6 +505,9 @@ var Verifier = (function() {
 		var algorithmTag = parseTagValue(tagMap, "a", sig_a_tag_alg);
 		if (algorithmTag === null) {
 			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_A");
+		}
+		if (!algorithmTag[1] || !algorithmTag[2]) {
+			throw new DKIM_InternalError("Error matching the a-tag.");
 		}
 		if (algorithmTag[0] === "rsa-sha256") {
 			DKIMSignature.a_sig = algorithmTag[1];
@@ -681,6 +684,9 @@ var Verifier = (function() {
 			DKIMSignature.i = "@"+DKIMSignature.d;
 			DKIMSignature.i_domain = DKIMSignature.d;
 		} else {
+			if (!AUIDTag[1]) {
+				throw new DKIM_InternalError("Error matching the i-tag.");
+			}
 			DKIMSignature.i = AUIDTag[0];
 			DKIMSignature.i_domain = AUIDTag[1];
 			if (!stringEndsWith(DKIMSignature.i_domain, DKIMSignature.d)) {

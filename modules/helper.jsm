@@ -306,7 +306,11 @@ function stringEqual(str1, str2) {
  * @return {String}
  */
 function toType(obj) {
-	return Object.prototype.toString.call(obj).match(/\s([a-zA-Z]+)/)[1];
+	const typeMatch = Object.prototype.toString.call(obj).match(/\s([a-zA-Z]+)/);
+	if (!typeMatch || !typeMatch[1]) {
+ 		throw new Error(`Failed to get type for ${obj}`);
+ 	}
+	return typeMatch[1];
 }
 
 /**

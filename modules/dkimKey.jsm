@@ -312,7 +312,7 @@ async function getKeyFromDNS(d_val, s_val) {
 		throw new DKIM_InternalError("rcode: " + result.rcode,
 			"DKIM_DNSERROR_SERVER_ERROR");
 	}
-	if (result.data === null || result.data[0] === "") {
+	if (result.data === null || !result.data[0]) {
 		throw new DKIM_SigError("DKIM_SIGERROR_NOKEY");
 	}
 
