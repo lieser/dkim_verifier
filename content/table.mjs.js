@@ -15,8 +15,10 @@ class TableCellEditable extends HTMLTableCellElement {
 	constructor() {
 		super();
 
+		/** @private */
 		this._span = document.createElement("span");
 
+		/** @private */
 		this._input = document.createElement("input");
 		this._input.hidden = true;
 		this._input.type = "text";
@@ -134,18 +136,27 @@ export default class DataTable {
 	 * @param {DeleteRowCallback} [deleteRowCallback]
 	 */
 	constructor(tableElement, editable = false, updatedCellValueCallback = undefined, deleteRowCallback = undefined) {
+		/** @private */
 		this._tbody = tableElement.getElementsByTagName("tbody")[0];
 		if (!this._tbody) {
 			throw new Error("No tbody element found.");
 		}
+		/** @private */
 		this._isEditable = editable;
+		/** @private */
 		this._isEditing = false;
+		/** @private */
 		this._updatedCellValueCallback = updatedCellValueCallback;
+		/** @private */
 		this._deleteRowCallback = deleteRowCallback;
 
-		/** @type {HTMLTableRowElement[]} */
+		/**
+		 * @private
+		 * @type {HTMLTableRowElement[]}
+		 */
 		this._selectedRows = [];
 
+		/** @private */
 		this._columns = Array.from(tableElement.getElementsByTagName("th")).
 			map(th => ({ name: th.dataset.name, type: th.dataset.type ?? "string" }));
 	}
@@ -240,6 +251,7 @@ export default class DataTable {
 	}
 
 	/**
+	 * @private
 	 * @param {Event} event
 	 * @returns {void}
 	 */
@@ -255,6 +267,7 @@ export default class DataTable {
 	}
 
 	/**
+	 * @private
 	 * @returns {void}
 	 */
 	_unselect() {
@@ -265,6 +278,7 @@ export default class DataTable {
 	}
 
 	/**
+	 * @private
 	 * @param {Event} event
 	 * @returns {void}
 	 */
@@ -279,6 +293,7 @@ export default class DataTable {
 	}
 
 	/**
+	 * @private
 	 * @param {TableCellEditable} cell
 	 * @returns {Promise<void>}
 	 */
@@ -328,6 +343,7 @@ export default class DataTable {
 	}
 
 	/**
+	 * @private
 	 * @param {FocusEvent} event
 	 * @returns {void}
 	 */
@@ -341,6 +357,7 @@ export default class DataTable {
 	}
 
 	/**
+	 * @private
 	 * @param {KeyboardEvent} event
 	 * @returns {void}
 	 */

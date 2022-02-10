@@ -28,13 +28,13 @@ function setNavigation(navSelector) {
 	// get the <nav> element the selector belongs to
 	const navElement = navSelector.parentElement;
 	if (!navElement) {
-		console.warn("Failed to get parent nav element", navSelector);
+		log.warn("Failed to get parent nav element", navSelector);
 		return;
 	}
 	// get the parent of the <nav> element, which should contain the panes
 	const navParent = navElement.parentElement;
 	if (!navParent) {
-		console.warn("Failed to get parent of nav element", navElement);
+		log.warn("Failed to get parent of nav element", navElement);
 		return;
 	}
 

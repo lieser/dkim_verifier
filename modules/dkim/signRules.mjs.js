@@ -645,6 +645,7 @@ export default class SignRules {
 	/**
 	 * Adds should be signed rule if no enabled rule for fromAddress is found.
 	 *
+	 * @private
 	 * @param {string} fromAddress
 	 * @param {VerifierModule.dkimSigResultV2} dkimResult
 	 * @returns {Promise<void>}
