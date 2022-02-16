@@ -253,7 +253,7 @@
 		"message": "Die signierende Domain ist im DKIM-Testmodus"
 	},
 	"DKIM_SIGERROR_KEY_ILLFORMED_T": {
-		"message": "T-Tag im DKIM-Schlüssel hat falsches Format"
+		"message": "t-Tag im DKIM-Schlüssel hat falsches Format"
 	},
 	// DKIM_SIGERROR - key decode
 	"DKIM_SIGERROR_KEYDECODE": {
@@ -378,7 +378,7 @@
 		"message": "DNS-Server (EBNF-Syntax: IP{\";\"IP} )"
 	},
 	"options_dns.libunbound.usageWarning": {
-		"message": "Der Libunbound-Resolver benötigt eine extern installierte Bibliothek!"
+		"message": "Der libunbound-Resolver benötigt eine extern installierte Bibliothek!"
 	},
 	"options_dns.libunbound.path": {
 		"message": "Pfadname"
@@ -507,7 +507,7 @@
 		"message": "RSA-SHA1-Signaturalgorithmus behandeln als"
 	},
 	"options_error.algorithm.rsa.weakKeyLength.treatAs": {
-		"message": "Schwachen RSA-Schlüssel (< 2048 Bit) behandeln als"
+		"message": "Schwachen RSA-Schlüssel (< 2048 Bits) behandeln als"
 	},
 	"options_error.treatAs.value.0": {
 		"message": "Fehler"
@@ -716,10 +716,10 @@
 		"message": "E-Mail muss von der spezifizierten SDID signiert sein."
 	},
 	"ruletype.2.description": {
-		"message": "E-Mail muss nicht signiert sein. Wenn Sie signiert ist, muss sie von der spezifizierten SDID signiert sein."
+		"message": "E-Mail muss nicht signiert sein. Wenn sie signiert ist, muss sie von der spezifizierten SDID signiert sein."
 	},
 	"ruletype.3.description": {
-		"message": "E-Mail muss nicht signiert sein. Wenn Sie signiert ist, muss sie von der spezifizierten SDID signiert sein. Wenn die Signatur ungültig ist, wird die E-Mail als nicht signiert behandelt."
+		"message": "E-Mail muss nicht signiert sein. Wenn sie signiert ist, muss sie von der spezifizierten SDID signiert sein. Wenn die Signatur ungültig ist, wird die E-Mail als nicht signiert behandelt."
 	},
 	"priority.description": {
 		"message": "Priorität der Regel: Wenn mehr als eine Regel passt, wird die Regel mit der höchsten Priorität verwendet."
