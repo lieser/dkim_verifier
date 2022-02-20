@@ -218,10 +218,12 @@ class DKIMHeaderField {
 			box.style.marginInlineStart = "10px";
 
 			const label = document.createElement("label");
-			label.textContent = labelValue;
+			// The space is needed for a line break in between the label and span to occur.
+			// Setting the span to "inline-block" has a similar result,
+			// but would result in the span being completely on the second line if wrapping occurs.
+			label.textContent = `${labelValue} `;
 
 			const value = document.createElement("span");
-			value.style.marginInlineStart = "3px";
 			value.style.userSelect = "text";
 
 			box.appendChild(label);
