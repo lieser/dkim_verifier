@@ -187,6 +187,8 @@ class DKIMHeaderField {
 		// Needed for TB < 96
 		headerValue.style.display = "flex";
 		headerValue.style.alignItems = "center";
+		// TB >= 99 sets "wrap" for the "headerValue" class
+		headerValue.style.flexWrap = "nowrap";
 
 		// DKIM result
 		this.element._dkimValue = document.createElement("span");
