@@ -335,7 +335,7 @@
 		"message": "DKIM-Schlüssel speichern und mit dem aktuellen vergleichen"
 	},
 	"options_key.viewKeys": {
-		"message": "DKIM-Schlüssel"
+		"message": "DKIM-Schlüssel…"
 	},
 	"options_saveResult": {
 		"message": "Ergebnis der Überprüfung speichern"
@@ -602,6 +602,10 @@
 		"message": "DKIM-Schlüssel aktualisieren"
 	},
 	// ==================== Table Views ====================
+	"treeviewKeys.title": {
+		"message": "DKIM-Schlüssel",
+		"description": "Title of the DKIM keys table view."
+	},
 	"treeviewKeys.treecol.SDID": {
 		"message": "SDID"
 	},
@@ -622,6 +626,12 @@
 	},
 	"treeviewKeys.deleteSelectedRows": {
 		"message": "Markierte Schlüssel entfernen"
+	},
+	"treeviewSigners.user.title": {
+		"message": "Signierregeln"
+	},
+	"treeviewSigners.default.title": {
+		"message": "Standard-Signierregeln"
 	},
 	"treeviewSigners.treecol.domain": {
 		"message": "Domain"
@@ -645,18 +655,22 @@
 		"message": "Aktiviert"
 	},
 	"treeviewSigners.addSignersRule": {
-		"message": "Regel hinzufügen"
+		"message": "Regel hinzufügen…"
 	},
 	"treeviewSigners.deleteSelectedRows": {
 		"message": "Markierte Regel entfernen"
 	},
 	"treeviewSigners.exportRules": {
-		"message": "Regeln exportieren",
+		"message": "Regeln exportieren…",
 		"description": "Button for exporting sign rules"
 	},
 	"treeviewSigners.importRules": {
-		"message": "Regeln importieren",
+		"message": "Regeln importieren…",
 		"description": "Button for importing sign rules"
+	},
+	"importRules.title": {
+		"message": "Regeln importieren",
+		"description": "Title for import dialog"
 	},
 	"importRules.replaceQuestion": {
 		"message": "Sollen die importierten Regeln zu den existierenden Regeln hinzugefügt werden oder die existierenden Regeln ersetzen?",
@@ -672,6 +686,10 @@
 	},
 	"addSignersRule.title": {
 		"message": "Signierregeln hinzufügen"
+	},
+	"addSignersRule.button.add": {
+		"message": "Regel hinzufügen",
+		"description": "Button for confirming adding of sign rule."
 	},
 	"signRules.ruletype.SIGNED": {
 		"message": "Muss signiert sein (1)"
@@ -692,7 +710,7 @@
 		"message": "Abbrechen"
 	},
 	"button.help": {
-		"message": "Hilfe"
+		"message": "Hilfe…"
 	},
 	"signersRuleHelp.title": {
 		"message": "Hilfe für Signierregeln"

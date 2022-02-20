@@ -92,7 +92,7 @@
 		"message": "Lagra DKIM-nycklar"
 	},
 	"options_key.viewKeys": {
-		"message": "DKIM-nycklar"
+		"message": "DKIM-nycklar…"
 	},
 	"options_saveResult": {
 		"message": "Spara verifieringens resultat"
@@ -205,6 +205,10 @@
 		"message": "Uppdatera DKIM-nyckel"
 	},
 	// ==================== Table Views ====================
+	"treeviewKeys.title": {
+		"message": "DKIM-nycklar",
+		"description": "Title of the DKIM keys table view."
+	},
 	"treeviewKeys.treecol.SDID": {
 		"message": "SDID"
 	},
@@ -245,10 +249,14 @@
 		"message": "Aktiverad"
 	},
 	"treeviewSigners.addSignersRule": {
-		"message": "Lägg till regel"
+		"message": "Lägg till regel…"
 	},
 	"addSignersRule.title": {
 		"message": "Lägg till signaturregel"
+	},
+	"addSignersRule.button.add": {
+		"message": "Lägg till regel",
+		"description": "Button for confirming adding of sign rule."
 	},
 	"signRules.ruletype.SIGNED": {
 		"message": "Måste vara signerad (1)"
@@ -260,7 +268,7 @@
 		"message": "Ändra prioritet till"
 	},
 	"button.help": {
-		"message": "Hjälp"
+		"message": "Hjälp…"
 	},
 	"ruletype.description": {
 		"message": "Regelns typ."

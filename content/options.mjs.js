@@ -431,7 +431,7 @@ function initButtons() {
 	keysView.addEventListener("click", () => {
 		ExtensionUtils.createOrRaisePopup(
 			"./keysView.html",
-			browser.i18n.getMessage("options_key.viewKeys"),
+			browser.i18n.getMessage("treeviewKeys.title"),
 		);
 	});
 
@@ -439,7 +439,7 @@ function initButtons() {
 	signRulesDefaultsView.addEventListener("click", () => {
 		ExtensionUtils.createOrRaisePopup(
 			"./signRulesDefaultsView.html",
-			browser.i18n.getMessage("options_viewSignerDefaults"),
+			browser.i18n.getMessage("treeviewSigners.default.title"),
 		);
 	});
 
@@ -447,7 +447,7 @@ function initButtons() {
 	signRulesUserView.addEventListener("click", () => {
 		ExtensionUtils.createOrRaisePopup(
 			"./signRulesUserView.html",
-			browser.i18n.getMessage("options_viewSigners"),
+			browser.i18n.getMessage("treeviewSigners.user.title"),
 		);
 	});
 }

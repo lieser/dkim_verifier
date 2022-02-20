@@ -335,7 +335,7 @@
 		"message": "Salva le chiavi DKIM e confrontale con la chiave attuale"
 	},
 	"options_key.viewKeys": {
-		"message": "Chiavi DKIM"
+		"message": "Chiavi DKIM…"
 	},
 	"options_saveResult": {
 		"message": "Salva il risultato della verifica"
@@ -418,10 +418,10 @@
 		"message": "Considera SDID errato come un avviso invece che come un errore"
 	},
 	"options_viewSigners": {
-		"message": "Regole firmatari"
+		"message": "Regole firmatari…"
 	},
 	"options_viewSignerDefaults": {
-		"message": "Regole predefinite signatari"
+		"message": "Regole predefinite signatari…"
 	},
 	"options_policy.DMARC.shouldBeSigned.enable": {
 		"message": "Usa DMARC per determinare euristicamente se un’email dovrebbe essere firmata"
@@ -602,6 +602,10 @@
 		"message": "Aggiorna chiave DKIM"
 	},
 	// ==================== Table Views ====================
+	"treeviewKeys.title": {
+		"message": "Chiavi DKIM",
+		"description": "Title of the DKIM keys table view."
+	},
 	"treeviewKeys.treecol.SDID": {
 		"message": "SDID"
 	},
@@ -622,6 +626,12 @@
 	},
 	"treeviewKeys.deleteSelectedRows": {
 		"message": "Rimuovi chiavi selezionate"
+	},
+	"treeviewSigners.user.title": {
+		"message": "Regole firmatari"
+	},
+	"treeviewSigners.default.title": {
+		"message": "Regole predefinite signatari"
 	},
 	"treeviewSigners.treecol.domain": {
 		"message": "Dominio"
@@ -645,18 +655,22 @@
 		"message": "Abilitata"
 	},
 	"treeviewSigners.addSignersRule": {
-		"message": "Aggiungi regola"
+		"message": "Aggiungi regola…"
 	},
 	"treeviewSigners.deleteSelectedRows": {
 		"message": "Rimuovi regole selezionate"
 	},
 	"treeviewSigners.exportRules": {
-		"message": "Esporta regole",
+		"message": "Esporta regole…",
 		"description": "Button for exporting sign rules"
 	},
 	"treeviewSigners.importRules": {
-		"message": "Importa regole",
+		"message": "Importa regole…",
 		"description": "Button for importing sign rules"
+	},
+	"importRules.title": {
+		"message": "Importa regole",
+		"description": "Title for import dialog"
 	},
 	"importRules.replaceQuestion": {
 		"message": "Le regole importate vanno aggiunte a quelle esistenti o devono sostituirle?",
@@ -672,6 +686,10 @@
 	},
 	"addSignersRule.title": {
 		"message": "Aggiungi regole firmatari"
+	},
+	"addSignersRule.button.add": {
+		"message": "Aggiungi regola",
+		"description": "Button for confirming adding of sign rule."
 	},
 	"signRules.ruletype.SIGNED": {
 		"message": "Deve essere firmata (1)"
@@ -692,7 +710,7 @@
 		"message": "Annulla"
 	},
 	"button.help": {
-		"message": "Aiuto"
+		"message": "Aiuto…"
 	},
 	"signersRuleHelp.title": {
 		"message": "Aiuto sulle regole dei firmatari"
