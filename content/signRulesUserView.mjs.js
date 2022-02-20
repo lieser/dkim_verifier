@@ -73,8 +73,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 		ExtensionUtils.createOrRaisePopup(
 			"./signRulesUserAdd.html",
 			browser.i18n.getMessage("addSignersRule.title"),
-			425,
-			375,
+			475,
+			400,
 		);
 	});
 

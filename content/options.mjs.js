@@ -10,6 +10,7 @@
 // @ts-check
 ///<reference path="../WebExtensions.d.ts" />
 /* eslint-env webextensions */
+/* eslint-disable no-magic-numbers */
 
 import ExtensionUtils from "../modules/extensionUtils.mjs.js";
 import Logging from "../modules/logging.mjs.js";
@@ -448,6 +449,8 @@ function initButtons() {
 		ExtensionUtils.createOrRaisePopup(
 			"./signRulesUserView.html",
 			browser.i18n.getMessage("treeviewSigners.user.title"),
+			550,
+			900
 		);
 	});
 }
