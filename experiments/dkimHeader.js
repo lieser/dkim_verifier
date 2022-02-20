@@ -383,7 +383,9 @@ class DkimHeaderRow {
 		const defaultView = this.document.defaultView;
 		if (defaultView) {
 			const window = defaultView.window;
-			window.dispatchEvent(new window.Event('resize'));
+			if (window.OnResizeExpandedHeaderView) {
+				window.OnResizeExpandedHeaderView();
+			}
 		}
 	}
 
