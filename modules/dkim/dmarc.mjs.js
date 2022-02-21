@@ -262,9 +262,9 @@ function parseDMARCRecord(DMARCRecordStr) {
 
 	// parse tag-value list
 	const tagMap = RfcParser.parseTagValueList(DMARCRecordStr);
-	if (tagMap === -1) {
+	if (tagMap === RfcParser.TAG_PARSE_ERROR.ILL_FORMED) {
 		throw new DKIM_InternalError("DKIM_DMARCERROR_ILLFORMED_TAGSPEC");
-	} else if (tagMap === -2) {
+	} else if (tagMap === RfcParser.TAG_PARSE_ERROR.DUPLICATE) {
 		throw new DKIM_InternalError("DKIM_DMARCERROR_DUPLICATE_TAG");
 	}
 	if (!(tagMap instanceof Map)) {
