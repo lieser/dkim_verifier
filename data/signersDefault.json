@@ -80,6 +80,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "aliexpress.com",
+			"addr": "*@mail.aliexpress.com",
+			"sdid": "aliexpress.com mail.aliexpress.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
 			"domain": "altroconsumo.it",
 			"addr": "*",
 			"sdid": "altroconsumo.it",
