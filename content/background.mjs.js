@@ -63,6 +63,8 @@ const SHOW = {
 	MSG: 50,
 };
 
+const verifier = new AuthVerifier();
+
 /**
  * Verify a message in a specific tab and display the result.
  *
@@ -78,7 +80,6 @@ async function verifyMessage(tabId, message) {
 			browser.dkimHeader.showFromTooltip(tabId, message.id, true);
 		}
 
-		const verifier = new AuthVerifier();
 		const res = await verifier.verify(message);
 		if (!res.dkim[0]) {
 			throw new Error("Result does not contain a DKIM result.");

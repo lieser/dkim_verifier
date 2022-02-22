@@ -138,9 +138,9 @@ class DkimSignatureHeader {
 		dkimHeader = dkimHeader.substr(0, dkimHeader.length - 2);
 		// parse tag-value list
 		const tagMap = RfcParser.parseTagValueList(dkimHeader);
-		if (tagMap === -1) {
+		if (tagMap === RfcParser.TAG_PARSE_ERROR.ILL_FORMED) {
 			throw new DKIM_SigError("DKIM_SIGERROR_ILLFORMED_TAGSPEC");
-		} else if (tagMap === -2) {
+		} else if (tagMap === RfcParser.TAG_PARSE_ERROR.DUPLICATE) {
 			throw new DKIM_SigError("DKIM_SIGERROR_DUPLICATE_TAG");
 		}
 		if (!(tagMap instanceof Map)) {
@@ -618,9 +618,9 @@ class DkimKey {
 	constructor(DkimKeyRecord) {
 		// parse tag-value list
 		const tagMap = RfcParser.parseTagValueList(DkimKeyRecord);
-		if (tagMap === -1) {
+		if (tagMap === RfcParser.TAG_PARSE_ERROR.ILL_FORMED) {
 			throw new DKIM_SigError("DKIM_SIGERROR_KEY_ILLFORMED_TAGSPEC");
-		} else if (tagMap === -2) {
+		} else if (tagMap === RfcParser.TAG_PARSE_ERROR.DUPLICATE) {
 			throw new DKIM_SigError("DKIM_SIGERROR_KEY_DUPLICATE_TAG");
 		}
 		if (!(tagMap instanceof Map)) {

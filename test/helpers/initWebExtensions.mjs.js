@@ -59,7 +59,7 @@ function getBaseDomainFromAddr(addr) {
 	return Promise.resolve(baseDomain);
 }
 
-// eslint-disable-next-line mocha/no-top-level-hooks, mocha/no-hooks-for-single-case
+// eslint-disable-next-line mocha/no-top-level-hooks
 before(async function () {
 	try {
 		const { default: browserFake } = await import("webextensions-api-fake");

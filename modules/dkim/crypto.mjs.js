@@ -208,6 +208,7 @@ class DkimCryptoNode extends DkimCryptoI {
 			Buffer.from(signature, "base64")
 		);
 		// TODO: get key size, e.g. with asn.1 parser in https://www.npmjs.com/package/node-forge
+		// eslint-disable-next-line no-magic-numbers
 		return [valid, 1024];
 	}
 }

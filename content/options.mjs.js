@@ -431,24 +431,21 @@ function initButtons() {
 	const keysView = getElementById("key.viewKeys");
 	keysView.addEventListener("click", () => {
 		ExtensionUtils.createOrRaisePopup(
-			"./keysView.html",
-			browser.i18n.getMessage("treeviewKeys.title"),
+			"/content/keysView.html",
 		);
 	});
 
 	const signRulesDefaultsView = getElementById("signRulesDefaultsView");
 	signRulesDefaultsView.addEventListener("click", () => {
 		ExtensionUtils.createOrRaisePopup(
-			"./signRulesDefaultsView.html",
-			browser.i18n.getMessage("treeviewSigners.default.title"),
+			"/content/signRulesDefaultsView.html",
 		);
 	});
 
 	const signRulesUserView = getElementById("signRulesUserView");
 	signRulesUserView.addEventListener("click", () => {
 		ExtensionUtils.createOrRaisePopup(
-			"./signRulesUserView.html",
-			browser.i18n.getMessage("treeviewSigners.user.title"),
+			"/content/signRulesUserView.html",
 			550,
 			900
 		);
