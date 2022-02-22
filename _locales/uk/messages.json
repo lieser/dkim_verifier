@@ -274,71 +274,71 @@
 	},
 	// DKIM_SIGWARNING
 	"DKIM_SIGWARNING_SMALL_L": {
-		"message": "Not the entire e-mail is signed"
+		"message": "Не весь електронний лист підписано"
 	},
 	"DKIM_SIGWARNING_EXPIRED": {
-		"message": "Signature is expired"
+		"message": "Термін дії підпису закінчився"
 	},
 	"DKIM_SIGWARNING_FUTURE": {
-		"message": "Signature is in the future"
+		"message": "Підпис у майбутньому"
 	},
 	"DKIM_SIGWARNING_KEYSMALL": {
-		"message": "Signature is insecure (key size too small)"
+		"message": "Підпис небезпечний (розмір ключа замалий)"
 	},
 	"DKIM_SIGWARNING_KEY_IS_WEAK": {
-		"message": "Signed with a weak key"
+		"message": "Підписано слабким ключем"
 	},
 	"DKIM_SIGWARNING_FROM_NOT_IN_SDID": {
-		"message": "From is not in the signing domain"
+		"message": "Поле 'Від' не з домену підпису"
 	},
 	"DKIM_SIGWARNING_FROM_NOT_IN_AUID": {
-		"message": "From does not match the user identifier"
+		"message": "Поле 'Від' не відповідає ідентифікатору користувача"
 	},
 	// JSDNS
 	"TOO_MANY_HOPS": {
-		"message": "Too many hops."
+		"message": "Забагато переходів."
 	},
 	"CONNECTION_REFUSED": {
-		"message": "DNS server $1 refused a TCP connection."
+		"message": "DNS-сервер $1 відмовив у TCP-з'єднанні."
 	},
 	"TIMED_OUT": {
-		"message": "DNS server $1 timed out on a TCP connection."
+		"message": "Час очікування DNS-сервера $1 для TCP-з'єднання закінчився."
 	},
 	"SERVER_ERROR": {
-		"message": "Error connecting to DNS server &1."
+		"message": "Помилка підключення до DNS-сервера &1."
 	},
 	"INCOMPLETE_RESPONSE": {
-		"message": "Incomplete response from $1."
+		"message": "Неповна відповідь від $1."
 	},
 	// ==================== Options window ====================
 	"options_prefwindow.title": {
-		"message": "DKIM Verifier Options"
+		"message": "Параметри перевірки DKIM"
 	},
 	// -------------------- General options --------------------
 	"options_general": {
-		"message": "General"
+		"message": "Загальні"
 	},
 	// ---------- General options tab ----------
 	"options_general.general": {
-		"message": "General"
+		"message": "Загальні"
 	},
 	"options_dkim.enable": {
-		"message": "Verify DKIM signatures"
+		"message": "Перевірити підписи DKIM"
 	},
 	"options_key.storing.value.0": {
-		"message": "Don't store DKIM keys"
+		"message": "Не зберігати ключі DKIM"
 	},
 	"options_key.storing.value.1": {
-		"message": "Store DKIM keys"
+		"message": "Зберігати ключі DKIM"
 	},
 	"options_key.storing.value.2": {
-		"message": "Store and compare DKIM keys with the current key"
+		"message": "Зберігати та порівнювати ключі DKIM з поточним ключем"
 	},
 	"options_key.viewKeys": {
-		"message": "DKIM keys…"
+		"message": "Ключі DKIM…"
 	},
 	"options_saveResult": {
-		"message": "Save result of the verification"
+		"message": "Зберегти результат перевірки"
 	},
 	// ---------- DNS options tab ----------
 	"options_dns": {
@@ -348,401 +348,401 @@
 		"message": "Resolver"
 	},
 	"options_dns.resolver.value.1": {
-		"message": "JavaScript DNS library"
+		"message": "Бібліотека JavaScript DNS"
 	},
 	"options_dns.resolver.value.2": {
 		"message": "libunbound"
 	},
 	"options_dns.getNameserversFromOS": {
-		"message": "Get DNS servers from OS configuration"
+		"message": "Отримати DNS-сервери з конфігурації ОС"
 	},
 	"options_dns.nameserver": {
-		"message": "DNS servers (Syntax (EBNF): host[\":\"port]{\";\"host[\":\"port]} )"
+		"message": "DNS-сервери (Синтаксис (EBNF): host[\":\"port]{\";\"host[\":\"port]} )"
 	},
 	"options_dns.timeout_connect": {
-		"message": "DNS connect timeout (in seconds)"
+		"message": "Час очікування підключення DNS (у секундах)"
 	},
 	"options_dns.proxy.enable": {
-		"message": "Use a Proxy to connect to the DNS servers"
+		"message": "Використовувати проксі для підключення до DNS-серверів"
 	},
 	"options_dns.proxy.type": {
-		"message": "Proxy type:"
+		"message": "Тип проксі:"
 	},
 	"options_dns.proxy.host": {
-		"message": "Proxy server:"
+		"message": "Проксі-сервер:"
 	},
 	"options_dns.proxy.port": {
-		"message": "Port:"
+		"message": "Порт:"
 	},
 	"options_dns.libunbound.nameserver": {
-		"message": "DNS servers (Syntax (EBNF): IP{\";\"IP} )"
+		"message": "DNS-сервери (Синтаксис (EBNF): IP{\";\"IP} )"
 	},
 	"options_dns.libunbound.usageWarning": {
-		"message": "The libunbound resolver requires an externally installed library"
+		"message": "Резолвер libunbound потребує встановленої зовнішньої бібліотеки"
 	},
 	"options_dns.libunbound.path": {
-		"message": "Path"
+		"message": "Шлях"
 	},
 	"options_dns.libunbound.path.relToProfileDir": {
-		"message": "Path relative to profile directory"
+		"message": "Шлях щодо теки профілю"
 	},
 	// ---------- Policy options tab ----------
 	"options_general.policy": {
-		"message": "Policy"
+		"message": "Політика"
 	},
 	"options_policy.signRules.enable": {
-		"message": "Check if e-mail should be signed"
+		"message": "Перевірити, чи має бути підписаний електронний лист"
 	},
 	"options_policy.signRules.checkDefaultRules": {
-		"message": "Use default rules"
+		"message": "Використовувати правила за замовчуванням"
 	},
 	"options_policy.signRules.autoAddRule.enable": {
-		"message": "Automatically add rules based on viewed DKIM signed e-mails"
+		"message": "Автоматично додавати правила на основі переглянутих підписаних DKIM електронних листів"
 	},
 	"options_policy.signRules.autoAddRule.onlyIfFromAddressInSDID": {
-		"message": "Only if the From address is in the SDID"
+		"message": "Тільки якщо адреса відправника є в SDID"
 	},
 	"options_policy.signRules.autoAddRule.for.value.0": {
-		"message": "for From address"
+		"message": "для адреси з поля 'Від'"
 	},
 	"options_policy.signRules.autoAddRule.for.value.1": {
-		"message": "for subdomain"
+		"message": "для субдомену"
 	},
 	"options_policy.signRules.autoAddRule.for.value.2": {
-		"message": "for base domain"
+		"message": "для базового домену"
 	},
 	"options_policy.signRules.sdid.allowSubDomains": {
-		"message": "Allow also subdomains of the SDIDs"
+		"message": "Дозволити також субдомени SDID"
 	},
 	"options_policy.signRules.error.wrong_sdid.asWarning": {
-		"message": "Treat wrong SDID as a warning instead of an error"
+		"message": "Розглядати неправильний SDID як попередження замість помилки"
 	},
 	"options_viewSigners": {
-		"message": "Signers rules…"
+		"message": "Правила для підписів..."
 	},
 	"options_viewSignerDefaults": {
-		"message": "Default signers rules…"
+		"message": "Правила для підписів за замовчуванням..."
 	},
 	"options_policy.DMARC.shouldBeSigned.enable": {
-		"message": "Use DMARC to heuristically determine if an e-mail should be signed"
+		"message": "Використовуйте DMARC, щоб евристично визначити, чи потрібно підписувати електронний лист"
 	},
 	// -------------------- Display options --------------------
 	"options_display": {
-		"message": "Display"
+		"message": "Показ"
 	},
 	"options_showDKIMHeader": {
-		"message": "Show DKIM header"
+		"message": "Показати заголовок DKIM"
 	},
 	"options_showDKIMFromTooltip": {
-		"message": "Show DKIM tooltip for From header"
+		"message": "Показати підказку DKIM для заголовка 'Від'"
 	},
 	"options_showDKIM.value.0": {
-		"message": "never"
+		"message": "ніколи"
 	},
 	"options_showDKIM.value.10": {
-		"message": "when an e-mail with a valid DKIM signature is viewed"
+		"message": "коли переглядається електронний лист із дійсним підписом DKIM"
 	},
 	"options_showDKIM.value.30": {
-		"message": "when an e-mail with a DKIM signature is viewed"
+		"message": "коли переглядається електронний лист із підписом DKIM"
 	},
 	"options_showDKIM.value.40": {
-		"message": "when an e-mail is viewed"
+		"message": "під час перегляду електронного листа"
 	},
 	"options_showDKIM.value.50": {
-		"message": "when a message is viewed"
+		"message": "коли повідомлення переглядається"
 	},
 	"options_colorFrom": {
-		"message": "Enable highlighting of From header"
+		"message": "Увімкнути виділення кольором заголовка 'Від'"
 	},
 	"options_color": {
-		"message": "Color"
+		"message": "Колір"
 	},
 	"options_color.text": {
-		"message": "Text:"
+		"message": "Текст:"
 	},
 	"options_color.background": {
-		"message": "Background:"
+		"message": "Фон:"
 	},
 	"options_color.success": {
-		"message": "Valid signature"
+		"message": "Дійсний підпис"
 	},
 	"options_color.warning": {
-		"message": "Valid signature with warnings"
+		"message": "Дійсний підпис з попередженнями"
 	},
 	"options_color.permfail": {
-		"message": "Invalid signature"
+		"message": "Недійсний підпис"
 	},
 	"options_color.tempfail": {
-		"message": "Temporary error"
+		"message": "Тимчасова помилка"
 	},
 	"options_color.nosig": {
-		"message": "Unsigned e-mail"
+		"message": "Непідписаний електронний лист"
 	},
 	"options_display.favicon.show": {
-		"message": "Show the favicon of known signing domains before the From address"
+		"message": "Показати піктограму відомих доменів підпису перед адресою 'Від'"
 	},
 	// -------------------- Advanced options --------------------
 	"options_advanced": {
-		"message": "Advanced"
+		"message": "Розширенні"
 	},
 	"options_debug": {
-		"message": "Enable debugging (Outputs errors and debug info in the Error Console)"
+		"message": "Увімкнути налагодження (Виводить помилки та інформацію про налагодження в консолі помилок)"
 	},
 	"options_error.detailedReasons": {
-		"message": "Show detailed error reasons"
+		"message": "Показати докладні причини помилки"
 	},
 	"options_error.key_testmode.ignore": {
-		"message": "Still verify the signature, if a domain is only testing DKIM"
+		"message": "Перевіряти підпис, навіть якщо домен лише тестує DKIM"
 	},
 	"options_error.illformed_i.treatAs": {
-		"message": "Treat ill-formed AUID tag as"
+		"message": "Розглядати неправильно сформований тег AUID як"
 	},
 	"options_error.illformed_s.treatAs": {
-		"message": "Treat ill-formed selector tag as"
+		"message": "Розглядати неправильно сформований тег селектора як"
 	},
 	"options_error.policy.key_insecure.treatAs": {
-		"message": "Treat DKIM key not secured by DNSSEC as"
+		"message": "Розглядати ключ DKIM, котрий не захищений DNSSEC, як"
 	},
 	"options_error.algorithm.sign.rsa-sha1.treatAs": {
-		"message": "Treat RSA-SHA1 sign algorithm as"
+		"message": "Розглядати алгоритм підпису RSA-SHA1 як"
 	},
 	"options_error.algorithm.rsa.weakKeyLength.treatAs": {
-		"message": "Treat weak RSA keys (<2048 bits) as"
+		"message": "Розглядати слабкі ключі RSA (<2048 біт) як"
 	},
 	"options_error.treatAs.value.0": {
-		"message": "error"
+		"message": "помилка"
 	},
 	"options_error.treatAs.value.1": {
-		"message": "warning"
+		"message": "попередження"
 	},
 	"options_error.treatAs.value.2": {
-		"message": "nothing"
+		"message": "нічого"
 	},
 	"options_display.keySecure": {
-		"message": "Indicate successful DNSSEC validation with a lock after the SDID"
+		"message": "Показати успішну перевірку DNSSEC із блокуванням після SDID"
 	},
 	"options_arh.read": {
-		"message": "Read Authentication-Results header"
+		"message": "Прочитати заголовок Authentication-Results"
 	},
 	"options_arh.replaceAddonResult": {
-		"message": "Reading the Authentication-Results header replaces the add-ons verification"
+		"message": "Читання заголовка Authentication-Results замінює перевірку додатків"
 	},
 	"options_arh.relaxedParsing": {
-		"message": "Try to read non RFC compliant Authentication-Results header"
+		"message": "Спроба прочитати несумісний з RFC заголовок Authentication-Results"
 	},
 	// -------------------- Account options --------------------
 	"options_account": {
-		"message": "Account",
-		"description": "Title for account specific options"
+		"message": "Обліковий запис",
+		"description": "Назва для параметрів облікового запису"
 	},
 	"options_acc.dkim.enable": {
-		"message": "Verify DKIM signatures:"
+		"message": "Перевірити підписи DKIM:"
 	},
 	"options_acc.arh.read": {
-		"message": "Read Authentication-Results header:"
+		"message": "Прочитати заголовок Authentication-Results:"
 	},
 	"options_acc.arh.allowedAuthserv": {
-		"message": "Trusted authentication servers:"
+		"message": "Надійні сервери аутентифікації:"
 	},
 	"options_acc.boolean.value.0": {
-		"message": "Use default value"
+		"message": "Використовувати значення за замовчуванням"
 	},
 	"options_acc.boolean.value.1": {
-		"message": "Yes"
+		"message": "Так"
 	},
 	"options_acc.boolean.value.2": {
-		"message": "No"
+		"message": "Ні"
 	},
 	// -------------------- About --------------------
 	"about": {
-		"message": "About"
+		"message": "Про"
 	},
 	"about_name": {
 		"message": "DKIM Verifier",
 		"description": "Name of the add-on"
 	},
 	"about_summary": {
-		"message": "Verifies the DKIM-Signatures of e-mails.",
+		"message": "Перевіряє DKIM-підписи електронних листів.",
 		"description": "Short description of the add-on"
 	},
 	"about_homepage": {
-		"message": "Homepage"
+		"message": "Домашня сторінка"
 	},
 	"about_documentation": {
-		"message": "Documentation",
+		"message": "Документація",
 		"description": "Link text for GitHub documentation page"
 	},
 	"about_contributors": {
-		"message": "GitHub contributors",
+		"message": "GitHub учасники",
 		"description": "Link text for GitHub contributors page"
 	},
 	"about_translators": {
-		"message": "Translators:",
+		"message": "Перекладачі:",
 		"description": "Heading for list of translators"
 	},
 	"about_dependencies": {
-		"message": "Included dependencies:",
+		"message": "Включені залежності:",
 		"description": "Heading for list of included dependencies"
 	},
 	"about_by": {
-		"message": "by",
+		"message": "від",
 		"description": "<dependency name> by <author>"
 	},
 	// ==================== Actions ====================
 	"dkim_verifier.reverifyDKIMSignature": {
-		"message": "Reverify DKIM Signature"
+		"message": "Повторно перевірити підпис DKIM"
 	},
 	"dkim_verifier.policyAddUserException": {
-		"message": "Add must be signed exception"
+		"message": "Додавання має бути підписаним винятком"
 	},
 	"dkim_verifier.markKeyAsSecure": {
-		"message": "Mark DKIM key as secure"
+		"message": "Позначити ключ DKIM як захищений"
 	},
 	"dkim_verifier.updateKey": {
-		"message": "Update DKIM key"
+		"message": "Оновити ключ DKIM"
 	},
 	// ==================== Table Views ====================
 	"treeviewKeys.title": {
-		"message": "DKIM keys",
+		"message": "Ключі DKIM",
 		"description": "Title of the DKIM keys table view."
 	},
 	"treeviewKeys.treecol.SDID": {
 		"message": "SDID"
 	},
 	"treeviewKeys.treecol.selector": {
-		"message": "Selector"
+		"message": "Селектор"
 	},
 	"treeviewKeys.treecol.key": {
-		"message": "DKIM key"
+		"message": "Ключ DKIM"
 	},
 	"treeviewKeys.treecol.insertedAt": {
-		"message": "Inserted"
+		"message": "Вставлено"
 	},
 	"treeviewKeys.treecol.lastUsedAt": {
-		"message": "Last used"
+		"message": "Останнє використано"
 	},
 	"treeviewKeys.treecol.secure": {
 		"message": "DNSSEC"
 	},
 	"treeviewKeys.deleteSelectedRows": {
-		"message": "Delete selected keys"
+		"message": "Видалити вибрані ключі"
 	},
 	"treeviewSigners.user.title": {
-		"message": "Signers rules"
+		"message": "Правила для підписників"
 	},
 	"treeviewSigners.default.title": {
-		"message": "Default signers rules"
+		"message": "Правила підписувачів за замовчуванням"
 	},
 	"treeviewSigners.treecol.domain": {
-		"message": "Domain"
+		"message": "Домен"
 	},
 	"treeviewSigners.treecol.listId": {
-		"message": "List-Id"
+		"message": "Ідентифікатор списку"
 	},
 	"treeviewSigners.treecol.addr": {
-		"message": "From"
+		"message": "Від"
 	},
 	"treeviewSigners.treecol.sdid": {
 		"message": "SDID"
 	},
 	"treeviewSigners.treecol.ruletype": {
-		"message": "Rule type"
+		"message": "Тип правила"
 	},
 	"treeviewSigners.treecol.priority": {
-		"message": "Priority"
+		"message": "Пріоритет"
 	},
 	"treeviewSigners.treecol.enabled": {
-		"message": "Enabled"
+		"message": "Увімкнено"
 	},
 	"treeviewSigners.addSignersRule": {
-		"message": "Add rule…"
+		"message": "Додати правило..."
 	},
 	"treeviewSigners.deleteSelectedRows": {
-		"message": "Delete selected rules"
+		"message": "Видалити вибрані правила"
 	},
 	"treeviewSigners.exportRules": {
-		"message": "Export rules…",
+		"message": "Правила для експорту...",
 		"description": "Button for exporting sign rules"
 	},
 	"treeviewSigners.importRules": {
-		"message": "Import rules…",
+		"message": "Правила для імпорту...",
 		"description": "Button for importing sign rules"
 	},
 	"importRules.title": {
-		"message": "Import rules",
+		"message": "Імпортувати правила",
 		"description": "Title for import dialog"
 	},
 	"importRules.replaceQuestion": {
-		"message": "Should the imported rules be added to the existing rules, or replace the existing rules?",
+		"message": "Чи слід імпортовані правила додати до тих що існують або замінити правила існують?",
 		"description": "Question asked in import dialog"
 	},
 	"importRules.addRules": {
-		"message": "Add rules",
+		"message": "Додати правила",
 		"description": "Button in import dialog for adding rules to existing rules"
 	},
 	"importRules.replaceRules": {
-		"message": "Replace rules",
+		"message": "Замінити правила",
 		"description": "Button in import dialog for replacing existing rules"
 	},
 	"addSignersRule.title": {
-		"message": "Add signers rule"
+		"message": "Додати правило підписувачів"
 	},
 	"addSignersRule.button.add": {
-		"message": "Add rule",
+		"message": "Додати правило",
 		"description": "Button for confirming adding of sign rule."
 	},
 	"signRules.ruletype.SIGNED": {
-		"message": "Must be signed (1)"
+		"message": "Повинен бути підписаний (1)"
 	},
 	"signRules.ruletype.NEUTRAL": {
-		"message": "Can be signed (2)"
+		"message": "Можна підписати (2)"
 	},
 	"signRules.ruletype.HIDEFAIL": {
-		"message": "Ignore invalid signature (3)"
+		"message": "Ігнорувати недійсний підпис (3)"
 	},
 	"signRules.priorityMode.auto": {
-		"message": "Automatically select priority"
+		"message": "Автоматично вибрати пріоритет"
 	},
 	"signRules.priorityMode.manual": {
-		"message": "Set priority to"
+		"message": "Встановити пріоритет"
 	},
 	"button.cancel": {
-		"message": "Cancel"
+		"message": "Скасувати"
 	},
 	"button.help": {
-		"message": "Help…"
+		"message": "Допомога..."
 	},
 	"signersRuleHelp.title": {
-		"message": "Signers rules help"
+		"message": "Допомога для правил підписувачів"
 	},
 	"domain.description": {
-		"message": "Will be matched against the base domain of the From address. For example, the base domain for 'email.example.co.uk' is 'example.co.uk'."
+		"message": "Буде відповідати базовому домену адреси 'Від'. Наприклад, базовим доменом для 'email.example.co.uk' є 'example.co.uk'."
 	},
 	"listId.description": {
-		"message": "Will be matched against the list-id, if the e-mail was received through an e-mail list. Note that only the part between '<' and '>' of the List-Id header is the actual list-id. Only either the domain or the list-id is matched at the same time."
+		"message": "Буде збігатися з ідентифікатором списку, якщо електронний лист було отримано через список електронної пошти. Зверніть увагу, що лише частина між "<" і ">" заголовку List-Id є фактичним ідентифікатором списку. Одночасно збігається лише домен або ідентифікатор списку."
 	},
 	"addr.description": {
-		"message": "Will be matched against the From address. Use an '*' to match zero or more characters."
+		"message": "Буде збігатися з адресою відправника. Використовуйте '*', щоб зіставити нуль або більше символів."
 	},
 	"sdid.description": {
-		"message": "The domain by which the e-mails should be signed. If this is left empty, every SDID is allowed. More than one domain can be specified by separating them with a space."
+		"message": "Домен, яким мають бути підписані електронні листи. Якщо це залишити порожнім, дозволено кожен SDID. Можна вказати більше одного домену, розділивши їх пробілом."
 	},
 	"ruletype.description": {
-		"message": "The type of the rule."
+		"message": "Тип правила."
 	},
 	"ruletype.1.description": {
-		"message": "E-mail must be signed by the specified SDID."
+		"message": "Електронна пошта має бути підписана вказаним SDID."
 	},
 	"ruletype.2.description": {
-		"message": "E-mail doesn't have to be signed. If it is signed, it must be by the specified SDID."
+		"message": "Електронну пошту не обов'язково підписувати. Якщо вона підписана, то має бути зазначеним SDID."
 	},
 	"ruletype.3.description": {
-		"message": "E-mail doesn't have to be signed. If it is signed, it must be by the specified SDID. If the e-mail has an invalid signature, it is treated as having no signature."
+		"message": "Електронну пошту не потрібно підписувати. Якщо вона підписана, вона має бути зазначеним SDID. Якщо електронна пошта має недійсний підпис, вона розглядається як без підпису."
 	},
 	"priority.description": {
-		"message": "The priority of the rule. If more than one rule matches, the one with the highest priority is used."
+		"message": "Пріоритет правила. Якщо збігається більше одного правила, використовується те, яке має найвищий пріоритет."
 	},
 	"enabled.description": {
-		"message": "1 if the rule is enabled, 0 if it is disabled."
+		"message": "1, якщо правило ввімкнено, 0, якщо воно вимкнено."
 	}
 }
