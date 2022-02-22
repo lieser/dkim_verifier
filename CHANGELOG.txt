@@ -1,9 +1,10 @@
-4.1.1 [2022-02-xx]
+4.1.1 [2022-02-22]
 ------------------
  - fixed blank line in header if email does not contain DKIM signature (Thunderbird 97) (#293)
  - fixed some dialog windows being to small (#296)
  - fixed header spanning multiple lines possibly being cropped at the bottom
  - fixed wrapping of header in Thunderbird 99
+ - added Ukrainian translation (by lexxai) (#297)
 
 4.1.0 [2022-02-06]
 ------------------
