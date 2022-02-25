@@ -308,7 +308,7 @@
 		"message": "Almacene y compare las claves DKIM con la clave actual"
 	},
 	"options_key.viewKeys": {
-		"message": "Llaves DKIM"
+		"message": "Llaves DKIM…"
 	},
 	"options_saveResult": {
 		"message": "Guardar resultado de la verificación"
@@ -391,10 +391,10 @@
 		"message": "Trate el SDID incorrecto como una advertencia en lugar de un error"
 	},
 	"options_viewSigners": {
-		"message": "Reglas de firmantes"
+		"message": "Reglas de firmantes…"
 	},
 	"options_viewSignerDefaults": {
-		"message": "Reglas de firmantes predeterminadas"
+		"message": "Reglas de firmantes predeterminadas…"
 	},
 	"options_policy.DMARC.shouldBeSigned.enable": {
 		"message": "Utilice DMARC para determinar heurísticamente si un correo electrónico debe estar firmado"
@@ -575,6 +575,10 @@
 		"message": "Actualizar la clave DKIM"
 	},
 	// ==================== Table Views ====================
+	"treeviewKeys.title": {
+		"message": "Llaves DKIM",
+		"description": "Title of the DKIM keys table view."
+	},
 	"treeviewKeys.treecol.SDID": {
 		"message": "SDID"
 	},
@@ -595,6 +599,12 @@
 	},
 	"treeviewKeys.deleteSelectedRows": {
 		"message": "Eliminar claves seleccionadas"
+	},
+	"treeviewSigners.user.title": {
+		"message": "Reglas de firmantes"
+	},
+	"treeviewSigners.default.title": {
+		"message": "Reglas de firmantes predeterminadas"
 	},
 	"treeviewSigners.treecol.domain": {
 		"message": "Dominio"
@@ -618,13 +628,17 @@
 		"message": "Activado"
 	},
 	"treeviewSigners.addSignersRule": {
-		"message": "Agregar regla"
+		"message": "Agregar regla…"
 	},
 	"treeviewSigners.deleteSelectedRows": {
 		"message": "Eliminar reglas seleccionadas"
 	},
 	"addSignersRule.title": {
 		"message": "Agregar regla de firmantes"
+	},
+	"addSignersRule.button.add": {
+		"message": "Agregar regla",
+		"description": "Button for confirming adding of sign rule."
 	},
 	"signRules.ruletype.SIGNED": {
 		"message": "Debe estar firmado (1)"
@@ -645,7 +659,7 @@
 		"message": "Cancelar"
 	},
 	"button.help": {
-		"message": "Ayuda"
+		"message": "Ayuda…"
 	},
 	"signersRuleHelp.title": {
 		"message": "Las reglas de los firmantes ayudan"

@@ -77,6 +77,14 @@ export default class RfcParser {
 	//// 3.5.  The DKIM-Signature Header Field
 	static get domain_name() { return `(?:${this.sub_domain}(?:\\.${this.sub_domain})+)`; }
 
+	/** @readonly */
+	static TAG_PARSE_ERROR = {
+		/** @readonly */
+		ILL_FORMED: -1,
+		/** @readonly */
+		DUPLICATE: -2,
+	};
+
 	/**
 	 * Parses a Tag=Value list.
 	 * Specified in Section 3.2 of RFC 6376.
@@ -92,11 +100,12 @@ export default class RfcParser {
 		const tagValue = `(?:${tval}(?:(${this.WSP}|${this.FWS})+${tval})*)?`;
 
 		// delete optional semicolon at end
-		if (str.charAt(str.length - 1) === ";") {
-			str = str.substr(0, str.length - 1);
+		let listStr = str;
+		if (listStr.charAt(listStr.length - 1) === ";") {
+			listStr = listStr.substr(0, listStr.length - 1);
 		}
 
-		const array = str.split(";");
+		const array = listStr.split(";");
 		/** @type {Map<string, string>} */
 		const map = new Map();
 		for (const elem of array) {
@@ -105,14 +114,14 @@ export default class RfcParser {
 				`^${this.FWS}?(${tagName})${this.FWS}?=${this.FWS}?(${tagValue})${this.FWS}?$`
 			));
 			if (tmp === null || !tmp[1] || !tmp[2]) {
-				return -1;
+				return RfcParser.TAG_PARSE_ERROR.ILL_FORMED;
 			}
 			const name = tmp[1];
 			const value = tmp[2];
 
 			// check that tag is no duplicate
 			if (map.has(name)) {
-				return -2;
+				return RfcParser.TAG_PARSE_ERROR.DUPLICATE;
 			}
 
 			// store Tag=Value pair

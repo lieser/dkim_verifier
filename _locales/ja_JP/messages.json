@@ -335,7 +335,7 @@
 		"message": "DKIM キーを保存し現在のキーと比較する"
 	},
 	"options_key.viewKeys": {
-		"message": "DKIM キー"
+		"message": "DKIM キー…"
 	},
 	"options_saveResult": {
 		"message": "検証結果を保存"
@@ -418,10 +418,10 @@
 		"message": "正しくない SDID をエラーではなく警告として扱う"
 	},
 	"options_viewSigners": {
-		"message": "署名者ルール"
+		"message": "署名者ルール…"
 	},
 	"options_viewSignerDefaults": {
-		"message": "デフォルトの署名者ルール"
+		"message": "デフォルトの署名者ルール…"
 	},
 	"options_policy.DMARC.shouldBeSigned.enable": {
 		"message": "メールが署名されているべきかをヒューリスティックに決定するために DMARC を利用"
@@ -602,6 +602,10 @@
 		"message": "DKIM キーを更新"
 	},
 	// ==================== Table Views ====================
+	"treeviewKeys.title": {
+		"message": "DKIM キー",
+		"description": "Title of the DKIM keys table view."
+	},
 	"treeviewKeys.treecol.SDID": {
 		"message": "SDID"
 	},
@@ -622,6 +626,12 @@
 	},
 	"treeviewKeys.deleteSelectedRows": {
 		"message": "選択したキーを削除"
+	},
+	"treeviewSigners.user.title": {
+		"message": "署名者ルール"
+	},
+	"treeviewSigners.default.title": {
+		"message": "デフォルトの署名者ルール"
 	},
 	"treeviewSigners.treecol.domain": {
 		"message": "ドメイン"
@@ -645,18 +655,22 @@
 		"message": "有効化"
 	},
 	"treeviewSigners.addSignersRule": {
-		"message": "ルールを追加"
+		"message": "ルールを追加…"
 	},
 	"treeviewSigners.deleteSelectedRows": {
 		"message": "選択したルールを削除"
 	},
 	"treeviewSigners.exportRules": {
-		"message": "エクスポートルール",
+		"message": "エクスポートルール…",
 		"description": "Button for exporting sign rules"
 	},
 	"treeviewSigners.importRules": {
-		"message": "インポートルール",
+		"message": "インポートルール…",
 		"description": "Button for importing sign rules"
+	},
+	"importRules.title": {
+		"message": "インポートルール",
+		"description": "Title for import dialog"
 	},
 	"importRules.replaceQuestion": {
 		"message": "インポートするルールを既存のルールに追加しますか？ 上書きしますか？",
@@ -672,6 +686,10 @@
 	},
 	"addSignersRule.title": {
 		"message": "署名者ルールを追加"
+	},
+	"addSignersRule.button.add": {
+		"message": "ルールを追加",
+		"description": "Button for confirming adding of sign rule."
 	},
 	"signRules.ruletype.SIGNED": {
 		"message": "署名必須 (1)"
@@ -692,7 +710,7 @@
 		"message": "キャンセル"
 	},
 	"button.help": {
-		"message": "ヘルプ"
+		"message": "ヘルプ…"
 	},
 	"signersRuleHelp.title": {
 		"message": "署名者ルールのヘルプ"

@@ -329,7 +329,7 @@
 		"message": "Armazene e compare as chaves DKIM com a chave atual"
 	},
 	"options_key.viewKeys": {
-		"message": "Chaves DKIM"
+		"message": "Chaves DKIM…"
 	},
 	"options_saveResult": {
 		"message": "Salvar resultado da verificação"
@@ -412,10 +412,10 @@
 		"message": "Tratar o SDID errado como um aviso em vez de um erro"
 	},
 	"options_viewSigners": {
-		"message": "Regras dos signatários"
+		"message": "Regras dos signatários…"
 	},
 	"options_viewSignerDefaults": {
-		"message": "Regras de signatários padrão"
+		"message": "Regras de signatários padrão…"
 	},
 	"options_policy.DMARC.shouldBeSigned.enable": {
 		"message": "Usar DMARC para determinar heuristicamente se um e-mail deve ser assinado"
@@ -588,6 +588,10 @@
 		"message": "Atualizar chave DKIM"
 	},
 	// ==================== Table Views ====================
+	"treeviewKeys.title": {
+		"message": "Chaves DKIM",
+		"description": "Title of the DKIM keys table view."
+	},
 	"treeviewKeys.treecol.SDID": {
 		"message": "SDID"
 	},
@@ -608,6 +612,12 @@
 	},
 	"treeviewKeys.deleteSelectedRows": {
 		"message": "Excluir chaves selecionadas"
+	},
+	"treeviewSigners.user.title": {
+		"message": "Regras dos signatários"
+	},
+	"treeviewSigners.default.title": {
+		"message": "Regras de signatários padrão"
 	},
 	"treeviewSigners.treecol.domain": {
 		"message": "Domínio"
@@ -631,16 +641,20 @@
 		"message": "Ativado"
 	},
 	"treeviewSigners.addSignersRule": {
-		"message": "Adicionar regra"
+		"message": "Adicionar regra…"
 	},
 	"treeviewSigners.deleteSelectedRows": {
 		"message": "Excluir regras selecionadas"
 	},
 	"treeviewSigners.exportRules": {
-		"message": "Exportar regras"
+		"message": "Exportar regras…"
 	},
 	"treeviewSigners.importRules": {
-		"message": "Importar regras"
+		"message": "Importar regras…"
+	},
+	"importRules.title": {
+		"message": "Importar regras",
+		"description": "Title for import dialog"
 	},
 	"importRules.replaceQuestion": {
 		"message": "As regras importadas devem ser adicionadas às regras existentes ou substituir as regras existentes?"
@@ -653,6 +667,10 @@
 	},
 	"addSignersRule.title": {
 		"message": "Adicionar regra de signatários"
+	},
+	"addSignersRule.button.add": {
+		"message": "Adicionar regra",
+		"description": "Button for confirming adding of sign rule."
 	},
 	"signRules.ruletype.SIGNED": {
 		"message": "Deve ser assinado (1)"
@@ -673,7 +691,7 @@
 		"message": "Cancelar"
 	},
 	"button.help": {
-		"message": "Ajuda"
+		"message": "Ajuda…"
 	},
 	"signersRuleHelp.title": {
 		"message": "Ajuda de regras de signatários"

@@ -10,6 +10,7 @@
 // @ts-check
 ///<reference path="../WebExtensions.d.ts" />
 /* eslint-env webextensions */
+/* eslint-disable no-magic-numbers */
 
 import ExtensionUtils from "../modules/extensionUtils.mjs.js";
 import Logging from "../modules/logging.mjs.js";
@@ -430,24 +431,23 @@ function initButtons() {
 	const keysView = getElementById("key.viewKeys");
 	keysView.addEventListener("click", () => {
 		ExtensionUtils.createOrRaisePopup(
-			"./keysView.html",
-			browser.i18n.getMessage("options_key.viewKeys"),
+			"/content/keysView.html",
 		);
 	});
 
 	const signRulesDefaultsView = getElementById("signRulesDefaultsView");
 	signRulesDefaultsView.addEventListener("click", () => {
 		ExtensionUtils.createOrRaisePopup(
-			"./signRulesDefaultsView.html",
-			browser.i18n.getMessage("options_viewSignerDefaults"),
+			"/content/signRulesDefaultsView.html",
 		);
 	});
 
 	const signRulesUserView = getElementById("signRulesUserView");
 	signRulesUserView.addEventListener("click", () => {
 		ExtensionUtils.createOrRaisePopup(
-			"./signRulesUserView.html",
-			browser.i18n.getMessage("options_viewSigners"),
+			"/content/signRulesUserView.html",
+			550,
+			900
 		);
 	});
 }

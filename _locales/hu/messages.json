@@ -335,7 +335,7 @@
 		"message": "Tárolja és hasonlítsa össze a DKIM kulcsokat a jelenlegi kulccsal"
 	},
 	"options_key.viewKeys": {
-		"message": "DKIM kulcsok"
+		"message": "DKIM kulcsok…"
 	},
 	"options_saveResult": {
 		"message": "Mentse el az ellenőrzés eredményét"
@@ -418,10 +418,10 @@
 		"message": "A helytelen SDID-t figyelmeztetésként kezelje, nem hibaként"
 	},
 	"options_viewSigners": {
-		"message": "Az aláírók szabályai"
+		"message": "Az aláírók szabályai…"
 	},
 	"options_viewSignerDefaults": {
-		"message": "Alapértelmezett aláírói szabályok"
+		"message": "Alapértelmezett aláírói szabályok…"
 	},
 	"options_policy.DMARC.shouldBeSigned.enable": {
 		"message": "A DMARC segítségével heurisztikusan meghatározhatja, hogy alá kell-e írni az e-mailt"
@@ -602,6 +602,10 @@
 		"message": "DKIM kulcs frissítése"
 	},
 	// ==================== Table Views ====================
+	"treeviewKeys.title": {
+		"message": "DKIM kulcsok",
+		"description": "Title of the DKIM keys table view."
+	},
 	"treeviewKeys.treecol.SDID": {
 		"message": "SDID"
 	},
@@ -622,6 +626,12 @@
 	},
 	"treeviewKeys.deleteSelectedRows": {
 		"message": "Kiválasztott kulcsok törlése"
+	},
+	"treeviewSigners.user.title": {
+		"message": "Az aláírók szabályai"
+	},
+	"treeviewSigners.default.title": {
+		"message": "Alapértelmezett aláírói szabályok"
 	},
 	"treeviewSigners.treecol.domain": {
 		"message": "Tartomány"
@@ -645,18 +655,22 @@
 		"message": "Engedélyezve"
 	},
 	"treeviewSigners.addSignersRule": {
-		"message": "Szabály hozzáadása"
+		"message": "Szabály hozzáadása…"
 	},
 	"treeviewSigners.deleteSelectedRows": {
 		"message": "Kiválasztott szabályok törlése"
 	},
 	"treeviewSigners.exportRules": {
-		"message": "Exportszabályok",
+		"message": "Exportszabályok…",
 		"description": "Gomb a jelszabályok exportálásához"
 	},
 	"treeviewSigners.importRules": {
-		"message": "Importszabályok",
+		"message": "Importszabályok…",
 		"description": "Gomb a jelszabályok importálásához"
+	},
+	"importRules.title": {
+		"message": "Importszabályok",
+		"description": "Title for import dialog"
 	},
 	"importRules.replaceQuestion": {
 		"message": "Az importált szabályokat hozzá kell adni a meglévő szabályokhoz, vagy fel kell váltani a meglévő szabályokat?",
@@ -672,6 +686,10 @@
 	},
 	"addSignersRule.title": {
 		"message": "Aláírók szabály hozzáadása"
+	},
+	"addSignersRule.button.add": {
+		"message": "Szabály hozzáadása",
+		"description": "Button for confirming adding of sign rule."
 	},
 	"signRules.ruletype.SIGNED": {
 		"message": "Alá kell írni (1)"
@@ -692,7 +710,7 @@
 		"message": "Mégse"
 	},
 	"button.help": {
-		"message": "Súgó"
+		"message": "Súgó…"
 	},
 	"signersRuleHelp.title": {
 		"message": "Aláírók szabályok súgó"

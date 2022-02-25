@@ -21,21 +21,17 @@ const log = Logging.getLogger("ExtensionUtils");
 /**
  * Create popup window, or raise it if already open.
  *
- * @param {string} url
- * @param {string} title
+ * @param {string} url - must be the absolute path starting with /
  * @param {number} [height]
  * @param {number} [width]
- * @returns {Promise<browser.windows.Window>}
+ * @returns {Promise<void>}
  */
-async function createOrRaisePopup(url, title, height = undefined, width = undefined) {
-	const popupWindows = await browser.windows.getAll({
-		populate: true,
-		windowTypes: ["popup"],
-	});
-	const popupWindow = popupWindows.find(popup => popup.title === `${title} - Mozilla Thunderbird`);
-	if (popupWindow?.id !== undefined) {
-		await browser.windows.update(popupWindow.id, { focused: true });
-		return popupWindow;
+async function createOrRaisePopup(url, height = undefined, width = undefined) {
+	const [popupTab] = await browser.tabs.query({url: browser.runtime.getURL(url)});
+	const popupWindowId = popupTab?.windowId;
+	if (popupWindowId !== undefined) {
+		await browser.windows.update(popupWindowId, { focused: true });
+		return;
 	}
 	/** @type {Parameters<browser.windows.create>[0]} */
 	const createData = {
@@ -49,7 +45,7 @@ async function createOrRaisePopup(url, title, height = undefined, width = undefi
 	if (width) {
 		createData.width = width;
 	}
-	return browser.windows.create(createData);
+	browser.windows.create(createData);
 }
 
 /**

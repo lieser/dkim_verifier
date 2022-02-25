@@ -1,4 +1,4 @@
-Dieses Add-on macht eine DNS-Anfrage (in der Voreinstellung an Google Public DNS (8.8.8.8) oder den im Betriebssystem eingestellten Server) für einen TXT-Record, der in der Signatur angegeben ist und den öffentlichen Schlüssel für die Signatur enthält.
-Dies passiert jedes mal, wenn eine E-Mail mit einer DKIM-Signatur angesehen wird.
+Dieses Add-on fragt einen DNS-Server (standardmäßig Google Public DNS (8.8.8.8) oder den im Betriebssystem konfigurierten Server) nach einem in der Signatur angegebenen TXT-Eintrag, der den öffentlichen Schlüssel der Signatur enthält.
+Dies passiert jedes Mal, wenn eine E-Mail mit einer DKIM-Signatur angesehen wird.
 
-Falls die Verwendung von DMARC eingeschaltet ist, kann es zu weiteren DNS-Anfragen kommen, auch wenn E-Mails angesehen werden, die nicht mit DKIM signiert wurden.
+Wenn die Verwendung von DMARC aktiviert ist, können zusätzliche DNS-Anfragen durchgeführt werden, auch wenn nicht DKIM-signierte E-Mails abgerufen werden.
