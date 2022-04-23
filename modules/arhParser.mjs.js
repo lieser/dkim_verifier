@@ -1,7 +1,7 @@
 /**
  * Parser for the Authentication-Results header as specified in RFC 7601.
  *
- * Copyright (c) 2014-2021 Philippe Lieser
+ * Copyright (c) 2014-2022 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -19,54 +19,17 @@ import RfcParser from "./rfcParser.mjs.js";
 const log = Logging.getLogger("ArhParser");
 
 
-// WSP as specified in Appendix B.1 of RFC 5234
-const WSP_p = "[ \t]";
-// VCHAR as specified in Appendix B.1 of RFC 5234
-const VCHAR_p = "[!-~]";
-// Let-dig  as specified in Section 4.1.2 of RFC 5321 [SMTP].
-const Let_dig_p = "[A-Za-z0-9]";
-// Ldh-str  as specified in Section 4.1.2 of RFC 5321 [SMTP].
-const Ldh_str_p = `(?:[A-Za-z0-9-]*${Let_dig_p})`;
 // "Keyword" as specified in Section 4.1.2 of RFC 5321 [SMTP].
-const Keyword_p = Ldh_str_p;
-// obs-FWS as specified in Section 4.2 of RFC 5322
-const obs_FWS_p = `(?:${WSP_p}+(?:\r\n${WSP_p}+)*)`;
-// quoted-pair as specified in Section 3.2.1 of RFC 5322
-// Note: obs-qp is not included, so this pattern matches less then specified!
-const quoted_pair_p = `(?:\\\\(?:${VCHAR_p}|${WSP_p}))`;
-// FWS as specified in Section 3.2.2 of RFC 5322
-const FWS_p = `(?:(?:(?:${WSP_p}*\r\n)?${WSP_p}+)|${obs_FWS_p})`;
-const FWS_op = `${FWS_p}?`;
-// ctext as specified in Section 3.2.2 of RFC 5322
-const ctext_p = "[!-'*-[\\]-~]";
-// ccontent as specified in Section 3.2.2 of RFC 5322
-// Note: comment is not included, so this pattern matches less then specified!
-const ccontent_p = `(?:${ctext_p}|${quoted_pair_p})`;
-// comment as specified in Section 3.2.2 of RFC 5322
-const comment_p = `\\((?:${FWS_op}${ccontent_p})*${FWS_op}\\)`;
+const Keyword_p = RfcParser.Keyword;
 // CFWS as specified in Section 3.2.2 of RFC 5322 [MAIL]
-const CFWS_p = `(?:(?:(?:${FWS_op}${comment_p})+${FWS_op})|${FWS_p})`;
-const CFWS_op = `${CFWS_p}?`;
-// dot-atom-text as specified in Section 3.2.3 of RFC 5322
-const dot_atom_text_p = RfcParser.dot_atom_text;
-// dot-atom as specified in Section 3.2.3 of RFC 5322
-// dot-atom        =   [CFWS] dot-atom-text [CFWS]
-const dot_atom_p = `(?:${CFWS_op}${dot_atom_text_p}${CFWS_op})`;
-// qtext as specified in Section 3.2.4 of RFC 5322
-// Note: obs-qtext is not included, so this pattern matches less then specified!
-const qtext_p = "[!#-[\\]-~]";
-// qcontent as specified in Section 3.2.4 of RFC 5322
-const qcontent_p = `(?:${qtext_p}|${quoted_pair_p})`;
+const CFWS_p = RfcParser.CFWS;
+const CFWS_op = RfcParser.CFWS_op;
 // quoted-string as specified in Section 3.2.4 of RFC 5322
-const quoted_string_p = `(?:${CFWS_op}"(?:${FWS_op}${qcontent_p})*${FWS_op}"${CFWS_op})`;
-const quoted_string_cp = `(?:${CFWS_op}"((?:${FWS_op}${qcontent_p})*)${FWS_op}"${CFWS_op})`;
+const quoted_string_cp = `(?:${CFWS_op}"((?:${RfcParser.FWS_op}${RfcParser.qcontent})*)${RfcParser.FWS_op}"${CFWS_op})`;
 // local-part as specified in Section 3.4.1 of RFC 5322
-// Note: obs-local-part is not included, so this pattern matches less then specified!
-const local_part_p = `(?:${dot_atom_p}|${quoted_string_p})`;
-// token as specified in Section 5.1 of RFC 2045.
-const token_p = "[^ \\x00-\\x1F\\x7F()<>@,;:\\\\\"/[\\]?=]+";
+const local_part_p = RfcParser.local_part;
 // "value" as specified in Section 5.1 of RFC 2045.
-const value_cp = `(?:(${token_p})|${quoted_string_cp})`;
+const value_cp = `(?:(${RfcParser.token})|${quoted_string_cp})`;
 // domain-name as specified in Section 3.5 of RFC 6376 [DKIM].
 const domain_name_p = RfcParser.domain_name;
 

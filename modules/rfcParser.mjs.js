@@ -15,6 +15,10 @@
 import { DKIM_InternalError, DKIM_SigError } from "./error.mjs.js";
 
 export default class RfcParser {
+	////// RFC 2045 - Multipurpose Internet Mail Extensions (MIME) Part One: Format of Internet Message Bodies
+	//// 5.1.  Syntax of the Content-Type Header Field
+	static get token() { return "[^ \\x00-\\x1F\\x7F()<>@,;:\\\\\"/[\\]?=]+"; }
+
 	////// RFC 5234 - Augmented BNF for Syntax Specifications: ABNF
 	//// Appendix B.1.  Core Rules
 	static get VCHAR() { return "[!-~]"; }
@@ -22,7 +26,10 @@ export default class RfcParser {
 
 	////// RFC 5321 - Simple Mail Transfer Protocol
 	//// 4.1.2.  Command Argument Syntax
-	static get sub_domain() { return "(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?)"; }
+	static get Keyword() { return this.Ldh_str; }
+	static get sub_domain() { return `(?:${this.Let_dig}${this.Ldh_str}?)`; }
+	static get Let_dig() { return "[A-Za-z0-9]"; }
+	static get Ldh_str() { return `(?:[A-Za-z0-9-]*${this.Let_dig})`; }
 
 	////// RFC 5322 - Internet Message Format
 	//// 3.2.1.  Quoted characters
