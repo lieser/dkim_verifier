@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2021 Philippe Lieser
+ * Copyright (c) 2020-2022 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -11,9 +11,9 @@
 ///<reference path="../../WebExtensions.d.ts" />
 /* eslint-env shared-node-browser, webextensions */
 
+import expect, { expectAsyncError } from "../helpers/chaiUtils.mjs.js";
 import { fakeBrowser, hasWebExtensions } from "../helpers/initWebExtensions.mjs.js";
 import prefs, { ObjPreferences, StorageLocalPreferences } from "../../modules/preferences.mjs.js";
-import expect from "../helpers/chaiUtils.mjs.js";
 
 describe("preferences [unittest]", function () {
 	/** @type {import("../../modules/preferences.mjs.js").BasePreferences} */
@@ -47,19 +47,19 @@ describe("preferences [unittest]", function () {
 		it("throw if not exist", function () {
 			expect(
 				() => pref.getValue("policy.xxx")
-			).to.throw;
+			).to.throw();
 			expect(
 				() => pref.getValue("policy.xxx.yyy")
-			).to.throw;
+			).to.throw();
 			expect(
 				() => pref.getValue("policy.signRules")
-			).to.throw;
+			).to.throw();
 			expect(
 				() => pref.getValue("policy.signRules.xxx")
-			).to.throw;
+			).to.throw();
 			expect(
 				() => pref.getValue("policy.signRules")
-			).to.throw;
+			).to.throw();
 		});
 	});
 	describe("getBool/getNumber/getString", function () {
@@ -81,13 +81,13 @@ describe("preferences [unittest]", function () {
 		it("throw if not exist", function () {
 			expect(
 				() => pref.getBool("policy.xxx")
-			).to.throw;
+			).to.throw();
 			expect(
 				() => pref.getNumber("policy.xxx.yyy")
-			).to.throw;
+			).to.throw();
 			expect(
 				() => pref.getString("policy.signRules")
-			).to.throw;
+			).to.throw();
 		});
 		it("throw if unexpected type", function () {
 			expect(
@@ -126,27 +126,27 @@ describe("preferences [unittest]", function () {
 				pref["policy.signRules.enable"]
 			).to.be.false;
 		});
-		it("throw if not exist", function () {
+		it("undefined if not exist", function () {
 			expect(
 				// @ts-expect-error
-				() => pref["policy.xxx"]
-			).to.throw;
+				pref["policy.xxx"]
+			).to.be.undefined;
 			expect(
 				// @ts-expect-error
-				() => pref["policy.xxx.yyy"]
-			).to.throw;
+				pref["policy.xxx.yyy"]
+			).to.be.undefined;
 			expect(
 				// @ts-expect-error
-				() => pref["policy.signRules"]
-			).to.throw;
+				pref["policy.signRules"]
+			).to.be.undefined;
 			expect(
 				// @ts-expect-error
-				() => pref["policy.signRules.xxx"]
-			).to.throw;
+				pref["policy.signRules.xxx"]
+			).to.be.undefined;
 			expect(
 				// @ts-expect-error
-				() => pref["policy.signRules"]
-			).to.throw;
+				pref["policy.signRules"]
+			).to.be.undefined;
 		});
 	});
 	describe("set value", function () {
@@ -212,22 +212,21 @@ describe("preferences [unittest]", function () {
 				pref.getValue("display.favicon.show")
 			).to.be.true;
 		});
-		it("throw if not exist", function () {
-			expect(
-				() => pref.setValue("policy.xxx", 1)
-			).to.throw;
-			expect(
-				() => pref.setValue("policy.xxx.yyy", true)
-			).to.throw;
-			expect(
-				() => pref.setValue("policy.signRules", "foo")
-			).to.throw;
-			expect(
-				() => pref.setValue("policy.signRules.xxx", 2)
-			).to.throw;
-			expect(
-				() => pref.setValue("policy.signRules", false)
-			).to.throw;
+		it("throw if not exist", async function () {
+			let res = pref.setValue("policy.xxx", 1);
+			await expectAsyncError(res);
+
+			res = pref.setValue("policy.xxx.yyy", true);
+			await expectAsyncError(res);
+
+			res = pref.setValue("policy.signRules", "foo");
+			await expectAsyncError(res);
+
+			res = pref.setValue("policy.signRules.xxx", 2);
+			await expectAsyncError(res);
+
+			res = pref.setValue("policy.signRules", false);
+			await expectAsyncError(res);
 		});
 		it("throw if unexpected type", function () {
 			expect(
@@ -465,7 +464,7 @@ describe("preferences [unittest]", function () {
 				expect(fakeBrowser.storage.local.get.callCount).to.be.greaterThan(2);
 				expect(() =>
 					loadedPref["dns.nameserver"]
-				).to.throw;
+				).to.throw();
 			} finally {
 				fakeBrowser.storage.local.get.resetBehavior();
 				fakeBrowser.storage.local.get.callsFake(fakeBrowser.storage.local._get);

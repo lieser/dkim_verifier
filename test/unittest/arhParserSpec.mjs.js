@@ -148,7 +148,7 @@ describe("ARH Parser [unittest]", function () {
 				"Authentication-Results: example.com;\r\n" +
 				"          spf=pass smtp.mailfrom=example.net;\r\n";
 
-			expect(() => ArhParser.parse(arh)).to.throw;
+			expect(() => ArhParser.parse(arh)).to.throw();
 
 			const res = ArhParser.parse(arh, true);
 			expect(res.authserv_id).to.be.equal("example.com");
@@ -161,7 +161,7 @@ describe("ARH Parser [unittest]", function () {
 				"Authentication-Results: example.com;\r\n" +
 				"          dkim=pass header.b=gfT/i2HB\r\n";
 
-			expect(() => ArhParser.parse(arh)).to.throw;
+			expect(() => ArhParser.parse(arh)).to.throw();
 
 			const res = ArhParser.parse(arh, true);
 			expect(res.authserv_id).to.be.equal("example.com");
