@@ -195,5 +195,16 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo[0]?.propertys.header.d).to.be.equal("github.com");
 			expect(res.resinfo[0]?.propertys.header.i).to.be.equal("dkim+foo-bar@example.github.com");
 		});
+		it("a-tag", function () {
+			const res = ArhParser.parse(
+				"Authentication-Results: example.net;\r\n" +
+				'      dkim=pass header.a=rsa-sha256\r\n');
+
+			expect(res.authserv_id).to.be.equal("example.net");
+			expect(res.resinfo.length).to.be.equal(1);
+			expect(res.resinfo[0]?.method).to.be.equal("dkim");
+			expect(res.resinfo[0]?.result).to.be.equal("pass");
+			expect(res.resinfo[0]?.propertys.header.a).to.be.equal("rsa-sha256");
+		});
 	});
 });

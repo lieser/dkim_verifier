@@ -1,7 +1,7 @@
 /**
  * Authentication Verifier.
  *
- * Copyright (c) 2014-2021 Philippe Lieser
+ * Copyright (c) 2014-2022 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -280,9 +280,36 @@ async function getARHResult(message, headers, from, listId, account, dmarc) {
 	const dkimSigResults = arhDKIM.map(arhDKIM_to_dkimSigResultV2);
 
 	// if ARH result is replacing the add-ons,
-	// check SDID and AUID of DKIM results
+	// do some checks we also do for verification
 	if (prefs["arh.replaceAddonResult"]) {
+		// check SDID and AUID of DKIM results
 		await checkSignRules(message, dkimSigResults, from, listId, dmarc);
+
+		// check signature algorithm
+		for (let i = 0; i < dkimSigResults.length; i++) {
+			if (arhDKIM[i]?.propertys.header.a === "rsa-sha1") {
+				switch (prefs["error.algorithm.sign.rsa-sha1.treatAs"]) {
+					case 0: { // error
+						dkimSigResults[i] = {
+							version: "2.0",
+							result: "PERMFAIL",
+							sdid: dkimSigResults[i]?.sdid,
+							auid: dkimSigResults[i]?.auid,
+							selector: dkimSigResults[i]?.selector,
+							errorType: "DKIM_SIGERROR_INSECURE_A",
+						};
+						break;
+					}
+					case 1: // warning
+						dkimSigResults[i]?.warnings?.push({ name: "DKIM_SIGERROR_INSECURE_A" });
+						break;
+					case 2: // ignore
+						break;
+					default:
+						throw new DKIM_InternalError("invalid error.algorithm.sign.rsa-sha1.treatAs");
+				}
+			}
+		}
 	}
 
 	// sort signatures

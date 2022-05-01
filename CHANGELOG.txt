@@ -1,3 +1,5 @@
+- Authentication-Results header: check sign algorithm used for DKIM (#219)
+
 4.1.1 [2022-02-22]
 ------------------
  - fixed blank line in header if email does not contain DKIM signature (Thunderbird 97) (#293)
