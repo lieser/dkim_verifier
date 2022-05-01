@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2021 Philippe Lieser
+ * Copyright (c) 2020-2022 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -46,6 +46,7 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo[1]?.method).to.be.equal("spf");
 			expect(res.resinfo[1]?.result).to.be.equal("pass");
 			expect(res.resinfo[1]?.propertys.smtp.mailfrom).to.be.equal("example.net");
+			// From [RFC 7601]
 			res = ArhParser.parse(
 				"Authentication-Results: example.com;\r\n" +
 				"          sender-id=pass header.from=example.net\r\n");
@@ -54,8 +55,18 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo[0]?.method).to.be.equal("sender-id");
 			expect(res.resinfo[0]?.result).to.be.equal("pass");
 			expect(res.resinfo[0]?.propertys.header.from).to.be.equal("example.net");
+			// From [RFC 8601]
+			res = ArhParser.parse(
+				"Authentication-Results: example.com; iprev=pass\r\n" +
+				"          policy.iprev=192.0.2.200\r\n");
+			expect(res.authserv_id).to.be.equal("example.com");
+			expect(res.resinfo.length).to.be.equal(1);
+			expect(res.resinfo[0]?.method).to.be.equal("iprev");
+			expect(res.resinfo[0]?.result).to.be.equal("pass");
+			expect(res.resinfo[0]?.propertys.policy.iprev).to.be.equal("192.0.2.200");
 		});
 		it("B.5.  Service Provided, Several Authentications Done, Different MTAs", function () {
+			// From [RFC 7601]
 			let res = ArhParser.parse(
 				"Authentication-Results: example.com;\r\n" +
 				"          sender-id=fail header.from=example.com;\r\n" +
@@ -68,6 +79,15 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo[1]?.method).to.be.equal("dkim");
 			expect(res.resinfo[1]?.result).to.be.equal("pass");
 			expect(res.resinfo[1]?.propertys.header.d).to.be.equal("example.com");
+			// From [RFC 8601]
+			res = ArhParser.parse(
+				"Authentication-Results: example.com;\r\n" +
+				"          dkim=pass (good signature) header.d=example.com\r\n");
+			expect(res.authserv_id).to.be.equal("example.com");
+			expect(res.resinfo.length).to.be.equal(1);
+			expect(res.resinfo[0]?.method).to.be.equal("dkim");
+			expect(res.resinfo[0]?.result).to.be.equal("pass");
+			expect(res.resinfo[0]?.propertys.header.d).to.be.equal("example.com");
 			res = ArhParser.parse(
 				"Authentication-Results: example.com;\r\n" +
 				"          auth=pass (cram-md5) smtp.auth=sender@example.com;\r\n" +
