@@ -31,6 +31,7 @@ this.migration = class extends ExtensionCommon.ExtensionAPI {
 	/**
 	 * Returns the preferences set in a preference branch.
 	 *
+	 * @private
 	 * @param {nsIPrefBranch} prefBranch
 	 * @returns {Object.<string, boolean|number|string>}
 	 */
@@ -60,6 +61,7 @@ this.migration = class extends ExtensionCommon.ExtensionAPI {
 	/**
 	 * Open connection to an SQLite database if it exist.
 	 *
+	 * @private
 	 * @param {string} fileName
 	 * @returns {Promise<any>?}
 	 */

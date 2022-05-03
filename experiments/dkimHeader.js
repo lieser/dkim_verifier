@@ -32,7 +32,11 @@ class DKIMTooltip {
 	 * @memberof DKIMTooltip
 	 */
 	constructor(document, element) {
-		// whether a separator should be added before the warnings
+		/**
+		 * Whether a separator should be added before the warnings.
+		 *
+		 * @protected
+		 */
 		this._warningsSeparator = false;
 
 		if (element) {
@@ -56,9 +60,7 @@ class DKIMTooltip {
 	 */
 	set warnings(warnings) {
 		// delete old warnings from tooltips
-		while (this.element._warningsBox.firstChild) {
-			this.element._warningsBox.firstChild.remove();
-		}
+		this.element._warningsBox.replaceChildren();
 
 		if (!this.element.ownerDocument) {
 			throw Error("Underlying element of DKIMTooltip does not contain ownerDocument");
@@ -118,6 +120,7 @@ class DkimResultTooltip extends DKIMTooltip {
 	 */
 	constructor(document, element) {
 		super(document, element);
+		/** @protected */
 		this._warningsSeparator = true;
 		if (element) {
 			return;
@@ -184,12 +187,15 @@ class DKIMHeaderField {
 		// Needed for TB < 96
 		headerValue.style.display = "flex";
 		headerValue.style.alignItems = "center";
+		// TB >= 99 sets "wrap" for the "headerValue" class
+		headerValue.style.flexWrap = "nowrap";
 
 		// DKIM result
 		this.element._dkimValue = document.createElement("span");
 		this.element._dkimValue.style.userSelect = "text";
 
 		// DKIM warning icon
+		/** @private */
 		this._dkimWarningTooltip = new DKIMWarningsTooltip(document);
 		this.element._dkimWarningTooltip = this._dkimWarningTooltip.element;
 		this.element._dkimWarningTooltip.id = "dkim-verifier-header-tooltip-warnings";
@@ -214,10 +220,12 @@ class DKIMHeaderField {
 			box.style.marginInlineStart = "10px";
 
 			const label = document.createElement("label");
-			label.textContent = labelValue;
+			// The space is needed for a line break in between the label and span to occur.
+			// Setting the span to "inline-block" has a similar result,
+			// but would result in the span being completely on the second line if wrapping occurs.
+			label.textContent = `${labelValue} `;
 
 			const value = document.createElement("span");
-			value.style.marginInlineStart = "3px";
 			value.style.userSelect = "text";
 
 			box.appendChild(label);
@@ -370,16 +378,18 @@ class DkimHeaderRow {
 	 */
 	show(show) {
 		if (show) {
-			this.element.style.visibility = "";
+			this.element.style.display = "";
 		} else {
-			this.element.style.visibility = "collapse";
+			this.element.style.display = "none";
 		}
 		// Trigger the OnResizeExpandedHeaderView() function from Thunderbird
 		// to recalculate the height on the expandedHeaderView element.
 		const defaultView = this.document.defaultView;
 		if (defaultView) {
 			const window = defaultView.window;
-			window.dispatchEvent(new window.Event('resize'));
+			if (window.OnResizeExpandedHeaderView) {
+				window.OnResizeExpandedHeaderView();
+			}
 		}
 	}
 
@@ -445,6 +455,7 @@ class DkimHeaderRow {
 	 * Should be added to the `expandedHeaders2` element.
 	 *
 	 * @static
+	 * @private
 	 * @param {Document} document
 	 * @returns {HTMLElement}
 	 * @memberof DkimHeaderRow
@@ -474,6 +485,7 @@ class DkimHeaderRow {
 	 * Should be added to the `extraHeadersArea` element.
 	 *
 	 * @static
+	 * @private
 	 * @param {Document} document
 	 * @returns {HTMLElement}
 	 * @memberof DkimHeaderRow
@@ -525,7 +537,7 @@ class DkimFavicon {
 
 		this.element.id = DkimFavicon._id;
 		this.element.classList.add("headerValue");
-		this.element.setAttribute("tooltip", DkimFavicon._idTooltip);
+		this.element.setAttribute("tooltip", DkimFavicon.idTooltip);
 		// dummy text for align baseline
 		this.element.textContent = "";
 		this.element.style.setProperty("min-width", "0px", "important");
@@ -536,10 +548,11 @@ class DkimFavicon {
 		this.element.style.backgroundRepeat = "no-repeat";
 
 		// DKIM tooltip
+		/** @private */
 		this._dkimTooltipFrom = new DkimResultTooltip(document);
 		this.element._dkimTooltipFromElement = this._dkimTooltipFrom.element;
-		this.element._dkimTooltipFromElement.id = DkimFavicon._idTooltip;
-		this.element.setAttribute("tooltip", DkimFavicon._idTooltip);
+		this.element._dkimTooltipFromElement.id = DkimFavicon.idTooltip;
+		this.element.setAttribute("tooltip", DkimFavicon.idTooltip);
 
 		this.reset();
 	}
@@ -640,9 +653,15 @@ class DkimFavicon {
 			favicon._dkimTooltipFrom.element.remove();
 		}
 	}
+
+	/**
+	 * @private
+	 * @readonly
+	 */
+	static _id = "dkimFavicon";
+	/** @readonly */
+	static idTooltip = "dkim-verifier-header-tooltip-from";
 }
-DkimFavicon._id = "dkimFavicon";
-DkimFavicon._idTooltip = "dkim-verifier-header-tooltip-from";
 
 /**
  * DKIM specific modifications of the from address:
@@ -654,6 +673,7 @@ class DkimFromAddress {
 	 * Get the element containing the from address (without the following star).
 	 *
 	 * @static
+	 * @private
 	 * @param {Document} document
 	 * @returns {XULElement?}
 	 */
@@ -720,9 +740,9 @@ class DkimFromAddress {
 			}
 			emailValue.removeAttribute("tooltiptext");
 			// set DKIM tooltip
-			emailValue.setAttribute("tooltip", DkimFavicon._idTooltip);
+			emailValue.setAttribute("tooltip", DkimFavicon.idTooltip);
 		} else {
-			if (emailValue.getAttribute("tooltip") === DkimFavicon._idTooltip) {
+			if (emailValue.getAttribute("tooltip") === DkimFavicon.idTooltip) {
 				// remove DKIM tooltip
 				emailValue.removeAttribute("tooltip");
 				// restore saved tooltip
@@ -830,9 +850,13 @@ class DkimResetMessageListener {
 	onEndHeaders() { }
 	// eslint-disable-next-line no-empty-function
 	onEndAttachments() { }
+
+	/**
+	 * @private
+	 * @type {Map<Window, DkimResetMessageListener>}
+	 */
+	static _mapping = new Map();
 }
-/** @type {Map<Window, DkimResetMessageListener>} */
-DkimResetMessageListener._mapping = new Map();
 
 // eslint-disable-next-line no-invalid-this
 this.dkimHeader = class extends ExtensionCommon.ExtensionAPI {

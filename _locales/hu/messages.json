@@ -21,6 +21,18 @@
 	"NOT_EMAIL": {
 		"message": "Az üzenet nem e-mail"
 	},
+	"SUCCESS_TAG": {
+		"message": "$1 által aláírt DKIM",
+		"description": "A Beszélgetés-bővítményben látható címke érvényes levelekhez. Röviden kell tartani."
+	},
+	"TEMPFAIL_TAG": {
+		"message": "DKIM-hiba",
+		"description": "A Beszélgetés-bővítményben látható címke átmeneti hiba miatt. Röviden kell tartani."
+	},
+	"PERMFAIL_TAG": {
+		"message": "DKIM érvénytelen",
+		"description": "Címke látható a Beszélgetés-bővítményben érvénytelen levélért. Röviden kell tartani."
+	},
 	// DKIM_INTERNALERROR
 	"DKIM_INTERNALERROR": {
 		"message": "DKIM ellenőrző belső hiba"
@@ -33,6 +45,21 @@
 	},
 	"DKIM_INTERNALERROR_INCORRECT_EMAIL_FORMAT": {
 		"message": "Az e-mail hibás formázott"
+	},
+	"DKIM_INTERNALERROR_INCORRECT_FROM": {
+		"message": "A feladó címe hibás formázott"
+	},
+	"ERROR_IMPORT_RULES": {
+		"message": "A jelszabályok importálása nem sikerült.",
+		"description": "Hiba címe, ha az előírási szabályok importálása nem sikerült."
+	},
+	"ERROR_IMPORT_RULES_UNKNOWN_DATA": {
+		"message": "Az importált fájl formátuma érvénytelen.",
+		"description": "Hibaüzenet jelenik meg, ha a felhasználó ismeretlen adatokat próbál importálni aláírási szabályokként."
+	},
+	"ERROR_IMPORT_RULES_UNSUPPORTED_FORMAT": {
+		"message": "Az előjelszabályok formátumának nem támogatott verziója van.",
+		"description": "Hibaüzenet, ha a felhasználó által importálni próbált előírási szabályok formátuma nem támogatott."
 	},
 	// DKIM_INTERNALERROR - DNS
 	"DKIM_DNSERROR_UNKNOWN": {
@@ -308,7 +335,7 @@
 		"message": "Tárolja és hasonlítsa össze a DKIM kulcsokat a jelenlegi kulccsal"
 	},
 	"options_key.viewKeys": {
-		"message": "DKIM kulcsok"
+		"message": "DKIM kulcsok…"
 	},
 	"options_saveResult": {
 		"message": "Mentse el az ellenőrzés eredményét"
@@ -391,10 +418,10 @@
 		"message": "A helytelen SDID-t figyelmeztetésként kezelje, nem hibaként"
 	},
 	"options_viewSigners": {
-		"message": "Az aláírók szabályai"
+		"message": "Az aláírók szabályai…"
 	},
 	"options_viewSignerDefaults": {
-		"message": "Alapértelmezett aláírói szabályok"
+		"message": "Alapértelmezett aláírói szabályok…"
 	},
 	"options_policy.DMARC.shouldBeSigned.enable": {
 		"message": "A DMARC segítségével heurisztikusan meghatározhatja, hogy alá kell-e írni az e-mailt"
@@ -575,6 +602,10 @@
 		"message": "DKIM kulcs frissítése"
 	},
 	// ==================== Table Views ====================
+	"treeviewKeys.title": {
+		"message": "DKIM kulcsok",
+		"description": "Title of the DKIM keys table view."
+	},
 	"treeviewKeys.treecol.SDID": {
 		"message": "SDID"
 	},
@@ -595,6 +626,12 @@
 	},
 	"treeviewKeys.deleteSelectedRows": {
 		"message": "Kiválasztott kulcsok törlése"
+	},
+	"treeviewSigners.user.title": {
+		"message": "Az aláírók szabályai"
+	},
+	"treeviewSigners.default.title": {
+		"message": "Alapértelmezett aláírói szabályok"
 	},
 	"treeviewSigners.treecol.domain": {
 		"message": "Tartomány"
@@ -618,13 +655,41 @@
 		"message": "Engedélyezve"
 	},
 	"treeviewSigners.addSignersRule": {
-		"message": "Szabály hozzáadása"
+		"message": "Szabály hozzáadása…"
 	},
 	"treeviewSigners.deleteSelectedRows": {
 		"message": "Kiválasztott szabályok törlése"
 	},
+	"treeviewSigners.exportRules": {
+		"message": "Exportszabályok…",
+		"description": "Gomb a jelszabályok exportálásához"
+	},
+	"treeviewSigners.importRules": {
+		"message": "Importszabályok…",
+		"description": "Gomb a jelszabályok importálásához"
+	},
+	"importRules.title": {
+		"message": "Importszabályok",
+		"description": "Title for import dialog"
+	},
+	"importRules.replaceQuestion": {
+		"message": "Az importált szabályokat hozzá kell adni a meglévő szabályokhoz, vagy fel kell váltani a meglévő szabályokat?",
+		"description": "Kérdés az importálási párbeszédpanelen"
+	},
+	"importRules.addRules": {
+		"message": "Szabályok hozzáadása",
+		"description": "Gomb az importálási párbeszédpanelen szabályok hozzáadásához a meglévő szabályokhoz"
+	},
+	"importRules.replaceRules": {
+		"message": "Szabályok helyettesítése",
+		"description": "Gomb az importálási párbeszédpanelen a meglévő szabályok lecseréléséhez"
+	},
 	"addSignersRule.title": {
 		"message": "Aláírók szabály hozzáadása"
+	},
+	"addSignersRule.button.add": {
+		"message": "Szabály hozzáadása",
+		"description": "Button for confirming adding of sign rule."
 	},
 	"signRules.ruletype.SIGNED": {
 		"message": "Alá kell írni (1)"
@@ -645,7 +710,7 @@
 		"message": "Mégse"
 	},
 	"button.help": {
-		"message": "Súgó"
+		"message": "Súgó…"
 	},
 	"signersRuleHelp.title": {
 		"message": "Aláírók szabályok súgó"

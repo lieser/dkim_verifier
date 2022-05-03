@@ -24,6 +24,7 @@ class Logger {
 	 */
 	constructor(loggerName) {
 		this.name = loggerName;
+		/** @private */
 		this._logLevel = Logging.logLevel;
 		this.logLevel = Logging.logLevel;
 	}
@@ -163,7 +164,12 @@ export default class Logging {
 			}
 		});
 	}
+
+	/** @private */
+	static _logLevel = Logging.Level.Debug;
+	/**
+	 * @private
+	 * @type {Logger[]}
+	 */
+	static _loggers = [];
 }
-Logging._logLevel = Logging.Level.Debug;
-/** @type {Logger[]} */
-Logging._loggers = [];

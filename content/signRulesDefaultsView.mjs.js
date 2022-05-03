@@ -28,8 +28,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 	const buttonHelp = getElementById("buttonHelp");
 	buttonHelp.addEventListener("click", () => {
 		ExtensionUtils.createOrRaisePopup(
-			"./signRulesHelp.html",
-			browser.i18n.getMessage("signersRuleHelp.title"),
+			"/content/signRulesHelp.html",
 		);
 	});
 }, { once: true });

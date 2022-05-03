@@ -14,7 +14,10 @@
 import { getElementById, uploadJsonData } from "./domUtils.mjs.js";
 import DataTable from "./table.mjs.js";
 import ExtensionUtils from "../modules/extensionUtils.mjs.js";
+import Logging from "../modules/logging.mjs.js";
 import SignRulesProxy from "../modules/dkim/signRulesProxy.mjs.js";
+
+const log = Logging.getLogger("signRulesUserView");
 
 /**
  * Notify the user about an error importing the sign rules.
@@ -22,7 +25,7 @@ import SignRulesProxy from "../modules/dkim/signRulesProxy.mjs.js";
  * @param {unknown} error
  */
 function showImportError(error) {
-	console.error("Error importing sing rules.", error);
+	log.error("Error importing sing rules.", error);
 	let message;
 	if (error instanceof Error) {
 		message = browser.i18n.getMessage(error.message);
@@ -68,10 +71,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 	const addSignersRule = getElementById("addSignersRule");
 	addSignersRule.addEventListener("click", () => {
 		ExtensionUtils.createOrRaisePopup(
-			"./signRulesUserAdd.html",
-			browser.i18n.getMessage("addSignersRule.title"),
-			425,
-			375,
+			"/content/signRulesUserAdd.html",
+			475,
+			400,
 		);
 	});
 
@@ -83,8 +85,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 	const buttonHelp = getElementById("buttonHelp");
 	buttonHelp.addEventListener("click", () => {
 		ExtensionUtils.createOrRaisePopup(
-			"./signRulesHelp.html",
-			browser.i18n.getMessage("signersRuleHelp.title"),
+			"/content/signRulesHelp.html",
 		);
 	});
 

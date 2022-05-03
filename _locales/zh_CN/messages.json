@@ -308,7 +308,7 @@
 		"message": "存储 DKIM 密钥并与当前密钥比较"
 	},
 	"options_key.viewKeys": {
-		"message": "DKIM 密钥"
+		"message": "DKIM 密钥…"
 	},
 	"options_saveResult": {
 		"message": "保存验证结果"
@@ -385,10 +385,10 @@
 		"message": "将错误的 SDID 视作一个警告而不是错误"
 	},
 	"options_viewSigners": {
-		"message": "签名者规则"
+		"message": "签名者规则…"
 	},
 	"options_viewSignerDefaults": {
-		"message": "默认签名者规则"
+		"message": "默认签名者规则…"
 	},
 	"options_policy.DMARC.shouldBeSigned.enable": {
 		"message": "如果一个邮件应该被签名，使用 DMARC 来试探性地测定"
@@ -538,6 +538,10 @@
 		"message": "更新 DKIM 密钥"
 	},
 	// ==================== Table Views ====================
+	"treeviewKeys.title": {
+		"message": "DKIM 密钥",
+		"description": "Title of the DKIM keys table view."
+	},
 	"treeviewKeys.treecol.SDID": {
 		"message": "SDID"
 	},
@@ -558,6 +562,12 @@
 	},
 	"treeviewKeys.deleteSelectedRows": {
 		"message": "删除选定密钥"
+	},
+	"treeviewSigners.user.title": {
+		"message": "签名者规则"
+	},
+	"treeviewSigners.default.title": {
+		"message": "默认签名者规则"
 	},
 	"treeviewSigners.treecol.domain": {
 		"message": "域"
@@ -581,13 +591,17 @@
 		"message": "启用"
 	},
 	"treeviewSigners.addSignersRule": {
-		"message": "添加规则"
+		"message": "添加规则…"
 	},
 	"treeviewSigners.deleteSelectedRows": {
 		"message": "删除选定规则"
 	},
 	"addSignersRule.title": {
 		"message": "添加签名者规则"
+	},
+	"addSignersRule.button.add": {
+		"message": "添加规则",
+		"description": "Button for confirming adding of sign rule."
 	},
 	"signRules.ruletype.SIGNED": {
 		"message": "必须签名 (1)"
@@ -605,7 +619,7 @@
 		"message": "设置优先级为"
 	},
 	"button.help": {
-		"message": "帮助"
+		"message": "帮助…"
 	},
 	"signersRuleHelp.title": {
 		"message": "签名者规则帮助"

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2021 Philippe Lieser
+ * Copyright (c) 2020-2022 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -335,6 +335,37 @@ describe("AuthVerifier [unittest]", function () {
 				expect(res.dkim[1]?.sdid).to.be.equal("example.org");
 				expect(res.dkim[2]?.result).to.be.equal("SUCCESS");
 				expect(res.dkim[2]?.sdid).to.be.equal("unrelated.org");
+			});
+			it("With secure signature algorithm", async function () {
+				const message = await createMessageHeader("rfc6376-A.2-arh-valid-a_tag.eml");
+				const res = await authVerifier.verify(message);
+				expect(res.dkim[0]?.result_str).to.be.equal("Valid (Signed by example.com)");
+				expect(res.dkim[0]?.warnings_str).to.be.deep.equal([]);
+				expect(res.dkim[0]?.sdid).to.be.equal("example.com");
+				expect(res.dkim[0]?.auid).to.be.equal("@example.com");
+			});
+			it("With insecure signature algorithm", async function () {
+				const message = await createMessageHeader("rfc6376-A.2-arh-valid-a_tag_sha1.eml");
+
+				let res = await authVerifier.verify(message);
+				expect(res.dkim[0]?.result_str).to.be.equal("Valid (Signed by example.com)");
+				expect(res.dkim[0]?.warnings_str).to.be.deep.equal(["Insecure signature algorithm"]);
+				expect(res.dkim[0]?.sdid).to.be.equal("example.com");
+				expect(res.dkim[0]?.auid).to.be.equal("@example.com");
+
+				prefs.setValue("error.algorithm.sign.rsa-sha1.treatAs", 0);
+				res = await authVerifier.verify(message);
+				expect(res.dkim[0]?.result).to.be.equal("PERMFAIL");
+				expect(res.dkim[0]?.result_str).to.be.equal("Invalid (Insecure signature algorithm)");
+				expect(res.dkim[0]?.sdid).to.be.equal("example.com");
+				expect(res.dkim[0]?.auid).to.be.equal("@example.com");
+
+				prefs.setValue("error.algorithm.sign.rsa-sha1.treatAs", 2);
+				res = await authVerifier.verify(message);
+				expect(res.dkim[0]?.result_str).to.be.equal("Valid (Signed by example.com)");
+				expect(res.dkim[0]?.warnings_str).to.be.deep.equal([]);
+				expect(res.dkim[0]?.sdid).to.be.equal("example.com");
+				expect(res.dkim[0]?.auid).to.be.equal("@example.com");
 			});
 		});
 	});

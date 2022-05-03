@@ -10,6 +10,7 @@
 // @ts-check
 ///<reference path="../WebExtensions.d.ts" />
 /* eslint-env webextensions */
+/* eslint-disable no-magic-numbers */
 
 import ExtensionUtils from "../modules/extensionUtils.mjs.js";
 import Logging from "../modules/logging.mjs.js";
@@ -28,13 +29,13 @@ function setNavigation(navSelector) {
 	// get the <nav> element the selector belongs to
 	const navElement = navSelector.parentElement;
 	if (!navElement) {
-		console.warn("Failed to get parent nav element", navSelector);
+		log.warn("Failed to get parent nav element", navSelector);
 		return;
 	}
 	// get the parent of the <nav> element, which should contain the panes
 	const navParent = navElement.parentElement;
 	if (!navParent) {
-		console.warn("Failed to get parent of nav element", navElement);
+		log.warn("Failed to get parent of nav element", navElement);
 		return;
 	}
 
@@ -430,24 +431,23 @@ function initButtons() {
 	const keysView = getElementById("key.viewKeys");
 	keysView.addEventListener("click", () => {
 		ExtensionUtils.createOrRaisePopup(
-			"./keysView.html",
-			browser.i18n.getMessage("options_key.viewKeys"),
+			"/content/keysView.html",
 		);
 	});
 
 	const signRulesDefaultsView = getElementById("signRulesDefaultsView");
 	signRulesDefaultsView.addEventListener("click", () => {
 		ExtensionUtils.createOrRaisePopup(
-			"./signRulesDefaultsView.html",
-			browser.i18n.getMessage("options_viewSignerDefaults"),
+			"/content/signRulesDefaultsView.html",
 		);
 	});
 
 	const signRulesUserView = getElementById("signRulesUserView");
 	signRulesUserView.addEventListener("click", () => {
 		ExtensionUtils.createOrRaisePopup(
-			"./signRulesUserView.html",
-			browser.i18n.getMessage("options_viewSigners"),
+			"/content/signRulesUserView.html",
+			550,
+			900
 		);
 	});
 }

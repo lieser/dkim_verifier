@@ -15,6 +15,10 @@
 import { DKIM_InternalError, DKIM_SigError } from "./error.mjs.js";
 
 export default class RfcParser {
+	////// RFC 2045 - Multipurpose Internet Mail Extensions (MIME) Part One: Format of Internet Message Bodies
+	//// 5.1.  Syntax of the Content-Type Header Field
+	static get token() { return "[^ \\x00-\\x1F\\x7F()<>@,;:\\\\\"/[\\]?=]+"; }
+
 	////// RFC 5234 - Augmented BNF for Syntax Specifications: ABNF
 	//// Appendix B.1.  Core Rules
 	static get VCHAR() { return "[!-~]"; }
@@ -22,7 +26,10 @@ export default class RfcParser {
 
 	////// RFC 5321 - Simple Mail Transfer Protocol
 	//// 4.1.2.  Command Argument Syntax
-	static get sub_domain() { return "(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?)"; }
+	static get Keyword() { return this.Ldh_str; }
+	static get sub_domain() { return `(?:${this.Let_dig}${this.Ldh_str}?)`; }
+	static get Let_dig() { return "[A-Za-z0-9]"; }
+	static get Ldh_str() { return `(?:[A-Za-z0-9-]*${this.Let_dig})`; }
 
 	////// RFC 5322 - Internet Message Format
 	//// 3.2.1.  Quoted characters
@@ -77,6 +84,14 @@ export default class RfcParser {
 	//// 3.5.  The DKIM-Signature Header Field
 	static get domain_name() { return `(?:${this.sub_domain}(?:\\.${this.sub_domain})+)`; }
 
+	/** @readonly */
+	static TAG_PARSE_ERROR = {
+		/** @readonly */
+		ILL_FORMED: -1,
+		/** @readonly */
+		DUPLICATE: -2,
+	};
+
 	/**
 	 * Parses a Tag=Value list.
 	 * Specified in Section 3.2 of RFC 6376.
@@ -92,11 +107,12 @@ export default class RfcParser {
 		const tagValue = `(?:${tval}(?:(${this.WSP}|${this.FWS})+${tval})*)?`;
 
 		// delete optional semicolon at end
-		if (str.charAt(str.length - 1) === ";") {
-			str = str.substr(0, str.length - 1);
+		let listStr = str;
+		if (listStr.charAt(listStr.length - 1) === ";") {
+			listStr = listStr.substr(0, listStr.length - 1);
 		}
 
-		const array = str.split(";");
+		const array = listStr.split(";");
 		/** @type {Map<string, string>} */
 		const map = new Map();
 		for (const elem of array) {
@@ -105,14 +121,14 @@ export default class RfcParser {
 				`^${this.FWS}?(${tagName})${this.FWS}?=${this.FWS}?(${tagValue})${this.FWS}?$`
 			));
 			if (tmp === null || !tmp[1] || !tmp[2]) {
-				return -1;
+				return RfcParser.TAG_PARSE_ERROR.ILL_FORMED;
 			}
 			const name = tmp[1];
 			const value = tmp[2];
 
 			// check that tag is no duplicate
 			if (map.has(name)) {
-				return -2;
+				return RfcParser.TAG_PARSE_ERROR.DUPLICATE;
 			}
 
 			// store Tag=Value pair

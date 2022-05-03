@@ -335,7 +335,7 @@
 		"message": "Store and compare DKIM keys with the current key"
 	},
 	"options_key.viewKeys": {
-		"message": "DKIM keys"
+		"message": "DKIM keys…"
 	},
 	"options_saveResult": {
 		"message": "Save result of the verification"
@@ -418,10 +418,10 @@
 		"message": "Treat wrong SDID as a warning instead of an error"
 	},
 	"options_viewSigners": {
-		"message": "Signers rules"
+		"message": "Signers rules…"
 	},
 	"options_viewSignerDefaults": {
-		"message": "Default signers rules"
+		"message": "Default signers rules…"
 	},
 	"options_policy.DMARC.shouldBeSigned.enable": {
 		"message": "Use DMARC to heuristically determine if an e-mail should be signed"
@@ -602,6 +602,10 @@
 		"message": "Update DKIM key"
 	},
 	// ==================== Table Views ====================
+	"treeviewKeys.title": {
+		"message": "DKIM keys",
+		"description": "Title of the DKIM keys table view."
+	},
 	"treeviewKeys.treecol.SDID": {
 		"message": "SDID"
 	},
@@ -622,6 +626,12 @@
 	},
 	"treeviewKeys.deleteSelectedRows": {
 		"message": "Delete selected keys"
+	},
+	"treeviewSigners.user.title": {
+		"message": "Signers rules"
+	},
+	"treeviewSigners.default.title": {
+		"message": "Default signers rules"
 	},
 	"treeviewSigners.treecol.domain": {
 		"message": "Domain"
@@ -645,18 +655,22 @@
 		"message": "Enabled"
 	},
 	"treeviewSigners.addSignersRule": {
-		"message": "Add rule"
+		"message": "Add rule…"
 	},
 	"treeviewSigners.deleteSelectedRows": {
 		"message": "Delete selected rules"
 	},
 	"treeviewSigners.exportRules": {
-		"message": "Export rules",
+		"message": "Export rules…",
 		"description": "Button for exporting sign rules"
 	},
 	"treeviewSigners.importRules": {
-		"message": "Import rules",
+		"message": "Import rules…",
 		"description": "Button for importing sign rules"
+	},
+	"importRules.title": {
+		"message": "Import rules",
+		"description": "Title for import dialog"
 	},
 	"importRules.replaceQuestion": {
 		"message": "Should the imported rules be added to the existing rules, or replace the existing rules?",
@@ -672,6 +686,10 @@
 	},
 	"addSignersRule.title": {
 		"message": "Add signers rule"
+	},
+	"addSignersRule.button.add": {
+		"message": "Add rule",
+		"description": "Button for confirming adding of sign rule."
 	},
 	"signRules.ruletype.SIGNED": {
 		"message": "Must be signed (1)"
@@ -692,7 +710,7 @@
 		"message": "Cancel"
 	},
 	"button.help": {
-		"message": "Help"
+		"message": "Help…"
 	},
 	"signersRuleHelp.title": {
 		"message": "Signers rules help"

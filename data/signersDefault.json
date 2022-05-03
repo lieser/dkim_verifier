@@ -68,11 +68,23 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "aktion-deutschland-hilft.de",
+			"addr": "postmaster@aktion-deutschland-hilft.de",
+			"sdid": "aktion-deutschland-hilft.de",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_NEUTRAL"
+		}, {
 			"domain": "aliexpress.com",
 			"addr": "*",
 			"sdid": "aliexpress.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "aliexpress.com",
+			"addr": "*@mail.aliexpress.com",
+			"sdid": "aliexpress.com mail.aliexpress.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
 			"domain": "altroconsumo.it",
 			"addr": "*",
@@ -284,6 +296,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "bni-hamburg.de",
+			"addr": "MAILER-DAEMON@mailhost.bni-hamburg.de",
+			"sdid": "bni-hamburg.de",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_NEUTRAL"
+		}, {
 			"domain": "bnitm.de",
 			"addr": "*",
 			"sdid": "bnitm.de",
@@ -379,6 +397,12 @@
 			"sdid": "carglass.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "carglass.de",
+			"addr": "postmaster@carglass.de",
+			"sdid": "carglass.de",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_NEUTRAL"
 		}, {
 			"domain": "checktls.com",
 			"addr": "*",
@@ -494,6 +518,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "deutschebahn.com",
+			"addr": "MAILER-DAEMON@deutschebahn.com",
+			"sdid": "deutschebahn.com",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_NEUTRAL"
+		}, {
 			"domain": "deutschepost.de",
 			"addr": "*",
 			"sdid": "deutschepost.de",
@@ -508,7 +538,7 @@
 		}, {
 			"domain": "dhl.de",
 			"addr": "*",
-			"sdid": "dhl.de info.dhl.de",
+			"sdid": "dhl.de info.dhl.de mailing2.dhl.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -734,6 +764,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
+			"domain": "f-secure.com",
+			"addr": "postmaster@F-Secure.com",
+			"sdid": "f-secure.com",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_NEUTRAL"
+		}, {
 			"domain": "facebook.com",
 			"addr": "*@support.facebook.com",
 			"sdid": "facebook.com support.facebook.com",
@@ -872,6 +908,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "ftcommunity.de",
+			"addr": "MAILER-DAEMON@ftcommunity.de",
+			"sdid": "ftcommunity.de",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_NEUTRAL"
+		}, {
 			"domain": "gellersen.de",
 			"addr": "*",
 			"sdid": "gellersen.de",
@@ -931,6 +973,12 @@
 			"sdid": "gmail.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL0"
+		}, {
+			"domain": "gmx.de",
+			"addr": "*",
+			"sdid": "gmx.de gmx.net",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_NEUTRAL"
 		}, {
 			"domain": "gmx.net",
 			"addr": "*@sicher.gmx.net",
@@ -1052,6 +1100,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "herzstiftung.de",
+			"addr": "*@news.herzstiftung.de",
+			"sdid": "herzstiftung.de news.herzstiftung.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
 			"domain": "homeaffairs.gov.au",
 			"addr": "*",
 			"sdid": "homeaffairs.gov.au",
@@ -1171,6 +1225,12 @@
 			"sdid": "ironman.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "ironman.com",
+			"addr": "postmaster@ironman.com",
+			"sdid": "ironman.com",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_NEUTRAL"
 		}, {
 			"domain": "italotreno.it",
 			"addr": "*@news.italotreno.it",
@@ -1346,6 +1406,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
+			"domain": "microsoftsupport.com",
+			"addr": "*",
+			"sdid": "microsoftsupport.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "milesandmore.com",
 			"addr": "*@mailing.milesandmore.com",
 			"sdid": "milesandmore.com mailing.milesandmore.com",
@@ -1385,6 +1451,12 @@
 			"domain": "mybosch.com",
 			"addr": "*@mails.mybosch.com",
 			"sdid": "mybosch.com mails.mybosch.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "mycommerce.com",
+			"addr": "*",
+			"sdid": "mycommerce.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -1567,6 +1639,12 @@
 			"sdid": "peterhahn.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "peterhahn.de",
+			"addr": "postmaster@peterhahn.de",
+			"sdid": "peterhahn.de",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_NEUTRAL"
 		}, {
 			"domain": "pimkie.com",
 			"addr": "*@news.pimkie.com",

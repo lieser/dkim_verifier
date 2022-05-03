@@ -21,6 +21,18 @@
 	"NOT_EMAIL": {
 		"message": "メッセージはメールではありません"
 	},
+	"SUCCESS_TAG": {
+		"message": "DKIM $1 が署名",
+		"description": "Tag shown in Conversation add-on for valid mail. Should be kept short."
+	},
+	"TEMPFAIL_TAG": {
+		"message": "DKIM エラー",
+		"description": "Tag shown in Conversation add-on for temporary failure. Should be kept short."
+	},
+	"PERMFAIL_TAG": {
+		"message": "DKIM 無効",
+		"description": "Tag shown in Conversation add-on for invalid mail. Should be kept short."
+	},
 	// DKIM_INTERNALERROR
 	"DKIM_INTERNALERROR": {
 		"message": "DKIM verifier 内部エラー"
@@ -33,6 +45,21 @@
 	},
 	"DKIM_INTERNALERROR_INCORRECT_EMAIL_FORMAT": {
 		"message": "メールの形式が不正です"
+	},
+	"DKIM_INTERNALERROR_INCORRECT_FROM": {
+		"message": "差出人アドレスが不正"
+	},
+	"ERROR_IMPORT_RULES": {
+		"message": "署名ルールのインポートに失敗しました。",
+		"description": "Error title if importing of sign rules failed."
+	},
+	"ERROR_IMPORT_RULES_UNKNOWN_DATA": {
+		"message": "インポートしたファイルの形式が無効です。",
+		"description": "Error message if the user tries to import some unknown data as sign rules."
+	},
+	"ERROR_IMPORT_RULES_UNSUPPORTED_FORMAT": {
+		"message": "署名ルールの形式にサポート外のバージョンが含まれています。",
+		"description": "Error message if the sign rules the user tried to import have an unsupported format."
 	},
 	// DKIM_INTERNALERROR - DNS
 	"DKIM_DNSERROR_UNKNOWN": {
@@ -308,7 +335,7 @@
 		"message": "DKIM キーを保存し現在のキーと比較する"
 	},
 	"options_key.viewKeys": {
-		"message": "DKIM キー"
+		"message": "DKIM キー…"
 	},
 	"options_saveResult": {
 		"message": "検証結果を保存"
@@ -391,10 +418,10 @@
 		"message": "正しくない SDID をエラーではなく警告として扱う"
 	},
 	"options_viewSigners": {
-		"message": "署名者ルール"
+		"message": "署名者ルール…"
 	},
 	"options_viewSignerDefaults": {
-		"message": "デフォルトの署名者ルール"
+		"message": "デフォルトの署名者ルール…"
 	},
 	"options_policy.DMARC.shouldBeSigned.enable": {
 		"message": "メールが署名されているべきかをヒューリスティックに決定するために DMARC を利用"
@@ -575,6 +602,10 @@
 		"message": "DKIM キーを更新"
 	},
 	// ==================== Table Views ====================
+	"treeviewKeys.title": {
+		"message": "DKIM キー",
+		"description": "Title of the DKIM keys table view."
+	},
 	"treeviewKeys.treecol.SDID": {
 		"message": "SDID"
 	},
@@ -595,6 +626,12 @@
 	},
 	"treeviewKeys.deleteSelectedRows": {
 		"message": "選択したキーを削除"
+	},
+	"treeviewSigners.user.title": {
+		"message": "署名者ルール"
+	},
+	"treeviewSigners.default.title": {
+		"message": "デフォルトの署名者ルール"
 	},
 	"treeviewSigners.treecol.domain": {
 		"message": "ドメイン"
@@ -618,13 +655,41 @@
 		"message": "有効化"
 	},
 	"treeviewSigners.addSignersRule": {
-		"message": "ルールを追加"
+		"message": "ルールを追加…"
 	},
 	"treeviewSigners.deleteSelectedRows": {
 		"message": "選択したルールを削除"
 	},
+	"treeviewSigners.exportRules": {
+		"message": "エクスポートルール…",
+		"description": "Button for exporting sign rules"
+	},
+	"treeviewSigners.importRules": {
+		"message": "インポートルール…",
+		"description": "Button for importing sign rules"
+	},
+	"importRules.title": {
+		"message": "インポートルール",
+		"description": "Title for import dialog"
+	},
+	"importRules.replaceQuestion": {
+		"message": "インポートするルールを既存のルールに追加しますか？ 上書きしますか？",
+		"description": "Question asked in import dialog"
+	},
+	"importRules.addRules": {
+		"message": "ルールを追加",
+		"description": "Button in import dialog for adding rules to existing rules"
+	},
+	"importRules.replaceRules": {
+		"message": "ルールを上書き",
+		"description": "Button in import dialog for replacing existing rules"
+	},
 	"addSignersRule.title": {
 		"message": "署名者ルールを追加"
+	},
+	"addSignersRule.button.add": {
+		"message": "ルールを追加",
+		"description": "Button for confirming adding of sign rule."
 	},
 	"signRules.ruletype.SIGNED": {
 		"message": "署名必須 (1)"
@@ -645,7 +710,7 @@
 		"message": "キャンセル"
 	},
 	"button.help": {
-		"message": "ヘルプ"
+		"message": "ヘルプ…"
 	},
 	"signersRuleHelp.title": {
 		"message": "署名者ルールのヘルプ"
