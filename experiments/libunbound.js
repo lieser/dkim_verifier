@@ -88,7 +88,7 @@ class LibunboundWorker {
 		/** @type {Libunbound.LibunboundWorker} */
 		this.worker =
 			//@ts-expect-error
-			new ChromeWorker("chrome://dkim_verifier/content/libunboundWorker.jsm.js");
+			new ChromeWorker("chrome://dkim_verifier_libunbound/content/libunboundWorker.jsm.js");
 		this.worker.onmessage = (msg) => this._onmessage(msg);
 
 		this.config = {
@@ -364,7 +364,7 @@ this.libunbound = class extends ExtensionCommon.ExtensionAPI {
 			this.extension.rootURI
 		);
 		this.chromeHandle = aomStartup.registerChrome(manifestURI, [
-			["content", "dkim_verifier", "experiments/"],
+			["content", "dkim_verifier_libunbound", "experiments/"],
 		]);
 
 		this.libunboundWorker = new LibunboundWorker();

@@ -1,3 +1,6 @@
+4.2.0pre1 [2022-05-15]
+------------------
+- JSDNS: fixed incompatibility with Thunderbird 101 (#303)
 - Authentication-Results header: check sign algorithm used for DKIM (#219)
 
 4.1.1 [2022-02-22]
