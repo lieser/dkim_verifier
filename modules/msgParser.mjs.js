@@ -1,7 +1,7 @@
 /**
  * Reads and parses a message.
  *
- * Copyright (c) 2014-2021 Philippe Lieser
+ * Copyright (c) 2014-2022 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -11,9 +11,10 @@
 
 // @ts-check
 
+import RfcParser, { RfcParserI } from "./rfcParser.mjs.js";
 import { DKIM_InternalError } from "./error.mjs.js";
 import Logging from "./logging.mjs.js";
-import RfcParser from "./rfcParser.mjs.js";
+import { decodeBinaryString } from "./utils.mjs.js";
 
 const log = Logging.getLogger("msgParser");
 
@@ -23,7 +24,7 @@ export default class MsgParser {
 	 * Parse given message into parsed header and body.
 	 *
 	 * @static
-	 * @param {string} msg
+	 * @param {string} msg - binary string
 	 * @returns {{headers: Map<string, string[]>, body: string}}
 	 * @throws DKIM_InternalError
 	 * @memberof MsgParser
@@ -74,10 +75,10 @@ export default class MsgParser {
 	 * Parses the header of a message.
 	 *
 	 * @static
-	 * @param {string} headerPlain
+	 * @param {string} headerPlain - binary string
 	 * @returns {Map<string, string[]>}
 	 *          key - header name in lower case
-	 *          value - array of complete headers, including the header name at the beginning
+	 *          value - array of complete headers, including the header name at the beginning (binary string)
 	 * @memberof MsgParser
 	 */
 	static parseHeader(headerPlain) {
@@ -110,19 +111,22 @@ export default class MsgParser {
 	 * Note: Using a domain-literal as domain is not supported.
 	 *
 	 * @static
-	 * @param {string} header
+	 * @param {string} header - binary string
+	 * @param {boolean} [internationalized] - Enable internationalized support
 	 * @returns {string}
 	 * @memberof MsgParser
 	 */
-	static parseFromHeader(header) {
+	static parseFromHeader(header, internationalized) {
+		const parser = internationalized ? RfcParserI : RfcParser;
+
 		const headerStart = "from:";
 		if (!header.toLowerCase().startsWith(headerStart)) {
 			throw new Error("Unexpected start of from header");
 		}
 		const headerValue = header.substr(headerStart.length);
 
-		const dotAtomC = `(?:${RfcParser.CFWS_op}(${RfcParser.dot_atom_text})${RfcParser.CFWS_op})`;
-		const quotedStringC = `(?:${RfcParser.CFWS_op}("(?:${RfcParser.FWS_op}${RfcParser.qcontent})*${RfcParser.FWS_op}")${RfcParser.CFWS_op})`;
+		const dotAtomC = `(?:${RfcParser.CFWS_op}(${parser.dot_atom_text})${RfcParser.CFWS_op})`;
+		const quotedStringC = `(?:${RfcParser.CFWS_op}("(?:${RfcParser.FWS_op}${parser.qcontent})*${RfcParser.FWS_op}")${RfcParser.CFWS_op})`;
 		const localPartC = `(?:${dotAtomC}|${quotedStringC})`;
 		// Capturing address pattern there
 		// 1. Group is the local part as dot-atom-text (can be undefined)
@@ -133,7 +137,7 @@ export default class MsgParser {
 		/**
 		 * Join together the local and domain part of the address.
 		 *
-		 * @param {RegExpMatchArray} regExpMatchArray
+		 * @param {RegExpMatchArray} regExpMatchArray - binary strings
 		 * @returns {string}
 		 */
 		const joinAddress = (regExpMatchArray) => {
@@ -145,12 +149,12 @@ export default class MsgParser {
 			if (local === undefined) {
 				local = localQuotedString;
 			}
-			return `${local}@${domain}`;
+			return decodeBinaryString(`${local}@${domain}`);
 		};
 
 		// Try to parse as address that is in <> (name-addr)
 		const angleAddrC = `(?:${RfcParser.CFWS_op}<${addrSpecC}>${RfcParser.CFWS_op})`;
-		const nameAddrC = `(?:${RfcParser.display_name}?${angleAddrC})`;
+		const nameAddrC = `(?:${parser.display_name}?${angleAddrC})`;
 		let regExpMatch = headerValue.match(new RegExp(`^${nameAddrC}\r\n$`));
 		if (regExpMatch !== null) {
 			return joinAddress(regExpMatch);

@@ -128,7 +128,7 @@ export default class AuthVerifier {
 		}
 		let from;
 		try {
-			from = MsgParser.parseFromHeader(fromHeader[0]);
+			from = MsgParser.parseFromHeader(fromHeader[0], prefs["internationalized.enable"]);
 		} catch (error) {
 			log.error("Parsing of from header failed", error);
 			return Promise.resolve({
@@ -242,7 +242,7 @@ async function getARHResult(message, headers, from, listId, account, dmarc) {
 		/** @type {ArhParserModule.ArhHeader} */
 		let arh;
 		try {
-			arh = ArhParser.parse(header, prefs["arh.relaxedParsing"]);
+			arh = ArhParser.parse(header, prefs["arh.relaxedParsing"], prefs["internationalized.enable"]);
 		} catch (exception) {
 			log.error("Ignoring error in parsing of ARH", exception);
 			continue;

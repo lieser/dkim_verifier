@@ -226,6 +226,10 @@ export class BasePreferences {
 	get "arh.relaxedParsing"() {
 		return this._tryGetBoolValue("arh.relaxedParsing", false);
 	}
+
+	get "internationalized.enable"() {
+		return this._tryGetBoolValue("internationalized.enable", false);
+	}
 	//#endregion
 
 	////////////////////////////////////////////////////////////////////////////
