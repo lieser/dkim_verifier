@@ -201,7 +201,7 @@ var log = chromeConsole.createInstance({
 
 
 /**
- * @typedef {Object} DnsServer
+ * @typedef {object} DnsServer
  * @property {string} server - IP of server as string
  * @property {boolean} alive -  whether the server is alive
  */
@@ -287,7 +287,7 @@ function configureDNS(getNameserversFromOS, nameServer, timeoutConnect, proxy, a
 function arrayUniqBy(ary, key) {
 	"use strict";
 
-	/** @type {Object.<string, number>} */
+	/** @type {Object<string, number>} */
 	var seen = {};
 	return ary.filter(function (elem) {
 		var k = key(elem);
@@ -717,7 +717,7 @@ function DNS_readDomain(ctx) {
 }
 
 /**
- * @typedef {Object} DnsRecord
+ * @typedef {object} DnsRecord
  * @property {string} dom
  * @property {string|number} type
  * @property {number} cls

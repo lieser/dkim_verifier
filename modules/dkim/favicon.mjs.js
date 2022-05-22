@@ -14,7 +14,7 @@
 import ExtensionUtils from "../extensionUtils.mjs.js";
 import { domainIsInDomain } from "../utils.mjs.js";
 
-/** @type {Object.<string, string|undefined>} */
+/** @type {Object<string, string|undefined>} */
 let favicons;
 
 /**

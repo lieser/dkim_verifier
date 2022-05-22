@@ -33,7 +33,6 @@ function toType(obj) {
 	return typeMatch[1];
 }
 
-// eslint-disable-next-line no-invalid-this
 this.jsdns = class extends ExtensionCommon.ExtensionAPI {
 	/**
 	 * @param {ExtensionCommon.Extension} extension

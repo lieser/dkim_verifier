@@ -35,7 +35,7 @@ import prefs from "../preferences.mjs.js";
 /**
  * The result of the verification (Version 1).
  *
- * @typedef {Object} dkimResultV1
+ * @typedef {object} dkimResultV1
  * @property {string} version
  *           result version ("1.0" / "1.1")
  * @property {string} result
@@ -56,7 +56,7 @@ import prefs from "../preferences.mjs.js";
  */
 
 /**
- * @typedef {Object} dkimSigWarningV2
+ * @typedef {object} dkimSigWarningV2
  * @property {string} name - Name of the warning
  * @property {(string|string[])[]} [params] - optional params for formatted string
  */
@@ -64,7 +64,7 @@ import prefs from "../preferences.mjs.js";
 /**
  * The result of the verification of a single DKIM signature (Version 2).
  *
- * @typedef {Object} dkimSigResultV2
+ * @typedef {object} dkimSigResultV2
  * @property {string} version
  *           result version ("2.0")
  * @property {string} result
@@ -86,7 +86,7 @@ import prefs from "../preferences.mjs.js";
 /**
  * The result of the verification (Version 2).
  *
- * @typedef {Object} dkimResultV2
+ * @typedef {object} dkimResultV2
  * @property {string} version
  *           result version ("2.0")
  * @property {dkimSigResultV2[]} signatures
@@ -1118,7 +1118,7 @@ export default class Verifier {
 	 *
 	 * @private
 	 * @param {unknown} e
-	 * @param {DkimSignatureHeader|Object.<string, undefined>} dkimSignature
+	 * @param {DkimSignatureHeader|Object<string, undefined>} dkimSignature
 	 * @returns {dkimSigResultV2}
 	 */
 	static _handleException(e, dkimSignature = {}) {
@@ -1225,7 +1225,7 @@ export default class Verifier {
 	}
 
 	/**
-	 * @typedef {Object} Msg
+	 * @typedef {object} Msg
 	 * @property {Map<string, string[]>} headerFields
 	 * @property {string} bodyPlain
 	 * @property {string} from

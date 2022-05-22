@@ -48,7 +48,7 @@ export class BasePreferences {
 	constructor(valueGetter, valueSetter) {
 		/**
 		 * @protected
-		 * @type {Object.<string, boolean|number|string|undefined>}
+		 * @type {Object<string, boolean|number|string|undefined>}
 		 */
 		this._prefs = {};
 

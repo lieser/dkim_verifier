@@ -35,7 +35,7 @@ import prefs from "./preferences.mjs.js";
 const log = Logging.getLogger("AuthVerifier");
 
 /**
- * @typedef {Object} AuthResultV2
+ * @typedef {object} AuthResultV2
  * @property {string} version
  *           result version ("2.1")
  * @property {AuthResultDKIM[]} dkim
@@ -49,7 +49,7 @@ const log = Logging.getLogger("AuthVerifier");
  */
 
 /**
- * @typedef {Object} SavedAuthResultV3
+ * @typedef {object} SavedAuthResultV3
  * @property {string} version
  *           result version ("3.0")
  * @property {VerifierModule.dkimSigResultV2[]} dkim

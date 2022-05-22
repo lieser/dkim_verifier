@@ -28,14 +28,14 @@ var { OS } = ChromeUtils.import("resource://gre/modules/osfile.jsm");
  * The result of the query.
  * Does differ from the original ub_result a bit.
  *
- * @typedef {Object} ub_result
+ * @typedef {object} ub_result
  * @property {string} qname
  *           text string, original question
  * @property {number} qtype
  *           type code asked for
  * @property {number} qclass
  *           class code (CLASS IN (internet))
- * @property {Object[]} data
+ * @property {object[]} data
  *           Array of converted rdata items. Empty for unsupported RR types.
  *           Currently supported types: TXT
  * @property {number[][]} data_raw
@@ -344,7 +344,6 @@ LibunboundWorker.Constants = {
 };
 
 
-// eslint-disable-next-line no-invalid-this
 this.libunbound = class extends ExtensionCommon.ExtensionAPI {
 	/**
 	 * @param {ExtensionCommon.Extension} extension

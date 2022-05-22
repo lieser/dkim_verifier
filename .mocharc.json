@@ -5,6 +5,6 @@
 	],
 	"require": [
 		"test/helpers/sinonRegisterNode.mjs.js",
-		"chai/register-expect"
+		"chai/register-expect.js"
 	]
 }

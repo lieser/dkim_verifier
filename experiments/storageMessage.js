@@ -14,7 +14,6 @@
 
 "use strict";
 
-// eslint-disable-next-line no-invalid-this
 this.storageMessage = class extends ExtensionCommon.ExtensionAPI {
 	/**
 	 * @private
