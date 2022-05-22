@@ -259,6 +259,25 @@ describe("Message parser [unittest]", function () {
 				MsgParser.parseFromHeader("From:\r\n\t=?utf-8?q?(omit)?=\r\n\t=?utf-8?q?(omit)?= <mail@example.com>\r\n")
 			).to.be.equal("mail@example.com");
 		});
+		it("mailbox-list", function () {
+			expect(
+				MsgParser.parseFromHeader("From: foo@example.com, user <user@example.com>\r\n")
+			).to.be.equal("foo@example.com");
+			expect(
+				MsgParser.parseFromHeader("From: foo@example.com, user@example.com\r\n")
+			).to.be.equal("foo@example.com");
+
+			expect(
+				MsgParser.parseFromHeader("From: foo <foo@example.com>, user@example.com\r\n")
+			).to.be.equal("foo@example.com");
+			expect(
+				MsgParser.parseFromHeader("From: foo <foo@example.com>, user <user@example.com>\r\n")
+			).to.be.equal("foo@example.com");
+
+			expect(
+				MsgParser.parseFromHeader("From: foo <foo@example.com>, user <user@example.com>, bar@example.com\r\n")
+			).to.be.equal("foo@example.com");
+		});
 		it("avoid backtracking issues", function () {
 			// A naive implementation of the phrase pattern can lead to backtracking issues,
 			// especially if it tries but fails to match it to a long string.

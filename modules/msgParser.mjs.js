@@ -105,8 +105,7 @@ export default class MsgParser {
 	/**
 	 * Extract the address from the From header (RFC 5322).
 	 *
-	 * Note: The RFC also allows a list of addresses (mailbox-list).
-	 * This is currently not supported, and will throw a parsing error.
+	 * Note: Will only return the first address ofd a mailbox-list.
 	 * Note: Some obsolete patterns are not supported.
 	 * Note: Using a domain-literal as domain is not supported.
 	 *
@@ -152,16 +151,18 @@ export default class MsgParser {
 			return decodeBinaryString(`${local}@${domain}`);
 		};
 
-		// Try to parse as address that is in <> (name-addr)
 		const angleAddrC = `(?:${RfcParser.CFWS_op}<${addrSpecC}>${RfcParser.CFWS_op})`;
 		const nameAddrC = `(?:${parser.display_name}?${angleAddrC})`;
-		let regExpMatch = headerValue.match(new RegExp(`^${nameAddrC}\r\n$`));
+		const mailboxC = `(?:${nameAddrC}|${addrSpecC})`;
+
+		// Try to parse as address that is in <> (name-addr)
+		let regExpMatch = headerValue.match(new RegExp(`^${nameAddrC}(?:,${mailboxC})*\r\n$`));
 		if (regExpMatch !== null) {
 			return joinAddress(regExpMatch);
 		}
 
 		// Try to parse as address without <> (addr-spec)
-		regExpMatch = headerValue.match(new RegExp(`^${addrSpecC}\r\n$`));
+		regExpMatch = headerValue.match(new RegExp(`^${addrSpecC}(?:,${mailboxC})*\r\n$`));
 		if (regExpMatch !== null) {
 			return joinAddress(regExpMatch);
 		}
