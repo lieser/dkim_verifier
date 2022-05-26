@@ -1,9 +1,12 @@
 /**
- * Verifies the DKIM-Signatures as specified in RFC 6376
- * http://tools.ietf.org/html/rfc6376
- * Update done by RFC 8301 included https://tools.ietf.org/html/rfc8301
+ * Verifies the DKIM-Signatures as specified in RFC 6376.
+ * https://www.rfc-editor.org/rfc/rfc6376.html
  *
- * Copyright (c) 2013-2021 Philippe Lieser
+ * Included Updates to the RFC:
+ * - RFC 8301 https://www.rfc-editor.org/rfc/rfc8301.html
+ * - RFC 8463 https://www.rfc-editor.org/rfc/rfc8463.html
+ *
+ * Copyright (c) 2013-2022 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -228,7 +231,7 @@ class DkimSignatureHeader {
 	static _parseSignatureAlgorithms(tagMap, warnings) {
 		// get signature algorithm (plain-text;REQUIRED)
 		// currently only "rsa-sha1" or "rsa-sha256"
-		const sig_a_tag_k = "(rsa|[A-Za-z](?:[A-Za-z]|[0-9])*)";
+		const sig_a_tag_k = "(rsa|ed25519|[A-Za-z](?:[A-Za-z]|[0-9])*)";
 		const sig_a_tag_h = "(sha1|sha256|[A-Za-z](?:[A-Za-z]|[0-9])*)";
 		const sig_a_tag_alg = `${sig_a_tag_k}-${sig_a_tag_h}`;
 		const algorithmTag = RfcParser.parseTagValue(tagMap, "a", sig_a_tag_alg);
@@ -238,7 +241,7 @@ class DkimSignatureHeader {
 		if (!algorithmTag[1] || !algorithmTag[2]) {
 			throw new DKIM_InternalError("Error matching the a-tag.");
 		}
-		if (algorithmTag[0] === "rsa-sha256") {
+		if (algorithmTag[0] === "rsa-sha256" || algorithmTag[0] === "ed25519-sha256") {
 			return {
 				signature: algorithmTag[1],
 				hash: algorithmTag[2],
@@ -683,10 +686,12 @@ class DkimKey {
 	 */
 	static _parseKeyType(tagMap) {
 		// get Key type (plain-text; OPTIONAL, default is "rsa")
-		const key_k_tag_type = `(?:rsa|${hyphenated_word})`;
+		const key_k_tag_type = `(?:rsa|ed25519|${hyphenated_word})`;
 		const keyTypeTag = RfcParser.parseTagValue(tagMap, "k", key_k_tag_type, 2);
 		if (keyTypeTag === null || keyTypeTag[0] === "rsa") {
 			return "rsa";
+		} else if (keyTypeTag[0] === "ed25519") {
+			return "ed25519";
 		}
 		throw new DKIM_SigError("DKIM_SIGERROR_KEY_UNKNOWN_K");
 	}
@@ -1035,6 +1040,11 @@ class DkimSignature {
 			}
 		}
 
+		// Signature algo musst match the key type.
+		if (this._header.a_sig !== dkimKey.k) {
+			throw new DKIM_SigError("DKIM_SIGERROR_KEY_MISMATCHED_K");
+		}
+
 		// if s flag is set in DKIM key record
 		// AUID must be from the same domain as SDID (and not a subdomain)
 		if (dkimKey.t_array.includes("s") &&
@@ -1055,7 +1065,8 @@ class DkimSignature {
 		log.debug(`Header hash input:\n${headerHashInput}`);
 
 		// verify Signature
-		const [isValid, keyLength] = await DkimCrypto.verifyRSA(
+		const [isValid, keyLength] = await DkimCrypto.verify(
+			this._header.a_sig,
 			dkimKey.p,
 			this._header.a_hash,
 			this._header.b,
@@ -1065,24 +1076,27 @@ class DkimSignature {
 			throw new DKIM_SigError("DKIM_SIGERROR_BADSIG");
 		}
 
-		if (keyLength < 1024) {
-			// error if key is too short
-			log.debug(`rsa key size: ${keyLength}`);
-			throw new DKIM_SigError("DKIM_SIGWARNING_KEYSMALL");
-		} else if (keyLength < 2048) {
-			// weak key
-			log.debug(`rsa key size: ${keyLength}`);
-			switch (prefs["error.algorithm.rsa.weakKeyLength.treatAs"]) {
-				case 0: // error
-					throw new DKIM_SigError("DKIM_SIGWARNING_KEY_IS_WEAK");
-				case 1: // warning
-					this._header.warnings.push({ name: "DKIM_SIGWARNING_KEY_IS_WEAK" });
-					log.debug("Warning: DKIM_SIGWARNING_KEY_IS_WEAK");
-					break;
-				case 2: // ignore
-					break;
-				default:
-					throw new DKIM_InternalError("invalid error.algorithm.rsa.weakKeyLength.treatAs");
+		if (this._header.a_sig === "rsa") {
+			// Check strength of RSA keys.
+			if (keyLength < 1024) {
+				// error if key is too short
+				log.debug(`rsa key size: ${keyLength}`);
+				throw new DKIM_SigError("DKIM_SIGWARNING_KEYSMALL");
+			} else if (keyLength < 2048) {
+				// weak key
+				log.debug(`rsa key size: ${keyLength}`);
+				switch (prefs["error.algorithm.rsa.weakKeyLength.treatAs"]) {
+					case 0: // error
+						throw new DKIM_SigError("DKIM_SIGWARNING_KEY_IS_WEAK");
+					case 1: // warning
+						this._header.warnings.push({ name: "DKIM_SIGWARNING_KEY_IS_WEAK" });
+						log.debug("Warning: DKIM_SIGWARNING_KEY_IS_WEAK");
+						break;
+					case 2: // ignore
+						break;
+					default:
+						throw new DKIM_InternalError("invalid error.algorithm.rsa.weakKeyLength.treatAs");
+				}
 			}
 		}
 

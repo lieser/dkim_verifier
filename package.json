@@ -17,10 +17,13 @@
 		"url": "git+https://github.com/lieser/dkim_verifier.git"
 	},
 	"scripts": {
+		"update-thirdparty": "node ./scripts/update-thirdparty.js",
 		"test": "node node_modules/mocha/bin/mocha --recursive --reporter dot"
 	},
 	"type": "module",
-	"dependencies": {},
+	"dependencies": {
+		"tweetnacl-es6": "1.0.3"
+	},
 	"devDependencies": {
 		"@types/firefox-webext-browser": "^94.0.1",
 		"chai": "^4.3.6",

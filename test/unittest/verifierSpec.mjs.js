@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2021 Philippe Lieser
+ * Copyright (c) 2020-2022 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -72,6 +72,30 @@ describe("DKIM Verifier [unittest]", function () {
 			expect(res.signatures[0]?.result).to.be.equal("PERMFAIL");
 			expect(res.signatures[0]?.errorType).to.be.equal("DKIM_SIGERROR_MISSING_V");
 			expect(res.signatures[0]?.sdid).to.be.undefined;
+		});
+	});
+	describe("RFC 8463 Appendix A Example", function () {
+		it("valid", async function () {
+			const res = await verifyEmlFile("rfc8463-A.3.eml");
+			expect(res.signatures.length).to.be.equal(2);
+			expect(res.signatures[0]?.result).to.be.equal("SUCCESS");
+			expect(res.signatures[0]?.warnings).to.be.empty;
+			expect(res.signatures[0]?.sdid).to.be.equal("football.example.com");
+			expect(res.signatures[0]?.auid).to.be.equal("@football.example.com");
+			expect(res.signatures[0]?.selector).to.be.equal("test");
+			expect(res.signatures[1]?.result).to.be.equal("SUCCESS");
+			expect(res.signatures[1]?.warnings).to.be.empty;
+			expect(res.signatures[1]?.sdid).to.be.equal("football.example.com");
+			expect(res.signatures[1]?.auid).to.be.equal("@football.example.com");
+			expect(res.signatures[1]?.selector).to.be.equal("brisbane");
+		});
+		it("Wrong key signature algorithm", async function () {
+			const res = await verifyEmlFile("rfc8463-A.3-key_algo_mismatch.eml");
+			expect(res.signatures.length).to.be.equal(2);
+			expect(res.signatures[0]?.result).to.be.equal("PERMFAIL");
+			expect(res.signatures[0]?.errorType).to.be.equal("DKIM_SIGERROR_KEY_MISMATCHED_K");
+			expect(res.signatures[1]?.result).to.be.equal("PERMFAIL");
+			expect(res.signatures[1]?.errorType).to.be.equal("DKIM_SIGERROR_KEY_MISMATCHED_K");
 		});
 	});
 	describe("Signature warnings", function () {

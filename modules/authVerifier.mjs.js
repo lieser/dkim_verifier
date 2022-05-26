@@ -757,6 +757,7 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 						case "DKIM_SIGERROR_KEY_INVALID_V":
 						case "DKIM_SIGERROR_KEY_HASHNOTINCLUDED":
 						case "DKIM_SIGERROR_KEY_UNKNOWN_K":
+						case "DKIM_SIGERROR_KEY_MISMATCHED_K":
 						case "DKIM_SIGERROR_KEY_HASHMISMATCH":
 						case "DKIM_SIGERROR_KEY_NOTEMAILKEY":
 						case "DKIM_SIGERROR_KEYDECODE":

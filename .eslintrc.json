@@ -26,6 +26,9 @@
     "globals": {
         "globalThis": "readonly"
     },
+    "ignorePatterns": [
+        "thirdparty/**"
+    ],
     "rules": {
         // Possible Problems
         "array-callback-return": "warn",

@@ -1,5 +1,6 @@
 4.2.0pre1 [2022-05-15]
 ------------------
+- Added support for signing algorithm Ed25519-SHA256 (RFC 8463) (#142)
 - fixed multiple from addresses being treated as ill-formed (#304)
 - JSDNS: fixed incompatibility with Thunderbird 101 (#303)
 - Authentication-Results header: check sign algorithm used for DKIM (#219)
