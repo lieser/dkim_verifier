@@ -162,7 +162,7 @@ export default class DataTable {
 	}
 
 	/**
-	 * @param {Object.<string, string|number|boolean>[]} data
+	 * @param {Object<string, string|number|boolean>[]} data
 	 * @param {string[]} [sortOrder]
 	 * @returns {void}
 	 */

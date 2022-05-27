@@ -225,6 +225,10 @@
 	"DKIM_SIGERROR_KEY_UNKNOWN_K": {
 		"message": "Unsupported DKIM key type"
 	},
+	"DKIM_SIGERROR_KEY_MISMATCHED_K": {
+		"message": "Signature algorithm does not match DKIM key type",
+		"description": "Error message if the signature algorithm in the DKIM Signature header (a-tag) does not match the key type of the DKIM key (k-tag)."
+	},
 	"DKIM_SIGERROR_KEY_ILLFORMED_K": {
 		"message": "DKIM key type tag is ill-formed"
 	},

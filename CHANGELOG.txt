@@ -1,9 +1,17 @@
-4.1.1 [2022-02-xx]
+4.2.0pre1 [2022-05-15]
+------------------
+- Added support for signing algorithm Ed25519-SHA256 (RFC 8463) (#142)
+- fixed multiple from addresses being treated as ill-formed (#304)
+- JSDNS: fixed incompatibility with Thunderbird 101 (#303)
+- Authentication-Results header: check sign algorithm used for DKIM (#219)
+
+4.1.1 [2022-02-22]
 ------------------
  - fixed blank line in header if email does not contain DKIM signature (Thunderbird 97) (#293)
  - fixed some dialog windows being to small (#296)
  - fixed header spanning multiple lines possibly being cropped at the bottom
  - fixed wrapping of header in Thunderbird 99
+ - added Ukrainian translation (by lexxai) (#297)
 
 4.1.0 [2022-02-06]
 ------------------

@@ -1406,6 +1406,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
+			"domain": "microsoftsupport.com",
+			"addr": "*",
+			"sdid": "microsoftsupport.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "milesandmore.com",
 			"addr": "*@mailing.milesandmore.com",
 			"sdid": "milesandmore.com mailing.milesandmore.com",

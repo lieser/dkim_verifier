@@ -1,7 +1,7 @@
 /**
  * Authentication Verifier.
  *
- * Copyright (c) 2014-2021 Philippe Lieser
+ * Copyright (c) 2014-2022 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -35,7 +35,7 @@ import prefs from "./preferences.mjs.js";
 const log = Logging.getLogger("AuthVerifier");
 
 /**
- * @typedef {Object} AuthResultV2
+ * @typedef {object} AuthResultV2
  * @property {string} version
  *           result version ("2.1")
  * @property {AuthResultDKIM[]} dkim
@@ -49,7 +49,7 @@ const log = Logging.getLogger("AuthVerifier");
  */
 
 /**
- * @typedef {Object} SavedAuthResultV3
+ * @typedef {object} SavedAuthResultV3
  * @property {string} version
  *           result version ("3.0")
  * @property {VerifierModule.dkimSigResultV2[]} dkim
@@ -128,7 +128,7 @@ export default class AuthVerifier {
 		}
 		let from;
 		try {
-			from = MsgParser.parseFromHeader(fromHeader[0]);
+			from = MsgParser.parseFromHeader(fromHeader[0], prefs["internationalized.enable"]);
 		} catch (error) {
 			log.error("Parsing of from header failed", error);
 			return Promise.resolve({
@@ -242,7 +242,7 @@ async function getARHResult(message, headers, from, listId, account, dmarc) {
 		/** @type {ArhParserModule.ArhHeader} */
 		let arh;
 		try {
-			arh = ArhParser.parse(header, prefs["arh.relaxedParsing"]);
+			arh = ArhParser.parse(header, prefs["arh.relaxedParsing"], prefs["internationalized.enable"]);
 		} catch (exception) {
 			log.error("Ignoring error in parsing of ARH", exception);
 			continue;
@@ -280,9 +280,36 @@ async function getARHResult(message, headers, from, listId, account, dmarc) {
 	const dkimSigResults = arhDKIM.map(arhDKIM_to_dkimSigResultV2);
 
 	// if ARH result is replacing the add-ons,
-	// check SDID and AUID of DKIM results
+	// do some checks we also do for verification
 	if (prefs["arh.replaceAddonResult"]) {
+		// check SDID and AUID of DKIM results
 		await checkSignRules(message, dkimSigResults, from, listId, dmarc);
+
+		// check signature algorithm
+		for (let i = 0; i < dkimSigResults.length; i++) {
+			if (arhDKIM[i]?.propertys.header.a === "rsa-sha1") {
+				switch (prefs["error.algorithm.sign.rsa-sha1.treatAs"]) {
+					case 0: { // error
+						dkimSigResults[i] = {
+							version: "2.0",
+							result: "PERMFAIL",
+							sdid: dkimSigResults[i]?.sdid,
+							auid: dkimSigResults[i]?.auid,
+							selector: dkimSigResults[i]?.selector,
+							errorType: "DKIM_SIGERROR_INSECURE_A",
+						};
+						break;
+					}
+					case 1: // warning
+						dkimSigResults[i]?.warnings?.push({ name: "DKIM_SIGERROR_INSECURE_A" });
+						break;
+					case 2: // ignore
+						break;
+					default:
+						throw new DKIM_InternalError("invalid error.algorithm.sign.rsa-sha1.treatAs");
+				}
+			}
+		}
 	}
 
 	// sort signatures
@@ -730,6 +757,7 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 						case "DKIM_SIGERROR_KEY_INVALID_V":
 						case "DKIM_SIGERROR_KEY_HASHNOTINCLUDED":
 						case "DKIM_SIGERROR_KEY_UNKNOWN_K":
+						case "DKIM_SIGERROR_KEY_MISMATCHED_K":
 						case "DKIM_SIGERROR_KEY_HASHMISMATCH":
 						case "DKIM_SIGERROR_KEY_NOTEMAILKEY":
 						case "DKIM_SIGERROR_KEYDECODE":

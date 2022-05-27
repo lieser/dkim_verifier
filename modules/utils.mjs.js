@@ -1,7 +1,7 @@
 /**
  * General utility functions that do not have any dependencies.
  *
- * Copyright (c) 2013-2020 Philippe Lieser
+ * Copyright (c) 2013-2020;2022 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -75,6 +75,20 @@ export function copy(src) {
  */
 export function dateToString(date) {
 	return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
+/**
+ * Converts an UTF-8 encoded binary string to a normal string.
+ * https://developer.mozilla.org/en-US/docs/Web/API/DOMString/Binary.
+ *
+ * @param {string} binaryString - binary string
+ * @returns {string}
+ */
+ export function decodeBinaryString(binaryString) {
+	// eslint-disable-next-line no-magic-numbers
+	const buffer = Uint8Array.from(binaryString, x => x.charCodeAt(0) & 0xFF);
+	const utf8decoder = new TextDecoder();
+	return utf8decoder.decode(buffer);
 }
 
 /**

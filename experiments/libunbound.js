@@ -28,14 +28,14 @@ var { OS } = ChromeUtils.import("resource://gre/modules/osfile.jsm");
  * The result of the query.
  * Does differ from the original ub_result a bit.
  *
- * @typedef {Object} ub_result
+ * @typedef {object} ub_result
  * @property {string} qname
  *           text string, original question
  * @property {number} qtype
  *           type code asked for
  * @property {number} qclass
  *           class code (CLASS IN (internet))
- * @property {Object[]} data
+ * @property {object[]} data
  *           Array of converted rdata items. Empty for unsupported RR types.
  *           Currently supported types: TXT
  * @property {number[][]} data_raw
@@ -88,7 +88,7 @@ class LibunboundWorker {
 		/** @type {Libunbound.LibunboundWorker} */
 		this.worker =
 			//@ts-expect-error
-			new ChromeWorker("chrome://dkim_verifier/content/libunboundWorker.jsm.js");
+			new ChromeWorker("chrome://dkim_verifier_libunbound/content/libunboundWorker.jsm.js");
 		this.worker.onmessage = (msg) => this._onmessage(msg);
 
 		this.config = {
@@ -344,7 +344,6 @@ LibunboundWorker.Constants = {
 };
 
 
-// eslint-disable-next-line no-invalid-this
 this.libunbound = class extends ExtensionCommon.ExtensionAPI {
 	/**
 	 * @param {ExtensionCommon.Extension} extension
@@ -364,7 +363,7 @@ this.libunbound = class extends ExtensionCommon.ExtensionAPI {
 			this.extension.rootURI
 		);
 		this.chromeHandle = aomStartup.registerChrome(manifestURI, [
-			["content", "dkim_verifier", "experiments/"],
+			["content", "dkim_verifier_libunbound", "experiments/"],
 		]);
 
 		this.libunboundWorker = new LibunboundWorker();
