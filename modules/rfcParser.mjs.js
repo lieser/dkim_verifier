@@ -1,7 +1,7 @@
 /**
  * RegExp pattern for ABNF definitions in various RFCs.
  *
- * Copyright (c) 2020-2021 Philippe Lieser
+ * Copyright (c) 2020-2022 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -17,7 +17,7 @@ import { DKIM_InternalError, DKIM_SigError } from "./error.mjs.js";
 export default class RfcParser {
 	////// RFC 2045 - Multipurpose Internet Mail Extensions (MIME) Part One: Format of Internet Message Bodies
 	//// 5.1.  Syntax of the Content-Type Header Field
-	static get token() { return "[^ \\x00-\\x1F\\x7F()<>@,;:\\\\\"/[\\]?=]+"; }
+	static get token() { return "[^ \\x00-\\x1F\\x7F()<>@,;:\\\\\"/[\\]?=\\u0080-\\uFFFF]+"; }
 
 	////// RFC 5234 - Augmented BNF for Syntax Specifications: ABNF
 	//// Appendix B.1.  Core Rules
@@ -171,4 +171,44 @@ export default class RfcParser {
 		// @ts-expect-error
 		return res;
 	}
+}
+
+export class RfcParserI extends RfcParser {
+	////// RFC 3629 - UTF-8, a transformation format of ISO 10646
+	//// 4.  Syntax of UTF-8 Byte Sequences
+	//// https://datatracker.ietf.org/doc/html/rfc3629#section-4
+	static get UTF8_tail() { return "[\x80-\xBF]"; }
+	static get UTF8_2() { return `(?:[\xC2-\xDF]${this.UTF8_tail})`; }
+	static get UTF8_3() { return `(?:(?:\xE0[\xA0-\xBF]${this.UTF8_tail})|(?:[\xE1-\xEC]${this.UTF8_tail}${this.UTF8_tail})|(?:\xED[\x80-\x9F]${this.UTF8_tail})|(?:[\xEE-\xEF]${this.UTF8_tail}${this.UTF8_tail}))`; }
+	static get UTF8_4() { return `(?:(?:\xF0[\x90-\xBF]${this.UTF8_tail}${this.UTF8_tail})|(?:[\xF1-\xF3]${this.UTF8_tail}${this.UTF8_tail}${this.UTF8_tail})|(?:\xF4[\x80-\x8F]${this.UTF8_tail}${this.UTF8_tail}))`; }
+
+	////// RFC 5890 - Internationalized Domain Names for Applications (IDNA): Definitions and Document Framework
+	//// 2.3.2.1.  IDNA-valid strings, A-label, and U-label
+	//// https://datatracker.ietf.org/doc/html/rfc5890#section-2.3.2.1
+	// IMPORTANT: This does not validate if the label is valid.
+	// E.g. the character "⒈" (U+2488) should be disallowed but matches UTF8_non_ascii
+	static get u_label() { return `(?:(?:${this.Let_dig}|${this.UTF8_non_ascii})(?:${this.Let_dig}|-|${this.UTF8_non_ascii})*(?:${this.Let_dig}|${this.UTF8_non_ascii})?)`; }
+
+	////// RFC 6531 - SMTP Extension for Internationalized Email
+	//// 3.3.  Extended Mailbox Address Syntax
+	//// https://datatracker.ietf.org/doc/html/rfc6531#section-3.3
+	/** @override */
+	static get sub_domain() {
+		return `(?:${RfcParser.sub_domain}|${this.u_label})`;
+	}
+
+	////// RFC 6532 - Internationalized Email Headers
+	//// 3.1.  UTF-8 Syntax and Normalization
+	//// https://datatracker.ietf.org/doc/html/rfc6532#section-3.1
+	static get UTF8_non_ascii() { return `(?:${this.UTF8_2}|${this.UTF8_3}|${this.UTF8_4})`; }
+	//// 3.2.  Syntax Extensions to RFC 5322
+	//// https://datatracker.ietf.org/doc/html/rfc6532#section-3.2
+	/** @override */
+	static get VCHAR() { return `(?:${RfcParser.VCHAR}|${this.UTF8_non_ascii})`; }
+	/** @override */
+	static get ctext() { return `(?:${RfcParser.ctext}|${this.UTF8_non_ascii})`; }
+	/** @override */
+	static get atext() { return `(?:${RfcParser.atext}|${this.UTF8_non_ascii})`; }
+	/** @override */
+	static get qtext() { return `(?:${RfcParser.qtext}|${this.UTF8_non_ascii})`; }
 }

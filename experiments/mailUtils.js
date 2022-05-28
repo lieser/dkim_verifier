@@ -18,7 +18,6 @@
 // eslint-disable-next-line no-var
 var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
-// eslint-disable-next-line no-invalid-this
 this.mailUtils = class extends ExtensionCommon.ExtensionAPI {
 	/**
 	 * @param {ExtensionCommon.Context} _context

@@ -117,7 +117,7 @@ async function readFile(path) {
  * - TransactionInactiveError resulting in Promise never being resolved.
  * - Getting rejected with "An unexpected error occurred".
  *
- * @returns {Promise<Object.<string, any>>}
+ * @returns {Promise<Object<string, any>>}
  */
 async function safeGetLocalStorage() {
 	const overallTimeout = 15000;

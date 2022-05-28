@@ -82,7 +82,7 @@ export default class DMARC {
 /**
  * A DMARC Record.
  *
- * @typedef {Object} DMARCRecord
+ * @typedef {object} DMARCRecord
  * @property {string} adkim
  *   DKIM identifier alignment mode
  *   Possible values: "r" (relaxed), "s" (strict)
@@ -103,7 +103,7 @@ export default class DMARC {
 /**
  * A DMARC Policy.
  *
- * @typedef {Object} DMARCPolicy
+ * @typedef {object} DMARCPolicy
  * @property {string} adkim
  *   DKIM identifier alignment mode
  *   Possible values: "r" (relaxed), "s" (strict)
