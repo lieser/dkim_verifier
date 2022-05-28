@@ -11,7 +11,7 @@
         "plugin:mocha/recommended"
     ],
     "env": {
-        "es2020": true
+        "es2022": true
     },
     "parserOptions": {
         "ecmaVersion": 2022,
@@ -26,6 +26,9 @@
     "globals": {
         "globalThis": "readonly"
     },
+    "ignorePatterns": [
+        "thirdparty/**"
+    ],
     "rules": {
         // Possible Problems
         "array-callback-return": "warn",

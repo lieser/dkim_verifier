@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020 Philippe Lieser
+ * Copyright (c) 2020;2022 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -9,10 +9,20 @@
 
 // @ts-check
 
-import expect, { expectAsyncDkimSigError } from "../helpers/chaiUtils.mjs.js";
+import expect, { expectAsyncDkimSigError, expectAsyncError } from "../helpers/chaiUtils.mjs.js";
 import DkimCrypto from "../../modules/dkim/crypto.mjs.js";
 
 describe("crypto [unittest]", function () {
+	/**
+	 * @param {string} str
+	 * @param {number} index
+	 * @param {string} replacement
+	 * @returns {string}
+	 */
+	function strReplaceAt(str, index, replacement) {
+		return str.substr(0, index) + replacement + str.substr(index + replacement.length);
+	}
+
 	describe("digest", function () {
 		it("sha1", async function () {
 			expect(
@@ -61,16 +71,6 @@ describe("crypto [unittest]", function () {
 			"      bh=2jUSOH9NhtVGCQWNr9BrIAPreKQjO6Sn7XIkfJVOzv8=;\r\n" +
 			"      b=;";
 
-		/**
-		 * @param {string} str
-		 * @param {number} index
-		 * @param {string} replacement
-		 * @returns {string}
-		 */
-		function strReplaceAt(str, index, replacement) {
-			return str.substr(0, index) + replacement + str.substr(index + replacement.length);
-		}
-
 		it("signature valid", async function () {
 			const [valid, keyLength] = await DkimCrypto.verifyRSA(pubKey, "sha256", signature, msg);
 			expect(valid).to.be.true;
@@ -91,6 +91,51 @@ describe("crypto [unittest]", function () {
 		it("wrong key");
 		it("wrong hash algorithm", async function () {
 			const [valid,] = await DkimCrypto.verifyRSA(pubKey, "sha1", signature, msg);
+			expect(valid).to.be.false;
+		});
+	});
+	describe("verify Ed25519 signature", function () {
+		// RFC 8463 Appendix A Example
+		const pubKey = "11qYAYKxCrfVS/7TyWQHOg7hcvPapiMlrwIaaPcHURo=";
+		const signature = "/gCrinpcQOoIfuHNQIbq4pgh9kyIK3AQUdt9OdqQehSwhEIug4D11Bus" +
+			"Fa3bT3FY5OsU7ZbnKELq+eXdp1Q1Dw==";
+
+		const msg =
+			"from:Joe SixPack <joe@football.example.com>\r\n" +
+			"to:Suzie Q <suzie@shopping.example.net>\r\n" +
+			"subject:Is dinner ready?\r\n" +
+			"date:Fri, 11 Jul 2003 21:00:37 -0700 (PDT)\r\n" +
+			"message-id:<20030712040037.46341.5F8J@football.example.com>\r\n" +
+			"dkim-signature:v=1; a=ed25519-sha256; c=relaxed/relaxed;" +
+			" d=football.example.com; i=@football.example.com;" +
+			" q=dns/txt; s=brisbane; t=1528637909; h=from : to :" +
+			" subject : date : message-id : from : subject : date;" +
+			" bh=2jUSOH9NhtVGCQWNr9BrIAPreKQjO6Sn7XIkfJVOzv8=;" +
+			" b=";
+
+		it("signature valid", async function () {
+			const [valid, keyLength] = await DkimCrypto.verifyEd25519(pubKey, "sha256", signature, msg);
+			expect(valid).to.be.true;
+			expect(keyLength).to.be.equal(256);
+		});
+		it("invalid key", async function () {
+			const res = DkimCrypto.verifyEd25519("11qYAYKxCrfVS/7TyWQ", "sha256", signature, msg);
+			await expectAsyncError(res, Error);
+		});
+		it("invalid signature", async function () {
+			const [valid,] = await DkimCrypto.verifyEd25519(pubKey, "sha256", strReplaceAt(signature, 5, "x"), msg);
+			expect(valid).to.be.false;
+		});
+		it("invalid msg", async function () {
+			const [valid,] = await DkimCrypto.verifyEd25519(pubKey, "sha256", signature, strReplaceAt(msg, 5, "x"));
+			expect(valid).to.be.false;
+		});
+		it("wrong key", async function () {
+			const [valid,] = await DkimCrypto.verifyEd25519(strReplaceAt(pubKey, 5, "x"), "sha256", signature, msg);
+			expect(valid).to.be.false;
+		});
+		it("wrong hash algorithm", async function () {
+			const [valid,] = await DkimCrypto.verifyEd25519(pubKey, "sha1", signature, msg);
 			expect(valid).to.be.false;
 		});
 	});

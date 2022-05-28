@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020 Philippe Lieser
+ * Copyright (c) 2020;2022 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -33,13 +33,27 @@ function toType(obj) {
 	return typeMatch[1];
 }
 
-// eslint-disable-next-line no-invalid-this
 this.jsdns = class extends ExtensionCommon.ExtensionAPI {
 	/**
 	 * @param {ExtensionCommon.Extension} extension
 	 */
 	constructor(extension) {
 		super(extension);
+
+		const aomStartup = Cc[
+			"@mozilla.org/addons/addon-manager-startup;1"
+		]?.getService(Ci.amIAddonManagerStartup);
+		if (!aomStartup) {
+			throw new Error("Failed to get amIAddonManagerStartup");
+		}
+		const manifestURI = Services.io.newURI(
+			"manifest.json",
+			null,
+			this.extension.rootURI
+		);
+		this.chromeHandle = aomStartup.registerChrome(manifestURI, [
+			["content", "dkim_verifier_jsdns", "experiments/"],
+		]);
 	}
 
 	/**
@@ -56,7 +70,7 @@ this.jsdns = class extends ExtensionCommon.ExtensionAPI {
 			Refused: 5, // Query Refused [RFC1035]
 		};
 		/** @type {{JSDNS: {configureDNS: typeof configureDNS, queryDNS: typeof queryDNS}}} */
-		const { JSDNS } = ChromeUtils.import(this.extension.rootURI.resolve("experiments/JSDNS.jsm.js"));
+		const { JSDNS } = ChromeUtils.import("chrome://dkim_verifier_jsdns/content/JSDNS.jsm.js");
 		this.extension.callOnClose(this);
 		return {
 			jsdns: {
@@ -111,7 +125,12 @@ this.jsdns = class extends ExtensionCommon.ExtensionAPI {
 	}
 
 	close() {
-		Cu.unload(this.extension.rootURI.resolve("experiments/JSDNS.jsm.js"));
+		Cu.unload("chrome://dkim_verifier_jsdns/content/JSDNS.jsm.js");
+
+		this.chromeHandle.destruct();
+		// @ts-expect-error
+		this.chromeHandle = null;
+
 		Services.obs.notifyObservers(null, "startupcache-invalidate");
 	}
 };

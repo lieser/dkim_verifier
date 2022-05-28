@@ -25,7 +25,7 @@ const log = Logging.getLogger("dns");
 /**
  * The result of a TXT query.
  *
- * @typedef {Object} DnsTxtResult
+ * @typedef {object} DnsTxtResult
  * @property {string[]|null} data Array of txt rdata items, or null if error or no entry in DNS
  * @property {number} rcode DNS error code
  * @property {boolean} secure true if result is secure.

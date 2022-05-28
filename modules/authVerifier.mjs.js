@@ -35,7 +35,7 @@ import prefs from "./preferences.mjs.js";
 const log = Logging.getLogger("AuthVerifier");
 
 /**
- * @typedef {Object} AuthResultV2
+ * @typedef {object} AuthResultV2
  * @property {string} version
  *           result version ("2.1")
  * @property {AuthResultDKIM[]} dkim
@@ -49,7 +49,7 @@ const log = Logging.getLogger("AuthVerifier");
  */
 
 /**
- * @typedef {Object} SavedAuthResultV3
+ * @typedef {object} SavedAuthResultV3
  * @property {string} version
  *           result version ("3.0")
  * @property {VerifierModule.dkimSigResultV2[]} dkim
@@ -128,7 +128,7 @@ export default class AuthVerifier {
 		}
 		let from;
 		try {
-			from = MsgParser.parseFromHeader(fromHeader[0]);
+			from = MsgParser.parseFromHeader(fromHeader[0], prefs["internationalized.enable"]);
 		} catch (error) {
 			log.error("Parsing of from header failed", error);
 			return Promise.resolve({
@@ -242,7 +242,7 @@ async function getARHResult(message, headers, from, listId, account, dmarc) {
 		/** @type {ArhParserModule.ArhHeader} */
 		let arh;
 		try {
-			arh = ArhParser.parse(header, prefs["arh.relaxedParsing"]);
+			arh = ArhParser.parse(header, prefs["arh.relaxedParsing"], prefs["internationalized.enable"]);
 		} catch (exception) {
 			log.error("Ignoring error in parsing of ARH", exception);
 			continue;
@@ -757,6 +757,7 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 						case "DKIM_SIGERROR_KEY_INVALID_V":
 						case "DKIM_SIGERROR_KEY_HASHNOTINCLUDED":
 						case "DKIM_SIGERROR_KEY_UNKNOWN_K":
+						case "DKIM_SIGERROR_KEY_MISMATCHED_K":
 						case "DKIM_SIGERROR_KEY_HASHMISMATCH":
 						case "DKIM_SIGERROR_KEY_NOTEMAILKEY":
 						case "DKIM_SIGERROR_KEYDECODE":

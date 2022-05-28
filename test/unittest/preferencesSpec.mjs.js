@@ -308,7 +308,7 @@ describe("preferences [unittest]", function () {
 				fakeBrowser.storage.local.set.callsFake(async items => {
 					await fakeBrowser.storage.local._set(items, undefined);
 
-					/** @type {Object.<string, {oldValue: any, newValue: any}>} */
+					/** @type {Object<string, {oldValue: any, newValue: any}>} */
 					const changes = {};
 					for (const [name, value] of Object.entries(items)) {
 						changes[name] = {
@@ -343,6 +343,7 @@ describe("preferences [unittest]", function () {
 			pref.setValue("dns.nameserver", "fooBar");
 			fakeBrowser.storage.onChanged.addListener.yield({
 				"dns.nameserver": {
+					// @ts-expect-error
 					oldValue: pref._prefs,
 					newValue: "sync",
 				}
@@ -352,7 +353,7 @@ describe("preferences [unittest]", function () {
 			).to.be.equal("fooBar");
 		});
 		it("test multiple pref changes at the same time", async function () {
-			/** @type {Object.<string, any>[]} */
+			/** @type {Object<string, any>[]} */
 			const storageCalls = [];
 			/**
 			 * @returns {void}
@@ -362,7 +363,7 @@ describe("preferences [unittest]", function () {
 				if (!items) {
 					return;
 				}
-				/** @type {Object.<string, {oldValue: any, newValue: any}>} */
+				/** @type {Object<string, {oldValue: any, newValue: any}>} */
 				const changes = {};
 				for (const [name, value] of Object.entries(items)) {
 					changes[name] = {

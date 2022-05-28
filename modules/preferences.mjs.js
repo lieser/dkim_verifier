@@ -48,7 +48,7 @@ export class BasePreferences {
 	constructor(valueGetter, valueSetter) {
 		/**
 		 * @protected
-		 * @type {Object.<string, boolean|number|string|undefined>}
+		 * @type {Object<string, boolean|number|string|undefined>}
 		 */
 		this._prefs = {};
 
@@ -225,6 +225,10 @@ export class BasePreferences {
 	}
 	get "arh.relaxedParsing"() {
 		return this._tryGetBoolValue("arh.relaxedParsing", false);
+	}
+
+	get "internationalized.enable"() {
+		return this._tryGetBoolValue("internationalized.enable", false);
 	}
 	//#endregion
 
