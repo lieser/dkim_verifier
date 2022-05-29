@@ -128,6 +128,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "amnesty.de",
+			"addr": "*",
+			"sdid": "amnesty.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "amazonses.com",
 			"addr": "*",
 			"sdid": "amazonses.com",
@@ -193,6 +199,12 @@
 			"sdid": "avis-europe.com",
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_NEUTRAL"
+		}, {
+			"domain": "avm.de",
+			"addr": "*",
+			"sdid": "avm.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
 		}, {
 			"domain": "babelzilla.org",
 			"addr": "*",
@@ -356,6 +368,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
+			"domain": "buhl.de",
+			"addr": "*",
+			"sdid": "buhl.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "buhl-newsletter.de",
 			"addr": "*",
 			"sdid": "buhl-newsletter.de",
@@ -443,6 +461,12 @@
 			"domain": "conad.com",
 			"addr": "*",
 			"sdid": "conad.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "congstar.de",
+			"addr": "*",
+			"sdid": "congstar.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -542,9 +566,21 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "dierichs.de",
+			"addr": "*",
+			"sdid": "dierichs.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "digitalocean.com",
 			"addr": "*",
 			"sdid": "digitalocean.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "discord.com",
+			"addr": "*",
+			"sdid": "discord.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -704,6 +740,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "email-telekom.de",
+			"addr": "*",
+			"sdid": "email-telekom.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "emailprivacytester.com",
 			"addr": "*",
 			"sdid": "emailprivacytester.com",
@@ -812,6 +854,18 @@
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_NEUTRAL"
 		}, {
+			"domain": "fielmann.com",
+			"addr": "*",
+			"sdid": "fielmann.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "fielmann.com",
+			"addr": "kontaktlinsen-service@fielmann.com",
+			"sdid": "fielmann.com service.fielmann.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
 			"domain": "fielmann.de",
 			"addr": "*@account.fielmann.de",
 			"sdid": "fielmann.de account.fielmann.de",
@@ -842,6 +896,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "fischer-news.com",
+			"addr": "*",
+			"sdid": "fischer-news.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "fischer-newsletter.com",
 			"addr": "*",
 			"sdid": "fischer-newsletter.com",
@@ -857,6 +917,12 @@
 			"domain": "flytit.no",
 			"addr": "*",
 			"sdid": "flytit.no",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "foodwatch.de",
+			"addr": "*",
+			"sdid": "foodwatch.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -1244,6 +1310,12 @@
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_NEUTRAL"
 		}, {
+			"domain": "judge.me",
+			"addr": "*",
+			"sdid": "judge.me",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "jugendherberge.de",
 			"addr": "news@jugendherberge.de",
 			"sdid": "jugendherberge.de",
@@ -1319,6 +1391,12 @@
 			"domain": "linux.pizza",
 			"addr": "*",
 			"sdid": "linux.pizza social.linux.pizza",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "lotto-niedersachsen.de",
+			"addr": "*",
+			"sdid": "lotto-niedersachsen.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -1526,6 +1604,18 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "novacustom.com",
+			"addr": "*",
+			"sdid": "novacustom.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "noveltech.de",
+			"addr": "*",
+			"sdid": "noveltech.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "nz-k.de",
 			"addr": "*",
 			"sdid": "nz-k.de",
@@ -1706,6 +1796,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "resmio.com",
+			"addr": "*",
+			"sdid": "resmio.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "rhbank.no",
 			"addr": "*",
 			"sdid": "rhbank.no",
@@ -1781,6 +1877,12 @@
 			"domain": "shareit.com",
 			"addr": "*",
 			"sdid": "shareit.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "shopifyemail.com",
+			"addr": "*",
+			"sdid": "shopifyemail.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -1880,6 +1982,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "stadtwerke-uelzen.de",
+			"addr": "*",
+			"sdid": "stadtwerke-uelzen.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "stage-entertainment.de",
 			"addr": "*@news.stage-entertainment.de",
 			"sdid": "stage-entertainment.de news.stage-entertainment.de",
@@ -1976,6 +2084,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "thunderbird-mail.de",
+			"addr": "*",
+			"sdid": "thunderbird-mail.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "tidbit5150.com",
 			"addr": "*",
 			"sdid": "tidbit5150.com",
@@ -2027,6 +2141,12 @@
 			"domain": "tumblr.com",
 			"addr": "*",
 			"sdid": "tumblr.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "tuxedocomputers.com",
+			"addr": "*",
+			"sdid": "tuxedocomputers.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -2101,6 +2221,18 @@
 			"sdid": "verdi-bub.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "vergoelst.de",
+			"addr": "*",
+			"sdid": "vergoelst.de continental.onmicrosoft.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "vergoelst.de",
+			"addr": "*@email.vergoelst.de",
+			"sdid": "vergoelst.de email.vergoelst.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
 			"domain": "videolan.org",
 			"addr": "*",
