@@ -23,11 +23,9 @@ export default class MsgParser {
 	/**
 	 * Parse given message into parsed header and body.
 	 *
-	 * @static
 	 * @param {string} msg - binary string
 	 * @returns {{headers: Map<string, string[]>, body: string}}
 	 * @throws DKIM_InternalError
-	 * @memberof MsgParser
 	 */
 	static parseMsg(msg) {
 		let newlineLength = 2;
@@ -74,12 +72,10 @@ export default class MsgParser {
 	/**
 	 * Parses the header of a message.
 	 *
-	 * @static
 	 * @param {string} headerPlain - binary string
 	 * @returns {Map<string, string[]>}
 	 *          key - header name in lower case
 	 *          value - array of complete headers, including the header name at the beginning (binary string)
-	 * @memberof MsgParser
 	 */
 	static parseHeader(headerPlain) {
 		const headerFields = new Map();
@@ -109,11 +105,9 @@ export default class MsgParser {
 	 * Note: Some obsolete patterns are not supported.
 	 * Note: Using a domain-literal as domain is not supported.
 	 *
-	 * @static
 	 * @param {string} header - binary string
 	 * @param {boolean} [internationalized] - Enable internationalized support
 	 * @returns {string}
-	 * @memberof MsgParser
 	 */
 	static parseFromHeader(header, internationalized) {
 		const parser = internationalized ? RfcParserI : RfcParser;
@@ -175,10 +169,8 @@ export default class MsgParser {
 	 *
 	 * Note: Some obsolete patterns are not supported.
 	 *
-	 * @static
 	 * @param {string} header
 	 * @returns {string}
-	 * @memberof MsgParser
 	 */
 	static parseListIdHeader(header) {
 		const headerStart = "list-id:";

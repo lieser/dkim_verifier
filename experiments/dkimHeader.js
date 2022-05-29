@@ -58,7 +58,6 @@ class DKIMTooltip {
 	 *
 	 * @param {Document} document
 	 * @param {XULElement|void} element - optional underlying element, will be created if not given
-	 * @memberof DKIMTooltip
 	 */
 	constructor(document, element) {
 		/**
@@ -85,7 +84,6 @@ class DKIMTooltip {
 	 * Set the warnings for the tooltip.
 	 *
 	 * @param {string[]} warnings
-	 * @memberof DKIMTooltip
 	 */
 	set warnings(warnings) {
 		// delete old warnings from tooltips
@@ -121,7 +119,6 @@ class DKIMWarningsTooltip extends DKIMTooltip {
 	 *
 	 * @param {Document} document
 	 * @param {XULElement|void} element - optional underlying element, will be created if not given
-	 * @memberof DKIMTooltip
 	 */
 	constructor(document, element) {
 		super(document, element);
@@ -145,7 +142,6 @@ class DkimResultTooltip extends DKIMTooltip {
 	 *
 	 * @param {Document} document
 	 * @param {XULElement|void} element - optional underlying element, will be created if not given
-	 * @memberof DKIMTooltip
 	 */
 	constructor(document, element) {
 		super(document, element);
@@ -178,7 +174,6 @@ class DkimResultTooltip extends DKIMTooltip {
 	 * Set the DKIM result.
 	 *
 	 * @param {string} val
-	 * @memberof DKIMTooltip
 	 */
 	set value(val) {
 		if (!this.element._value) {
@@ -197,7 +192,6 @@ class DKIMHeaderField {
 	 *
 	 * @param {Document} document
 	 * @param {XULElement|void} element - optional underlying element, will be created if not given
-	 * @memberof DKIMHeaderField
 	 */
 	constructor(document, element) {
 		if (element) {
@@ -289,7 +283,6 @@ class DKIMHeaderField {
 	 * Set the DKIM result.
 	 *
 	 * @param {string} val
-	 * @memberof DKIMHeaderField
 	 */
 	set value(val) {
 		this.element._dkimValue.textContent = val;
@@ -299,7 +292,6 @@ class DKIMHeaderField {
 	 * Set the DKIM warnings.
 	 *
 	 * @param {string[]} warnings
-	 * @memberof DKIMHeaderField
 	 */
 	set warnings(warnings) {
 		if (warnings.length) {
@@ -314,7 +306,6 @@ class DKIMHeaderField {
 	 * Set the SPF result.
 	 *
 	 * @param {string} val
-	 * @memberof DKIMHeaderField
 	 */
 	set spfValue(val) {
 		if (val) {
@@ -329,7 +320,6 @@ class DKIMHeaderField {
 	 * Set the DMARC result.
 	 *
 	 * @param {string} val
-	 * @memberof DKIMHeaderField
 	 */
 	set dmarcValue(val) {
 		if (val) {
@@ -344,7 +334,6 @@ class DKIMHeaderField {
 	 * Set the DKIM result from the ARH.
 	 *
 	 * @param {string} val
-	 * @memberof DKIMHeaderField
 	 */
 	set arhDkimValue(val) {
 		if (val) {
@@ -366,10 +355,8 @@ class DKIMHeaderField {
 	/**
 	 * Get the DKIM header field in a given document.
 	 *
-	 * @static
 	 * @param {Document} document
 	 * @returns {DKIMHeaderField}
-	 * @memberof DKIMHeaderField
 	 */
 	static get(document) {
 		const element = document.getElementById(DKIMHeaderField._id);
@@ -391,7 +378,6 @@ class DkimHeaderRow {
 	 *
 	 * @param {Document} document
 	 * @param {HTMLElement} element - optional underlying element, will be created if not given
-	 * @memberof DkimHeaderRow
 	 */
 	constructor(document, element) {
 		this.document = document;
@@ -403,7 +389,6 @@ class DkimHeaderRow {
 	 *
 	 * @param {boolean} show
 	 * @returns {void}
-	 * @memberof DkimHeaderRow
 	 */
 	show(show) {
 		if (show) {
@@ -425,10 +410,8 @@ class DkimHeaderRow {
 	/**
 	 * Get the DKIM header row in a given document.
 	 *
-	 * @static
 	 * @param {Document} document
 	 * @returns {DkimHeaderRow}
-	 * @memberof DkimHeaderRow
 	 */
 	static get(document) {
 		const element = document.getElementById(DkimHeaderRow._id);
@@ -441,10 +424,8 @@ class DkimHeaderRow {
 	/**
 	 * Add the DKIM header row to a given document.
 	 *
-	 * @static
 	 * @param {Document} document
 	 * @returns {void}
-	 * @memberof DkimHeaderRow
 	 */
 	static add(document) {
 		let headerRowElement;
@@ -466,10 +447,8 @@ class DkimHeaderRow {
 	/**
 	 * Remove the DKIM header row from a given document.
 	 *
-	 * @static
 	 * @param {Document} document
 	 * @returns {void}
-	 * @memberof DkimHeaderRow
 	 */
 	static remove(document) {
 		const headerRow = DkimHeaderRow.get(document);
@@ -483,11 +462,9 @@ class DkimHeaderRow {
 	 * Used in TB 78-95.
 	 * Should be added to the `expandedHeaders2` element.
 	 *
-	 * @static
 	 * @private
 	 * @param {Document} document
 	 * @returns {HTMLElement}
-	 * @memberof DkimHeaderRow
 	 */
 	static _createTableRowElement(document) {
 		const headerRow = document.createElement("tr");
@@ -513,11 +490,9 @@ class DkimHeaderRow {
 	 * Used in TB >= 96.
 	 * Should be added to the `extraHeadersArea` element.
 	 *
-	 * @static
 	 * @private
 	 * @param {Document} document
 	 * @returns {HTMLElement}
-	 * @memberof DkimHeaderRow
 	 */
 	static _createDivRowElement(document) {
 		const headerRow = document.createElement("div");
@@ -550,7 +525,6 @@ class DkimFavicon {
 	 *
 	 * @param {Document} document
 	 * @param {XULElement|void} element - optional underlying element, will be created if not given
-	 * @memberof DkimFavicon
 	 */
 	constructor(document, element) {
 		if (element) {
@@ -590,7 +564,6 @@ class DkimFavicon {
 	 * Set the DKIM result.
 	 *
 	 * @param {string} val
-	 * @memberof DkimFavicon
 	 */
 	set value(val) {
 		this._dkimTooltipFrom.value = val;
@@ -600,7 +573,6 @@ class DkimFavicon {
 	 * Set the DKIM warnings.
 	 *
 	 * @param {string[]} warnings
-	 * @memberof DkimFavicon
 	 */
 	set warnings(warnings) {
 		this._dkimTooltipFrom.warnings = warnings;
@@ -611,7 +583,6 @@ class DkimFavicon {
 	 *
 	 * @param {string} faviconUrl
 	 * @returns {void}
-	 * @memberof DkimFavicon
 	 */
 	setFaviconUrl(faviconUrl) {
 		this.element.style.backgroundImage = `url('${faviconUrl}')`;
@@ -631,10 +602,8 @@ class DkimFavicon {
 	/**
 	 * Get the DKIM favicon in a given document.
 	 *
-	 * @static
 	 * @param {Document} document
 	 * @returns {DkimFavicon}
-	 * @memberof DkimFavicon
 	 */
 	static get(document) {
 		const element = document.getElementById(DkimFavicon._id);
@@ -647,10 +616,8 @@ class DkimFavicon {
 	/**
 	 * Add the DKIM favicon to a given document.
 	 *
-	 * @static
 	 * @param {Document} document
 	 * @returns {void}
-	 * @memberof DkimFavicon
 	 */
 	static add(document) {
 		const favicon = new DkimFavicon(document);
@@ -691,10 +658,8 @@ class DkimFavicon {
 	/**
 	 * Remove the DKIM favicon from a given document.
 	 *
-	 * @static
 	 * @param {Document} document
 	 * @returns {void}
-	 * @memberof DkimFavicon
 	 */
 	static remove(document) {
 		const favicon = DkimFavicon.get(document);
@@ -725,7 +690,6 @@ class DkimFromAddress {
 	/**
 	 * Get the element containing the from address (without the following star).
 	 *
-	 * @static
 	 * @private
 	 * @param {Document} document
 	 * @returns {HTMLElement?}
@@ -841,7 +805,6 @@ class DkimResetMessageListener {
 	 * Should not be called directly, use the static register() instead.
 	 *
 	 * @param {Window} window
-	 * @memberof DkimResetMessageListener
 	 */
 	constructor(window) {
 		this.window = window;
@@ -850,10 +813,8 @@ class DkimResetMessageListener {
 	/**
 	 * Create and register a DkimResetMessageListener.
 	 *
-	 * @static
 	 * @param {Window} window
 	 * @returns {void}
-	 * @memberof DkimResetMessageListener
 	 */
 	static register(window) {
 		if (DkimResetMessageListener._mapping.has(window)) {
@@ -867,10 +828,8 @@ class DkimResetMessageListener {
 	/**
 	 * Unregister a DkimResetMessageListener.
 	 *
-	 * @static
 	 * @param {Window} window
 	 * @returns {void}
-	 * @memberof DkimResetMessageListener
 	 */
 	static unregister(window) {
 		const listener = DkimResetMessageListener._mapping.get(window);
@@ -890,7 +849,6 @@ class DkimResetMessageListener {
 	/**
 	 * Reset the header in a specific document.
 	 *
-	 * @static
 	 * @param {Document} document
 	 * @returns {void}
 	 */
