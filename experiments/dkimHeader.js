@@ -21,6 +21,35 @@ const { ExtensionParent } = ChromeUtils.import("resource://gre/modules/Extension
 const { ExtensionSupport } = ChromeUtils.import("resource:///modules/ExtensionSupport.jsm");
 
 /**
+ * Wraps an element in the given wrapper.
+ * Note: element musst have a parent.
+ *
+ * @param {HTMLElement} element
+ * @param {HTMLElement} wrapper
+ */
+function wrap(element, wrapper) {
+	element.insertAdjacentElement("beforebegin", wrapper);
+	wrapper.appendChild(element);
+}
+
+/**
+ * Unwraps all child nodes in a given wrapper.
+ * Note: wrapper musst have a parent.
+ *
+ * @param {HTMLElement} wrapper
+ */
+function unwrap(wrapper) {
+	const parent = wrapper.parentNode;
+	if (!parent) {
+		throw Error("Wrapper element has no parent");
+	}
+	while (wrapper.firstChild) {
+		parent.insertBefore(wrapper.firstChild, wrapper);
+	}
+	wrapper.remove();
+}
+
+/**
  * Base class for DKIM tooltips
  */
 class DKIMTooltip {
@@ -383,7 +412,7 @@ class DkimHeaderRow {
 			this.element.style.display = "none";
 		}
 		// Trigger the OnResizeExpandedHeaderView() function from Thunderbird
-		// to recalculate the height on the expandedHeaderView element.
+		// to recalculate the height on the expandedHeaderView element in TB<=98.
 		const defaultView = this.document.defaultView;
 		if (defaultView) {
 			const window = defaultView.window;
@@ -624,18 +653,39 @@ class DkimFavicon {
 	 * @memberof DkimFavicon
 	 */
 	static add(document) {
-		const headerRow = new DkimFavicon(document);
-		/** @type {MozMailMultiEmailheaderfield|null} */
-		// @ts-expect-error
-		const expandedFromBox = document.getElementById("expandedfromBox");
+		const favicon = new DkimFavicon(document);
+		// eslint-disable-next-line no-extra-parens
+		const expandedFromBox = /** @type {expandedfromBox?} */ (document.getElementById("expandedfromBox"));
 		if (!expandedFromBox) {
 			throw Error("Could not find the expandedFromBox element");
 		}
 
-		expandedFromBox.prepend(headerRow.element);
+		// Add the favicon.
+		if ("recipientsList" in expandedFromBox) {
+			// TB >=102
+			const hboxWrapper = document.createElement("div");
+			favicon.element._hboxWrapper = hboxWrapper;
+			hboxWrapper.style.display = "flex";
+			hboxWrapper.style.alignItems = "center";
 
-		// The tooltip is reused, and wherefore can not defined directly under the favicon
-		expandedFromBox.longEmailAddresses.prepend(headerRow._dkimTooltipFrom.element);
+			favicon.element.style.marginInlineEnd = "var(--message-header-field-offset)";
+
+			hboxWrapper.appendChild(favicon.element);
+			wrap(expandedFromBox.recipientsList, hboxWrapper);
+		} else {
+			// TB <102
+			expandedFromBox.prepend(favicon.element);
+		}
+
+		// Add the tooltip used by the favicon and the from address.
+		// As the tooltip is reused, it can not be defined directly under the favicon.
+		if ("longEmailAddresses" in expandedFromBox) {
+			// TB <102
+			expandedFromBox.longEmailAddresses.prepend(favicon._dkimTooltipFrom.element);
+		} else {
+			// TB >=102
+			expandedFromBox.prepend(favicon._dkimTooltipFrom.element);
+		}
 	}
 
 	/**
@@ -649,6 +699,9 @@ class DkimFavicon {
 	static remove(document) {
 		const favicon = DkimFavicon.get(document);
 		if (favicon) {
+			if (favicon.element._hboxWrapper) {
+				unwrap(favicon.element._hboxWrapper);
+			}
 			favicon.element.remove();
 			favicon._dkimTooltipFrom.element.remove();
 		}
@@ -675,31 +728,38 @@ class DkimFromAddress {
 	 * @static
 	 * @private
 	 * @param {Document} document
-	 * @returns {XULElement?}
+	 * @returns {HTMLElement?}
 	 */
 	static _getFromAddress(document) {
-		/** @type {MozMailMultiEmailheaderfield?} */
-		// @ts-expect-error
-		const expandedFromBox = document.getElementById("expandedfromBox");
+		// TB >=102
+		const fromRecipient0Display = document.getElementById("fromRecipient0Display");
+		if (fromRecipient0Display) {
+			return fromRecipient0Display;
+		}
+
+		// TB <102
+		// eslint-disable-next-line no-extra-parens
+		const expandedFromBox = /** @type {expandedfromBox?} */ (document.getElementById("expandedfromBox"));
 		if (!expandedFromBox) {
 			console.debug("DKIM: from address not found (no expandedfromBox)");
 			return null;
 		}
-		/** @type {XULElement?} */
-		// @ts-expect-error
-		const mailEmailadress = expandedFromBox.emailAddresses.firstChild;
-		if (!mailEmailadress) {
-			console.debug("DKIM: from address not found (no firstChild)");
+		if (!("emailAddresses" in expandedFromBox)) {
+			console.debug("DKIM: from address not found (no expandedFromBox.emailAddresses)");
 			return null;
 		}
-		/** @type {XULElement|undefined} */
-		// @ts-expect-error
+		const mailEmailadress = expandedFromBox.emailAddresses.firstElementChild;
+		if (!mailEmailadress) {
+			console.debug("DKIM: from address not found (no firstElementChild)");
+			return null;
+		}
 		const emailValue = mailEmailadress.getElementsByClassName("emaillabel")[0];
 		if (!emailValue) {
 			console.debug("DKIM: from address not found (no emaillabel)");
 			return null;
 		}
-		return emailValue;
+		// eslint-disable-next-line no-extra-parens
+		return /** @type {HTMLElement} */ (emailValue);
 	}
 
 	/**
@@ -721,7 +781,7 @@ class DkimFromAddress {
 	}
 
 	/**
-	 * Set whether the DKIM heder should be shown.
+	 * Set whether the DKIM tooltip should be shown.
 	 *
 	 * @param {Document} document
 	 * @param {boolean} show
@@ -843,8 +903,12 @@ class DkimResetMessageListener {
 	}
 
 	onStartHeaders() {
-		const document = this.window.document;
-		DkimResetMessageListener.reset(document);
+		try {
+			const document = this.window.document;
+			DkimResetMessageListener.reset(document);
+		} catch (error) {
+			console.error("DKIM: Error in onStartHeaders:", error);
+		}
 	}
 	// eslint-disable-next-line no-empty-function
 	onEndHeaders() { }
@@ -906,7 +970,17 @@ this.dkimHeader = class extends ExtensionCommon.ExtensionAPI {
 	paint(window) {
 		const { document } = window;
 		DkimHeaderRow.add(document);
-		window.syncGridColumnWidths();
+		if (window.syncGridColumnWidths) {
+			// TB <102
+			window.syncGridColumnWidths();
+		} else if (window.updateExpandedView) {
+			// TB >=102
+			// Calling `gMessageHeader.syncLabelsColumnWidths()` directly is not possible,
+			// as `gMessageHeader` is not part of the `window` object.
+			window.updateExpandedView();
+		} else {
+			console.warn("DKIM: Function to sync header column widths not found.");
+		}
 		DkimFavicon.add(document);
 	}
 

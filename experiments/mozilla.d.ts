@@ -310,6 +310,9 @@ declare class XULElement extends HTMLElement { };
 ////////////////////////////////////////////////////////////////////////////////
 //// Thunderbird specific interfaces
 
+/**
+ * expandedfromBox in TB <102
+ */
 declare class MozMailMultiEmailheaderfield extends MozXULElement {
     /**
      * The description inside `longEmailAddresses` with class "headerValue".
@@ -320,9 +323,14 @@ declare class MozMailMultiEmailheaderfield extends MozXULElement {
      * The outer hbox with class "headerValueBox"
      */
     longEmailAddresses: MozXULElement;
-    // added by add-on
-    _dkimFavicon: MozXULElement;
 };
+/**
+ * expandedfromBox in TB >=102
+ */
+declare class MultiRecipientRow extends HTMLDivElement {
+    recipientsList: HTMLElement;
+}
+type expandedfromBox = MozMailMultiEmailheaderfield | MultiRecipientRow;
 
 interface nsIMsgDBHdr {
     getStringProperty(propertyName: string): string;

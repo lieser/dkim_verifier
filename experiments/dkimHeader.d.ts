@@ -14,6 +14,7 @@ interface DKIMTooltipElement extends XULElement {
 
 interface DKIMFaviconElement extends XULElement {
     _dkimTooltipFromElement: DKIMTooltipElement
+    _hboxWrapper?: HTMLDivElement
 }
 
 declare module browser {
