@@ -688,17 +688,28 @@ class DkimFavicon {
  */
 class DkimFromAddress {
 	/**
-	 * Get the element containing the from address (without the following star).
+	 * Get the elements containing the from address (without the following star).
+	 * Can return multiple elements, as newer Thunderbird version have
+	 * both a single line and a multi line from address.
 	 *
 	 * @private
 	 * @param {Document} document
-	 * @returns {HTMLElement?}
+	 * @returns {HTMLElement[]}
 	 */
 	static _getFromAddress(document) {
 		// TB >=102
 		const fromRecipient0Display = document.getElementById("fromRecipient0Display");
 		if (fromRecipient0Display) {
-			return fromRecipient0Display;
+			// eslint-disable-next-line no-extra-parens
+			const fromRecipient0 = /** @type {HeaderRecipient?} */ (document.getElementById("fromRecipient0"));
+			if (!fromRecipient0) {
+				console.warn("DKIM: multi line from address not found (no fromRecipient0)");
+			} else if (!fromRecipient0.multiLine) {
+				console.warn("DKIM: multi line from address not found (fromRecipient0 has no multiLine)");
+			} else {
+				return [fromRecipient0Display, fromRecipient0.multiLine];
+			}
+			return [fromRecipient0Display];
 		}
 
 		// TB <102
@@ -706,24 +717,24 @@ class DkimFromAddress {
 		const expandedFromBox = /** @type {expandedfromBox?} */ (document.getElementById("expandedfromBox"));
 		if (!expandedFromBox) {
 			console.debug("DKIM: from address not found (no expandedfromBox)");
-			return null;
+			return [];
 		}
 		if (!("emailAddresses" in expandedFromBox)) {
 			console.debug("DKIM: from address not found (no expandedFromBox.emailAddresses)");
-			return null;
+			return [];
 		}
 		const mailEmailadress = expandedFromBox.emailAddresses.firstElementChild;
 		if (!mailEmailadress) {
 			console.debug("DKIM: from address not found (no firstElementChild)");
-			return null;
+			return [];
 		}
 		const emailValue = mailEmailadress.getElementsByClassName("emaillabel")[0];
 		if (!emailValue) {
 			console.debug("DKIM: from address not found (no emaillabel)");
-			return null;
+			return [];
 		}
 		// eslint-disable-next-line no-extra-parens
-		return /** @type {HTMLElement} */ (emailValue);
+		return [/** @type {HTMLElement} */ (emailValue)];
 	}
 
 	/**
@@ -735,13 +746,15 @@ class DkimFromAddress {
 	 * @returns {void}
 	 */
 	static setHighlightColor(document, color, backgroundColor) {
-		const emailValue = this._getFromAddress(document);
-		if (!emailValue) {
+		const emailValues = this._getFromAddress(document);
+		if (!emailValues) {
 			return;
 		}
-		emailValue.style.borderRadius = "3px";
-		emailValue.style.color = color;
-		emailValue.style.backgroundColor = backgroundColor;
+		for (const emailValue of emailValues) {
+			emailValue.style.borderRadius = "3px";
+			emailValue.style.color = color;
+			emailValue.style.backgroundColor = backgroundColor;
+		}
 	}
 
 	/**
@@ -752,28 +765,30 @@ class DkimFromAddress {
 	 * @returns {void}
 	 */
 	static showTooltip(document, show) {
-		const emailValue = this._getFromAddress(document);
-		if (!emailValue) {
+		const emailValues = this._getFromAddress(document);
+		if (!emailValues) {
 			return;
 		}
-		if (show) {
-			// save current tooltip if set
-			const tooltiptext = emailValue.getAttribute("tooltiptext");
-			if (tooltiptext) {
-				emailValue.setAttribute("tooltiptextSaved", tooltiptext);
-			}
-			emailValue.removeAttribute("tooltiptext");
-			// set DKIM tooltip
-			emailValue.setAttribute("tooltip", DkimFavicon.idTooltip);
-		} else {
-			if (emailValue.getAttribute("tooltip") === DkimFavicon.idTooltip) {
-				// remove DKIM tooltip
-				emailValue.removeAttribute("tooltip");
-				// restore saved tooltip
-				const tooltiptextSaved = emailValue.getAttribute("tooltiptextSaved");
-				if (tooltiptextSaved) {
-					emailValue.setAttribute("tooltiptext", tooltiptextSaved);
-					emailValue.removeAttribute("tooltiptextSaved");
+		for (const emailValue of emailValues) {
+			if (show) {
+				// save current tooltip if set
+				const tooltiptext = emailValue.getAttribute("tooltiptext");
+				if (tooltiptext) {
+					emailValue.setAttribute("tooltiptextSaved", tooltiptext);
+				}
+				emailValue.removeAttribute("tooltiptext");
+				// set DKIM tooltip
+				emailValue.setAttribute("tooltip", DkimFavicon.idTooltip);
+			} else {
+				if (emailValue.getAttribute("tooltip") === DkimFavicon.idTooltip) {
+					// remove DKIM tooltip
+					emailValue.removeAttribute("tooltip");
+					// restore saved tooltip
+					const tooltiptextSaved = emailValue.getAttribute("tooltiptextSaved");
+					if (tooltiptextSaved) {
+						emailValue.setAttribute("tooltiptext", tooltiptextSaved);
+						emailValue.removeAttribute("tooltiptextSaved");
+					}
 				}
 			}
 		}

@@ -1,7 +1,7 @@
 5.0.0pre1 [2022-05-29]
 ------------------
 - now requires at least Thunderbird 91
-- fixed incompatibility with Thunderbird 102 (#306)
+- fixed incompatibility with Thunderbird 102 (#306, #312)
 - Added support for signing algorithm Ed25519-SHA256 (RFC 8463) (#142)
 - fixed multiple from addresses being treated as ill-formed (#304)
 - JSDNS: fixed incompatibility with Thunderbird 101 (#303)

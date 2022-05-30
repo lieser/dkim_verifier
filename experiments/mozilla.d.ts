@@ -330,6 +330,12 @@ declare class MozMailMultiEmailheaderfield extends MozXULElement {
 declare class MultiRecipientRow extends HTMLDivElement {
     recipientsList: HTMLElement;
 }
+/**
+ * fromRecipientX in TB >=102
+ */
+declare class HeaderRecipient extends HTMLLIElement {
+    multiLine: HTMLElement;
+}
 type expandedfromBox = MozMailMultiEmailheaderfield | MultiRecipientRow;
 
 interface nsIMsgDBHdr {
