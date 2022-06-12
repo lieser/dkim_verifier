@@ -430,18 +430,24 @@ class DkimHeaderRow {
 	static add(document) {
 		let headerRowElement;
 		let headerRowContainer = document.getElementById("expandedHeaders2");
+		/** @type {InsertPosition=} */
+		let position;
 		if (headerRowContainer) {
+			// TB < 96
 			headerRowElement = this._createTableRowElement(document);
+			position = "beforeend";
 		} else {
+			// TB >= 96
 			headerRowContainer = document.getElementById("extraHeadersArea");
 			if (!headerRowContainer) {
 				throw Error("Could not find the expandedHeaders2 element");
 			}
 			headerRowElement = this._createDivRowElement(document);
+			position = "beforebegin";
 		}
 		const headerRow = new DkimHeaderRow(document, headerRowElement);
 		headerRow.show(false);
-		headerRowContainer.appendChild(headerRow.element);
+		headerRowContainer.insertAdjacentElement(position, headerRow.element);
 	}
 
 	/**
