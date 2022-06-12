@@ -396,6 +396,11 @@ describe("Message parser [unittest]", function () {
 			expect(MsgParser.parseFromHeader(toBinaryString(
 				'From: "Pelé" <"Pelé"@example.com>\r\n'
 			), true)).to.be.equal('"Pelé"@example.com');
+
+			// https://mathiasbynens.be/notes/javascript-unicode#poo-test
+			expect(MsgParser.parseFromHeader(toBinaryString(
+				"From: Iñtërnâtiônàlizætiøn☃💩@Iñtërnâtiônàlizætiøn☃💩.test\r\n"
+			), true)).to.be.equal("Iñtërnâtiônàlizætiøn☃💩@Iñtërnâtiônàlizætiøn☃💩.test");
 		});
 		it("valid IDNA labels", function () {
 			// Examples from https://unicode.org/reports/tr46/#Table_Example_Processing
