@@ -38,6 +38,7 @@ async function createOrRaisePopup(url, height = undefined, width = undefined) {
 		url: url,
 		type: "popup",
 		allowScriptsToClose: true,
+		titlePreface: `${browser.i18n.getMessage("about_name")} - `,
 	};
 	if (height) {
 		createData.height = height;
