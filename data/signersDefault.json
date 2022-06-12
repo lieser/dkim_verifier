@@ -1010,6 +1010,12 @@
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
+			"domain": "geocaching.com",
+			"addr": "*",
+			"sdid": "geocaching.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "germanwings.com",
 			"addr": "*",
 			"sdid": "germanwings.com",
@@ -1429,6 +1435,12 @@
 			"sdid": "mailc.net",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL0"
+		}, {
+			"domain": "malwarebytes.com",
+			"addr": "*",
+			"sdid": "malwarebytes.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
 		}, {
 			"domain": "markt.de",
 			"addr": "*",
