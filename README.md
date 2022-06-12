@@ -24,7 +24,7 @@ The following directories and files are included in the packed extension:
   Contains most of the business logic.
   Only `.js` files are included in the packed extension.
 - `thirdparty`: Most of the included third-party libraries.
-- `CHANGELOG.txt`: Changelog of user visible changes.
+- `CHANGELOG.md`: Changelog of user visible changes.
 - `icon.svg` / `icon-white.svg`: Icon of the extension.
 - `LICENSE.txt`: Licensing information for the extension.
 - `manifest.json`: Manifest file containing basic metadata about the extension.
