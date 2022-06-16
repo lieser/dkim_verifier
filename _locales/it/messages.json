@@ -241,9 +241,6 @@
 	"DKIM_SIGERROR_KEY_REVOKED": {
 		"message": "Chiave DKIM revocata"
 	},
-	"DKIM_SIGERROR_KEY_HASHMISMATCH": {
-		"message": "Chiave pubblica nella chiave DKIM con algoritmo di firma errato"
-	},
 	"DKIM_SIGERROR_KEY_ILLFORMED_P": {
 		"message": "Tag dati della chiave pubblica nella chiave DKIM con sintassi errata"
 	},

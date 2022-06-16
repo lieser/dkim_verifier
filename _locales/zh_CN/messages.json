@@ -210,9 +210,6 @@
 	"DKIM_SIGERROR_KEY_REVOKED": {
 		"message": "密钥已废除"
 	},
-	"DKIM_SIGERROR_KEY_HASHMISMATCH": {
-		"message": "公钥算法有错"
-	},
 	"DKIM_SIGERROR_KEY_ILLFORMED_P": {
 		"message": "公钥数据标签格式不良"
 	},

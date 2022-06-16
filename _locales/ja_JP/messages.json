@@ -241,9 +241,6 @@
 	"DKIM_SIGERROR_KEY_REVOKED": {
 		"message": "DKIM キーが無効化されています"
 	},
-	"DKIM_SIGERROR_KEY_HASHMISMATCH": {
-		"message": "DKIM キーの公開鍵のハッシュアルゴリズムが正しくありません"
-	},
 	"DKIM_SIGERROR_KEY_ILLFORMED_P": {
 		"message": "DKIM キーの公開鍵データタグの形式が不正"
 	},

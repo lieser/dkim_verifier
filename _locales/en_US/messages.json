@@ -241,9 +241,6 @@
 	"DKIM_SIGERROR_KEY_REVOKED": {
 		"message": "DKIM key is revoked"
 	},
-	"DKIM_SIGERROR_KEY_HASHMISMATCH": {
-		"message": "Public key in DKIM key has wrong hash algorithm"
-	},
 	"DKIM_SIGERROR_KEY_ILLFORMED_P": {
 		"message": "Public key data tag in DKIM key is ill-formed"
 	},

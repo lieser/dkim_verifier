@@ -241,9 +241,6 @@
 	"DKIM_SIGERROR_KEY_REVOKED": {
 		"message": "DKIM-Schlüssel wurde zurückgezogen"
 	},
-	"DKIM_SIGERROR_KEY_HASHMISMATCH": {
-		"message": "Öffentlicher Schlüssel im DKIM-Schlüssel hat falschen Hash-Algorithmus"
-	},
 	"DKIM_SIGERROR_KEY_ILLFORMED_P": {
 		"message": "Public-Key-Tag im DKIM-Schlüssel hat falsches Format"
 	},

@@ -241,9 +241,6 @@
 	"DKIM_SIGERROR_KEY_REVOKED": {
 		"message": "Ключ DKIM відкликано"
 	},
-	"DKIM_SIGERROR_KEY_HASHMISMATCH": {
-		"message": "Відкритий ключ у ключі DKIM має неправильний алгоритм хешування"
-	},
 	"DKIM_SIGERROR_KEY_ILLFORMED_P": {
 		"message": "Тег даних відкритого ключа в ключі DKIM неправильно сформований"
 	},

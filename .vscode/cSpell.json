@@ -3,7 +3,7 @@
     // Version of the setting file.  Always 0.1
     "version": "0.1",
     // language - current active spelling language
-    "language": "en,de-de",
+    "language": "en,de-de,uk",
     // words - list of words to be always considered correct
     "words": [
         "anonid",
@@ -72,7 +72,6 @@
         "DKIM_POLICYERROR_KEYMISMATCH",
         "DKIM_SIGERROR_KEY_ILLFORMED",
         "DKIM_SIGERROR_KEY_HASHNOTINCLUDED",
-        "DKIM_SIGERROR_KEY_HASHMISMATCH",
         "DKIM_SIGERROR_KEY_NOTEMAILKEY",
         "DKIM_SIGERROR_BADSIG",
         "DKIM_SIGERROR_KEYDECODE",
