@@ -42,8 +42,8 @@ async function verifyEmlFile(file) {
 }
 
 describe("DKIM Verifier [unittest]", function () {
-	describe("RFC 6376 Appendix A Example", function () {
-		it("valid", async function () {
+	describe("Valid examples", function () {
+		it("RFC 6376 Appendix A Example", async function () {
 			const res = await verifyEmlFile("rfc6376-A.2.eml");
 			expect(res.signatures.length).to.be.equal(1);
 			expect(res.signatures[0]?.result).to.be.equal("SUCCESS");
@@ -52,30 +52,7 @@ describe("DKIM Verifier [unittest]", function () {
 			expect(res.signatures[0]?.auid).to.be.equal("joe@football.example.com");
 			expect(res.signatures[0]?.selector).to.be.equal("brisbane");
 		});
-		it("body modified", async function () {
-			const res = await verifyEmlFile("rfc6376-A.2-body_modified.eml");
-			expect(res.signatures.length).to.be.equal(1);
-			expect(res.signatures[0]?.result).to.be.equal("PERMFAIL");
-			expect(res.signatures[0]?.errorType).to.be.equal("DKIM_SIGERROR_CORRUPT_BH");
-			expect(res.signatures[0]?.sdid).to.be.equal("example.com");
-		});
-		it("header subject modified", async function () {
-			const res = await verifyEmlFile("rfc6376-A.2-header_subject_modified.eml");
-			expect(res.signatures.length).to.be.equal(1);
-			expect(res.signatures[0]?.result).to.be.equal("PERMFAIL");
-			expect(res.signatures[0]?.errorType).to.be.equal("DKIM_SIGERROR_BADSIG");
-			expect(res.signatures[0]?.sdid).to.be.equal("example.com");
-		});
-		it("missing v", async function () {
-			const res = await verifyEmlFile("rfc6376-A.2-ill_formed-missing_v.eml");
-			expect(res.signatures.length).to.be.equal(1);
-			expect(res.signatures[0]?.result).to.be.equal("PERMFAIL");
-			expect(res.signatures[0]?.errorType).to.be.equal("DKIM_SIGERROR_MISSING_V");
-			expect(res.signatures[0]?.sdid).to.be.undefined;
-		});
-	});
-	describe("RFC 8463 Appendix A Example", function () {
-		it("valid", async function () {
+		it("RFC 8463 Appendix A Example", async function () {
 			const res = await verifyEmlFile("rfc8463-A.3.eml");
 			expect(res.signatures.length).to.be.equal(2);
 			expect(res.signatures[0]?.result).to.be.equal("SUCCESS");
@@ -89,6 +66,17 @@ describe("DKIM Verifier [unittest]", function () {
 			expect(res.signatures[1]?.auid).to.be.equal("@football.example.com");
 			expect(res.signatures[1]?.selector).to.be.equal("brisbane");
 		});
+	});
+	describe("Syntax errors", function () {
+		it("Missing v-tag in signature", async function () {
+			const res = await verifyEmlFile("rfc6376-A.2-ill_formed-missing_v.eml");
+			expect(res.signatures.length).to.be.equal(1);
+			expect(res.signatures[0]?.result).to.be.equal("PERMFAIL");
+			expect(res.signatures[0]?.errorType).to.be.equal("DKIM_SIGERROR_MISSING_V");
+			expect(res.signatures[0]?.sdid).to.be.undefined;
+		});
+	});
+	describe("Mismatches between signature and key", function () {
 		it("Wrong key signature algorithm", async function () {
 			const res = await verifyEmlFile("rfc8463-A.3-key_algo_mismatch.eml");
 			expect(res.signatures.length).to.be.equal(2);
@@ -96,6 +84,31 @@ describe("DKIM Verifier [unittest]", function () {
 			expect(res.signatures[0]?.errorType).to.be.equal("DKIM_SIGERROR_KEY_MISMATCHED_K");
 			expect(res.signatures[1]?.result).to.be.equal("PERMFAIL");
 			expect(res.signatures[1]?.errorType).to.be.equal("DKIM_SIGERROR_KEY_MISMATCHED_K");
+		});
+	});
+	describe("Modifications", function () {
+		describe("Simple body canonicalization", function () {
+			describe("Disallowed modifications", function () {
+				it("Body modified", async function () {
+					const res = await verifyEmlFile("rfc6376-A.2-body_modified.eml");
+					expect(res.signatures.length).to.be.equal(1);
+					expect(res.signatures[0]?.result).to.be.equal("PERMFAIL");
+					expect(res.signatures[0]?.errorType).to.be.equal("DKIM_SIGERROR_CORRUPT_BH");
+					expect(res.signatures[0]?.sdid).to.be.equal("example.com");
+				});
+			});
+		});
+		describe("Simple header canonicalization", function () {
+			describe("Disallowed modifications", function () {
+				it("Signed header subject modified", async function () {
+					const res = await verifyEmlFile("rfc6376-A.2-header_subject_modified.eml");
+					expect(res.signatures.length).to.be.equal(1);
+					expect(res.signatures[0]?.result).to.be.equal("PERMFAIL");
+					expect(res.signatures[0]?.errorType).to.be.equal("DKIM_SIGERROR_BADSIG");
+					expect(res.signatures[0]?.sdid).to.be.equal("example.com");
+				});
+			});
+
 		});
 	});
 	describe("Signature warnings", function () {
@@ -113,7 +126,7 @@ describe("DKIM Verifier [unittest]", function () {
 			expect(res.signatures.length).to.be.equal(1);
 			expect(res.signatures[0]?.result).to.be.equal("SUCCESS");
 			expect(res.signatures[0]?.warnings).to.be.an('array').
-				that.deep.includes({name: "DKIM_SIGWARNING_FROM_NOT_IN_SDID"});
+				that.deep.includes({ name: "DKIM_SIGWARNING_FROM_NOT_IN_SDID" });
 		});
 	});
 });
