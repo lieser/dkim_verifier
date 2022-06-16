@@ -969,14 +969,12 @@ class DkimSignature {
 	}
 
 	/**
-	 * Verifying a single DKIM signature.
+	 * Check alignment of the from address.
 	 *
-	 * @param {KeyStore} keyStore
-	 * @returns {Promise<dkimSigResultV2>}
-	 * @throws DKIM_SigError
-	 * @throws DKIM_InternalError
+	 * @private
+	 * @returns {void}
 	 */
-	async verifySignature(keyStore) { // eslint-disable-line complexity
+	_checkFromAlignment() {
 		// warning if from is not in SDID or AUID
 		if (!addrIsInDomain(this._msg.from, this._header.d)) {
 			this._header.warnings.push({ name: "DKIM_SIGWARNING_FROM_NOT_IN_SDID" });
@@ -985,7 +983,15 @@ class DkimSignature {
 			this._header.warnings.push({ name: "DKIM_SIGWARNING_FROM_NOT_IN_AUID" });
 			log.debug("Warning: DKIM_SIGWARNING_FROM_NOT_IN_AUID");
 		}
+	}
 
+	/**
+	 * Check the validity period of the signature.
+	 *
+	 * @private
+	 * @returns {void}
+	 */
+	_checkValidityPeriod() {
 		const time = Math.round(Date.now() / 1000);
 		// warning if signature expired
 		if (this._header.x !== null && this._header.x < time) {
@@ -997,7 +1003,17 @@ class DkimSignature {
 			this._header.warnings.push({ name: "DKIM_SIGWARNING_FUTURE" });
 			log.debug("Warning: DKIM_SIGWARNING_FUTURE");
 		}
+	}
 
+	/**
+	 * Verify that the body of the message is unmodified.
+	 *
+	 * @private
+	 * @returns {Promise<void>}
+	 * @throws {DKIM_SigError}
+	 * @throws {DKIM_InternalError}
+	 */
+	async _verifyBody() {
 		// Compute the Message hash for the body
 		const bodyHash = await this._computeBodyHash();
 		log.debug("computed body hash:", bodyHash);
@@ -1006,10 +1022,19 @@ class DkimSignature {
 		if (bodyHash !== this._header.bh) {
 			throw new DKIM_SigError("DKIM_SIGERROR_CORRUPT_BH");
 		}
+	}
 
-		log.trace("Receiving DNS key for DKIM-Signature ...");
+	/**
+	 * Fetch the DKIM key.
+	 *
+	 * @private
+	 * @param {KeyStore} keyStore
+	 * @returns {Promise<import("./keyStore.mjs.js").DkimKeyResult>}
+	 * @throws {DKIM_SigError}
+	 * @throws {DKIM_InternalError}
+	 */
+	async _fetchKey(keyStore) {
 		const keyQueryResult = await keyStore.fetchKey(this._header.d, this._header.s);
-		log.trace("Received DNS key for DKIM-Signature");
 
 		// if key is not signed by DNSSEC
 		if (!keyQueryResult.secure) {
@@ -1027,9 +1052,17 @@ class DkimSignature {
 			}
 		}
 
-		const dkimKey = new DkimKey(keyQueryResult.key);
-		log.debug("Parsed DKIM-Key:", dkimKey);
+		return keyQueryResult;
+	}
 
+	/**
+	 * Sanity checks for the key, including if it matches the data in the signature.
+	 *
+	 * @private
+	 * @param {DkimKey} dkimKey
+	 * @throws {DKIM_SigError}
+	 */
+	_checkKey(dkimKey) {
 		// check that the testing flag is not set
 		if (dkimKey.t_array.includes("y")) {
 			if (prefs["error.key_testmode.ignore"]) {
@@ -1059,7 +1092,15 @@ class DkimSignature {
 			!dkimKey.h_array.includes(this._header.a_hash)) {
 			throw new DKIM_SigError("DKIM_SIGERROR_KEY_HASHNOTINCLUDED");
 		}
+	}
 
+	/**
+	 * Verify the actual signature.
+	 *
+	 * @private
+	 * @param {string} publicKey
+	 */
+	async _verifySignature(publicKey) {
 		// Compute the input for the header hash
 		const headerHashInput = this._computeHeaderHashInput();
 		log.debug(`Header hash input:\n${headerHashInput}`);
@@ -1067,7 +1108,7 @@ class DkimSignature {
 		// verify Signature
 		const [isValid, keyLength] = await DkimCrypto.verify(
 			this._header.a_sig,
-			dkimKey.p,
+			publicKey,
 			this._header.a_hash,
 			this._header.b,
 			headerHashInput
@@ -1099,6 +1140,28 @@ class DkimSignature {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Verifying a single DKIM signature.
+	 *
+	 * @param {KeyStore} keyStore
+	 * @returns {Promise<dkimSigResultV2>}
+	 * @throws {DKIM_SigError}
+	 * @throws {DKIM_InternalError}
+	 */
+	async verify(keyStore) {
+		this._checkFromAlignment();
+		this._checkValidityPeriod();
+
+		await this._verifyBody();
+
+		const keyQueryResult = await this._fetchKey(keyStore);
+		const dkimKey = new DkimKey(keyQueryResult.key);
+		log.debug("Parsed DKIM-Key:", dkimKey);
+		this._checkKey(dkimKey);
+
+		await this._verifySignature(dkimKey.p);
 
 		// return result
 		log.trace("Everything is fine");
@@ -1205,7 +1268,7 @@ export default class Verifier {
 				dkimHeader = new DkimSignatureHeader(dkimSignatureHeaders[iDKIMSignatureIdx] ?? "");
 				log.debug(`Parsed DKIM-Signature ${iDKIMSignatureIdx + 1}:`, dkimHeader);
 				const dkimSignature = new DkimSignature(msg, dkimHeader);
-				sigRes = await dkimSignature.verifySignature(this._keyStore);
+				sigRes = await dkimSignature.verify(this._keyStore);
 				log.debug(`Verified DKIM-Signature ${iDKIMSignatureIdx + 1}`);
 			} catch (e) {
 				sigRes = Verifier._handleException(e, dkimHeader);
