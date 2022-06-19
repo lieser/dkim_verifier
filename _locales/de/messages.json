@@ -273,6 +273,10 @@
 	"DKIM_POLICYERROR_WRONG_SDID": {
 		"message": "Falscher Signierer (sollte $1 sein)"
 	},
+	"DKIM_POLICYERROR_UNSIGNED_HEADER_ADDED": {
+		"message": "Unsignierter Header '$1' wurde hinzugefügt",
+		"description": "Error if an important header was probably maliciously added later"
+	},
 	// DKIM_SIGWARNING
 	"DKIM_SIGWARNING_SMALL_L": {
 		"message": "Die E-Mail ist nicht vollständig signiert"
@@ -294,6 +298,10 @@
 	},
 	"DKIM_SIGWARNING_FROM_NOT_IN_AUID": {
 		"message": "Absender passt nicht zur Benutzeridentität"
+	},
+	"DKIM_SIGWARNING_UNSIGNED_HEADER": {
+		"message": "Header '$1' ist nicht signiert",
+		"description": "Warding if an important header is not signed"
 	},
 	// JSDNS
 	"TOO_MANY_HOPS": {
@@ -426,6 +434,22 @@
 	},
 	"options_policy.DMARC.shouldBeSigned.enable": {
 		"message": "DMARC benutzen, um heuristisch zu bestimmen, ob eine E-Mail signiert sein sollte"
+	},
+	"options_policy.dkim.unsignedHeadersWarning.mode": {
+		"message": "Warne über unsignierte Header die empfohlen sind signiert zu werden: ",
+		"description": "Description for the setting of the unsigned headers warning mode."
+	},
+	"options_policy.dkim.unsignedHeadersWarning.mode.relaxed": {
+		"message": "toleranter Modus",
+		"description": "A relaxed mode that will try to avoid showing warnings."
+	},
+	"options_policy.dkim.unsignedHeadersWarning.mode.recommended": {
+		"message": "empfohlener Modus",
+		"description": "A mode trying to enforce best practice without showing to many warnings."
+	},
+	"options_policy.dkim.unsignedHeadersWarning.mode.strict": {
+		"message": "strenger Modus",
+		"description": "A strict mode that will potentially show a lot of warnings."
 	},
 	// -------------------- Display options --------------------
 	"options_display": {

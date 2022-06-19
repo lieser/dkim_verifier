@@ -99,24 +99,18 @@ export default class MsgParser {
 	}
 
 	/**
-	 * Extract the address from the From header (RFC 5322).
+	 * Extract the address from a mailbox-list (RFC 5322).
 	 *
-	 * Note: Will only return the first address ofd a mailbox-list.
+	 * Note: Will only return the first address of the mailbox-list.
 	 * Note: Some obsolete patterns are not supported.
 	 * Note: Using a domain-literal as domain is not supported.
 	 *
-	 * @param {string} header - binary string
+	 * @param {string} headerValue - binary string
 	 * @param {boolean} [internationalized] - Enable internationalized support
-	 * @returns {string}
+	 * @returns {string|null}
 	 */
-	static parseFromHeader(header, internationalized) {
+	static #tryParseMailboxList(headerValue, internationalized) {
 		const parser = internationalized ? RfcParserI : RfcParser;
-
-		const headerStart = "from:";
-		if (!header.toLowerCase().startsWith(headerStart)) {
-			throw new Error("Unexpected start of from header");
-		}
-		const headerValue = header.substr(headerStart.length);
 
 		const dotAtomC = `(?:${RfcParser.CFWS_op}(${parser.dot_atom_text})${RfcParser.CFWS_op})`;
 		const quotedStringC = `(?:${RfcParser.CFWS_op}("(?:${RfcParser.FWS_op}${parser.qcontent})*${RfcParser.FWS_op}")${RfcParser.CFWS_op})`;
@@ -161,7 +155,51 @@ export default class MsgParser {
 			return joinAddress(regExpMatch);
 		}
 
-		throw new Error("From header does not contain an address");
+		return null;
+	}
+
+	/**
+	 * Extract the address from the From header (RFC 5322).
+	 *
+	 * @param {string} header - binary string
+	 * @param {boolean} [internationalized] - Enable internationalized support
+	 * @returns {string}
+	 */
+	static parseFromHeader(header, internationalized) {
+		const headerStart = "from:";
+		if (!header.toLowerCase().startsWith(headerStart)) {
+			throw new Error("Unexpected start of from header");
+		}
+		const headerValue = header.substr(headerStart.length);
+
+		const from = MsgParser.#tryParseMailboxList(headerValue, internationalized);
+		if (from === null) {
+			throw new Error("From header does not contain an address");
+		}
+		return from;
+	}
+
+	/**
+	 * Extract the address from the Reply-To header (RFC 5322).
+	 *
+	 * Note: group pattern is not supported.
+	 *
+	 * @param {string} header - binary string
+	 * @param {boolean} [internationalized] - Enable internationalized support
+	 * @returns {string}
+	 */
+	static parseReplyToHeader(header, internationalized) {
+		const headerStart = "reply-to:";
+		if (!header.toLowerCase().startsWith(headerStart)) {
+			throw new Error("Unexpected start of from header");
+		}
+		const headerValue = header.substr(headerStart.length);
+
+		const replyTo = MsgParser.#tryParseMailboxList(headerValue, internationalized);
+		if (replyTo === null) {
+			throw new Error("Reply-To header does not contain an address");
+		}
+		return replyTo;
 	}
 
 	/**

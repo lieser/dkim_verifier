@@ -309,6 +309,16 @@ describe("Message parser [unittest]", function () {
 			).to.throw();
 		});
 	});
+	describe("Extracting Reply-To address", function () {
+		it("Valid examples", function () {
+			expect(
+				MsgParser.parseReplyToHeader("Reply-To: foo@example.com\r\n")
+			).to.be.equal("foo@example.com");
+			expect(
+				MsgParser.parseReplyToHeader('Reply-To: "noreply@mail.paypal.de" <noreply@mail.paypal.de>\r\n')
+			).to.be.equal("noreply@mail.paypal.de");
+		});
+	});
 	describe("Extracting List-Id", function () {
 		it("RFC 2919 examples", function () {
 			expect(

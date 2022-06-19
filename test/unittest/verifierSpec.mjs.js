@@ -13,6 +13,7 @@
 import "../helpers/dnsStub.mjs.js";
 import "../helpers/initWebExtensions.mjs.js";
 import Verifier, * as VerifierModule from "../../modules/dkim/verifier.mjs.js";
+import prefs, { BasePreferences } from "../../modules/preferences.mjs.js";
 import KeyStore from "../../modules/dkim/keyStore.mjs.js";
 import MsgParser from "../../modules/msgParser.mjs.js";
 import expect from "../helpers/chaiUtils.mjs.js";
@@ -42,6 +43,14 @@ async function verifyEmlFile(file) {
 }
 
 describe("DKIM Verifier [unittest]", function () {
+	before(async function () {
+		await prefs.init();
+	});
+
+	beforeEach(async function () {
+		await prefs.clear();
+	});
+
 	describe("Valid examples", function () {
 		it("RFC 6376 Appendix A Example", async function () {
 			const res = await verifyEmlFile("rfc6376-A.2.eml");
@@ -127,6 +136,76 @@ describe("DKIM Verifier [unittest]", function () {
 			expect(res.signatures[0]?.result).to.be.equal("SUCCESS");
 			expect(res.signatures[0]?.warnings).to.be.an('array').
 				that.deep.includes({ name: "DKIM_SIGWARNING_FROM_NOT_IN_SDID" });
+		});
+	});
+	describe("Detect and prevent possible attacks", function () {
+		describe("Additional unsigned header was added", function () {
+			// Thunderbirds uses the top most, unsigned header.
+
+			it("Added From header", async function () {
+				const res = await verifyEmlFile("dkim/added_header-from.eml");
+				expect(res.signatures.length).to.be.equal(1);
+				expect(res.signatures[0]?.result).to.be.equal("PERMFAIL");
+				expect(res.signatures[0]?.errorType).to.be.equal("DKIM_POLICYERROR_UNSIGNED_HEADER_ADDED");
+				expect(res.signatures[0]?.errorStrParams).to.be.deep.equal(["From"]);
+			});
+			it("Added Subject header", async function () {
+				const res = await verifyEmlFile("dkim/added_header-subject.eml");
+				expect(res.signatures.length).to.be.equal(1);
+				expect(res.signatures[0]?.result).to.be.equal("PERMFAIL");
+				expect(res.signatures[0]?.errorType).to.be.equal("DKIM_POLICYERROR_UNSIGNED_HEADER_ADDED");
+				expect(res.signatures[0]?.errorStrParams).to.be.deep.equal(["Subject"]);
+			});
+			it("Added Date header", async function () {
+				const res = await verifyEmlFile("dkim/added_header-date.eml");
+				expect(res.signatures.length).to.be.equal(1);
+				expect(res.signatures[0]?.result).to.be.equal("PERMFAIL");
+				expect(res.signatures[0]?.errorType).to.be.equal("DKIM_POLICYERROR_UNSIGNED_HEADER_ADDED");
+				expect(res.signatures[0]?.errorStrParams).to.be.deep.equal(["Date"]);
+			});
+			it("Added To header", async function () {
+				// Thunderbirds shows both the unsigned and signed header.
+				const res = await verifyEmlFile("dkim/added_header-to.eml");
+				expect(res.signatures.length).to.be.equal(1);
+				expect(res.signatures[0]?.result).to.be.equal("PERMFAIL");
+				expect(res.signatures[0]?.errorType).to.be.equal("DKIM_POLICYERROR_UNSIGNED_HEADER_ADDED");
+				expect(res.signatures[0]?.errorStrParams).to.be.deep.equal(["To"]);
+			});
+		});
+		describe("Recommended or advised header is not signed", function () {
+			// All headers that are directly shown, affect the displaying of the body
+			// or affect how Thunderbird behaves should be signed.
+
+			it("Unsigned Content-Type header", async function () {
+				prefs.setValue("policy.dkim.unsignedHeadersWarning.mode", BasePreferences.POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE.STRICT);
+				const res = await verifyEmlFile("dkim/unsigned_header-content-type.eml");
+				expect(res.signatures.length).to.be.equal(1);
+				expect(res.signatures[0]?.result).to.be.equal("SUCCESS");
+				expect(res.signatures[0]?.warnings).to.be.an('array').
+					that.deep.includes({ name: "DKIM_SIGWARNING_UNSIGNED_HEADER", params: ["Content-Type"] });
+			});
+			it("Unsigned Reply-To header that is in the signing domain", async function () {
+				prefs.setValue("policy.dkim.unsignedHeadersWarning.mode", BasePreferences.POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE.RECOMMENDED);
+				let res = await verifyEmlFile("dkim/unsigned_header-reply_to-in_domain.eml");
+				expect(res.signatures.length).to.be.equal(1);
+				expect(res.signatures[0]?.result).to.be.equal("SUCCESS");
+				expect(res.signatures[0]?.warnings).to.be.empty;
+
+				prefs.setValue("policy.dkim.unsignedHeadersWarning.mode", BasePreferences.POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE.STRICT);
+				res = await verifyEmlFile("dkim/unsigned_header-reply_to-in_domain.eml");
+				expect(res.signatures.length).to.be.equal(1);
+				expect(res.signatures[0]?.result).to.be.equal("SUCCESS");
+				expect(res.signatures[0]?.warnings).to.be.an('array').
+					that.deep.includes({ name: "DKIM_SIGWARNING_UNSIGNED_HEADER", params: ["Reply-To"] });
+			});
+			it("Unsigned Reply-To header that is not in the signing domain", async function () {
+				prefs.setValue("policy.dkim.unsignedHeadersWarning.mode", BasePreferences.POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE.RECOMMENDED);
+				const res = await verifyEmlFile("dkim/unsigned_header-reply_to-not_in_domain.eml");
+				expect(res.signatures.length).to.be.equal(1);
+				expect(res.signatures[0]?.result).to.be.equal("SUCCESS");
+				expect(res.signatures[0]?.warnings).to.be.an('array').
+					that.deep.includes({ name: "DKIM_SIGWARNING_UNSIGNED_HEADER", params: ["Reply-To"] });
+			});
 		});
 	});
 });

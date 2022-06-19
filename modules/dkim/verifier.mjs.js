@@ -29,11 +29,12 @@
 
 import { DKIM_InternalError, DKIM_SigError } from "../error.mjs.js";
 import { addrIsInDomain, stringEndsWith, stringEqual } from "../utils.mjs.js";
+import prefs, { BasePreferences } from "../preferences.mjs.js";
 import DkimCrypto from "./crypto.mjs.js";
 import KeyStore from "./keyStore.mjs.js";
 import Logging from "../logging.mjs.js";
+import MsgParser from "../msgParser.mjs.js";
 import RfcParser from "../rfcParser.mjs.js";
-import prefs from "../preferences.mjs.js";
 
 /**
  * The result of the verification (Version 1).
@@ -1006,6 +1007,108 @@ class DkimSignature {
 	}
 
 	/**
+	 * Check that the list of signed headers satisfy our policies.
+	 * - Warn if recommended headers are not signed.
+	 * - Try detecting maliciously added unsigned headers.
+	 *
+	 * @returns {void}
+	 */
+	#checkSignedHeaders() {
+		// The list of recommended headers to sign is mostly based on
+		// https://www.rfc-editor.org/rfc/rfc6376.html#section-5.4.
+
+		// The detection for maliciously added unsigned headers only considers all the recommended signed headers.
+		// It simply ensures that a message does not contain both signed and unsigned values of a header.
+		// Using the same mechanism for all signed headers will cause problems there added headers is normal
+		// e.g. the Received header.
+
+		/**
+		 * Headers that we required to be signed in relaxed, recommended or strict mode.
+		 *
+		 * @type {string[]}
+		 */
+		const required = [
+			"From",
+			"Subject",
+		];
+		/**
+		 * Headers that we required to be signed in recommended or strict mode.
+		 *
+		 * @type {string[]}
+		 */
+		const recommended = [
+			"Date",
+			"To", "Cc",
+			"Resent-Date", "Resent-From", "Resent-To", "Resent-Cc",
+			"In-Reply-To", "References",
+			"List-Id", "List-Help", "List-Unsubscribe", "List-Subscribe", "List-Post", "List-Owner", "List-Archive",
+		];
+		/**
+		 * Headers that we required to be signed in strict mode.
+		 *
+		 * @type {string[]}
+		 */
+		const desired = [
+			"Message-ID",
+			"Sender",
+			"MIME-Version",
+			"Content-Transfer-Encoding",
+			"Content-Disposition",
+			"Content-ID",
+			"Content-Description",
+		];
+		// We would like Reply-To to be in the recommended list.
+		// As some bigger domains violate this, we only enforce it if the Reply-To is not in the signing domain.
+		const replyTo = this._msg.headerFields.get("reply-to");
+		if (replyTo && replyTo[0] && addrIsInDomain(MsgParser.parseReplyToHeader(replyTo[0]), this._header.d)) {
+			desired.push("Reply-To");
+		} else {
+			recommended.push("Reply-To");
+		}
+
+		// If the body is not completely signed, a manipulated Content-Type header
+		// can cause completely different content to be shown.
+		if (this._header.warnings.some(warning => warning.name === "DKIM_SIGWARNING_SMALL_L")) {
+			required.push("Content-Type");
+		} else if (this._header.l !== null) {
+			recommended.push("Content-Type");
+		} else {
+			desired.push("Content-Type");
+		}
+
+		/**
+		 * @param {string} header
+		 * @param {boolean} warnIfUnsigned
+		 * @returns {void}
+		 */
+		const checkSignedHeader = (header, warnIfUnsigned) => {
+			const headerLowerCase = header.toLowerCase();
+			const signedCount = this._header.h_array.filter(e => e === headerLowerCase).length;
+			const unsignedCount = this._msg.headerFields.get(headerLowerCase)?.length ?? 0;
+			if (signedCount > 0 && signedCount < unsignedCount) {
+				throw new DKIM_SigError("DKIM_POLICYERROR_UNSIGNED_HEADER_ADDED", [header]);
+			}
+			if (warnIfUnsigned && signedCount < unsignedCount) {
+				this._header.warnings.push({ name: "DKIM_SIGWARNING_UNSIGNED_HEADER", params: [header] });
+				log.debug(`Warning: DKIM_SIGWARNING_UNSIGNED_HEADER (${header})`);
+			}
+		};
+
+		for (const header of required) {
+			checkSignedHeader(header, prefs["policy.dkim.unsignedHeadersWarning.mode"] >=
+				BasePreferences.POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE.RELAXED);
+		}
+		for (const header of recommended) {
+			checkSignedHeader(header, prefs["policy.dkim.unsignedHeadersWarning.mode"] >=
+				BasePreferences.POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE.RECOMMENDED);
+		}
+		for (const header of desired) {
+			checkSignedHeader(header, prefs["policy.dkim.unsignedHeadersWarning.mode"] >=
+				BasePreferences.POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE.STRICT);
+		}
+	}
+
+	/**
 	 * Verify that the body of the message is unmodified.
 	 *
 	 * @private
@@ -1153,6 +1256,7 @@ class DkimSignature {
 	async verify(keyStore) {
 		this._checkFromAlignment();
 		this._checkValidityPeriod();
+		this.#checkSignedHeaders();
 
 		await this._verifyBody();
 

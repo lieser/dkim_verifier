@@ -369,6 +369,25 @@ export class BasePreferences {
 	get "policy.DMARC.shouldBeSigned.neededPolicy"() {
 		return this._tryGetStringValue("policy.DMARC.shouldBeSigned.neededPolicy", "none");
 	}
+
+	/**
+	 * @enum {number}
+	 * @readonly
+	 */
+	static POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE = {
+		/** @readonly */
+		RELAXED: 10,
+		/** @readonly */
+		RECOMMENDED: 20,
+		/** @readonly */
+		STRICT: 30,
+	};
+	/**
+	 * @returns {POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE}
+	 */
+	get "policy.dkim.unsignedHeadersWarning.mode"() {
+		return this._tryGetNumberValue("policy.dkim.unsignedHeadersWarning.mode", 10);
+	}
 	//#endregion
 
 	////////////////////////////////////////////////////////////////////////////

@@ -4,6 +4,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+### Enhancements
+
+- Added heuristic to detect maliciously added unsigned headers (#102).
+- Warn about unsigned headers that are recommended to be signed (#102, #277).
+
 ## 5.0.0 (2022-06-12)
 
 ### Breaking Changes
