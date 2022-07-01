@@ -145,6 +145,14 @@
           <button id="signRulesDefaultsView" data-i18n="options_viewSignerDefaults"></button>
         </div>
       </fieldset>
+      <div>
+        <label data-i18n="options_policy.dkim.unsignedHeadersWarning.mode"></label>
+        <select data-pref="policy.dkim.unsignedHeadersWarning.mode">
+          <option data-i18n="options_policy.dkim.unsignedHeadersWarning.mode.relaxed" value="10"></option>
+          <option data-i18n="options_policy.dkim.unsignedHeadersWarning.mode.recommended" value="20"></option>
+          <option data-i18n="options_policy.dkim.unsignedHeadersWarning.mode.strict" value="30"></option>
+        </select>
+      </div>
     </section>
   </main>
 
@@ -341,6 +349,7 @@
       <p data-i18n="about_dependencies"></p>
       <ul>
         <li><a href="https://github.com/JoshData/thunderbird-spf">DNS Library</a> <span data-i18n="about_by"></span> Joshua Tauberer</li>
+        <li><a href="https://github.com/hakanols/tweetnacl-es6">tweetnacl-es6</a></li>
       </ul>
     </section>
   </main>

@@ -28,7 +28,7 @@ const log = Logging.getLogger("SignRules");
 /**
  * DKIM signing policy for a message.
  *
- * @typedef {Object} DKIMSignPolicy
+ * @typedef {object} DKIMSignPolicy
  * @property {boolean} shouldBeSigned
  *           true if message should be signed
  * @property {string[]} sdid

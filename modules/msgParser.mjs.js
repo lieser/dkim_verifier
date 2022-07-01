@@ -1,7 +1,7 @@
 /**
  * Reads and parses a message.
  *
- * Copyright (c) 2014-2021 Philippe Lieser
+ * Copyright (c) 2014-2022 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -11,9 +11,10 @@
 
 // @ts-check
 
+import RfcParser, { RfcParserI } from "./rfcParser.mjs.js";
 import { DKIM_InternalError } from "./error.mjs.js";
 import Logging from "./logging.mjs.js";
-import RfcParser from "./rfcParser.mjs.js";
+import { decodeBinaryString } from "./utils.mjs.js";
 
 const log = Logging.getLogger("msgParser");
 
@@ -22,11 +23,9 @@ export default class MsgParser {
 	/**
 	 * Parse given message into parsed header and body.
 	 *
-	 * @static
-	 * @param {string} msg
+	 * @param {string} msg - binary string
 	 * @returns {{headers: Map<string, string[]>, body: string}}
 	 * @throws DKIM_InternalError
-	 * @memberof MsgParser
 	 */
 	static parseMsg(msg) {
 		let newlineLength = 2;
@@ -73,12 +72,10 @@ export default class MsgParser {
 	/**
 	 * Parses the header of a message.
 	 *
-	 * @static
-	 * @param {string} headerPlain
+	 * @param {string} headerPlain - binary string
 	 * @returns {Map<string, string[]>}
 	 *          key - header name in lower case
-	 *          value - array of complete headers, including the header name at the beginning
-	 * @memberof MsgParser
+	 *          value - array of complete headers, including the header name at the beginning (binary string)
 	 */
 	static parseHeader(headerPlain) {
 		const headerFields = new Map();
@@ -102,27 +99,21 @@ export default class MsgParser {
 	}
 
 	/**
-	 * Extract the address from the From header (RFC 5322).
+	 * Extract the address from a mailbox-list (RFC 5322).
 	 *
-	 * Note: The RFC also allows a list of addresses (mailbox-list).
-	 * This is currently not supported, and will throw a parsing error.
+	 * Note: Will only return the first address of the mailbox-list.
 	 * Note: Some obsolete patterns are not supported.
 	 * Note: Using a domain-literal as domain is not supported.
 	 *
-	 * @static
-	 * @param {string} header
-	 * @returns {string}
-	 * @memberof MsgParser
+	 * @param {string} headerValue - binary string
+	 * @param {boolean} [internationalized] - Enable internationalized support
+	 * @returns {string|null}
 	 */
-	static parseFromHeader(header) {
-		const headerStart = "from:";
-		if (!header.toLowerCase().startsWith(headerStart)) {
-			throw new Error("Unexpected start of from header");
-		}
-		const headerValue = header.substr(headerStart.length);
+	static #tryParseMailboxList(headerValue, internationalized) {
+		const parser = internationalized ? RfcParserI : RfcParser;
 
-		const dotAtomC = `(?:${RfcParser.CFWS_op}(${RfcParser.dot_atom_text})${RfcParser.CFWS_op})`;
-		const quotedStringC = `(?:${RfcParser.CFWS_op}("(?:${RfcParser.FWS_op}${RfcParser.qcontent})*${RfcParser.FWS_op}")${RfcParser.CFWS_op})`;
+		const dotAtomC = `(?:${RfcParser.CFWS_op}(${parser.dot_atom_text})${RfcParser.CFWS_op})`;
+		const quotedStringC = `(?:${RfcParser.CFWS_op}("(?:${RfcParser.FWS_op}${parser.qcontent})*${RfcParser.FWS_op}")${RfcParser.CFWS_op})`;
 		const localPartC = `(?:${dotAtomC}|${quotedStringC})`;
 		// Capturing address pattern there
 		// 1. Group is the local part as dot-atom-text (can be undefined)
@@ -133,7 +124,7 @@ export default class MsgParser {
 		/**
 		 * Join together the local and domain part of the address.
 		 *
-		 * @param {RegExpMatchArray} regExpMatchArray
+		 * @param {RegExpMatchArray} regExpMatchArray - binary strings
 		 * @returns {string}
 		 */
 		const joinAddress = (regExpMatchArray) => {
@@ -145,24 +136,70 @@ export default class MsgParser {
 			if (local === undefined) {
 				local = localQuotedString;
 			}
-			return `${local}@${domain}`;
+			return decodeBinaryString(`${local}@${domain}`);
 		};
 
-		// Try to parse as address that is in <> (name-addr)
 		const angleAddrC = `(?:${RfcParser.CFWS_op}<${addrSpecC}>${RfcParser.CFWS_op})`;
-		const nameAddrC = `(?:${RfcParser.display_name}?${angleAddrC})`;
-		let regExpMatch = headerValue.match(new RegExp(`^${nameAddrC}\r\n$`));
+		const nameAddrC = `(?:${parser.display_name}?${angleAddrC})`;
+		const mailboxC = `(?:${nameAddrC}|${addrSpecC})`;
+
+		// Try to parse as address that is in <> (name-addr)
+		let regExpMatch = headerValue.match(new RegExp(`^${nameAddrC}(?:,${mailboxC})*\r\n$`));
 		if (regExpMatch !== null) {
 			return joinAddress(regExpMatch);
 		}
 
 		// Try to parse as address without <> (addr-spec)
-		regExpMatch = headerValue.match(new RegExp(`^${addrSpecC}\r\n$`));
+		regExpMatch = headerValue.match(new RegExp(`^${addrSpecC}(?:,${mailboxC})*\r\n$`));
 		if (regExpMatch !== null) {
 			return joinAddress(regExpMatch);
 		}
 
-		throw new Error("From header does not contain an address");
+		return null;
+	}
+
+	/**
+	 * Extract the address from the From header (RFC 5322).
+	 *
+	 * @param {string} header - binary string
+	 * @param {boolean} [internationalized] - Enable internationalized support
+	 * @returns {string}
+	 */
+	static parseFromHeader(header, internationalized) {
+		const headerStart = "from:";
+		if (!header.toLowerCase().startsWith(headerStart)) {
+			throw new Error("Unexpected start of from header");
+		}
+		const headerValue = header.substr(headerStart.length);
+
+		const from = MsgParser.#tryParseMailboxList(headerValue, internationalized);
+		if (from === null) {
+			throw new Error("From header does not contain an address");
+		}
+		return from;
+	}
+
+	/**
+	 * Extract the address from the Reply-To header (RFC 5322).
+	 *
+	 * Note: group pattern is not supported.
+	 *
+	 * @param {string} header - binary string
+	 * @param {boolean} [internationalized] - Enable internationalized support
+	 * @returns {string}
+	 */
+	static parseReplyToHeader(header, internationalized) {
+		const headerStart = "reply-to:";
+		if (!header.toLowerCase().startsWith(headerStart)) {
+			throw new Error("Unexpected start of from header");
+		}
+		const headerValue = header.substr(headerStart.length);
+
+		const replyTo = MsgParser.#tryParseMailboxList(headerValue, internationalized);
+		if (replyTo === null) {
+			throw new Error("Reply-To header does not contain an address");
+		}
+		return replyTo;
 	}
 
 	/**
@@ -170,10 +207,8 @@ export default class MsgParser {
 	 *
 	 * Note: Some obsolete patterns are not supported.
 	 *
-	 * @static
 	 * @param {string} header
 	 * @returns {string}
-	 * @memberof MsgParser
 	 */
 	static parseListIdHeader(header) {
 		const headerStart = "list-id:";

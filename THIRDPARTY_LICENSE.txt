@@ -2,8 +2,8 @@ This document contains third party licensing information for third party
 software components included within DKIM Verifier.
 
 
-*******************************************************************************
-*******************************************************************************
+********************************************************************************
+********************************************************************************
 For Joshua Tauberer's DNS Library
 (part of Thunderbird Sender Verification Extension)
 
@@ -13,9 +13,23 @@ Site:
 https://github.com/tauberer/thunderbird-spf
 https://addons.thunderbird.net/addon/sender-verification-anti-phish/
 
-*******************************************************************************
+License:
+********************************************************************************
 
 Copyright 2005 Joshua Tauberer <http://razor.occams.info>
 
 Feel free to use this file however you want, but
 credit would be nice.
+
+********************************************************************************
+********************************************************************************
+ES6 version of the tweetnacl-js `nacl-fast.js`
+
+Site:
+https://github.com/hakanols/tweetnacl-es6
+
+Authors:
+thirdparty/tweetnacl-es6/AUTHORS.md
+
+License (The Unlicense):
+thirdparty/tweetnacl-es6/LICENSE

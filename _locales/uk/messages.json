@@ -225,6 +225,10 @@
 	"DKIM_SIGERROR_KEY_UNKNOWN_K": {
 		"message": "Непідтримуваний тип ключа DKIM"
 	},
+	"DKIM_SIGERROR_KEY_MISMATCHED_K": {
+		"message": "Алгоритм підпису не відповідає типу ключа DKIM",
+		"description": "Error message if the signature algorithm in the DKIM Signature header (a-tag) does not match the key type of the DKIM key (k-tag)."
+	},
 	"DKIM_SIGERROR_KEY_ILLFORMED_K": {
 		"message": "Тег типу ключа DKIM неправильно сформований"
 	},
@@ -236,9 +240,6 @@
 	},
 	"DKIM_SIGERROR_KEY_REVOKED": {
 		"message": "Ключ DKIM відкликано"
-	},
-	"DKIM_SIGERROR_KEY_HASHMISMATCH": {
-		"message": "Відкритий ключ у ключі DKIM має неправильний алгоритм хешування"
 	},
 	"DKIM_SIGERROR_KEY_ILLFORMED_P": {
 		"message": "Тег даних відкритого ключа в ключі DKIM неправильно сформований"

@@ -26,18 +26,17 @@ var { OS } = ChromeUtils.import("resource://gre/modules/osfile.jsm");
 // eslint-disable-next-line no-var
 var { FileUtils } = ChromeUtils.import("resource://gre/modules/FileUtils.jsm");
 
-// eslint-disable-next-line no-invalid-this
 this.migration = class extends ExtensionCommon.ExtensionAPI {
 	/**
 	 * Returns the preferences set in a preference branch.
 	 *
 	 * @private
 	 * @param {nsIPrefBranch} prefBranch
-	 * @returns {Object.<string, boolean|number|string>}
+	 * @returns {Object<string, boolean|number|string>}
 	 */
 	_getChildPrefs(prefBranch) {
 		const setPrefNames = prefBranch.getChildList("");
-		/** @type {Object.<string, boolean|number|string>} */
+		/** @type {Object<string, boolean|number|string>} */
 		const childPrefs = {};
 		for (const prefName of setPrefNames) {
 			prefBranch.getPrefType(prefName);
@@ -93,7 +92,7 @@ this.migration = class extends ExtensionCommon.ExtensionAPI {
 				getAccountPrefs: () => {
 					const mailPrefs = Services.prefs.getBranch("mail.");
 					const accounts = mailPrefs.getCharPref("accountmanager.accounts").split(",");
-					/** @type {Object.<string, Object.<string, boolean|number|string>>} */
+					/** @type {Object<string, Object<string, boolean|number|string>>} */
 					const accountPrefs = {};
 					for (const account of accounts) {
 						const server = mailPrefs.getCharPref(`account.${account}.server`);

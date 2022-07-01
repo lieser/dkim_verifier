@@ -38,6 +38,7 @@ async function createOrRaisePopup(url, height = undefined, width = undefined) {
 		url: url,
 		type: "popup",
 		allowScriptsToClose: true,
+		titlePreface: `${browser.i18n.getMessage("about_name")} - `,
 	};
 	if (height) {
 		createData.height = height;
@@ -117,7 +118,7 @@ async function readFile(path) {
  * - TransactionInactiveError resulting in Promise never being resolved.
  * - Getting rejected with "An unexpected error occurred".
  *
- * @returns {Promise<Object.<string, any>>}
+ * @returns {Promise<Object<string, any>>}
  */
 async function safeGetLocalStorage() {
 	const overallTimeout = 15000;

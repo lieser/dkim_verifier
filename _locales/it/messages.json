@@ -225,6 +225,10 @@
 	"DKIM_SIGERROR_KEY_UNKNOWN_K": {
 		"message": "Tipo di chiave DKIM non supportato"
 	},
+	"DKIM_SIGERROR_KEY_MISMATCHED_K": {
+		"message": "L’algoritmo di firma non corrisponde al tipo di chiave DKIM",
+		"description": "Error message if the signature algorithm in the DKIM Signature header (a-tag) does not match the key type of the DKIM key (k-tag)."
+	},
 	"DKIM_SIGERROR_KEY_ILLFORMED_K": {
 		"message": "Tag tipo di chiave DKIM con sintassi errata"
 	},
@@ -236,9 +240,6 @@
 	},
 	"DKIM_SIGERROR_KEY_REVOKED": {
 		"message": "Chiave DKIM revocata"
-	},
-	"DKIM_SIGERROR_KEY_HASHMISMATCH": {
-		"message": "Chiave pubblica nella chiave DKIM con algoritmo di firma errato"
 	},
 	"DKIM_SIGERROR_KEY_ILLFORMED_P": {
 		"message": "Tag dati della chiave pubblica nella chiave DKIM con sintassi errata"

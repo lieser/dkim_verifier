@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2021 Philippe Lieser
+ * Copyright (c) 2020-2022 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -274,7 +274,7 @@ class DisplayAction {
 	static async policyAddUserException(tabId) {
 		const message = await browser.messageDisplay.getDisplayedMessage(tabId);
 
-		const from = MsgParser.parseFromHeader(`From: ${message.author}\r\n`);
+		const from = MsgParser.parseFromHeader(`From: ${message.author}\r\n`, prefs["internationalized.enable"]);
 		await SignRules.addException(from);
 
 		await DisplayAction._reverifyMessage(tabId, message);

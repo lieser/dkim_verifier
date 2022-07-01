@@ -1,9 +1,12 @@
 /**
- * Verifies the DKIM-Signatures as specified in RFC 6376
- * http://tools.ietf.org/html/rfc6376
- * Update done by RFC 8301 included https://tools.ietf.org/html/rfc8301
+ * Verifies the DKIM-Signatures as specified in RFC 6376.
+ * https://www.rfc-editor.org/rfc/rfc6376.html
  *
- * Copyright (c) 2013-2021 Philippe Lieser
+ * Included Updates to the RFC:
+ * - RFC 8301 https://www.rfc-editor.org/rfc/rfc8301.html
+ * - RFC 8463 https://www.rfc-editor.org/rfc/rfc8463.html
+ *
+ * Copyright (c) 2013-2022 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -26,16 +29,17 @@
 
 import { DKIM_InternalError, DKIM_SigError } from "../error.mjs.js";
 import { addrIsInDomain, stringEndsWith, stringEqual } from "../utils.mjs.js";
+import prefs, { BasePreferences } from "../preferences.mjs.js";
 import DkimCrypto from "./crypto.mjs.js";
 import KeyStore from "./keyStore.mjs.js";
 import Logging from "../logging.mjs.js";
+import MsgParser from "../msgParser.mjs.js";
 import RfcParser from "../rfcParser.mjs.js";
-import prefs from "../preferences.mjs.js";
 
 /**
  * The result of the verification (Version 1).
  *
- * @typedef {Object} dkimResultV1
+ * @typedef {object} dkimResultV1
  * @property {string} version
  *           result version ("1.0" / "1.1")
  * @property {string} result
@@ -56,7 +60,7 @@ import prefs from "../preferences.mjs.js";
  */
 
 /**
- * @typedef {Object} dkimSigWarningV2
+ * @typedef {object} dkimSigWarningV2
  * @property {string} name - Name of the warning
  * @property {(string|string[])[]} [params] - optional params for formatted string
  */
@@ -64,7 +68,7 @@ import prefs from "../preferences.mjs.js";
 /**
  * The result of the verification of a single DKIM signature (Version 2).
  *
- * @typedef {Object} dkimSigResultV2
+ * @typedef {object} dkimSigResultV2
  * @property {string} version
  *           result version ("2.0")
  * @property {string} result
@@ -86,7 +90,7 @@ import prefs from "../preferences.mjs.js";
 /**
  * The result of the verification (Version 2).
  *
- * @typedef {Object} dkimResultV2
+ * @typedef {object} dkimResultV2
  * @property {string} version
  *           result version ("2.0")
  * @property {dkimSigResultV2[]} signatures
@@ -228,7 +232,7 @@ class DkimSignatureHeader {
 	static _parseSignatureAlgorithms(tagMap, warnings) {
 		// get signature algorithm (plain-text;REQUIRED)
 		// currently only "rsa-sha1" or "rsa-sha256"
-		const sig_a_tag_k = "(rsa|[A-Za-z](?:[A-Za-z]|[0-9])*)";
+		const sig_a_tag_k = "(rsa|ed25519|[A-Za-z](?:[A-Za-z]|[0-9])*)";
 		const sig_a_tag_h = "(sha1|sha256|[A-Za-z](?:[A-Za-z]|[0-9])*)";
 		const sig_a_tag_alg = `${sig_a_tag_k}-${sig_a_tag_h}`;
 		const algorithmTag = RfcParser.parseTagValue(tagMap, "a", sig_a_tag_alg);
@@ -238,7 +242,7 @@ class DkimSignatureHeader {
 		if (!algorithmTag[1] || !algorithmTag[2]) {
 			throw new DKIM_InternalError("Error matching the a-tag.");
 		}
-		if (algorithmTag[0] === "rsa-sha256") {
+		if (algorithmTag[0] === "rsa-sha256" || algorithmTag[0] === "ed25519-sha256") {
 			return {
 				signature: algorithmTag[1],
 				hash: algorithmTag[2],
@@ -683,10 +687,12 @@ class DkimKey {
 	 */
 	static _parseKeyType(tagMap) {
 		// get Key type (plain-text; OPTIONAL, default is "rsa")
-		const key_k_tag_type = `(?:rsa|${hyphenated_word})`;
+		const key_k_tag_type = `(?:rsa|ed25519|${hyphenated_word})`;
 		const keyTypeTag = RfcParser.parseTagValue(tagMap, "k", key_k_tag_type, 2);
 		if (keyTypeTag === null || keyTypeTag[0] === "rsa") {
 			return "rsa";
+		} else if (keyTypeTag[0] === "ed25519") {
+			return "ed25519";
 		}
 		throw new DKIM_SigError("DKIM_SIGERROR_KEY_UNKNOWN_K");
 	}
@@ -964,14 +970,12 @@ class DkimSignature {
 	}
 
 	/**
-	 * Verifying a single DKIM signature.
+	 * Check alignment of the from address.
 	 *
-	 * @param {KeyStore} keyStore
-	 * @returns {Promise<dkimSigResultV2>}
-	 * @throws DKIM_SigError
-	 * @throws DKIM_InternalError
+	 * @private
+	 * @returns {void}
 	 */
-	async verifySignature(keyStore) { // eslint-disable-line complexity
+	_checkFromAlignment() {
 		// warning if from is not in SDID or AUID
 		if (!addrIsInDomain(this._msg.from, this._header.d)) {
 			this._header.warnings.push({ name: "DKIM_SIGWARNING_FROM_NOT_IN_SDID" });
@@ -980,7 +984,15 @@ class DkimSignature {
 			this._header.warnings.push({ name: "DKIM_SIGWARNING_FROM_NOT_IN_AUID" });
 			log.debug("Warning: DKIM_SIGWARNING_FROM_NOT_IN_AUID");
 		}
+	}
 
+	/**
+	 * Check the validity period of the signature.
+	 *
+	 * @private
+	 * @returns {void}
+	 */
+	_checkValidityPeriod() {
 		const time = Math.round(Date.now() / 1000);
 		// warning if signature expired
 		if (this._header.x !== null && this._header.x < time) {
@@ -992,7 +1004,119 @@ class DkimSignature {
 			this._header.warnings.push({ name: "DKIM_SIGWARNING_FUTURE" });
 			log.debug("Warning: DKIM_SIGWARNING_FUTURE");
 		}
+	}
 
+	/**
+	 * Check that the list of signed headers satisfy our policies.
+	 * - Warn if recommended headers are not signed.
+	 * - Try detecting maliciously added unsigned headers.
+	 *
+	 * @returns {void}
+	 */
+	#checkSignedHeaders() {
+		// The list of recommended headers to sign is mostly based on
+		// https://www.rfc-editor.org/rfc/rfc6376.html#section-5.4.
+
+		// The detection for maliciously added unsigned headers only considers all the recommended signed headers.
+		// It simply ensures that a message does not contain both signed and unsigned values of a header.
+		// Using the same mechanism for all signed headers will cause problems there added headers is normal
+		// e.g. the Received header.
+
+		/**
+		 * Headers that we required to be signed in relaxed, recommended or strict mode.
+		 *
+		 * @type {string[]}
+		 */
+		const required = [
+			"From",
+			"Subject",
+		];
+		/**
+		 * Headers that we required to be signed in recommended or strict mode.
+		 *
+		 * @type {string[]}
+		 */
+		const recommended = [
+			"Date",
+			"To", "Cc",
+			"Resent-Date", "Resent-From", "Resent-To", "Resent-Cc",
+			"In-Reply-To", "References",
+			"List-Id", "List-Help", "List-Unsubscribe", "List-Subscribe", "List-Post", "List-Owner", "List-Archive",
+		];
+		/**
+		 * Headers that we required to be signed in strict mode.
+		 *
+		 * @type {string[]}
+		 */
+		const desired = [
+			"Message-ID",
+			"Sender",
+			"MIME-Version",
+			"Content-Transfer-Encoding",
+			"Content-Disposition",
+			"Content-ID",
+			"Content-Description",
+		];
+		// We would like Reply-To to be in the recommended list.
+		// As some bigger domains violate this, we only enforce it if the Reply-To is not in the signing domain.
+		const replyTo = this._msg.headerFields.get("reply-to");
+		if (replyTo && replyTo[0] && addrIsInDomain(MsgParser.parseReplyToHeader(replyTo[0]), this._header.d)) {
+			desired.push("Reply-To");
+		} else {
+			recommended.push("Reply-To");
+		}
+
+		// If the body is not completely signed, a manipulated Content-Type header
+		// can cause completely different content to be shown.
+		if (this._header.warnings.some(warning => warning.name === "DKIM_SIGWARNING_SMALL_L")) {
+			required.push("Content-Type");
+		} else if (this._header.l !== null) {
+			recommended.push("Content-Type");
+		} else {
+			desired.push("Content-Type");
+		}
+
+		/**
+		 * @param {string} header
+		 * @param {boolean} warnIfUnsigned
+		 * @returns {void}
+		 */
+		const checkSignedHeader = (header, warnIfUnsigned) => {
+			const headerLowerCase = header.toLowerCase();
+			const signedCount = this._header.h_array.filter(e => e === headerLowerCase).length;
+			const unsignedCount = this._msg.headerFields.get(headerLowerCase)?.length ?? 0;
+			if (signedCount > 0 && signedCount < unsignedCount) {
+				throw new DKIM_SigError("DKIM_POLICYERROR_UNSIGNED_HEADER_ADDED", [header]);
+			}
+			if (warnIfUnsigned && signedCount < unsignedCount) {
+				this._header.warnings.push({ name: "DKIM_SIGWARNING_UNSIGNED_HEADER", params: [header] });
+				log.debug(`Warning: DKIM_SIGWARNING_UNSIGNED_HEADER (${header})`);
+			}
+		};
+
+		for (const header of required) {
+			checkSignedHeader(header, prefs["policy.dkim.unsignedHeadersWarning.mode"] >=
+				BasePreferences.POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE.RELAXED);
+		}
+		for (const header of recommended) {
+			checkSignedHeader(header, prefs["policy.dkim.unsignedHeadersWarning.mode"] >=
+				BasePreferences.POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE.RECOMMENDED);
+		}
+		for (const header of desired) {
+			checkSignedHeader(header, prefs["policy.dkim.unsignedHeadersWarning.mode"] >=
+				BasePreferences.POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE.STRICT);
+		}
+	}
+
+	/**
+	 * Verify that the body of the message is unmodified.
+	 *
+	 * @private
+	 * @returns {Promise<void>}
+	 * @throws {DKIM_SigError}
+	 * @throws {DKIM_InternalError}
+	 */
+	async _verifyBody() {
 		// Compute the Message hash for the body
 		const bodyHash = await this._computeBodyHash();
 		log.debug("computed body hash:", bodyHash);
@@ -1001,10 +1125,19 @@ class DkimSignature {
 		if (bodyHash !== this._header.bh) {
 			throw new DKIM_SigError("DKIM_SIGERROR_CORRUPT_BH");
 		}
+	}
 
-		log.trace("Receiving DNS key for DKIM-Signature ...");
+	/**
+	 * Fetch the DKIM key.
+	 *
+	 * @private
+	 * @param {KeyStore} keyStore
+	 * @returns {Promise<import("./keyStore.mjs.js").DkimKeyResult>}
+	 * @throws {DKIM_SigError}
+	 * @throws {DKIM_InternalError}
+	 */
+	async _fetchKey(keyStore) {
 		const keyQueryResult = await keyStore.fetchKey(this._header.d, this._header.s);
-		log.trace("Received DNS key for DKIM-Signature");
 
 		// if key is not signed by DNSSEC
 		if (!keyQueryResult.secure) {
@@ -1022,9 +1155,17 @@ class DkimSignature {
 			}
 		}
 
-		const dkimKey = new DkimKey(keyQueryResult.key);
-		log.debug("Parsed DKIM-Key:", dkimKey);
+		return keyQueryResult;
+	}
 
+	/**
+	 * Sanity checks for the key, including if it matches the data in the signature.
+	 *
+	 * @private
+	 * @param {DkimKey} dkimKey
+	 * @throws {DKIM_SigError}
+	 */
+	_checkKey(dkimKey) {
 		// check that the testing flag is not set
 		if (dkimKey.t_array.includes("y")) {
 			if (prefs["error.key_testmode.ignore"]) {
@@ -1033,6 +1174,11 @@ class DkimSignature {
 			} else {
 				throw new DKIM_SigError("DKIM_SIGERROR_KEY_TESTMODE");
 			}
+		}
+
+		// Signature algo musst match the key type.
+		if (this._header.a_sig !== dkimKey.k) {
+			throw new DKIM_SigError("DKIM_SIGERROR_KEY_MISMATCHED_K");
 		}
 
 		// if s flag is set in DKIM key record
@@ -1049,14 +1195,23 @@ class DkimSignature {
 			!dkimKey.h_array.includes(this._header.a_hash)) {
 			throw new DKIM_SigError("DKIM_SIGERROR_KEY_HASHNOTINCLUDED");
 		}
+	}
 
+	/**
+	 * Verify the actual signature.
+	 *
+	 * @private
+	 * @param {string} publicKey
+	 */
+	async _verifySignature(publicKey) {
 		// Compute the input for the header hash
 		const headerHashInput = this._computeHeaderHashInput();
 		log.debug(`Header hash input:\n${headerHashInput}`);
 
 		// verify Signature
-		const [isValid, keyLength] = await DkimCrypto.verifyRSA(
-			dkimKey.p,
+		const [isValid, keyLength] = await DkimCrypto.verify(
+			this._header.a_sig,
+			publicKey,
 			this._header.a_hash,
 			this._header.b,
 			headerHashInput
@@ -1065,26 +1220,52 @@ class DkimSignature {
 			throw new DKIM_SigError("DKIM_SIGERROR_BADSIG");
 		}
 
-		if (keyLength < 1024) {
-			// error if key is too short
-			log.debug(`rsa key size: ${keyLength}`);
-			throw new DKIM_SigError("DKIM_SIGWARNING_KEYSMALL");
-		} else if (keyLength < 2048) {
-			// weak key
-			log.debug(`rsa key size: ${keyLength}`);
-			switch (prefs["error.algorithm.rsa.weakKeyLength.treatAs"]) {
-				case 0: // error
-					throw new DKIM_SigError("DKIM_SIGWARNING_KEY_IS_WEAK");
-				case 1: // warning
-					this._header.warnings.push({ name: "DKIM_SIGWARNING_KEY_IS_WEAK" });
-					log.debug("Warning: DKIM_SIGWARNING_KEY_IS_WEAK");
-					break;
-				case 2: // ignore
-					break;
-				default:
-					throw new DKIM_InternalError("invalid error.algorithm.rsa.weakKeyLength.treatAs");
+		if (this._header.a_sig === "rsa") {
+			// Check strength of RSA keys.
+			if (keyLength < 1024) {
+				// error if key is too short
+				log.debug(`rsa key size: ${keyLength}`);
+				throw new DKIM_SigError("DKIM_SIGWARNING_KEYSMALL");
+			} else if (keyLength < 2048) {
+				// weak key
+				log.debug(`rsa key size: ${keyLength}`);
+				switch (prefs["error.algorithm.rsa.weakKeyLength.treatAs"]) {
+					case 0: // error
+						throw new DKIM_SigError("DKIM_SIGWARNING_KEY_IS_WEAK");
+					case 1: // warning
+						this._header.warnings.push({ name: "DKIM_SIGWARNING_KEY_IS_WEAK" });
+						log.debug("Warning: DKIM_SIGWARNING_KEY_IS_WEAK");
+						break;
+					case 2: // ignore
+						break;
+					default:
+						throw new DKIM_InternalError("invalid error.algorithm.rsa.weakKeyLength.treatAs");
+				}
 			}
 		}
+	}
+
+	/**
+	 * Verifying a single DKIM signature.
+	 *
+	 * @param {KeyStore} keyStore
+	 * @returns {Promise<dkimSigResultV2>}
+	 * @throws {DKIM_SigError}
+	 * @throws {DKIM_InternalError}
+	 */
+	async verify(keyStore) {
+		this._checkFromAlignment();
+		this._checkValidityPeriod();
+		this.#checkSignedHeaders();
+
+		await this._verifyBody();
+
+		const keyQueryResult = await this._fetchKey(keyStore);
+		const dkimKey = new DkimKey(keyQueryResult.key);
+		log.debug("Parsed DKIM-Key:", dkimKey);
+		this._checkKey(dkimKey);
+
+		await this._verifySignature(dkimKey.p);
 
 		// return result
 		log.trace("Everything is fine");
@@ -1118,7 +1299,7 @@ export default class Verifier {
 	 *
 	 * @private
 	 * @param {unknown} e
-	 * @param {DkimSignatureHeader|Object.<string, undefined>} dkimSignature
+	 * @param {DkimSignatureHeader|Object<string, undefined>} dkimSignature
 	 * @returns {dkimSigResultV2}
 	 */
 	static _handleException(e, dkimSignature = {}) {
@@ -1191,7 +1372,7 @@ export default class Verifier {
 				dkimHeader = new DkimSignatureHeader(dkimSignatureHeaders[iDKIMSignatureIdx] ?? "");
 				log.debug(`Parsed DKIM-Signature ${iDKIMSignatureIdx + 1}:`, dkimHeader);
 				const dkimSignature = new DkimSignature(msg, dkimHeader);
-				sigRes = await dkimSignature.verifySignature(this._keyStore);
+				sigRes = await dkimSignature.verify(this._keyStore);
 				log.debug(`Verified DKIM-Signature ${iDKIMSignatureIdx + 1}`);
 			} catch (e) {
 				sigRes = Verifier._handleException(e, dkimHeader);
@@ -1225,7 +1406,7 @@ export default class Verifier {
 	}
 
 	/**
-	 * @typedef {Object} Msg
+	 * @typedef {object} Msg
 	 * @property {Map<string, string[]>} headerFields
 	 * @property {string} bodyPlain
 	 * @property {string} from

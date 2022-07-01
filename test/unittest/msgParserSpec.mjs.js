@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2021 Philippe Lieser
+ * Copyright (c) 2020-2022 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -12,6 +12,7 @@
 import { DKIM_InternalError } from "../../modules/error.mjs.js";
 import MsgParser from "../../modules/msgParser.mjs.js";
 import expect from "../helpers/chaiUtils.mjs.js";
+import { toBinaryString } from "../helpers/testUtils.mjs.js";
 
 describe("Message parser [unittest]", function () {
 	describe("RFC 6376 Appendix A Example", function () {
@@ -258,6 +259,25 @@ describe("Message parser [unittest]", function () {
 				MsgParser.parseFromHeader("From:\r\n\t=?utf-8?q?(omit)?=\r\n\t=?utf-8?q?(omit)?= <mail@example.com>\r\n")
 			).to.be.equal("mail@example.com");
 		});
+		it("mailbox-list", function () {
+			expect(
+				MsgParser.parseFromHeader("From: foo@example.com, user <user@example.com>\r\n")
+			).to.be.equal("foo@example.com");
+			expect(
+				MsgParser.parseFromHeader("From: foo@example.com, user@example.com\r\n")
+			).to.be.equal("foo@example.com");
+
+			expect(
+				MsgParser.parseFromHeader("From: foo <foo@example.com>, user@example.com\r\n")
+			).to.be.equal("foo@example.com");
+			expect(
+				MsgParser.parseFromHeader("From: foo <foo@example.com>, user <user@example.com>\r\n")
+			).to.be.equal("foo@example.com");
+
+			expect(
+				MsgParser.parseFromHeader("From: foo <foo@example.com>, user <user@example.com>, bar@example.com\r\n")
+			).to.be.equal("foo@example.com");
+		});
 		it("avoid backtracking issues", function () {
 			// A naive implementation of the phrase pattern can lead to backtracking issues,
 			// especially if it tries but fails to match it to a long string.
@@ -287,6 +307,16 @@ describe("Message parser [unittest]", function () {
 			expect(() =>
 				MsgParser.parseFromHeader("To: <foo@example.com>\r\n")
 			).to.throw();
+		});
+	});
+	describe("Extracting Reply-To address", function () {
+		it("Valid examples", function () {
+			expect(
+				MsgParser.parseReplyToHeader("Reply-To: foo@example.com\r\n")
+			).to.be.equal("foo@example.com");
+			expect(
+				MsgParser.parseReplyToHeader('Reply-To: "noreply@mail.paypal.de" <noreply@mail.paypal.de>\r\n')
+			).to.be.equal("noreply@mail.paypal.de");
 		});
 	});
 	describe("Extracting List-Id", function () {
@@ -320,14 +350,105 @@ describe("Message parser [unittest]", function () {
 			).to.be.equal("list-header.nisto.com");
 		});
 		it("invalid headers", function () {
-			expect( () =>
+			expect(() =>
 				MsgParser.parseListIdHeader('List-Id: missing-angle-brackets.example.com')
 			).to.throw();
-			expect( () =>
+			expect(() =>
 				MsgParser.parseListIdHeader('List-Id: <foo@example.com>\r\n')
 			).to.throw();
-			expect( () =>
+			expect(() =>
 				MsgParser.parseListIdHeader('List-Id: 123 <foo newsletter>\r\n')
+			).to.throw();
+		});
+	});
+	describe("Internationalized Email", function () {
+		it("Disabled by default", function () {
+			expect(() => MsgParser.parseFromHeader(toBinaryString(
+				"From: Pelé@example.com\r\n"
+			))).to.throw();
+			expect(() => MsgParser.parseFromHeader(toBinaryString(
+				"From: <Pelé@example.com>\r\n"
+			))).to.throw();
+		});
+		it("From header", function () {
+			// https://en.wikipedia.org/wiki/E-mail_address#Internationalization_examples
+			// Latin alphabet with diacritics: Pelé@example.com
+			// Greek alphabet: δοκιμή@παράδειγμα.δοκιμή
+			// Traditional Chinese characters: 我買@屋企.香港
+			// Japanese characters: 二ノ宮@黒川.日本
+			// Cyrillic characters: медведь@с-балалайкой.рф
+			// Devanagari characters: संपर्क@डाटामेल.भारत
+			expect(MsgParser.parseFromHeader(toBinaryString(
+				"From: Pelé@example.com\r\n"
+			), true)).to.be.equal("Pelé@example.com");
+			expect(MsgParser.parseFromHeader(toBinaryString(
+				"From: δοκιμή@παράδειγμα.δοκιμή\r\n"
+			), true)).to.be.equal("δοκιμή@παράδειγμα.δοκιμή");
+			expect(MsgParser.parseFromHeader(toBinaryString(
+				"From: 我買@屋企.香港\r\n"
+			), true)).to.be.equal("我買@屋企.香港");
+			expect(MsgParser.parseFromHeader(toBinaryString(
+				"From: 二ノ宮@黒川.日本\r\n"
+			), true)).to.be.equal("二ノ宮@黒川.日本");
+			expect(MsgParser.parseFromHeader(toBinaryString(
+				"From: медведь@с-балалайкой.рф\r\n"
+			), true)).to.be.equal("медведь@с-балалайкой.рф");
+			expect(MsgParser.parseFromHeader(toBinaryString(
+				"From: संपर्क@डाटामेल.भारत\r\n"
+			), true)).to.be.equal("संपर्क@डाटामेल.भारत");
+
+			expect(MsgParser.parseFromHeader(toBinaryString(
+				"From: Pelé <Pelé@example.com>\r\n"
+			), true)).to.be.equal("Pelé@example.com");
+			expect(MsgParser.parseFromHeader(toBinaryString(
+				'From: "Pelé" <Pelé@example.com>\r\n'
+			), true)).to.be.equal("Pelé@example.com");
+			expect(MsgParser.parseFromHeader(toBinaryString(
+				'From: "Pelé" <"Pelé"@example.com>\r\n'
+			), true)).to.be.equal('"Pelé"@example.com');
+
+			// https://mathiasbynens.be/notes/javascript-unicode#poo-test
+			expect(MsgParser.parseFromHeader(toBinaryString(
+				"From: Iñtërnâtiônàlizætiøn☃💩@Iñtërnâtiônàlizætiøn☃💩.test\r\n"
+			), true)).to.be.equal("Iñtërnâtiônàlizætiøn☃💩@Iñtërnâtiônàlizætiøn☃💩.test");
+		});
+		it("valid IDNA labels", function () {
+			// Examples from https://unicode.org/reports/tr46/#Table_Example_Processing
+			expect(MsgParser.parseFromHeader(toBinaryString(
+				"From: <foo@Bloß.de>\r\n"
+			), true)).to.be.equal("foo@Bloß.de");
+			expect(MsgParser.parseFromHeader(toBinaryString(
+				"From: <foo@xn--blo-7ka.de>\r\n"
+			), true)).to.be.equal("foo@xn--blo-7ka.de");
+			expect(MsgParser.parseFromHeader(toBinaryString(
+				"From: <foo@u¨.com>\r\n"
+			), true)).to.be.equal("foo@u¨.com");
+			expect(MsgParser.parseFromHeader(toBinaryString(
+				"From: <foo@xn--tda.com>\r\n"
+			), true)).to.be.equal("foo@xn--tda.com");
+			expect(MsgParser.parseFromHeader(toBinaryString(
+				"From: <foo@日本語。ＪＰ>\r\n"
+			), true)).to.be.equal("foo@日本語。ＪＰ");
+			expect(MsgParser.parseFromHeader(toBinaryString(
+				"From: <foo@☕.us>\r\n"
+			), true)).to.be.equal("foo@☕.us");
+		});
+		// eslint-disable-next-line mocha/no-skipped-tests
+		xit("invalid IDNA labels", function () {
+			// Test disabled because currently no check for valid IDNA A-label or U-label is done.
+
+			// Examples from https://unicode.org/reports/tr46/#Table_Example_Processing
+			expect(() =>
+				MsgParser.parseFromHeader(toBinaryString("From: <foo@xn--u-ccb.com>\r\n"), true)
+			).to.throw();
+			expect(() =>
+				MsgParser.parseFromHeader(toBinaryString("From: <foo@a⒈com>\r\n"), true)
+			).to.throw();
+			expect(() =>
+				MsgParser.parseFromHeader(toBinaryString("From: <foo@xn--a-ecp.ru>\r\n"), true)
+			).to.throw();
+			expect(() =>
+				MsgParser.parseFromHeader(toBinaryString("From: <foo@xn--0.pt>\r\n"), true)
 			).to.throw();
 		});
 	});
