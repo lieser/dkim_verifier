@@ -11,6 +11,10 @@ All notable changes to this project will be documented in this file.
 - Added heuristic to detect maliciously added unsigned headers (#102).
 - Warn about unsigned headers that are recommended to be signed (#102, #277).
 
+### Fixes
+
+- Fixed error when opening messages in a new window in Thunderbird 102.
+
 ## 5.0.0 (2022-06-12)
 
 ### Breaking Changes

@@ -949,16 +949,25 @@ this.dkimHeader = class extends ExtensionCommon.ExtensionAPI {
 	paint(window) {
 		const { document } = window;
 		DkimHeaderRow.add(document);
-		if (window.syncGridColumnWidths) {
-			// TB <102
-			window.syncGridColumnWidths();
-		} else if (window.updateExpandedView) {
-			// TB >=102
-			// Calling `gMessageHeader.syncLabelsColumnWidths()` directly is not possible,
-			// as `gMessageHeader` is not part of the `window` object.
-			window.updateExpandedView();
-		} else {
-			console.warn("DKIM: Function to sync header column widths not found.");
+		try {
+			if (window.syncGridColumnWidths) {
+				// TB <102
+				window.syncGridColumnWidths();
+			} else if (window.updateExpandedView) {
+				// TB >=102
+				// Calling `gMessageHeader.syncLabelsColumnWidths()` directly is not possible,
+				// as `gMessageHeader` is not part of the `window` object.
+
+				// When viewing messages in a window, `gFolderDisplay` is defined only in the first opened window.
+				// A missing `gFolderDisplay` will result in `updateExpandedView()` to fail.
+				if (window.gFolderDisplay) {
+					window.updateExpandedView();
+				}
+			} else {
+				console.warn("DKIM: Function to sync header column widths not found.");
+			}
+		} catch (error) {
+			console.warn("DKIM: Function to sync header column failed:", error);
 		}
 		DkimFavicon.add(document);
 	}
