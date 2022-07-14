@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 
 - Added heuristic to detect maliciously added unsigned headers (#102).
 - Warn about unsigned headers that are recommended to be signed (#102, #277).
+- Improved theming of header icon in Thunderbird 102.
 
 ### Fixes
 

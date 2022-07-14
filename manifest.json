@@ -37,12 +37,12 @@
 		"theme_icons": [
 			{
 				"dark": "icon.svg",
-				"light": "icon-white.svg",
+				"light": "icon.svg",
 				"size": 16
 			},
 			{
 				"dark": "icon.svg",
-				"light": "icon-white.svg",
+				"light": "icon.svg",
 				"size": 32
 			}
 		],
