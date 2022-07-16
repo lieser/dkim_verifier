@@ -214,7 +214,7 @@ export class KeyDb {
 		}
 		storedKeysLoaded = new Deferred();
 		try {
-			/** @type {StoredDkimKeys=} */
+			/** @type {StoredDkimKeys|undefined} */
 			const keyStore = (await browser.storage.local.get("keyStore")).keyStore;
 			if (keyStore !== undefined) {
 				storedKeysMaxId = keyStore.maxId;

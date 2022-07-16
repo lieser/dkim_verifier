@@ -430,7 +430,7 @@ class DkimHeaderRow {
 	static add(document) {
 		let headerRowElement;
 		let headerRowContainer = document.getElementById("expandedHeaders2");
-		/** @type {InsertPosition=} */
+		/** @type {InsertPosition|undefined} */
 		let position;
 		if (headerRowContainer) {
 			// TB < 96

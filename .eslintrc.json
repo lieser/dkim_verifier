@@ -147,6 +147,7 @@
         "wrap-iife": "warn",
         // JSDoc
         "jsdoc/check-line-alignment": "warn",
+        "jsdoc/check-syntax": "warn",
         "jsdoc/match-description": "warn",
         "jsdoc/no-bad-blocks": "warn",
         "jsdoc/no-defaults": "warn",
