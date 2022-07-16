@@ -241,9 +241,6 @@
 	"DKIM_SIGERROR_KEY_REVOKED": {
 		"message": "DKIM key is revoked"
 	},
-	"DKIM_SIGERROR_KEY_HASHMISMATCH": {
-		"message": "Public key in DKIM key has wrong hash algorithm"
-	},
 	"DKIM_SIGERROR_KEY_ILLFORMED_P": {
 		"message": "Public key data tag in DKIM key is ill-formed"
 	},
@@ -276,6 +273,10 @@
 	"DKIM_POLICYERROR_WRONG_SDID": {
 		"message": "Wrong signer (should be $1)"
 	},
+	"DKIM_POLICYERROR_UNSIGNED_HEADER_ADDED": {
+		"message": "Unsigned header '$1' was added",
+		"description": "Error if an important header was probably maliciously added later"
+	},
 	// DKIM_SIGWARNING
 	"DKIM_SIGWARNING_SMALL_L": {
 		"message": "Not the entire e-mail is signed"
@@ -297,6 +298,10 @@
 	},
 	"DKIM_SIGWARNING_FROM_NOT_IN_AUID": {
 		"message": "From does not match the user identifier"
+	},
+	"DKIM_SIGWARNING_UNSIGNED_HEADER": {
+		"message": "Header '$1' is not signed",
+		"description": "Warning if an important header is not signed"
 	},
 	// JSDNS
 	"TOO_MANY_HOPS": {
@@ -429,6 +434,22 @@
 	},
 	"options_policy.DMARC.shouldBeSigned.enable": {
 		"message": "Use DMARC to heuristically determine if an e-mail should be signed"
+	},
+	"options_policy.dkim.unsignedHeadersWarning.mode": {
+		"message": "Warn about unsigned headers that are recommended to be signed: ",
+		"description": "Description for the setting of the unsigned headers warning mode."
+	},
+	"options_policy.dkim.unsignedHeadersWarning.mode.relaxed": {
+		"message": "relaxed mode",
+		"description": "A relaxed mode that will try to avoid showing warnings."
+	},
+	"options_policy.dkim.unsignedHeadersWarning.mode.recommended": {
+		"message": "recommended mode",
+		"description": "A mode trying to enforce best practice without showing to many warnings."
+	},
+	"options_policy.dkim.unsignedHeadersWarning.mode.strict": {
+		"message": "strict mode",
+		"description": "A strict mode that will potentially show a lot of warnings."
 	},
 	// -------------------- Display options --------------------
 	"options_display": {

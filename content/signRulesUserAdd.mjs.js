@@ -17,17 +17,6 @@ import { getElementById } from "./domUtils.mjs.js";
 const log = Logging.getLogger("signRulesUserAdd");
 
 /**
- * @returns {Promise<void>}
- */
-async function closeCurrentWindow() {
-	const windowId = (await browser.windows.getCurrent()).id;
-	if (windowId === undefined) {
-		throw new Error("Failed to get current window id");
-	}
-	await browser.windows.remove(windowId);
-}
-
-/**
  * @param {string} id
  * @returns {string}
  */
@@ -85,7 +74,7 @@ async function onAccept() {
 		const enabled = getCheckbox("enabled");
 
 		await SignRulesProxy.addRule(domain, listId, addr, sdid, ruleType, priority, enabled);
-		closeCurrentWindow();
+		window.close();
 	} catch (exception) {
 		log.error(exception);
 	}
@@ -95,7 +84,7 @@ async function onAccept() {
  * @returns {void}
  */
 function onCancel() {
-	closeCurrentWindow();
+	window.close();
 }
 
 /**

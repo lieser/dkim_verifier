@@ -210,9 +210,6 @@
 	"DKIM_SIGERROR_KEY_REVOKED": {
 		"message": "Clé DKIM revoquée"
 	},
-	"DKIM_SIGERROR_KEY_HASHMISMATCH": {
-		"message": "Mauvais algorithme de clé DKIM dans la clé publique"
-	},
 	"DKIM_SIGERROR_KEY_ILLFORMED_P": {
 		"message": "Balise de clé DKIM publique malformée"
 	},

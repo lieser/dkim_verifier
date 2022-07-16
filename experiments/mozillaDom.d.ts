@@ -7,5 +7,7 @@ interface Window {
     readonly gMessageListeners: object[];
     // Removed in TB 99
     readonly OnResizeExpandedHeaderView?: () => void;
-    readonly syncGridColumnWidths: () => void;
+    // Removed in TB 102
+    readonly syncGridColumnWidths?: () => void;
+    readonly updateExpandedView: () => void;
 }

@@ -20,7 +20,6 @@ class Logger {
 	 * Creates an instance of Logger.
 	 *
 	 * @param {string} loggerName
-	 * @memberof Logger
 	 */
 	constructor(loggerName) {
 		this.name = loggerName;
@@ -33,7 +32,6 @@ class Logger {
 	 * Set the log level of the logger.
 	 *
 	 * @param {number} logLevel
-	 * @memberof Logger
 	 */
 	set logLevel(logLevel) {
 		this._logLevel = logLevel;
@@ -95,10 +93,8 @@ export default class Logging {
 	/**
 	 * Get a logger with the given optional name.
 	 *
-	 * @static
 	 * @param {string|void} loggerName
 	 * @returns {LoggerI} Logger
-	 * @memberof Logging
 	 */
 	static getLogger(loggerName) {
 		const name = loggerName ? `${LOG_NAME}.${loggerName}` : `${LOG_NAME}`;
@@ -112,10 +108,8 @@ export default class Logging {
 	 * Sets the default log level.
 	 * Also sets the log level for all loggers gotten via getLogger().
 	 *
-	 * @static
 	 * @param {number} logLevel
 	 * @returns {void}
-	 * @memberof Logging
 	 */
 	static setLogLevel(logLevel) {
 		Logging._logLevel = logLevel;
@@ -131,9 +125,7 @@ export default class Logging {
 	 * Initialize the log level from preferences.
 	 * Also adds a change listener to adapt log level if setting changes.
 	 *
-	 * @static
 	 * @returns {Promise<void>}
-	 * @memberof Logging
 	 */
 	static async initLogLevelFromPrefs() {
 		const setLogLevelFromPrefs = async () => {

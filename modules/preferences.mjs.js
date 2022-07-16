@@ -43,7 +43,6 @@ export class BasePreferences {
 	 *
 	 * @param {ValueGetter} valueGetter
 	 * @param {ValueSetter} valueSetter
-	 * @memberof BasePreferences
 	 */
 	constructor(valueGetter, valueSetter) {
 		/**
@@ -83,7 +82,6 @@ export class BasePreferences {
 	 * @param {string} name
 	 * @param {boolean} defaultValue
 	 * @returns {boolean}
-	 * @memberof BasePreferences
 	 */
 	_tryGetBoolValue(name, defaultValue) {
 		const value = this._valueGetter(name);
@@ -101,7 +99,6 @@ export class BasePreferences {
 	 * @param {string} name
 	 * @param {number} defaultValue
 	 * @returns {number}
-	 * @memberof BasePreferences
 	 */
 	_tryGetNumberValue(name, defaultValue) {
 		const value = this._valueGetter(name);
@@ -119,7 +116,6 @@ export class BasePreferences {
 	 * @param {string} name
 	 * @param {string} defaultValue
 	 * @returns {string}
-	 * @memberof BasePreferences
 	 */
 	_tryGetStringValue(name, defaultValue) {
 		const value = this._valueGetter(name);
@@ -135,7 +131,6 @@ export class BasePreferences {
 	/**
 	 * @param {string} name
 	 * @returns {boolean|number|string}
-	 * @memberof BasePreferences
 	 */
 	getValue(name) {
 		if (!Object.prototype.hasOwnProperty.call(BasePreferences.prototype, name)) {
@@ -149,7 +144,6 @@ export class BasePreferences {
 	/**
 	 * @param {string} name
 	 * @returns {boolean}
-	 * @memberof BasePreferences
 	 */
 	getBool(name) {
 		const value = this.getValue(name);
@@ -162,7 +156,6 @@ export class BasePreferences {
 	/**
 	 * @param {string} name
 	 * @returns {number}
-	 * @memberof BasePreferences
 	 */
 	getNumber(name) {
 		const value = this.getValue(name);
@@ -175,7 +168,6 @@ export class BasePreferences {
 	/**
 	 * @param {string} name
 	 * @returns {string}
-	 * @memberof BasePreferences
 	 */
 	getString(name) {
 		const value = this.getValue(name);
@@ -189,7 +181,6 @@ export class BasePreferences {
 	 * @param {string} name
 	 * @param {boolean|number|string} value
 	 * @returns {Promise<void>}
-	 * @memberof BasePreferences
 	 */
 	async setValue(name, value) {
 		if (typeof value !== typeof this.getValue(name)) {
@@ -378,6 +369,25 @@ export class BasePreferences {
 	get "policy.DMARC.shouldBeSigned.neededPolicy"() {
 		return this._tryGetStringValue("policy.DMARC.shouldBeSigned.neededPolicy", "none");
 	}
+
+	/**
+	 * @enum {number}
+	 * @readonly
+	 */
+	static POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE = {
+		/** @readonly */
+		RELAXED: 10,
+		/** @readonly */
+		RECOMMENDED: 20,
+		/** @readonly */
+		STRICT: 30,
+	};
+	/**
+	 * @returns {POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE}
+	 */
+	get "policy.dkim.unsignedHeadersWarning.mode"() {
+		return this._tryGetNumberValue("policy.dkim.unsignedHeadersWarning.mode", 10);
+	}
 	//#endregion
 
 	////////////////////////////////////////////////////////////////////////////
@@ -481,7 +491,6 @@ export class BasePreferences {
 	 * @param {string} account
 	 * @param {boolean|number|string} value
 	 * @returns {Promise<void>}
-	 * @memberof BasePreferences
 	 */
 	setAccountValue(name, account, value) {
 		if (!Object.prototype.hasOwnProperty.call(BasePreferences.prototype, `account.${name}`)) {
@@ -507,7 +516,6 @@ export class BasePreferences {
 	 * @param {string} name
 	 * @param {string} account
 	 * @returns {boolean|number|string}
-	 * @memberof BasePreferences
 	 */
 	getAccountValue(name, account) {
 		if (!Object.prototype.hasOwnProperty.call(BasePreferences.prototype, `account.${name}`)) {
@@ -528,7 +536,6 @@ export class BasePreferences {
 	 * @param {string} name
 	 * @param {string} account
 	 * @returns {boolean}
-	 * @memberof BasePreferences
 	 */
 	_getAccountBoolWithDefault(name, account) {
 		// 0: default, 1: yes, 2: no
@@ -548,7 +555,6 @@ export class BasePreferences {
 	/**
 	 * @param {string} account
 	 * @returns {boolean}
-	 * @memberof BasePreferences
 	 */
 	"account.dkim.enable"(account) {
 		return this._getAccountBoolWithDefault("dkim.enable", account);
@@ -557,7 +563,6 @@ export class BasePreferences {
 	/**
 	 * @param {string} account
 	 * @returns {boolean}
-	 * @memberof BasePreferences
 	 */
 	"account.arh.read"(account) {
 		return this._getAccountBoolWithDefault("arh.read", account);
@@ -566,7 +571,6 @@ export class BasePreferences {
 	/**
 	 * @param {string} account
 	 * @returns {string}
-	 * @memberof BasePreferences
 	 */
 	"account.arh.allowedAuthserv"(account) {
 		return this._tryGetStringValue(`account.${account}.arh.allowedAuthserv`, "");
