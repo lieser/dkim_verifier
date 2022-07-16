@@ -422,6 +422,12 @@
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_NEUTRAL"
 		}, {
+			"domain": "cert.ee",
+			"addr": "*",
+			"sdid": "cert.ee",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "checktls.com",
 			"addr": "*",
 			"sdid": "checktls.com",

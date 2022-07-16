@@ -16,6 +16,10 @@ All notable changes to this project will be documented in this file.
 
 - Fixed error when opening messages in a new window in Thunderbird 102.
 
+### Other
+
+- updated default rules and favicons
+
 ## 5.0.0 (2022-06-12)
 
 ### Breaking Changes
