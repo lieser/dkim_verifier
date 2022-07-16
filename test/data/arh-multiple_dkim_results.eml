@@ -1,6 +1,10 @@
 Authentication-Results: example.net;
+  dkim=fail header.d=example.com;
   dkim=pass header.d=unrelated.org;
   dkim=pass header.d=example.com;
+  dkim=fail reason="test failure" header.d=example.com;
+  dkim=fail reason="test failure signed by unrelated" header.d=unrelated.org;
+  dkim=fail header.d=example.com;
   dkim=pass header.d=example.org
 Received: from client1.football.example.com  [192.0.2.1]
       by submitserver.example.com with SUBMISSION;
