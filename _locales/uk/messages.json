@@ -241,9 +241,6 @@
 	"DKIM_SIGERROR_KEY_REVOKED": {
 		"message": "Ключ DKIM відкликано"
 	},
-	"DKIM_SIGERROR_KEY_HASHMISMATCH": {
-		"message": "Відкритий ключ у ключі DKIM має неправильний алгоритм хешування"
-	},
 	"DKIM_SIGERROR_KEY_ILLFORMED_P": {
 		"message": "Тег даних відкритого ключа в ключі DKIM неправильно сформований"
 	},
@@ -276,6 +273,10 @@
 	"DKIM_POLICYERROR_WRONG_SDID": {
 		"message": "Неправильний підписувач (повинен бути $1)"
 	},
+	"DKIM_POLICYERROR_UNSIGNED_HEADER_ADDED": {
+		"message": "Додано заголовок без підпису '$1'",
+		"description": "Error if an important header was probably maliciously added later"
+	},
 	// DKIM_SIGWARNING
 	"DKIM_SIGWARNING_SMALL_L": {
 		"message": "Не весь електронний лист підписано"
@@ -297,6 +298,10 @@
 	},
 	"DKIM_SIGWARNING_FROM_NOT_IN_AUID": {
 		"message": "Поле 'Від' не відповідає ідентифікатору користувача"
+	},
+	"DKIM_SIGWARNING_UNSIGNED_HEADER": {
+		"message": "Заголовок '$1' не підписаний",
+		"description": "Warding if an important header is not signed"
 	},
 	// JSDNS
 	"TOO_MANY_HOPS": {
@@ -429,6 +434,22 @@
 	},
 	"options_policy.DMARC.shouldBeSigned.enable": {
 		"message": "Використовуйте DMARC, щоб евристично визначити, чи потрібно підписувати електронний лист"
+	},
+	"options_policy.dkim.unsignedHeadersWarning.mode": {
+		"message": "Попереджати про непідписані заголовки, які рекомендується підписувати: ",
+		"description": "Description for the setting of the unsigned headers warning mode."
+	},
+	"options_policy.dkim.unsignedHeadersWarning.mode.relaxed": {
+		"message": "послаблений режим",
+		"description": "A relaxed mode that will try to avoid showing warnings."
+	},
+	"options_policy.dkim.unsignedHeadersWarning.mode.recommended": {
+		"message": "рекомендований режим",
+		"description": "A mode trying to enforce best practice without showing to many warnings."
+	},
+	"options_policy.dkim.unsignedHeadersWarning.mode.strict": {
+		"message": "суворий режим",
+		"description": "A strict mode that will potentially show a lot of warnings."
 	},
 	// -------------------- Display options --------------------
 	"options_display": {

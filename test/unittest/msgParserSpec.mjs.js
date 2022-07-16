@@ -309,6 +309,16 @@ describe("Message parser [unittest]", function () {
 			).to.throw();
 		});
 	});
+	describe("Extracting Reply-To address", function () {
+		it("Valid examples", function () {
+			expect(
+				MsgParser.parseReplyToHeader("Reply-To: foo@example.com\r\n")
+			).to.be.equal("foo@example.com");
+			expect(
+				MsgParser.parseReplyToHeader('Reply-To: "noreply@mail.paypal.de" <noreply@mail.paypal.de>\r\n')
+			).to.be.equal("noreply@mail.paypal.de");
+		});
+	});
 	describe("Extracting List-Id", function () {
 		it("RFC 2919 examples", function () {
 			expect(
@@ -396,6 +406,11 @@ describe("Message parser [unittest]", function () {
 			expect(MsgParser.parseFromHeader(toBinaryString(
 				'From: "Pelé" <"Pelé"@example.com>\r\n'
 			), true)).to.be.equal('"Pelé"@example.com');
+
+			// https://mathiasbynens.be/notes/javascript-unicode#poo-test
+			expect(MsgParser.parseFromHeader(toBinaryString(
+				"From: Iñtërnâtiônàlizætiøn☃💩@Iñtërnâtiônàlizætiøn☃💩.test\r\n"
+			), true)).to.be.equal("Iñtërnâtiônàlizætiøn☃💩@Iñtërnâtiônàlizætiøn☃💩.test");
 		});
 		it("valid IDNA labels", function () {
 			// Examples from https://unicode.org/reports/tr46/#Table_Example_Processing

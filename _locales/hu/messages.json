@@ -237,9 +237,6 @@
 	"DKIM_SIGERROR_KEY_REVOKED": {
 		"message": "A DKIM kulcs visszavonásra kerül"
 	},
-	"DKIM_SIGERROR_KEY_HASHMISMATCH": {
-		"message": "A DKIM kulcs nyilvános kulcsa hibás hash algoritmussal rendelkezik"
-	},
 	"DKIM_SIGERROR_KEY_ILLFORMED_P": {
 		"message": "Nyilvános kulcsú adatcímke a DKIM kulcsban hibás formázott"
 	},

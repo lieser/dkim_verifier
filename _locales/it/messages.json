@@ -225,6 +225,10 @@
 	"DKIM_SIGERROR_KEY_UNKNOWN_K": {
 		"message": "Tipo di chiave DKIM non supportato"
 	},
+	"DKIM_SIGERROR_KEY_MISMATCHED_K": {
+		"message": "L’algoritmo di firma non corrisponde al tipo di chiave DKIM",
+		"description": "Error message if the signature algorithm in the DKIM Signature header (a-tag) does not match the key type of the DKIM key (k-tag)."
+	},
 	"DKIM_SIGERROR_KEY_ILLFORMED_K": {
 		"message": "Tag tipo di chiave DKIM con sintassi errata"
 	},
@@ -236,9 +240,6 @@
 	},
 	"DKIM_SIGERROR_KEY_REVOKED": {
 		"message": "Chiave DKIM revocata"
-	},
-	"DKIM_SIGERROR_KEY_HASHMISMATCH": {
-		"message": "Chiave pubblica nella chiave DKIM con algoritmo di firma errato"
 	},
 	"DKIM_SIGERROR_KEY_ILLFORMED_P": {
 		"message": "Tag dati della chiave pubblica nella chiave DKIM con sintassi errata"
@@ -272,6 +273,10 @@
 	"DKIM_POLICYERROR_WRONG_SDID": {
 		"message": "Firmatario errato (dovrebbe essere $1)"
 	},
+	"DKIM_POLICYERROR_UNSIGNED_HEADER_ADDED": {
+		"message": "È stata aggiunta l’intestazione non firmata '$1'",
+		"description": "Error if an important header was probably maliciously added later"
+	},
 	// DKIM_SIGWARNING
 	"DKIM_SIGWARNING_SMALL_L": {
 		"message": "Non tutta l’email è firmata"
@@ -293,6 +298,10 @@
 	},
 	"DKIM_SIGWARNING_FROM_NOT_IN_AUID": {
 		"message": "Mittente non corrispondente all’identificativo utente"
+	},
+	"DKIM_SIGWARNING_UNSIGNED_HEADER": {
+		"message": "L’intestazione '$1' nonè firmata",
+		"description": "Warning if an important header is not signed"
 	},
 	// JSDNS
 	"TOO_MANY_HOPS": {
@@ -425,6 +434,22 @@
 	},
 	"options_policy.DMARC.shouldBeSigned.enable": {
 		"message": "Usa DMARC per determinare euristicamente se un’email dovrebbe essere firmata"
+	},
+	"options_policy.dkim.unsignedHeadersWarning.mode": {
+		"message": "Avvisa quando ci sono intestazioni non firmate che invece è consigliato lo siano: ",
+		"description": "Description for the setting of the unsigned headers warning mode."
+	},
+	"options_policy.dkim.unsignedHeadersWarning.mode.relaxed": {
+		"message": "modalità non rigorosa",
+		"description": "A relaxed mode that will try to avoid showing warnings."
+	},
+	"options_policy.dkim.unsignedHeadersWarning.mode.recommended": {
+		"message": "modalità consigliata",
+		"description": "A mode trying to enforce best practice without showing to many warnings."
+	},
+	"options_policy.dkim.unsignedHeadersWarning.mode.strict": {
+		"message": "modalità rigorosa",
+		"description": "A strict mode that will potentially show a lot of warnings."
 	},
 	// -------------------- Display options --------------------
 	"options_display": {

@@ -21,6 +21,35 @@ const { ExtensionParent } = ChromeUtils.import("resource://gre/modules/Extension
 const { ExtensionSupport } = ChromeUtils.import("resource:///modules/ExtensionSupport.jsm");
 
 /**
+ * Wraps an element in the given wrapper.
+ * Note: element musst have a parent.
+ *
+ * @param {HTMLElement} element
+ * @param {HTMLElement} wrapper
+ */
+function wrap(element, wrapper) {
+	element.insertAdjacentElement("beforebegin", wrapper);
+	wrapper.appendChild(element);
+}
+
+/**
+ * Unwraps all child nodes in a given wrapper.
+ * Note: wrapper musst have a parent.
+ *
+ * @param {HTMLElement} wrapper
+ */
+function unwrap(wrapper) {
+	const parent = wrapper.parentNode;
+	if (!parent) {
+		throw Error("Wrapper element has no parent");
+	}
+	while (wrapper.firstChild) {
+		parent.insertBefore(wrapper.firstChild, wrapper);
+	}
+	wrapper.remove();
+}
+
+/**
  * Base class for DKIM tooltips
  */
 class DKIMTooltip {
@@ -29,7 +58,6 @@ class DKIMTooltip {
 	 *
 	 * @param {Document} document
 	 * @param {XULElement|void} element - optional underlying element, will be created if not given
-	 * @memberof DKIMTooltip
 	 */
 	constructor(document, element) {
 		/**
@@ -56,7 +84,6 @@ class DKIMTooltip {
 	 * Set the warnings for the tooltip.
 	 *
 	 * @param {string[]} warnings
-	 * @memberof DKIMTooltip
 	 */
 	set warnings(warnings) {
 		// delete old warnings from tooltips
@@ -92,7 +119,6 @@ class DKIMWarningsTooltip extends DKIMTooltip {
 	 *
 	 * @param {Document} document
 	 * @param {XULElement|void} element - optional underlying element, will be created if not given
-	 * @memberof DKIMTooltip
 	 */
 	constructor(document, element) {
 		super(document, element);
@@ -116,7 +142,6 @@ class DkimResultTooltip extends DKIMTooltip {
 	 *
 	 * @param {Document} document
 	 * @param {XULElement|void} element - optional underlying element, will be created if not given
-	 * @memberof DKIMTooltip
 	 */
 	constructor(document, element) {
 		super(document, element);
@@ -149,7 +174,6 @@ class DkimResultTooltip extends DKIMTooltip {
 	 * Set the DKIM result.
 	 *
 	 * @param {string} val
-	 * @memberof DKIMTooltip
 	 */
 	set value(val) {
 		if (!this.element._value) {
@@ -168,7 +192,6 @@ class DKIMHeaderField {
 	 *
 	 * @param {Document} document
 	 * @param {XULElement|void} element - optional underlying element, will be created if not given
-	 * @memberof DKIMHeaderField
 	 */
 	constructor(document, element) {
 		if (element) {
@@ -260,7 +283,6 @@ class DKIMHeaderField {
 	 * Set the DKIM result.
 	 *
 	 * @param {string} val
-	 * @memberof DKIMHeaderField
 	 */
 	set value(val) {
 		this.element._dkimValue.textContent = val;
@@ -270,7 +292,6 @@ class DKIMHeaderField {
 	 * Set the DKIM warnings.
 	 *
 	 * @param {string[]} warnings
-	 * @memberof DKIMHeaderField
 	 */
 	set warnings(warnings) {
 		if (warnings.length) {
@@ -285,7 +306,6 @@ class DKIMHeaderField {
 	 * Set the SPF result.
 	 *
 	 * @param {string} val
-	 * @memberof DKIMHeaderField
 	 */
 	set spfValue(val) {
 		if (val) {
@@ -300,7 +320,6 @@ class DKIMHeaderField {
 	 * Set the DMARC result.
 	 *
 	 * @param {string} val
-	 * @memberof DKIMHeaderField
 	 */
 	set dmarcValue(val) {
 		if (val) {
@@ -315,7 +334,6 @@ class DKIMHeaderField {
 	 * Set the DKIM result from the ARH.
 	 *
 	 * @param {string} val
-	 * @memberof DKIMHeaderField
 	 */
 	set arhDkimValue(val) {
 		if (val) {
@@ -337,10 +355,8 @@ class DKIMHeaderField {
 	/**
 	 * Get the DKIM header field in a given document.
 	 *
-	 * @static
 	 * @param {Document} document
 	 * @returns {DKIMHeaderField}
-	 * @memberof DKIMHeaderField
 	 */
 	static get(document) {
 		const element = document.getElementById(DKIMHeaderField._id);
@@ -362,7 +378,6 @@ class DkimHeaderRow {
 	 *
 	 * @param {Document} document
 	 * @param {HTMLElement} element - optional underlying element, will be created if not given
-	 * @memberof DkimHeaderRow
 	 */
 	constructor(document, element) {
 		this.document = document;
@@ -374,7 +389,6 @@ class DkimHeaderRow {
 	 *
 	 * @param {boolean} show
 	 * @returns {void}
-	 * @memberof DkimHeaderRow
 	 */
 	show(show) {
 		if (show) {
@@ -383,7 +397,7 @@ class DkimHeaderRow {
 			this.element.style.display = "none";
 		}
 		// Trigger the OnResizeExpandedHeaderView() function from Thunderbird
-		// to recalculate the height on the expandedHeaderView element.
+		// to recalculate the height on the expandedHeaderView element in TB<=98.
 		const defaultView = this.document.defaultView;
 		if (defaultView) {
 			const window = defaultView.window;
@@ -396,10 +410,8 @@ class DkimHeaderRow {
 	/**
 	 * Get the DKIM header row in a given document.
 	 *
-	 * @static
 	 * @param {Document} document
 	 * @returns {DkimHeaderRow}
-	 * @memberof DkimHeaderRow
 	 */
 	static get(document) {
 		const element = document.getElementById(DkimHeaderRow._id);
@@ -412,35 +424,37 @@ class DkimHeaderRow {
 	/**
 	 * Add the DKIM header row to a given document.
 	 *
-	 * @static
 	 * @param {Document} document
 	 * @returns {void}
-	 * @memberof DkimHeaderRow
 	 */
 	static add(document) {
 		let headerRowElement;
 		let headerRowContainer = document.getElementById("expandedHeaders2");
+		/** @type {InsertPosition=} */
+		let position;
 		if (headerRowContainer) {
+			// TB < 96
 			headerRowElement = this._createTableRowElement(document);
+			position = "beforeend";
 		} else {
+			// TB >= 96
 			headerRowContainer = document.getElementById("extraHeadersArea");
 			if (!headerRowContainer) {
 				throw Error("Could not find the expandedHeaders2 element");
 			}
 			headerRowElement = this._createDivRowElement(document);
+			position = "beforebegin";
 		}
 		const headerRow = new DkimHeaderRow(document, headerRowElement);
 		headerRow.show(false);
-		headerRowContainer.appendChild(headerRow.element);
+		headerRowContainer.insertAdjacentElement(position, headerRow.element);
 	}
 
 	/**
 	 * Remove the DKIM header row from a given document.
 	 *
-	 * @static
 	 * @param {Document} document
 	 * @returns {void}
-	 * @memberof DkimHeaderRow
 	 */
 	static remove(document) {
 		const headerRow = DkimHeaderRow.get(document);
@@ -454,11 +468,9 @@ class DkimHeaderRow {
 	 * Used in TB 78-95.
 	 * Should be added to the `expandedHeaders2` element.
 	 *
-	 * @static
 	 * @private
 	 * @param {Document} document
 	 * @returns {HTMLElement}
-	 * @memberof DkimHeaderRow
 	 */
 	static _createTableRowElement(document) {
 		const headerRow = document.createElement("tr");
@@ -484,11 +496,9 @@ class DkimHeaderRow {
 	 * Used in TB >= 96.
 	 * Should be added to the `extraHeadersArea` element.
 	 *
-	 * @static
 	 * @private
 	 * @param {Document} document
 	 * @returns {HTMLElement}
-	 * @memberof DkimHeaderRow
 	 */
 	static _createDivRowElement(document) {
 		const headerRow = document.createElement("div");
@@ -521,7 +531,6 @@ class DkimFavicon {
 	 *
 	 * @param {Document} document
 	 * @param {XULElement|void} element - optional underlying element, will be created if not given
-	 * @memberof DkimFavicon
 	 */
 	constructor(document, element) {
 		if (element) {
@@ -561,7 +570,6 @@ class DkimFavicon {
 	 * Set the DKIM result.
 	 *
 	 * @param {string} val
-	 * @memberof DkimFavicon
 	 */
 	set value(val) {
 		this._dkimTooltipFrom.value = val;
@@ -571,7 +579,6 @@ class DkimFavicon {
 	 * Set the DKIM warnings.
 	 *
 	 * @param {string[]} warnings
-	 * @memberof DkimFavicon
 	 */
 	set warnings(warnings) {
 		this._dkimTooltipFrom.warnings = warnings;
@@ -582,7 +589,6 @@ class DkimFavicon {
 	 *
 	 * @param {string} faviconUrl
 	 * @returns {void}
-	 * @memberof DkimFavicon
 	 */
 	setFaviconUrl(faviconUrl) {
 		this.element.style.backgroundImage = `url('${faviconUrl}')`;
@@ -602,10 +608,8 @@ class DkimFavicon {
 	/**
 	 * Get the DKIM favicon in a given document.
 	 *
-	 * @static
 	 * @param {Document} document
 	 * @returns {DkimFavicon}
-	 * @memberof DkimFavicon
 	 */
 	static get(document) {
 		const element = document.getElementById(DkimFavicon._id);
@@ -618,37 +622,57 @@ class DkimFavicon {
 	/**
 	 * Add the DKIM favicon to a given document.
 	 *
-	 * @static
 	 * @param {Document} document
 	 * @returns {void}
-	 * @memberof DkimFavicon
 	 */
 	static add(document) {
-		const headerRow = new DkimFavicon(document);
-		/** @type {MozMailMultiEmailheaderfield|null} */
-		// @ts-expect-error
-		const expandedFromBox = document.getElementById("expandedfromBox");
+		const favicon = new DkimFavicon(document);
+		// eslint-disable-next-line no-extra-parens
+		const expandedFromBox = /** @type {expandedfromBox?} */ (document.getElementById("expandedfromBox"));
 		if (!expandedFromBox) {
 			throw Error("Could not find the expandedFromBox element");
 		}
 
-		expandedFromBox.prepend(headerRow.element);
+		// Add the favicon.
+		if ("recipientsList" in expandedFromBox) {
+			// TB >=102
+			const hboxWrapper = document.createElement("div");
+			favicon.element._hboxWrapper = hboxWrapper;
+			hboxWrapper.style.display = "flex";
+			hboxWrapper.style.alignItems = "center";
 
-		// The tooltip is reused, and wherefore can not defined directly under the favicon
-		expandedFromBox.longEmailAddresses.prepend(headerRow._dkimTooltipFrom.element);
+			favicon.element.style.marginInlineEnd = "var(--message-header-field-offset)";
+
+			hboxWrapper.appendChild(favicon.element);
+			wrap(expandedFromBox.recipientsList, hboxWrapper);
+		} else {
+			// TB <102
+			expandedFromBox.prepend(favicon.element);
+		}
+
+		// Add the tooltip used by the favicon and the from address.
+		// As the tooltip is reused, it can not be defined directly under the favicon.
+		if ("longEmailAddresses" in expandedFromBox) {
+			// TB <102
+			expandedFromBox.longEmailAddresses.prepend(favicon._dkimTooltipFrom.element);
+		} else {
+			// TB >=102
+			expandedFromBox.prepend(favicon._dkimTooltipFrom.element);
+		}
 	}
 
 	/**
 	 * Remove the DKIM favicon from a given document.
 	 *
-	 * @static
 	 * @param {Document} document
 	 * @returns {void}
-	 * @memberof DkimFavicon
 	 */
 	static remove(document) {
 		const favicon = DkimFavicon.get(document);
 		if (favicon) {
+			if (favicon.element._hboxWrapper) {
+				unwrap(favicon.element._hboxWrapper);
+			}
 			favicon.element.remove();
 			favicon._dkimTooltipFrom.element.remove();
 		}
@@ -670,36 +694,53 @@ class DkimFavicon {
  */
 class DkimFromAddress {
 	/**
-	 * Get the element containing the from address (without the following star).
+	 * Get the elements containing the from address (without the following star).
+	 * Can return multiple elements, as newer Thunderbird version have
+	 * both a single line and a multi line from address.
 	 *
-	 * @static
 	 * @private
 	 * @param {Document} document
-	 * @returns {XULElement?}
+	 * @returns {HTMLElement[]}
 	 */
 	static _getFromAddress(document) {
-		/** @type {MozMailMultiEmailheaderfield?} */
-		// @ts-expect-error
-		const expandedFromBox = document.getElementById("expandedfromBox");
+		// TB >=102
+		const fromRecipient0Display = document.getElementById("fromRecipient0Display");
+		if (fromRecipient0Display) {
+			// eslint-disable-next-line no-extra-parens
+			const fromRecipient0 = /** @type {HeaderRecipient?} */ (document.getElementById("fromRecipient0"));
+			if (!fromRecipient0) {
+				console.warn("DKIM: multi line from address not found (no fromRecipient0)");
+			} else if (!fromRecipient0.multiLine) {
+				console.warn("DKIM: multi line from address not found (fromRecipient0 has no multiLine)");
+			} else {
+				return [fromRecipient0Display, fromRecipient0.multiLine];
+			}
+			return [fromRecipient0Display];
+		}
+
+		// TB <102
+		// eslint-disable-next-line no-extra-parens
+		const expandedFromBox = /** @type {expandedfromBox?} */ (document.getElementById("expandedfromBox"));
 		if (!expandedFromBox) {
 			console.debug("DKIM: from address not found (no expandedfromBox)");
-			return null;
+			return [];
 		}
-		/** @type {XULElement?} */
-		// @ts-expect-error
-		const mailEmailadress = expandedFromBox.emailAddresses.firstChild;
+		if (!("emailAddresses" in expandedFromBox)) {
+			console.debug("DKIM: from address not found (no expandedFromBox.emailAddresses)");
+			return [];
+		}
+		const mailEmailadress = expandedFromBox.emailAddresses.firstElementChild;
 		if (!mailEmailadress) {
-			console.debug("DKIM: from address not found (no firstChild)");
-			return null;
+			console.debug("DKIM: from address not found (no firstElementChild)");
+			return [];
 		}
-		/** @type {XULElement|undefined} */
-		// @ts-expect-error
 		const emailValue = mailEmailadress.getElementsByClassName("emaillabel")[0];
 		if (!emailValue) {
 			console.debug("DKIM: from address not found (no emaillabel)");
-			return null;
+			return [];
 		}
-		return emailValue;
+		// eslint-disable-next-line no-extra-parens
+		return [/** @type {HTMLElement} */ (emailValue)];
 	}
 
 	/**
@@ -711,45 +752,49 @@ class DkimFromAddress {
 	 * @returns {void}
 	 */
 	static setHighlightColor(document, color, backgroundColor) {
-		const emailValue = this._getFromAddress(document);
-		if (!emailValue) {
+		const emailValues = this._getFromAddress(document);
+		if (!emailValues) {
 			return;
 		}
-		emailValue.style.borderRadius = "3px";
-		emailValue.style.color = color;
-		emailValue.style.backgroundColor = backgroundColor;
+		for (const emailValue of emailValues) {
+			emailValue.style.borderRadius = "3px";
+			emailValue.style.color = color;
+			emailValue.style.backgroundColor = backgroundColor;
+		}
 	}
 
 	/**
-	 * Set whether the DKIM heder should be shown.
+	 * Set whether the DKIM tooltip should be shown.
 	 *
 	 * @param {Document} document
 	 * @param {boolean} show
 	 * @returns {void}
 	 */
 	static showTooltip(document, show) {
-		const emailValue = this._getFromAddress(document);
-		if (!emailValue) {
+		const emailValues = this._getFromAddress(document);
+		if (!emailValues) {
 			return;
 		}
-		if (show) {
-			// save current tooltip if set
-			const tooltiptext = emailValue.getAttribute("tooltiptext");
-			if (tooltiptext) {
-				emailValue.setAttribute("tooltiptextSaved", tooltiptext);
-			}
-			emailValue.removeAttribute("tooltiptext");
-			// set DKIM tooltip
-			emailValue.setAttribute("tooltip", DkimFavicon.idTooltip);
-		} else {
-			if (emailValue.getAttribute("tooltip") === DkimFavicon.idTooltip) {
-				// remove DKIM tooltip
-				emailValue.removeAttribute("tooltip");
-				// restore saved tooltip
-				const tooltiptextSaved = emailValue.getAttribute("tooltiptextSaved");
-				if (tooltiptextSaved) {
-					emailValue.setAttribute("tooltiptext", tooltiptextSaved);
-					emailValue.removeAttribute("tooltiptextSaved");
+		for (const emailValue of emailValues) {
+			if (show) {
+				// save current tooltip if set
+				const tooltiptext = emailValue.getAttribute("tooltiptext");
+				if (tooltiptext) {
+					emailValue.setAttribute("tooltiptextSaved", tooltiptext);
+				}
+				emailValue.removeAttribute("tooltiptext");
+				// set DKIM tooltip
+				emailValue.setAttribute("tooltip", DkimFavicon.idTooltip);
+			} else {
+				if (emailValue.getAttribute("tooltip") === DkimFavicon.idTooltip) {
+					// remove DKIM tooltip
+					emailValue.removeAttribute("tooltip");
+					// restore saved tooltip
+					const tooltiptextSaved = emailValue.getAttribute("tooltiptextSaved");
+					if (tooltiptextSaved) {
+						emailValue.setAttribute("tooltiptext", tooltiptextSaved);
+						emailValue.removeAttribute("tooltiptextSaved");
+					}
 				}
 			}
 		}
@@ -781,7 +826,6 @@ class DkimResetMessageListener {
 	 * Should not be called directly, use the static register() instead.
 	 *
 	 * @param {Window} window
-	 * @memberof DkimResetMessageListener
 	 */
 	constructor(window) {
 		this.window = window;
@@ -790,10 +834,8 @@ class DkimResetMessageListener {
 	/**
 	 * Create and register a DkimResetMessageListener.
 	 *
-	 * @static
 	 * @param {Window} window
 	 * @returns {void}
-	 * @memberof DkimResetMessageListener
 	 */
 	static register(window) {
 		if (DkimResetMessageListener._mapping.has(window)) {
@@ -807,10 +849,8 @@ class DkimResetMessageListener {
 	/**
 	 * Unregister a DkimResetMessageListener.
 	 *
-	 * @static
 	 * @param {Window} window
 	 * @returns {void}
-	 * @memberof DkimResetMessageListener
 	 */
 	static unregister(window) {
 		const listener = DkimResetMessageListener._mapping.get(window);
@@ -830,7 +870,6 @@ class DkimResetMessageListener {
 	/**
 	 * Reset the header in a specific document.
 	 *
-	 * @static
 	 * @param {Document} document
 	 * @returns {void}
 	 */
@@ -843,8 +882,12 @@ class DkimResetMessageListener {
 	}
 
 	onStartHeaders() {
-		const document = this.window.document;
-		DkimResetMessageListener.reset(document);
+		try {
+			const document = this.window.document;
+			DkimResetMessageListener.reset(document);
+		} catch (error) {
+			console.error("DKIM: Error in onStartHeaders:", error);
+		}
 	}
 	// eslint-disable-next-line no-empty-function
 	onEndHeaders() { }
@@ -906,7 +949,26 @@ this.dkimHeader = class extends ExtensionCommon.ExtensionAPI {
 	paint(window) {
 		const { document } = window;
 		DkimHeaderRow.add(document);
-		window.syncGridColumnWidths();
+		try {
+			if (window.syncGridColumnWidths) {
+				// TB <102
+				window.syncGridColumnWidths();
+			} else if (window.updateExpandedView) {
+				// TB >=102
+				// Calling `gMessageHeader.syncLabelsColumnWidths()` directly is not possible,
+				// as `gMessageHeader` is not part of the `window` object.
+
+				// When viewing messages in a window, `gFolderDisplay` is defined only in the first opened window.
+				// A missing `gFolderDisplay` will result in `updateExpandedView()` to fail.
+				if (window.gFolderDisplay) {
+					window.updateExpandedView();
+				}
+			} else {
+				console.warn("DKIM: Function to sync header column widths not found.");
+			}
+		} catch (error) {
+			console.warn("DKIM: Function to sync header column failed:", error);
+		}
 		DkimFavicon.add(document);
 	}
 
