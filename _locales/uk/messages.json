@@ -301,7 +301,7 @@
 	},
 	"DKIM_SIGWARNING_UNSIGNED_HEADER": {
 		"message": "Заголовок '$1' не підписаний",
-		"description": "Warding if an important header is not signed"
+		"description": "Warning if an important header is not signed"
 	},
 	// JSDNS
 	"TOO_MANY_HOPS": {
