@@ -1057,6 +1057,7 @@ class DkimSignature {
 			"Content-ID",
 			"Content-Description",
 		];
+
 		// We would like Reply-To to be in the recommended list.
 		// As some bigger domains violate this, we only enforce it if the Reply-To is not in the signing domain.
 		const replyTo = this._msg.headerFields.get("reply-to");
@@ -1268,7 +1269,6 @@ class DkimSignature {
 		await this._verifySignature(dkimKey.p);
 
 		// return result
-		log.trace("Everything is fine");
 		const verification_result = {
 			version: "2.0",
 			result: "SUCCESS",
@@ -1315,7 +1315,7 @@ export default class Verifier {
 				hideFail: e.errorType === "DKIM_SIGERROR_KEY_TESTMODE",
 			};
 
-			log.warn(e);
+			log.warn("Error verifying the signature", e);
 
 			return result;
 		}
@@ -1379,7 +1379,6 @@ export default class Verifier {
 				log.debug(`Exception on DKIM-Signature ${iDKIMSignatureIdx + 1}`);
 			}
 
-			log.trace(`Adding DKIM-Signature ${iDKIMSignatureIdx + 1} result to result list`);
 			sigResults.push(sigRes);
 		}
 
@@ -1434,4 +1433,3 @@ export default class Verifier {
 		return promise;
 	}
 }
-

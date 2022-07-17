@@ -671,7 +671,6 @@ export default class SignRules {
 			if (!addrIsInDomain(fromAddress, sdid) &&
 				prefs["policy.signRules.autoAddRule.onlyIfFromAddressInSDID"]
 			) {
-				log.trace("fromAddress is not in SDID");
 				return;
 			}
 

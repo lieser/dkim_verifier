@@ -175,8 +175,6 @@ export default class ArhParser {
  * @returns {ArhResInfo|null} Parsed resinfo
  */
 function parseResInfo(str, relaxedParsing, token) {
-	log.trace("parse str: ", str);
-
 	let reg_match;
 	/** @type {ArhResInfo} */
 	const res = {};
@@ -260,7 +258,6 @@ function parseResInfo(str, relaxedParsing, token) {
 		property[reg_match[2]] = decodeBinaryString(value);
 	}
 
-	log.trace("parseResInfo res:", res);
 	return res;
 }
 
@@ -308,7 +305,6 @@ class RefString {
 function match(str, pattern, token) {
 	const reg_match = match_o(str, pattern, token);
 	if (reg_match === null) {
-		log.trace("str to match against:", JSON.stringify(str));
 		throw new Error("Parsing error");
 	}
 	return reg_match;
@@ -333,7 +329,6 @@ function match_o(str, pattern, token) {
 	if (reg_match === null || !reg_match[0]) {
 		return null;
 	}
-	log.trace("matched: ", JSON.stringify(reg_match[0]));
 	str.value = str.substr(reg_match[0].length);
 	return reg_match;
 }
