@@ -4,12 +4,12 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased
+## 5.1.0 (2022-07-17)
 
 ### Enhancements
 
 - Added heuristic to detect maliciously added unsigned headers (#102).
-- Warn about unsigned headers that are recommended to be signed (#102, #277).
+- Configurable option to warn about unsigned headers that are recommended to be signed (#102, #277).
 - Improved theming of header icon in Thunderbird 102.
 - Authentication-Results header: Prefer to show failure results that include a reason and are related to the sending domain (#247).
 
