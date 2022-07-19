@@ -113,3 +113,16 @@ Copyright 2005 Joshua Tauberer <http://razor.occams.info>
 
 Feel free to use this file however you want, but
 credit would be nice.
+
+*******************************************************************************
+*******************************************************************************
+tweetnacl-js `nacl-fast.js` `nacl-util.js`
+
+Site:
+https://github.com/dchest/tweetnacl-js
+
+Authors:
+thirdparty/tweetnacl/AUTHORS.md
+
+License (The Unlicense):
+thirdparty/tweetnacl/LICENSE
