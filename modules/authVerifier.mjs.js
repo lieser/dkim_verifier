@@ -552,6 +552,35 @@ function sortSignatures(signatures, from, listId) {
 		return 0;
 	}
 
+	/**
+	 * Compare the error reason of two signatures.
+	 *
+	 * @param {VerifierModule.dkimSigResultV2} sig1
+	 * @param {VerifierModule.dkimSigResultV2} sig2
+	 * @returns {number}
+	 */
+	function error_compare(sig1, sig2) {
+		if (sig1.result !== "PERMFAIL") {
+			return 0;
+		}
+		if (sig1.errorType) {
+			// sig1 has an error type
+			if (sig2.errorType) {
+				// both signatures have an error type
+				return 0;
+			}
+			// sig2 has no error type
+			return -1;
+		}
+		// sig1 has no error type
+		if (sig2.errorType) {
+			// sig2 has an error type
+			return 1;
+		}
+		// both signatures have no error type
+		return 0;
+	}
+
 	signatures.sort(function (sig1, sig2) {
 		let cmp;
 		cmp = result_compare(sig1, sig2);
@@ -563,6 +592,10 @@ function sortSignatures(signatures, from, listId) {
 			return cmp;
 		}
 		cmp = sdid_compare(sig1, sig2);
+		if (cmp !== 0) {
+			return cmp;
+		}
+		cmp = error_compare(sig1, sig2);
 		if (cmp !== 0) {
 			return cmp;
 		}
@@ -587,18 +620,6 @@ function arhDKIM_to_dkimSigResultV2(arhDKIM) {
 		case "pass": {
 			dkimSigResult.result = "SUCCESS";
 			dkimSigResult.warnings = [];
-			let sdid = arhDKIM.propertys.header.d;
-			let auid = arhDKIM.propertys.header.i;
-			if (sdid || auid) {
-				if (!sdid) {
-					// @ts-expect-error
-					sdid = getDomainFromAddr(auid);
-				} else if (!auid) {
-					auid = `@${sdid}`;
-				}
-				dkimSigResult.sdid = sdid;
-				dkimSigResult.auid = auid;
-			}
 			break;
 		}
 		case "fail":
@@ -622,6 +643,18 @@ function arhDKIM_to_dkimSigResultV2(arhDKIM) {
 			break;
 		default:
 			throw new DKIM_InternalError(`invalid dkim result in arh: ${arhDKIM.result}`);
+	}
+	let sdid = arhDKIM.propertys.header.d;
+	let auid = arhDKIM.propertys.header.i;
+	if (sdid || auid) {
+		if (!sdid) {
+			// @ts-expect-error
+			sdid = getDomainFromAddr(auid);
+		} else if (!auid) {
+			auid = `@${sdid}`;
+		}
+		dkimSigResult.sdid = sdid;
+		dkimSigResult.auid = auid;
 	}
 	return dkimSigResult;
 }

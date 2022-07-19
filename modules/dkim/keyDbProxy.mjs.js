@@ -19,7 +19,7 @@ export default class KeyDbProxy {
 	/**
 	 * Get all stored keys.
 	 *
-	 * @type {typeof import("./keyStore.mjs.js").KeyDb["getKeys"]}
+	 * @type {typeof import("./keyStore.mjs.js").KeyDb.getKeys}
 	 */
 	static getKeys() {
 		/** @type {RuntimeMessage.KeyDb.getKeys} */

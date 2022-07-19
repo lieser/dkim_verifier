@@ -152,14 +152,14 @@ async function loadDefaultRules() {
 		/** @type {{rules: {domain: string, addr: string, sdid: string, ruletype: string, priority: string}[]}} */
 		const signersDefaultData = JSON.parse(signersDefaultStr);
 		defaultRules = signersDefaultData.rules.map(function (rule) {
-			/** @type {number=} */
+			/** @type {number|undefined} */
 			// @ts-expect-error
 			const type = RULE_TYPE[rule.ruletype];
 			if (type === undefined) {
 				throw new Error(`unknown rule type ${rule.ruletype}`);
 			}
 
-			/** @type {number=} */
+			/** @type {number|undefined} */
 			// @ts-expect-error
 			const priority = PRIORITY[rule.priority];
 			if (priority === undefined) {
@@ -192,7 +192,7 @@ async function loadUserRules() {
 	}
 	userRulesLoaded = new Deferred();
 	try {
-		/** @type {DkimStoredUserSignRules=} */
+		/** @type {DkimStoredUserSignRules|undefined} */
 		const storedUserRules = (await browser.storage.local.get("signRulesUser")).signRulesUser;
 		if (storedUserRules !== undefined) {
 			userRulesMaxId = storedUserRules.maxId;
@@ -272,7 +272,7 @@ async function checkIfShouldBeSigned(fromAddress, listId, dmarc) {
 			return true;
 		}));
 	}
-	/** @type {DkimSignRuleDefault|DkimSignRuleUser=} */
+	/** @type {DkimSignRuleDefault|DkimSignRuleUser|undefined} */
 	const rule = matchedRules.sort((a, b) => b.priority - a.priority)[0];
 	if (!rule) {
 		if (dmarc) {
@@ -671,7 +671,6 @@ export default class SignRules {
 			if (!addrIsInDomain(fromAddress, sdid) &&
 				prefs["policy.signRules.autoAddRule.onlyIfFromAddressInSDID"]
 			) {
-				log.trace("fromAddress is not in SDID");
 				return;
 			}
 

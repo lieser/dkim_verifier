@@ -8,7 +8,7 @@ This file contains the information which versions of the third-party libraries a
 
 ## tweetnacl-es6
 
-Name: tweetnacl-es6
-Source: npm
-Version: 1.0.3
-Download URL: <https://registry.npmjs.org/tweetnacl-es6/-/tweetnacl-es6-1.0.3.tgz>
+- Name: tweetnacl-es6
+- Source: npm
+- Version: 1.0.3
+- Download URL: <https://registry.npmjs.org/tweetnacl-es6/-/tweetnacl-es6-1.0.3.tgz>

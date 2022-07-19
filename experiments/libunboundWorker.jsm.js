@@ -133,7 +133,7 @@ let libDeps = [];
 let ctx = ctypes.voidptr_t();
 // http://unbound.net/documentation/libunbound.html
 /** @typedef {ctypes.CDataPointerType<ub_ctx_struct>} p_ub_ctx */
-/** @type {ub_ctx_struct=} */
+/** @type {ub_ctx_struct|undefined} */
 let ub_ctx;
 /** @typedef {ctypes.CDataPointerType<ub_result_struct>} p_ub_result */
 /** @typedef {ctypes.CDataPointerType<ctypes.PointerTypeI<ub_result_struct>>} pp_ub_result */
@@ -157,7 +157,7 @@ let ub_ctx_debuglevel;
 let ub_resolve;
 /** @type {(result: p_ub_result)=>void} */
 let ub_resolve_free;
-/** @type {(err: number)=>ReturnType<ctypes["char"]["ptr"]>} */
+/** @type {(err: number)=>ReturnType<typeof ctypes.char.ptr>} */
 let ub_strerror;
 
 /**

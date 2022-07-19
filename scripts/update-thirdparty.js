@@ -19,10 +19,10 @@ async function writePackageInfo(packageLock, packageName) {
 	}
 	const readme =
 		`\n## ${packageName}\n\n` +
-		`Name: ${packageName}\n` +
-		`Source: npm\n` +
-		`Version: ${packageInfo.version}\n` +
-		`Download URL: <${packageInfo.resolved}>\n`;
+		`- Name: ${packageName}\n` +
+		`- Source: npm\n` +
+		`- Version: ${packageInfo.version}\n` +
+		`- Download URL: <${packageInfo.resolved}>\n`;
 	await fs.appendFile("thirdparty/README.md", readme);
 }
 

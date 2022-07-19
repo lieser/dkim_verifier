@@ -35,7 +35,7 @@ var { OS } = ChromeUtils.import("resource://gre/modules/osfile.jsm");
  *           type code asked for
  * @property {number} qclass
  *           class code (CLASS IN (internet))
- * @property {object[]} data
+ * @property {any[]} data
  *           Array of converted rdata items. Empty for unsupported RR types.
  *           Currently supported types: TXT
  * @property {number[][]} data_raw
