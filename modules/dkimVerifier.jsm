@@ -58,6 +58,8 @@ var RSA = {};
 // for jsbn.js
 RSA.navigator = {};
 RSA.navigator.appName = "Netscape";
+var NaCl = {};
+var NaClUtil = {};
 
 // ASN.1
 Services.scriptloader.loadSubScript("resource://dkim_verifier/asn1hex-1.1.js",
@@ -74,7 +76,9 @@ Services.scriptloader.loadSubScript("resource://dkim_verifier/rsa.js",
                                     RSA, "UTF-8" /* The script's encoding */);
 Services.scriptloader.loadSubScript("resource://dkim_verifier/rsasign-1.2.js",
                                     RSA, "UTF-8" /* The script's encoding */);
-
+// ed25519
+Services.scriptloader.loadSubScript("resource://dkim_verifier_3p/tweetnacl/nacl-util.js", NaClUtil, "UTF-8");
+Services.scriptloader.loadSubScript("resource://dkim_verifier_3p/tweetnacl/nacl-fast.js", NaCl, "UTF-8");
 
 // @ts-ignore
 const PREF_BRANCH = "extensions.dkim_verifier.";
@@ -271,6 +275,7 @@ var Verifier = (function() {
 	 * @param {String} key
 	 *        b64 encoded RSA key in ASN.1 DER format
 	 * @param {String} str
+	 *        plain string to be verified 
 	 * @param {String} signature
 	 *        b64 encoded signature
 	 * @param {dkimSigWarning[]} warnings - out param
@@ -348,6 +353,23 @@ var Verifier = (function() {
 
 		// verify Signature
 		return rsa.verify(str, RSA.b64tohex(signature), keyInfo);
+	}
+	
+	/**
+	 * Verifies an ed25519 signature.
+	 *
+	 * @param {String} key
+	 *        b64 encoded ed25519 key
+	 * @param {String} str
+	 *        b64 encoded string to be verified
+	 * @param {String} signature
+	 *        b64 encoded signature
+	 * @param {dkimSigWarning[]} warnings - out param
+	 * @param {Object} [keyInfo] - out param
+	 * @return {Boolean}
+	 */
+	function verifyED25519Sig(key, str, signature, warnings, keyInfo = {}) {		
+		return NaCl.nacl.sign.detached.verify(NaClUtil.nacl.util.decodeBase64(str), NaClUtil.nacl.util.decodeBase64(signature), NaClUtil.nacl.util.decodeBase64(key));
 	}
 
 	/**
@@ -498,8 +520,8 @@ var Verifier = (function() {
 		}
 
 		// get signature algorithm (plain-text;REQUIRED)
-		// currently only "rsa-sha1" or "rsa-sha256"
-		var sig_a_tag_k = "(rsa|[A-Za-z](?:[A-Za-z]|[0-9])*)";
+		// currently only "rsa-sha1" or "rsa-sha256" or "ed25519-sha256"
+		var sig_a_tag_k = "(rsa|ed25519|[A-Za-z](?:[A-Za-z]|[0-9])*)";
 		var sig_a_tag_h = "(sha1|sha256|[A-Za-z](?:[A-Za-z]|[0-9])*)";
 		var sig_a_tag_alg = sig_a_tag_k+"-"+sig_a_tag_h;
 		var algorithmTag = parseTagValue(tagMap, "a", sig_a_tag_alg);
@@ -509,7 +531,7 @@ var Verifier = (function() {
 		if (!algorithmTag[1] || !algorithmTag[2]) {
 			throw new DKIM_InternalError("Error matching the a-tag.");
 		}
-		if (algorithmTag[0] === "rsa-sha256") {
+		if (algorithmTag[0] === "ed25519-sha256" || algorithmTag[0] === "rsa-sha256") {
 			DKIMSignature.a_sig = algorithmTag[1];
 			DKIMSignature.a_hash = algorithmTag[2];
 		} else if (algorithmTag[0] === "rsa-sha1") {
@@ -831,10 +853,12 @@ var Verifier = (function() {
 		} 
 		
 		// get Key type (plain-text; OPTIONAL, default is "rsa")
-		var key_k_tag_type = "(?:rsa|"+hyphenated_word+")";
+		var key_k_tag_type = "(?:rsa|ed25519|"+hyphenated_word+")";
 		var keyTypeTag = parseTagValue(tagMap, "k", key_k_tag_type, 2);
-		if (keyTypeTag === null || keyTypeTag[0] === "rsa") {
+		if (keyTypeTag === null) {
 			DKIMKey.k = "rsa";
+		} else if (keyTypeTag[0] === "ed25519" || keyTypeTag[0] === "rsa") {
+			DKIMKey.k = keyTypeTag[0];
 		} else {
 			throw new DKIM_SigError("DKIM_SIGERROR_KEY_UNKNOWN_K");
 		}
@@ -1146,7 +1170,7 @@ var Verifier = (function() {
 			log.debug("Warning: DKIM_SIGWARNING_FUTURE");
 		}
 		
-		// Compute the Message Hashe for the body
+		// Compute the Message Hash for the body
 		var bodyHash = computeBodyHash(msg, DKIMSignature);
 		log.debug("computed body hash: " + bodyHash);
 		
@@ -1209,7 +1233,23 @@ var Verifier = (function() {
 
 		// verify Signature
 		var keyInfo = {};
-		var isValid = verifyRSASig(DKIMSignature.DKIMKey.p, headerHashInput,
+		
+		// Selecting verification function depending on used signature algorithm
+		var verifyFunction = null;
+		switch (DKIMSignature.a_sig) {
+			case "ed25519":
+				verifyFunction = verifyED25519Sig;
+				headerHashInput = dkim_hash(headerHashInput, DKIMSignature.a_hash, "b64");
+				break;
+			case "rsa":	
+				verifyFunction = verifyRSASig;
+				break;
+			default:
+			// this should never happen, as it's already handled in newDKIMSignature
+				throw new DKIM_SigError("DKIM_SIGERROR_UNKNOWN_A");
+		}
+
+		var isValid = verifyFunction(DKIMSignature.DKIMKey.p, headerHashInput,
 			DKIMSignature.b, DKIMSignature.warnings, keyInfo);
 		if (!isValid) {
 			if (prefs.getIntPref("error.contentTypeCharsetAddedQuotes.treatAs") > 0) {
@@ -1222,8 +1262,9 @@ var Verifier = (function() {
 				log.debug("Header hash input:\n" + headerHashInput);
 				// verify Signature
 				keyInfo = {};
-				isValid = verifyRSASig(DKIMSignature.DKIMKey.p, headerHashInput,
+				isValid = verifyFunction(DKIMSignature.DKIMKey.p, headerHashInput,
 					DKIMSignature.b, DKIMSignature.warnings, keyInfo);
+					
 				if (!isValid) {
 					throw new DKIM_SigError("DKIM_SIGERROR_BADSIG");
 				} else if (prefs.getIntPref("error.contentTypeCharsetAddedQuotes.treatAs") === 1) {
