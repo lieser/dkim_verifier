@@ -2401,6 +2401,18 @@
 			"sdid": "zendesk.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "zone.ee",
+			"addr": "*",
+			"sdid": "zone.ee",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "zone.fi",
+			"addr": "*",
+			"sdid": "zone.fi",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
 		}
 	]
 }
