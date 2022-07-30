@@ -82,6 +82,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "aliexpress.com",
+			"addr": "*@mail.aliexpress.com",
+			"sdid": "aliexpress.com mail.aliexpress.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+ 		}, {
 			"domain": "altroconsumo.it",
 			"addr": "*",
 			"sdid": "altroconsumo.it",
@@ -390,7 +396,7 @@
 		}, {
 			"domain": "cacf-festgeld.de",
 			"addr": "*",
-			"sdid": "cacf-festgeld.de",
+			"sdid": "cacf-festgeld.de inxserver.com",
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -2259,6 +2265,12 @@
 			"sdid": "voelkner.de",
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_NEUTRAL"
+		}, {
+			"domain": "watchlistmailings.de",
+			"addr": "*",
+			"sdid": "watchlistmailings.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
 		}, {
 			"domain": "wetransfer.com",
 			"addr": "*",
