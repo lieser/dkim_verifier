@@ -394,7 +394,7 @@
 		}, {
 			"domain": "cacf-festgeld.de",
 			"addr": "*",
-			"sdid": "cacf-festgeld.de",
+			"sdid": "cacf-festgeld.de inxserver.com",
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -2263,6 +2263,12 @@
 			"sdid": "voelkner.de",
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_NEUTRAL"
+		}, {
+			"domain": "watchlistmailings.de",
+			"addr": "*",
+			"sdid": "watchlistmailings.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
 		}, {
 			"domain": "wetransfer.com",
 			"addr": "*",
