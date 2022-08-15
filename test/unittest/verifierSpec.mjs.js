@@ -10,7 +10,6 @@
 // @ts-check
 /* eslint no-unused-vars: ["error", { "varsIgnorePattern": "VerifierModule" }]*/
 
-import "../helpers/dnsStub.mjs.js";
 import "../helpers/initWebExtensions.mjs.js";
 import Verifier, * as VerifierModule from "../../modules/dkim/verifier.mjs.js";
 import prefs, { BasePreferences } from "../../modules/preferences.mjs.js";

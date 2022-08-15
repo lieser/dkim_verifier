@@ -231,7 +231,7 @@ class DkimSignatureHeader {
 	 */
 	static _parseSignatureAlgorithms(tagMap, warnings) {
 		// get signature algorithm (plain-text;REQUIRED)
-		// currently only "rsa-sha1" or "rsa-sha256"
+		// currently only "rsa-sha1" or "rsa-sha256" or "ed25519-sha256"
 		const sig_a_tag_k = "(rsa|ed25519|[A-Za-z](?:[A-Za-z]|[0-9])*)";
 		const sig_a_tag_h = "(sha1|sha256|[A-Za-z](?:[A-Za-z]|[0-9])*)";
 		const sig_a_tag_alg = `${sig_a_tag_k}-${sig_a_tag_h}`;
@@ -1338,9 +1338,9 @@ export default class Verifier {
 
 		if (e instanceof DKIM_InternalError) {
 			result.errorType = e.errorType;
-			log.error(e);
+			log.error("Internal error during DKIM verification:", e);
 		} else {
-			log.fatal(e);
+			log.fatal("Error during DKIM verification:", e);
 		}
 
 		return result;
