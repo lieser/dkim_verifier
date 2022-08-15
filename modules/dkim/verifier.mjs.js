@@ -1061,7 +1061,15 @@ class DkimSignature {
 		// We would like Reply-To to be in the recommended list.
 		// As some bigger domains violate this, we only enforce it if the Reply-To is not in the signing domain.
 		const replyTo = this._msg.headerFields.get("reply-to");
-		if (replyTo && replyTo[0] && addrIsInDomain(MsgParser.parseReplyToHeader(replyTo[0]), this._header.d)) {
+		let replyToAddress;
+		if (replyTo && replyTo[0]) {
+			try {
+				replyToAddress = MsgParser.parseReplyToHeader(replyTo[0]);
+			} catch (error) {
+				log.warn("Ignoring error in parsing of Reply-To header:", error);
+			}
+		}
+		if (replyToAddress && addrIsInDomain(replyToAddress, this._header.d)) {
 			desired.push("Reply-To");
 		} else {
 			recommended.push("Reply-To");

@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+### Fixes
+
+- Invalid Reply-To header is now ignored instead of resulting in internal error.
+
 ### Other
 
 - updated default rules and favicons (#323, #326, #327)
