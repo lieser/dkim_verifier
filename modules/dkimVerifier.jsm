@@ -62,22 +62,22 @@ var NaCl = {};
 var NaClUtil = {};
 
 // ASN.1
-Services.scriptloader.loadSubScript("resource://dkim_verifier/asn1hex-1.1.js",
+Services.scriptloader.loadSubScript("resource://dkim_verifier_3p/rsasign/asn1hex-1.1.js",
                                     RSA, "UTF-8" /* The script's encoding */);
 // base64 converter
-Services.scriptloader.loadSubScript("resource://dkim_verifier/base64.js",
+Services.scriptloader.loadSubScript("resource://dkim_verifier_3p/jsbn/base64.js",
                                     RSA, "UTF-8" /* The script's encoding */);
 // RSA
-Services.scriptloader.loadSubScript("resource://dkim_verifier/jsbn.js",
+Services.scriptloader.loadSubScript("resource://dkim_verifier_3p/jsbn/jsbn.js",
                                     RSA, "UTF-8" /* The script's encoding */);
-Services.scriptloader.loadSubScript("resource://dkim_verifier/jsbn2.js",
+Services.scriptloader.loadSubScript("resource://dkim_verifier_3p/jsbn/jsbn2.js",
                                     RSA, "UTF-8" /* The script's encoding */);
-Services.scriptloader.loadSubScript("resource://dkim_verifier/rsa.js",
+Services.scriptloader.loadSubScript("resource://dkim_verifier_3p/jsbn/rsa.js",
                                     RSA, "UTF-8" /* The script's encoding */);
-Services.scriptloader.loadSubScript("resource://dkim_verifier/rsasign-1.2.js",
+Services.scriptloader.loadSubScript("resource://dkim_verifier_3p/rsasign/rsasign-1.2.js",
                                     RSA, "UTF-8" /* The script's encoding */);
 // ed25519
-Services.scriptloader.loadSubScript("resource://dkim_verifier_3p/tweetnacl/nacl-util.js", NaClUtil, "UTF-8");
+Services.scriptloader.loadSubScript("resource://dkim_verifier_3p/tweetnacl-util/nacl-util.js", NaClUtil, "UTF-8");
 Services.scriptloader.loadSubScript("resource://dkim_verifier_3p/tweetnacl/nacl-fast.js", NaCl, "UTF-8");
 
 // @ts-ignore

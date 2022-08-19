@@ -116,7 +116,7 @@ credit would be nice.
 
 *******************************************************************************
 *******************************************************************************
-tweetnacl-js `nacl-fast.js` `nacl-util.js`
+tweetnacl-js `nacl-fast.js`
 
 Site:
 https://github.com/dchest/tweetnacl-js
@@ -126,3 +126,16 @@ thirdparty/tweetnacl/AUTHORS.md
 
 License (The Unlicense):
 thirdparty/tweetnacl/LICENSE
+
+*******************************************************************************
+*******************************************************************************
+tweetnacl-util-js `nacl-util.js`
+
+Site:
+https://github.com/dchest/tweetnacl-util-js
+
+Authors:
+thirdparty/tweetnacl-util/AUTHORS.md
+
+License (The Unlicense):
+thirdparty/tweetnacl-util/LICENSE
