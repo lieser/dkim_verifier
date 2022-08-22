@@ -394,7 +394,7 @@
 		}, {
 			"domain": "cacf-festgeld.de",
 			"addr": "*",
-			"sdid": "cacf-festgeld.de",
+			"sdid": "cacf-festgeld.de inxserver.com",
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -560,6 +560,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "deutschlandcard.de",
+			"addr": "*@reply.deutschlandcard.de",
+			"sdid": "deutschlandcard.de reply.deutschlandcard.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
 			"domain": "dhl.com",
 			"addr": "*",
 			"sdid": "dhl.com",
@@ -713,6 +719,12 @@
 			"domain": "ebay-kleinanzeigen.de",
 			"addr": "*",
 			"sdid": "ebay-kleinanzeigen.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "eestipank.ee",
+			"addr": "*",
+			"sdid": "eestipank.ee",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -1394,6 +1406,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "lidlplus.de",
+			"addr": "*@mail.lidlplus.de",
+			"sdid": "lidlplus.de mail.lidlplus.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
 			"domain": "linkedin.com",
 			"addr": "*",
 			"sdid": "linkedin.com",
@@ -1457,6 +1475,12 @@
 			"domain": "mediamarkt.de",
 			"addr": "*",
 			"sdid": "mediamarkt.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "mein-grundeinkommen.de.png",
+			"addr": "*",
+			"sdid": "mein-grundeinkommen.de.png",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -1676,6 +1700,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "payback.de",
+			"addr": "*",
+			"sdid": "payback.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "payleven.de",
 			"addr": "*",
 			"sdid": "payleven.de",
@@ -1801,6 +1831,12 @@
 			"sdid": "yourbooking.qantas.com.au",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "quoka.de",
+			"addr": "*@reply.quoka.de",
+			"sdid": "quoka.de reply.quoka.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
 			"domain": "ratepay.de",
 			"addr": "*",
@@ -2264,6 +2300,18 @@
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_NEUTRAL"
 		}, {
+			"domain": "watchlistmailings.de",
+			"addr": "*",
+			"sdid": "watchlistmailings.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "weact.de",
+			"addr": "*",
+			"sdid": "weact.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "wetransfer.com",
 			"addr": "*",
 			"sdid": "wetransfer.com",
@@ -2399,6 +2447,18 @@
 			"domain": "zendesk.com",
 			"addr": "*",
 			"sdid": "zendesk.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "zone.ee",
+			"addr": "*",
+			"sdid": "zone.ee",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "zone.fi",
+			"addr": "*",
+			"sdid": "zone.fi",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}

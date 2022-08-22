@@ -76,7 +76,7 @@ async function onAccept() {
 		await SignRulesProxy.addRule(domain, listId, addr, sdid, ruleType, priority, enabled);
 		window.close();
 	} catch (exception) {
-		log.error(exception);
+		log.error("Error adding the user sign rule", exception);
 	}
 }
 

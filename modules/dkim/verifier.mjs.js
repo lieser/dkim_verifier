@@ -231,7 +231,7 @@ class DkimSignatureHeader {
 	 */
 	static _parseSignatureAlgorithms(tagMap, warnings) {
 		// get signature algorithm (plain-text;REQUIRED)
-		// currently only "rsa-sha1" or "rsa-sha256"
+		// currently only "rsa-sha1" or "rsa-sha256" or "ed25519-sha256"
 		const sig_a_tag_k = "(rsa|ed25519|[A-Za-z](?:[A-Za-z]|[0-9])*)";
 		const sig_a_tag_h = "(sha1|sha256|[A-Za-z](?:[A-Za-z]|[0-9])*)";
 		const sig_a_tag_alg = `${sig_a_tag_k}-${sig_a_tag_h}`;
@@ -1061,7 +1061,15 @@ class DkimSignature {
 		// We would like Reply-To to be in the recommended list.
 		// As some bigger domains violate this, we only enforce it if the Reply-To is not in the signing domain.
 		const replyTo = this._msg.headerFields.get("reply-to");
-		if (replyTo && replyTo[0] && addrIsInDomain(MsgParser.parseReplyToHeader(replyTo[0]), this._header.d)) {
+		let replyToAddress;
+		if (replyTo && replyTo[0]) {
+			try {
+				replyToAddress = MsgParser.parseReplyToHeader(replyTo[0]);
+			} catch (error) {
+				log.warn("Ignoring error in parsing of Reply-To header:", error);
+			}
+		}
+		if (replyToAddress && addrIsInDomain(replyToAddress, this._header.d)) {
 			desired.push("Reply-To");
 		} else {
 			recommended.push("Reply-To");
@@ -1330,9 +1338,9 @@ export default class Verifier {
 
 		if (e instanceof DKIM_InternalError) {
 			result.errorType = e.errorType;
-			log.error(e);
+			log.error("Internal error during DKIM verification:", e);
 		} else {
-			log.fatal(e);
+			log.fatal("Error during DKIM verification:", e);
 		}
 
 		return result;

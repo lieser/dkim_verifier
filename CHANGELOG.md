@@ -4,6 +4,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## 5.1.1 (2022-08-15)
+
+### Fixes
+
+- Invalid Reply-To header is now ignored instead of resulting in internal error.
+
+### Other
+
+- updated default rules and favicons (#323, #326, #327)
+
 ## 5.1.0 (2022-07-17)
 
 ### Enhancements

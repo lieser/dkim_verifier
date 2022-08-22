@@ -698,7 +698,7 @@ export default class SignRules {
 		})();
 		promise.then(null, function onReject(exception) {
 			// Failure!  We can inspect or report the exception.
-			log.fatal(exception);
+			log.fatal("Error adding an automatic rule:", exception);
 		});
 		return promise;
 	}

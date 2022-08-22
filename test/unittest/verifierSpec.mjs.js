@@ -10,7 +10,6 @@
 // @ts-check
 /* eslint no-unused-vars: ["error", { "varsIgnorePattern": "VerifierModule" }]*/
 
-import "../helpers/dnsStub.mjs.js";
 import "../helpers/initWebExtensions.mjs.js";
 import Verifier, * as VerifierModule from "../../modules/dkim/verifier.mjs.js";
 import prefs, { BasePreferences } from "../../modules/preferences.mjs.js";
@@ -205,6 +204,12 @@ describe("DKIM Verifier [unittest]", function () {
 				expect(res.signatures[0]?.result).to.be.equal("SUCCESS");
 				expect(res.signatures[0]?.warnings).to.be.an('array').
 					that.deep.includes({ name: "DKIM_SIGWARNING_UNSIGNED_HEADER", params: ["Reply-To"] });
+			});
+			it("Unsigned Reply-To header that is invalid", async function () {
+				const res = await verifyEmlFile("dkim/unsigned_header-reply_to-invalid.eml");
+				expect(res.signatures.length).to.be.equal(1);
+				expect(res.signatures[0]?.result).to.be.equal("SUCCESS");
+				expect(res.signatures[0]?.warnings).to.be.empty;
 			});
 		});
 	});
