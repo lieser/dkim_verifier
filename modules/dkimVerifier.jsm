@@ -4,13 +4,13 @@
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
  * Update done by RFC 8301 included https://tools.ietf.org/html/rfc8301
- * 
+ *
  * Version: 2.3.0 (18 Mai 2019)
- * 
+ *
  * Copyright (c) 2013-2019 Philippe Lieser
- * 
+ *
  * This software is licensed under the terms of the MIT License.
- * 
+ *
  * The above copyright and license notice shall be
  * included in all copies or substantial portions of the Software.
  */
@@ -86,7 +86,7 @@ const PREF_BRANCH = "extensions.dkim_verifier.";
 
 /**
  * The result of the verification (Version 1).
- * 
+ *
  * @typedef {Object} dkimResultV1
  * @property {String} version
  *           result version ("1.0" / "1.1")
@@ -115,7 +115,7 @@ const PREF_BRANCH = "extensions.dkim_verifier.";
 
 /**
  * The result of the verification of a single DKIM signature (Version 2).
- * 
+ *
  * @typedef {Object} dkimSigResultV2
  * @property {String} version
  *           result version ("2.0")
@@ -137,7 +137,7 @@ const PREF_BRANCH = "extensions.dkim_verifier.";
 
 /**
  * The result of the verification (Version 2).
- * 
+ *
  * @typedef {Object} dkimResultV2
  * @property {String} version
  *           result version ("2.0")
@@ -153,7 +153,7 @@ const PREF_BRANCH = "extensions.dkim_verifier.";
  */
 var Verifier = (function() {
 	"use strict";
-	
+
 	// set hash funktions used by rsasign-1.2.js
 	RSA.KJUR = {};
 	RSA.KJUR.crypto = {};
@@ -174,7 +174,7 @@ var Verifier = (function() {
  * preferences
  */
 	var prefs = Services.prefs.getBranch(PREF_BRANCH);
-	
+
  /*
  * private variables
  */
@@ -210,7 +210,7 @@ var Verifier = (function() {
 	 * wrapper for hash functions
 	 * hashAlgorithm: "md2", "md5", "sha1", "sha256", "sha384", "sha512"
 	 * outputFormat: "hex", "b64"
-	 * 
+	 *
 	 * from https://developer.mozilla.org/en-US/docs/XPCOM_Interface_Reference/nsICryptoHash
 	 */
 	function dkim_hash(str, hashAlgorithm, outputFormat) {
@@ -223,10 +223,10 @@ var Verifier = (function() {
 			for (var i = 0; i < str.length; i++) {
 				res[i] = str.charCodeAt(i) & 0xFF;
 			}
-			
+
 			return res;
 		}
-		
+
 		// return the two-digit hexadecimal code for a byte
 		function toHexString(charCode)
 		{
@@ -236,7 +236,7 @@ var Verifier = (function() {
 		var hasher = Components.classes["@mozilla.org/security/hash;1"].
 			createInstance(Components.interfaces.nsICryptoHash);
 		hasher.initWithString(hashAlgorithm);
-		
+
 /*
 		var converter = Components.classes["@mozilla.org/intl/scriptableunicodeconverter"].
 			createInstance(Components.interfaces.nsIScriptableUnicodeConverter);
@@ -247,9 +247,9 @@ var Verifier = (function() {
 */
 		// convert input str
 		var data = rstr2byteArray(str);
-		
+
 		hasher.update(data, data.length);
-		
+
 		switch (outputFormat) {
 			case "hex":
 				// true for base-64, false for binary data output
@@ -275,7 +275,10 @@ var Verifier = (function() {
 	 * @param {String} key
 	 *        b64 encoded RSA key in ASN.1 DER format
 	 * @param {String} str
-	 *        plain string to be verified 
+	 *        plain string to be verified
+	 * @param {String} hash_algo
+	 *        algorithm that should be used to calculate the hash
+	 *        (but is not used in this implementation)
 	 * @param {String} signature
 	 *        b64 encoded signature
 	 * @param {dkimSigWarning[]} warnings - out param
@@ -283,11 +286,11 @@ var Verifier = (function() {
 	 * @return {Boolean}
 	 * @throws DKIM_SigError
 	 */
-	function verifyRSASig(key, str, signature, warnings, keyInfo = {}) {
+	function verifyRSASig(key, str, hash_algo, signature, warnings, keyInfo = {}) {
 		// get RSA-key
 		/*
 		the rsa key must be in the following ASN.1 DER format
-		
+
 		SEQUENCE(2 elem) -- our posTopArray
 			SEQUENCE(2 elem)
 				OBJECT IDENTIFIER 1.2.840.113549.1.1.1 (Comment: PKCS #1; Description: rsaEncryption)
@@ -354,7 +357,7 @@ var Verifier = (function() {
 		// verify Signature
 		return rsa.verify(str, RSA.b64tohex(signature), keyInfo);
 	}
-	
+
 	/**
 	 * Verifies an ed25519 signature.
 	 *
@@ -362,22 +365,27 @@ var Verifier = (function() {
 	 *        b64 encoded ed25519 key
 	 * @param {String} str
 	 *        b64 encoded string to be verified
+	 * @param {String} hash_algo
+	 *        algorithm that should be used to calculate the hash
 	 * @param {String} signature
 	 *        b64 encoded signature
 	 * @param {dkimSigWarning[]} warnings - out param
 	 * @param {Object} [keyInfo] - out param
 	 * @return {Boolean}
 	 */
-	function verifyED25519Sig(key, str, signature, warnings, keyInfo = {}) {		
-		return NaCl.nacl.sign.detached.verify(NaClUtil.nacl.util.decodeBase64(str), NaClUtil.nacl.util.decodeBase64(signature), NaClUtil.nacl.util.decodeBase64(key));
+	function verifyED25519Sig(key, str, hash_algo, signature, warnings, keyInfo = {}) {
+		let hashedStr = dkim_hash(str, hash_algo, "b64");
+		return NaCl.nacl.sign.detached.verify(NaClUtil.nacl.util.decodeBase64(hashedStr),
+											NaClUtil.nacl.util.decodeBase64(signature),
+											NaClUtil.nacl.util.decodeBase64(key));
 	}
 
 	/**
 	 * Parses a Tag=Value list.
 	 * Specified in Section 3.2 of RFC 6376.
-	 * 
+	 *
 	 * @param {String} str
-	 * 
+	 *
 	 * @return {Map<String, String>|Number} Map
 	 *                       -1 if a tag-spec is ill-formed
 	 *                       -2 duplicate tag names
@@ -386,12 +394,12 @@ var Verifier = (function() {
 		var tval = "[!-:<-~]+";
 		var tag_name = "[A-Za-z][A-Za-z0-9_]*";
 		var tag_value = "(?:"+tval+"(?:("+pattWSP+"|"+pattFWS+")+"+tval+")*)?";
-		
+
 		// delete optional semicolon at end
 		if (str.charAt(str.length-1) === ";") {
 			str = str.substr(0, str.length-1);
 		}
-		
+
 		var array = str.split(";");
 		/** @type{Map<String, String>} */
 		var map = new Map();
@@ -410,29 +418,29 @@ var Verifier = (function() {
 			}
 			name = tmp[1];
 			value = tmp[2];
-			
+
 			// check that tag is no duplicate
 			if (map.has(name)) {
 				return -2;
 			}
-			
+
 			// store Tag=Value pair
 			map.set(name, value);
 		}
-		
+
 		return map;
 	}
-	
+
 	/**
 	 * Parse a tag value stored in a Map.
-	 * 
+	 *
 	 * @param {Map<String, String>} map
 	 * @param {String} tag_name name of the tag
 	 * @param {String} pattern_tag_value Pattern for the tag-value
 	 * @param {Number} [expType=1] Type of exception to throw. 1 for DKIM header, 2 for DKIM key, 3 for general.
-	 * 
+	 *
 	 * @return {RegExpMatchArray|Null} The match from the RegExp if tag_name exists, otherwise null
-	 * 
+	 *
 	 * @throws {DKIM_SigError|DKIM_InternalError} Throws if tag_value does not match.
 	 */
 	function parseTagValue(map, tag_name, pattern_tag_value, expType = 1) {
@@ -441,9 +449,9 @@ var Verifier = (function() {
 		if (tag_value === undefined) {
 			return null;
 		}
-		
+
 		var res = tag_value.match(new RegExp("^"+pattern_tag_value+"$"));
-		
+
 		// throw DKIM_SigError if tag_value is ill-formed
 		if (res === null) {
 			if (expType === 1) {
@@ -454,7 +462,7 @@ var Verifier = (function() {
 				throw new DKIM_InternalError("illformed tag "+tag_name);
 			}
 		}
-		
+
 		return res;
 	}
 
@@ -581,7 +589,7 @@ var Verifier = (function() {
 			} else {
 				throw new DKIM_SigError("DKIM_SIGERROR_UNKNOWN_C_H");
 			}
-				
+
 			// canonicalization for body
 			if (msCanonTag[2] === undefined) {
 				DKIMSignature.c_body = "simple";
@@ -593,8 +601,8 @@ var Verifier = (function() {
 				}
 			}
 		}
-		
-		// get SDID (plain-text; REQUIRED)	
+
+		// get SDID (plain-text; REQUIRED)
 		// Pattern for sub-domain as specified in Section 4.1.2 of RFC 5321
 		var sub_domain = "(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?)";
 		var domain_name = "(?:"+sub_domain+"(?:\\."+sub_domain+")+)";
@@ -627,7 +635,7 @@ var Verifier = (function() {
 		/*
 		RFC 5321 (the one specified to be used in RFC 5322)
 		========
-		
+
 		Local-part = Dot-string / Quoted-string
 		Dot-string = Atom *("." Atom)
 		Atom = 1*atext
@@ -635,10 +643,10 @@ var Verifier = (function() {
 		QcontentSMTP = qtextSMTP / quoted-pairSMTP
 		quoted-pairSMTP = %d92 %d32-126
 		qtextSMTP = %d32-33 / %d35-91 / %d93-126
-		
+
 		RFC 5322
 		========
-		
+
 		local-part = dot-atom / quoted-string / obs-local-part
 		quoted-string = [CFWS]
 						DQUOTE *([FWS] qcontent) [FWS] DQUOTE
@@ -672,11 +680,11 @@ var Verifier = (function() {
 						%d12 / ; include the carriage
 						%d14-31 / ; return, line feed, and
 						%d127 ; white space characters
-						
+
 		about RegEx and valid mail addresses:
 		http://stackoverflow.com/questions/201323/using-a-regular-expression-to-validate-an-email-address
 		*/
-		
+
 		var atext = "[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]";
 		var local_part = "(?:"+atext+"+(?:\\."+atext+"+)*)";
 		var sig_i_tag = local_part+"?@("+domain_name+")";
@@ -765,7 +773,7 @@ var Verifier = (function() {
 			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_S");
 		}
 		DKIMSignature.s = SelectorTag[0];
-		
+
 		// get Signature Timestamp (plain-text unsigned decimal integer; RECOMMENDED,
 		// default is an unknown creation time)
 		var SigTimeTag = parseTagValue(tagMap, "t", "[0-9]+");
@@ -773,7 +781,7 @@ var Verifier = (function() {
 			DKIMSignature.t = parseInt(SigTimeTag[0], 10);
 		}
 
-		// get Signature Expiration (plain-text unsigned decimal integer; 
+		// get Signature Expiration (plain-text unsigned decimal integer;
 		// RECOMMENDED, default is no expiration)
 		// The value of the "x=" tag MUST be greater than the value of the "t=" tag if both are present
 		var ExpTimeTag = parseTagValue(tagMap, "x", "[0-9]+");
@@ -783,7 +791,7 @@ var Verifier = (function() {
 				throw new DKIM_SigError("DKIM_SIGERROR_TIMESTAMPS");
 			}
 		}
-		
+
 		// get Copied header fields (dkim-quoted-printable, but see description; OPTIONAL, default is null)
 		var hdr_name_FWS = "(?:(?:[!-9<-~]"+pattFWS+"?)+)";
 		var sig_z_tag_copy = hdr_name_FWS+pattFWS+"?:"+qp_hdr_value;
@@ -792,7 +800,7 @@ var Verifier = (function() {
 		if (CopyHeaderFieldsTag !== null) {
 			DKIMSignature.z = CopyHeaderFieldsTag[0].replace(new RegExp(pattFWS,"g"), "");
 		}
-		
+
 		return DKIMSignature;
 	}
 
@@ -820,7 +828,7 @@ var Verifier = (function() {
 			/** @type {string[]?} */
 			t_array : [] // array of all flags
 		};
-		
+
 		// parse tag-value list
 		var tagMap = parseTagValueList(DKIMKeyRecord);
 		if (tagMap === -1) {
@@ -842,7 +850,7 @@ var Verifier = (function() {
 		} else {
 			throw new DKIM_SigError("DKIM_SIGERROR_KEY_INVALID_V");
 		}
-		
+
 		// get Acceptable hash algorithms (plain-text; OPTIONAL, defaults toallowing all algorithms)
 		var key_h_tag_alg = "(?:sha1|sha256|"+hyphenated_word+")";
 		var key_h_tag = key_h_tag_alg+"(?:"+pattFWS+"?:"+pattFWS+"?"+key_h_tag_alg+")*";
@@ -850,8 +858,8 @@ var Verifier = (function() {
 		if (algorithmTag !== null) {
 			DKIMKey.h = algorithmTag[0];
 			DKIMKey.h_array = DKIMKey.h.split(":").map(s => s.trim()).filter(function (x) {return x;});
-		} 
-		
+		}
+
 		// get Key type (plain-text; OPTIONAL, default is "rsa")
 		var key_k_tag_type = "(?:rsa|ed25519|"+hyphenated_word+")";
 		var keyTypeTag = parseTagValue(tagMap, "k", key_k_tag_type, 2);
@@ -870,7 +878,7 @@ var Verifier = (function() {
 		if (notesTag !== null) {
 			DKIMKey.n = notesTag[0];
 		}
-		
+
 		// get Public-key data (base64; REQUIRED)
 		// empty value means that this public key has been revoked
 		var keyTag = parseTagValue(tagMap, "p", base64string+"?", 2);
@@ -910,7 +918,7 @@ var Verifier = (function() {
 		} else {
 			DKIMKey.t = "";
 		}
-		
+
 		return DKIMKey;
 	}
 
@@ -929,15 +937,15 @@ var Verifier = (function() {
 
 		// Unfold header field continuation lines
 		headerField = headerField.replace(/\r\n[ \t]/g," ");
-		
+
 		// Convert all sequences of one or more WSP characters to a single SP character.
 		// WSP characters here include those before and after a line folding boundary.
 		headerField = headerField.replace(/[ \t]+/g," ");
-		
+
 		// Delete all WSP characters at the end of each unfolded header field value.
 		headerField = headerField.replace(/[ \t]+\r\n/,"\r\n");
-		
-		// Delete any WSP characters remaining before and after the colon 
+
+		// Delete any WSP characters remaining before and after the colon
 		// separating the header field name from the header field value.
 		// The colon separator MUST be retained.
 		headerField = headerField.replace(/[ \t]*:[ \t]*/,":");
@@ -955,7 +963,7 @@ var Verifier = (function() {
 		// for some reason /(\r\n)*$/ doesn't work all the time
 		// (especially in large strings; matching only last "\r\n")
 		body = body.replace(/((\r\n)+)?$/,"\r\n");
-		
+
 		return body;
 	}
 
@@ -968,13 +976,13 @@ var Verifier = (function() {
 		body = body.replace(/[ \t]+\r\n/g,"\r\n");
 		// Reduce all sequences of WSP within a line to a single SP character
 		body = body.replace(/[ \t]+/g," ");
-		
+
 		// Ignore all empty lines at the end of the message body
 		// If the body is non-empty but does not end with a CRLF, a CRLF is added
 		// for some reason /(\r\n)*$/ doesn't work all the time
 		// (especially in large strings; matching only last "\r\n")
 		body = body.replace(/((\r\n)+)?$/,"\r\n");
-		
+
 		// If only one \r\n rests, there were only emtpy lines or body was empty.
 		if (body === "\r\n") {
 			return "";
@@ -983,7 +991,7 @@ var Verifier = (function() {
 	}
 
 	/*
-	 * Computing the Message Hash for the body 
+	 * Computing the Message Hash for the body
 	 * specified in Section 3.7 of RFC 6376
 	 */
 	function computeBodyHash(msg, DKIMSignature) {
@@ -999,11 +1007,11 @@ var Verifier = (function() {
 			default:
 				throw new DKIM_InternalError("unsupported canonicalization algorithm got parsed");
 		}
-		
+
 		if (prefs.getIntPref("debugLevel") >= 2) {
 			writeStringToTmpFile(bodyCanon, "bodyCanon.txt");
 		}
-		
+
 		// if a body length count is given
 		if (DKIMSignature.l !== null) {
 			// check the value of the body lenght tag
@@ -1021,7 +1029,7 @@ var Verifier = (function() {
 			// truncated body to the length specified in the "l=" tag
 			bodyCanon = bodyCanon.substr(0, DKIMSignature.l);
 		}
-		
+
 		// compute body hash
 		var bodyHash;
 		switch (DKIMSignature.a_hash) {
@@ -1037,7 +1045,7 @@ var Verifier = (function() {
 
 		return bodyHash;
 	}
-	
+
 	/*
 	 * Computing the input for the header Hash
 	 * specified in Section 3.7 of RFC 6376
@@ -1079,7 +1087,7 @@ var Verifier = (function() {
 				}
 			}
 		}
-		
+
 		// add DKIM-Signature header to the hash input
 		// with the value of the "b=" tag (including all surrounding whitespace) deleted
 		var pos_bTag = DKIMSignature.original_header.indexOf(DKIMSignature.b_folded);
@@ -1092,13 +1100,13 @@ var Verifier = (function() {
 		temp = headerCanonAlgo(temp);
 		// without a trailing CRLF
 		hashInput += temp.substr(0, temp.length - 2);
-		
+
 		return hashInput;
 	}
-	
+
 	/**
 	 * handeles Exeption
-	 * 
+	 *
 	 * @param {Error} e
 	 * @param {Object} msg
 	 * @param {Object} [dkimSignature]
@@ -1122,7 +1130,7 @@ var Verifier = (function() {
 			};
 
 			log.warn(e);
-			
+
 			return result;
 		}
 		// return result
@@ -1146,7 +1154,7 @@ var Verifier = (function() {
 
 	/**
 	 * Verifying a single DKIM signature
-	 * 
+	 *
 	 * @param {Object} msg
 	 * @param {Object} DKIMSignature
 	 * @return {Promise<dkimSigResultV2>}
@@ -1169,11 +1177,11 @@ var Verifier = (function() {
 			DKIMSignature.warnings.push({name: "DKIM_SIGWARNING_FUTURE"});
 			log.debug("Warning: DKIM_SIGWARNING_FUTURE");
 		}
-		
+
 		// Compute the Message Hash for the body
 		var bodyHash = computeBodyHash(msg, DKIMSignature);
 		log.debug("computed body hash: " + bodyHash);
-		
+
 		// compare body hash
 		if (bodyHash !== DKIMSignature.bh) {
 			throw new DKIM_SigError("DKIM_SIGERROR_CORRUPT_BH");
@@ -1226,22 +1234,21 @@ var Verifier = (function() {
 		    (!DKIMSignature.DKIMKey.h_array.includes(DKIMSignature.a_hash))) {
 			throw new DKIM_SigError( "DKIM_SIGERROR_KEY_HASHNOTINCLUDED" );
 		}
-		
+
 		// Compute the input for the header hash
 		var headerHashInput = computeHeaderHashInput(msg,DKIMSignature);
 		log.debug("Header hash input:\n" + headerHashInput);
 
 		// verify Signature
 		var keyInfo = {};
-		
+
 		// Selecting verification function depending on used signature algorithm
 		var verifyFunction = null;
 		switch (DKIMSignature.a_sig) {
 			case "ed25519":
 				verifyFunction = verifyED25519Sig;
-				headerHashInput = dkim_hash(headerHashInput, DKIMSignature.a_hash, "b64");
 				break;
-			case "rsa":	
+			case "rsa":
 				verifyFunction = verifyRSASig;
 				break;
 			default:
@@ -1249,7 +1256,7 @@ var Verifier = (function() {
 				throw new DKIM_SigError("DKIM_SIGERROR_UNKNOWN_A");
 		}
 
-		var isValid = verifyFunction(DKIMSignature.DKIMKey.p, headerHashInput,
+		var isValid = verifyFunction(DKIMSignature.DKIMKey.p, headerHashInput, DKIMSignature.a_hash,
 			DKIMSignature.b, DKIMSignature.warnings, keyInfo);
 		if (!isValid) {
 			if (prefs.getIntPref("error.contentTypeCharsetAddedQuotes.treatAs") > 0) {
@@ -1263,8 +1270,8 @@ var Verifier = (function() {
 				// verify Signature
 				keyInfo = {};
 				isValid = verifyFunction(DKIMSignature.DKIMKey.p, headerHashInput,
-					DKIMSignature.b, DKIMSignature.warnings, keyInfo);
-					
+						DKIMSignature.a_hash, DKIMSignature.b, DKIMSignature.warnings, keyInfo);
+
 				if (!isValid) {
 					throw new DKIM_SigError("DKIM_SIGERROR_BADSIG");
 				} else if (prefs.getIntPref("error.contentTypeCharsetAddedQuotes.treatAs") === 1) {
@@ -1275,17 +1282,21 @@ var Verifier = (function() {
 				throw new DKIM_SigError("DKIM_SIGERROR_BADSIG");
 			}
 		}
-			
+
+		if (DKIMSignature.a_sig !== DKIMSignature.DKIMKey.k) {
+			throw new DKIM_SigError("DKIM_SIGERROR_KEY_MISMATCHED_K");
+		}
+
 		// hash algorithm defined in public-key data must be the same as in the header
 		if (keyInfo.algName !== DKIMSignature.a_hash) {
 			throw new DKIM_SigError("DKIM_SIGERROR_KEY_HASHMISMATCH");
 		}
-			
+
 		// add should be signed rule
 		if (!msg.DKIMSignPolicy.foundRule) {
 			Policy.signedBy(msg.from, DKIMSignature.d);
 		}
-		
+
 		// return result
 		log.trace("Everything is fine");
 		var verification_result = {
@@ -1302,7 +1313,7 @@ var Verifier = (function() {
 
 	/**
 	 * processes signatures
-	 * 
+	 *
 	 * @param {Object} msg
 	 * @return {Promise<dkimSigResultV2[]>}
 	 */
@@ -1353,7 +1364,7 @@ var Verifier = (function() {
 	/**
 	 * Checks if at least on signature exists.
 	 * If not, adds one to signatures with result "no sig" or "missing sig".
-	 * 
+	 *
 	 * @param {Object} msg
 	 * @param {dkimSigResultV2[]} signatures
 	 * @return {void}
@@ -1385,7 +1396,7 @@ var that = {
 /*
  * public methods/variables
  */
- 
+
 	/*
 	 * init
 	 */
@@ -1393,15 +1404,15 @@ var that = {
 
 	/**
 	 * Callback for the result of the verification.
-	 * 
+	 *
 	 * @callback dkimResultCallback
 	 * @param {String} msgURI
 	 * @param {dkimResultV1} result
 	 */
-	
+
 	/**
 	 * Verifies the message with the given msgURI.
-	 * 
+	 *
 	 * @deprecated Use verify2() or AuthVerifier.verify() instead.
 	 * @param {String} msgURI
 	 * @param {dkimResultCallback} dkimResultCallback
@@ -1463,7 +1474,7 @@ var that = {
 
 	/**
 	 * Verifies the message given message.
-	 * 
+	 *
 	 * @param {Msg} msg
 	 * @return {Promise<dkimResultV2>}
 	 */
@@ -1485,7 +1496,7 @@ var that = {
 
 	/**
 	 * Creates a message object given the msgURI.
-	 * 
+	 *
 	 * @param {String} msgURI
 	 * @return {Promise<Msg>}
 	 */
@@ -1546,7 +1557,7 @@ var that = {
 
 	/**
 	 * Sorts the given signatures.
-	 * 
+	 *
 	 * @param {Object} msg
 	 * @param {dkimSigResultV2[]} signatures
 	 * @return {void}
@@ -1648,7 +1659,7 @@ var that = {
 	 * make log public
 	 */
 	log : log,
-	
+
 	/*
 	 * make handleException public
 	 */
