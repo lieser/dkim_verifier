@@ -410,6 +410,162 @@ var Policy = {
 	},
 
 	/**
+	 * Check that the list of signed headers satisfy our policies.
+	 * - Warn if recommended headers are not signed.
+	 * - Try detecting maliciously added unsigned headers.
+	 *
+	 * The detection for maliciously added unsigned headers 
+	 * only considers all the recommended signed headers.
+	 * It simply ensures that a message does not contain both 
+	 * signed and unsigned values of a header.
+	 * Using the same mechanism for all signed headers 
+	 * will cause problems there added headers is normal
+	 * e.g. the Received header.
+	 *
+ 	 * @param {MAP<String,String>} msgHeaders
+	 *			All headers of the message to check as headername-value-pair
+	 * @param {Object} DKIMSignature
+	 *			DKIMSignature of the message
+	 * @returns {void}
+	 */	
+	checkHeadersSigned: function Policy_checkHeadersSigned(msgHeaders, DKIMSignature) {
+		
+		const POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE = {
+			RELAXED : 10,
+			RECOMMENDED : 20,
+			STRICT : 30
+		}
+		
+		// The list of recommended headers to sign is mostly based on
+		// https://www.rfc-editor.org/rfc/rfc6376.html#section-5.4.
+		const SIGNEDHEADERS = {
+			REQUIRED : ["From", "Subject"],
+			RECOMMENDED : ["Date", "To", "Cc", "Resent-Date", "Resent-From", "Resent-To", "Resent-Cc", "In-Reply-To", "References", "List-Id", "List-Help", "List-Unsubscribe", "List-Subscribe", "List-Post", "List-Owner", "List-Archive"],
+			DESIRED : ["Message-ID", "Sender", "MIME-Version", "Content-Transfer-Encoding", "Content-Disposition", "Content-ID", "Content-Description", "Reply-To"]
+		};
+	
+		// We would like Reply-To to be in the recommended list.
+		// As some bigger domains violate this, we will only enforce it if the Reply-To is not in the signing domain, but a valid email address
+		const replyTo = msgHeaders.get("reply-to");
+		let replyToAddress = null;
+		if (replyTo && replyTo[0]) {
+						
+			// Copied over from ARHParser.jsm
+			// WSP as specified in Appendix B.1 of RFC 5234
+			const WSP_p = "[ \t]";
+			// VCHAR as specified in Appendix B.1 of RFC 5234
+			const VCHAR_p = "[!-~]";
+			// Let-dig  as specified in Section 4.1.2 of RFC 5321 [SMTP].
+			const Let_dig_p = "[A-Za-z0-9]";
+			// Ldh-str  as specified in Section 4.1.2 of RFC 5321 [SMTP].
+			const Ldh_str_p = `(?:[A-Za-z0-9-]*${Let_dig_p})`;
+			// "Keyword" as specified in Section 4.1.2 of RFC 5321 [SMTP].
+			const Keyword_p = Ldh_str_p;
+			// sub-domain as specified in Section 4.1.2 of RFC 5321 [SMTP].
+			const sub_domain_p = `(?:${Let_dig_p}${Ldh_str_p}?)`;
+			// obs-FWS as specified in Section 4.2 of RFC 5322
+			const obs_FWS_p = `(?:${WSP_p}+(?:\r\n${WSP_p}+)*)`;
+			// quoted-pair as specified in Section 3.2.1 of RFC 5322
+			// Note: obs-qp is not included, so this pattern matches less then specified!
+			const quoted_pair_p = `(?:\\\\(?:${VCHAR_p}|${WSP_p}))`;
+			// FWS as specified in Section 3.2.2 of RFC 5322
+			const FWS_p = `(?:(?:(?:${WSP_p}*\r\n)?${WSP_p}+)|${obs_FWS_p})`;
+			const FWS_op = `${FWS_p}?`;
+			// ctext as specified in Section 3.2.2 of RFC 5322
+			const ctext_p = "[!-'*-[\\]-~]";
+			// ccontent as specified in Section 3.2.2 of RFC 5322
+			// Note: comment is not included, so this pattern matches less then specified!
+			const ccontent_p = `(?:${ctext_p}|${quoted_pair_p})`;
+			// comment as specified in Section 3.2.2 of RFC 5322
+			const comment_p = `\\((?:${FWS_op}${ccontent_p})*${FWS_op}\\)`;
+			// CFWS as specified in Section 3.2.2 of RFC 5322 [MAIL]
+			const CFWS_p = `(?:(?:(?:${FWS_op}${comment_p})+${FWS_op})|${FWS_p})`;
+			const CFWS_op = `${CFWS_p}?`;
+			// atext as specified in Section 3.2.3 of RFC 5322
+			const atext_p = "[!#-'*-+/-9=?A-Z^-~-]";
+			// dot-atom-text as specified in Section 3.2.3 of RFC 5322
+			const dot_atom_text_p = `(?:${atext_p}+(?:\\.${atext_p}+)*)`;
+			// dot-atom as specified in Section 3.2.3 of RFC 5322
+			// dot-atom        =   [CFWS] dot-atom-text [CFWS]
+			const dot_atom_p = `(?:${CFWS_op}${dot_atom_text_p}${CFWS_op})`;
+			// qtext as specified in Section 3.2.4 of RFC 5322
+			// Note: obs-qtext is not included, so this pattern matches less then specified!
+			const qtext_p = "[!#-[\\]-~]";
+			// qcontent as specified in Section 3.2.4 of RFC 5322
+			const qcontent_p = `(?:${qtext_p}|${quoted_pair_p})`;
+			// quoted-string as specified in Section 3.2.4 of RFC 5322
+			const quoted_string_p = `(?:${CFWS_op}"(?:${FWS_op}${qcontent_p})*${FWS_op}"${CFWS_op})`;
+			const quoted_string_cp = `(?:${CFWS_op}"((?:${FWS_op}${qcontent_p})*)${FWS_op}"${CFWS_op})`;
+			// local-part as specified in Section 3.4.1 of RFC 5322
+			// Note: obs-local-part is not included, so this pattern matches less then specified!
+			const local_part_p = `(?:${dot_atom_p}|${quoted_string_p})`;
+			// token as specified in Section 5.1 of RFC 2045.
+			const token_p = "[^ \\x00-\\x1F\\x7F()<>@,;:\\\\\"/[\\]?=]+";
+			// "value" as specified in Section 5.1 of RFC 2045.
+			const value_cp = `(?:(${token_p})|${quoted_string_cp})`;
+			// domain-name as specified in Section 3.5 of RFC 6376 [DKIM].
+			const domain_name_p = `(?:${sub_domain_p}(?:\\.${sub_domain_p})+)`;
+			
+			const replyToAddrMatcher = `reply-to:${WSP_p}(${local_part_p}@${domain_name_p})\r\n`
+			replyToAddress = replyTo[0].toLowerCase().match(replyToAddrMatcher);
+			if (replyToAddress && replyToAddress[1]) {
+				replyToAddress = replyToAddress[1];
+			} else {
+				log.warn("Ignoring error in parsing of Reply-To header", replyTo[0]);
+				replyToAddress = null;
+			}
+		}
+		if (replyToAddress && addrIsInDomain(replyToAddress, DKIMSignature.d))
+		{
+			SIGNEDHEADERS.DESIRED.push("Reply-To");			
+		} else {
+			SIGNEDHEADERS.RECOMMENDED.push("Reply-To");
+		}
+		
+		// If the body is not completely signed, a manipulated Content-Type header
+		// can cause completely different content to be shown.
+		if (DKIMSignature.warnings.some(warning => warning.name === "DKIM_SIGWARNING_SMALL_L")) {
+			SIGNEDHEADERS.REQUIRED.push("Content-Type");
+		} else if (DKIMSignature.l !== null) {
+			SIGNEDHEADERS.RECOMMENDED.push("Content-Type");
+		} else {
+			SIGNEDHEADERS.DESIRED.push("Content-Type");
+		}
+		
+		/**
+		 * @param {string} header
+		 * @param {boolean} warnIfUnsigned
+		 * @returns {void}
+ 		 * @throws {DKIM_SigError}
+		 */
+		const checkSignedHeader = (header, warnIfUnsigned) => {
+			const headerLowerCase = header.toLowerCase();
+			const signedCount = DKIMSignature.h_array.filter(e => e === headerLowerCase).length;
+			const unsignedCount = msgHeaders.get(headerLowerCase) ? msgHeaders.get(headerLowerCase).length : 0;
+			if (signedCount > 0 && signedCount < unsignedCount) {
+				throw new DKIM_SigError("DKIM_POLICYERROR_UNSIGNED_HEADER_ADDED", [header]);
+			}
+			if (warnIfUnsigned && signedCount < unsignedCount) {
+				DKIMSignature.warnings.push({ name: "DKIM_SIGWARNING_UNSIGNED_HEADER", params: [header] });
+				log.debug(`Warning: DKIM_SIGWARNING_UNSIGNED_HEADER (${header})`);
+			}
+		};
+
+		for (const header of SIGNEDHEADERS.REQUIRED) {
+			checkSignedHeader(header, prefs["dkim.unsignedHeadersWarning.mode"] >=
+				POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE.RELAXED);
+		}
+		for (const header of SIGNEDHEADERS.RECOMMENDED) {
+			checkSignedHeader(header, prefs["dkim.unsignedHeadersWarning.mode"] >=
+				POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE.RECOMMENDED);
+		}
+		for (const header of SIGNEDHEADERS.DESIRED) {
+			checkSignedHeader(header, prefs["dkim.unsignedHeadersWarning.mode"] >=
+				POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE.STRICT);
+		}
+	},
+
+	/**
 	 * Get the URL to the favicon, if available.
 	 * 
 	 * @param {String} sdid

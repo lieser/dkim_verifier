@@ -1133,6 +1133,9 @@ var Verifier = (function() {
 		// check SDID and AUID
 		Policy.checkSDID(msg.DKIMSignPolicy.sdid, msg.from, DKIMSignature.d,
 			DKIMSignature.i, DKIMSignature.warnings);
+		
+		// check signed headers
+		Policy.checkHeadersSigned(msg.headerFields, DKIMSignature);
 
 		var time = Math.round(Date.now() / 1000);
 		// warning if signature expired

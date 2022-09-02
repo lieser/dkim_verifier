@@ -12,7 +12,7 @@
 <!ENTITY treeviewKeys.title "DKIM-Schlüssel">
 <!ENTITY treeviewKeys.treecol.SDID.label "SDID">
 <!ENTITY treeviewKeys.treecol.selector.label "Selector">
-<!ENTITY treeviewKeys.treecol.key.label "DKIM Schlüssel">
+<!ENTITY treeviewKeys.treecol.key.label "DKIM-Schlüssel">
 <!ENTITY treeviewKeys.treecol.insertedAt.label "Hinzugefügt">
 <!ENTITY treeviewKeys.treecol.lastUsedAt.label "Zuletzt benutzt">
 <!ENTITY treeviewKeys.treecol.secure.label "DNSSEC">

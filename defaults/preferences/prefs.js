@@ -60,6 +60,16 @@ pref("extensions.dkim_verifier.policy.DMARC.shouldBeSigned.enable", false);
 // "none", "quarantine", "reject"
 pref("extensions.dkim_verifier.policy.DMARC.shouldBeSigned.neededPolicy", "none");
 
+pref("extensions.dkim_verifier.display.favicon.show", true);
+
+/* 
+ * Mode to handle headers, which should be signed, but are not
+ * 10  relaxed
+ * 20  recommended
+ * 30  strict
+ */
+pref("extensions.dkim_verifier.policy.dkim.unsignedHeadersWarning.mode", 20);
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // display preferences
@@ -109,8 +119,6 @@ pref("extensions.dkim_verifier.color.tempfail.text", "unset");
 pref("extensions.dkim_verifier.color.tempfail.background", "unset");
 pref("extensions.dkim_verifier.color.nosig.text", "unset");
 pref("extensions.dkim_verifier.color.nosig.background", "unset");
-
-pref("extensions.dkim_verifier.display.favicon.show", true);
 
 
 ////////////////////////////////////////////////////////////////////////////////
