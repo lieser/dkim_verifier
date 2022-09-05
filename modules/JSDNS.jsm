@@ -365,7 +365,7 @@ function DNS_get_OS_DNSServers() {
 	
 	OS_DNS_ROOT_NAME_SERVERS = [];
 
-	if ("@mozilla.org/windows-registry-key;1" in Components.classes) {
+	if ("@mozilla.org/windows-registry-key;1" in Cc) {
 		// Firefox 1.5 or newer on Windows
 		// Try getting a nameserver from the windows registry
 		var reg;
@@ -374,9 +374,12 @@ function DNS_get_OS_DNSServers() {
 		var registryLinkage;
 		var registryInterfaces;
 		try {
-			var registry_class = Components.classes["@mozilla.org/windows-registry-key;1"];
+			var registry_class = Cc["@mozilla.org/windows-registry-key;1"];
+			if (!registry_class) {
+				throw new Error("Could not get windows-registry-key class");
+			}
 			var registry_object = registry_class.createInstance();
-			registry = registry_object.QueryInterface(Components.interfaces.nsIWindowsRegKey);
+			registry = registry_object.QueryInterface(Ci.nsIWindowsRegKey);
 			
 			registry.open(registry.ROOT_KEY_LOCAL_MACHINE,
 				"SYSTEM\\CurrentControlSet",
@@ -440,8 +443,8 @@ function DNS_get_OS_DNSServers() {
 				"Services\\Tcpip\\Parameters\\Interfaces",
 				registry.ACCESS_READ);
 			var ns = "";
-			for (var i=0; i < interfacesOnline.length; i++) {
-				reg = registryInterfaces.openChild(interfaces[i],	registry.ACCESS_READ);
+			for (const onlineInterface of interfacesOnline) {
+				reg = registryInterfaces.openChild(onlineInterface, registry.ACCESS_READ);
 				if (reg.hasValue("NameServer")) {
 					ns += " " + reg.readStringValue("NameServer");
 				}
@@ -465,6 +468,7 @@ function DNS_get_OS_DNSServers() {
 					OS_DNS_ROOT_NAME_SERVERS.toSource());
 			}
 		} catch (e) {
+			// @ts-expect-error
 			log.error("Error reading Registry: " + e + "\n" + e.stack);
 		} finally {
 			// @ts-ignore
@@ -487,17 +491,23 @@ function DNS_get_OS_DNSServers() {
 		var stream_filestream;
 		try {
 			/** @type {nsIFile} */
-			var resolvconf = Components.classes["@mozilla.org/file/local;1"].createInstance(Components.interfaces.nsIFile);
+			var resolvconf = Cc["@mozilla.org/file/local;1"] ? Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile) : null;
+			if (!resolvconf) {
+				throw new Error("Could not create nsIFile instance");
+			}
 			resolvconf.initWithPath("/etc/resolv.conf");
 			
-			var stream = Components.classes["@mozilla.org/network/file-input-stream;1"].createInstance();
-			stream_filestream = stream.QueryInterface(Components.interfaces.nsIFileInputStream);
+			var stream = Cc["@mozilla.org/network/file-input-stream;1"] ? Cc["@mozilla.org/network/file-input-stream;1"].createInstance() : null;
+			if (!stream) {
+				throw new Error("Could not create file-input-stream instance");
+			}
+			stream_filestream = stream.QueryInterface(Ci.nsIFileInputStream);
 			stream_filestream.init(resolvconf, 0, 0, 0); // don't know what the flags are...
 			
-			var stream_reader = stream.QueryInterface(Components.interfaces.nsILineInputStream);
+			var stream_reader = stream.QueryInterface(Ci.nsILineInputStream);
 			
 			var out_line = {};
-			var hasmore;
+			var hasmore = false;
 			do {
 				hasmore = stream_reader.readLine(out_line);
 				if (DNS_StartsWith(out_line.value, "nameserver ")) {
@@ -512,6 +522,7 @@ function DNS_get_OS_DNSServers() {
 			
 			log.config("Got servers from resolv.conf: " + OS_DNS_ROOT_NAME_SERVERS.toSource());
 		} catch (e) {
+			// @ts-expect-error
 			log.error("Error reading resolv.conf: " + e + "\n" + e.stack);
 			
 			// @ts-ignore
@@ -563,7 +574,7 @@ function DNS_Test() {
 function queryDNS(host, recordtype, callback, callbackdata) {
 	"use strict";
 	
-	queryDNSRecursive(null, host, recordtype, callback, callbackdata, 0, DNS_ROOT_NAME_SERVERS);
+	queryDNSRecursive(DNS_ROOT_NAME_SERVERS, host, recordtype, callback, callbackdata, 0);
 }
 
 function reverseDNS(ip, callback, callbackdata) {
@@ -625,24 +636,23 @@ function DNS_ReverseIPHostname(ip) {
 	return q[3] + "." + q[2] + "." + q[1] + "." + q[0] + ".in-addr.arpa";
 }
 
-function queryDNSRecursive(server, host, recordtype, callback, callbackdata, hops, servers) {
+function queryDNSRecursive(servers, host, recordtype, callback, callbackdata, hops) {
 	"use strict";
 	
-	// if more when one server is given
-	if (servers !== undefined) {
+	let server;
+	let serverObj = null;
+	
+	// if more than one server is given
+	if (typeof servers === "object") {
+		log.debug("DNS: More servers: "+Object.entries(servers));
 		// set server to next alive DNS server
-		var i;
-		var serverObj = null;
-		server = null;
-		for (i = 0; i < servers.length; i++) {
-			if (servers[i].alive) {
-				server = servers[i].server;
-				serverObj = servers[i];
-				break;
-			}
-		}
-		
-		if (server === null) {
+		for (const serv of servers) {
+			if (serv.alive) {
+				serverObj = serv;
+ 				break;
+ 			}
+ 		}		
+		if (serverObj === null) {
 			log.debug("no DNS Server alive");
 			if (prefs.getBoolPref("jsdns.autoResetServerAlive")) {
 				servers.forEach(function(element /*, index, array*/) {
@@ -653,6 +663,10 @@ function queryDNSRecursive(server, host, recordtype, callback, callbackdata, hop
 			callback(null, callbackdata, "no DNS Server alive");
 			return;
 		}
+		server = serverObj.server;
+	} else {
+		log.debug("DNS: One server: "+servers);
+		server = servers;
 	}
 
 	if (hops === 10) {
@@ -675,8 +689,8 @@ function queryDNSRecursive(server, host, recordtype, callback, callbackdata, hop
 		;
 		
 	var hostparts = host.split(".");
-	for (var hostpartidx = 0; hostpartidx < hostparts.length; hostpartidx++) {
-		query += DNS_octetToStr(hostparts[hostpartidx].length) + hostparts[hostpartidx];
+	for (const hostpart of hostparts) {
+		query += DNS_octetToStr(hostpart.length) + hostpart;
 	}
 	query += DNS_octetToStr(0);
 	if (recordtype === "A") {
@@ -692,7 +706,7 @@ function queryDNSRecursive(server, host, recordtype, callback, callbackdata, hop
 	} else if (recordtype === "TXT") {
 		query += DNS_wordToStr(16); 
 	} else {
-		throw "Invalid record type.";
+		throw new Error("Invalid record type.");
 	}
 	query += DNS_wordToStr(1); // IN
 		
@@ -730,12 +744,12 @@ function queryDNSRecursive(server, host, recordtype, callback, callbackdata, hop
 				}
 				
 				// if more when one server is given
-				if (servers !== undefined) {
+				if (serverObj !== null) {
 					// set current server to not alive
 					serverObj.alive = false;
 					
 					// start query again for next server
-					queryDNSRecursive(null, host, recordtype, callback, callbackdata, hops, servers);
+					queryDNSRecursive(servers, host, recordtype, callback, callbackdata, hops);
 				}
 				return;
 			}
@@ -753,13 +767,14 @@ function queryDNSRecursive(server, host, recordtype, callback, callbackdata, hop
 			
 			this.readcount += data.length;
 			
-			while (this.responseHeader.length < 14 && data.length > 0) {
-				this.responseHeader += data.charAt(0);
-				data = data.substr(1);
+			let remainingData = data;
+			while (this.responseHeader.length < 14 && remainingData.length) {
+				this.responseHeader += remainingData.charAt(0);
+				remainingData = remainingData.substr(1);
 			}
 			if (this.responseHeader.length === 14) {
 				this.msgsize = DNS_strToWord(this.responseHeader.substr(0, 2));
-				this.responseBody += data;
+				this.responseBody += remainingData;
 
 				//DNS_Debug("DNS: Received Reply: " + (this.readcount-2) + " of " + this.msgsize + " bytes");
 
@@ -779,12 +794,12 @@ function queryDNSRecursive(server, host, recordtype, callback, callbackdata, hop
 	var port = 53;
 	if (server.includes(':')) {
 		server_hostname = server.substring(0, server.indexOf(':'));
-		port = server.substring(server.indexOf(':')+1);
+		port = parseInt(server.substring(server.indexOf(':') + 1), 10);
 	}
 
 	var ex = DNS_readAllFromSocket(server_hostname, port, query, listener);
 	if (ex !== null) {
-		log.fatal("" + ex + "\n" + ex.stack);
+		log.error(`${ex}\n${ex.stack}`);
 	}
 }
 
@@ -876,7 +891,7 @@ function DNS_readRec(ctx) {
 function DNS_getRDData(str, server, host, recordtype, callback, callbackdata, hops) {
 	"use strict";
 	
-	var debugstr = "" + host + "/" + recordtype + ": ";
+	const debugstr = `${host}/${recordtype}: `;
 	
 	var flags = DNS_strToWord(str.substr(2, 2));
 	var qcount = DNS_strToWord(str.substr(4, 2));
@@ -902,16 +917,16 @@ function DNS_getRDData(str, server, host, recordtype, callback, callbackdata, ho
 	var rec;
 	
 	if (qcount !== 1) {
-		throw "Invalid response: Question section didn't have exactly one record.";
+		throw new Error("Invalid response: Question section didn't have exactly one record.");
 	}
 	if (ancount > 128) {
-		throw "Invalid response: Answer section had more than 128 records.";
+		throw new Error("Invalid response: Answer section had more than 128 records.");
 	}
 	if (aucount > 128) {
-		throw "Invalid response: Authority section had more than 128 records.";
+		throw new Error("Invalid response: Authority section had more than 128 records.");
 	}
 	if (adcount > 128) {
-		throw "Invalid response: Additional section had more than 128 records.";
+		throw new Error("Invalid response: Additional section had more than 128 records.");
 	}
 	
 	for (i = 0; i < qcount; i++) {
@@ -924,7 +939,7 @@ function DNS_getRDData(str, server, host, recordtype, callback, callbackdata, ho
 	for (i = 0; i < ancount; i++) {
 		rec = DNS_readRec(ctx);
 		if (!rec.recognized) {
-			throw "Record type is not one that this library can understand.";
+			throw new Error("Record type is not one that this library can understand.");
 		}
 		// ignore CNAME records
 		if (rec.type !== "CNAME") {
@@ -951,18 +966,18 @@ function DNS_getRDData(str, server, host, recordtype, callback, callbackdata, ho
 			log.debug(debugstr + "Additional: " + rec.dom + " " + rec.type + " " + rec.rddata);
 		}
 		if (rec.type === "A") {
-			for (j = 0; j < results.length; j++) {
-				if (results[j].host && results[j].host === rec.dom) {
-					if (results[j].address === null) {
-						results[j].address = Array(0);
+			for (const result of results) {
+				if (typeof result === "object" && result.host && result.host === rec.dom) {
+					if (result.address === undefined) {
+						result.address = Array(0);
 					}
-					results[j].address[results[j].address.length] = rec.rddata;
+					result.address[result.address.length] = rec.rddata;
 				}
 			}
 		}
 	}
 	
-	if (results.length > 0) {
+	if (results.length) {
 		// We have an answer.
 		callback(results, callbackdata);
 		
@@ -971,10 +986,10 @@ function DNS_getRDData(str, server, host, recordtype, callback, callbackdata, ho
 		// Note that we can do without the IP address of the NS authority (given in the additional
 		// section) because we're able to do DNS lookups without knowing the IP address
 		// of the DNS server -- Thunderbird and the OS take care of that.
-		for (i = 0; i < aucount; i++) {
-			if (authorities[i].type === "NS" && authorities[i].rddata !== server) {
-				log.debug(debugstr + "Recursing on Authority: " + authorities[i].rddata);
-				queryDNSRecursive(authorities[i].rddata, host, recordtype, callback, callbackdata, hops+1);
+		for (const authority of authorities) {
+			if (authority.type === "NS" && authority.rddata !== server) {
+				log.debug(debugstr + "Recursing on Authority: " + authority.rddata);
+				queryDNSRecursive(authority.rddata, host, recordtype, callback, callbackdata, hops + 1);
 				return;
 			}
 		}
@@ -1020,8 +1035,11 @@ function DNS_readAllFromSocket(host,port,outputData,listener)
 	try {
 		var proxy = null;
 		if (prefs.getBoolPref("proxy.enable")) {
-			var pps = Cc["@mozilla.org/network/protocol-proxy-service;1"].
-				getService(Ci.nsIProtocolProxyService);
+			var pps = Cc["@mozilla.org/network/protocol-proxy-service;1"] ? Cc["@mozilla.org/network/protocol-proxy-service;1"].
+				getService(Ci.nsIProtocolProxyService) : null;
+			if (!pps) {
+				throw new Error("Could not get protocol-proxy-service service");
+			}
 			proxy = pps.newProxyInfo(
 				prefs.getCharPref("proxy.type"),
 				prefs.getCharPref("proxy.host"),
@@ -1031,9 +1049,12 @@ function DNS_readAllFromSocket(host,port,outputData,listener)
 		}
 
 		var transportService =
-			Cc["@mozilla.org/network/socket-transport-service;1"].
-			getService(Ci.nsISocketTransportService);
-		var transport = transportService.
+			Cc["@mozilla.org/network/socket-transport-service;1"] ? Cc["@mozilla.org/network/socket-transport-service;1"].
+			getService(Ci.nsISocketTransportService) : null;
+		if (!transportService) {
+			throw new Error("Could not get socket-transport-service service");
+		}
+		const transport = transportService.
 			createTransport(null,0,host,port,proxy);
 
 		// change timeout for connection
@@ -1047,8 +1068,11 @@ function DNS_readAllFromSocket(host,port,outputData,listener)
 		outstream.write(outputData,outputData.length);
 
 		var stream = transport.openInputStream(0,0,0);
-		var instream = Components.classes["@mozilla.org/binaryinputstream;1"].
-			createInstance(Components.interfaces.nsIBinaryInputStream);
+		var instream = Cc["@mozilla.org/binaryinputstream;1"] ? Cc["@mozilla.org/binaryinputstream;1"].
+			createInstance(Components.interfaces.nsIBinaryInputStream) : null;
+		if (!instream) {
+			throw new Error("Could not create binaryinputstream instance");
+		}
 		instream.setInputStream(stream);
 
 		var dataListener = {
@@ -1077,9 +1101,11 @@ function DNS_readAllFromSocket(host,port,outputData,listener)
 			}
 		};
 		
-		var pump = Components.
-			classes["@mozilla.org/network/input-stream-pump;1"].
-			createInstance(Components.interfaces.nsIInputStreamPump);
+		var pump = Cc["@mozilla.org/network/input-stream-pump;1"] ? Cc["@mozilla.org/network/input-stream-pump;1"].
+			createInstance(Ci.nsIInputStreamPump) : null;
+		if (!pump) {
+			throw new Error("Could not create input-stream-pump instance");
+		}
 		if (Services.vc.compare(Services.appinfo.platformVersion, "57.0-1") >= 0) {
 			pump.init(stream, 0, 0, false);
 		} else {
