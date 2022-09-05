@@ -1,6 +1,6 @@
 # Third-party libraries
 
-Unchanged third-party libraries included in the add-on.
+Third-party libraries included in the add-on.
 
 See [THIRDPARTY_LICENSE.txt](../THIRDPARTY_LICENSE.txt) in the root directory for licensing information.
 
