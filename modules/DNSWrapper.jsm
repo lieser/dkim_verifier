@@ -38,7 +38,7 @@ Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://dkim_verifier/logging.jsm");
 Cu.import("resource://dkim_verifier/helper.jsm");
 XPCOMUtils.defineLazyModuleGetter(this, "JSDNS", // eslint-disable-line no-invalid-this
-	"resource://dkim_verifier/JSDNS.jsm");
+	"resource://dkim_verifier_3p/dns/JSDNS.jsm");
 XPCOMUtils.defineLazyModuleGetter(this, "libunbound", // eslint-disable-line no-invalid-this
 	"resource://dkim_verifier/libunbound.jsm");
 
