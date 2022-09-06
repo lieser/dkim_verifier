@@ -98,7 +98,7 @@
 <!ENTITY acc.boolean.value.1.label "Oui">
 <!ENTITY acc.boolean.value.2.label "Non">
 
-<!ENTITY policy.unsigned_header.mode "Mode to handle unsigned headers, which should be signed:">
+<!ENTITY policy.unsigned_header.mode "Warn about unsigned headers that are recommended to be signed:">
 <!ENTITY policy.unsigned_header.mode.value.0.label "Relaxed">
 <!ENTITY policy.unsigned_header.mode.value.1.label "Recommended">
 <!ENTITY policy.unsigned_header.mode.value.2.label "Strict">

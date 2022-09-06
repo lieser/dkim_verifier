@@ -26,6 +26,8 @@ var EXPORTED_SYMBOLS = [
 ];
 
 // @ts-ignore
+const Cc = Components.classes;
+const Ci = Components.interfaces;
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
@@ -441,7 +443,7 @@ var Policy = {
 		const SIGNEDHEADERS = {
 			REQUIRED : ["From", "Subject"],
 			RECOMMENDED : ["Date", "To", "Cc", "Resent-Date", "Resent-From", "Resent-To", "Resent-Cc", "In-Reply-To", "References", "List-Id", "List-Help", "List-Unsubscribe", "List-Subscribe", "List-Post", "List-Owner", "List-Archive"],
-			DESIRED : ["Message-ID", "Sender", "MIME-Version", "Content-Transfer-Encoding", "Content-Disposition", "Content-ID", "Content-Description", "Reply-To"]
+			DESIRED : ["Message-ID", "Sender", "MIME-Version", "Content-Transfer-Encoding", "Content-Disposition", "Content-ID", "Content-Description"]
 		};
 	
 		// We would like Reply-To to be in the recommended list.
@@ -449,70 +451,10 @@ var Policy = {
 		const replyTo = msgHeaders.get("reply-to");
 		let replyToAddress = null;
 		if (replyTo && replyTo[0]) {
-						
-			// Copied over from ARHParser.jsm
-			// WSP as specified in Appendix B.1 of RFC 5234
-			const WSP_p = "[ \t]";
-			// VCHAR as specified in Appendix B.1 of RFC 5234
-			const VCHAR_p = "[!-~]";
-			// Let-dig  as specified in Section 4.1.2 of RFC 5321 [SMTP].
-			const Let_dig_p = "[A-Za-z0-9]";
-			// Ldh-str  as specified in Section 4.1.2 of RFC 5321 [SMTP].
-			const Ldh_str_p = `(?:[A-Za-z0-9-]*${Let_dig_p})`;
-			// "Keyword" as specified in Section 4.1.2 of RFC 5321 [SMTP].
-			const Keyword_p = Ldh_str_p;
-			// sub-domain as specified in Section 4.1.2 of RFC 5321 [SMTP].
-			const sub_domain_p = `(?:${Let_dig_p}${Ldh_str_p}?)`;
-			// obs-FWS as specified in Section 4.2 of RFC 5322
-			const obs_FWS_p = `(?:${WSP_p}+(?:\r\n${WSP_p}+)*)`;
-			// quoted-pair as specified in Section 3.2.1 of RFC 5322
-			// Note: obs-qp is not included, so this pattern matches less then specified!
-			const quoted_pair_p = `(?:\\\\(?:${VCHAR_p}|${WSP_p}))`;
-			// FWS as specified in Section 3.2.2 of RFC 5322
-			const FWS_p = `(?:(?:(?:${WSP_p}*\r\n)?${WSP_p}+)|${obs_FWS_p})`;
-			const FWS_op = `${FWS_p}?`;
-			// ctext as specified in Section 3.2.2 of RFC 5322
-			const ctext_p = "[!-'*-[\\]-~]";
-			// ccontent as specified in Section 3.2.2 of RFC 5322
-			// Note: comment is not included, so this pattern matches less then specified!
-			const ccontent_p = `(?:${ctext_p}|${quoted_pair_p})`;
-			// comment as specified in Section 3.2.2 of RFC 5322
-			const comment_p = `\\((?:${FWS_op}${ccontent_p})*${FWS_op}\\)`;
-			// CFWS as specified in Section 3.2.2 of RFC 5322 [MAIL]
-			const CFWS_p = `(?:(?:(?:${FWS_op}${comment_p})+${FWS_op})|${FWS_p})`;
-			const CFWS_op = `${CFWS_p}?`;
-			// atext as specified in Section 3.2.3 of RFC 5322
-			const atext_p = "[!#-'*-+/-9=?A-Z^-~-]";
-			// dot-atom-text as specified in Section 3.2.3 of RFC 5322
-			const dot_atom_text_p = `(?:${atext_p}+(?:\\.${atext_p}+)*)`;
-			// dot-atom as specified in Section 3.2.3 of RFC 5322
-			// dot-atom        =   [CFWS] dot-atom-text [CFWS]
-			const dot_atom_p = `(?:${CFWS_op}${dot_atom_text_p}${CFWS_op})`;
-			// qtext as specified in Section 3.2.4 of RFC 5322
-			// Note: obs-qtext is not included, so this pattern matches less then specified!
-			const qtext_p = "[!#-[\\]-~]";
-			// qcontent as specified in Section 3.2.4 of RFC 5322
-			const qcontent_p = `(?:${qtext_p}|${quoted_pair_p})`;
-			// quoted-string as specified in Section 3.2.4 of RFC 5322
-			const quoted_string_p = `(?:${CFWS_op}"(?:${FWS_op}${qcontent_p})*${FWS_op}"${CFWS_op})`;
-			const quoted_string_cp = `(?:${CFWS_op}"((?:${FWS_op}${qcontent_p})*)${FWS_op}"${CFWS_op})`;
-			// local-part as specified in Section 3.4.1 of RFC 5322
-			// Note: obs-local-part is not included, so this pattern matches less then specified!
-			const local_part_p = `(?:${dot_atom_p}|${quoted_string_p})`;
-			// token as specified in Section 5.1 of RFC 2045.
-			const token_p = "[^ \\x00-\\x1F\\x7F()<>@,;:\\\\\"/[\\]?=]+";
-			// "value" as specified in Section 5.1 of RFC 2045.
-			const value_cp = `(?:(${token_p})|${quoted_string_cp})`;
-			// domain-name as specified in Section 3.5 of RFC 6376 [DKIM].
-			const domain_name_p = `(?:${sub_domain_p}(?:\\.${sub_domain_p})+)`;
-			
-			const replyToAddrMatcher = `reply-to:${WSP_p}(${local_part_p}@${domain_name_p})\r\n`
-			replyToAddress = replyTo[0].toLowerCase().match(replyToAddrMatcher);
-			if (replyToAddress && replyToAddress[1]) {
-				replyToAddress = replyToAddress[1];
-			} else {
+			let msgHeaderParser = Cc["@mozilla.org/messenger/headerparser;1"].createInstance(Ci.nsIMsgHeaderParser); 
+			replyToAddress = msgHeaderParser.extractHeaderAddressMailboxes(replyTo[0]); 
+			if (!replyToAddress) {
 				log.warn("Ignoring error in parsing of Reply-To header", replyTo[0]);
-				replyToAddress = null;
 			}
 		}
 		if (replyToAddress && addrIsInDomain(replyToAddress, DKIMSignature.d))

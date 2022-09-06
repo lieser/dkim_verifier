@@ -34,9 +34,6 @@ var gDKIMOptionsGeneralPane = {
 		document.getElementById("viewSigners").disabled = disabled;
 		document.getElementById("viewSignerDefaults").disabled = disabled;
 		document.getElementById("policy.DMARC.shouldBeSigned.enable").disabled = disabled;
-		document.getElementById("policy.dkim.unsignedHeadersWarning.mode.label").disabled = disabled;
-		document.getElementById("policy.dkim.unsignedHeadersWarning.mode").disabled = disabled;
-
 		
 		this.update_Policy_autoAddRule_enable();
 	},

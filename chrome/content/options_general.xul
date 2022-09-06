@@ -234,20 +234,21 @@
 						        oncommand="window.open('chrome://dkim_verifier/content/treeviewSignersDefault.xul', 'SignersDefaultRules', 'chrome,resizable,centerscreen,width=600,height=300');"/>
 						<spacer/>
 					</hbox>
+				</vbox>
+				<vbox>
 					<hbox align="center">
-					   <label id="policy.dkim.unsignedHeadersWarning.mode.label"
-						      value="&policy.unsigned_header.mode;"/>
-					   <menulist id="policy.dkim.unsignedHeadersWarning.mode"
-						         preference="pref_policy.dkim.unsignedHeadersWarning.mode">
-					      <menupopup>
-							<menuitem label="&policy.unsigned_header.mode.value.0.label;" value="10"/>
-							<menuitem label="&policy.unsigned_header.mode.value.1.label;" value="20"/>
-							<menuitem label="&policy.unsigned_header.mode.value.2.label;" value="30"/>
-						  </menupopup>
+						<label id="policy.dkim.unsignedHeadersWarning.mode.label"
+								value="&policy.unsigned_header.mode;"/>
+						<menulist id="policy.dkim.unsignedHeadersWarning.mode"
+									preference="pref_policy.dkim.unsignedHeadersWarning.mode">
+							<menupopup>
+								<menuitem label="&policy.unsigned_header.mode.value.0.label;" value="10"/>
+								<menuitem label="&policy.unsigned_header.mode.value.1.label;" value="20"/>
+								<menuitem label="&policy.unsigned_header.mode.value.2.label;" value="30"/>
+							</menupopup>
 						</menulist>
-						<spacer/>
 					</hbox>
-		        </vbox>
+				</vbox>
 			</tabpanel>
 		</tabpanels>
 	</tabbox>
