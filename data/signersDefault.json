@@ -1,7 +1,7 @@
 {
 	"$schema": "./signersDefault-schema.json",
 	"versionTable": 1,
-	"versionData": 33,
+	"versionData": 34,
 	"rules": [
 		{
 			"domain": "1und1.de",
@@ -562,6 +562,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "deutschlandcard.de",
+			"addr": "*@reply.deutschlandcard.de",
+			"sdid": "deutschlandcard.de reply.deutschlandcard.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+ 		}, {
 			"domain": "dhl.com",
 			"addr": "*",
 			"sdid": "dhl.com",
@@ -718,6 +724,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "eestipank.ee",
+			"addr": "*",
+			"sdid": "eestipank.ee",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+ 		}, {
 			"domain": "efaktura.no",
 			"addr": "*",
 			"sdid": "efaktura.no",
@@ -928,18 +940,18 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
-			"domain": "ford.com",
-			"addr": "*",
-			"sdid": "ford.com",
-			"ruletype": "ALL",
-			"priority": "DEFAULT_RULE_ALL"
-		}, {
 			"domain": "foodwatch.de",
 			"addr": "*",
 			"sdid": "foodwatch.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
  		}, {
+			"domain": "ford.com",
+			"addr": "*",
+			"sdid": "ford.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "formdesk.com",
 			"addr": "*",
 			"sdid": "formdesk.com",
@@ -1396,6 +1408,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "lidlplus.de",
+			"addr": "*@mail.lidlplus.de",
+			"sdid": "lidlplus.de mail.lidlplus.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+ 		}, {
 			"domain": "linkedin.com",
 			"addr": "*",
 			"sdid": "linkedin.com",
@@ -1462,6 +1480,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "mein-grundeinkommen.de.png",
+			"addr": "*",
+			"sdid": "mein-grundeinkommen.de.png",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+ 		}, {
 			"domain": "mensa.de",
 			"addr": "*",
 			"sdid": "mensa.de",
@@ -1678,6 +1702,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "payback.de",
+			"addr": "*",
+			"sdid": "payback.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+ 		}, {
 			"domain": "payleven.de",
 			"addr": "*",
 			"sdid": "payleven.de",
@@ -1804,6 +1834,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "quoka.de",
+			"addr": "*@reply.quoka.de",
+			"sdid": "quoka.de reply.quoka.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+ 		}, {
 			"domain": "ratepay.de",
 			"addr": "*",
 			"sdid": "ratepay.de",
@@ -2272,6 +2308,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "weact.de",
+			"addr": "*",
+			"sdid": "weact.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+ 		}, {
 			"domain": "wetransfer.com",
 			"addr": "*",
 			"sdid": "wetransfer.com",
@@ -2409,6 +2451,18 @@
 			"sdid": "zendesk.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
-		}
+		}, {
+			"domain": "zone.ee",
+			"addr": "*",
+			"sdid": "zone.ee",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "zone.fi",
+			"addr": "*",
+			"sdid": "zone.fi",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+ 		}
 	]
 }

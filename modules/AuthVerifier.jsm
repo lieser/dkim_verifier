@@ -284,9 +284,9 @@ function getARHResult(msgHdr, msg) {
 	// convert DKIM results
 	let dkimSigResults = arhDKIM.map(arhDKIM_to_dkimSigResultV2);
 
-	// if ARH result is replacing the add-ons,
-	// check SDID and AUID of DKIM results
+	// if ARH result is replacing the add-ons,	
 	if (prefs.getBoolPref("arh.replaceAddonResult")) {
+		// check SDID and AUID of DKIM results
 		for (let i = 0; i < dkimSigResults.length; i++) {
 			if (dkimSigResults[i].result === "SUCCESS") {
 				try {
@@ -303,6 +303,33 @@ function getARHResult(msgHdr, msg) {
 						msg,
 						{d: dkimSigResults[i].sdid, i: dkimSigResults[i].auid}
 					);
+				}
+			}
+		}
+		// check for weak signature type rsa-sha1
+		for (let i = 0; i < dkimSigResults.length; i++) {
+			if (arhDKIM[i] && arhDKIM[i].propertys.header.a === "rsa-sha1") {
+				switch (prefs["error.algorithm.sign.rsa-sha1.treatAs"]) {
+					case 0: { // error
+						dkimSigResults[i] = {
+							version: "2.0",
+							result: "PERMFAIL",
+							sdid: dkimSigResults[i] ? dkimSigResults[i].sdid : "",
+							auid: dkimSigResults[i] ? dkimSigResults[i].auid : "",
+							selector: dkimSigResults[i] ? dkimSigResults[i].selector : null,
+							errorType: "DKIM_SIGERROR_INSECURE_A",
+						};
+						break;
+					}
+					case 1: // warning
+						if (dkimSigResults[i] && dkimSigResults[i].warnings) {
+							dkimSigResults[i].warnings.push({ name: "DKIM_SIGERROR_INSECURE_A" });
+						}
+						break;
+					case 2: // ignore
+						break;
+					default:
+						throw new DKIM_InternalError("invalid error.algorithm.sign.rsa-sha1.treatAs");
 				}
 			}
 		}
@@ -595,6 +622,7 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 						case "DKIM_SIGERROR_KEY_HASHNOTINCLUDED":
 						case "DKIM_SIGERROR_KEY_UNKNOWN_K":
 						case "DKIM_SIGERROR_KEY_HASHMISMATCH":
+						case "DKIM_SIGERROR_KEY_MISMATCHED_K":
 						case "DKIM_SIGERROR_KEY_NOTEMAILKEY":
 						case "DKIM_SIGERROR_KEYDECODE":
 							errorType = "DKIM_SIGERROR_KEY_INVALID";
