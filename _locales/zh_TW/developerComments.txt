@@ -1,0 +1,3 @@
+可以在 https://github.com/lieser/dkim_verifier/issues 或是直接寄電子郵件到 lieser+dkim@posteo.net (英文或德文) 來取得支援。
+
+建議以在 https://github.com/lieser/dkim_verifier/issues 建立 issue 的方式回報臭蟲。
