@@ -1,0 +1,773 @@
+{
+	// DKIM_STRINGS
+	"loading": {
+		"message": "驗證中…"
+	},
+	"SUCCESS": {
+		"message": "有效 (由 $1 簽署)"
+	},
+	"PERMFAIL": {
+		"message": "無效的簽章 ($1)"
+	},
+	"PERMFAIL_NO_REASON": {
+		"message": "無效的簽章"
+	},
+	"TEMPFAIL": {
+		"message": "暫時性的錯誤 (由 $1 簽署)"
+	},
+	"NOSIG": {
+		"message": "沒有簽章"
+	},
+	"NOT_EMAIL": {
+		"message": "不是電子郵件"
+	},
+	"SUCCESS_TAG": {
+		"message": "由 $1 簽署的 DKIM",
+		"description": "Tag shown in Conversation add-on for valid mail. Should be kept short."
+	},
+	"TEMPFAIL_TAG": {
+		"message": "DKIM 錯誤",
+		"description": "Tag shown in Conversation add-on for temporary failure. Should be kept short."
+	},
+	"PERMFAIL_TAG": {
+		"message": "DKIM 無效",
+		"description": "Tag shown in Conversation add-on for invalid mail. Should be kept short."
+	},
+	// DKIM_INTERNALERROR
+	"DKIM_INTERNALERROR": {
+		"message": "DKIM 驗證器內部錯誤"
+	},
+	"DKIM_INTERNALERROR_NAME": {
+		"message": "內部錯誤"
+	},
+	"DKIM_INTERNALERROR_DEFAULT": {
+		"message": "錯誤"
+	},
+	"DKIM_INTERNALERROR_INCORRECT_EMAIL_FORMAT": {
+		"message": "郵件格式錯誤"
+	},
+	"DKIM_INTERNALERROR_INCORRECT_FROM": {
+		"message": "寄件者欄位格式錯誤"
+	},
+	"ERROR_IMPORT_RULES": {
+		"message": "無法引入簽章規則。",
+		"description": "Error title if importing of sign rules failed."
+	},
+	"ERROR_IMPORT_RULES_UNKNOWN_DATA": {
+		"message": "簽章規則格式錯誤。",
+		"description": "Error message if the user tries to import some unknown data as sign rules."
+	},
+	"ERROR_IMPORT_RULES_UNSUPPORTED_FORMAT": {
+		"message": "不支援的簽章規則格式。",
+		"description": "Error message if the sign rules the user tried to import have an unsupported format."
+	},
+	// DKIM_INTERNALERROR - DNS
+	"DKIM_DNSERROR_UNKNOWN": {
+		"message": "DNS 解析內部錯誤"
+	},
+	"DKIM_DNSERROR_SERVER_ERROR": {
+		"message": "無法連線到 DNS 伺服器"
+	},
+	"DKIM_DNSERROR_DNSSEC_BOGUS": {
+		"message": "DNS 解析結果無效"
+	},
+	// DKIM_SIGERROR
+	"DKIM_SIGERROR": {
+		"message": "DKIM 簽章錯誤"
+	},
+	"DKIM_SIGERROR_DEFAULT": {
+		"message": "錯誤"
+	},
+	// DKIM_SIGERROR - DKIM-Signature Header
+	"DKIM_SIGERROR_ILLFORMED": {
+		"message": "格式錯誤"
+	},
+	"DKIM_SIGERROR_UNSUPPORTED": {
+		"message": "不支援的版本"
+	},
+	"DKIM_SIGERROR_ILLFORMED_TAGSPEC": {
+		"message": "格式錯誤"
+	},
+	"DKIM_SIGERROR_DUPLICATE_TAG": {
+		"message": "格式錯誤 (標籤重複)"
+	},
+	"DKIM_SIGERROR_VERSION": {
+		"message": "不支援的版本"
+	},
+	"DKIM_SIGERROR_MISSING_V": {
+		"message": "缺少版本標籤"
+	},
+	"DKIM_SIGERROR_ILLFORMED_V": {
+		"message": "版本格式錯誤"
+	},
+	"DKIM_SIGERROR_MISSING_A": {
+		"message": "未註明簽章演算法"
+	},
+	"DKIM_SIGERROR_UNKNOWN_A": {
+		"message": "不支援的簽章演算法"
+	},
+	"DKIM_SIGERROR_INSECURE_A": {
+		"message": "不安全的簽章演算法"
+	},
+	"DKIM_SIGERROR_ILLFORMED_A": {
+		"message": "無效的演算法標記"
+	},
+	"DKIM_SIGERROR_MISSING_B": {
+		"message": "缺少簽章"
+	},
+	"DKIM_SIGERROR_BADSIG": {
+		"message": "錯誤的簽章"
+	},
+	"DKIM_SIGERROR_ILLFORMED_B": {
+		"message": "簽章格式錯誤"
+	},
+	"DKIM_SIGERROR_MISSING_BH": {
+		"message": "缺少簽章雜湊值"
+	},
+	"DKIM_SIGERROR_CORRUPT_BH": {
+		"message": "郵件內容已被竄改"
+	},
+	"DKIM_SIGERROR_ILLFORMED_BH": {
+		"message": "簽章雜湊值格式錯誤"
+	},
+	"DKIM_SIGERROR_UNKNOWN_C_H": {
+		"message": "不支援的標頭正規化演算法"
+	},
+	"DKIM_SIGERROR_UNKNOWN_C_B": {
+		"message": "不支援的簽章正規化演算法"
+	},
+	"DKIM_SIGERROR_ILLFORMED_C": {
+		"message": "正規化演算法格式錯誤"
+	},
+	"DKIM_SIGERROR_MISSING_D": {
+		"message": "缺少 SDID 欄位"
+	},
+	"DKIM_SIGERROR_ILLFORMED_D": {
+		"message": "SDID 欄位格式錯誤"
+	},
+	"DKIM_SIGERROR_MISSING_H": {
+		"message": "缺少簽章標頭清單"
+	},
+	"DKIM_SIGERROR_MISSING_FROM": {
+		"message": "簽章並未包含寄件者欄位"
+	},
+	"DKIM_SIGERROR_ILLFORMED_H": {
+		"message": "簽章標頭清單格式錯誤"
+	},
+	"DKIM_SIGERROR_SUBDOMAIN_I": {
+		"message": "AUID 並不是 SDID 的子域名"
+	},
+	"DKIM_SIGERROR_DOMAIN_I": {
+		"message": "AUID 必須與 SDID 一致 (因為金鑰紀錄中有設置 s 標記)"
+	},
+	"DKIM_SIGERROR_ILLFORMED_I": {
+		"message": "SDID 格式錯誤"
+	},
+	"DKIM_SIGERROR_TOOLARGE_L": {
+		"message": "郵件比簽章中聲明的長度還短"
+	},
+	"DKIM_SIGERROR_ILLFORMED_L": {
+		"message": "內文長度格式錯誤"
+	},
+	"DKIM_SIGERROR_UNKNOWN_Q": {
+		"message": "不支援的公鑰取得方法"
+	},
+	"DKIM_SIGERROR_ILLFORMED_Q": {
+		"message": "公鑰取的方法格式錯誤"
+	},
+	"DKIM_SIGERROR_MISSING_S": {
+		"message": "缺少選擇器"
+	},
+	"DKIM_SIGERROR_ILLFORMED_S": {
+		"message": "選擇器格式錯誤"
+	},
+	"DKIM_SIGERROR_ILLFORMED_T": {
+		"message": "時戳格式錯誤"
+	},
+	"DKIM_SIGERROR_TIMESTAMPS": {
+		"message": "簽章已過期"
+	},
+	"DKIM_SIGERROR_ILLFORMED_X": {
+		"message": "簽章過期時間格式錯誤"
+	},
+	"DKIM_SIGERROR_ILLFORMED_Z": {
+		"message": "已複製標頭欄位格式錯誤"
+	},
+	// DKIM_SIGERROR - key query
+	"DKIM_SIGERROR_NOKEY": {
+		"message": "並未在 DNS 伺服器上找到金鑰"
+	},
+	// DKIM_SIGERROR - Key record
+	"DKIM_SIGERROR_KEY_ILLFORMED": {
+		"message": "DKIM 金鑰格式錯誤"
+	},
+	"DKIM_SIGERROR_KEY_INVALID": {
+		"message": "DKIM 金鑰無效"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_TAGSPEC": {
+		"message": "DKIM 金鑰格式錯誤"
+	},
+	"DKIM_SIGERROR_KEY_DUPLICATE_TAG": {
+		"message": "DKIM 金鑰格式錯誤 (重複的標記)"
+	},
+	"DKIM_SIGERROR_KEY_INVALID_V": {
+		"message": "無效的 DKIM 金鑰版本"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_V": {
+		"message": "DKIM 金鑰版本欄位格式錯誤"
+	},
+	"DKIM_SIGERROR_KEY_HASHNOTINCLUDED": {
+		"message": "並未於 DKIM 金鑰內指定的雜湊演算法"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_H": {
+		"message": "DKIM 金鑰內的雜湊演算法欄位格式錯誤"
+	},
+	"DKIM_SIGERROR_KEY_UNKNOWN_K": {
+		"message": "不支援的 DKIM 金鑰"
+	},
+	"DKIM_SIGERROR_KEY_MISMATCHED_K": {
+		"message": "簽章演算法與 DKIM 金鑰不符",
+		"description": "Error message if the signature algorithm in the DKIM Signature header (a-tag) does not match the key type of the DKIM key (k-tag)."
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_K": {
+		"message": "DKIM 金鑰類別格式錯誤"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_N": {
+		"message": "DKIM 金鑰附註格式錯誤"
+	},
+	"DKIM_SIGERROR_KEY_MISSING_P": {
+		"message": "DKIM 金鑰並未包含公鑰"
+	},
+	"DKIM_SIGERROR_KEY_REVOKED": {
+		"message": "DKIM 金鑰已被註銷"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_P": {
+		"message": "DKIM 金鑰的公鑰格式錯誤"
+	},
+	"DKIM_SIGERROR_KEY_NOTEMAILKEY": {
+		"message": "沒有適用於電子郵件的 DKIM 金鑰"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_S": {
+		"message": "DKIM 金鑰服務格式錯誤"
+	},
+	"DKIM_SIGERROR_KEY_TESTMODE": {
+		"message": "這個簽章域名為測試用途"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_T": {
+		"message": "DKIM 金鑰標記格式錯誤"
+	},
+	// DKIM_SIGERROR - key decode
+	"DKIM_SIGERROR_KEYDECODE": {
+		"message": "無法解析 DKIM 金鑰內的公鑰"
+	},
+	// DKIM_SIGERROR - POLICY
+	"DKIM_POLICYERROR_MISSING_SIG": {
+		"message": "應該由 $1 簽署"
+	},
+	"DKIM_POLICYERROR_KEYMISMATCH": {
+		"message": "已儲存的 DKIM 金鑰與目前的不同"
+	},
+	"DKIM_POLICYERROR_KEY_INSECURE": {
+		"message": "DKIM 金鑰並未受到 DNSSEC 保護"
+	},
+	"DKIM_POLICYERROR_WRONG_SDID": {
+		"message": "錯誤的簽署者 (應為 $1)"
+	},
+	"DKIM_POLICYERROR_UNSIGNED_HEADER_ADDED": {
+		"message": "額外的未簽署標頭欄位 '$1'",
+		"description": "Error if an important header was probably maliciously added later"
+	},
+	// DKIM_SIGWARNING
+	"DKIM_SIGWARNING_SMALL_L": {
+		"message": "郵件並未完全受到保護"
+	},
+	"DKIM_SIGWARNING_EXPIRED": {
+		"message": "簽章已經過期"
+	},
+	"DKIM_SIGWARNING_FUTURE": {
+		"message": "簽章尚未生效"
+	},
+	"DKIM_SIGWARNING_KEYSMALL": {
+		"message": "不安全的簽章 (金鑰長度太短)"
+	},
+	"DKIM_SIGWARNING_KEY_IS_WEAK": {
+		"message": "以弱金鑰簽署"
+	},
+	"DKIM_SIGWARNING_FROM_NOT_IN_SDID": {
+		"message": "寄件者欄位域名並未包含在 SDID 內"
+	},
+	"DKIM_SIGWARNING_FROM_NOT_IN_AUID": {
+		"message": "寄件者欄位域名並未包含在 AUID 內"
+	},
+	"DKIM_SIGWARNING_UNSIGNED_HEADER": {
+		"message": "標頭欄位 '$1' 未受到簽章保護",
+		"description": "Warning if an important header is not signed"
+	},
+	// JSDNS
+	"TOO_MANY_HOPS": {
+		"message": "DNS 查詢遞迴過深。"
+	},
+	"CONNECTION_REFUSED": {
+		"message": "DNS 伺服器 $1 拒絕以 TCP 連線。"
+	},
+	"TIMED_OUT": {
+		"message": "DNS 伺服器 $1 TCP 連線超時。"
+	},
+	"SERVER_ERROR": {
+		"message": "在連線到 DNS 伺服器 $1 時發生錯誤。"
+	},
+	"INCOMPLETE_RESPONSE": {
+		"message": "$1 回傳了不完整的內容。"
+	},
+	// ==================== Options window ====================
+	"options_prefwindow.title": {
+		"message": "DKIM 驗證器選項"
+	},
+	// -------------------- General options --------------------
+	"options_general": {
+		"message": "一般"
+	},
+	// ---------- General options tab ----------
+	"options_general.general": {
+		"message": "一般"
+	},
+	"options_dkim.enable": {
+		"message": "驗證 DKIM 簽章"
+	},
+	"options_key.storing.value.0": {
+		"message": "不儲存 DKIM 金鑰"
+	},
+	"options_key.storing.value.1": {
+		"message": "儲存 DKIM 金鑰"
+	},
+	"options_key.storing.value.2": {
+		"message": "儲存 DKIM 金鑰並與目前金鑰比對"
+	},
+	"options_key.viewKeys": {
+		"message": "DKIM 金鑰…"
+	},
+	"options_saveResult": {
+		"message": "儲存驗證結果"
+	},
+	// ---------- DNS options tab ----------
+	"options_dns": {
+		"message": "DNS"
+	},
+	"options_dns.resolver": {
+		"message": "解析器"
+	},
+	"options_dns.resolver.value.1": {
+		"message": "JavaScript DNS 函式庫"
+	},
+	"options_dns.resolver.value.2": {
+		"message": "libunbound"
+	},
+	"options_dns.getNameserversFromOS": {
+		"message": "從系統設定取得 DNS 伺服器"
+	},
+	"options_dns.nameserver": {
+		"message": "DNS 伺服器 (語法 (EBNF): host[\":\"port]{\";\"host[\":\"port]} )"
+	},
+	"options_dns.timeout_connect": {
+		"message": "DNS 連接超時 (秒)"
+	},
+	"options_dns.proxy.enable": {
+		"message": "使用代理伺服器連接 DNS 伺服器"
+	},
+	"options_dns.proxy.type": {
+		"message": "代理伺服器類型:"
+	},
+	"options_dns.proxy.host": {
+		"message": "主機位址:"
+	},
+	"options_dns.proxy.port": {
+		"message": "埠號:"
+	},
+	"options_dns.libunbound.nameserver": {
+		"message": "DNS 伺服器 (語法 (EBNF): IP{\";\"IP} )"
+	},
+	"options_dns.libunbound.usageWarning": {
+		"message": "libunbound 解析器需要外部安裝的函式庫"
+	},
+	"options_dns.libunbound.path": {
+		"message": "路徑"
+	},
+	"options_dns.libunbound.path.relToProfileDir": {
+		"message": "相對於設定檔的路徑"
+	},
+	// ---------- Policy options tab ----------
+	"options_general.policy": {
+		"message": "規則"
+	},
+	"options_policy.signRules.enable": {
+		"message": "檢查郵件是否應被簽署"
+	},
+	"options_policy.signRules.checkDefaultRules": {
+		"message": "使用預設規則"
+	},
+	"options_policy.signRules.autoAddRule.enable": {
+		"message": "自動依照已檢視過的郵件 DKIM 結果新增規則"
+	},
+	"options_policy.signRules.autoAddRule.onlyIfFromAddressInSDID": {
+		"message": "只在寄件者符合 SDID 時加入"
+	},
+	"options_policy.signRules.autoAddRule.for.value.0": {
+		"message": "寄件者"
+	},
+	"options_policy.signRules.autoAddRule.for.value.1": {
+		"message": "子域名"
+	},
+	"options_policy.signRules.autoAddRule.for.value.2": {
+		"message": "基底域名"
+	},
+	"options_policy.signRules.sdid.allowSubDomains": {
+		"message": "也允許 SDID 的子域名"
+	},
+	"options_policy.signRules.error.wrong_sdid.asWarning": {
+		"message": "將 SDID 不符合視為警告而非錯誤"
+	},
+	"options_viewSigners": {
+		"message": "簽署者規則…"
+	},
+	"options_viewSignerDefaults": {
+		"message": "預設簽署者規則…"
+	},
+	"options_policy.DMARC.shouldBeSigned.enable": {
+		"message": "使用 DMARC 推測郵件是否應被簽署"
+	},
+	"options_policy.dkim.unsignedHeadersWarning.mode": {
+		"message": "警告建議簽署但未被簽署的欄位",
+		"description": "Description for the setting of the unsigned headers warning mode."
+	},
+	"options_policy.dkim.unsignedHeadersWarning.mode.relaxed": {
+		"message": "寬鬆",
+		"description": "A relaxed mode that will try to avoid showing warnings."
+	},
+	"options_policy.dkim.unsignedHeadersWarning.mode.recommended": {
+		"message": "建議",
+		"description": "A mode trying to enforce best practice without showing to many warnings."
+	},
+	"options_policy.dkim.unsignedHeadersWarning.mode.strict": {
+		"message": "嚴格",
+		"description": "A strict mode that will potentially show a lot of warnings."
+	},
+	// -------------------- Display options --------------------
+	"options_display": {
+		"message": "顯示"
+	},
+	"options_showDKIMHeader": {
+		"message": "顯示 DKIM 標頭"
+	},
+	"options_showDKIMFromTooltip": {
+		"message": "在寄件者欄位的提示中顯示 DKIM 資訊"
+	},
+	"options_showDKIM.value.0": {
+		"message": "永不"
+	},
+	"options_showDKIM.value.10": {
+		"message": "當檢視具有有效的 DKIM 簽章的郵件時"
+	},
+	"options_showDKIM.value.30": {
+		"message": "當檢視具有 DKIM 簽章的郵件時"
+	},
+	"options_showDKIM.value.40": {
+		"message": "檢視郵件時"
+	},
+	"options_showDKIM.value.50": {
+		"message": "檢視訊息時"
+	},
+	"options_colorFrom": {
+		"message": "啟用寄件者欄位上色"
+	},
+	"options_color": {
+		"message": "顏色"
+	},
+	"options_color.text": {
+		"message": "文字:"
+	},
+	"options_color.background": {
+		"message": "背景:"
+	},
+	"options_color.success": {
+		"message": "有效簽章"
+	},
+	"options_color.warning": {
+		"message": "有效簽章但有警告"
+	},
+	"options_color.permfail": {
+		"message": "無效簽章"
+	},
+	"options_color.tempfail": {
+		"message": "暫時性錯誤"
+	},
+	"options_color.nosig": {
+		"message": "未簽章"
+	},
+	"options_display.favicon.show": {
+		"message": "在寄件者地址前顯示已知簽章者域名的圖示"
+	},
+	// -------------------- Advanced options --------------------
+	"options_advanced": {
+		"message": "進階"
+	},
+	"options_debug": {
+		"message": "啟用除錯 (在錯誤主控台顯示錯誤及除錯資訊)"
+	},
+	"options_error.detailedReasons": {
+		"message": "顯示詳細錯誤原因"
+	},
+	"options_error.key_testmode.ignore": {
+		"message": "即便域名只是測試 DKIM，也要驗證簽章"
+	},
+	"options_error.illformed_i.treatAs": {
+		"message": "將錯誤的 AUID 欄位視為"
+	},
+	"options_error.illformed_s.treatAs": {
+		"message": "將錯誤的選擇器視為"
+	},
+	"options_error.policy.key_insecure.treatAs": {
+		"message": "將未受到 DNSSEC 保護的 DKIM 金鑰視為"
+	},
+	"options_error.algorithm.sign.rsa-sha1.treatAs": {
+		"message": "將 RSA-SHA1 簽章演算法視為"
+	},
+	"options_error.algorithm.rsa.weakKeyLength.treatAs": {
+		"message": "將脆弱的 RSA 金鑰 (<2048 bits) 視為"
+	},
+	"options_error.treatAs.value.0": {
+		"message": "錯誤"
+	},
+	"options_error.treatAs.value.1": {
+		"message": "警告"
+	},
+	"options_error.treatAs.value.2": {
+		"message": "沒有問題"
+	},
+	"options_display.keySecure": {
+		"message": "在 SDID 後顯示鎖頭圖示表示其通過 DNSSEC 檢驗"
+	},
+	"options_arh.read": {
+		"message": "讀取 Authentication-Results 標頭"
+	},
+	"options_arh.replaceAddonResult": {
+		"message": "以 Authentication-Results 標頭取代這個擴充功能的驗證結果"
+	},
+	"options_arh.relaxedParsing": {
+		"message": "試著讀取並未遵循 RFC 生成的 Authentication-Results 標頭"
+	},
+	// -------------------- Account options --------------------
+	"options_account": {
+		"message": "帳號",
+		"description": "Title for account specific options"
+	},
+	"options_acc.dkim.enable": {
+		"message": "驗證 DKIM 簽章:"
+	},
+	"options_acc.arh.read": {
+		"message": "讀取 Authentication-Results 標頭:"
+	},
+	"options_acc.arh.allowedAuthserv": {
+		"message": "受信任的驗證伺服器:"
+	},
+	"options_acc.boolean.value.0": {
+		"message": "使用預設值"
+	},
+	"options_acc.boolean.value.1": {
+		"message": "是"
+	},
+	"options_acc.boolean.value.2": {
+		"message": "否"
+	},
+	// -------------------- About --------------------
+	"about": {
+		"message": "關於"
+	},
+	"about_name": {
+		"message": "DKIM Verifier",
+		"description": "Name of the add-on"
+	},
+	"about_summary": {
+		"message": "驗證電子郵件的 DKIM 簽章。",
+		"description": "Short description of the add-on"
+	},
+	"about_homepage": {
+		"message": "首頁"
+	},
+	"about_documentation": {
+		"message": "文件",
+		"description": "Link text for GitHub documentation page"
+	},
+	"about_contributors": {
+		"message": "GitHub 貢獻者",
+		"description": "Link text for GitHub contributors page"
+	},
+	"about_translators": {
+		"message": "翻譯者:",
+		"description": "Heading for list of translators"
+	},
+	"about_dependencies": {
+		"message": "使用的函式庫:",
+		"description": "Heading for list of included dependencies"
+	},
+	"about_by": {
+		"message": "by",
+		"description": "<dependency name> by <author>"
+	},
+	// ==================== Actions ====================
+	"dkim_verifier.reverifyDKIMSignature": {
+		"message": "重新驗證 DKIM 簽章"
+	},
+	"dkim_verifier.policyAddUserException": {
+		"message": "新增為例外"
+	},
+	"dkim_verifier.markKeyAsSecure": {
+		"message": "標記為安全"
+	},
+	"dkim_verifier.updateKey": {
+		"message": "更新 DKIM 金鑰"
+	},
+	// ==================== Table Views ====================
+	"treeviewKeys.title": {
+		"message": "DKIM 金鑰",
+		"description": "Title of the DKIM keys table view."
+	},
+	"treeviewKeys.treecol.SDID": {
+		"message": "SDID"
+	},
+	"treeviewKeys.treecol.selector": {
+		"message": "選擇器"
+	},
+	"treeviewKeys.treecol.key": {
+		"message": "DKIM 金鑰"
+	},
+	"treeviewKeys.treecol.insertedAt": {
+		"message": "加入時間"
+	},
+	"treeviewKeys.treecol.lastUsedAt": {
+		"message": "最近一次使用"
+	},
+	"treeviewKeys.treecol.secure": {
+		"message": "DNSSEC"
+	},
+	"treeviewKeys.deleteSelectedRows": {
+		"message": "刪除已選擇的金鑰"
+	},
+	"treeviewSigners.user.title": {
+		"message": "簽署者規則"
+	},
+	"treeviewSigners.default.title": {
+		"message": "預設簽署者規則"
+	},
+	"treeviewSigners.treecol.domain": {
+		"message": "域名"
+	},
+	"treeviewSigners.treecol.listId": {
+		"message": "郵件清單 Id"
+	},
+	"treeviewSigners.treecol.addr": {
+		"message": "寄件者"
+	},
+	"treeviewSigners.treecol.sdid": {
+		"message": "SDID"
+	},
+	"treeviewSigners.treecol.ruletype": {
+		"message": "規則類型"
+	},
+	"treeviewSigners.treecol.priority": {
+		"message": "優先順序"
+	},
+	"treeviewSigners.treecol.enabled": {
+		"message": "已啟用"
+	},
+	"treeviewSigners.addSignersRule": {
+		"message": "新增規則…"
+	},
+	"treeviewSigners.deleteSelectedRows": {
+		"message": "刪除已選取的規則"
+	},
+	"treeviewSigners.exportRules": {
+		"message": "匯出規則…",
+		"description": "Button for exporting sign rules"
+	},
+	"treeviewSigners.importRules": {
+		"message": "匯入規則…",
+		"description": "Button for importing sign rules"
+	},
+	"importRules.title": {
+		"message": "匯入規則",
+		"description": "Title for import dialog"
+	},
+	"importRules.replaceQuestion": {
+		"message": "請問匯入的規則應該要附加到目前規則或是覆蓋？",
+		"description": "Question asked in import dialog"
+	},
+	"importRules.addRules": {
+		"message": "新增規則",
+		"description": "Button in import dialog for adding rules to existing rules"
+	},
+	"importRules.replaceRules": {
+		"message": "覆蓋規則",
+		"description": "Button in import dialog for replacing existing rules"
+	},
+	"addSignersRule.title": {
+		"message": "新增簽署者規則"
+	},
+	"addSignersRule.button.add": {
+		"message": "新增規則",
+		"description": "Button for confirming adding of sign rule."
+	},
+	"signRules.ruletype.SIGNED": {
+		"message": "必須簽署 (1)"
+	},
+	"signRules.ruletype.NEUTRAL": {
+		"message": "可簽署 (2)"
+	},
+	"signRules.ruletype.HIDEFAIL": {
+		"message": "略過無效的簽章 (3)"
+	},
+	"signRules.priorityMode.auto": {
+		"message": "自動選取優先順序"
+	},
+	"signRules.priorityMode.manual": {
+		"message": "將優先權重設定為"
+	},
+	"button.cancel": {
+		"message": "取消"
+	},
+	"button.help": {
+		"message": "說明…"
+	},
+	"signersRuleHelp.title": {
+		"message": "簽署者規則說明"
+	},
+	"domain.description": {
+		"message": "會與寄件者欄位的基底域名進行比對。舉例來說, 「mail.example.com.tw」 的基底域名會是 「example.com.tw」。"
+	},
+	"listId.description": {
+		"message": "如果該郵件是透過郵件清單寄達，會與郵件清單的 Id 進行比對。請注意只有 List-Id 標頭在 '<' 及 '>' 之間的部份才是真正的郵件清單 Id。域名或是郵件清單 Id 符合都會觸發。"
+	},
+	"addr.description": {
+		"message": "會與寄件者地址進行比對。使用「*」來比對任意數量的字元。"
+	},
+	"sdid.description": {
+        "message": "符合的郵件必須由這個域名簽署。如果留空代表允許任意的 SDID。可以使用空白分隔來指定多個域名。"
+	},
+	"ruletype.description": {
+		"message": "規則類型"
+	},
+	"ruletype.1.description": {
+		"message": "郵件必須由指定的 SDID 簽署。"
+	},
+	"ruletype.2.description": {
+		"message": "郵件可以不簽署。但若存在簽章，必須由指定的 SDID 簽署。"
+	},
+	"ruletype.3.description": {
+		"message": "郵件可以不簽署。但若存在簽章，必須由指定的 SDID 簽署。若是簽章無效則視為未簽署。"
+	},
+	"priority.description": {
+		"message": "規則的優先權重。如果同時符合多個規則，則套用最高優先權重的規則。"
+	},
+	"enabled.description": {
+		"message": "1 代表啟用。0 代表停用。"
+	}
+}
