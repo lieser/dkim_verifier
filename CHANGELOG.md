@@ -6,6 +6,11 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+### Fixes
+
+- Fixed extension not working for attached or external messages (#216).
+  Requires Thunderbird 106 or later.
+
 ### Other
 
 - added Traditional Chinese translation (by NightFeather) (#335)
