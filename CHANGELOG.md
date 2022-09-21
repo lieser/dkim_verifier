@@ -4,6 +4,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+### Other
+
+- added Traditional Chinese translation (by NightFeather) (#335)
+
 ## 5.1.1 (2022-08-15)
 
 ### Fixes
