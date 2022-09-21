@@ -26,6 +26,8 @@ var EXPORTED_SYMBOLS = [
 ];
 
 // @ts-ignore
+const Cc = Components.classes;
+const Ci = Components.interfaces;
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
@@ -406,6 +408,102 @@ var Policy = {
 				warnings.push({name: "DKIM_SIGWARNING_FROM_NOT_IN_AUID"});
 				log.debug("Warning: DKIM_SIGWARNING_FROM_NOT_IN_AUID");
 			}
+		}
+	},
+
+	/**
+	 * Check that the list of signed headers satisfy our policies.
+	 * - Warn if recommended headers are not signed.
+	 * - Try detecting maliciously added unsigned headers.
+	 *
+	 * The detection for maliciously added unsigned headers 
+	 * only considers all the recommended signed headers.
+	 * It simply ensures that a message does not contain both 
+	 * signed and unsigned values of a header.
+	 * Using the same mechanism for all signed headers 
+	 * will cause problems there added headers is normal
+	 * e.g. the Received header.
+	 *
+ 	 * @param {MAP<String,String>} msgHeaders
+	 *			All headers of the message to check as headername-value-pair
+	 * @param {Object} DKIMSignature
+	 *			DKIMSignature of the message
+	 * @returns {void}
+	 */	
+	checkHeadersSigned: function Policy_checkHeadersSigned(msgHeaders, DKIMSignature) {
+		
+		const POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE = {
+			RELAXED : 10,
+			RECOMMENDED : 20,
+			STRICT : 30
+		}
+		
+		// The list of recommended headers to sign is mostly based on
+		// https://www.rfc-editor.org/rfc/rfc6376.html#section-5.4.
+		const SIGNEDHEADERS = {
+			REQUIRED : ["From", "Subject"],
+			RECOMMENDED : ["Date", "To", "Cc", "Resent-Date", "Resent-From", "Resent-To", "Resent-Cc", "In-Reply-To", "References", "List-Id", "List-Help", "List-Unsubscribe", "List-Subscribe", "List-Post", "List-Owner", "List-Archive"],
+			DESIRED : ["Message-ID", "Sender", "MIME-Version", "Content-Transfer-Encoding", "Content-Disposition", "Content-ID", "Content-Description"]
+		};
+	
+		// We would like Reply-To to be in the recommended list.
+		// As some bigger domains violate this, we will only enforce it if the Reply-To is not in the signing domain, but a valid email address
+		const replyTo = msgHeaders.get("reply-to");
+		let replyToAddress = null;
+		if (replyTo && replyTo[0]) {
+			let msgHeaderParser = Cc["@mozilla.org/messenger/headerparser;1"].createInstance(Ci.nsIMsgHeaderParser); 
+			replyToAddress = msgHeaderParser.extractHeaderAddressMailboxes(replyTo[0]); 
+			if (!replyToAddress) {
+				log.warn("Ignoring error in parsing of Reply-To header", replyTo[0]);
+			}
+		}
+		if (replyToAddress && addrIsInDomain(replyToAddress, DKIMSignature.d))
+		{
+			SIGNEDHEADERS.DESIRED.push("Reply-To");			
+		} else {
+			SIGNEDHEADERS.RECOMMENDED.push("Reply-To");
+		}
+		
+		// If the body is not completely signed, a manipulated Content-Type header
+		// can cause completely different content to be shown.
+		if (DKIMSignature.warnings.some(warning => warning.name === "DKIM_SIGWARNING_SMALL_L")) {
+			SIGNEDHEADERS.REQUIRED.push("Content-Type");
+		} else if (DKIMSignature.l !== null) {
+			SIGNEDHEADERS.RECOMMENDED.push("Content-Type");
+		} else {
+			SIGNEDHEADERS.DESIRED.push("Content-Type");
+		}
+		
+		/**
+		 * @param {string} header
+		 * @param {boolean} warnIfUnsigned
+		 * @returns {void}
+ 		 * @throws {DKIM_SigError}
+		 */
+		const checkSignedHeader = (header, warnIfUnsigned) => {
+			const headerLowerCase = header.toLowerCase();
+			const signedCount = DKIMSignature.h_array.filter(e => e === headerLowerCase).length;
+			const unsignedCount = msgHeaders.get(headerLowerCase) ? msgHeaders.get(headerLowerCase).length : 0;
+			if (signedCount > 0 && signedCount < unsignedCount) {
+				throw new DKIM_SigError("DKIM_POLICYERROR_UNSIGNED_HEADER_ADDED", [header]);
+			}
+			if (warnIfUnsigned && signedCount < unsignedCount) {
+				DKIMSignature.warnings.push({ name: "DKIM_SIGWARNING_UNSIGNED_HEADER", params: [header] });
+				log.debug(`Warning: DKIM_SIGWARNING_UNSIGNED_HEADER (${header})`);
+			}
+		};
+
+		for (const header of SIGNEDHEADERS.REQUIRED) {
+			checkSignedHeader(header, prefs["dkim.unsignedHeadersWarning.mode"] >=
+				POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE.RELAXED);
+		}
+		for (const header of SIGNEDHEADERS.RECOMMENDED) {
+			checkSignedHeader(header, prefs["dkim.unsignedHeadersWarning.mode"] >=
+				POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE.RECOMMENDED);
+		}
+		for (const header of SIGNEDHEADERS.DESIRED) {
+			checkSignedHeader(header, prefs["dkim.unsignedHeadersWarning.mode"] >=
+				POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE.STRICT);
 		}
 	},
 
