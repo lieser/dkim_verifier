@@ -436,7 +436,7 @@
 		"message": "Usa DMARC per determinare euristicamente se un’email dovrebbe essere firmata"
 	},
 	"options_policy.dkim.unsignedHeadersWarning.mode": {
-		"message": "Avvisa quando ci sono intestazioni non firmate che invece è consigliato lo siano: ",
+		"message": "Avvisa quando ci sono intestazioni non firmate che invece è consigliato lo siano:",
 		"description": "Description for the setting of the unsigned headers warning mode."
 	},
 	"options_policy.dkim.unsignedHeadersWarning.mode.relaxed": {

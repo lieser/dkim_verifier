@@ -274,7 +274,7 @@
 		"message": "Falscher Signierer (sollte $1 sein)"
 	},
 	"DKIM_POLICYERROR_UNSIGNED_HEADER_ADDED": {
-		"message": "Unsignierter Header '$1' wurde hinzugefügt",
+		"message": "Unsignierte Kopfzeile '$1' wurde hinzugefügt",
 		"description": "Error if an important header was probably maliciously added later"
 	},
 	// DKIM_SIGWARNING
@@ -300,7 +300,7 @@
 		"message": "Absender passt nicht zur Benutzeridentität"
 	},
 	"DKIM_SIGWARNING_UNSIGNED_HEADER": {
-		"message": "Header '$1' ist nicht signiert",
+		"message": "Kopfzeile '$1' ist nicht signiert",
 		"description": "Warning if an important header is not signed"
 	},
 	// JSDNS
@@ -436,7 +436,7 @@
 		"message": "DMARC benutzen, um heuristisch zu bestimmen, ob eine E-Mail signiert sein sollte"
 	},
 	"options_policy.dkim.unsignedHeadersWarning.mode": {
-		"message": "Warne über unsignierte Header die empfohlen sind signiert zu werden: ",
+		"message": "Warne vor unsignierten Kopfzeilen, die signiert sein sollten: ",
 		"description": "Description for the setting of the unsigned headers warning mode."
 	},
 	"options_policy.dkim.unsignedHeadersWarning.mode.relaxed": {

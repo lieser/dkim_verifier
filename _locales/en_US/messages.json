@@ -436,7 +436,7 @@
 		"message": "Use DMARC to heuristically determine if an e-mail should be signed"
 	},
 	"options_policy.dkim.unsignedHeadersWarning.mode": {
-		"message": "Warn about unsigned headers that are recommended to be signed: ",
+		"message": "Warn about unsigned headers that are recommended to be signed:",
 		"description": "Description for the setting of the unsigned headers warning mode."
 	},
 	"options_policy.dkim.unsignedHeadersWarning.mode.relaxed": {

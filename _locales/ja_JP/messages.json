@@ -436,7 +436,7 @@
 		"message": "メールが署名されているべきかをヒューリスティックに決定するために DMARC を利用"
 	},
 	"options_policy.dkim.unsignedHeadersWarning.mode": {
-		"message": "署名されていることが望ましいヘッダが未署名であることの警告: ",
+		"message": "署名されていることが望ましいヘッダが未署名であることの警告:",
 		"description": "Description for the setting of the unsigned headers warning mode."
 	},
 	"options_policy.dkim.unsignedHeadersWarning.mode.relaxed": {
