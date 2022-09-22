@@ -6,7 +6,7 @@
 
 <prefpane id="paneGeneral" onpaneload="gDKIMOptionsGeneralPane.init();">
 	<script type="application/javascript" src="chrome://dkim_verifier/content/options_general.js"/>
-	
+
 	<preferences>
 		<!-- general tab -->
 		<preference id="pref_dkim.enable"
@@ -33,7 +33,7 @@
 		<preference id="pref_dns.nameserver"
 		            name="extensions.dkim_verifier.dns.nameserver"
 		            type="string"/>
-		
+
 		<preference id="pref_dns.timeout_connect"
 		            name="extensions.dkim_verifier.dns.timeout_connect"
 		            type="int"/>
@@ -49,7 +49,7 @@
 		<preference id="pref_dns.proxy.port"
 		            name="extensions.dkim_verifier.dns.proxy.port"
 		            type="string"/>
-		
+
 		<preference id="pref_dns.libunbound.path"
 		            name="extensions.dkim_verifier.dns.libunbound.path"
 		            type="string"/>
@@ -83,15 +83,18 @@
 		<preference id="pref_policy.DMARC.shouldBeSigned.enable"
 		            name="extensions.dkim_verifier.policy.DMARC.shouldBeSigned.enable"
 		            type="bool"/>
+		<preference id="pref_policy.dkim.unsignedHeadersWarning.mode"
+					name="extensions.dkim_verifier.policy.dkim.unsignedHeadersWarning.mode"
+					type="int"/>
 	</preferences>
-	
+
 	<tabbox>
 		<tabs>
 			<tab label="&general.general.label;"/>
 			<tab label="&dns.label;"/>
 			<tab label="&general.policy.label;"/>
 		</tabs>
-		
+
 		<tabpanels>
 			<!-- general tab -->
 			<tabpanel orient="vertical">
@@ -114,7 +117,7 @@
 				<checkbox preference="pref_saveResult" label="&saveResult.label;"/>
 				<checkbox preference="pref_arh.read" label="&arh.read.label;"/>
 			</tabpanel>
-			
+
 			<!-- DNS tab -->
 			<tabpanel orient="vertical">
 				<hbox align="center">
@@ -128,12 +131,12 @@
 						</menupopup>
 					</menulist>
 				</hbox>
-				
+
 				<checkbox preference="pref_dns.getNameserversFromOS"
 				          label="&dns.getNameserversFromOS.label;"/>
 				<label control="dns.nameserver">&dns.nameserver.label;</label>
 				<textbox id="dns.nameserver" preference="pref_dns.nameserver"/>
-				
+
 				<deck id="resolverDeck">
 					<groupbox>
 						<caption label="&dns.resolver.value.1.label;"/>
@@ -169,10 +172,10 @@
 							</hbox>
 						</vbox>
 					</groupbox>
-					
+
 					<groupbox>
 						<caption label="&dns.resolver.value.2.label;"/>
-						
+
 						<hbox align="center">
 							<label value="&dns.libunbound.path.label;"/>
 							<textbox preference="pref_dns.libunbound.path" flex ="1"/>
@@ -182,7 +185,7 @@
 					</groupbox>
 				</deck>
 			</tabpanel>
-			
+
 			<!-- policy tab -->
 			<tabpanel orient="vertical">
 				<checkbox id="policy.signRules.enable"
@@ -230,6 +233,20 @@
 						        label="&viewSignerDefaults.label;"
 						        oncommand="window.open('chrome://dkim_verifier/content/treeviewSignersDefault.xul', 'SignersDefaultRules', 'chrome,resizable,centerscreen,width=600,height=300');"/>
 						<spacer/>
+					</hbox>
+				</vbox>
+				<vbox>
+					<hbox align="center">
+						<label id="policy.dkim.unsignedHeadersWarning.mode.label"
+								value="&policy.unsigned_header.mode;"/>
+						<menulist id="policy.dkim.unsignedHeadersWarning.mode"
+									preference="pref_policy.dkim.unsignedHeadersWarning.mode">
+							<menupopup>
+								<menuitem label="&policy.unsigned_header.mode.value.0.label;" value="10"/>
+								<menuitem label="&policy.unsigned_header.mode.value.1.label;" value="20"/>
+								<menuitem label="&policy.unsigned_header.mode.value.2.label;" value="30"/>
+							</menupopup>
+						</menulist>
 					</hbox>
 				</vbox>
 			</tabpanel>

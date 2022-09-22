@@ -97,3 +97,8 @@
 <!ENTITY acc.boolean.value.0.label "Alapértelmezett érték használata">
 <!ENTITY acc.boolean.value.1.label "Igen">
 <!ENTITY acc.boolean.value.2.label "Nem">
+
+<!ENTITY policy.unsigned_header.mode "Warn about unsigned headers that are recommended to be signed:">
+<!ENTITY policy.unsigned_header.mode.value.0.label "Relaxed">
+<!ENTITY policy.unsigned_header.mode.value.1.label "Recommended">
+<!ENTITY policy.unsigned_header.mode.value.2.label "Strict">
