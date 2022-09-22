@@ -76,3 +76,8 @@
 <!ENTITY acc.boolean.value.0.label "使用默认值">
 <!ENTITY acc.boolean.value.1.label "是">
 <!ENTITY acc.boolean.value.2.label "否">
+
+<!ENTITY policy.unsigned_header.mode "Warn about unsigned headers that are recommended to be signed:">
+<!ENTITY policy.unsigned_header.mode.value.0.label "Relaxed">
+<!ENTITY policy.unsigned_header.mode.value.1.label "Recommended">
+<!ENTITY policy.unsigned_header.mode.value.2.label "Strict">

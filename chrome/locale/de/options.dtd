@@ -97,3 +97,8 @@
 <!ENTITY acc.boolean.value.0.label "Benutzte Standardwert">
 <!ENTITY acc.boolean.value.1.label "Ja">
 <!ENTITY acc.boolean.value.2.label "Nein">
+
+<!ENTITY policy.unsigned_header.mode "Warne vor unsignierten Kopfzeilen, die signiert sein sollten:">
+<!ENTITY policy.unsigned_header.mode.value.0.label "Tolerant">
+<!ENTITY policy.unsigned_header.mode.value.1.label "Empfohlen">
+<!ENTITY policy.unsigned_header.mode.value.2.label "Streng">
