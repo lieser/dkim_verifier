@@ -4,15 +4,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+### Fixes
+
+- Fixed extension not working for attached or external messages (#216).
+  Requires Thunderbird 106 or later.
+
+### Other
+
+- added Traditional Chinese translation (by NightFeather) (#335)
+
 ## 5.1.1 (2022-08-15)
 
 ### Fixes
 
-- Invalid Reply-To header is now ignored instead of resulting in internal error.
+- Invalid Reply-To header is now ignored instead of resulting in internal error (#321).
 
 ### Other
 
-- updated default rules and favicons (#323, #326, #327)
+- Updated default rules and favicons (#323, #326, #327).
 
 ## 5.1.0 (2022-07-17)
 

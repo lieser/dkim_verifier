@@ -477,11 +477,13 @@ describe("preferences [unittest]", function () {
 			expect(pref["account.dkim.enable"]("fooAccount")).to.be.equal(true);
 			expect(pref["account.arh.read"]("barAccount")).to.be.equal(false);
 			expect(pref["account.arh.allowedAuthserv"]("fooAccount")).to.be.equal("");
+			expect(pref["account.arh.read"](undefined)).to.be.equal(false);
 
 			pref.setValue("dkim.enable", false);
 			pref.setValue("arh.read", true);
 			expect(pref["account.dkim.enable"]("fooAccount")).to.be.equal(false);
 			expect(pref["account.arh.read"]("barAccount")).to.be.equal(true);
+			expect(pref["account.arh.read"](undefined)).to.be.equal(true);
 		});
 		it("account specific setting", function () {
 			pref.setAccountValue("dkim.enable", "fooAccount", 2);

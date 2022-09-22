@@ -534,10 +534,13 @@ export class BasePreferences {
 	 *
 	 * @private
 	 * @param {string} name
-	 * @param {string} account
+	 * @param {string|undefined} account
 	 * @returns {boolean}
 	 */
 	_getAccountBoolWithDefault(name, account) {
+		if (!account) {
+			return this.getBool(name);
+		}
 		// 0: default, 1: yes, 2: no
 		const accBool = this._tryGetNumberValue(`account.${account}.${name}`, 0);
 		switch (accBool) {
@@ -553,7 +556,7 @@ export class BasePreferences {
 	}
 
 	/**
-	 * @param {string} account
+	 * @param {string|undefined} account
 	 * @returns {boolean}
 	 */
 	"account.dkim.enable"(account) {
@@ -561,7 +564,7 @@ export class BasePreferences {
 	}
 
 	/**
-	 * @param {string} account
+	 * @param {string|undefined} account
 	 * @returns {boolean}
 	 */
 	"account.arh.read"(account) {
@@ -569,7 +572,7 @@ export class BasePreferences {
 	}
 
 	/**
-	 * @param {string} account
+	 * @param {string|undefined} account
 	 * @returns {string}
 	 */
 	"account.arh.allowedAuthserv"(account) {

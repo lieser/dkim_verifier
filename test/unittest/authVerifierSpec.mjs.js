@@ -231,6 +231,9 @@ describe("AuthVerifier [unittest]", function () {
 			expect(res.dkim[0]?.result).to.be.equal("PERMFAIL");
 			expect(res.dkim[0]?.result_str).to.be.equal("Invalid (Should be signed by paypal.com)");
 
+			if (!fakePayPalMessage.folder) {
+				throw new Error("Expect faked message to be in a fake folder");
+			}
 			fakePayPalMessage.folder.type = "sent";
 
 			res = await authVerifier.verify(fakePayPalMessage);

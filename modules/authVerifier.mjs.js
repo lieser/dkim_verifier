@@ -157,7 +157,7 @@ export default class AuthVerifier {
 		}
 
 		// read Authentication-Results header
-		const arhResult = await getARHResult(message, msg.headerFields, msg.from, listId, message.folder.accountId, this._dmarc);
+		const arhResult = await getARHResult(message, msg.headerFields, msg.from, listId, message.folder?.accountId, this._dmarc);
 
 		if (arhResult) {
 			if (prefs["arh.replaceAddonResult"]) {
@@ -181,7 +181,7 @@ export default class AuthVerifier {
 		}
 
 		if (!savedAuthResult.dkim || savedAuthResult.dkim.length === 0) {
-			if (prefs["account.dkim.enable"](message.folder.accountId)) {
+			if (prefs["account.dkim.enable"](message.folder?.accountId)) {
 				// verify DKIM signatures
 				const dkimResultV2 = await this._dkimVerifier.verify(msg);
 
@@ -221,7 +221,7 @@ export default class AuthVerifier {
  * @param {Map<string, string[]>} headers
  * @param {string} from
  * @param {string?} listId
- * @param {string} account
+ * @param {string|undefined} account
  * @param {DMARC} dmarc
  * @returns {Promise<SavedAuthResult|null>}
  */

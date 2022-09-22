@@ -436,7 +436,7 @@
 		"message": "Використовуйте DMARC, щоб евристично визначити, чи потрібно підписувати електронний лист"
 	},
 	"options_policy.dkim.unsignedHeadersWarning.mode": {
-		"message": "Попереджати про непідписані заголовки, які рекомендується підписувати: ",
+		"message": "Попереджати про непідписані заголовки, які рекомендується підписувати:",
 		"description": "Description for the setting of the unsigned headers warning mode."
 	},
 	"options_policy.dkim.unsignedHeadersWarning.mode.relaxed": {
