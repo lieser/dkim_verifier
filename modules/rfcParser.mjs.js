@@ -120,7 +120,7 @@ export default class RfcParser {
 			const tmp = elem.match(new RegExp(
 				`^${this.FWS}?(${tagName})${this.FWS}?=${this.FWS}?(${tagValue})${this.FWS}?$`
 			));
-			if (tmp === null || !tmp[1] || !tmp[2]) {
+			if (tmp === null || !tmp[1] || tmp[2] === undefined) {
 				return RfcParser.TAG_PARSE_ERROR.ILL_FORMED;
 			}
 			const name = tmp[1];

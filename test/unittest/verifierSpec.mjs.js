@@ -12,20 +12,21 @@
 
 import "../helpers/initWebExtensions.mjs.js";
 import Verifier, * as VerifierModule from "../../modules/dkim/verifier.mjs.js";
+import { createTxtQueryCallback, queryDnsTxt } from "../helpers/dnsStub.mjs.js";
 import prefs, { BasePreferences } from "../../modules/preferences.mjs.js";
 import KeyStore from "../../modules/dkim/keyStore.mjs.js";
 import MsgParser from "../../modules/msgParser.mjs.js";
 import expect from "../helpers/chaiUtils.mjs.js";
-import { queryDnsTxt } from "../helpers/dnsStub.mjs.js";
 import { readTestFile } from "../helpers/testUtils.mjs.js";
 
 /**
  * Verify DKIM for the given eml file.
  *
  * @param {string} file - path to file relative to test data directory
+ * @param {Map<string, string>} [dnsEntries]
  * @returns {Promise<VerifierModule.dkimResultV2>}
  */
-async function verifyEmlFile(file) {
+async function verifyEmlFile(file, dnsEntries) {
 	const msgPlain = await readTestFile(file);
 	const msgParsed = MsgParser.parseMsg(msgPlain);
 	const from = msgParsed.headers.get("from");
@@ -37,7 +38,8 @@ async function verifyEmlFile(file) {
 		bodyPlain: msgParsed.body,
 		from: MsgParser.parseFromHeader(from[0]),
 	};
-	const verifier = new Verifier(new KeyStore(queryDnsTxt));
+	const queryFunktion = dnsEntries ? createTxtQueryCallback(dnsEntries) : queryDnsTxt;
+	const verifier = new Verifier(new KeyStore(queryFunktion));
 	return verifier.verify(msg);
 }
 
@@ -84,7 +86,15 @@ describe("DKIM Verifier [unittest]", function () {
 			expect(res.signatures[0]?.sdid).to.be.undefined;
 		});
 	});
-	describe("Mismatches between signature and key", function () {
+	describe("General errors", function () {
+		it("Revoked key", async function () {
+			const res = await verifyEmlFile("rfc6376-A.2.eml", new Map([
+				["brisbane._domainkey.example.com", "v=DKIM1; p="]
+			]));
+			expect(res.signatures.length).to.be.equal(1);
+			expect(res.signatures[0]?.result).to.be.equal("PERMFAIL");
+			expect(res.signatures[0]?.errorType).to.be.equal("DKIM_SIGERROR_KEY_REVOKED");
+		});
 		it("Wrong key signature algorithm", async function () {
 			const res = await verifyEmlFile("rfc8463-A.3-key_algo_mismatch.eml");
 			expect(res.signatures.length).to.be.equal(2);
