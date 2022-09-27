@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 
 - Fixed extension not working for attached or external messages (#216).
   Requires Thunderbird 106 or later.
+- Fixed revoked DKIM key being treated as ill-formed.
 
 ### Other
 
