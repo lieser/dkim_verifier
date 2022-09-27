@@ -1144,9 +1144,9 @@ var Verifier = (function() {
 
 		if (e instanceof DKIM_InternalError) {
 			result.errorType = e.errorType;
-			log.error(e);
+			log.error("Internal error during DKIM verification:", e);
 		} else {
-			log.fatal(e);
+			log.fatal("Error during DKIM verification:", e);
 		}
 
 		return result;

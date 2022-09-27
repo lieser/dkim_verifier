@@ -455,17 +455,6 @@ function arhDKIM_to_dkimSigResultV2(arhDKIM) {
 		case "pass": {
 			dkimSigResult.result = "SUCCESS";
 			dkimSigResult.warnings = [];
-			let sdid = arhDKIM.propertys.header.d;
-			let auid = arhDKIM.propertys.header.i;
-			if (sdid || auid) {
-				if (!sdid) {
-					sdid = getDomainFromAddr(auid);
-				} else if (!auid) {
-					auid = "@" + sdid;
-				}
-				dkimSigResult.sdid = sdid;
-				dkimSigResult.auid = auid;
-			}
 			break;
 		}
 		case "fail":
@@ -491,6 +480,19 @@ function arhDKIM_to_dkimSigResultV2(arhDKIM) {
 			throw new DKIM_InternalError("invalid dkim result in arh: " +
 				arhDKIM.result);
 	}
+	
+	let sdid = arhDKIM.propertys.header.d;
+	let auid = arhDKIM.propertys.header.i;
+	if (sdid || auid) {
+		if (!sdid) {
+			sdid = getDomainFromAddr(auid);
+		} else if (!auid) {
+			auid = "@" + sdid;
+		}
+		dkimSigResult.sdid = sdid;
+		dkimSigResult.auid = auid;
+	}
+	
 	return dkimSigResult;
 }
 
