@@ -413,7 +413,7 @@ var Verifier = (function() {
 			tmp = elem.match(new RegExp(
 				"^"+pattFWS+"?("+tag_name+")"+pattFWS+"?="+pattFWS+"?("+tag_value+")"+pattFWS+"?$"
 			));
-			if (tmp === null || !tmp[1] || !tmp[2]) {
+			if (tmp === null || !tmp[1] || tmp[2] === undefined) {
 				return -1;
 			}
 			name = tmp[1];
