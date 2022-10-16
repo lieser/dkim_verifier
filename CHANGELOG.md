@@ -14,7 +14,8 @@ All notable changes to this project will be documented in this file.
 
 ### Other
 
-- added Traditional Chinese translation (by NightFeather) (#335)
+- Added Traditional Chinese translation (by NightFeather) (#335).
+- Updated default rules and favicons (#334, #337).
 
 ## 5.1.1 (2022-08-15)
 
