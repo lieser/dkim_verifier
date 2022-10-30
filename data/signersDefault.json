@@ -428,6 +428,12 @@
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_NEUTRAL"
 		}, {
+			"domain": "centralbank.cy",
+			"addr": "*",
+			"sdid": "centralbank.cy",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "cert.ee",
 			"addr": "*",
 			"sdid": "cert.ee",
@@ -1310,6 +1316,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "hp.com",
+			"addr": "*",
+			"sdid": "hp.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "hpi.de",
 			"addr": "*",
 			"sdid": "hpi.de",
@@ -1517,6 +1529,12 @@
 			"domain": "kuketz-blog.de",
 			"addr": "*",
 			"sdid": "kuketz-security.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "kununu.com",
+			"addr": "*",
+			"sdid": "kununu.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -2192,6 +2210,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "shippypro.com",
+			"addr": "*",
+			"sdid": "shippypro.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "shore.com",
 			"addr": "*",
 			"sdid": "shore.com",
@@ -2309,6 +2333,12 @@
 			"domain": "stackoverflow.email",
 			"addr": "*",
 			"sdid": "stackoverflow.email",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "stadt-koeln.de",
+			"addr": "*",
+			"sdid": "stadt-koeln.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
