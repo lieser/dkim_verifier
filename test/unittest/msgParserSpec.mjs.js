@@ -361,6 +361,35 @@ describe("Message parser [unittest]", function () {
 			).to.throw();
 		});
 	});
+	describe("Extracting the date from a Received header", function () {
+		it("RFC 6376 Appendix A Example", function () {
+			const received = "Received: from client1.football.example.com  [192.0.2.1]\r\n" +
+				"      by submitserver.example.com with SUBMISSION;\r\n" +
+				"      Fri, 11 Jul 2003 21:01:54 -0700 (PDT)\r\n";
+			expect(MsgParser.tryExtractReceivedTime(received)).
+				to.be.deep.equal(new Date("2003-07-11T21:01:54.000-07:00"));
+		});
+		it("RFC 5322 Appendix A.4. Messages with Trace Fields", function () {
+			const received = "Received: from node.example by x.y.test; 21 Nov 1997 10:01:22 -0600\r\n";
+			expect(MsgParser.tryExtractReceivedTime(received)).
+				to.be.deep.equal(new Date("1997-11-21T10:01:22.000-06:00"));
+		});
+		it("Time without seconds", function () {
+			const received = "Received: from node.example by x.y.test; 21 Nov 1997 10:01 -0600\r\n";
+			expect(MsgParser.tryExtractReceivedTime(received)).
+				to.be.deep.equal(new Date("1997-11-21T10:01:00.000-06:00"));
+		});
+		it("Missing semicolon", function () {
+			const received = "Received: from node.example by x.y.test 21 Nov 1997 10:01:22 -0600\r\n";
+			expect(MsgParser.tryExtractReceivedTime(received)).
+				to.be.null;
+		});
+		it("Invalid date", function () {
+			const received = "Received: from node.example by x.y.test; 41 Nov 1997 10:01:22 -0600\r\n";
+			expect(MsgParser.tryExtractReceivedTime(received)).
+				to.be.null;
+		});
+	});
 	describe("Internationalized Email", function () {
 		it("Disabled by default", function () {
 			expect(() => MsgParser.parseFromHeader(toBinaryString(

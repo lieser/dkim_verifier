@@ -993,14 +993,24 @@ class DkimSignature {
 	 * @returns {void}
 	 */
 	_checkValidityPeriod() {
-		const time = Math.round(Date.now() / 1000);
+		let receivedTime = null;
+		const receivedHeaders = this._msg.headerFields.get("received") ?? [];
+		if (receivedHeaders[0]) {
+			receivedTime = MsgParser.tryExtractReceivedTime(receivedHeaders[0]);
+		}
+
+		const verifyTime = receivedTime ?? new Date();
+		const time = Math.round(verifyTime.getTime() / 1000);
 		// warning if signature expired
 		if (this._header.x !== null && this._header.x < time) {
 			this._header.warnings.push({ name: "DKIM_SIGWARNING_EXPIRED" });
 			log.debug("Warning: DKIM_SIGWARNING_EXPIRED");
 		}
 		// warning if signature in future
-		if (this._header.t !== null && this._header.t > time) {
+		// We allow a difference of 15 min so small clock differenzess between
+		// sender and receiver are not causing any issues
+		const allowedDifference = 15 * 60;
+		if (this._header.t !== null && this._header.t > time + allowedDifference) {
 			this._header.warnings.push({ name: "DKIM_SIGWARNING_FUTURE" });
 			log.debug("Warning: DKIM_SIGWARNING_FUTURE");
 		}

@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+### Enhancements
+
+- Extract the received time from the last Received header and use it as the verification time (#336).
+
 ### Fixes
 
 - Fixed extension not working for attached or external messages (#216).

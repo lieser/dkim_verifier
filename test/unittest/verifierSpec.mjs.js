@@ -141,6 +141,19 @@ describe("DKIM Verifier [unittest]", function () {
 			expect(res.signatures[0]?.result).to.be.equal("SUCCESS");
 			expect(res.signatures[0]?.warnings).to.be.empty;
 		});
+		it("Received time is after Signature Timestamp", async function () {
+			const res = await verifyEmlFile("dkim/time-received_after_creation.eml");
+			expect(res.signatures.length).to.be.equal(1);
+			expect(res.signatures[0]?.result).to.be.equal("SUCCESS");
+			expect(res.signatures[0]?.warnings).to.be.empty;
+		});
+		it("Received time is briefly before Signature Timestamp", async function () {
+			// I.e. a small clock difference between sender and receiver should not result in an error
+			const res = await verifyEmlFile("dkim/time-received_briefly_before_creation.eml");
+			expect(res.signatures.length).to.be.equal(1);
+			expect(res.signatures[0]?.result).to.be.equal("SUCCESS");
+			expect(res.signatures[0]?.warnings).to.be.empty;
+		});
 	});
 	describe("Syntax errors", function () {
 		it("Missing v-tag in signature", async function () {
@@ -249,6 +262,13 @@ describe("DKIM Verifier [unittest]", function () {
 			expect(res.signatures[0]?.result).to.be.equal("SUCCESS");
 			expect(res.signatures[0]?.warnings).to.be.an('array').
 				that.deep.includes({ name: "DKIM_SIGWARNING_FROM_NOT_IN_SDID" });
+		});
+		it("Received time is before Signature Timestamp", async function () {
+			const res = await verifyEmlFile("dkim/time-received_long_before_creation.eml");
+			expect(res.signatures.length).to.be.equal(1);
+			expect(res.signatures[0]?.result).to.be.equal("SUCCESS");
+			expect(res.signatures[0]?.warnings).to.be.an('array').
+				that.deep.includes({ name: "DKIM_SIGWARNING_FUTURE" });
 		});
 	});
 	describe("Detect and prevent possible attacks", function () {

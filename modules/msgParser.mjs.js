@@ -225,4 +225,25 @@ export default class MsgParser {
 		}
 		throw new Error("Cannot extract the list identifier from the List-Id header.");
 	}
+
+	/**
+	 * Tries to extract the date time information from a Received header (RFC 2919).
+	 *
+	 * @param {string} header
+	 * @returns {Date|null}
+	 */
+	static tryExtractReceivedTime(header) {
+		const dateTimeStart = header.lastIndexOf(";");
+		if (dateTimeStart === -1) {
+			log.warn("Could not find the date time in the Received header");
+			return null;
+		}
+		const dateTimeStr = header.substring(dateTimeStart + 1);
+		const dateTime = new Date(dateTimeStr);
+		if (dateTime.toString() === "Invalid Date") {
+			log.warn("Could not parse the date time in the Received header");
+			return null;
+		}
+		return dateTime;
+	}
 }
