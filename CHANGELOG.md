@@ -6,11 +6,15 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+### Enhancements
+
+- Extract the received time from the last Received header and use it as the verification time (#336).
+
 ### Fixes
 
 - Fixed extension not working for attached or external messages (#216).
   Requires Thunderbird 106 or later.
-- Fixed revoked DKIM key being treated as ill-formed.
+- Fixed empty tags being treated as ill-formed. This e.g. fixes revoked DKIM keys.
 
 ### Other
 

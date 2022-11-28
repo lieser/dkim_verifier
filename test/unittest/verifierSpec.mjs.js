@@ -76,6 +76,84 @@ describe("DKIM Verifier [unittest]", function () {
 			expect(res.signatures[1]?.auid).to.be.equal("@football.example.com");
 			expect(res.signatures[1]?.selector).to.be.equal("brisbane");
 		});
+		it("DKIM key with empty notes tag", async function () {
+			const res = await verifyEmlFile("rfc6376-A.2.eml", new Map([
+				["brisbane._domainkey.example.com",
+					"v=DKIM1;n=;p=" +
+					"MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDwIRP/UC3SBsEmGqZ9ZJW3/DkM" +
+					"oGeLnQg1fWn7/zYtIxN2SnFCjxOCKG9v3b4jYfcTNh5ijSsq631uBItLa7od+v/R" +
+					"tdC2UzJ1lWT947qR+Rcac2gbto/NMqJ0fzfVjH4OuKhitdY9tf6mcwGjaNBcWToI" +
+					"MmPSPDdQPNUYckcQ2QIDAQAB"],
+			]));
+			expect(res.signatures.length).to.be.equal(1);
+			expect(res.signatures[0]?.result).to.be.equal("SUCCESS");
+			expect(res.signatures[0]?.warnings).to.be.empty;
+		});
+		it("DKIM key with list of allowed hash algorithms", async function () {
+			const res = await verifyEmlFile("rfc6376-A.2.eml", new Map([
+				["brisbane._domainkey.example.com",
+					"v=DKIM1;h=sha1:sha256;p=" +
+					"MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDwIRP/UC3SBsEmGqZ9ZJW3/DkM" +
+					"oGeLnQg1fWn7/zYtIxN2SnFCjxOCKG9v3b4jYfcTNh5ijSsq631uBItLa7od+v/R" +
+					"tdC2UzJ1lWT947qR+Rcac2gbto/NMqJ0fzfVjH4OuKhitdY9tf6mcwGjaNBcWToI" +
+					"MmPSPDdQPNUYckcQ2QIDAQAB"],
+			]));
+			expect(res.signatures.length).to.be.equal(1);
+			expect(res.signatures[0]?.result).to.be.equal("SUCCESS");
+			expect(res.signatures[0]?.warnings).to.be.empty;
+		});
+		it("DKIM key with wildcard service tag", async function () {
+			const res = await verifyEmlFile("rfc6376-A.2.eml", new Map([
+				["brisbane._domainkey.example.com",
+					"v=DKIM1;s=*;p=" +
+					"MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDwIRP/UC3SBsEmGqZ9ZJW3/DkM" +
+					"oGeLnQg1fWn7/zYtIxN2SnFCjxOCKG9v3b4jYfcTNh5ijSsq631uBItLa7od+v/R" +
+					"tdC2UzJ1lWT947qR+Rcac2gbto/NMqJ0fzfVjH4OuKhitdY9tf6mcwGjaNBcWToI" +
+					"MmPSPDdQPNUYckcQ2QIDAQAB"],
+			]));
+			expect(res.signatures.length).to.be.equal(1);
+			expect(res.signatures[0]?.result).to.be.equal("SUCCESS");
+			expect(res.signatures[0]?.warnings).to.be.empty;
+		});
+		it("DKIM key with email service tag", async function () {
+			const res = await verifyEmlFile("rfc6376-A.2.eml", new Map([
+				["brisbane._domainkey.example.com",
+					"v=DKIM1;s=email;p=" +
+					"MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDwIRP/UC3SBsEmGqZ9ZJW3/DkM" +
+					"oGeLnQg1fWn7/zYtIxN2SnFCjxOCKG9v3b4jYfcTNh5ijSsq631uBItLa7od+v/R" +
+					"tdC2UzJ1lWT947qR+Rcac2gbto/NMqJ0fzfVjH4OuKhitdY9tf6mcwGjaNBcWToI" +
+					"MmPSPDdQPNUYckcQ2QIDAQAB"],
+			]));
+			expect(res.signatures.length).to.be.equal(1);
+			expect(res.signatures[0]?.result).to.be.equal("SUCCESS");
+			expect(res.signatures[0]?.warnings).to.be.empty;
+		});
+		it("DKIM key with unknown tag", async function () {
+			const res = await verifyEmlFile("rfc6376-A.2.eml", new Map([
+				["brisbane._domainkey.example.com",
+					"v=DKIM1;g=*;p=" +
+					"MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDwIRP/UC3SBsEmGqZ9ZJW3/DkM" +
+					"oGeLnQg1fWn7/zYtIxN2SnFCjxOCKG9v3b4jYfcTNh5ijSsq631uBItLa7od+v/R" +
+					"tdC2UzJ1lWT947qR+Rcac2gbto/NMqJ0fzfVjH4OuKhitdY9tf6mcwGjaNBcWToI" +
+					"MmPSPDdQPNUYckcQ2QIDAQAB"],
+			]));
+			expect(res.signatures.length).to.be.equal(1);
+			expect(res.signatures[0]?.result).to.be.equal("SUCCESS");
+			expect(res.signatures[0]?.warnings).to.be.empty;
+		});
+		it("Received time is after Signature Timestamp", async function () {
+			const res = await verifyEmlFile("dkim/time-received_after_creation.eml");
+			expect(res.signatures.length).to.be.equal(1);
+			expect(res.signatures[0]?.result).to.be.equal("SUCCESS");
+			expect(res.signatures[0]?.warnings).to.be.empty;
+		});
+		it("Received time is briefly before Signature Timestamp", async function () {
+			// I.e. a small clock difference between sender and receiver should not result in an error
+			const res = await verifyEmlFile("dkim/time-received_briefly_before_creation.eml");
+			expect(res.signatures.length).to.be.equal(1);
+			expect(res.signatures[0]?.result).to.be.equal("SUCCESS");
+			expect(res.signatures[0]?.warnings).to.be.empty;
+		});
 	});
 	describe("Syntax errors", function () {
 		it("Missing v-tag in signature", async function () {
@@ -95,6 +173,19 @@ describe("DKIM Verifier [unittest]", function () {
 			expect(res.signatures[0]?.result).to.be.equal("PERMFAIL");
 			expect(res.signatures[0]?.errorType).to.be.equal("DKIM_SIGERROR_KEY_REVOKED");
 		});
+		it("Hash algorithm is not in the allowed list of the DKIM key", async function () {
+			const res = await verifyEmlFile("rfc6376-A.2.eml", new Map([
+				["brisbane._domainkey.example.com",
+					"v=DKIM1;h=sha1;p=" +
+					"MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDwIRP/UC3SBsEmGqZ9ZJW3/DkM" +
+					"oGeLnQg1fWn7/zYtIxN2SnFCjxOCKG9v3b4jYfcTNh5ijSsq631uBItLa7od+v/R" +
+					"tdC2UzJ1lWT947qR+Rcac2gbto/NMqJ0fzfVjH4OuKhitdY9tf6mcwGjaNBcWToI" +
+					"MmPSPDdQPNUYckcQ2QIDAQAB"],
+			]));
+			expect(res.signatures.length).to.be.equal(1);
+			expect(res.signatures[0]?.result).to.be.equal("PERMFAIL");
+			expect(res.signatures[0]?.errorType).to.be.equal("DKIM_SIGERROR_KEY_HASHNOTINCLUDED");
+		});
 		it("Wrong key signature algorithm", async function () {
 			const res = await verifyEmlFile("rfc8463-A.3-key_algo_mismatch.eml");
 			expect(res.signatures.length).to.be.equal(2);
@@ -102,6 +193,32 @@ describe("DKIM Verifier [unittest]", function () {
 			expect(res.signatures[0]?.errorType).to.be.equal("DKIM_SIGERROR_KEY_MISMATCHED_K");
 			expect(res.signatures[1]?.result).to.be.equal("PERMFAIL");
 			expect(res.signatures[1]?.errorType).to.be.equal("DKIM_SIGERROR_KEY_MISMATCHED_K");
+		});
+		it("DKIM key with other service tag", async function () {
+			const res = await verifyEmlFile("rfc6376-A.2.eml", new Map([
+				["brisbane._domainkey.example.com",
+					"v=DKIM1;s=other;p=" +
+					"MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDwIRP/UC3SBsEmGqZ9ZJW3/DkM" +
+					"oGeLnQg1fWn7/zYtIxN2SnFCjxOCKG9v3b4jYfcTNh5ijSsq631uBItLa7od+v/R" +
+					"tdC2UzJ1lWT947qR+Rcac2gbto/NMqJ0fzfVjH4OuKhitdY9tf6mcwGjaNBcWToI" +
+					"MmPSPDdQPNUYckcQ2QIDAQAB"],
+			]));
+			expect(res.signatures.length).to.be.equal(1);
+			expect(res.signatures[0]?.result).to.be.equal("PERMFAIL");
+			expect(res.signatures[0]?.errorType).to.be.equal("DKIM_SIGERROR_KEY_NOTEMAILKEY");
+		});
+		it("DKIM key does not allow AUID to be a subdomain", async function () {
+			const res = await verifyEmlFile("rfc6376-A.2.eml", new Map([
+				["brisbane._domainkey.example.com",
+					"v=DKIM1;t=s;p=" +
+					"MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDwIRP/UC3SBsEmGqZ9ZJW3/DkM" +
+					"oGeLnQg1fWn7/zYtIxN2SnFCjxOCKG9v3b4jYfcTNh5ijSsq631uBItLa7od+v/R" +
+					"tdC2UzJ1lWT947qR+Rcac2gbto/NMqJ0fzfVjH4OuKhitdY9tf6mcwGjaNBcWToI" +
+					"MmPSPDdQPNUYckcQ2QIDAQAB"],
+			]));
+			expect(res.signatures.length).to.be.equal(1);
+			expect(res.signatures[0]?.result).to.be.equal("PERMFAIL");
+			expect(res.signatures[0]?.errorType).to.be.equal("DKIM_SIGERROR_DOMAIN_I");
 		});
 	});
 	describe("Modifications", function () {
@@ -145,6 +262,13 @@ describe("DKIM Verifier [unittest]", function () {
 			expect(res.signatures[0]?.result).to.be.equal("SUCCESS");
 			expect(res.signatures[0]?.warnings).to.be.an('array').
 				that.deep.includes({ name: "DKIM_SIGWARNING_FROM_NOT_IN_SDID" });
+		});
+		it("Received time is before Signature Timestamp", async function () {
+			const res = await verifyEmlFile("dkim/time-received_long_before_creation.eml");
+			expect(res.signatures.length).to.be.equal(1);
+			expect(res.signatures[0]?.result).to.be.equal("SUCCESS");
+			expect(res.signatures[0]?.warnings).to.be.an('array').
+				that.deep.includes({ name: "DKIM_SIGWARNING_FUTURE" });
 		});
 	});
 	describe("Detect and prevent possible attacks", function () {

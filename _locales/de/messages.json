@@ -185,7 +185,7 @@
 		"message": "Signatur-Zeitstempel-Tag hat falsches Format"
 	},
 	"DKIM_SIGERROR_TIMESTAMPS": {
-		"message": "Signatur abgelaufen"
+		"message": "Signatur-Ablaufdatum ist vor dem Signatur-Zeitstempel"
 	},
 	"DKIM_SIGERROR_ILLFORMED_X": {
 		"message": "Signatur-Ablaufdatum-Tag hat falsches Format"
