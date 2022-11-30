@@ -2506,6 +2506,12 @@
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_NEUTRAL"
 		}, {
+			"domain": "tracker-software.com",
+			"addr": "*",
+			"sdid": "tracker-software.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "trello.com",
 			"addr": "*",
 			"sdid": "trello.com",
@@ -2653,6 +2659,12 @@
 			"domain": "videolan.org",
 			"addr": "*",
 			"sdid": "videolan.org",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "vodafone.de",
+			"addr": "*",
+			"sdid": "vodafone.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
