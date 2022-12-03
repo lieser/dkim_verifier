@@ -1168,15 +1168,38 @@ var Verifier = (function() {
 		
 		// check signed headers
 		Policy.checkHeadersSigned(msg.headerFields, DKIMSignature);
+		
+		// get time of received header or use system time as reference for signature expiration check
+		let receivedTime = null;
+		const receivedHeaders = msg.headerFields.get("received");
+		if (receivedHeaders && receivedHeaders[0]) {
+			const recDateTimeStart = receivedHeaders[0].lastIndexOf(";");
+			if (recDateTimeStart === -1) {
+				log.warn("Could not find the date time in the Received header: "+receivedHeaders[0]);
+			} else {
+				const recDateTimeStr = receivedHeaders[0].substring(recDateTimeStart + 1);
+				receivedTime = new Date(recDateTimeStr);
+				if (receivedTime.toString() === "Invalid Date") {
+					log.warn("Could not parse the date time in the Received header");
+					receivedTime = null;
+				}
+			}
+		}
 
-		var time = Math.round(Date.now() / 1000);
+		const verifyTime = receivedTime ? receivedTime : new Date();
+		const time = Math.round(verifyTime.getTime() / 1000);
+		log.debug("Info: Using '"+verifyTime+"' as timestamp for expiration check");
+		
 		// warning if signature expired
 		if (DKIMSignature.x !== null && DKIMSignature.x < time) {
 			DKIMSignature.warnings.push({name: "DKIM_SIGWARNING_EXPIRED"});
 			log.debug("Warning: DKIM_SIGWARNING_EXPIRED");
 		}
 		// warning if signature in future
-		if (DKIMSignature.t !== null && DKIMSignature.t > time) {
+		// We allow a difference of 15 min so small clock differences between
+		// sender and receiver are not causing any issues
+		const allowedDifference = 15 * 60;
+		if (DKIMSignature.t !== null && DKIMSignature.t > time + allowedDifference) {
 			DKIMSignature.warnings.push({name: "DKIM_SIGWARNING_FUTURE"});
 			log.debug("Warning: DKIM_SIGWARNING_FUTURE");
 		}
