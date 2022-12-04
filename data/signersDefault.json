@@ -416,17 +416,17 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
-			"domain": "carwow.de",
-			"addr": "*@t.carwow.de",
-			"sdid": "carwow.de t.carwow.de",
-			"ruletype": "ALL",
-			"priority": "DEFAULT_RULE_ALL_2"
-		}, {
 			"domain": "carglass.de",
 			"addr": "postmaster@carglass.de",
 			"sdid": "carglass.de",
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_NEUTRAL"
+		}, {
+			"domain": "carwow.de",
+			"addr": "*@t.carwow.de",
+			"sdid": "carwow.de t.carwow.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
 			"domain": "centralbank.cy",
 			"addr": "*",
@@ -2048,17 +2048,17 @@
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
-			"domain": "psu.edu",
-			"addr": "*",
-			"sdid": "psu.edu",
-			"ruletype": "ALL",
-			"priority": "DEFAULT_RULE_ALL"
-		}, {
 			"domain": "psd-muenchen.de",
 			"addr": "*@news.psd-muenchen.de",
 			"sdid": "news.psd-muenchen.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
+			"domain": "psu.edu",
+			"addr": "*",
+			"sdid": "psu.edu",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
 		}, {
 			"domain": "qantas.com.au",
 			"addr": "*@yourbooking.qantas.com.au",
@@ -2168,17 +2168,17 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
-			"domain": "sda.it",
-			"addr": "*",
-			"sdid": "sda.it",
-			"ruletype": "NEUTRAL",
-			"priority": "DEFAULT_RULE_NEUTRAL"
-		}, {
 			"domain": "scv.va",
 			"addr": "*",
 			"sdid": "scv.va",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "sda.it",
+			"addr": "*",
+			"sdid": "sda.it",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_NEUTRAL"
 		}, {
 			"domain": "sent.com",
 			"addr": "*",
@@ -2198,12 +2198,6 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
-			"domain": "shopifyemail.com",
-			"addr": "*",
-			"sdid": "shopifyemail.com",
-			"ruletype": "ALL",
-			"priority": "DEFAULT_RULE_ALL"
-		}, {
 			"domain": "shipcloud.io",
 			"addr": "*",
 			"sdid": "shipcloud.io",
@@ -2213,6 +2207,12 @@
 			"domain": "shippypro.com",
 			"addr": "*",
 			"sdid": "shippypro.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "shopifyemail.com",
+			"addr": "*",
+			"sdid": "shopifyemail.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -2504,6 +2504,12 @@
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_NEUTRAL"
 		}, {
+			"domain": "tracker-software.com",
+			"addr": "*",
+			"sdid": "tracker-software.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "trello.com",
 			"addr": "*",
 			"sdid": "trello.com",
@@ -2651,6 +2657,12 @@
 			"domain": "videolan.org",
 			"addr": "*",
 			"sdid": "videolan.org",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "vodafone.de",
+			"addr": "*",
+			"sdid": "vodafone.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
