@@ -1,7 +1,7 @@
 {
 	"$schema": "./signersDefault-schema.json",
 	"versionTable": 1,
-	"versionData": 35,
+	"versionData": 36,
 	"rules": [
 		{
 			"domain": "1und1.de",
@@ -2511,6 +2511,12 @@
 			"sdid": "tracker-software.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "tracker-software.com",
+			"addr": "support@tracker-software.com",
+			"sdid": "tracker-software.com",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_NEUTRAL"
 		}, {
 			"domain": "trello.com",
 			"addr": "*",
