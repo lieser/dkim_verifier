@@ -749,12 +749,12 @@ function isOutgoing(msgHdr) {
 	const lfAcc = accMgr.FindAccountForServer(accMgr.localFoldersServer);
 	const lfKey = lfAcc ? lfAcc.key : null;
 
-	let accountAddressDB = new Object;
+	let accountAddressMap = new Map();
 	let allAccounts = accMgr.accounts;
 	for (let i = 0; i < allAccounts.length; i++) {
 		let account = allAccounts.queryElementAt(i, Ci.nsIMsgAccount);
 		let key = account.key;
-		let thisAccAddr = accountAddressDB[key] ? accountAddressDB[key] : new Array();
+		let thisAccAddr = accountAddressMap.has(key) ? accountAddressMap.get(key) : new Array();
 		let allIdentities = account.identities;
 		for (let j = 0; j < allIdentities.length; j++) {
 			let identity = allIdentities.queryElementAt(j, Ci.nsIMsgIdentity);
@@ -765,23 +765,23 @@ function isOutgoing(msgHdr) {
 		}
 		if (thisAccAddr.length > 0) {
 			// add email addresses to current server
-			accountAddressDB[key] = thisAccAddr;
+			accountAddressMap.set(key, thisAccAddr);
 
 			// check if INBOX is redirected to another account
 			// if so, add all email addresses from this account to the redirected account
 			if (account.incomingServer && account.incomingServer.rootFolder != account.incomingServer.rootMsgFolder) {
 				let rAccount = accMgr.FindAccountForServer(account.incomingServer.rootMsgFolder.server);
 				let rKey = rAccount.key;
-				let rAccAddr = accountAddressDB[rKey] ? accountAddressDB[rKey] : new Array();
+				let rAccAddr = accountAddressMap.has(rKey) ? accountAddressMap.get(rKey) : new Array();
 				rAccAddr = rAccAddr.concat(thisAccAddr);
-				accountAddressDB[rKey] = rAccAddr;
+				accountAddressMap.set(rKey, rAccAddr);
 			}
 
 			// Add email addresses to Local Folders
 			if (lfKey) {
-				let lfAccAddr = accountAddressDB[lfKey] ? accountAddressDB[lfKey] : new Array();
+				let lfAccAddr = accountAddressMap.has(lfKey) ? accountAddressMap.get(lfKey) : new Array();
 				lfAccAddr = lfAccAddr.concat(thisAccAddr);
-				accountAddressDB[lfKey] = lfAccAddr;
+				accountAddressMap.set(lfKey, lfAccAddr);
 			}
 		}
 	}
@@ -791,5 +791,5 @@ function isOutgoing(msgHdr) {
 	fromAddress = fromAddress.toLowerCase();
 	let key = accMgr.FindAccountForServer(msgHdr.folder.server).key;
 
-	return accountAddressDB[key] ? accountAddressDB[key].includes(fromAddress) : false;
+	return accountAddressMap.has(key) ? (accountAddressMap.get(key)).includes(fromAddress) : false;
 }
