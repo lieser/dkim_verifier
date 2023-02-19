@@ -1,7 +1,7 @@
 /**
  * Reads and parses a message.
  *
- * Copyright (c) 2014-2022 Philippe Lieser
+ * Copyright (c) 2014-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -23,45 +23,33 @@ export default class MsgParser {
 	/**
 	 * Parse given message into parsed header and body.
 	 *
-	 * @param {string} msg - binary string
+	 * @param {string} rawMsg - binary string
 	 * @returns {{headers: Map<string, string[]>, body: string}}
 	 * @throws DKIM_InternalError
 	 */
-	static parseMsg(msg) {
-		let newlineLength = 2;
-
-		// get header end
-		let posEndHeader = msg.indexOf("\r\n\r\n");
-		// check for LF line ending
-		if (posEndHeader === -1) {
-			posEndHeader = msg.indexOf("\n\n");
-			if (posEndHeader !== -1) {
-				newlineLength = 1;
-				log.debug("LF line ending detected");
-			}
-		}
-		// check for CR line ending
-		if (posEndHeader === -1) {
-			posEndHeader = msg.indexOf("\r\r");
-			if (posEndHeader !== -1) {
-				newlineLength = 1;
-				log.debug("CR line ending detected");
-			}
-		}
-
-		// check that end of header was detected
-		if (posEndHeader === -1) {
-			throw new DKIM_InternalError("Message is not in correct e-mail format",
-				"DKIM_INTERNALERROR_INCORRECT_EMAIL_FORMAT");
-		}
-
-		// get header and body
-		let headerPlain = msg.substr(0, posEndHeader + newlineLength);
-		let body = msg.substr(posEndHeader + 2 * newlineLength);
+	static parseMsg(rawMsg) {
+		const newlineLength = 2;
 
 		// convert all EOLs to CRLF
-		headerPlain = headerPlain.replace(/(\r\n|\n|\r)/g, "\r\n");
-		body = body.replace(/(\r\n|\n|\r)/g, "\r\n");
+		const msg = rawMsg.replace(/(\r\n|\n|\r)/g, "\r\n");
+
+		// get header end
+		const posEndHeader = msg.indexOf("\r\n\r\n");
+
+		// split header and body
+		let headerPlain;
+		let body;
+		if (posEndHeader === -1) {
+			if (!msg.endsWith("\r\n")) {
+				throw new DKIM_InternalError("Last header is not ending with a newline",
+					"DKIM_INTERNALERROR_INCORRECT_EMAIL_FORMAT");
+			}
+			headerPlain = msg;
+			body = "";
+		} else {
+			headerPlain = msg.substr(0, posEndHeader + newlineLength);
+			body = msg.substr(posEndHeader + 2 * newlineLength);
+		}
 
 		return {
 			headers: MsgParser.parseHeader(headerPlain),
@@ -82,6 +70,8 @@ export default class MsgParser {
 
 		// split header fields
 		const headerArray = headerPlain.split(/\r\n(?=\S|$)/);
+		// The last newline will result in an empty entry, remove it
+		headerArray.pop();
 
 		// store valid fields under header field name (in lower case) in an array
 		for (const header of headerArray) {
@@ -92,6 +82,9 @@ export default class MsgParser {
 					headerFields.set(hName, []);
 				}
 				headerFields.get(hName).push(`${header}\r\n`);
+			} else {
+				throw new DKIM_InternalError("Could not split header into name and value",
+					"DKIM_INTERNALERROR_INCORRECT_EMAIL_FORMAT");
 			}
 		}
 

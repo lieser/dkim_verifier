@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2022 Philippe Lieser
+ * Copyright (c) 2020-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -50,6 +50,7 @@ describe("Message parser [unittest]", function () {
 		it("parse CRLF", function () {
 			const msg = MsgParser.parseMsg(msgPlain);
 			expect(msg.body).to.be.equal(msgBody);
+			expect(msg.headers.size).to.be.equal(7);
 
 			expect(msg.headers.has("received")).to.be.true;
 			// @ts-expect-error
@@ -64,6 +65,7 @@ describe("Message parser [unittest]", function () {
 		it("parse LF", function () {
 			const msg = MsgParser.parseMsg(msgPlain.replace(/\r\n/g, "\n"));
 			expect(msg.body).to.be.equal(msgBody);
+			expect(msg.headers.size).to.be.equal(7);
 
 			expect(msg.headers.has("subject")).to.be.true;
 			// @ts-expect-error
@@ -74,6 +76,7 @@ describe("Message parser [unittest]", function () {
 		it("parse CR", function () {
 			const msg = MsgParser.parseMsg(msgPlain.replace(/\r\n/g, "\r"));
 			expect(msg.body).to.be.equal(msgBody);
+			expect(msg.headers.size).to.be.equal(7);
 
 			expect(msg.headers.has("subject")).to.be.true;
 			// @ts-expect-error
@@ -85,6 +88,7 @@ describe("Message parser [unittest]", function () {
 		it("multiple received headers", function () {
 			const msg = MsgParser.parseMsg(`Received: foo\r\n${msgPlain}`);
 			expect(msg.body).to.be.equal(msgBody);
+			expect(msg.headers.size).to.be.equal(7);
 
 			expect(msg.headers.has("received")).to.be.true;
 			// @ts-expect-error
@@ -99,6 +103,27 @@ describe("Message parser [unittest]", function () {
 			expect(
 				() => MsgParser.parseMsg(msgPlain.replace(/\r\n\r\n/g, "\r\n"))
 			).to.throw(DKIM_InternalError).with.property("errorType", "DKIM_INTERNALERROR_INCORRECT_EMAIL_FORMAT");
+		});
+		it("Valid missing body", function () {
+			let msg = MsgParser.parseMsg(msgPlain.replace(/\r\n\r\n.+/gs, "\r\n"));
+			expect(msg.body).to.be.equal("");
+			expect(msg.headers.size).to.be.equal(7);
+			msg = MsgParser.parseMsg(msgPlain.replace(/\r\n\r\n.+/gs, "\n"));
+			expect(msg.body).to.be.equal("");
+			expect(msg.headers.size).to.be.equal(7);
+			msg = MsgParser.parseMsg(msgPlain.replace(/\r\n\r\n.+/gs, "\r"));
+			expect(msg.body).to.be.equal("");
+			expect(msg.headers.size).to.be.equal(7);
+		});
+		it("With a missing body the headers still need to end with a newline", function () {
+			expect(
+				() => MsgParser.parseMsg(msgPlain.replace(/\r\n\r\n.+/gs, ""))
+			).to.throw(DKIM_InternalError).with.property("errorType", "DKIM_INTERNALERROR_INCORRECT_EMAIL_FORMAT");
+		});
+		it("Valid empty body", function () {
+			const msg = MsgParser.parseMsg(msgPlain.replace(/\r\n\r\n.+/gs, "\r\n\r\n"));
+			expect(msg.body).to.be.equal("");
+			expect(msg.headers.size).to.be.equal(7);
 		});
 	});
 	describe("Extracting From address", function () {

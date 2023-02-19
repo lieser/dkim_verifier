@@ -16,6 +16,7 @@ All notable changes to this project will be documented in this file.
   Requires Thunderbird 106 or later.
 - Fixed empty tags being treated as ill-formed. This e.g. fixes revoked DKIM keys.
 - Fixed tooltip for From header in Thunderbird 102 or newer (#311)
+- Fixed missing body resulting in internal error (#347)
 
 ### Other
 
