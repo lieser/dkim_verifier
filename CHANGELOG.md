@@ -15,6 +15,7 @@ All notable changes to this project will be documented in this file.
 - Fixed extension not working for attached or external messages (#216).
   Requires Thunderbird 106 or later.
 - Fixed empty tags being treated as ill-formed. This e.g. fixes revoked DKIM keys.
+- Fixed tooltip for From header in Thunderbird 102 or newer (#311)
 
 ### Other
 

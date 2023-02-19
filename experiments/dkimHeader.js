@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2021 Philippe Lieser
+ * Copyright (c) 2020-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -19,6 +19,14 @@
 const { ExtensionParent } = ChromeUtils.import("resource://gre/modules/ExtensionParent.jsm");
 /** @type {{ExtensionSupport: ExtensionSupportM}} */
 const { ExtensionSupport } = ChromeUtils.import("resource:///modules/ExtensionSupport.jsm");
+
+/**
+ * The localized DKIM "loading" string.
+ *
+ * The default english value will be replaced by the localized one
+ * then the experiment API gets constructed.
+ */
+let DKIMResultResetValue = "Validating…";
 
 /**
  * Wraps an element in the given wrapper.
@@ -50,11 +58,11 @@ function unwrap(wrapper) {
 }
 
 /**
- * Base class for DKIM tooltips
+ * XUL tooltip showing the DKIM warnings.
  */
-class DKIMTooltip {
+class DKIMWarningsTooltipXUL {
 	/**
-	 * Creates an instance of DKIMTooltip.
+	 * Creates an instance of DKIMWarningsTooltipXUL.
 	 *
 	 * @param {Document} document
 	 * @param {XULElement|void} element - optional underlying element, will be created if not given
@@ -72,12 +80,15 @@ class DKIMTooltip {
 			this.element = element;
 			return;
 		}
+
 		/** @type {DKIMTooltipElement} */
 		// @ts-expect-error
 		this.element = document.createXULElement("tooltip");
 
 		// A box containing the warnings
 		this.element._warningsBox = document.createXULElement("vbox");
+
+		this.element.appendChild(this.element._warningsBox);
 	}
 
 	/**
@@ -86,11 +97,15 @@ class DKIMTooltip {
 	 * @param {string[]} warnings
 	 */
 	set warnings(warnings) {
+		if (!this.element._warningsBox) {
+			throw Error("Underlying element of DKIMTooltipXUL does not contain _warningsBox");
+		}
+
 		// delete old warnings from tooltips
 		this.element._warningsBox.replaceChildren();
 
 		if (!this.element.ownerDocument) {
-			throw Error("Underlying element of DKIMTooltip does not contain ownerDocument");
+			throw Error("Underlying element of DKIMTooltipXUL does not contain ownerDocument");
 		}
 
 		if (this._warningsSeparator && warnings.length) {
@@ -109,24 +124,105 @@ class DKIMTooltip {
 }
 
 /**
- * Tooltip showing the DKIM warnings.
- *
- * @augments {DKIMTooltip}
+ * Base class for DKIM tooltips.
  */
-class DKIMWarningsTooltip extends DKIMTooltip {
+class DKIMTooltip {
 	/**
-	 * Creates an instance of DKIMWarningsTooltip.
+	 * Creates an instance of DKIMTooltip.
 	 *
 	 * @param {Document} document
-	 * @param {XULElement|void} element - optional underlying element, will be created if not given
+	 * @param {HTMLElement|void} element - optional underlying element, will be created if not given
 	 */
 	constructor(document, element) {
-		super(document, element);
+		/**
+		 * Whether a separator should be added before the warnings.
+		 *
+		 * @protected
+		 */
+		this._warningsSeparator = false;
+
 		if (element) {
+			// @ts-expect-error
+			this.element = element;
 			return;
 		}
 
-		this.element.appendChild(this.element._warningsBox);
+		/** @type {DKIMTooltipElement} */
+		// @ts-expect-error
+		this.element = document.createElement("div");
+		this.element.style.visibility = "hidden";
+		this.element.style.position = "absolute";
+		this.element.style.zIndex = "99";
+
+		// Bottom Tooltip
+		this.element.style.top = "calc(100% + 10px)";
+
+		this.element.style.backgroundColor = "var(--arrowpanel-background)";
+		this.element.style.color = "var(--arrowpanel-color)";
+		this.element.style.borderStyle = "solid";
+		this.element.style.borderWidth = "1px";
+		this.element.style.borderColor = "var(--arrowpanel-border-color)";
+		this.element.style.borderRadius = "var(--arrowpanel-border-radius)";
+		this.element.style.paddingInline = "0.6em";
+		this.element.style.paddingBlock = "0.4em";
+
+		this.element._dkimOnmouseenter = (event) => DKIMTooltip.#mouseEnter(this, event);
+		this.element._dkimOnmouseleave = (event) => DKIMTooltip.#mouseLeave(this, event);
+	}
+
+	/**
+	 * Add the tooltip to the given parent.
+	 *
+	 * @protected
+	 * @param {HTMLElement} parent
+	 */
+	add(parent) {
+		const parentSyle = parent.ownerDocument.defaultView?.getComputedStyle(parent);
+		if (parentSyle?.position === "static") {
+			parent.style.position = "relative";
+		}
+
+		parent.appendChild(this.element);
+		parent.addEventListener("mouseenter", this.element._dkimOnmouseenter);
+		parent.addEventListener("mouseleave", this.element._dkimOnmouseleave);
+	}
+
+	/**
+	 * Remove the tooltip.
+	 *
+	 * @protected
+	 */
+	remove() {
+		const parent = this.element.parentElement;
+		if (parent) {
+			parent.removeEventListener("mouseenter", this.element._dkimOnmouseenter);
+			parent.removeEventListener("mouseleave", this.element._dkimOnmouseleave);
+		}
+		this.element.remove();
+	}
+
+	/**
+	 * @param {DKIMTooltip} tooltip
+	 * @param {MouseEvent} _event
+	 */
+	static #mouseEnter(tooltip, _event) {
+		if (tooltip.element.parentElement?.title) {
+			tooltip.element.parentElement.dataset.titleBackup = tooltip.element.parentElement.title;
+			tooltip.element.parentElement.title = "";
+		}
+		tooltip.element.style.visibility = "visible";
+	}
+
+	/**
+	 * @param {DKIMTooltip} tooltip
+	 * @param {MouseEvent} _event
+	 */
+	static #mouseLeave(tooltip, _event) {
+		tooltip.element.style.visibility = "hidden";
+		if (tooltip.element.parentElement?.dataset.titleBackup) {
+			tooltip.element.parentElement.title = tooltip.element.parentElement.dataset.titleBackup;
+			tooltip.element.parentElement.dataset.titleBackup = "";
+		}
 	}
 }
 
@@ -141,7 +237,7 @@ class DkimResultTooltip extends DKIMTooltip {
 	 * Creates an instance of DkimResultTooltip.
 	 *
 	 * @param {Document} document
-	 * @param {XULElement|void} element - optional underlying element, will be created if not given
+	 * @param {HTMLElement|void} element - optional underlying element, will be created if not given
 	 */
 	constructor(document, element) {
 		super(document, element);
@@ -151,23 +247,34 @@ class DkimResultTooltip extends DKIMTooltip {
 			return;
 		}
 
+		this.element.classList.add(DkimResultTooltip.#class);
+
 		// Outer box and label
-		const outerBox = document.createXULElement("hbox");
-		const outerBoxLabel = document.createXULElement("label");
-		outerBoxLabel.setAttribute("value", "DKIM:");
+		const outerBox = document.createElement("div");
+		outerBox.style.display = "grid";
+		outerBox.style.gridTemplateColumns = "max-content auto";
+		outerBox.style.width = "max-content";
+		outerBox.style.maxWidth = "400px";
+		const outerBoxLabel = document.createElement("p");
+		outerBoxLabel.textContent = "DKIM:";
+		outerBoxLabel.style.paddingInlineEnd = "0.4em";
 
 		// The inner box, containing the DKIM result and optional the warnings
-		const innerBox = document.createXULElement("vbox");
-		innerBox.setAttribute("flex", "1");
+		const innerBox = document.createElement("div");
 
 		// The DKIM result
-		this.element._value = document.createXULElement("label");
+		this.element._value = document.createElement("p");
+
+		// A box containing the warnings
+		this.element._warningsBox = document.createElement("div");
 
 		this.element.appendChild(outerBox);
 		outerBox.appendChild(outerBoxLabel);
 		outerBox.appendChild(innerBox);
 		innerBox.appendChild(this.element._value);
 		innerBox.appendChild(this.element._warningsBox);
+
+		this.reset();
 	}
 
 	/**
@@ -181,6 +288,91 @@ class DkimResultTooltip extends DKIMTooltip {
 		}
 		this.element._value.textContent = val;
 	}
+
+	/**
+	 * Set the warnings for the tooltip.
+	 *
+	 * @param {string[]} warnings
+	 */
+	 set warnings(warnings) {
+		if (!this.element._warningsBox) {
+			throw Error("Underlying element of DkimResultTooltip does not contain _warningsBox");
+		}
+
+		// delete old warnings from tooltips
+		this.element._warningsBox.replaceChildren();
+
+		if (!this.element.ownerDocument) {
+			throw Error("Underlying element of DKIMTooltip does not contain ownerDocument");
+		}
+
+		if (this._warningsSeparator && warnings.length) {
+			this.element._warningsBox.style.paddingBlock = "0.2em";
+		} else {
+			this.element._warningsBox.style.paddingBlock = "";
+		}
+
+		// add warnings to warning tooltip
+		for (const w of warnings) {
+			const des = this.element.ownerDocument.createElement("p");
+			des.textContent = w;
+			this.element._warningsBox.appendChild(des);
+		}
+	}
+
+	reset() {
+		this.value = DKIMResultResetValue;
+		this.warnings = [];
+	}
+
+	/**
+	 * Get all tooltips under the given document or parent.
+	 *
+	 * @param {Document|Element} searchRoot
+	 * @returns {DkimResultTooltip[]}
+	 */
+	static get(searchRoot) {
+		// eslint-disable-next-line no-extra-parens
+		const elements = /** @type {HTMLElement[]} */ (
+			Array.from(searchRoot.getElementsByClassName(DkimResultTooltip.#class)));
+		const tooltips = [];
+		for (const element of elements) {
+			tooltips.push(new DkimResultTooltip(element.ownerDocument, element));
+		}
+		return tooltips;
+	}
+
+	/**
+	 * Add the tooltip for the given parent.
+	 *
+	 * @param {HTMLElement} parent
+	 * @returns {DkimResultTooltip}
+	 */
+	static add(parent) {
+		const existingTooltip = DkimResultTooltip.get(parent)[0];
+		if (existingTooltip) {
+			console.warn("DKIM: DkimResultTooltip already exist and will be reused");
+			return existingTooltip;
+		}
+
+		const tooltip = new DkimResultTooltip(parent.ownerDocument);
+		tooltip.add(parent);
+		return tooltip;
+	}
+
+	/**
+	 * Remove the tooltip from the given parent.
+	 *
+	 * @param {HTMLElement} parent
+	 */
+	static remove(parent) {
+		const tooltips = DkimResultTooltip.get(parent);
+		for (const tooltip of tooltips) {
+			tooltip.remove();
+		}
+	}
+
+	static #class = "DkimResultTooltip";
 }
 
 /**
@@ -197,7 +389,7 @@ class DKIMHeaderField {
 		if (element) {
 			// @ts-expect-error
 			this.element = element;
-			this._dkimWarningTooltip = new DKIMWarningsTooltip(document, this.element._dkimWarningTooltip);
+			this._dkimWarningTooltip = new DKIMWarningsTooltipXUL(document, this.element._dkimWarningTooltip);
 			return;
 		}
 		/** @type {DKIMHeaderFieldElement} */
@@ -219,7 +411,7 @@ class DKIMHeaderField {
 
 		// DKIM warning icon
 		/** @private */
-		this._dkimWarningTooltip = new DKIMWarningsTooltip(document);
+		this._dkimWarningTooltip = new DKIMWarningsTooltipXUL(document);
 		this.element._dkimWarningTooltip = this._dkimWarningTooltip.element;
 		this.element._dkimWarningTooltip.id = "dkim-verifier-header-tooltip-warnings";
 		this.element._dkimWarningIcon = document.createXULElement("image");
@@ -345,7 +537,7 @@ class DKIMHeaderField {
 	}
 
 	reset() {
-		this.value = DKIMHeaderField.resetValue;
+		this.value = DKIMResultResetValue;
 		this.warnings = [];
 		this.spfValue = "";
 		this.dmarcValue = "";
@@ -366,7 +558,6 @@ class DKIMHeaderField {
 		return new DKIMHeaderField(document, element);
 	}
 }
-DKIMHeaderField.resetValue = "Validating…";
 DKIMHeaderField._id = "expandedDkim-verifierBox";
 
 /**
@@ -536,7 +727,10 @@ class DkimFavicon {
 		if (element) {
 			// @ts-expect-error
 			this.element = element;
-			this._dkimTooltipFrom = new DkimResultTooltip(document, this.element._dkimTooltipFromElement);
+			this._dkimTooltipFrom = DkimResultTooltip.get(this.element)[0];
+			if (!this._dkimTooltipFrom) {
+				this._dkimTooltipFrom = DkimResultTooltip.add(this.element);
+			}
 			return;
 		}
 
@@ -558,30 +752,9 @@ class DkimFavicon {
 
 		// DKIM tooltip
 		/** @private */
-		this._dkimTooltipFrom = new DkimResultTooltip(document);
-		this.element._dkimTooltipFromElement = this._dkimTooltipFrom.element;
-		this.element._dkimTooltipFromElement.id = DkimFavicon.idTooltip;
-		this.element.setAttribute("tooltip", DkimFavicon.idTooltip);
+		this._dkimTooltipFrom = DkimResultTooltip.add(this.element);
 
 		this.reset();
-	}
-
-	/**
-	 * Set the DKIM result.
-	 *
-	 * @param {string} val
-	 */
-	set value(val) {
-		this._dkimTooltipFrom.value = val;
-	}
-
-	/**
-	 * Set the DKIM warnings.
-	 *
-	 * @param {string[]} warnings
-	 */
-	set warnings(warnings) {
-		this._dkimTooltipFrom.warnings = warnings;
 	}
 
 	/**
@@ -601,8 +774,7 @@ class DkimFavicon {
 
 	reset() {
 		this.setFaviconUrl("");
-		this.value = DKIMHeaderField.resetValue;
-		this.warnings = [];
+		this._dkimTooltipFrom.reset();
 	}
 
 	/**
@@ -674,7 +846,7 @@ class DkimFavicon {
 				unwrap(favicon.element._hboxWrapper);
 			}
 			favicon.element.remove();
-			favicon._dkimTooltipFrom.element.remove();
+			DkimResultTooltip.remove(favicon.element);
 		}
 	}
 
@@ -777,24 +949,24 @@ class DkimFromAddress {
 		}
 		for (const emailValue of emailValues) {
 			if (show) {
-				// save current tooltip if set
+				// save current XUL tooltip if set
 				const tooltiptext = emailValue.getAttribute("tooltiptext");
 				if (tooltiptext) {
 					emailValue.setAttribute("tooltiptextSaved", tooltiptext);
 				}
 				emailValue.removeAttribute("tooltiptext");
+
 				// set DKIM tooltip
-				emailValue.setAttribute("tooltip", DkimFavicon.idTooltip);
+				DkimResultTooltip.add(emailValue);
 			} else {
-				if (emailValue.getAttribute("tooltip") === DkimFavicon.idTooltip) {
-					// remove DKIM tooltip
-					emailValue.removeAttribute("tooltip");
-					// restore saved tooltip
-					const tooltiptextSaved = emailValue.getAttribute("tooltiptextSaved");
-					if (tooltiptextSaved) {
-						emailValue.setAttribute("tooltiptext", tooltiptextSaved);
-						emailValue.removeAttribute("tooltiptextSaved");
-					}
+				// remove DKIM tooltip
+				DkimResultTooltip.remove(emailValue);
+
+				// restore saved XUL tooltip
+				const tooltiptextSaved = emailValue.getAttribute("tooltiptextSaved");
+				if (tooltiptextSaved) {
+					emailValue.setAttribute("tooltiptext", tooltiptextSaved);
+					emailValue.removeAttribute("tooltiptextSaved");
 				}
 			}
 		}
@@ -914,7 +1086,7 @@ this.dkimHeader = class extends ExtensionCommon.ExtensionAPI {
 			"chrome://messenger/content/messageWindow.xhtml",
 		];
 
-		DKIMHeaderField.resetValue = extension.localeData.localizeMessage("loading");
+		DKIMResultResetValue = extension.localeData.localizeMessage("loading");
 
 		extension.callOnClose(this);
 		this.open();
@@ -982,6 +1154,7 @@ this.dkimHeader = class extends ExtensionCommon.ExtensionAPI {
 		const { document } = window;
 		DkimHeaderRow.remove(document);
 		DkimFavicon.remove(document);
+		DkimFromAddress.reset(document);
 	}
 
 	/**
@@ -1051,9 +1224,13 @@ this.dkimHeader = class extends ExtensionCommon.ExtensionAPI {
 					}
 
 					const favicon = DkimFavicon.get(document);
-					favicon.value = result;
-					favicon.warnings = warnings;
 					favicon.setFaviconUrl(faviconUrl);
+
+					const resultTooltips = DkimResultTooltip.get(document);
+					for (const tooltip of resultTooltips) {
+						tooltip.value = result;
+						tooltip.warnings = warnings;
+					}
 
 					return Promise.resolve(true);
 				},

@@ -9,7 +9,9 @@ interface DKIMHeaderFieldElement extends HTMLDivElement {
 
 interface DKIMTooltipElement extends XULElement {
     _value: XULElement | void
-    _warningsBox: XULElement
+    _warningsBox: XULElement | void
+    _dkimOnmouseenter: (ev: MouseEvent) => void
+    _dkimOnmouseleave: (ev: MouseEvent) => void
 }
 
 interface DKIMFaviconElement extends XULElement {
