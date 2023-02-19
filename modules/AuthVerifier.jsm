@@ -29,6 +29,8 @@ var EXPORTED_SYMBOLS = [
 ];
 
 // @ts-ignore
+const Cc = Components.classes;
+// @ts-ignore
 const Ci = Components.interfaces;
 // @ts-ignore
 const Cu = Components.utils;
@@ -732,17 +734,62 @@ function isOutgoing(msgHdr) {
 		// msg is in sent folder
 		return true;
 	}
+	if (msgHdr.folder.getFlag(Ci.nsMsgFolderFlags.Junk)) {
+		// msg is in junk folder
+		return false;
+	}
 
-	// return true if one of the servers identities contain the from address
-	let author = msgHdr.mime2DecodedAuthor;
-	let	identities = MailServices.accounts.
-			getIdentitiesForServer(msgHdr.folder.server);
-	for (let identity of fixIterator(identities, Ci.nsIMsgIdentity)) {
-		if (author.includes(identity.email)) {
-			return true;
+	// return true
+	// - if one of the servers identities contains the from address
+	// - if another account's inbox is redirected to this server and an originating account's identity matches
+	// - if the mail is in local folders and the from address matches any identity
+
+	const accMgr = MailServices.accounts;
+	const msgHeaderParser = Cc["@mozilla.org/messenger/headerparser;1"].createInstance(Ci.nsIMsgHeaderParser);
+	const lfAcc = accMgr.FindAccountForServer(accMgr.localFoldersServer);
+	const lfKey = lfAcc ? lfAcc.key : null;
+
+	let accountAddressMap = new Map();
+	let allAccounts = accMgr.accounts;
+	for (let i = 0; i < allAccounts.length; i++) {
+		let account = allAccounts.queryElementAt(i, Ci.nsIMsgAccount);
+		let key = account.key;
+		let thisAccAddr = accountAddressMap.has(key) ? accountAddressMap.get(key) : new Array();
+		let allIdentities = account.identities;
+		for (let j = 0; j < allIdentities.length; j++) {
+			let identity = allIdentities.queryElementAt(j, Ci.nsIMsgIdentity);
+			if (identity.email) {
+				let email = identity.email.toLowerCase();
+				thisAccAddr.push(email);
+			}
+		}
+		if (thisAccAddr.length > 0) {
+			// add email addresses to current server
+			accountAddressMap.set(key, thisAccAddr);
+
+			// check if INBOX is redirected to another account
+			// if so, add all email addresses from this account to the redirected account
+			if (account.incomingServer && account.incomingServer.rootFolder != account.incomingServer.rootMsgFolder) {
+				let rAccount = accMgr.FindAccountForServer(account.incomingServer.rootMsgFolder.server);
+				let rKey = rAccount.key;
+				let rAccAddr = accountAddressMap.has(rKey) ? accountAddressMap.get(rKey) : new Array();
+				rAccAddr = rAccAddr.concat(thisAccAddr);
+				accountAddressMap.set(rKey, rAccAddr);
+			}
+
+			// Add email addresses to Local Folders
+			if (lfKey) {
+				let lfAccAddr = accountAddressMap.has(lfKey) ? accountAddressMap.get(lfKey) : new Array();
+				lfAccAddr = lfAccAddr.concat(thisAccAddr);
+				accountAddressMap.set(lfKey, lfAccAddr);
+			}
 		}
 	}
 
-	// default to false
-	return false;
+	let author = msgHdr.mime2DecodedAuthor;
+	let fromAddress = msgHeaderParser.extractHeaderAddressMailboxes(author);
+	fromAddress = fromAddress.toLowerCase();
+	let key = accMgr.FindAccountForServer(msgHdr.folder.server).key;
+
+	return accountAddressMap.has(key) ? (accountAddressMap.get(key)).includes(fromAddress) : false;
 }
