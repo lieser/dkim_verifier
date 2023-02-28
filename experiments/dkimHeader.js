@@ -81,7 +81,7 @@ class DKIMWarningsTooltipXUL {
 			return;
 		}
 
-		/** @type {DKIMTooltipElement} */
+		/** @type {DKIMWarningsTooltipXULElement} */
 		// @ts-expect-error
 		this.element = document.createXULElement("tooltip");
 
@@ -154,9 +154,6 @@ class DKIMTooltip {
 		this.element.style.position = "absolute";
 		this.element.style.zIndex = "99";
 
-		// Bottom Tooltip
-		this.element.style.top = "calc(100% + 10px)";
-
 		this.element.style.backgroundColor = "var(--arrowpanel-background)";
 		this.element.style.color = "var(--arrowpanel-color)";
 		this.element.style.borderStyle = "solid";
@@ -171,20 +168,30 @@ class DKIMTooltip {
 	}
 
 	/**
-	 * Add the tooltip to the given parent.
+	 * Add the tooltip to the given target.
 	 *
 	 * @protected
-	 * @param {HTMLElement} parent
+	 * @param {DKIMTooltipTarget} target
 	 */
-	add(parent) {
-		const parentSyle = parent.ownerDocument.defaultView?.getComputedStyle(parent);
-		if (parentSyle?.position === "static") {
-			parent.style.position = "relative";
+	add(target) {
+		if (target._dkimTooltip) {
+			throw new Error("DKIM: A DKIMTooltip already exist on target");
+		}
+		if (this.element._target) {
+			throw new Error("DKIM: The DKIMTooltip was already added to a target");
 		}
 
-		parent.appendChild(this.element);
-		parent.addEventListener("mouseenter", this.element._dkimOnmouseenter);
-		parent.addEventListener("mouseleave", this.element._dkimOnmouseleave);
+		target._dkimTooltip = this.element;
+		this.element._target = target;
+
+		// The tooltip is added to the body instead of the target
+		// to avoid potential issues with overflow.
+		// See also
+		// - https://stackoverflow.com/questions/36531708/why-does-position-absolute-make-page-to-overflow
+		// - https://stackoverflow.com/questions/6421966/css-overflow-x-visible-and-overflow-y-hidden-causing-scrollbar-issue
+		target.ownerDocument.body.appendChild(this.element);
+		target.addEventListener("mouseenter", this.element._dkimOnmouseenter);
+		target.addEventListener("mouseleave", this.element._dkimOnmouseleave);
 	}
 
 	/**
@@ -193,10 +200,11 @@ class DKIMTooltip {
 	 * @protected
 	 */
 	remove() {
-		const parent = this.element.parentElement;
-		if (parent) {
-			parent.removeEventListener("mouseenter", this.element._dkimOnmouseenter);
-			parent.removeEventListener("mouseleave", this.element._dkimOnmouseleave);
+		const target = this.element._target;
+		if (target) {
+			target.removeEventListener("mouseenter", this.element._dkimOnmouseenter);
+			target.removeEventListener("mouseleave", this.element._dkimOnmouseleave);
+			delete target._dkimTooltip;
 		}
 		this.element.remove();
 	}
@@ -206,10 +214,24 @@ class DKIMTooltip {
 	 * @param {MouseEvent} _event
 	 */
 	static #mouseEnter(tooltip, _event) {
-		if (tooltip.element.parentElement?.title) {
-			tooltip.element.parentElement.dataset.titleBackup = tooltip.element.parentElement.title;
-			tooltip.element.parentElement.title = "";
+		const target = tooltip.element._target;
+		if (!target) {
+			throw new Error("DKIM: mouseEnter event called for a DKIMTooltip that has no target");
 		}
+
+		// Avoid title being shown together with tooltip
+		if (target?.title) {
+			target.dataset.titleBackup = target.title;
+			target.title = "";
+		}
+
+		// Calculate and set tooltip position
+		const clientRect = target.getBoundingClientRect();
+		const tooltipSpaceToTarget = 10;
+		tooltip.element.style.top = `${clientRect.bottom + tooltipSpaceToTarget}px`;
+		tooltip.element.style.left = `${clientRect.left}px`;
+
+		// Show tooltip
 		tooltip.element.style.visibility = "visible";
 	}
 
@@ -218,10 +240,14 @@ class DKIMTooltip {
 	 * @param {MouseEvent} _event
 	 */
 	static #mouseLeave(tooltip, _event) {
+		// Hide tooltip
 		tooltip.element.style.visibility = "hidden";
-		if (tooltip.element.parentElement?.dataset.titleBackup) {
-			tooltip.element.parentElement.title = tooltip.element.parentElement.dataset.titleBackup;
-			tooltip.element.parentElement.dataset.titleBackup = "";
+
+		// Restore title
+		const target = tooltip.element._target;
+		if (target?.dataset.titleBackup) {
+			target.title = target.dataset.titleBackup;
+			target.dataset.titleBackup = "";
 		}
 	}
 }
@@ -294,7 +320,7 @@ class DkimResultTooltip extends DKIMTooltip {
 	 *
 	 * @param {string[]} warnings
 	 */
-	 set warnings(warnings) {
+	set warnings(warnings) {
 		if (!this.element._warningsBox) {
 			throw Error("Underlying element of DkimResultTooltip does not contain _warningsBox");
 		}
@@ -326,15 +352,28 @@ class DkimResultTooltip extends DKIMTooltip {
 	}
 
 	/**
-	 * Get all tooltips under the given document or parent.
+	 * Try getting the tooltip of a target.
 	 *
-	 * @param {Document|Element} searchRoot
+	 * @param {DKIMTooltipTarget} target
+	 * @returns {DkimResultTooltip|null}
+	 */
+	static get(target) {
+		if (target._dkimTooltip) {
+			return new DkimResultTooltip(target._dkimTooltip.ownerDocument, target._dkimTooltip);
+		}
+		return null;
+	}
+
+	/**
+	 * Get all tooltips in the given document.
+	 *
+	 * @param {Document} document
 	 * @returns {DkimResultTooltip[]}
 	 */
-	static get(searchRoot) {
+	static getAll(document) {
 		// eslint-disable-next-line no-extra-parens
 		const elements = /** @type {HTMLElement[]} */ (
-			Array.from(searchRoot.getElementsByClassName(DkimResultTooltip.#class)));
+			Array.from(document.getElementsByClassName(DkimResultTooltip.#class)));
 		const tooltips = [];
 		for (const element of elements) {
 			tooltips.push(new DkimResultTooltip(element.ownerDocument, element));
@@ -343,33 +382,31 @@ class DkimResultTooltip extends DKIMTooltip {
 	}
 
 	/**
-	 * Add the tooltip for the given parent.
+	 * Add a tooltip to the given target.
 	 *
-	 * @param {HTMLElement} parent
+	 * @param {DKIMTooltipTarget} target
 	 * @returns {DkimResultTooltip}
 	 */
-	static add(parent) {
-		const existingTooltip = DkimResultTooltip.get(parent)[0];
+	static add(target) {
+		const existingTooltip = DkimResultTooltip.get(target);
 		if (existingTooltip) {
 			console.warn("DKIM: DkimResultTooltip already exist and will be reused");
 			return existingTooltip;
 		}
 
-		const tooltip = new DkimResultTooltip(parent.ownerDocument);
-		tooltip.add(parent);
+		const tooltip = new DkimResultTooltip(target.ownerDocument);
+		tooltip.add(target);
 		return tooltip;
 	}
 
 	/**
-	 * Remove the tooltip from the given parent.
+	 * Remove an existing tooltip from the given target.
 	 *
-	 * @param {HTMLElement} parent
+	 * @param {HTMLElement} target
 	 */
-	static remove(parent) {
-		const tooltips = DkimResultTooltip.get(parent);
-		for (const tooltip of tooltips) {
-			tooltip.remove();
-		}
+	static remove(target) {
+		const tooltip = DkimResultTooltip.get(target);
+		tooltip?.remove();
 	}
 
 	static #class = "DkimResultTooltip";
@@ -727,8 +764,9 @@ class DkimFavicon {
 		if (element) {
 			// @ts-expect-error
 			this.element = element;
-			this._dkimTooltipFrom = DkimResultTooltip.get(this.element)[0];
+			this._dkimTooltipFrom = DkimResultTooltip.get(this.element);
 			if (!this._dkimTooltipFrom) {
+				console.warn("DKIM: DkimResultTooltip for DkimFavicon not found - will recreate it");
 				this._dkimTooltipFrom = DkimResultTooltip.add(this.element);
 			}
 			return;
@@ -820,16 +858,6 @@ class DkimFavicon {
 		} else {
 			// TB <102
 			expandedFromBox.prepend(favicon.element);
-		}
-
-		// Add the tooltip used by the favicon and the from address.
-		// As the tooltip is reused, it can not be defined directly under the favicon.
-		if ("longEmailAddresses" in expandedFromBox) {
-			// TB <102
-			expandedFromBox.longEmailAddresses.prepend(favicon._dkimTooltipFrom.element);
-		} else {
-			// TB >=102
-			expandedFromBox.prepend(favicon._dkimTooltipFrom.element);
 		}
 	}
 
@@ -1226,7 +1254,7 @@ this.dkimHeader = class extends ExtensionCommon.ExtensionAPI {
 					const favicon = DkimFavicon.get(document);
 					favicon.setFaviconUrl(faviconUrl);
 
-					const resultTooltips = DkimResultTooltip.get(document);
+					const resultTooltips = DkimResultTooltip.getAll(document);
 					for (const tooltip of resultTooltips) {
 						tooltip.value = result;
 						tooltip.warnings = warnings;

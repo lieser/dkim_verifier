@@ -1,17 +1,26 @@
+interface DKIMTooltipElement extends HTMLElement {
+    _target: DKIMTooltipTarget | void
+    _warningsBox: HTMLElement | void
+    _value: HTMLElement | void
+    _dkimOnmouseenter: (ev: MouseEvent) => void
+    _dkimOnmouseleave: (ev: MouseEvent) => void
+}
+
+interface DKIMTooltipTarget extends HTMLElement {
+    _dkimTooltip?: HTMLElement;
+}
+
 interface DKIMHeaderFieldElement extends HTMLDivElement {
     _dkimValue: XULElement
     _dkimWarningIcon: XULElement
-    _dkimWarningTooltip: DKIMTooltipElement
+    _dkimWarningTooltip: DKIMWarningsTooltipXULElement
     _arhDkim: { box: XULElement, value: XULElement }
     _arhDmarc: { box: XULElement, value: XULElement }
     _arhSpf: { box: XULElement, value: XULElement }
 }
 
-interface DKIMTooltipElement extends XULElement {
-    _value: XULElement | void
+interface DKIMWarningsTooltipXULElement extends XULElement {
     _warningsBox: XULElement | void
-    _dkimOnmouseenter: (ev: MouseEvent) => void
-    _dkimOnmouseleave: (ev: MouseEvent) => void
 }
 
 interface DKIMFaviconElement extends XULElement {
