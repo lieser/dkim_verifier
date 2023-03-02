@@ -88,7 +88,14 @@ describe("crypto [unittest]", function () {
 			const [valid,] = await DkimCrypto.verifyRSA(pubKey, "sha256", signature, strReplaceAt(msg, 5, "x"));
 			expect(valid).to.be.false;
 		});
-		it("wrong key");
+		it("wrong key", async function () {
+			const github = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDaCCQ+CiOqRkMAM/Oi04Xjhnxv" +
+			"3bXkTtA8KXt49RKQExLCmBxRpMp0PMMI73noKL/bZwEXljPO8HIfzG43ntPp1QRB" +
+			"Upn1UEvbp1/rlWPUop3i1j6aUpjxYGHEEzgmT+ncLUBDEPO4n4Zzt36DG3ZcJaLh" +
+			"vKtRkk2off5XD+BMvQIDAQAB";
+			const [valid,] = await DkimCrypto.verifyRSA(github, "sha256", signature, msg);
+			expect(valid).to.be.false;
+		});
 		it("wrong hash algorithm", async function () {
 			const [valid,] = await DkimCrypto.verifyRSA(pubKey, "sha1", signature, msg);
 			expect(valid).to.be.false;
