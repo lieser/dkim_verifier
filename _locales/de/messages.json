@@ -185,7 +185,7 @@
 		"message": "Signatur-Zeitstempel-Tag hat falsches Format"
 	},
 	"DKIM_SIGERROR_TIMESTAMPS": {
-		"message": "Signatur-Ablaufdatum ist vor dem Signatur-Zeitstempel"
+		"message": "Ablaufdatum der Signatur liegt vor dem Zeitstempel der Signatur"
 	},
 	"DKIM_SIGERROR_ILLFORMED_X": {
 		"message": "Signatur-Ablaufdatum-Tag hat falsches Format"
@@ -262,7 +262,8 @@
 	},
 	// DKIM_SIGERROR - POLICY
 	"DKIM_POLICYERROR_MISSING_SIG": {
-		"message": "Sollte durch $1 signiert sein"
+		"message": "Keine Signatur, sollte durch $1 signiert sein",
+		"description": "Error if a message has no signature, but the sign rules state that it should be signed"
 	},
 	"DKIM_POLICYERROR_KEYMISMATCH": {
 		"message": "Gespeicherter DKIM-Schlüssel stimmt nicht mit dem aktuellen überein"
@@ -369,7 +370,8 @@
 		"message": "DNS-Server (EBNF-Syntax: host[\":\"port]{\";\"host[\":\"port]} )"
 	},
 	"options_dns.timeout_connect": {
-		"message": "Timeout für DNS-Verbindungsaufbau (in Sekunden)"
+		"message": "DNS-Verbindungs-Timeout (in Sekunden)",
+		"description": "Timeout for the connection to the DNS servers (both establishing the connection and sending/receiving data)"
 	},
 	"options_dns.proxy.enable": {
 		"message": "Proxy für die Verbindung zu den DNS-Servern benutzen"
@@ -436,7 +438,7 @@
 		"message": "DMARC benutzen, um heuristisch zu bestimmen, ob eine E-Mail signiert sein sollte"
 	},
 	"options_policy.dkim.unsignedHeadersWarning.mode": {
-		"message": "Warne vor unsignierten Kopfzeilen, die signiert sein sollten: ",
+		"message": "Warne vor unsignierten Kopfzeilen, die signiert sein sollten:",
 		"description": "Description for the setting of the unsigned headers warning mode."
 	},
 	"options_policy.dkim.unsignedHeadersWarning.mode.relaxed": {

@@ -262,7 +262,8 @@
 	},
 	// DKIM_SIGERROR - POLICY
 	"DKIM_POLICYERROR_MISSING_SIG": {
-		"message": "Should be signed by $1"
+		"message": "No Signature, should be signed by $1",
+		"description": "Error if a message has no signature, but the sign rules state that it should be signed"
 	},
 	"DKIM_POLICYERROR_KEYMISMATCH": {
 		"message": "Stored DKIM key is different from the current one"
@@ -369,7 +370,8 @@
 		"message": "DNS servers (Syntax (EBNF): host[\":\"port]{\";\"host[\":\"port]} )"
 	},
 	"options_dns.timeout_connect": {
-		"message": "DNS connect timeout (in seconds)"
+		"message": "DNS connection timeout (in seconds)",
+		"description": "Timeout for the connection to the DNS servers (both establishing the connection and sending/receiving data)"
 	},
 	"options_dns.proxy.enable": {
 		"message": "Use a Proxy to connect to the DNS servers"

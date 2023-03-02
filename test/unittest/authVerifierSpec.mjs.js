@@ -220,7 +220,7 @@ describe("AuthVerifier [unittest]", function () {
 
 			res = await authVerifier.verify(fakePayPalMessage);
 			expect(res.dkim[0]?.result).to.be.equal("PERMFAIL");
-			expect(res.dkim[0]?.result_str).to.be.equal("Invalid (Should be signed by paypal.com)");
+			expect(res.dkim[0]?.result_str).to.be.equal("Invalid (No Signature, should be signed by paypal.com)");
 		});
 
 		it("outgoing mail", async function () {
@@ -229,7 +229,7 @@ describe("AuthVerifier [unittest]", function () {
 
 			let res = await authVerifier.verify(fakePayPalMessage);
 			expect(res.dkim[0]?.result).to.be.equal("PERMFAIL");
-			expect(res.dkim[0]?.result_str).to.be.equal("Invalid (Should be signed by paypal.com)");
+			expect(res.dkim[0]?.result_str).to.be.equal("Invalid (No Signature, should be signed by paypal.com)");
 
 			if (!fakePayPalMessage.folder) {
 				throw new Error("Expect faked message to be in a fake folder");
@@ -253,7 +253,7 @@ describe("AuthVerifier [unittest]", function () {
 
 			res = await verifier.verify(fakePayPalMessage);
 			expect(res.dkim[0]?.result).to.be.equal("PERMFAIL");
-			expect(res.dkim[0]?.result_str).to.be.equal("Invalid (Should be signed by paypal.com)");
+			expect(res.dkim[0]?.result_str).to.be.equal("Invalid (No Signature, should be signed by paypal.com)");
 		});
 	});
 
