@@ -12,7 +12,7 @@
 <!ENTITY dns.getNameserversFromOS.label "Lade DNS-Server aus den Einstellungen des Betriebssystems">
 <!ENTITY dns.nameserver.label "DNS-Server (Syntax (EBNF): host[&quot;:&quot;port]{&quot;;&quot;host[&quot;:&quot;port]} )">
 
-<!ENTITY dns.timeout_connect.label "Timeout für DNS-Verbindungsaufbau (in Sekunden)">
+<!ENTITY dns.timeout_connect.label "DNS-Verbindungs-Timeout (in Sekunden)">
 <!ENTITY dns.proxy.enable.label "Benutze einen Proxy für die Verbindung zu den DNS-Servern">
 <!ENTITY dns.proxy.type.label "Proxy-Typ:">
 <!ENTITY dns.proxy.host.label "Proxy-Server:">
