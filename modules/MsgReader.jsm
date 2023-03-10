@@ -55,6 +55,7 @@ var MsgReader = {
 	read: function _MsgReader_read(msgURI) {
 		/** @type {IDeferred<{headerPlain: string, bodyPlain: string}>} */
 		let res_defer = new Deferred();
+		let raw = "";
 		let res = {
 			headerPlain: "",
 			bodyPlain: "",
@@ -62,8 +63,6 @@ var MsgReader = {
 
 		let StreamListener =
 		{
-			headerFinished: false,
-
 			QueryInterface : function(iid) {
 						if (iid.equals(Components.interfaces.nsIStreamListener) ||
 							iid.equals(Components.interfaces.nsISupports)) {
@@ -74,50 +73,11 @@ var MsgReader = {
 			},
 
 			onDataAvailable: function ( request , context , inputStream , offset , count ) {
-				let str;
-				let NewlineLength = 2;
-
 				try {
 					var scriptableInputStream = Components.classes["@mozilla.org/scriptableinputstream;1"].
 						createInstance(Components.interfaces.nsIScriptableInputStream);
 					scriptableInputStream.init(inputStream);
-
-					if (!this.headerFinished) {
-						// read header
-						str = scriptableInputStream.read(count);
-						let posEndHeader = str.indexOf("\r\n\r\n");
-
-						// check for LF line ending
-						if (posEndHeader === -1) {
-							posEndHeader = str.indexOf("\n\n");
-							if (posEndHeader !== -1) {
-								NewlineLength = 1;
-								log.debug("LF line ending detected");
-							}
-						}
-						// check for CR line ending
-						if (posEndHeader === -1) {
-							posEndHeader = str.indexOf("\r\r");
-							if (posEndHeader !== -1) {
-								NewlineLength = 1;
-								log.debug("CR line ending detected");
-							}
-						}
-
-						// check for end of header
-						if (posEndHeader === -1) {
-							// end of header not yet reached
-							res.headerPlain += str;
-						} else {
-							// end of header reached
-							res.headerPlain += str.substr(0, posEndHeader + NewlineLength);
-							res.bodyPlain = str.substr(posEndHeader + 2*NewlineLength);
-							this.headerFinished = true;
-						}
-					} else {
-						// read body
-						res.bodyPlain += scriptableInputStream.read(count);
-					}
+						raw += scriptableInputStream.read(count);
 				} catch (e) {
 					log.warn(e);
 					res_defer.reject(e);
@@ -128,16 +88,25 @@ var MsgReader = {
 
 			onStopRequest: function (/* aRequest , aContext , aStatusCode */) {
 				try {
-					// if end of msg is reached before end of header,
-					// it is no in correct e-mail format
-					if (!this.headerFinished) {
-						throw new DKIM_InternalError("Message is not in correct e-mail format",
-							"DKIM_INTERNALERROR_INCORRECT_EMAIL_FORMAT");
-					}
-
 					// convert all EOLs to CRLF
-					res.headerPlain = res.headerPlain.replace(/(\r\n|\n|\r)/g, "\r\n");
-					res.bodyPlain = res.bodyPlain.replace(/(\r\n|\n|\r)/g, "\r\n");
+					const str = raw.replace(/(\r\n|\n|\r)/g, "\r\n");
+					const newlineLength = 2;
+					
+					const posEndHeader = str.indexOf("\r\n\r\n");
+					
+					// check if header end was detected and split header and body				
+					if (posEndHeader === -1) {
+						// in this case, the message has no body, but headers must end with a newline
+						if (!str.endsWith("\r\n")) {
+							throw new DKIM_InternalError("Message is not in correct e-mail format",
+								"DKIM_INTERNALERROR_INCORRECT_EMAIL_FORMAT");
+						}
+						res.headerPlain = str;
+						res.bodyPlain = "";
+					} else {
+						res.headerPlain = str.substr(0, posEndHeader + newlineLength);
+						res.bodyPlain = str.substr(posEndHeader + 2 * newlineLength);
+					}
 
 					res_defer.resolve(res);
 				} catch (e) {
@@ -175,6 +144,8 @@ var MsgReader = {
 
 		// split header fields
 		var headerArray = headerPlain.split(/\r\n(?=\S|$)/);
+		// The last newline will result in an empty entry, remove it
+		headerArray.pop();
 		var hName;
 		for(var i = 0; i < headerArray.length; i++) {
 			// store fields under header field name (in lower case) in an array
@@ -185,6 +156,9 @@ var MsgReader = {
 					headerFields.set(hName, []);
 				}
 				headerFields.get(hName).push(headerArray[i]+"\r\n");
+			} else {
+				throw new DKIM_InternalError("Could not split header into name and value",
+					"DKIM_INTERNALERROR_INCORRECT_EMAIL_FORMAT");
 			}
 		}
 
