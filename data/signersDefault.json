@@ -140,6 +140,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "analog.com",
+			"addr": "*",
+			"sdid": "analog.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "anyroam.net",
 			"addr": "*",
 			"sdid": "anyroam.net",
@@ -161,6 +167,12 @@
 			"domain": "apple.com",
 			"addr": "*@insideapple.apple.com",
 			"sdid": "insideapple.apple.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "arbeitsagentur.de",
+			"addr": "*",
+			"sdid": "arbeitsagentur.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -278,6 +290,18 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "bitly.com",
+			"addr": "*@accounts.bitly.com",
+			"sdid": "bitly.com accounts.bitly.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
+			"domain": "bl.uk",
+			"addr": "*@mail.plr.bl.uk",
+			"sdid": "plr.bl.uk mail.plr.bl.uk",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
 			"domain": "blablacar.com",
 			"addr": "*@community.blablacar.com",
 			"sdid": "blablacar.com community.blablacar.com",
@@ -317,6 +341,12 @@
 			"domain": "bnitm.de",
 			"addr": "*",
 			"sdid": "bnitm.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "bonnerwerkstaetten.de",
+			"addr": "*",
+			"sdid": "bonnerwerkstaetten.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -524,6 +554,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "ctan.org",
+			"addr": "*",
+			"sdid": "ctan.org",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "culligan.it",
 			"addr": "*",
 			"sdid": "culligan.it culliganorg.onmicrosoft.com",
@@ -674,6 +710,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "doodle.com",
+			"addr": "*",
+			"sdid": "doodle.com e.doodle.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "doveconviene.it",
 			"addr": "*",
 			"sdid": "doveconviene.it",
@@ -689,6 +731,12 @@
 			"domain": "dpd.de",
 			"addr": "*@paket.dpd.de",
 			"sdid": "dpd.de paket.dpd.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "dpg-physik.de",
+			"addr": "*",
+			"sdid": "dpg-physik.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -938,6 +986,12 @@
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "fedoraproject.org",
+			"addr": "*",
+			"sdid": "fedoraproject.org",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "fiduciagad.de",
 			"addr": "*",
 			"sdid": "fiduciagad.de",
@@ -1094,6 +1148,12 @@
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_NEUTRAL"
 		}, {
+			"domain": "futureme.org",
+			"addr": "*",
+			"sdid": "futureme.org",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "gellersen.de",
 			"addr": "*",
 			"sdid": "gellersen.de",
@@ -1182,7 +1242,13 @@
 			"addr": "*@sicher.gmx.net",
 			"sdid": "gmx.net sicher.gmx.net",
 			"ruletype": "ALL",
-			"priority": "DEFAULT_RULE_ALL"
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
+			"domain": "gmx.net",
+			"addr": "mailer-daemon@gmx.net",
+			"sdid": "gmx.net",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
 			"domain": "gmxnet.de",
 			"addr": "*",
@@ -1496,6 +1562,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "kinderschutzbund-koeln.de",
+			"addr": "*",
+			"sdid": "kinderschutzbund-koeln.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "klarna.de",
 			"addr": "*",
 			"sdid": "klarna.de email.klarna.de",
@@ -1544,6 +1616,18 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "latex-project.org",
+			"addr": "*",
+			"sdid": "latex-project.org",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "lbl.gov",
+			"addr": "*@pdg.lbl.gov",
+			"sdid": "pdg.lbl.gov",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
 			"domain": "leagueoflegends.com",
 			"addr": "*@email.leagueoflegends.com",
 			"sdid": "leagueoflegends.com email.leagueoflegends.com",
@@ -1573,6 +1657,12 @@
 			"sdid": "lima-city.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "lindt.com",
+			"addr": "*@newsletter.lindt.com",
+			"sdid": "lindt.com newsletter.lindt.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
 			"domain": "linkedin.com",
 			"addr": "*",
@@ -1874,6 +1964,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "oclc.org",
+			"addr": "*",
+			"sdid": "oclc.org",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "omniva.ee",
 			"addr": "*",
 			"sdid": "omniva.ee",
@@ -2006,6 +2102,12 @@
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_NEUTRAL"
 		}, {
+			"domain": "pilotprojekt-grundeinkommen.de",
+			"addr": "*",
+			"sdid": "pilotprojekt-grundeinkommen.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "pimkie.com",
 			"addr": "*@news.pimkie.com",
 			"sdid": "pimkie.com news.pimkie.com",
@@ -2087,6 +2189,12 @@
 			"domain": "rcibanque.com",
 			"addr": "*",
 			"sdid": "rcibanque.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "redditmail.com",
+			"addr": "*",
+			"sdid": "redditmail.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -2594,6 +2702,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "uni-koeln.de",
+			"addr": "*@asta.uni-koeln.de",
+			"sdid": "asta.uni-koeln.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
 			"domain": "united-domains.de",
 			"addr": "*",
 			"sdid": "united-domains.de",
@@ -2672,6 +2786,12 @@
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_NEUTRAL"
 		}, {
+			"domain": "washabich.de",
+			"addr": "*",
+			"sdid": "washabich.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "watchlistmailings.de",
 			"addr": "*",
 			"sdid": "watchlistmailings.de",
@@ -2696,6 +2816,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
+			"domain": "web.de",
+			"addr": "fax-und-voice@web.de",
+			"sdid": "web.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
 			"domain": "wetransfer.com",
 			"addr": "*",
 			"sdid": "wetransfer.com",
@@ -2711,6 +2837,12 @@
 			"domain": "wikimedia.org",
 			"addr": "*",
 			"sdid": "wikimedia.org",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "wiley.com",
+			"addr": "*",
+			"sdid": "wiley.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
