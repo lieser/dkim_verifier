@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 ### Enhancements
 
 - Extract the received time from the last Received header and use it as the verification time (#336).
+- Fixed incompatibility with Thunderbird 113 (#352)
 
 ### Fixes
 

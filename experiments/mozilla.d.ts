@@ -63,10 +63,16 @@ declare module ExtensionCommon {
                 substitutions?: undefined | string | (string | string[])[]
             ) => string;
         };
+
+        ////////////////////////////////////////////////////////////////////////
+        //// https://searchfox.org/comm-central/source/mail/components/extensions/parent/ext-mail.js
         readonly messageManager: {
             readonly convert: (msgDBHdr: nsIMsgDBHdr) => browser.messageDisplay.MessageHeader;
             readonly get: (messageId: number) => nsIMsgDBHdr;
         };
+        readonly tabManager: ExtensionParentM.TabManagerBase;
+        readonly windowManager: ExtensionParentM.WindowManagerBase;
+        ////////////////////////////////////////////////////////////////////////
 
         readonly id: string;
         readonly rootURI: nsIURI;
@@ -84,21 +90,65 @@ declare module ExtensionCommon {
 }
 
 declare module ExtensionParentM {
+    ////////////////////////////////////////////////////////////////////////////
+    //// https://searchfox.org/comm-central/source/mozilla/toolkit/components/extensions/parent/ext-tabs-base.js
+
+    interface NativeTabObj {
+        readonly chromeBrowser?: HTMLIFrameElement;
+    }
+    type NativeTab = NativeTabObj | Window;
+
+    interface TabBase {
+        readonly id: number;
+        readonly nativeTab: NativeTab;
+        // The following is specific to a tab in TB
+        // https://searchfox.org/comm-central/source/mail/components/extensions/parent/ext-mail.js
+        readonly type: null
+            | "messageCompose"
+            | "messageDisplay"
+            | "content"
+            // This list is incomplete, more are specified for TabmailTab
+        ;
+    }
+
+    interface WindowBase {
+        readonly getTabs: () => Generator<TabBase>;
+    }
+
+    interface TabTrackerBase {
+        readonly getTab: (id: number) => NativeTab;
+    }
+
+    interface TabManagerBase {
+        readonly get: (tabId: number) => TabBase;
+    }
+
+    interface WindowManagerBase {
+        readonly getWrapper: (window: Window) => WindowBase|undefined;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+
     declare module apiManager {
         declare module global {
-            declare module tabTracker {
-                interface Tab { Tab: never }
+            const tabTracker: TabTrackerBase;
 
-                const getTab: (id: number) => Tab;
-            }
+            const getDisplayedMessages: (tab: TabBase) => browser.messageDisplay.MessageHeader[];
         }
     }
 }
 
+/**
+ * @link https://searchfox.org/comm-central/source/mail/modules/ExtensionSupport.jsm
+ */
 declare module ExtensionSupportM {
     const registerWindowListener: (
         id: string,
-        listener: { chromeURLs: string[], onLoadWindow: (window: Window) => void }
+        listener: {
+            chromeURLs: string[],
+            onLoadWindow: (window: Window) => void,
+            onUnloadWindow: (window: Window) => void,
+        }
     ) => void;
     const unregisterWindowListener: (id: string) => void;
 

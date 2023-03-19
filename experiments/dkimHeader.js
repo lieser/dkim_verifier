@@ -587,7 +587,7 @@ class DKIMHeaderField {
 	 * @param {Document} document
 	 * @returns {DKIMHeaderField}
 	 */
-	static get(document) {
+	static getOrThrow(document) {
 		const element = document.getElementById(DKIMHeaderField._id);
 		if (!element) {
 			throw Error("Could not find the DKIMHeaderField element");
@@ -639,14 +639,28 @@ class DkimHeaderRow {
 	 * Get the DKIM header row in a given document.
 	 *
 	 * @param {Document} document
-	 * @returns {DkimHeaderRow}
+	 * @returns {DkimHeaderRow|null}
 	 */
 	static get(document) {
 		const element = document.getElementById(DkimHeaderRow._id);
 		if (!element) {
-			throw Error("Could not find the DkimHeaderRow element");
+			return null;
 		}
 		return new DkimHeaderRow(document, element);
+	}
+
+	/**
+	 * Get the DKIM header row in a given document.
+	 *
+	 * @param {Document} document
+	 * @returns {DkimHeaderRow}
+	 */
+	static getOrThrow(document) {
+		const dkimHeaderRow = DkimHeaderRow.get(document);
+		if (!dkimHeaderRow) {
+			throw Error("Could not find the DkimHeaderRow element");
+		}
+		return dkimHeaderRow;
 	}
 
 	/**
@@ -692,6 +706,37 @@ class DkimHeaderRow {
 	}
 
 	/**
+	 * Trigger syncing the column widths of all headers.
+	 *
+	 * @param {Window} window
+	 */
+	static syncColumns(window) {
+		try {
+			if (window.syncGridColumnWidths) {
+				// TB <102
+				window.syncGridColumnWidths();
+			} else if (window.updateExpandedView) {
+				// TB >=102
+				// Calling `gMessageHeader.syncLabelsColumnWidths()` directly is not possible,
+				// as `gMessageHeader` is not part of the `window` object.
+
+				// When viewing messages in a window, `gFolderDisplay` is defined only in the first opened window.
+				// A missing `gFolderDisplay` will result in `updateExpandedView()` to fail in older TB version.
+				// In TB 111 this is not the case.
+				try {
+					window.updateExpandedView();
+				} catch (error) {
+					// ignore
+				}
+			} else {
+				console.warn("DKIM: Function to sync header column widths not found.");
+			}
+		} catch (error) {
+			console.warn("DKIM: Function to sync header column failed:", error);
+		}
+	}
+
+	/**
 	 * Create a table based header row element.
 	 * Used in TB 78-95.
 	 * Should be added to the `expandedHeaders2` element.
@@ -733,10 +778,12 @@ class DkimHeaderRow {
 		headerRow.id = DkimHeaderRow._id;
 		headerRow.classList.add("message-header-row");
 
-		// const headerRowLabel = document.createXULElement("label");
-		const headerRowLabel = document.createElement("label");
+		// We still use XUL and store the text in the value to get the same styling
+		// as the original TB headers.
+		// Otherwise in e.g. TB 102 the header text alignment for messages opened in a new tab differs.
+		const headerRowLabel = document.createXULElement("label");
 		headerRowLabel.classList.add("message-header-label");
-		headerRowLabel.textContent = "DKIM";
+		headerRowLabel.setAttribute("value", "DKIM");
 
 		const headerRowValue = document.createElement("div");
 		headerRowValue.classList.add("headerValue");
@@ -819,14 +866,28 @@ class DkimFavicon {
 	 * Get the DKIM favicon in a given document.
 	 *
 	 * @param {Document} document
-	 * @returns {DkimFavicon}
+	 * @returns {DkimFavicon|null}
 	 */
 	static get(document) {
 		const element = document.getElementById(DkimFavicon._id);
 		if (!element) {
-			throw Error("Could not find the DkimFavicon element");
+			return null;
 		}
 		return new DkimFavicon(document, element);
+	}
+
+	/**
+	 * Get the DKIM favicon in a given document.
+	 *
+	 * @param {Document} document
+	 * @returns {DkimFavicon}
+	 */
+	static getOrThrow(document) {
+		const dkimFavicon = DkimFavicon.get(document);
+		if (!dkimFavicon) {
+			throw Error("Could not find the DkimFavicon element");
+		}
+		return dkimFavicon;
 	}
 
 	/**
@@ -1074,9 +1135,9 @@ class DkimResetMessageListener {
 	 * @returns {void}
 	 */
 	static reset(document) {
-		const dkimHeaderField = DKIMHeaderField.get(document);
+		const dkimHeaderField = DKIMHeaderField.getOrThrow(document);
 		dkimHeaderField.reset();
-		const dkimFavicon = DkimFavicon.get(document);
+		const dkimFavicon = DkimFavicon.getOrThrow(document);
 		dkimFavicon.reset();
 		DkimFromAddress.reset(document);
 	}
@@ -1111,7 +1172,6 @@ this.dkimHeader = class extends ExtensionCommon.ExtensionAPI {
 		this.id = `${extension.id}|dkimHeader`;
 		this.windowURLs = [
 			"chrome://messenger/content/messenger.xhtml",
-			"chrome://messenger/content/messageWindow.xhtml",
 		];
 
 		DKIMResultResetValue = extension.localeData.localizeMessage("loading");
@@ -1120,12 +1180,55 @@ this.dkimHeader = class extends ExtensionCommon.ExtensionAPI {
 		this.open();
 	}
 
+	/**
+	 * From the top level window get the potential inner window there the headers are in.
+	 *
+	 * Note: Does not work with multiple tabs. Will only return the inner window
+	 *       of the mail3Pane tab in the "normal" TB window.
+	 *
+	 * @param {Window} window
+	 * @returns {Window}
+	 */
+	#getMessageBrowserWindow(window) {
+		if (window.gMessageListeners) {
+			// TB < 111
+			return window;
+		}
+
+		// TB >= 111
+		let msgViewDocument;
+		// eslint-disable-next-line no-extra-parens
+		const browser1 = /** @type {HTMLIFrameElement} */ (window.document.getElementById("mail3PaneTabBrowser1"));
+		if (browser1) {
+			// Window contains a tab with the mail3PaneTab
+			msgViewDocument = browser1.contentDocument;
+			if (!msgViewDocument) {
+				throw new Error("DKIM: mail3PaneTabBrowser1 exists but does not contain a document");
+			}
+		} else {
+			// Message is displayed in a new Window
+			msgViewDocument = window.document;
+		}
+
+		// eslint-disable-next-line no-extra-parens
+		const messageBrowser = /** @type {HTMLIFrameElement} */ (msgViewDocument.getElementById("messageBrowser"));
+		const innerWindow = messageBrowser.contentWindow;
+		if (!innerWindow) {
+			throw new Error("DKIM: messageBrowser exists but does not contain a window");
+		}
+		return innerWindow;
+	}
+
 	open() {
 		ExtensionSupport.registerWindowListener(this.id, {
 			chromeURLs: this.windowURLs,
 			onLoadWindow: window => {
-				DkimResetMessageListener.register(window);
-				this.paint(window);
+				const messageBrowserWindow = this.#getMessageBrowserWindow(window);
+				DkimResetMessageListener.register(this.#getMessageBrowserWindow(messageBrowserWindow));
+			},
+			onUnloadWindow: window => {
+				const messageBrowserWindow = this.#getMessageBrowserWindow(window);
+				DkimResetMessageListener.unregister(messageBrowserWindow);
 			},
 		});
 	}
@@ -1133,43 +1236,48 @@ this.dkimHeader = class extends ExtensionCommon.ExtensionAPI {
 	close() {
 		ExtensionSupport.unregisterWindowListener(this.id);
 		for (const window of ExtensionSupport.openWindows) {
-			if (this.windowURLs.includes(window.location.href)) {
-				DkimResetMessageListener.unregister(window);
-				this.unPaint(window);
+			try {
+				if (this.windowURLs.includes(window.location.href)) {
+					const messageBrowserWindow = this.#getMessageBrowserWindow(window);
+					DkimResetMessageListener.unregister(messageBrowserWindow);
+					this.unPaint(messageBrowserWindow);
+				}
+
+				// Remove added DKIM elements in all tabs
+				const wrappedWindow = this.extension.windowManager.getWrapper(window);
+				if (wrappedWindow) {
+					const tabs = wrappedWindow.getTabs();
+					for (const tab of tabs) {
+						if (tab.type === "messageDisplay") {
+							// messages opened in a new tab or window
+							const { window: innerWindow } = this.#getWindowAndIdOfMsgShownInTab(tab.id);
+							this.unPaint(innerWindow);
+						}
+					}
+				}
+			} catch (error) {
+				console.error(`DKIM: cleanup for window ${window.document.title} failed`, error);
 			}
 		}
 	}
 
 	/**
-	 * Add the DKIM specific elements to the window.
+	 * Add the DKIM specific elements to the window if needed.
 	 *
 	 * @param {Window} window
 	 * @returns {void}
 	 */
 	paint(window) {
 		const { document } = window;
-		DkimHeaderRow.add(document);
-		try {
-			if (window.syncGridColumnWidths) {
-				// TB <102
-				window.syncGridColumnWidths();
-			} else if (window.updateExpandedView) {
-				// TB >=102
-				// Calling `gMessageHeader.syncLabelsColumnWidths()` directly is not possible,
-				// as `gMessageHeader` is not part of the `window` object.
-
-				// When viewing messages in a window, `gFolderDisplay` is defined only in the first opened window.
-				// A missing `gFolderDisplay` will result in `updateExpandedView()` to fail.
-				if (window.gFolderDisplay) {
-					window.updateExpandedView();
-				}
-			} else {
-				console.warn("DKIM: Function to sync header column widths not found.");
-			}
-		} catch (error) {
-			console.warn("DKIM: Function to sync header column failed:", error);
+		const dkimHeaderRow = DkimHeaderRow.get(document);
+		if (!dkimHeaderRow) {
+			DkimHeaderRow.add(document);
 		}
-		DkimFavicon.add(document);
+		DkimHeaderRow.syncColumns(window);
+		const dkimFavicon = DkimFavicon.get(document);
+		if (!dkimFavicon) {
+			DkimFavicon.add(document);
+		}
 	}
 
 	/**
@@ -1186,21 +1294,88 @@ this.dkimHeader = class extends ExtensionCommon.ExtensionAPI {
 	}
 
 	/**
+	 * Get the inner Window and id for a message shown in a tab.
+	 *
+	 * @param {number} tabId
+	 * @returns {{window: Window, id: number|null}}
+	 */
+	#getWindowAndIdOfMsgShownInTab(tabId) {
+		const tab = this.extension.tabManager.get(tabId);
+
+		const tabGlobal = Cu.getGlobalForObject(tab.nativeTab);
+		if (tabGlobal.gFolderDisplay) {
+			// TB < 111
+			const msg = this.extension.messageManager.convert(
+				tabGlobal.gFolderDisplay.selectedMessage);
+			return {
+				window: tabGlobal,
+				id: msg.id,
+			};
+		}
+
+		// TB >= 111
+
+		// Get the window of the tab
+		let tabWindow;
+		if ("chromeBrowser" in tab.nativeTab) {
+			// Message is displayed in the mail3PaneTab or a new tab
+			tabWindow = tab.nativeTab.chromeBrowser.contentWindow;
+		} else {
+			// Message is displayed in a new window
+			// eslint-disable-next-line no-extra-parens
+			tabWindow = /** @type {Window} */ (tab.nativeTab);
+		}
+		if (!tabWindow) {
+			throw new Error("DKIM: tab for msg exists but does not contain a window");
+		}
+
+		// Get the inner window that actually shows the message (about:message)
+		let msgWindow;
+		// eslint-disable-next-line no-extra-parens
+		const messageBrowser = /** @type {HTMLIFrameElement} */ (tabWindow.document.getElementById("messageBrowser"));
+		if (messageBrowser) {
+			// Message is displayed in the mail3PaneTab
+			msgWindow = messageBrowser.contentWindow;
+			if (!msgWindow) {
+				throw new Error("DKIM: messageBrowser exists but does not contain a window");
+			}
+		} else {
+			// Message is displayed in a new window or a new tab
+			msgWindow = tabWindow;
+		}
+
+		const displayedMessages = ExtensionParent.apiManager.global.getDisplayedMessages(tab);
+		const id = displayedMessages[0]?.id;
+		if (id === undefined || displayedMessages.length !== 1) {
+			return {
+				window: msgWindow,
+				id: null,
+			};
+		}
+		return {
+			window: msgWindow,
+			id,
+		};
+	}
+
+	/**
 	 * Get the Document for a specific message shown in a tab.
+	 * Also ensures the DKIM specific elements exist.
 	 * Returns null if a different message is shown.
 	 *
 	 * @param {number} tabId
 	 * @param {number} messageId
 	 * @returns {Document?}
 	 */
-	getDocumentForCurrentMsg(tabId, messageId) {
-		const target = ExtensionParent.apiManager.global.tabTracker.getTab(tabId);
-		const window = Cu.getGlobalForObject(target);
-		const msg = this.extension.messageManager.convert(
-			window.gFolderDisplay.selectedMessage);
-		if (msg.id !== messageId) {
+	#getAndPrepareDocumentForCurrentMsg(tabId, messageId) {
+		const { window, id } = this.#getWindowAndIdOfMsgShownInTab(tabId);
+
+		// Ensure that the tab is still showing the message
+		if (id !== messageId) {
 			return null;
 		}
+
+		this.paint(window);
 		return window.document;
 	}
 
@@ -1212,18 +1387,18 @@ this.dkimHeader = class extends ExtensionCommon.ExtensionAPI {
 		return {
 			dkimHeader: {
 				showDkimHeader: (tabId, messageId, show) => {
-					const document = this.getDocumentForCurrentMsg(tabId, messageId);
+					const document = this.#getAndPrepareDocumentForCurrentMsg(tabId, messageId);
 					if (!document) {
 						return Promise.resolve(false);
 					}
 
-					const dkimHeaderRow = DkimHeaderRow.get(document);
+					const dkimHeaderRow = DkimHeaderRow.getOrThrow(document);
 					dkimHeaderRow.show(show);
 
 					return Promise.resolve(true);
 				},
 				showFromTooltip: (tabId, messageId, show) => {
-					const document = this.getDocumentForCurrentMsg(tabId, messageId);
+					const document = this.#getAndPrepareDocumentForCurrentMsg(tabId, messageId);
 					if (!document) {
 						return Promise.resolve(false);
 					}
@@ -1233,12 +1408,12 @@ this.dkimHeader = class extends ExtensionCommon.ExtensionAPI {
 					return Promise.resolve(true);
 				},
 				setDkimHeaderResult: (tabId, messageId, result, warnings, faviconUrl, arh) => {
-					const document = this.getDocumentForCurrentMsg(tabId, messageId);
+					const document = this.#getAndPrepareDocumentForCurrentMsg(tabId, messageId);
 					if (!document) {
 						return Promise.resolve(false);
 					}
 
-					const dkimHeaderField = DKIMHeaderField.get(document);
+					const dkimHeaderField = DKIMHeaderField.getOrThrow(document);
 					dkimHeaderField.value = result;
 					dkimHeaderField.warnings = warnings;
 					if (arh.dkim) {
@@ -1251,7 +1426,7 @@ this.dkimHeader = class extends ExtensionCommon.ExtensionAPI {
 						dkimHeaderField.dmarcValue = arh.dmarc;
 					}
 
-					const favicon = DkimFavicon.get(document);
+					const favicon = DkimFavicon.getOrThrow(document);
 					favicon.setFaviconUrl(faviconUrl);
 
 					const resultTooltips = DkimResultTooltip.getAll(document);
@@ -1263,7 +1438,7 @@ this.dkimHeader = class extends ExtensionCommon.ExtensionAPI {
 					return Promise.resolve(true);
 				},
 				highlightFromAddress: (tabId, messageId, color, backgroundColor) => {
-					const document = this.getDocumentForCurrentMsg(tabId, messageId);
+					const document = this.#getAndPrepareDocumentForCurrentMsg(tabId, messageId);
 					if (!document) {
 						return Promise.resolve(false);
 					}
@@ -1273,7 +1448,7 @@ this.dkimHeader = class extends ExtensionCommon.ExtensionAPI {
 					return Promise.resolve(true);
 				},
 				reset: (tabId, messageId) => {
-					const document = this.getDocumentForCurrentMsg(tabId, messageId);
+					const document = this.#getAndPrepareDocumentForCurrentMsg(tabId, messageId);
 					if (!document) {
 						return Promise.resolve(false);
 					}
