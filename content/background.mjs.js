@@ -48,7 +48,7 @@ isInitialized.catch(error => log.fatal("Initializing failed with:", error));
  * A cache of the current results displayed in the tabs.
  * Needed for the actions triggered by the user in the display header.
  */
-/** @type {Map.<number, import("../modules/authVerifier.mjs.js").AuthResult>} */
+/** @type {Map.<number, import("../modules/authVerifier.mjs.js").AuthResult|null>} */
 const displayedResultsCache = new Map();
 browser.tabs.onRemoved.addListener((tabId) => {
 	displayedResultsCache.delete(tabId);
@@ -165,6 +165,7 @@ browser.messageDisplay.onMessageDisplayed.addListener(async (tab, message) => {
 			browser.dkimHeader.showDkimHeader(tab.id, message.id, prefs.showDKIMHeader >= SHOW.MSG);
 			browser.dkimHeader.setDkimHeaderResult(
 				tab.id, message.id, browser.i18n.getMessage("NOT_EMAIL"), [], "", {});
+			displayedResultsCache.set(tab.id, null);
 			return;
 		}
 
@@ -225,7 +226,7 @@ class DisplayAction {
 			res?.dkim[0]?.sdid !== undefined && res?.dkim[0].selector !== undefined;
 		/** @type {RuntimeMessage.DisplayAction.queryButtonStateResult} */
 		const state = {
-			reverifyDKIMSignature: res !== undefined,
+			reverifyDKIMSignature: res !== null,
 			policyAddUserException:
 				res?.dkim[0]?.errorType === "DKIM_POLICYERROR_MISSING_SIG" ||
 				res?.dkim[0]?.errorType === "DKIM_POLICYERROR_WRONG_SDID" || (
