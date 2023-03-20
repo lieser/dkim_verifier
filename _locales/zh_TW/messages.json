@@ -262,7 +262,7 @@
 	},
 	// DKIM_SIGERROR - POLICY
 	"DKIM_POLICYERROR_MISSING_SIG": {
-		"message": "應該由 $1 簽署"
+		"message": "沒有簽章，應該由 $1 簽署"
 	},
 	"DKIM_POLICYERROR_KEYMISMATCH": {
 		"message": "已儲存的 DKIM 金鑰與目前的不同"
@@ -369,7 +369,7 @@
 		"message": "DNS 伺服器 (語法 (EBNF): host[\":\"port]{\";\"host[\":\"port]} )"
 	},
 	"options_dns.timeout_connect": {
-		"message": "DNS 連接超時 (秒)"
+		"message": "DNS 連線超時 (秒)"
 	},
 	"options_dns.proxy.enable": {
 		"message": "使用代理伺服器連接 DNS 伺服器"
