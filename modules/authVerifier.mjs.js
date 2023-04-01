@@ -51,9 +51,9 @@ const log = Logging.getLogger("AuthVerifier");
  * @typedef {object} SavedAuthResultV3
  * @property {string} version Result version ("3.0").
  * @property {VerifierModule.dkimSigResultV2[]} dkim
- * @property {ArhParserModule.ArhResInfo[]} [spf]
- * @property {ArhParserModule.ArhResInfo[]} [dmarc]
- * @property {{dkim?: VerifierModule.dkimSigResultV2[]}} [arh]
+ * @property {ArhParserModule.ArhResInfo[]|undefined} [spf]
+ * @property {ArhParserModule.ArhResInfo[]|undefined} [dmarc]
+ * @property {{dkim?: VerifierModule.dkimSigResultV2[]}|undefined} [arh]
  */
 /**
  * @typedef {SavedAuthResultV3} SavedAuthResult

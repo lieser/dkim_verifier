@@ -73,17 +73,17 @@ import RfcParser from "../rfcParser.mjs.js";
  * Result version ("2.0").
  * @property {string} result
  * "none" / "SUCCESS" / "PERMFAIL" / "TEMPFAIL"
- * @property {string} [sdid]
- * @property {string} [auid]
- * @property {string} [selector]
+ * @property {string|undefined} [sdid]
+ * @property {string|undefined} [auid]
+ * @property {string|undefined} [selector]
  * @property {dkimSigWarningV2[]} [warnings]
  * Array of warning_objects.
  * Required if result="SUCCESS".
- * @property {string} [errorType]
+ * @property {string|undefined} [errorType]
  * - if result="PERMFAIL: DKIM_SigError.errorType or Undefined
  * - if result="TEMPFAIL: DKIM_InternalError.errorType or Undefined
  * @property {string[]} [errorStrParams]
- * @property {boolean} [hideFail]
+ * @property {boolean|undefined} [hideFail]
  * @property {boolean} [keySecure]
  */
 

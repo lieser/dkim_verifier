@@ -10,4 +10,5 @@
     "mocha-snippets.glob": "**/*Spec.mjs.js",
     "mocha-snippets.quote-type": "double",
     "xml.format.splitAttributes": true,
+    "typescript.tsdk": "node_modules\\typescript\\lib",
 }

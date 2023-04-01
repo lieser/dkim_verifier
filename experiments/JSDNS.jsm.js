@@ -649,7 +649,6 @@ function queryDNSRecursive(servers, host, recordtype, callback, callbackdata, ho
 			}
 		},
 		/**
-		 * @this {typeof listener}
 		 * @param {string} data
 		 * @returns {boolean}
 		 */
@@ -690,7 +689,6 @@ function queryDNSRecursive(servers, host, recordtype, callback, callbackdata, ho
 		port = parseInt(server.substring(server.indexOf(":") + 1), 10);
 	}
 
-	// @ts-expect-error
 	var ex = DNS_readAllFromSocket(server_hostname, port, query, listener);
 	if (ex !== null) {
 		log.error(`${ex}\n${ex.stack}`);

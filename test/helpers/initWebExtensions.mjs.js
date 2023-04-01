@@ -82,7 +82,9 @@ before(async function () {
 		hasWebExtensions = true;
 	} catch (e) {
 		// Ugly workaround for running tests for modules that use the global prefs in the browser
+		// @ts-expect-error
 		prefs._valueGetter = (name) => { return prefs._prefs[name]; };
+		// @ts-expect-error
 		prefs._valueSetter = (name, value) => { prefs._prefs[name] = value; return Promise.resolve(); };
 		prefs.init = () => { return Promise.resolve(); };
 		prefs.clear = () => { prefs._prefs = {}; return Promise.resolve(); };
