@@ -104,11 +104,11 @@ describe("ARH Parser [unittest]", function () {
 		});
 		it("B.6.  Service Provided, Multi-tiered Authentication Done", function () {
 			let res = ArhParser.parse(
-				'Authentication-Results: example.com;\r\n' +
+				"Authentication-Results: example.com;\r\n" +
 				'      dkim=pass reason="good signature"\r\n' +
-				'        header.i=@mail-router.example.net;\r\n' +
+				"        header.i=@mail-router.example.net;\r\n" +
 				'      dkim=fail reason="bad signature"\r\n' +
-				'        header.i=@newyork.example.com\r\n');
+				"        header.i=@newyork.example.com\r\n");
 			expect(res.authserv_id).to.be.equal("example.com");
 			expect(res.resinfo.length).to.be.equal(2);
 			expect(res.resinfo[0]?.method).to.be.equal("dkim");
@@ -185,7 +185,7 @@ describe("ARH Parser [unittest]", function () {
 		it("AUID with local part", function () {
 			const res = ArhParser.parse(
 				"Authentication-Results: example.net;\r\n" +
-				'      dkim=pass header.i=dkim+foo-bar@example.github.com\r\n');
+				"      dkim=pass header.i=dkim+foo-bar@example.github.com\r\n");
 
 			expect(res.authserv_id).to.be.equal("example.net");
 			expect(res.resinfo.length).to.be.equal(1);
@@ -208,7 +208,7 @@ describe("ARH Parser [unittest]", function () {
 		it("a-tag", function () {
 			const res = ArhParser.parse(
 				"Authentication-Results: example.net;\r\n" +
-				'      dkim=pass header.a=rsa-sha256\r\n');
+				"      dkim=pass header.a=rsa-sha256\r\n");
 
 			expect(res.authserv_id).to.be.equal("example.net");
 			expect(res.resinfo.length).to.be.equal(1);
@@ -220,24 +220,24 @@ describe("ARH Parser [unittest]", function () {
 	describe("Internationalized Email", function () {
 		it("Disabled by default", function () {
 			expect(() => ArhParser.parse(toBinaryString(
-				'Authentication-Results: éxamplé.org; none\r\n'
+				"Authentication-Results: éxamplé.org; none\r\n"
 			))).to.throw();
 			expect(() => ArhParser.parse(toBinaryString(
-				'Authentication-Results: Bloß.de; none\r\n'
+				"Authentication-Results: Bloß.de; none\r\n"
 			))).to.throw();
 			expect(() => ArhParser.parse(toBinaryString(
 				"Authentication-Results: example.net;\r\n" +
-				'      dkim=pass header.i=Bloß.de\r\n'
+				"      dkim=pass header.i=Bloß.de\r\n"
 			))).to.throw();
 		});
 		it("Wrongly called with normal string", function () {
 			// i.e. test that token does not match non ASCII characters
 			expect(() => ArhParser.parse(
-				'Authentication-Results: éxamplé.org; none\r\n',
+				"Authentication-Results: éxamplé.org; none\r\n",
 				false, true)
 			).to.throw();
 			expect(() => ArhParser.parse(
-				'Authentication-Results: с-балалайкой.рф; none\r\n',
+				"Authentication-Results: с-балалайкой.рф; none\r\n",
 				false, true)
 			).to.throw();
 		});
@@ -264,11 +264,11 @@ describe("ARH Parser [unittest]", function () {
 		});
 		it("U-label in authserv-id must be in quotes", function () {
 			expect(() => ArhParser.parse(toBinaryString(
-				'Authentication-Results: éxamplé.org; none\r\n'
+				"Authentication-Results: éxamplé.org; none\r\n"
 			), false, true)).to.throw();
 
 			expect(() => ArhParser.parse(toBinaryString(
-				'Authentication-Results: с-балалайкой.рф; none\r\n'
+				"Authentication-Results: с-балалайкой.рф; none\r\n"
 			), false, true)).to.throw();
 		});
 		it("A-label in authserv-id", function () {
@@ -285,7 +285,7 @@ describe("ARH Parser [unittest]", function () {
 		it("non-ASCII in pvalue", function () {
 			let res = ArhParser.parse(toBinaryString(
 				"Authentication-Results: example.net;\r\n" +
-				'      dkim=pass header.i=Pelé@example.com\r\n'
+				"      dkim=pass header.i=Pelé@example.com\r\n"
 			), false, true);
 			expect(res.authserv_id).to.be.equal("example.net");
 			expect(res.resinfo[0]?.propertys.header.i).to.be.equal("Pelé@example.com");
@@ -299,21 +299,21 @@ describe("ARH Parser [unittest]", function () {
 
 			res = ArhParser.parse(toBinaryString(
 				"Authentication-Results: example.net;\r\n" +
-				'      dkim=pass header.i=二ノ宮@example.com\r\n'
+				"      dkim=pass header.i=二ノ宮@example.com\r\n"
 			), false, true);
 			expect(res.authserv_id).to.be.equal("example.net");
 			expect(res.resinfo[0]?.propertys.header.i).to.be.equal("二ノ宮@example.com");
 
 			res = ArhParser.parse(toBinaryString(
 				"Authentication-Results: example.net;\r\n" +
-				'      dkim=pass header.i=二ノ宮@xn--wgv71a119e.jp\r\n'
+				"      dkim=pass header.i=二ノ宮@xn--wgv71a119e.jp\r\n"
 			), false, true);
 			expect(res.authserv_id).to.be.equal("example.net");
 			expect(res.resinfo[0]?.propertys.header.i).to.be.equal("二ノ宮@xn--wgv71a119e.jp");
 
 			res = ArhParser.parse(toBinaryString(
 				"Authentication-Results: example.net;\r\n" +
-				'      dkim=pass header.i=二ノ宮@黒川.日本\r\n'
+				"      dkim=pass header.i=二ノ宮@黒川.日本\r\n"
 			), false, true);
 			expect(res.authserv_id).to.be.equal("example.net");
 			expect(res.resinfo[0]?.propertys.header.i).to.be.equal("二ノ宮@黒川.日本");
@@ -327,14 +327,14 @@ describe("ARH Parser [unittest]", function () {
 
 			res = ArhParser.parse(toBinaryString(
 				"Authentication-Results: example.net;\r\n" +
-				'      dkim=pass header.i=Bloß.de\r\n'
+				"      dkim=pass header.i=Bloß.de\r\n"
 			), false, true);
 			expect(res.authserv_id).to.be.equal("example.net");
 			expect(res.resinfo[0]?.propertys.header.i).to.be.equal("Bloß.de");
 		});
 		it("non-ASCII in reasonspec", function () {
 			const res = ArhParser.parse(toBinaryString(
-				'Authentication-Results: example.com;\r\n' +
+				"Authentication-Results: example.com;\r\n" +
 				'      dkim=fail reason="Tést reason"\r\n'
 			), false, true);
 			expect(res.authserv_id).to.be.equal("example.com");
@@ -345,7 +345,7 @@ describe("ARH Parser [unittest]", function () {
 		});
 		it("non-ASCII in CFWS", function () {
 			const res = ArhParser.parse(toBinaryString(
-				'Authentication-Results: example.net (éxamplé); none\r\n'
+				"Authentication-Results: example.net (éxamplé); none\r\n"
 			), false, true);
 			expect(res.authserv_id).to.be.equal("example.net");
 		});

@@ -96,7 +96,7 @@ describe("Message parser [unittest]", function () {
 			// @ts-expect-error
 			expect(msg.headers.get("received")[0]).to.be.equal("Received: foo\r\n");
 			// @ts-expect-error
-			expect(msg.headers.get("received")[1]).to.have.string('\r\n      by submitserver.example.com');
+			expect(msg.headers.get("received")[1]).to.have.string("\r\n      by submitserver.example.com");
 		});
 
 		it("missing newline between header and body", function () {
@@ -169,18 +169,18 @@ describe("Message parser [unittest]", function () {
 			});
 			it("with simple quoted-string as display-name", function () {
 				expect(
-					MsgParser.parseFromHeader(`From: "this is from foo" <foo@example.com>\r\n`)
+					MsgParser.parseFromHeader("From: \"this is from foo\" <foo@example.com>\r\n")
 				).to.be.equal("foo@example.com");
 				expect(
-					MsgParser.parseFromHeader(`From: "bar@bad.com" <foo@example.com>\r\n`)
+					MsgParser.parseFromHeader("From: \"bar@bad.com\" <foo@example.com>\r\n")
 				).to.be.equal("foo@example.com");
 			});
 			it("with comment", function () {
 				expect(
-					MsgParser.parseFromHeader(`From: (bar@bad.com) <foo@example.com>\r\n`)
+					MsgParser.parseFromHeader("From: (bar@bad.com) <foo@example.com>\r\n")
 				).to.be.equal("foo@example.com");
 				expect(
-					MsgParser.parseFromHeader(`From: A (bar@bad.com) comment <foo@example.com>\r\n`)
+					MsgParser.parseFromHeader("From: A (bar@bad.com) comment <foo@example.com>\r\n")
 				).to.be.equal("foo@example.com");
 			});
 			it("with quoted-string as local part", function () {
@@ -193,7 +193,7 @@ describe("Message parser [unittest]", function () {
 			});
 			it("Strange but valid display name", function () {
 				expect(
-					MsgParser.parseFromHeader(`From: "mixed" atoms "and quoted-string" <foo@example.com>\r\n`)
+					MsgParser.parseFromHeader("From: \"mixed\" atoms \"and quoted-string\" <foo@example.com>\r\n")
 				).to.be.equal("foo@example.com");
 				expect(
 					MsgParser.parseFromHeader('From: "a"strange"phrase" <foo@example.com>\r\n')
@@ -365,10 +365,10 @@ describe("Message parser [unittest]", function () {
 		});
 		it("valid headers", function () {
 			expect(
-				MsgParser.parseListIdHeader('list-ID: <list-header.nisto.com>\r\n')
+				MsgParser.parseListIdHeader("list-ID: <list-header.nisto.com>\r\n")
 			).to.be.equal("list-header.nisto.com");
 			expect(
-				MsgParser.parseListIdHeader('List-Id:<list-header.nisto.com>\r\n')
+				MsgParser.parseListIdHeader("List-Id:<list-header.nisto.com>\r\n")
 			).to.be.equal("list-header.nisto.com");
 			expect(
 				MsgParser.parseListIdHeader('List-Id: "<fake.list.com>" <list-header.nisto.com>\r\n')
@@ -376,13 +376,13 @@ describe("Message parser [unittest]", function () {
 		});
 		it("invalid headers", function () {
 			expect(() =>
-				MsgParser.parseListIdHeader('List-Id: missing-angle-brackets.example.com')
+				MsgParser.parseListIdHeader("List-Id: missing-angle-brackets.example.com")
 			).to.throw();
 			expect(() =>
-				MsgParser.parseListIdHeader('List-Id: <foo@example.com>\r\n')
+				MsgParser.parseListIdHeader("List-Id: <foo@example.com>\r\n")
 			).to.throw();
 			expect(() =>
-				MsgParser.parseListIdHeader('List-Id: 123 <foo newsletter>\r\n')
+				MsgParser.parseListIdHeader("List-Id: 123 <foo newsletter>\r\n")
 			).to.throw();
 		});
 	});

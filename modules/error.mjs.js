@@ -29,7 +29,7 @@ export class DKIM_SigError extends Error {
 		this.errorType = errorType;
 		this.errorStrParams = errorStrParams;
 		// @ts-expect-error
-		this.stack = this.stack.substring(this.stack.indexOf('\n') + 1);
+		this.stack = this.stack.substring(this.stack.indexOf("\n") + 1);
 	}
 }
 
@@ -53,6 +53,6 @@ export class DKIM_InternalError extends Error {
 		this.name = "DKIM_InternalError";
 		this.errorType = errorType;
 		// @ts-expect-error
-		this.stack = this.stack.substring(this.stack.indexOf('\n') + 1);
+		this.stack = this.stack.substring(this.stack.indexOf("\n") + 1);
 	}
 }

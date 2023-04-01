@@ -187,7 +187,7 @@ export default class DataTable {
 		if (this._isEditable) {
 			tbody.onclick = (event) => this._select(event);
 			tbody.ondblclick = (event) => this._startEdit(event);
-			tbody.addEventListener('focusout', (event) => this._stopEditFocusout(event));
+			tbody.addEventListener("focusout", (event) => this._stopEditFocusout(event));
 			tbody.onkeydown = (event) => this._stopEditKeydown(event);
 		}
 

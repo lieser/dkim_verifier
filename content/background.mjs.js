@@ -325,7 +325,7 @@ browser.runtime.onMessage.addListener((runtimeMessage, sender /*, sendResponse*/
 	if (sender.id !== "dkim_verifier@pl") {
 		return;
 	}
-	if (typeof runtimeMessage !== 'object' || runtimeMessage === null) {
+	if (typeof runtimeMessage !== "object" || runtimeMessage === null) {
 		return;
 	}
 	/** @type {RuntimeMessage.Messages} */

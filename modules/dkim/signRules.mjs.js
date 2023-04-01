@@ -219,7 +219,7 @@ async function storeUserRules() {
  */
 function glob(str, pattern) {
 	// escape all special regex charters besides *
-	let regexpPattern = pattern.replace(/[.+?^${}()|[\]\\]/g, '\\$&');
+	let regexpPattern = pattern.replace(/[.+?^${}()|[\]\\]/g, "\\$&");
 	// replace * with correct regex
 	regexpPattern = regexpPattern.replace("*", ".*");
 
@@ -711,7 +711,7 @@ export function initSignRulesProxy() {
 		if (sender.id !== "dkim_verifier@pl") {
 			return;
 		}
-		if (typeof runtimeMessage !== 'object' || runtimeMessage === null) {
+		if (typeof runtimeMessage !== "object" || runtimeMessage === null) {
 			return;
 		}
 		/** @type {RuntimeMessage.Messages} */

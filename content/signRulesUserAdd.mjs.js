@@ -93,7 +93,7 @@ function onCancel() {
 function updatePriorityMode() {
 	const priorityElement = getElementById("priority");
 	if (!(priorityElement instanceof HTMLInputElement)) {
-		throw new Error(`Element with id 'priority' is not an HTMLInputElement`);
+		throw new Error("Element with id 'priority' is not an HTMLInputElement");
 	}
 	priorityElement.disabled = getRadioGroupValue("priorityMode") === "1";
 }

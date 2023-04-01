@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 		if (sender.id !== "dkim_verifier@pl") {
 			return;
 		}
-		if (typeof request !== 'object' || request === null) {
+		if (typeof request !== "object" || request === null) {
 			return;
 		}
 		if (request.event === "keysUpdated") {

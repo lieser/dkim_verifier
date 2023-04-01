@@ -14,7 +14,7 @@
  * @returns {boolean}
  */
 function isNodeJs() {
-	return typeof window === 'undefined';
+	return typeof window === "undefined";
 }
 
 let rootDirPath = "";

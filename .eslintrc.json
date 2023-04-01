@@ -169,6 +169,7 @@
             "smart-tabs"
         ],
         "no-multi-spaces": "warn",
+        "quotes": ["warn", "double", {"avoidEscape": true}],
         "semi": "warn",
         "template-curly-spacing": "warn",
         "wrap-iife": "warn",
