@@ -27,7 +27,7 @@ const log = Logging.getLogger("ExtensionUtils");
  * @returns {Promise<void>}
  */
 async function createOrRaisePopup(url, height = undefined, width = undefined) {
-	const [popupTab] = await browser.tabs.query({url: browser.runtime.getURL(url)});
+	const [popupTab] = await browser.tabs.query({ url: browser.runtime.getURL(url) });
 	const popupWindowId = popupTab?.windowId;
 	if (popupWindowId !== undefined) {
 		await browser.windows.update(popupWindowId, { focused: true });
@@ -35,7 +35,7 @@ async function createOrRaisePopup(url, height = undefined, width = undefined) {
 	}
 	/** @type {Parameters<browser.windows.create>[0]} */
 	const createData = {
-		url: url,
+		url,
 		type: "popup",
 		allowScriptsToClose: true,
 		titlePreface: `${browser.i18n.getMessage("about_name")} - `,

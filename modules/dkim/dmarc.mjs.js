@@ -193,7 +193,7 @@ async function getDMARCPolicy(fromAddress, queryDnsTxt) {
 		adkim: dmarcRecord.adkim,
 		pct: dmarcRecord.pct,
 		p: dmarcRecord.p,
-		domain: domain,
+		domain,
 		source: baseDomain || domain,
 	};
 	log.debug("DMARCPolicy:", dmarcPolicy);

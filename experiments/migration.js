@@ -127,7 +127,7 @@ this.migration = class extends ExtensionCommon.ExtensionAPI {
 							secure: key.getResultByName("secure") === 1,
 						});
 					}
-					return { maxId: maxId, keys: keys };
+					return { maxId, keys };
 				},
 				getSignRulesUser: async () => {
 					const conn = await this._openSqlite("dkimPolicy.sqlite");
@@ -153,7 +153,7 @@ this.migration = class extends ExtensionCommon.ExtensionAPI {
 							enabled: rule.getResultByName("enabled") === 1,
 						});
 					}
-					return { maxId: maxId, rules: userRules };
+					return { maxId, rules: userRules };
 				}
 			},
 		};

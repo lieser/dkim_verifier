@@ -53,7 +53,7 @@ export default class MsgParser {
 
 		return {
 			headers: MsgParser.parseHeader(headerPlain),
-			body: body,
+			body,
 		};
 	}
 

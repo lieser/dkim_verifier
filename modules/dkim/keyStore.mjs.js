@@ -93,10 +93,10 @@ export class KeyDb {
 		const currentDate = dateToString(new Date());
 		storedKeys.push({
 			id: ++storedKeysMaxId,
-			sdid: sdid,
-			selector: selector,
-			key: key,
-			secure: secure,
+			sdid,
+			selector,
+			key,
+			secure,
 			insertedAt: currentDate,
 			lastUsedAt: currentDate,
 		});
@@ -237,7 +237,7 @@ export class KeyDb {
 	static async _storeKeys(notify = false) {
 		/** @type {StoredDkimKeys} */
 		const keyStore = { maxId: storedKeysMaxId, keys: storedKeys };
-		await browser.storage.local.set({ keyStore: keyStore });
+		await browser.storage.local.set({ keyStore });
 
 		if (notify) {
 			browser.runtime.sendMessage({ event: "keysUpdated" }).

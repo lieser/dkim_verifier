@@ -118,7 +118,7 @@ this.jsdns = class extends ExtensionCommon.ExtensionAPI {
 						}
 					}
 					return new Promise((resolve, reject) => {
-						JSDNS.queryDNS(name, "TXT", dnsCallback, { resolve: resolve, reject: reject });
+						JSDNS.queryDNS(name, "TXT", dnsCallback, { resolve, reject });
 					});
 				},
 			},

@@ -138,7 +138,7 @@ export default class AuthVerifier {
 		const msg = {
 			headerFields: msgParsed.headers,
 			bodyPlain: msgParsed.body,
-			from: from,
+			from,
 		};
 		const listIdHeader = msgParsed.headers.get("list-id");
 		let listId = null;

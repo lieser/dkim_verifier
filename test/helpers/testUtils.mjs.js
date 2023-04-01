@@ -52,7 +52,7 @@ async function readFile(file, encoding) {
 		const filePath = path.join(await rootDir(), file);
 
 		return new Promise((resolve, reject) => {
-			fs.readFile(filePath, { encoding: encoding }, (err, data) => {
+			fs.readFile(filePath, { encoding }, (err, data) => {
 				if (err) {
 					reject(err);
 					return;

@@ -101,6 +101,6 @@ before(async function () {
 	};
 
 	globalThis.browser.mailUtils = {
-		getBaseDomainFromAddr: getBaseDomainFromAddr,
+		getBaseDomainFromAddr,
 	};
 });

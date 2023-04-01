@@ -39,7 +39,7 @@ async function triggerDisplayAction(action) {
 		module: "DisplayAction",
 		method: action,
 		parameters: {
-			tabId: tabId,
+			tabId,
 		},
 	};
 	browser.runtime.sendMessage(message);
@@ -58,7 +58,7 @@ async function queryButtonState() {
 		module: "DisplayAction",
 		method: "queryButtonState",
 		parameters: {
-			tabId: tabId,
+			tabId,
 		},
 	};
 	return browser.runtime.sendMessage(message);

@@ -484,8 +484,8 @@ class DKIMHeaderField {
 			box.appendChild(value);
 
 			return {
-				box: box,
-				value: value,
+				box,
+				value,
 			};
 		}
 

@@ -245,7 +245,7 @@ function configureDNS(getNameserversFromOS, nameServer, timeoutConnect, proxy, a
 	}
 	log = chromeConsole.createInstance({
 		prefix: LOG_NAME,
-		maxLogLevel: maxLogLevel,
+		maxLogLevel,
 	});
 
 	/** @type {DnsServer[]} */
@@ -606,7 +606,7 @@ function queryDNSRecursive(servers, host, recordtype, callback, callbackdata, ho
 		 * @param {number} status
 		 * @returns {void}
 		 */
-		finished: function (data, status) {
+		finished(data, status) {
 			if (!server) {
 				server = "unknown";
 			}
@@ -655,7 +655,7 @@ function queryDNSRecursive(servers, host, recordtype, callback, callbackdata, ho
 		 * @param {string} data
 		 * @returns {boolean}
 		 */
-		process: function (data) {
+		process(data) {
 			if (this.done) {
 				return false;
 			}
@@ -836,7 +836,7 @@ function DNS_getRDData(str, server, host, recordtype, callback, callbackdata, ho
 		return;
 	}
 
-	var ctx = { str: str, idx: 12 };
+	var ctx = { str, idx: 12 };
 
 	var i;
 
@@ -1032,8 +1032,8 @@ function DNS_readAllFromSocket(host, port, outputData, listener) {
 		var dataListener = {
 			data: "",
 			// eslint-disable-next-line no-empty-function
-			onStartRequest: function (/* request, context */) { },
-			onStopRequest: function (_request, status) {
+			onStartRequest(/* request, context */) { },
+			onStopRequest(_request, status) {
 				if (listener.finished !== null) {
 					listener.finished(this.data, status);
 				}
@@ -1045,7 +1045,7 @@ function DNS_readAllFromSocket(host, port, outputData, listener) {
 			 * @this {typeof dataListener}
 			 * @type {nsIStreamListener["onDataAvailable"]}
 			 */
-			onDataAvailable: function (_request, _inputStream, _offset, count) {
+			onDataAvailable(_request, _inputStream, _offset, count) {
 				//DNS_Debug("DNS: Got data (" + host + ")");
 				for (var i = 0; i < count; i++) {
 					// @ts-expect-error

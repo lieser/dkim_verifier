@@ -100,6 +100,6 @@ export async function migrateKeyStore() {
 
 	const keyStore = await browser.migration.getDkimKeys();
 	if (keyStore) {
-		await browser.storage.local.set({ keyStore: keyStore });
+		await browser.storage.local.set({ keyStore });
 	}
 }

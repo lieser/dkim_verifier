@@ -83,7 +83,7 @@ describe("Key store [unittest]", function () {
 
 			const keyStore = (await browser.storage.local.get("keyStore")).keyStore;
 			await KeyDb.clear();
-			await browser.storage.local.set({ keyStore: keyStore });
+			await browser.storage.local.set({ keyStore });
 
 			prefs.clear();
 

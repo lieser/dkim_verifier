@@ -26,7 +26,7 @@ const postLog = {
 	 * @param {string} msg
 	 * @returns {void}
 	 */
-	error: function (msg) {
+	error(msg) {
 		/** @type {Libunbound.Log} */
 		const toSend = { type: "log", subType: "error", message: log_prefix + msg };
 		postMessage(toSend);
@@ -35,7 +35,7 @@ const postLog = {
 	 * @param {string} msg
 	 * @returns {void}
 	 */
-	warn: function (msg) {
+	warn(msg) {
 		/** @type {Libunbound.Log} */
 		const toSend = { type: "log", subType: "warn", message: log_prefix + msg };
 		postMessage(toSend);
@@ -44,7 +44,7 @@ const postLog = {
 	 * @param {string} msg
 	 * @returns {void}
 	 */
-	info: function (msg) {
+	info(msg) {
 		/** @type {Libunbound.Log} */
 		const toSend = { type: "log", subType: "info", message: log_prefix + msg };
 		postMessage(toSend);
@@ -53,7 +53,7 @@ const postLog = {
 	 * @param {string} msg
 	 * @returns {void}
 	 */
-	debug: function (msg) {
+	debug(msg) {
 		/** @type {Libunbound.Log} */
 		const toSend = { type: "log", subType: "debug", message: log_prefix + msg };
 		postMessage(toSend);

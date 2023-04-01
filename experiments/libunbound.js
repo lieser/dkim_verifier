@@ -128,7 +128,7 @@ class LibunboundWorker {
 		this.worker.postMessage({
 			callId: this._maxCallId,
 			method: "load",
-			path: path,
+			path,
 		});
 
 		this.isLoaded = defer.promise;
@@ -176,11 +176,11 @@ class LibunboundWorker {
 		this.worker.postMessage({
 			callId: this._maxCallId,
 			method: "update_ctx",
-			conf: conf,
-			debuglevel: debuglevel,
+			conf,
+			debuglevel,
 			getNameserversFromOS: this.config.getNameserversFromOS,
-			nameservers: nameservers,
-			trustAnchors: trustAnchors,
+			nameservers,
+			trustAnchors,
 		});
 
 		return defer.promise;
@@ -202,8 +202,8 @@ class LibunboundWorker {
 		this.worker.postMessage({
 			callId: this._maxCallId,
 			method: "resolve",
-			name: name,
-			rrtype: rrtype,
+			name,
+			rrtype,
 		});
 
 		return defer.promise;
@@ -418,7 +418,7 @@ this.libunbound = class extends ExtensionCommon.ExtensionAPI {
 						return rdata;
 					}) : null;
 					return {
-						data: data,
+						data,
 						rcode: res.rcode,
 						secure: res.secure,
 						bogus: res.bogus,

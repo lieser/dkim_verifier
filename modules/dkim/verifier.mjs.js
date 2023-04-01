@@ -480,8 +480,8 @@ class DkimSignatureHeader {
 			throw new DKIM_SigError("DKIM_SIGERROR_SUBDOMAIN_I");
 		}
 		return {
-			auid: auid,
-			auidDomain: auidDomain,
+			auid,
+			auidDomain,
 		};
 	}
 

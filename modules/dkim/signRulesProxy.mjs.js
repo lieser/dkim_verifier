@@ -115,13 +115,13 @@ export default class SignRulesProxy {
 			module: "SignRules",
 			method: "addRule",
 			parameters: {
-				domain: domain,
-				listId: listId,
-				addr: addr,
-				sdid: sdid,
-				type: type,
-				priority: priority,
-				enabled: enabled,
+				domain,
+				listId,
+				addr,
+				sdid,
+				type,
+				priority,
+				enabled,
 			},
 		};
 		return browser.runtime.sendMessage(message);
@@ -141,9 +141,9 @@ export default class SignRulesProxy {
 			module: "SignRules",
 			method: "updateRule",
 			parameters: {
-				id: id,
-				propertyName: propertyName,
-				newValue: newValue,
+				id,
+				propertyName,
+				newValue,
 			},
 		};
 		return browser.runtime.sendMessage(message);
@@ -161,7 +161,7 @@ export default class SignRulesProxy {
 			module: "SignRules",
 			method: "deleteRule",
 			parameters: {
-				id: id,
+				id,
 			},
 		};
 		return browser.runtime.sendMessage(message);

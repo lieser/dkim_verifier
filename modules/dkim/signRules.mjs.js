@@ -166,8 +166,8 @@ async function loadDefaultRules() {
 				domain: rule.domain,
 				addr: rule.addr,
 				sdid: rule.sdid,
-				type: type,
-				priority: priority,
+				type,
+				priority,
 			};
 		});
 		defaultRulesLoaded.resolve();
@@ -307,10 +307,10 @@ async function checkIfShouldBeSigned(fromAddress, listId, dmarc) {
 			throw new Error(`unknown rule type ${rule.type}`);
 	}
 	return {
-		shouldBeSigned: shouldBeSigned,
+		shouldBeSigned,
 		sdid: rule.sdid.split(" ").filter(x => x),
 		foundRule: true,
-		hideFail: hideFail,
+		hideFail,
 	};
 }
 
@@ -535,11 +535,11 @@ export default class SignRules {
 			id: ++userRulesMaxId,
 			domain: ruleDomain ?? "",
 			listId: listId ?? "",
-			addr: addr,
-			sdid: sdid,
-			type: type,
+			addr,
+			sdid,
+			type,
 			priority: rulePriority,
-			enabled: enabled,
+			enabled,
 		});
 		await storeUserRules();
 

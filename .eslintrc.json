@@ -134,6 +134,7 @@
         "no-var": "warn",
         "no-void": "warn",
         "no-warning-comments": "warn",
+        "object-shorthand": "warn",
         "one-var": ["warn", "never"],
         "operator-assignment": "warn",
         "prefer-const": "warn",

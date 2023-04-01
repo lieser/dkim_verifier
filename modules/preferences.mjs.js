@@ -669,7 +669,7 @@ export class StorageLocalPreferences extends BasePreferences {
 			if (data) {
 				dataStorages.push({
 					scope: dataStorageScope,
-					data: data,
+					data,
 				});
 			}
 		}

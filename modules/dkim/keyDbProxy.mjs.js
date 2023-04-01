@@ -44,9 +44,9 @@ export default class KeyDbProxy {
 			module: "KeyDb",
 			method: "updateKey",
 			parameters: {
-				id: id,
-				propertyName: propertyName,
-				newValue: newValue,
+				id,
+				propertyName,
+				newValue,
 			},
 		};
 		return browser.runtime.sendMessage(message);
@@ -64,7 +64,7 @@ export default class KeyDbProxy {
 			module: "KeyDb",
 			method: "deleteKey",
 			parameters: {
-				id: id,
+				id,
 			},
 		};
 		return browser.runtime.sendMessage(message);
