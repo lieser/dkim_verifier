@@ -206,8 +206,8 @@ var log = chromeConsole.createInstance({
 
 /**
  * @typedef {object} DnsServer
- * @property {string} server - IP of server as string
- * @property {boolean} alive -  whether the server is alive
+ * @property {string} server IP of server as string.
+ * @property {boolean} alive Whether the server is alive.
  */
 
 // Preferences

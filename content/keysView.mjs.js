@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 	);
 	table.showData(keys, ["sdid"]);
 
-	browser.runtime.onMessage.addListener((request, sender, /*sendResponse*/) => {
+	browser.runtime.onMessage.addListener((request, sender /*, sendResponse*/) => {
 		if (sender.id !== "dkim_verifier@pl") {
 			return;
 		}

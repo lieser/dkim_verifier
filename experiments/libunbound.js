@@ -30,32 +30,32 @@ var { OS } = ChromeUtils.import("resource://gre/modules/osfile.jsm");
  *
  * @typedef {object} ub_result
  * @property {string} qname
- *           text string, original question
+ * Text string, the original question.
  * @property {number} qtype
- *           type code asked for
+ * The type code asked for.
  * @property {number} qclass
- *           class code (CLASS IN (internet))
+ * Class code (CLASS IN (internet)).
  * @property {any[]} data
- *           Array of converted rdata items. Empty for unsupported RR types.
- *           Currently supported types: TXT
+ * Array of converted rdata items. Empty for unsupported RR types.
+ * Currently supported types: TXT
  * @property {number[][]} data_raw
- *           Array of rdata items as byte array
+ * Array of rdata items as byte array.
  * @property {string} canonname
- *           canonical name of result (empty string if missing in response)
+ * Canonical name of result (empty string if missing in response).
  * @property {number} rcode
- *           additional error code in case of no data
+ * Additional error code in case of no data.
  * @property {boolean} havedata
- *           true if there is data
+ * True if there is data.
  * @property {boolean} nxdomain
- *           true if nodata because name does not exist
+ * True if nodata because name does not exist.
  * @property {boolean} secure
- *           true if result is secure.
+ * True if result is secure.
  * @property {boolean} bogus
- *           true if a security failure happened.
+ * True if a security failure happened.
  * @property {string} why_bogus
- *           string with error if bogus
+ * String with error if the result is bogus.
  * @property {number} ttl
- *           number of seconds the result is valid
+ * Number of seconds the result is valid.
  */
 
 /**

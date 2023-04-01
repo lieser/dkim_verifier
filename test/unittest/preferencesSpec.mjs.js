@@ -424,7 +424,7 @@ describe("preferences [unittest]", function () {
 				pref.setValue("dns.nameserver", "fooBar");
 
 				fakeBrowser.storage.local.get.onFirstCall().callsFake(async items => {
-					await new Promise(resolve => setTimeout(resolve, 4000));
+					await new Promise(resolve => { setTimeout(resolve, 4000); });
 					return fakeBrowser.storage.local._get(items);
 				});
 
@@ -448,7 +448,7 @@ describe("preferences [unittest]", function () {
 				pref.setValue("dns.nameserver", "fooBar");
 
 				fakeBrowser.storage.local.get.callsFake(async items => {
-					await new Promise(resolve => setTimeout(resolve, 4000));
+					await new Promise(resolve => { setTimeout(resolve, 4000); });
 					return fakeBrowser.storage.local._get(items);
 				});
 				fakeBrowser.storage.local.get.onSecondCall().rejects("a failure");

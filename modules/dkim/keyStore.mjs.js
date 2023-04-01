@@ -253,7 +253,7 @@ export class KeyDb {
 	 * @returns {void}
 	 */
 	static initProxy() {
-		browser.runtime.onMessage.addListener((runtimeMessage, sender, /*sendResponse*/) => {
+		browser.runtime.onMessage.addListener((runtimeMessage, sender /*, sendResponse*/) => {
 			if (sender.id !== "dkim_verifier@pl") {
 				return;
 			}
@@ -348,7 +348,7 @@ export default class KeyStore {
 					if (keyStored.key !== keyDns.key) {
 						throw new DKIM_SigError("DKIM_POLICYERROR_KEYMISMATCH");
 					}
-					keyDns.secure = keyDns.secure || keyStored.secure;
+					keyDns.secure ||= keyStored.secure;
 				} else {
 					KeyDb.store(sdid, selector, keyDns.key, keyDns.secure).
 						catch(error => log.fatal("Storing keys failed", error));

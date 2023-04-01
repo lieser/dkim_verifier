@@ -29,14 +29,10 @@ const log = Logging.getLogger("SignRules");
  * DKIM signing policy for a message.
  *
  * @typedef {object} DKIMSignPolicy
- * @property {boolean} shouldBeSigned
- *           true if message should be signed
- * @property {string[]} sdid
- *           Signing Domain Identifier
- * @property {boolean} foundRule
- *           true if enabled rule for message was found
- * @property {boolean} hideFail
- *           true if HIDEFAIL rule was found
+ * @property {boolean} shouldBeSigned True if message should be signed.
+ * @property {string[]} sdid Signing Domain Identifier.
+ * @property {boolean} foundRule True if enabled rule for message was found.
+ * @property {boolean} hideFail True if HIDEFAIL rule was found.
  */
 
 /**
@@ -711,7 +707,7 @@ export default class SignRules {
  * @returns {void}
  */
 export function initSignRulesProxy() {
-	browser.runtime.onMessage.addListener((runtimeMessage, sender, /*sendResponse*/) => {
+	browser.runtime.onMessage.addListener((runtimeMessage, sender /*, sendResponse*/) => {
 		if (sender.id !== "dkim_verifier@pl") {
 			return;
 		}

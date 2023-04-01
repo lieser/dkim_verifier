@@ -321,7 +321,7 @@ class DisplayAction {
 /**
  * Handel the actions triggered by the user in the display header.
  */
-browser.runtime.onMessage.addListener((runtimeMessage, sender, /*sendResponse*/) => {
+browser.runtime.onMessage.addListener((runtimeMessage, sender /*, sendResponse*/) => {
 	if (sender.id !== "dkim_verifier@pl") {
 		return;
 	}

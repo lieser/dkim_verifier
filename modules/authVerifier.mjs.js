@@ -36,13 +36,12 @@ const log = Logging.getLogger("AuthVerifier");
 
 /**
  * @typedef {object} AuthResultV2
- * @property {string} version
- *           result version ("2.1")
+ * @property {string} version Result version ("2.1").
  * @property {AuthResultDKIM[]} dkim
  * @property {ArhParserModule.ArhResInfo[]} [spf]
  * @property {ArhParserModule.ArhResInfo[]} [dmarc]
  * @property {{dkim?: AuthResultDKIM[]}} [arh]
- *           added in version 2.1
+ * added in version 2.1
  */
 /**
  * @typedef {AuthResultV2} AuthResult
@@ -50,8 +49,7 @@ const log = Logging.getLogger("AuthVerifier");
 
 /**
  * @typedef {object} SavedAuthResultV3
- * @property {string} version
- *           result version ("3.0")
+ * @property {string} version Result version ("3.0").
  * @property {VerifierModule.dkimSigResultV2[]} dkim
  * @property {ArhParserModule.ArhResInfo[]} [spf]
  * @property {ArhParserModule.ArhResInfo[]} [dmarc]
@@ -65,19 +63,15 @@ const log = Logging.getLogger("AuthVerifier");
  * @typedef {IAuthVerifier.AuthResultDKIMV2} AuthResultDKIMV2
  * extends dkimSigResultV2
  * @property {number} res_num
- *           10: SUCCESS
- *           20: TEMPFAIL
- *           30: PERMFAIL
- *           35: PERMFAIL treat as no sig
- *           40: no sig
- * @property {string} result_str
- *           localized result string
- * @property {string} [error_str]
- *           localized error string
- * @property {string[]} [warnings_str]
- *           localized warnings
- * @property {string} [favicon]
- *           url to the favicon of the sdid
+ * - 10: SUCCESS
+ * - 20: TEMPFAIL
+ * - 30: PERMFAIL
+ * - 35: PERMFAIL treat as no sig
+ * - 40: no sig
+ * @property {string} result_str Localized result string.
+ * @property {string} [error_str] Localized error string.
+ * @property {string[]} [warnings_str] Localized warnings.
+ * @property {string} [favicon] URL to the favicon of the SDID.
  */
 /**
  * @typedef {AuthResultDKIMV2} AuthResultDKIM

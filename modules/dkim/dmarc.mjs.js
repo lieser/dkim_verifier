@@ -42,8 +42,8 @@ export default class DMARC {
 	 *
 	 * @param {string} fromAddress
 	 * @returns {Promise<{shouldBeSigned: boolean, sdid: string[]}>}
-	 *         .shouldBeSigned true if fromAddress should be signed
-	 *         .sdid Signing Domain Identifier
+	 * - `.shouldBeSigned` True if fromAddress should be signed.
+	 * - `.sdid` Signing Domain Identifier.
 	 */
 	async shouldBeSigned(fromAddress) {
 		// default result
@@ -84,20 +84,20 @@ export default class DMARC {
  *
  * @typedef {object} DMARCRecord
  * @property {string} adkim
- *   DKIM identifier alignment mode
- *   Possible values: "r" (relaxed), "s" (strict)
+ * DKIM identifier alignment mode.
+ * Possible values: "r" (relaxed), "s" (strict)
  * @property {string} p
- *   Requested Mail Receiver policy
- *   Possible values: "none", "quarantine", "reject"
+ * Requested Mail Receiver policy.
+ * Possible values: "none", "quarantine", "reject"
  * @property {number} pct
- *   Percentage of messages from the Domain Owner's mail stream to which the
- *   DMARC mechanism is to be applied
+ * Percentage of messages from the Domain Owner's mail stream to which the
+ * DMARC mechanism is to be applied.
  * @property {string?} sp
- *   Requested Mail Receiver policy for all subdomains
- *   Possible values: "none", "quarantine", "reject"
+ * Requested Mail Receiver policy for all subdomains.
+ * Possible values: "none", "quarantine", "reject"
  * @property {string} v
- *   Version
- *   Possible values: "DMARC1"
+ * Version.
+ * Possible values: "DMARC1"
  */
 
 /**
@@ -105,18 +105,18 @@ export default class DMARC {
  *
  * @typedef {object} DMARCPolicy
  * @property {string} adkim
- *   DKIM identifier alignment mode
- *   Possible values: "r" (relaxed), "s" (strict)
+ * DKIM identifier alignment mode.
+ * Possible values: "r" (relaxed), "s" (strict)
  * @property {string} p
- *   Requested Mail Receiver policy
- *   Possible values: "none", "quarantine", "reject"
+ * Requested Mail Receiver policy.
+ * Possible values: "none", "quarantine", "reject"
  * @property {number} pct
- *   Percentage of messages from the Domain Owner's mail stream to which the
- *   DMARC mechanism is to be applied
+ * Percentage of messages from the Domain Owner's mail stream to which the
+ * DMARC mechanism is to be applied.
  * @property {string} domain
- *   Full domain of the e-mail address.
+ * Full domain of the e-mail address.
  * @property {string} source
- *   Domain in which the DMARC Policy was found.
+ * Domain in which the DMARC Policy was found.
  */
 
 /**

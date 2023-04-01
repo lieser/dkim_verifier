@@ -145,12 +145,12 @@ describe("utils [unittest]", function () {
 			const res = await promiseWithTimeout(100, Promise.resolve(true));
 			expect(res).to.be.true;
 
-			await promiseWithTimeout(100, new Promise(resolve => setTimeout(resolve, 50)));
+			await promiseWithTimeout(100, new Promise(resolve => { setTimeout(resolve, 50); }));
 		});
 		it("timeout", async function () {
 			let timedOut = true;
 			try {
-				await promiseWithTimeout(50, new Promise(resolve => setTimeout(resolve, 100)));
+				await promiseWithTimeout(50, new Promise(resolve => { setTimeout(resolve, 100); }));
 				timedOut = false;
 			} catch (error) {
 				// expected

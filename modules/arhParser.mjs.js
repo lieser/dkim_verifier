@@ -102,15 +102,9 @@ class Token {
  * @property {string} method
  * @property {number} method_version
  * @property {string} result
- *           none|pass|fail|softfail|policy|neutral|temperror|permerror
+ * none|pass|fail|softfail|policy|neutral|temperror|permerror
  * @property {string} [reason]
  * @property {ArhProperties} propertys
- * property {ArhProperty} propertys.smtp
- * property {ArhProperty} propertys.header
- * property {ArhProperty} propertys.body
- * property {ArhProperty} propertys.policy
- * property {ArhProperty} [propertys._Keyword_]
- *           ArhResInfo can also include other propertys besides the aboves.
  */
 
 export default class ArhParser {
@@ -320,7 +314,7 @@ function match(str, pattern, token) {
  * @param {string} pattern
  * @param {Token} token - Token to use for parsing; depends on internationalized support
  * @returns {string[]|null} Null if no match for the pattern is found, else
- *                        an Array, containing the matches
+ * an Array, containing the matches.
  */
 function match_o(str, pattern, token) {
 	const regexp = new RegExp(`^${token.CFWS_op}(?:${pattern})` +

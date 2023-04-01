@@ -62,8 +62,8 @@ export default class MsgParser {
 	 *
 	 * @param {string} headerPlain - binary string
 	 * @returns {Map<string, string[]>}
-	 *          key - header name in lower case
-	 *          value - array of complete headers, including the header name at the beginning (binary string)
+	 * - key - Header name in lower case.
+	 * - value - Array of complete headers, including the header name at the beginning (binary string).
 	 */
 	static parseHeader(headerPlain) {
 		const headerFields = new Map();

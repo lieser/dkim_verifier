@@ -41,22 +41,22 @@ import RfcParser from "../rfcParser.mjs.js";
  *
  * @typedef {object} dkimResultV1
  * @property {string} version
- *           result version ("1.0" / "1.1")
+ * Result version ("1.0" / "1.1").
  * @property {string} result
- *           "none" / "SUCCESS" / "PERMFAIL" / "TEMPFAIL"
+ * "none" / "SUCCESS" / "PERMFAIL" / "TEMPFAIL"
  * @property {string} [SDID]
- *           required if result="SUCCESS
+ * Required if result="SUCCESS".
  * @property {string} [selector]
- *           added in version 1.1
+ * Added in version 1.1.
  * @property {string[]} [warnings]
- *           required if result="SUCCESS
+ * Required if result="SUCCESS".
  * @property {string} [errorType]
- *           if result="PERMFAIL: DKIM_SigError.errorType
- *           if result="TEMPFAIL: DKIM_InternalError.errorType or Undefined
+ * - if result="PERMFAIL: DKIM_SigError.errorType
+ * - if result="TEMPFAIL: DKIM_InternalError.errorType or Undefined
  * @property {string} [shouldBeSignedBy]
- *           added in version 1.1
+ * Added in version 1.1.
  * @property {boolean} [hideFail]
- *           added in  version 1.1
+ * Added in version 1.1.
  */
 
 /**
@@ -70,18 +70,18 @@ import RfcParser from "../rfcParser.mjs.js";
  *
  * @typedef {object} dkimSigResultV2
  * @property {string} version
- *           result version ("2.0")
+ * Result version ("2.0").
  * @property {string} result
- *           "none" / "SUCCESS" / "PERMFAIL" / "TEMPFAIL"
+ * "none" / "SUCCESS" / "PERMFAIL" / "TEMPFAIL"
  * @property {string} [sdid]
  * @property {string} [auid]
  * @property {string} [selector]
  * @property {dkimSigWarningV2[]} [warnings]
- *           Array of warning_objects.
- *           required if result="SUCCESS"
+ * Array of warning_objects.
+ * Required if result="SUCCESS".
  * @property {string} [errorType]
- *           if result="PERMFAIL: DKIM_SigError.errorType or Undefined
- *           if result="TEMPFAIL: DKIM_InternalError.errorType or Undefined
+ * - if result="PERMFAIL: DKIM_SigError.errorType or Undefined
+ * - if result="TEMPFAIL: DKIM_InternalError.errorType or Undefined
  * @property {string[]} [errorStrParams]
  * @property {boolean} [hideFail]
  * @property {boolean} [keySecure]
@@ -92,7 +92,7 @@ import RfcParser from "../rfcParser.mjs.js";
  *
  * @typedef {object} dkimResultV2
  * @property {string} version
- *           result version ("2.0")
+ * Result version ("2.0").
  * @property {dkimSigResultV2[]} signatures
  */
 
