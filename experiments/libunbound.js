@@ -2,7 +2,7 @@
  * Wrapper for the libunbound DNS library. The actual work is done in the
  * ChromeWorker libunboundWorker.jsm.js.
  *
- * Copyright (c) 2013-2018;2020 Philippe Lieser
+ * Copyright (c) 2013-2018;2020-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *

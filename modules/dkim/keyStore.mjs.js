@@ -2,7 +2,7 @@
  * Abstract DKIM key store for key retrieval.
  * Will get the key either from DNS or an internal cache.
  *
- * Copyright (c) 2013-2018;2021 Philippe Lieser
+ * Copyright (c) 2013-2018;2021-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *

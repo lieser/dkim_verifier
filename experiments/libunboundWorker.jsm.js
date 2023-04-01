@@ -2,7 +2,7 @@
  * A ChromeWorker wrapper for the libunbound DNS library.
  * Currently only the TXT resource record is completely supported.
  *
- * Copyright (c) 2016-2018;2020 Philippe Lieser
+ * Copyright (c) 2016-2018;2020-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *

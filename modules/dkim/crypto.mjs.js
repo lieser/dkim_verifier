@@ -1,7 +1,7 @@
 /**
  * Unified crypto interface for Thunderbird/Browser and Node
  *
- * Copyright (c) 2020;2022 Philippe Lieser
+ * Copyright (c) 2020-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *

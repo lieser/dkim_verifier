@@ -6,7 +6,7 @@
  * - RFC 8301 https://www.rfc-editor.org/rfc/rfc8301.html
  * - RFC 8463 https://www.rfc-editor.org/rfc/rfc8463.html
  *
- * Copyright (c) 2013-2022 Philippe Lieser
+ * Copyright (c) 2013-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *

@@ -1,7 +1,7 @@
 /**
  * Push the authentication result to the Conversation add-on.
  *
- * Copyright (c) 2021 Philippe Lieser
+ * Copyright (c) 2021-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *

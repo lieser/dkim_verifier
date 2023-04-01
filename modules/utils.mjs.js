@@ -1,7 +1,7 @@
 /**
  * General utility functions that do not have any dependencies.
  *
- * Copyright (c) 2013-2020;2022 Philippe Lieser
+ * Copyright (c) 2013-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *

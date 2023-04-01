@@ -1,7 +1,7 @@
 /**
  * Provides access to the add-ons preferences.
  *
- * Copyright (c) 2020-2021 Philippe Lieser
+ * Copyright (c) 2020-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *

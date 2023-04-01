@@ -1,7 +1,7 @@
 /**
  * Authentication Verifier.
  *
- * Copyright (c) 2014-2022 Philippe Lieser
+ * Copyright (c) 2014-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *

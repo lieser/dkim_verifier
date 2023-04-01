@@ -1,7 +1,7 @@
 /**
  * Migrates user data from the Legacy Overlay Extension.
  *
- * Copyright (c) 2020-2021 Philippe Lieser
+ * Copyright (c) 2020-2021;2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *

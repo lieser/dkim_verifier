@@ -5,7 +5,7 @@
  * - IDNA A-labels and U-labels are not verified to be valid.
  * - A-labels are not converted into U-labels (e.g. to compare "authserv-id")
  *
- * Copyright (c) 2014-2022 Philippe Lieser
+ * Copyright (c) 2014-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *

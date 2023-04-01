@@ -4,7 +4,7 @@
  *
  * This module is NOT conform to DMARC.
  *
- * Copyright (c) 2014-2019;2021 Philippe Lieser
+ * Copyright (c) 2014-2019;2021-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
