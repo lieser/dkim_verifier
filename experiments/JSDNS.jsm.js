@@ -250,7 +250,7 @@ function configureDNS(getNameserversFromOS, nameServer, timeoutConnect, proxy, a
 
 	/** @type {DnsServer[]} */
 	const prefDnsRootNameServers = [];
-	nameServer.split(";").forEach(function (element /*, index, array*/) {
+	nameServer.split(";").forEach((element /*, index, array*/) => {
 		if (element.trim() !== "") {
 			prefDnsRootNameServers.push({
 				server: element.trim(),
@@ -262,7 +262,7 @@ function configureDNS(getNameserversFromOS, nameServer, timeoutConnect, proxy, a
 		const osDnsRootNameServers = getOsDnsServers();
 		DNS_ROOT_NAME_SERVERS = arrayUniqBy(
 			osDnsRootNameServers.concat(prefDnsRootNameServers),
-			function (e) { return e.server; }
+			(e) => e.server
 		);
 	} else {
 		DNS_ROOT_NAME_SERVERS = prefDnsRootNameServers;
@@ -293,7 +293,7 @@ function arrayUniqBy(ary, key) {
 
 	/** @type {Object<string, number>} */
 	var seen = {};
-	return ary.filter(function (elem) {
+	return ary.filter((elem) => {
 		var k = key(elem);
 		if (seen[k] === 1) {
 			return false;
@@ -341,11 +341,9 @@ function getOsDnsServers() {
 			// from http://mxr.mozilla.org/comm-central/source/mozilla/browser/components/migration/src/IEProfileMigrator.js#129
 			// slice(1,-1) to remove the " at the beginning and end
 			var str = registryLinkage.readStringValue("Route");
-			var interfaces = str.split("\0").map(function (e) {
-				return e.slice(1, -1);
-			}).filter(function (e) {
-				return e;
-			});
+			var interfaces = str.split("\0").
+				map((e) => e.slice(1, -1)).
+				filter((e) => e);
 			log.debug("Found " + interfaces.length + " interfaces.");
 
 			// filter out deactivated interfaces
@@ -355,7 +353,7 @@ function getOsDnsServers() {
 			var registryDevInterfaces = registry.openChild(
 				"Control\\DeviceClasses\\{cac88484-7515-4c03-82e6-71a87abac361}",
 				registry.ACCESS_QUERY_VALUE);
-			var interfacesOnline = interfaces.filter(function (element /*, index, array*/) {
+			var interfacesOnline = interfaces.filter((element /*, index, array*/) => {
 				reg = registryNetworkAdapters.openChild(element + "\\Connection",
 					registry.ACCESS_READ);
 				if (!reg.hasValue("PnpInstanceID")) {
@@ -404,7 +402,7 @@ function getOsDnsServers() {
 
 			if (ns !== "") {
 				var servers = ns.split(/ |,/);
-				servers.forEach(function (element /*, index, array*/) {
+				servers.forEach((element /*, index, array*/) => {
 					if (element !== "") {
 						OS_DNS_ROOT_NAME_SERVERS.push({
 							server: element.trim(),
@@ -537,7 +535,7 @@ function queryDNSRecursive(servers, host, recordtype, callback, callbackdata, ho
 		if (serverObj === null) {
 			log.debug("no DNS Server alive");
 			if (AUTO_RESET_SERVER_ALIVE) {
-				servers.forEach(function (element /*, index, array*/) {
+				servers.forEach((element /*, index, array*/) => {
 					element.alive = true;
 				});
 				log.debug("set all servers to alive");

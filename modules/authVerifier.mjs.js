@@ -259,13 +259,13 @@ async function getARHResult(message, headers, from, listId, account, dmarc) {
 			continue;
 		}
 
-		arhDKIM = arhDKIM.concat(arh.resinfo.filter(function (element) {
+		arhDKIM = arhDKIM.concat(arh.resinfo.filter((element) => {
 			return element.method === "dkim";
 		}));
-		arhSPF = arhSPF.concat(arh.resinfo.filter(function (element) {
+		arhSPF = arhSPF.concat(arh.resinfo.filter((element) => {
 			return element.method === "spf";
 		}));
-		arhDMARC = arhDMARC.concat(arh.resinfo.filter(function (element) {
+		arhDMARC = arhDMARC.concat(arh.resinfo.filter((element) => {
 			return element.method === "dmarc";
 		}));
 	}
@@ -575,7 +575,7 @@ function sortSignatures(signatures, from, listId) {
 		return 0;
 	}
 
-	signatures.sort(function (sig1, sig2) {
+	signatures.sort((sig1, sig2) => {
 		let cmp;
 		cmp = result_compare(sig1, sig2);
 		if (cmp !== 0) {
@@ -671,7 +671,7 @@ function dkimResultV1_to_dkimSigResultV2(dkimResultV1) {
 	};
 	if (dkimResultV1.warnings) {
 		sigResultV2.warnings = dkimResultV1.warnings.map(
-			function (w) {
+			(w) => {
 				if (w === "DKIM_POLICYERROR_WRONG_SDID") {
 					return { name: w, params: [dkimResultV1.shouldBeSignedBy ?? ""] };
 				}
@@ -710,7 +710,7 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 			if (!dkimSigResult.warnings) {
 				throw new Error("expected warnings to be defined on SUCCESS result");
 			}
-			authResultDKIM.warnings_str = dkimSigResult.warnings.map(function (e) {
+			authResultDKIM.warnings_str = dkimSigResult.warnings.map((e) => {
 				return browser.i18n.getMessage(e.name, e.params) || e.name;
 			});
 			break;

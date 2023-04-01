@@ -195,6 +195,7 @@
 
         // Mocha
         "mocha/no-return-from-async": "warn",
+        "mocha/prefer-arrow-callback": "warn",
 
         // Mozilla
         "mozilla/avoid-removeChild": "warn",

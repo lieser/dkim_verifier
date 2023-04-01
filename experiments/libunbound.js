@@ -160,10 +160,10 @@ class LibunboundWorker {
 
 		// set additional DNS servers
 		let nameservers = this.config.nameServer.split(";");
-		nameservers = nameservers.map(function (element /*, index, array*/) {
+		nameservers = nameservers.map((element /*, index, array*/) => {
 			return element.trim();
 		});
-		nameservers = nameservers.filter(function (element /*, index, array*/) {
+		nameservers = nameservers.filter((element /*, index, array*/) => {
 			if (element !== "") {
 				return true;
 			}

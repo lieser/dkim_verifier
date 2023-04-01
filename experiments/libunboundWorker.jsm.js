@@ -443,14 +443,14 @@ function update_ctx(conf, debuglevel, getNameserversFromOS, nameservers, trustAn
 	}
 
 	// set additional DNS servers
-	nameservers.forEach(function (element /*, index, array*/) {
+	nameservers.forEach((element /*, index, array*/) => {
 		if ((retval = ub_ctx_set_fwd(ctx, element.trim())) !== 0) {
 			throw new Error(`error in ub_ctx_set_fwd: ${ub_strerror(retval).readString()}. errno: ${ctypes.errno}`);
 		}
 	});
 
 	// add root trust anchors
-	trustAnchors.forEach(function (element /*, index, array*/) {
+	trustAnchors.forEach((element /*, index, array*/) => {
 		if ((retval = ub_ctx_add_ta(ctx, element.trim())) !== 0) {
 			throw new Error(`error in ub_ctx_add_ta: ${ub_strerror(retval).readString()}. errno: ${ctypes.errno}`);
 		}

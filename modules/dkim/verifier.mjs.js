@@ -369,8 +369,8 @@ class DkimSignatureHeader {
 		const signedHeaderFields = signedHeadersTag[0].replace(new RegExp(RfcParser.FWS, "g"), "");
 		// get the header field names and store them in lower case in an array
 		const signedHeaderFieldsArray = signedHeaderFields.split(":").
-			map(function (x) { return x.trim().toLowerCase(); }).
-			filter(function (x) { return x; });
+			map((x) => x.trim().toLowerCase()).
+			filter((x) => x);
 		// check that the from header is included
 		if (!signedHeaderFieldsArray.includes("from")) {
 			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_FROM");
@@ -677,7 +677,7 @@ class DkimKey {
 		if (algorithmTag === null) {
 			return null;
 		}
-		return algorithmTag[0].split(":").map(s => s.trim()).filter(function (x) { return x; });
+		return algorithmTag[0].split(":").map(s => s.trim()).filter((x) => x);
 	}
 
 	/**
@@ -765,7 +765,7 @@ class DkimKey {
 			return [];
 		}
 		// get the flags and store them in an array
-		return flagsTag[0].split(":").map(s => s.trim()).filter(function (x) { return x; });
+		return flagsTag[0].split(":").map(s => s.trim()).filter((x) => x);
 	}
 }
 
@@ -796,9 +796,7 @@ class DkimSignature {
 		// Convert header field name (not the header field values) to lowercase
 		let headerCanonicalized = headerField.replace(
 			/^\S[^:]*/,
-			function (match) {
-				return match.toLowerCase();
-			}
+			(match) => match.toLowerCase()
 		);
 
 		// Unfold header field continuation lines
@@ -1445,7 +1443,7 @@ export default class Verifier {
 			Verifier._checkForSignatureExistence(res.signatures);
 			return res;
 		})();
-		promise.then(null, function onReject(exception) {
+		promise.then(null, (exception) => {
 			log.warn("verify failed", exception);
 		});
 		return promise;

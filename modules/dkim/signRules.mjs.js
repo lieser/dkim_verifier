@@ -147,7 +147,7 @@ async function loadDefaultRules() {
 		const signersDefaultStr = await ExtensionUtils.readFile("data/signersDefault.json");
 		/** @type {{rules: {domain: string, addr: string, sdid: string, ruletype: string, priority: string}[]}} */
 		const signersDefaultData = JSON.parse(signersDefaultStr);
-		defaultRules = signersDefaultData.rules.map(function (rule) {
+		defaultRules = signersDefaultData.rules.map((rule) => {
 			/** @type {number|undefined} */
 			// @ts-expect-error
 			const type = RULE_TYPE[rule.ruletype];
@@ -346,7 +346,7 @@ function checkSDID(dkimResult, allowedSDIDs) {
 
 	// error/warning if there is a SDID in the sign rule
 	// that is different from the SDID in the signature
-	if (!allowedSDIDs.some(function (element/*, index, array*/) {
+	if (!allowedSDIDs.some((element/*, index, array*/) => {
 		if (prefs["policy.signRules.sdid.allowSubDomains"]) {
 			return stringEndsWith(sdid, element);
 		}
@@ -692,7 +692,7 @@ export default class SignRules {
 				await SignRules.addRule(domain, null, fromAddressToAdd, sdid, RULE_TYPE.ALL, PRIORITY.AUTOINSERT_RULE_ALL);
 			}
 		})();
-		promise.then(null, function onReject(exception) {
+		promise.then(null, (exception) => {
 			// Failure!  We can inspect or report the exception.
 			log.fatal("Error adding an automatic rule:", exception);
 		});
