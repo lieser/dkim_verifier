@@ -956,6 +956,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "europcar.com",
+			"addr": "*",
+			"sdid": "europcar.com europcar-com.20210112.gappssmtp.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "europcar-news.com",
 			"addr": "*",
 			"sdid": "europcar-news.com",
@@ -1568,6 +1574,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "interactadvocates.org",
+			"addr": "*",
+			"sdid": "interactadvocates.org interactadvocates-org.20210112.gappssmtp.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "iode.tech",
 			"addr": "*",
 			"sdid": "iode.tech",
@@ -1685,6 +1697,12 @@
 			"domain": "kycsafe.com",
 			"addr": "*",
 			"sdid": "kycsafe.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "latex.org",
+			"addr": "*",
+			"sdid": "latex.org latex-org.20210112.gappssmtp.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
