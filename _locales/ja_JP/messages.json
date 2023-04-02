@@ -262,7 +262,8 @@
 	},
 	// DKIM_SIGERROR - POLICY
 	"DKIM_POLICYERROR_MISSING_SIG": {
-		"message": "$1 により署名されているべき"
+		"message": "署名なし。$1 により署名されているべき",
+		"description": "Error if a message has no signature, but the sign rules state that it should be signed"
 	},
 	"DKIM_POLICYERROR_KEYMISMATCH": {
 		"message": "保存されている DKIM キーと現在のキーが異なる"
@@ -369,7 +370,8 @@
 		"message": "DNS サーバ （書式 （EBNF）: host[\":\"port]{\";\"host[\":\"port]} ）"
 	},
 	"options_dns.timeout_connect": {
-		"message": "DNS 接続タイムアウト （秒）"
+		"message": "DNS 接続タイムアウト （秒）",
+		"description": "Timeout for the connection to the DNS servers (both establishing the connection and sending/receiving data)"
 	},
 	"options_dns.proxy.enable": {
 		"message": "DNS サーバへの接続にプロキシを利用"
