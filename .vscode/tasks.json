@@ -5,8 +5,9 @@
 	"tasks": [
 		{
 			"label": "Build xpi",
-			"type": "shell",
-			"command": "rm ./dkim_verifier@pl.xpi; & \\\"$($Env:ProgramFiles)/7-Zip/7z.exe\\\" a -tzip -mx1 dkim_verifier@pl.xpi '-i!_locales/*/*.json' '-i!content/*.html' '-i!content/*.css' '-i!content/*.js' ./data/ '-i!experiments/*.js' '-i!experiments/*.json' '-i!modules/*.js' '-i!modules/dkim/*.js' ./thirdparty/ ./CHANGELOG.md ./icon.svg ./icon-white.svg ./LICENSE.txt ./manifest.json ./README.md ./THIRDPARTY_LICENSE.txt",
+			"detail": "node ./scripts/pack.js",
+			"type": "npm",
+			"script": "pack",
 			"problemMatcher": [],
 			"group": {
 				"kind": "build",

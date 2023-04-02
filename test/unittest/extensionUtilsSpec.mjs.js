@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020 Philippe Lieser
+ * Copyright (c) 2020-2021;2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -27,7 +27,7 @@ describe("ExtensionUtils [unittest]", function () {
 				ccList: [],
 				date: new Date(),
 				flagged: false,
-				folder: { accountId: accountId, type: folderType },
+				folder: { accountId, type: folderType },
 				id: 42,
 				junk: false,
 				junkScore: 0,

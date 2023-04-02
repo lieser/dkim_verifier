@@ -2,7 +2,7 @@
  * Setup the global browser object and the extensionUtils module for the tests
  * environment.
  *
- * Copyright (c) 2020 Philippe Lieser
+ * Copyright (c) 2020-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -82,7 +82,9 @@ before(async function () {
 		hasWebExtensions = true;
 	} catch (e) {
 		// Ugly workaround for running tests for modules that use the global prefs in the browser
+		// @ts-expect-error
 		prefs._valueGetter = (name) => { return prefs._prefs[name]; };
+		// @ts-expect-error
 		prefs._valueSetter = (name, value) => { prefs._prefs[name] = value; return Promise.resolve(); };
 		prefs.init = () => { return Promise.resolve(); };
 		prefs.clear = () => { prefs._prefs = {}; return Promise.resolve(); };
@@ -101,6 +103,6 @@ before(async function () {
 	};
 
 	globalThis.browser.mailUtils = {
-		getBaseDomainFromAddr: getBaseDomainFromAddr,
+		getBaseDomainFromAddr,
 	};
 });

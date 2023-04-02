@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2022 Philippe Lieser
+ * Copyright (c) 2020-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -50,6 +50,7 @@ describe("Message parser [unittest]", function () {
 		it("parse CRLF", function () {
 			const msg = MsgParser.parseMsg(msgPlain);
 			expect(msg.body).to.be.equal(msgBody);
+			expect(msg.headers.size).to.be.equal(7);
 
 			expect(msg.headers.has("received")).to.be.true;
 			// @ts-expect-error
@@ -64,6 +65,7 @@ describe("Message parser [unittest]", function () {
 		it("parse LF", function () {
 			const msg = MsgParser.parseMsg(msgPlain.replace(/\r\n/g, "\n"));
 			expect(msg.body).to.be.equal(msgBody);
+			expect(msg.headers.size).to.be.equal(7);
 
 			expect(msg.headers.has("subject")).to.be.true;
 			// @ts-expect-error
@@ -74,6 +76,7 @@ describe("Message parser [unittest]", function () {
 		it("parse CR", function () {
 			const msg = MsgParser.parseMsg(msgPlain.replace(/\r\n/g, "\r"));
 			expect(msg.body).to.be.equal(msgBody);
+			expect(msg.headers.size).to.be.equal(7);
 
 			expect(msg.headers.has("subject")).to.be.true;
 			// @ts-expect-error
@@ -85,6 +88,7 @@ describe("Message parser [unittest]", function () {
 		it("multiple received headers", function () {
 			const msg = MsgParser.parseMsg(`Received: foo\r\n${msgPlain}`);
 			expect(msg.body).to.be.equal(msgBody);
+			expect(msg.headers.size).to.be.equal(7);
 
 			expect(msg.headers.has("received")).to.be.true;
 			// @ts-expect-error
@@ -92,13 +96,34 @@ describe("Message parser [unittest]", function () {
 			// @ts-expect-error
 			expect(msg.headers.get("received")[0]).to.be.equal("Received: foo\r\n");
 			// @ts-expect-error
-			expect(msg.headers.get("received")[1]).to.have.string('\r\n      by submitserver.example.com');
+			expect(msg.headers.get("received")[1]).to.have.string("\r\n      by submitserver.example.com");
 		});
 
 		it("missing newline between header and body", function () {
 			expect(
 				() => MsgParser.parseMsg(msgPlain.replace(/\r\n\r\n/g, "\r\n"))
 			).to.throw(DKIM_InternalError).with.property("errorType", "DKIM_INTERNALERROR_INCORRECT_EMAIL_FORMAT");
+		});
+		it("Valid missing body", function () {
+			let msg = MsgParser.parseMsg(msgPlain.replace(/\r\n\r\n.+/gs, "\r\n"));
+			expect(msg.body).to.be.equal("");
+			expect(msg.headers.size).to.be.equal(7);
+			msg = MsgParser.parseMsg(msgPlain.replace(/\r\n\r\n.+/gs, "\n"));
+			expect(msg.body).to.be.equal("");
+			expect(msg.headers.size).to.be.equal(7);
+			msg = MsgParser.parseMsg(msgPlain.replace(/\r\n\r\n.+/gs, "\r"));
+			expect(msg.body).to.be.equal("");
+			expect(msg.headers.size).to.be.equal(7);
+		});
+		it("With a missing body the headers still need to end with a newline", function () {
+			expect(
+				() => MsgParser.parseMsg(msgPlain.replace(/\r\n\r\n.+/gs, ""))
+			).to.throw(DKIM_InternalError).with.property("errorType", "DKIM_INTERNALERROR_INCORRECT_EMAIL_FORMAT");
+		});
+		it("Valid empty body", function () {
+			const msg = MsgParser.parseMsg(msgPlain.replace(/\r\n\r\n.+/gs, "\r\n\r\n"));
+			expect(msg.body).to.be.equal("");
+			expect(msg.headers.size).to.be.equal(7);
 		});
 	});
 	describe("Extracting From address", function () {
@@ -144,18 +169,18 @@ describe("Message parser [unittest]", function () {
 			});
 			it("with simple quoted-string as display-name", function () {
 				expect(
-					MsgParser.parseFromHeader(`From: "this is from foo" <foo@example.com>\r\n`)
+					MsgParser.parseFromHeader("From: \"this is from foo\" <foo@example.com>\r\n")
 				).to.be.equal("foo@example.com");
 				expect(
-					MsgParser.parseFromHeader(`From: "bar@bad.com" <foo@example.com>\r\n`)
+					MsgParser.parseFromHeader("From: \"bar@bad.com\" <foo@example.com>\r\n")
 				).to.be.equal("foo@example.com");
 			});
 			it("with comment", function () {
 				expect(
-					MsgParser.parseFromHeader(`From: (bar@bad.com) <foo@example.com>\r\n`)
+					MsgParser.parseFromHeader("From: (bar@bad.com) <foo@example.com>\r\n")
 				).to.be.equal("foo@example.com");
 				expect(
-					MsgParser.parseFromHeader(`From: A (bar@bad.com) comment <foo@example.com>\r\n`)
+					MsgParser.parseFromHeader("From: A (bar@bad.com) comment <foo@example.com>\r\n")
 				).to.be.equal("foo@example.com");
 			});
 			it("with quoted-string as local part", function () {
@@ -168,7 +193,7 @@ describe("Message parser [unittest]", function () {
 			});
 			it("Strange but valid display name", function () {
 				expect(
-					MsgParser.parseFromHeader(`From: "mixed" atoms "and quoted-string" <foo@example.com>\r\n`)
+					MsgParser.parseFromHeader("From: \"mixed\" atoms \"and quoted-string\" <foo@example.com>\r\n")
 				).to.be.equal("foo@example.com");
 				expect(
 					MsgParser.parseFromHeader('From: "a"strange"phrase" <foo@example.com>\r\n')
@@ -340,10 +365,10 @@ describe("Message parser [unittest]", function () {
 		});
 		it("valid headers", function () {
 			expect(
-				MsgParser.parseListIdHeader('list-ID: <list-header.nisto.com>\r\n')
+				MsgParser.parseListIdHeader("list-ID: <list-header.nisto.com>\r\n")
 			).to.be.equal("list-header.nisto.com");
 			expect(
-				MsgParser.parseListIdHeader('List-Id:<list-header.nisto.com>\r\n')
+				MsgParser.parseListIdHeader("List-Id:<list-header.nisto.com>\r\n")
 			).to.be.equal("list-header.nisto.com");
 			expect(
 				MsgParser.parseListIdHeader('List-Id: "<fake.list.com>" <list-header.nisto.com>\r\n')
@@ -351,14 +376,43 @@ describe("Message parser [unittest]", function () {
 		});
 		it("invalid headers", function () {
 			expect(() =>
-				MsgParser.parseListIdHeader('List-Id: missing-angle-brackets.example.com')
+				MsgParser.parseListIdHeader("List-Id: missing-angle-brackets.example.com")
 			).to.throw();
 			expect(() =>
-				MsgParser.parseListIdHeader('List-Id: <foo@example.com>\r\n')
+				MsgParser.parseListIdHeader("List-Id: <foo@example.com>\r\n")
 			).to.throw();
 			expect(() =>
-				MsgParser.parseListIdHeader('List-Id: 123 <foo newsletter>\r\n')
+				MsgParser.parseListIdHeader("List-Id: 123 <foo newsletter>\r\n")
 			).to.throw();
+		});
+	});
+	describe("Extracting the date from a Received header", function () {
+		it("RFC 6376 Appendix A Example", function () {
+			const received = "Received: from client1.football.example.com  [192.0.2.1]\r\n" +
+				"      by submitserver.example.com with SUBMISSION;\r\n" +
+				"      Fri, 11 Jul 2003 21:01:54 -0700 (PDT)\r\n";
+			expect(MsgParser.tryExtractReceivedTime(received)).
+				to.be.deep.equal(new Date("2003-07-11T21:01:54.000-07:00"));
+		});
+		it("RFC 5322 Appendix A.4. Messages with Trace Fields", function () {
+			const received = "Received: from node.example by x.y.test; 21 Nov 1997 10:01:22 -0600\r\n";
+			expect(MsgParser.tryExtractReceivedTime(received)).
+				to.be.deep.equal(new Date("1997-11-21T10:01:22.000-06:00"));
+		});
+		it("Time without seconds", function () {
+			const received = "Received: from node.example by x.y.test; 21 Nov 1997 10:01 -0600\r\n";
+			expect(MsgParser.tryExtractReceivedTime(received)).
+				to.be.deep.equal(new Date("1997-11-21T10:01:00.000-06:00"));
+		});
+		it("Missing semicolon", function () {
+			const received = "Received: from node.example by x.y.test 21 Nov 1997 10:01:22 -0600\r\n";
+			expect(MsgParser.tryExtractReceivedTime(received)).
+				to.be.null;
+		});
+		it("Invalid date", function () {
+			const received = "Received: from node.example by x.y.test; 41 Nov 1997 10:01:22 -0600\r\n";
+			expect(MsgParser.tryExtractReceivedTime(received)).
+				to.be.null;
 		});
 	});
 	describe("Internationalized Email", function () {

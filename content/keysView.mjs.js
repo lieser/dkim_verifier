@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021 Philippe Lieser
+ * Copyright (c) 2021;2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -27,11 +27,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 	);
 	table.showData(keys, ["sdid"]);
 
-	browser.runtime.onMessage.addListener((request, sender, /*sendResponse*/) => {
+	browser.runtime.onMessage.addListener((request, sender /*, sendResponse*/) => {
 		if (sender.id !== "dkim_verifier@pl") {
 			return;
 		}
-		if (typeof request !== 'object' || request === null) {
+		if (typeof request !== "object" || request === null) {
 			return;
 		}
 		if (request.event === "keysUpdated") {

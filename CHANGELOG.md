@@ -8,12 +8,48 @@ All notable changes to this project will be documented in this file.
 
 ### Enhancements
 
+- Extract the received time from the last Received header and use it as the verification time (#336).
+- Fixed incompatibility with Thunderbird 113 (#352)
+
+### Fixes
+
+- Fixed extension not working for attached or external messages (#216).
+  Requires Thunderbird 106 or later.
+- Fixed empty tags being treated as ill-formed. This e.g. fixes revoked DKIM keys.
+- Fixed tooltip for From header in Thunderbird 102 or newer (#311)
+- Fixed missing body resulting in internal error (#347)
+
+### Other
+
+- Added Traditional Chinese translation (by NightFeather) (#335).
+- Updated default rules and favicons (#334, #337).
+
+## 5.1.1 (2022-08-15)
+
+### Fixes
+
+- Invalid Reply-To header is now ignored instead of resulting in internal error (#321).
+
+### Other
+
+- Updated default rules and favicons (#323, #326, #327).
+
+## 5.1.0 (2022-07-17)
+
+### Enhancements
+
 - Added heuristic to detect maliciously added unsigned headers (#102).
-- Warn about unsigned headers that are recommended to be signed (#102, #277).
+- Configurable option to warn about unsigned headers that are recommended to be signed (#102, #277).
+- Improved theming of header icon in Thunderbird 102.
+- Authentication-Results header: Prefer to show failure results that include a reason and are related to the sending domain (#247).
 
 ### Fixes
 
 - Fixed error when opening messages in a new window in Thunderbird 102.
+
+### Other
+
+- updated default rules and favicons
 
 ## 5.0.0 (2022-06-12)
 

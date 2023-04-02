@@ -262,7 +262,8 @@
 	},
 	// DKIM_SIGERROR - POLICY
 	"DKIM_POLICYERROR_MISSING_SIG": {
-		"message": "Dovrebbe essere firmato da $1"
+		"message": "Nessuna firma: dovrebbe essere firmato da $1",
+		"description": "Error if a message has no signature, but the sign rules state that it should be signed"
 	},
 	"DKIM_POLICYERROR_KEYMISMATCH": {
 		"message": "La chiave DKIM salvata è diversa da quella corrente"
@@ -369,7 +370,8 @@
 		"message": "Server DNS (sintassi (EBNF): host[\":\"porta]{\";\"host[\":\"porta]} )"
 	},
 	"options_dns.timeout_connect": {
-		"message": "Scadenza connessione DNS (in secondi)"
+		"message": "Scadenza connessione DNS (in secondi)",
+		"description": "Timeout for the connection to the DNS servers (both establishing the connection and sending/receiving data)"
 	},
 	"options_dns.proxy.enable": {
 		"message": "Usa un proxy per connetterti ai server DNS"
@@ -436,7 +438,7 @@
 		"message": "Usa DMARC per determinare euristicamente se un’email dovrebbe essere firmata"
 	},
 	"options_policy.dkim.unsignedHeadersWarning.mode": {
-		"message": "Avvisa quando ci sono intestazioni non firmate che invece è consigliato lo siano: ",
+		"message": "Avvisa quando ci sono intestazioni non firmate che invece è consigliato lo siano:",
 		"description": "Description for the setting of the unsigned headers warning mode."
 	},
 	"options_policy.dkim.unsignedHeadersWarning.mode.relaxed": {

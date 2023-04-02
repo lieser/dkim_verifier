@@ -273,6 +273,10 @@
 	"DKIM_POLICYERROR_WRONG_SDID": {
 		"message": "署名者が正しくありません（$1 であるべき）"
 	},
+	"DKIM_POLICYERROR_UNSIGNED_HEADER_ADDED": {
+		"message": "未署名ヘッダ '$1' が追加されました",
+		"description": "Error if an important header was probably maliciously added later"
+	},
 	// DKIM_SIGWARNING
 	"DKIM_SIGWARNING_SMALL_L": {
 		"message": "メール全体への署名でない"
@@ -294,6 +298,10 @@
 	},
 	"DKIM_SIGWARNING_FROM_NOT_IN_AUID": {
 		"message": "差出人がユーザ識別子とマッチしません"
+	},
+	"DKIM_SIGWARNING_UNSIGNED_HEADER": {
+		"message": "ヘッダ '$1' は署名されていません",
+		"description": "Warning if an important header is not signed"
 	},
 	// JSDNS
 	"TOO_MANY_HOPS": {
@@ -426,6 +434,22 @@
 	},
 	"options_policy.DMARC.shouldBeSigned.enable": {
 		"message": "メールが署名されているべきかをヒューリスティックに決定するために DMARC を利用"
+	},
+	"options_policy.dkim.unsignedHeadersWarning.mode": {
+		"message": "署名されていることが望ましいヘッダが未署名であることの警告:",
+		"description": "Description for the setting of the unsigned headers warning mode."
+	},
+	"options_policy.dkim.unsignedHeadersWarning.mode.relaxed": {
+		"message": "relaxed mode",
+		"description": "A relaxed mode that will try to avoid showing warnings."
+	},
+	"options_policy.dkim.unsignedHeadersWarning.mode.recommended": {
+		"message": "recommended mode",
+		"description": "A mode trying to enforce best practice without showing to many warnings."
+	},
+	"options_policy.dkim.unsignedHeadersWarning.mode.strict": {
+		"message": "strict mode",
+		"description": "A strict mode that will potentially show a lot of warnings."
 	},
 	// -------------------- Display options --------------------
 	"options_display": {

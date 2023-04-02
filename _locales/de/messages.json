@@ -185,7 +185,7 @@
 		"message": "Signatur-Zeitstempel-Tag hat falsches Format"
 	},
 	"DKIM_SIGERROR_TIMESTAMPS": {
-		"message": "Signatur abgelaufen"
+		"message": "Ablaufdatum der Signatur liegt vor dem Zeitstempel der Signatur"
 	},
 	"DKIM_SIGERROR_ILLFORMED_X": {
 		"message": "Signatur-Ablaufdatum-Tag hat falsches Format"
@@ -262,7 +262,8 @@
 	},
 	// DKIM_SIGERROR - POLICY
 	"DKIM_POLICYERROR_MISSING_SIG": {
-		"message": "Sollte durch $1 signiert sein"
+		"message": "Keine Signatur, sollte durch $1 signiert sein",
+		"description": "Error if a message has no signature, but the sign rules state that it should be signed"
 	},
 	"DKIM_POLICYERROR_KEYMISMATCH": {
 		"message": "Gespeicherter DKIM-Schlüssel stimmt nicht mit dem aktuellen überein"
@@ -274,7 +275,7 @@
 		"message": "Falscher Signierer (sollte $1 sein)"
 	},
 	"DKIM_POLICYERROR_UNSIGNED_HEADER_ADDED": {
-		"message": "Unsignierter Header '$1' wurde hinzugefügt",
+		"message": "Unsignierte Kopfzeile '$1' wurde hinzugefügt",
 		"description": "Error if an important header was probably maliciously added later"
 	},
 	// DKIM_SIGWARNING
@@ -300,8 +301,8 @@
 		"message": "Absender passt nicht zur Benutzeridentität"
 	},
 	"DKIM_SIGWARNING_UNSIGNED_HEADER": {
-		"message": "Header '$1' ist nicht signiert",
-		"description": "Warding if an important header is not signed"
+		"message": "Kopfzeile '$1' ist nicht signiert",
+		"description": "Warning if an important header is not signed"
 	},
 	// JSDNS
 	"TOO_MANY_HOPS": {
@@ -369,7 +370,8 @@
 		"message": "DNS-Server (EBNF-Syntax: host[\":\"port]{\";\"host[\":\"port]} )"
 	},
 	"options_dns.timeout_connect": {
-		"message": "Timeout für DNS-Verbindungsaufbau (in Sekunden)"
+		"message": "DNS-Verbindungs-Timeout (in Sekunden)",
+		"description": "Timeout for the connection to the DNS servers (both establishing the connection and sending/receiving data)"
 	},
 	"options_dns.proxy.enable": {
 		"message": "Proxy für die Verbindung zu den DNS-Servern benutzen"
@@ -436,7 +438,7 @@
 		"message": "DMARC benutzen, um heuristisch zu bestimmen, ob eine E-Mail signiert sein sollte"
 	},
 	"options_policy.dkim.unsignedHeadersWarning.mode": {
-		"message": "Warne über unsignierte Header die empfohlen sind signiert zu werden: ",
+		"message": "Warne vor unsignierten Kopfzeilen, die signiert sein sollten:",
 		"description": "Description for the setting of the unsigned headers warning mode."
 	},
 	"options_policy.dkim.unsignedHeadersWarning.mode.relaxed": {

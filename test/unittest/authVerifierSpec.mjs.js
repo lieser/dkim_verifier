@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2022 Philippe Lieser
+ * Copyright (c) 2020-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -220,7 +220,7 @@ describe("AuthVerifier [unittest]", function () {
 
 			res = await authVerifier.verify(fakePayPalMessage);
 			expect(res.dkim[0]?.result).to.be.equal("PERMFAIL");
-			expect(res.dkim[0]?.result_str).to.be.equal("Invalid (Should be signed by paypal.com)");
+			expect(res.dkim[0]?.result_str).to.be.equal("Invalid (No Signature, should be signed by paypal.com)");
 		});
 
 		it("outgoing mail", async function () {
@@ -229,8 +229,11 @@ describe("AuthVerifier [unittest]", function () {
 
 			let res = await authVerifier.verify(fakePayPalMessage);
 			expect(res.dkim[0]?.result).to.be.equal("PERMFAIL");
-			expect(res.dkim[0]?.result_str).to.be.equal("Invalid (Should be signed by paypal.com)");
+			expect(res.dkim[0]?.result_str).to.be.equal("Invalid (No Signature, should be signed by paypal.com)");
 
+			if (!fakePayPalMessage.folder) {
+				throw new Error("Expect faked message to be in a fake folder");
+			}
 			fakePayPalMessage.folder.type = "sent";
 
 			res = await authVerifier.verify(fakePayPalMessage);
@@ -250,7 +253,7 @@ describe("AuthVerifier [unittest]", function () {
 
 			res = await verifier.verify(fakePayPalMessage);
 			expect(res.dkim[0]?.result).to.be.equal("PERMFAIL");
-			expect(res.dkim[0]?.result_str).to.be.equal("Invalid (Should be signed by paypal.com)");
+			expect(res.dkim[0]?.result_str).to.be.equal("Invalid (No Signature, should be signed by paypal.com)");
 		});
 	});
 
@@ -335,6 +338,14 @@ describe("AuthVerifier [unittest]", function () {
 				expect(res.dkim[1]?.sdid).to.be.equal("example.org");
 				expect(res.dkim[2]?.result).to.be.equal("SUCCESS");
 				expect(res.dkim[2]?.sdid).to.be.equal("unrelated.org");
+				expect(res.dkim[3]?.result).to.be.equal("PERMFAIL");
+				expect(res.dkim[3]?.result_str).to.be.equal("Invalid (test failure)");
+				expect(res.dkim[4]?.result).to.be.equal("PERMFAIL");
+				expect(res.dkim[4]?.result_str).to.be.equal("Invalid");
+				expect(res.dkim[5]?.result).to.be.equal("PERMFAIL");
+				expect(res.dkim[5]?.result_str).to.be.equal("Invalid");
+				expect(res.dkim[6]?.result).to.be.equal("PERMFAIL");
+				expect(res.dkim[6]?.result_str).to.be.equal("Invalid (test failure signed by unrelated)");
 			});
 			it("With secure signature algorithm", async function () {
 				const message = await createMessageHeader("rfc6376-A.2-arh-valid-a_tag.eml");

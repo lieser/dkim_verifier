@@ -3,7 +3,7 @@
  *  - JSDNS
  *  - libunbound
  *
- * Copyright (c) 2020-2021 Philippe Lieser
+ * Copyright (c) 2020-2022 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *

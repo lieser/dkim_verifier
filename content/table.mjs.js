@@ -1,7 +1,7 @@
 /**
  * An editable table for showing data.
  *
- * Copyright (c) 2020 Philippe Lieser
+ * Copyright (c) 2020-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -187,7 +187,7 @@ export default class DataTable {
 		if (this._isEditable) {
 			tbody.onclick = (event) => this._select(event);
 			tbody.ondblclick = (event) => this._startEdit(event);
-			tbody.addEventListener('focusout', (event) => this._stopEditFocusout(event));
+			tbody.addEventListener("focusout", (event) => this._stopEditFocusout(event));
 			tbody.onkeydown = (event) => this._stopEditKeydown(event);
 		}
 

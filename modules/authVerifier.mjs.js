@@ -1,7 +1,7 @@
 /**
  * Authentication Verifier.
  *
- * Copyright (c) 2014-2022 Philippe Lieser
+ * Copyright (c) 2014-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -36,13 +36,12 @@ const log = Logging.getLogger("AuthVerifier");
 
 /**
  * @typedef {object} AuthResultV2
- * @property {string} version
- *           result version ("2.1")
+ * @property {string} version Result version ("2.1").
  * @property {AuthResultDKIM[]} dkim
  * @property {ArhParserModule.ArhResInfo[]} [spf]
  * @property {ArhParserModule.ArhResInfo[]} [dmarc]
  * @property {{dkim?: AuthResultDKIM[]}} [arh]
- *           added in version 2.1
+ * added in version 2.1
  */
 /**
  * @typedef {AuthResultV2} AuthResult
@@ -50,12 +49,11 @@ const log = Logging.getLogger("AuthVerifier");
 
 /**
  * @typedef {object} SavedAuthResultV3
- * @property {string} version
- *           result version ("3.0")
+ * @property {string} version Result version ("3.0").
  * @property {VerifierModule.dkimSigResultV2[]} dkim
- * @property {ArhParserModule.ArhResInfo[]} [spf]
- * @property {ArhParserModule.ArhResInfo[]} [dmarc]
- * @property {{dkim?: VerifierModule.dkimSigResultV2[]}} [arh]
+ * @property {ArhParserModule.ArhResInfo[]|undefined} [spf]
+ * @property {ArhParserModule.ArhResInfo[]|undefined} [dmarc]
+ * @property {{dkim?: VerifierModule.dkimSigResultV2[]}|undefined} [arh]
  */
 /**
  * @typedef {SavedAuthResultV3} SavedAuthResult
@@ -65,19 +63,15 @@ const log = Logging.getLogger("AuthVerifier");
  * @typedef {IAuthVerifier.AuthResultDKIMV2} AuthResultDKIMV2
  * extends dkimSigResultV2
  * @property {number} res_num
- *           10: SUCCESS
- *           20: TEMPFAIL
- *           30: PERMFAIL
- *           35: PERMFAIL treat as no sig
- *           40: no sig
- * @property {string} result_str
- *           localized result string
- * @property {string} [error_str]
- *           localized error string
- * @property {string[]} [warnings_str]
- *           localized warnings
- * @property {string} [favicon]
- *           url to the favicon of the sdid
+ * - 10: SUCCESS
+ * - 20: TEMPFAIL
+ * - 30: PERMFAIL
+ * - 35: PERMFAIL treat as no sig
+ * - 40: no sig
+ * @property {string} result_str Localized result string.
+ * @property {string} [error_str] Localized error string.
+ * @property {string[]} [warnings_str] Localized warnings.
+ * @property {string} [favicon] URL to the favicon of the SDID.
  */
 /**
  * @typedef {AuthResultDKIMV2} AuthResultDKIM
@@ -144,7 +138,7 @@ export default class AuthVerifier {
 		const msg = {
 			headerFields: msgParsed.headers,
 			bodyPlain: msgParsed.body,
-			from: from,
+			from,
 		};
 		const listIdHeader = msgParsed.headers.get("list-id");
 		let listId = null;
@@ -157,7 +151,7 @@ export default class AuthVerifier {
 		}
 
 		// read Authentication-Results header
-		const arhResult = await getARHResult(message, msg.headerFields, msg.from, listId, message.folder.accountId, this._dmarc);
+		const arhResult = await getARHResult(message, msg.headerFields, msg.from, listId, message.folder?.accountId, this._dmarc);
 
 		if (arhResult) {
 			if (prefs["arh.replaceAddonResult"]) {
@@ -181,7 +175,7 @@ export default class AuthVerifier {
 		}
 
 		if (!savedAuthResult.dkim || savedAuthResult.dkim.length === 0) {
-			if (prefs["account.dkim.enable"](message.folder.accountId)) {
+			if (prefs["account.dkim.enable"](message.folder?.accountId)) {
 				// verify DKIM signatures
 				const dkimResultV2 = await this._dkimVerifier.verify(msg);
 
@@ -221,7 +215,7 @@ export default class AuthVerifier {
  * @param {Map<string, string[]>} headers
  * @param {string} from
  * @param {string?} listId
- * @param {string} account
+ * @param {string|undefined} account
  * @param {DMARC} dmarc
  * @returns {Promise<SavedAuthResult|null>}
  */
@@ -265,13 +259,13 @@ async function getARHResult(message, headers, from, listId, account, dmarc) {
 			continue;
 		}
 
-		arhDKIM = arhDKIM.concat(arh.resinfo.filter(function (element) {
+		arhDKIM = arhDKIM.concat(arh.resinfo.filter((element) => {
 			return element.method === "dkim";
 		}));
-		arhSPF = arhSPF.concat(arh.resinfo.filter(function (element) {
+		arhSPF = arhSPF.concat(arh.resinfo.filter((element) => {
 			return element.method === "spf";
 		}));
-		arhDMARC = arhDMARC.concat(arh.resinfo.filter(function (element) {
+		arhDMARC = arhDMARC.concat(arh.resinfo.filter((element) => {
 			return element.method === "dmarc";
 		}));
 	}
@@ -552,7 +546,36 @@ function sortSignatures(signatures, from, listId) {
 		return 0;
 	}
 
-	signatures.sort(function (sig1, sig2) {
+	/**
+	 * Compare the error reason of two signatures.
+	 *
+	 * @param {VerifierModule.dkimSigResultV2} sig1
+	 * @param {VerifierModule.dkimSigResultV2} sig2
+	 * @returns {number}
+	 */
+	function error_compare(sig1, sig2) {
+		if (sig1.result !== "PERMFAIL") {
+			return 0;
+		}
+		if (sig1.errorType) {
+			// sig1 has an error type
+			if (sig2.errorType) {
+				// both signatures have an error type
+				return 0;
+			}
+			// sig2 has no error type
+			return -1;
+		}
+		// sig1 has no error type
+		if (sig2.errorType) {
+			// sig2 has an error type
+			return 1;
+		}
+		// both signatures have no error type
+		return 0;
+	}
+
+	signatures.sort((sig1, sig2) => {
 		let cmp;
 		cmp = result_compare(sig1, sig2);
 		if (cmp !== 0) {
@@ -563,6 +586,10 @@ function sortSignatures(signatures, from, listId) {
 			return cmp;
 		}
 		cmp = sdid_compare(sig1, sig2);
+		if (cmp !== 0) {
+			return cmp;
+		}
+		cmp = error_compare(sig1, sig2);
 		if (cmp !== 0) {
 			return cmp;
 		}
@@ -587,18 +614,6 @@ function arhDKIM_to_dkimSigResultV2(arhDKIM) {
 		case "pass": {
 			dkimSigResult.result = "SUCCESS";
 			dkimSigResult.warnings = [];
-			let sdid = arhDKIM.propertys.header.d;
-			let auid = arhDKIM.propertys.header.i;
-			if (sdid || auid) {
-				if (!sdid) {
-					// @ts-expect-error
-					sdid = getDomainFromAddr(auid);
-				} else if (!auid) {
-					auid = `@${sdid}`;
-				}
-				dkimSigResult.sdid = sdid;
-				dkimSigResult.auid = auid;
-			}
 			break;
 		}
 		case "fail":
@@ -623,6 +638,18 @@ function arhDKIM_to_dkimSigResultV2(arhDKIM) {
 		default:
 			throw new DKIM_InternalError(`invalid dkim result in arh: ${arhDKIM.result}`);
 	}
+	let sdid = arhDKIM.propertys.header.d;
+	let auid = arhDKIM.propertys.header.i;
+	if (sdid || auid) {
+		if (!sdid) {
+			// @ts-expect-error
+			sdid = getDomainFromAddr(auid);
+		} else if (!auid) {
+			auid = `@${sdid}`;
+		}
+		dkimSigResult.sdid = sdid;
+		dkimSigResult.auid = auid;
+	}
 	return dkimSigResult;
 }
 
@@ -644,7 +671,7 @@ function dkimResultV1_to_dkimSigResultV2(dkimResultV1) {
 	};
 	if (dkimResultV1.warnings) {
 		sigResultV2.warnings = dkimResultV1.warnings.map(
-			function (w) {
+			(w) => {
 				if (w === "DKIM_POLICYERROR_WRONG_SDID") {
 					return { name: w, params: [dkimResultV1.shouldBeSignedBy ?? ""] };
 				}
@@ -683,7 +710,7 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 			if (!dkimSigResult.warnings) {
 				throw new Error("expected warnings to be defined on SUCCESS result");
 			}
-			authResultDKIM.warnings_str = dkimSigResult.warnings.map(function (e) {
+			authResultDKIM.warnings_str = dkimSigResult.warnings.map((e) => {
 				return browser.i18n.getMessage(e.name, e.params) || e.name;
 			});
 			break;

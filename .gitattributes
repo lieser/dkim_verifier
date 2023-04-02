@@ -1,3 +1,6 @@
+# Enable end-of-line normalization for all text files
 * text=auto
 
+# Disable end-of-line normalization for the following files
+data/favicon/** -text
 thirdparty/** -text

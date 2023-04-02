@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020;2022 Philippe Lieser
+ * Copyright (c) 2020-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -117,8 +117,9 @@ this.jsdns = class extends ExtensionCommon.ExtensionAPI {
 							defer.reject(e);
 						}
 					}
-					return new Promise((resolve, reject) => JSDNS.queryDNS(
-						name, "TXT", dnsCallback, { resolve: resolve, reject: reject }));
+					return new Promise((resolve, reject) => {
+						JSDNS.queryDNS(name, "TXT", dnsCallback, { resolve, reject });
+					});
 				},
 			},
 		};

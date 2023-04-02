@@ -1,7 +1,7 @@
 /**
  * Push the authentication result to the Conversation add-on.
  *
- * Copyright (c) 2021 Philippe Lieser
+ * Copyright (c) 2021-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -24,18 +24,12 @@ const log = Logging.getLogger("Conversation");
 
 /**
  * @typedef {object} AddPillMessage
- * @property {"addPill"} type
- *  The type of the received message.
- * @property {number} msgId
- *   The id of the associated Message from the WebExtension APIs.
- * @property {Severity} [severity]
- *   The severity of the pill. Defaults to normal.
- * @property {string} [icon]
- *   The optional icon of the pill. Musst be an "moz-extension://" url.
- * @property {string} message
- *   The text of the pill.
- * @property {string[]} [tooltip]
- *   The optional tooltip of the pill.
+ * @property {"addPill"} type The type of the received message.
+ * @property {number} msgId The id of the associated Message from the WebExtension APIs.
+ * @property {Severity|undefined} [severity] The severity of the pill. Defaults to normal.
+ * @property {string|undefined} [icon] The optional icon of the pill. Musst be an "moz-extension://" url.
+ * @property {string} message The text of the pill.
+ * @property {string[]|undefined} [tooltip] The optional tooltip of the pill.
  */
 
 /** @type {browser.runtime.Port?} */

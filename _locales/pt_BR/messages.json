@@ -122,7 +122,7 @@
 		"message": "E-mail foi modificado"
 	},
 	"DKIM_SIGERROR_ILLFORMED_BH": {
-		"message": "A etiqueta do hash de corpo está malformado"
+		"message": "A etiqueta do hash de corpo está malformada"
 	},
 	"DKIM_SIGERROR_UNKNOWN_C_H": {
 		"message": "Algoritmo de canonização não suportado para cabeçalho"
@@ -137,13 +137,13 @@
 		"message": "Missing Signing Domain Identifier (SDID)"
 	},
 	"DKIM_SIGERROR_ILLFORMED_D": {
-		"message": "A  etiqueta SDID está malformada"
+		"message": "A etiqueta SDID está malformada"
 	},
 	"DKIM_SIGERROR_MISSING_H": {
 		"message": "Campos de cabeçalho assinados ausentes"
 	},
 	"DKIM_SIGERROR_MISSING_FROM": {
-		"message": "Cabeçalho De não assinado"
+		"message": "Cabeçalho 'De' não assinado"
 	},
 	"DKIM_SIGERROR_ILLFORMED_H": {
 		"message": "A etiqueta de campos de cabeçalho assinados malformada"
@@ -164,7 +164,7 @@
 		"message": "A etiqueta de comprimento de corpo malformada"
 	},
 	"DKIM_SIGERROR_UNKNOWN_Q": {
-		"message": "Métodos de consulta (Query) não é suportados para recuperação de chave pública"
+		"message": "Métodos de consulta (Query) não suportados para recuperação de chave pública"
 	},
 	"DKIM_SIGERROR_ILLFORMED_Q": {
 		"message": " A etiqueta do método de consulta (Query) está malformada"
@@ -176,7 +176,7 @@
 		"message": "A etiqueta do seletor está malformada"
 	},
 	"DKIM_SIGERROR_ILLFORMED_T": {
-		"message": "A etiquetade do carimbo de data/hora de assinatura malformada"
+		"message": "A etiqueta de carimbo de data/hora da assinatura está malformada"
 	},
 	"DKIM_SIGERROR_TIMESTAMPS": {
 		"message": "A expiração da assinatura é anterior ao carimbo de data/hora da assinatura"
@@ -211,10 +211,10 @@
 		"message": "A etiqueta da versão da chave DKIM está malformada"
 	},
 	"DKIM_SIGERROR_KEY_HASHNOTINCLUDED": {
-		"message": "Algoritmo hash está errado no registro da chave DKIM"
+		"message": "O algoritmo de hash está errado no registro da chave DKIM"
 	},
 	"DKIM_SIGERROR_KEY_ILLFORMED_H": {
-		"message": "A etiqueta do algoritmos de hash na chave DKIM está malformada"
+		"message": "A etiqueta de algoritmos de hash na chave DKIM está malformada"
 	},
 	"DKIM_SIGERROR_KEY_UNKNOWN_K": {
 		"message": "Tipo de chave DKIM não suportado"
@@ -244,7 +244,7 @@
 		"message": "O domínio de assinatura está testando apenas DKIM"
 	},
 	"DKIM_SIGERROR_KEY_ILLFORMED_T": {
-		"message": "A etiqueta sinalizadores na chave DKIM está malformada"
+		"message": "A etiqueta de sinalizadores na chave DKIM está malformada"
 	},
 	// DKIM_SIGERROR - key decode
 	"DKIM_SIGERROR_KEYDECODE": {
@@ -255,7 +255,7 @@
 		"message": "Deve ser assinado por $1"
 	},
 	"DKIM_POLICYERROR_KEYMISMATCH": {
-		"message": "A chave DKIM armazenada é diferente da atual"
+		"message": "A chave DKIM armazenada difere da atual"
 	},
 	"DKIM_POLICYERROR_KEY_INSECURE": {
 		"message": "A chave DKIM não é assinada por DNSSEC"
@@ -336,7 +336,7 @@
 		"message": "DNS"
 	},
 	"options_dns.resolver": {
-		"message": "Resolvesor"
+		"message": "Resolvedor"
 	},
 	"options_dns.resolver.value.1": {
 		"message": "Biblioteca DNS JavaScript"
@@ -510,13 +510,13 @@
 		"message": "nada"
 	},
 	"options_display.keySecure": {
-		"message": "Indica validação DNSSEC bem-sucedida com um bloqueio após o SDID"
+		"message": "Indicar validação DNSSEC bem-sucedida com um cadeado após o SDID"
 	},
 	"options_arh.read": {
 		"message": "Ler cabeçalho de resultados de autenticação"
 	},
 	"options_arh.replaceAddonResult": {
-		"message": "Ler o cabeçalho de Resultados de Autenticação e substitui a verificação de add-ons"
+		"message": "Ler o cabeçalho de Resultados de Autenticação substitui a verificação de add-ons"
 	},
 	"options_arh.relaxedParsing": {
 		"message": "Tente ler o cabeçalho de Resultados de Autenticação não compatível com RFC"

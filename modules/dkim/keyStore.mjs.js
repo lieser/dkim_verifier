@@ -2,7 +2,7 @@
  * Abstract DKIM key store for key retrieval.
  * Will get the key either from DNS or an internal cache.
  *
- * Copyright (c) 2013-2018;2021 Philippe Lieser
+ * Copyright (c) 2013-2018;2021-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -93,10 +93,10 @@ export class KeyDb {
 		const currentDate = dateToString(new Date());
 		storedKeys.push({
 			id: ++storedKeysMaxId,
-			sdid: sdid,
-			selector: selector,
-			key: key,
-			secure: secure,
+			sdid,
+			selector,
+			key,
+			secure,
 			insertedAt: currentDate,
 			lastUsedAt: currentDate,
 		});
@@ -214,7 +214,7 @@ export class KeyDb {
 		}
 		storedKeysLoaded = new Deferred();
 		try {
-			/** @type {StoredDkimKeys=} */
+			/** @type {StoredDkimKeys|undefined} */
 			const keyStore = (await browser.storage.local.get("keyStore")).keyStore;
 			if (keyStore !== undefined) {
 				storedKeysMaxId = keyStore.maxId;
@@ -237,7 +237,7 @@ export class KeyDb {
 	static async _storeKeys(notify = false) {
 		/** @type {StoredDkimKeys} */
 		const keyStore = { maxId: storedKeysMaxId, keys: storedKeys };
-		await browser.storage.local.set({ keyStore: keyStore });
+		await browser.storage.local.set({ keyStore });
 
 		if (notify) {
 			browser.runtime.sendMessage({ event: "keysUpdated" }).
@@ -253,11 +253,11 @@ export class KeyDb {
 	 * @returns {void}
 	 */
 	static initProxy() {
-		browser.runtime.onMessage.addListener((runtimeMessage, sender, /*sendResponse*/) => {
+		browser.runtime.onMessage.addListener((runtimeMessage, sender /*, sendResponse*/) => {
 			if (sender.id !== "dkim_verifier@pl") {
 				return;
 			}
-			if (typeof runtimeMessage !== 'object' || runtimeMessage === null) {
+			if (typeof runtimeMessage !== "object" || runtimeMessage === null) {
 				return;
 			}
 			/** @type {RuntimeMessage.Messages} */
@@ -348,7 +348,7 @@ export default class KeyStore {
 					if (keyStored.key !== keyDns.key) {
 						throw new DKIM_SigError("DKIM_POLICYERROR_KEYMISMATCH");
 					}
-					keyDns.secure = keyDns.secure || keyStored.secure;
+					keyDns.secure ||= keyStored.secure;
 				} else {
 					KeyDb.store(sdid, selector, keyDns.key, keyDns.secure).
 						catch(error => log.fatal("Storing keys failed", error));
