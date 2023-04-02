@@ -11,7 +11,6 @@
 
 // @ts-check
 ///<reference path="./authVerifier.d.ts" />
-///<reference path="../WebExtensions.d.ts" />
 ///<reference path="../experiments/storageMessage.d.ts" />
 /* eslint-env webextensions */
 /* eslint-disable camelcase */
@@ -102,7 +101,7 @@ export default class AuthVerifier {
 	/**
 	 * Verifies the authentication of the msg.
 	 *
-	 * @param {browser.messageDisplay.MessageHeader} message
+	 * @param {browser.messages.MessageHeader} message
 	 * @returns {Promise<AuthResult>}
 	 */
 	async verify(message) {
@@ -200,7 +199,7 @@ export default class AuthVerifier {
 	/**
 	 * Resets the stored authentication result of the msg.
 	 *
-	 * @param {browser.messageDisplay.MessageHeader} message
+	 * @param {browser.messages.MessageHeader} message
 	 * @returns {Promise<void>}
 	 */
 	static resetResult(message) {
@@ -211,7 +210,7 @@ export default class AuthVerifier {
 /**
  * Get the Authentication-Results header as an SavedAuthResult.
  *
- * @param {browser.messageDisplay.MessageHeader} message
+ * @param {browser.messages.MessageHeader} message
  * @param {Map<string, string[]>} headers
  * @param {string} from
  * @param {string?} listId
@@ -322,7 +321,7 @@ async function getARHResult(message, headers, from, listId, account, dmarc) {
 /**
  * Save authentication result.
  *
- * @param {browser.messageDisplay.MessageHeader} message
+ * @param {browser.messages.MessageHeader} message
  * @param {SavedAuthResult|null} savedAuthResult
  * @returns {Promise<void>}
  */
@@ -349,7 +348,7 @@ async function saveAuthResult(message, savedAuthResult) {
 /**
  * Get saved authentication result.
  *
- * @param {browser.messageDisplay.MessageHeader} message
+ * @param {browser.messages.MessageHeader} message
  * @returns {Promise<SavedAuthResult|null>} savedAuthResult
  */
 async function loadAuthResult(message) {
@@ -421,7 +420,7 @@ async function loadAuthResult(message) {
 /**
  * Checks the DKIM results against the sign rules.
  *
- * @param {browser.messageDisplay.MessageHeader} message
+ * @param {browser.messages.MessageHeader} message
  * @param {VerifierModule.dkimSigResultV2[]} dkimResults
  * @param {string} from
  * @param {string?} listId

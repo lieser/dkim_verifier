@@ -10,7 +10,6 @@
  */
 
 // @ts-check
-///<reference path="../../WebExtensions.d.ts" />
 ///<reference path="../../RuntimeMessage.d.ts" />
 ///<reference path="../../experiments/mailUtils.d.ts" />
 /* eslint-env webextensions */

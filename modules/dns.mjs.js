@@ -12,7 +12,6 @@
  */
 
 // @ts-check
-///<reference path="../WebExtensions.d.ts" />
 ///<reference path="../experiments/jsdns.d.ts" />
 ///<reference path="../experiments/libunbound.d.ts" />
 /* eslint-env webextensions */

@@ -27,10 +27,10 @@
 	},
 	"devDependencies": {
 		"@types/chai": "^4.3.4",
-		"@types/firefox-webext-browser": "^111.0.1",
 		"@types/mocha": "^10.0.1",
 		"@types/node": "^18.15.11",
 		"@types/sinon": "^10.0.13",
+		"@types/thunderbird-webext-browser": "^109.0.0",
 		"chai": "^4.3.7",
 		"chalk": "^5.2.0",
 		"eslint": "^8.37.0",

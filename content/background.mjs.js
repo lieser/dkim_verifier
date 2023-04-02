@@ -8,7 +8,6 @@
  */
 
 // @ts-check
-///<reference path="../WebExtensions.d.ts" />
 ///<reference path="../RuntimeMessage.d.ts" />
 ///<reference path="../experiments/dkimHeader.d.ts" />
 /* eslint-env webextensions */
@@ -69,7 +68,7 @@ const verifier = new AuthVerifier();
  * Verify a message in a specific tab and display the result.
  *
  * @param {number} tabId
- * @param {browser.messageDisplay.MessageHeader} message
+ * @param {browser.messages.MessageHeader} message
  * @returns {Promise<void>}
  */
 // eslint-disable-next-line complexity
@@ -151,6 +150,10 @@ async function verifyMessage(tabId, message) {
  * Will start the verification if needed.
  */
 browser.messageDisplay.onMessageDisplayed.addListener(async (tab, message) => {
+	if (!tab.id) {
+		console.warn(`onMessageDisplayed called for message ${message.id} without a tab id`);
+		return;
+	}
 	try {
 		await isInitialized;
 		if (tab.url?.startsWith("chrome://conversations/")) {
@@ -246,7 +249,7 @@ class DisplayAction {
 	 *
 	 * @private
 	 * @param {number} tabId
-	 * @param {browser.messageDisplay.MessageHeader} message
+	 * @param {browser.messages.MessageHeader} message
 	 * @returns {Promise<void>}
 	 */
 	static async _reverifyMessage(tabId, message) {
@@ -263,7 +266,9 @@ class DisplayAction {
 	 */
 	static async reverifyDKIMSignature(tabId) {
 		const message = await browser.messageDisplay.getDisplayedMessage(tabId);
-		await DisplayAction._reverifyMessage(tabId, message);
+		if (message) {
+			await DisplayAction._reverifyMessage(tabId, message);
+		}
 	}
 
 	/**
@@ -274,6 +279,9 @@ class DisplayAction {
 	 */
 	static async policyAddUserException(tabId) {
 		const message = await browser.messageDisplay.getDisplayedMessage(tabId);
+		if (!message) {
+			return;
+		}
 
 		const from = MsgParser.parseFromHeader(`From: ${message.author}\r\n`, prefs["internationalized.enable"]);
 		await SignRules.addException(from);
@@ -298,7 +306,9 @@ class DisplayAction {
 		await KeyDb.markAsSecure(sdid, selector);
 
 		const message = await browser.messageDisplay.getDisplayedMessage(tabId);
-		await DisplayAction._reverifyMessage(tabId, message);
+		if (message) {
+			await DisplayAction._reverifyMessage(tabId, message);
+		}
 	}
 
 	/**
@@ -314,7 +324,9 @@ class DisplayAction {
 		}
 
 		const message = await browser.messageDisplay.getDisplayedMessage(tabId);
-		await DisplayAction._reverifyMessage(tabId, message);
+		if (message) {
+			await DisplayAction._reverifyMessage(tabId, message);
+		}
 	}
 }
 

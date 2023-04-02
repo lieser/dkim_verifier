@@ -10,7 +10,6 @@
  */
 
 // @ts-check
-///<reference path="../WebExtensions.d.ts" />
 /* eslint-env browser, webextensions */
 
 import { dateToString, promiseWithTimeout, sleep } from "./utils.mjs.js";
@@ -68,7 +67,7 @@ function downloadDataAsJSON(data, dataName) {
 /**
  * Checks if a message is outgoing.
  *
- * @param {browser.messageDisplay.MessageHeader} message
+ * @param {browser.messages.MessageHeader} message
  * @param {string} fromAddr
  * @returns {Promise<boolean>}
  */

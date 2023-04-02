@@ -100,6 +100,24 @@ before(async function () {
 	globalThis.browser.accounts = {
 		list: sinon.fake.resolves([]),
 		get: sinon.fake.resolves(null),
+		getDefault: sinon.fake.throws("no fake for browser.accounts.getDefault"),
+		setDefaultIdentity: sinon.fake.throws("no fake for browser.accounts.setDefaultIdentity"),
+		getDefaultIdentity: sinon.fake.throws("no fake for browser.accounts.getDefaultIdentity"),
+		onCreated: {
+			addListener: sinon.fake.throws("no fake for browser.accounts.onCreated.addListener"),
+			removeListener: sinon.fake.throws("no fake for browser.accounts.onCreated.removeListener"),
+			hasListener: sinon.fake.throws("no fake for browser.accounts.onCreated.hasListener"),
+		},
+		onDeleted: {
+			addListener: sinon.fake.throws("no fake for browser.accounts.onDeleted.addListener"),
+			removeListener: sinon.fake.throws("no fake for browser.accounts.onDeleted.removeListener"),
+			hasListener: sinon.fake.throws("no fake for browser.accounts.onDeleted.hasListener"),
+		},
+		onUpdated: {
+			addListener: sinon.fake.throws("no fake for browser.accounts.onUpdated.addListener"),
+			removeListener: sinon.fake.throws("no fake for browser.accounts.onUpdated.removeListener"),
+			hasListener: sinon.fake.throws("no fake for browser.accounts.onUpdated.hasListener"),
+		},
 	};
 
 	globalThis.browser.mailUtils = {

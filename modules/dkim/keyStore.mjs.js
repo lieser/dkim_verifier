@@ -11,7 +11,6 @@
  */
 
 // @ts-check
-///<reference path="../../WebExtensions.d.ts" />
 ///<reference path="../../RuntimeMessage.d.ts" />
 ///<reference path="../dns.d.ts" />
 /* eslint-env webextensions */
