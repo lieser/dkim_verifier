@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020 Philippe Lieser
+ * Copyright (c) 2020-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -76,7 +76,7 @@ async function onAccept() {
 		await SignRulesProxy.addRule(domain, listId, addr, sdid, ruleType, priority, enabled);
 		window.close();
 	} catch (exception) {
-		log.error(exception);
+		log.error("Error adding the user sign rule", exception);
 	}
 }
 
@@ -93,7 +93,7 @@ function onCancel() {
 function updatePriorityMode() {
 	const priorityElement = getElementById("priority");
 	if (!(priorityElement instanceof HTMLInputElement)) {
-		throw new Error(`Element with id 'priority' is not an HTMLInputElement`);
+		throw new Error("Element with id 'priority' is not an HTMLInputElement");
 	}
 	priorityElement.disabled = getRadioGroupValue("priorityMode") === "1";
 }

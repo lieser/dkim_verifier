@@ -2,7 +2,7 @@
  * Proxy to a singleton SignRules to avoid problems with race conditions
  * when accessing browser.storage.local.
  *
- * Copyright (c) 2020-2021 Philippe Lieser
+ * Copyright (c) 2020-2021;2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -115,13 +115,13 @@ export default class SignRulesProxy {
 			module: "SignRules",
 			method: "addRule",
 			parameters: {
-				domain: domain,
-				listId: listId,
-				addr: addr,
-				sdid: sdid,
-				type: type,
-				priority: priority,
-				enabled: enabled,
+				domain,
+				listId,
+				addr,
+				sdid,
+				type,
+				priority,
+				enabled,
 			},
 		};
 		return browser.runtime.sendMessage(message);
@@ -141,9 +141,9 @@ export default class SignRulesProxy {
 			module: "SignRules",
 			method: "updateRule",
 			parameters: {
-				id: id,
-				propertyName: propertyName,
-				newValue: newValue,
+				id,
+				propertyName,
+				newValue,
 			},
 		};
 		return browser.runtime.sendMessage(message);
@@ -161,7 +161,7 @@ export default class SignRulesProxy {
 			module: "SignRules",
 			method: "deleteRule",
 			parameters: {
-				id: id,
+				id,
 			},
 		};
 		return browser.runtime.sendMessage(message);

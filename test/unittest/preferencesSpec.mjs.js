@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2022 Philippe Lieser
+ * Copyright (c) 2020-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -424,7 +424,7 @@ describe("preferences [unittest]", function () {
 				pref.setValue("dns.nameserver", "fooBar");
 
 				fakeBrowser.storage.local.get.onFirstCall().callsFake(async items => {
-					await new Promise(resolve => setTimeout(resolve, 4000));
+					await new Promise(resolve => { setTimeout(resolve, 4000); });
 					return fakeBrowser.storage.local._get(items);
 				});
 
@@ -448,7 +448,7 @@ describe("preferences [unittest]", function () {
 				pref.setValue("dns.nameserver", "fooBar");
 
 				fakeBrowser.storage.local.get.callsFake(async items => {
-					await new Promise(resolve => setTimeout(resolve, 4000));
+					await new Promise(resolve => { setTimeout(resolve, 4000); });
 					return fakeBrowser.storage.local._get(items);
 				});
 				fakeBrowser.storage.local.get.onSecondCall().rejects("a failure");
@@ -477,11 +477,13 @@ describe("preferences [unittest]", function () {
 			expect(pref["account.dkim.enable"]("fooAccount")).to.be.equal(true);
 			expect(pref["account.arh.read"]("barAccount")).to.be.equal(false);
 			expect(pref["account.arh.allowedAuthserv"]("fooAccount")).to.be.equal("");
+			expect(pref["account.arh.read"](undefined)).to.be.equal(false);
 
 			pref.setValue("dkim.enable", false);
 			pref.setValue("arh.read", true);
 			expect(pref["account.dkim.enable"]("fooAccount")).to.be.equal(false);
 			expect(pref["account.arh.read"]("barAccount")).to.be.equal(true);
+			expect(pref["account.arh.read"](undefined)).to.be.equal(true);
 		});
 		it("account specific setting", function () {
 			pref.setAccountValue("dkim.enable", "fooAccount", 2);

@@ -2,7 +2,7 @@
  * Wrapper for the libunbound DNS library. The actual work is done in the
  * ChromeWorker libunboundWorker.jsm.js.
  *
- * Copyright (c) 2013-2018;2020 Philippe Lieser
+ * Copyright (c) 2013-2018;2020-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -30,32 +30,32 @@ var { OS } = ChromeUtils.import("resource://gre/modules/osfile.jsm");
  *
  * @typedef {object} ub_result
  * @property {string} qname
- *           text string, original question
+ * Text string, the original question.
  * @property {number} qtype
- *           type code asked for
+ * The type code asked for.
  * @property {number} qclass
- *           class code (CLASS IN (internet))
- * @property {object[]} data
- *           Array of converted rdata items. Empty for unsupported RR types.
- *           Currently supported types: TXT
+ * Class code (CLASS IN (internet)).
+ * @property {any[]} data
+ * Array of converted rdata items. Empty for unsupported RR types.
+ * Currently supported types: TXT
  * @property {number[][]} data_raw
- *           Array of rdata items as byte array
+ * Array of rdata items as byte array.
  * @property {string} canonname
- *           canonical name of result (empty string if missing in response)
+ * Canonical name of result (empty string if missing in response).
  * @property {number} rcode
- *           additional error code in case of no data
+ * Additional error code in case of no data.
  * @property {boolean} havedata
- *           true if there is data
+ * True if there is data.
  * @property {boolean} nxdomain
- *           true if nodata because name does not exist
+ * True if nodata because name does not exist.
  * @property {boolean} secure
- *           true if result is secure.
+ * True if result is secure.
  * @property {boolean} bogus
- *           true if a security failure happened.
+ * True if a security failure happened.
  * @property {string} why_bogus
- *           string with error if bogus
+ * String with error if the result is bogus.
  * @property {number} ttl
- *           number of seconds the result is valid
+ * Number of seconds the result is valid.
  */
 
 /**
@@ -128,7 +128,7 @@ class LibunboundWorker {
 		this.worker.postMessage({
 			callId: this._maxCallId,
 			method: "load",
-			path: path,
+			path,
 		});
 
 		this.isLoaded = defer.promise;
@@ -160,10 +160,10 @@ class LibunboundWorker {
 
 		// set additional DNS servers
 		let nameservers = this.config.nameServer.split(";");
-		nameservers = nameservers.map(function (element /*, index, array*/) {
+		nameservers = nameservers.map((element /*, index, array*/) => {
 			return element.trim();
 		});
-		nameservers = nameservers.filter(function (element /*, index, array*/) {
+		nameservers = nameservers.filter((element /*, index, array*/) => {
 			if (element !== "") {
 				return true;
 			}
@@ -176,11 +176,11 @@ class LibunboundWorker {
 		this.worker.postMessage({
 			callId: this._maxCallId,
 			method: "update_ctx",
-			conf: conf,
-			debuglevel: debuglevel,
+			conf,
+			debuglevel,
 			getNameserversFromOS: this.config.getNameserversFromOS,
-			nameservers: nameservers,
-			trustAnchors: trustAnchors,
+			nameservers,
+			trustAnchors,
 		});
 
 		return defer.promise;
@@ -202,8 +202,8 @@ class LibunboundWorker {
 		this.worker.postMessage({
 			callId: this._maxCallId,
 			method: "resolve",
-			name: name,
-			rrtype: rrtype,
+			name,
+			rrtype,
 		});
 
 		return defer.promise;
@@ -418,7 +418,7 @@ this.libunbound = class extends ExtensionCommon.ExtensionAPI {
 						return rdata;
 					}) : null;
 					return {
-						data: data,
+						data,
 						rcode: res.rcode,
 						secure: res.secure,
 						bogus: res.bogus,

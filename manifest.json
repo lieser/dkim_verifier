@@ -2,7 +2,7 @@
 	"manifest_version": 2,
 	"name": "__MSG_about_name__",
 	"description": "__MSG_about_summary__",
-	"version": "5.0.0",
+	"version": "5.1.1",
 	"author": "Philippe Lieser",
 	"homepage_url": "https://github.com/lieser/dkim_verifier/wiki",
 	"default_locale": "en_US",
@@ -10,7 +10,7 @@
 		"gecko": {
 			"id": "dkim_verifier@pl",
 			"strict_min_version": "91.0",
-			"strict_max_version": "103.0"
+			"strict_max_version": "113.0"
 		}
 	},
 	"permissions": [
@@ -37,12 +37,12 @@
 		"theme_icons": [
 			{
 				"dark": "icon.svg",
-				"light": "icon-white.svg",
+				"light": "icon.svg",
 				"size": 16
 			},
 			{
 				"dark": "icon.svg",
-				"light": "icon-white.svg",
+				"light": "icon.svg",
 				"size": 32
 			}
 		],

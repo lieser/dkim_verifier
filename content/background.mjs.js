@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2022 Philippe Lieser
+ * Copyright (c) 2020-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -48,7 +48,7 @@ isInitialized.catch(error => log.fatal("Initializing failed with:", error));
  * A cache of the current results displayed in the tabs.
  * Needed for the actions triggered by the user in the display header.
  */
-/** @type {Map.<number, import("../modules/authVerifier.mjs.js").AuthResult>} */
+/** @type {Map.<number, import("../modules/authVerifier.mjs.js").AuthResult|null>} */
 const displayedResultsCache = new Map();
 browser.tabs.onRemoved.addListener((tabId) => {
 	displayedResultsCache.delete(tabId);
@@ -160,11 +160,12 @@ browser.messageDisplay.onMessageDisplayed.addListener(async (tab, message) => {
 		displayedResultsCache.delete(tab.id);
 
 		// Nothing to verify if msg is RSS feed or news
-		const account = await browser.accounts.get(message.folder.accountId);
+		const account = message.folder ? await browser.accounts.get(message.folder.accountId) : null;
 		if (account && (account.type === "rss" || account.type === "nntp")) {
 			browser.dkimHeader.showDkimHeader(tab.id, message.id, prefs.showDKIMHeader >= SHOW.MSG);
 			browser.dkimHeader.setDkimHeaderResult(
 				tab.id, message.id, browser.i18n.getMessage("NOT_EMAIL"), [], "", {});
+			displayedResultsCache.set(tab.id, null);
 			return;
 		}
 
@@ -225,7 +226,7 @@ class DisplayAction {
 			res?.dkim[0]?.sdid !== undefined && res?.dkim[0].selector !== undefined;
 		/** @type {RuntimeMessage.DisplayAction.queryButtonStateResult} */
 		const state = {
-			reverifyDKIMSignature: res !== undefined,
+			reverifyDKIMSignature: res !== null,
 			policyAddUserException:
 				res?.dkim[0]?.errorType === "DKIM_POLICYERROR_MISSING_SIG" ||
 				res?.dkim[0]?.errorType === "DKIM_POLICYERROR_WRONG_SDID" || (
@@ -320,11 +321,11 @@ class DisplayAction {
 /**
  * Handel the actions triggered by the user in the display header.
  */
-browser.runtime.onMessage.addListener((runtimeMessage, sender, /*sendResponse*/) => {
+browser.runtime.onMessage.addListener((runtimeMessage, sender /*, sendResponse*/) => {
 	if (sender.id !== "dkim_verifier@pl") {
 		return;
 	}
-	if (typeof runtimeMessage !== 'object' || runtimeMessage === null) {
+	if (typeof runtimeMessage !== "object" || runtimeMessage === null) {
 		return;
 	}
 	/** @type {RuntimeMessage.Messages} */

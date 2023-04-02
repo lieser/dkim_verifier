@@ -6,7 +6,7 @@
  * - RFC 8301 https://www.rfc-editor.org/rfc/rfc8301.html
  * - RFC 8463 https://www.rfc-editor.org/rfc/rfc8463.html
  *
- * Copyright (c) 2013-2022 Philippe Lieser
+ * Copyright (c) 2013-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -41,22 +41,22 @@ import RfcParser from "../rfcParser.mjs.js";
  *
  * @typedef {object} dkimResultV1
  * @property {string} version
- *           result version ("1.0" / "1.1")
+ * Result version ("1.0" / "1.1").
  * @property {string} result
- *           "none" / "SUCCESS" / "PERMFAIL" / "TEMPFAIL"
+ * "none" / "SUCCESS" / "PERMFAIL" / "TEMPFAIL"
  * @property {string} [SDID]
- *           required if result="SUCCESS
+ * Required if result="SUCCESS".
  * @property {string} [selector]
- *           added in version 1.1
+ * Added in version 1.1.
  * @property {string[]} [warnings]
- *           required if result="SUCCESS
+ * Required if result="SUCCESS".
  * @property {string} [errorType]
- *           if result="PERMFAIL: DKIM_SigError.errorType
- *           if result="TEMPFAIL: DKIM_InternalError.errorType or Undefined
+ * - if result="PERMFAIL: DKIM_SigError.errorType
+ * - if result="TEMPFAIL: DKIM_InternalError.errorType or Undefined
  * @property {string} [shouldBeSignedBy]
- *           added in version 1.1
+ * Added in version 1.1.
  * @property {boolean} [hideFail]
- *           added in  version 1.1
+ * Added in version 1.1.
  */
 
 /**
@@ -70,20 +70,20 @@ import RfcParser from "../rfcParser.mjs.js";
  *
  * @typedef {object} dkimSigResultV2
  * @property {string} version
- *           result version ("2.0")
+ * Result version ("2.0").
  * @property {string} result
- *           "none" / "SUCCESS" / "PERMFAIL" / "TEMPFAIL"
- * @property {string} [sdid]
- * @property {string} [auid]
- * @property {string} [selector]
+ * "none" / "SUCCESS" / "PERMFAIL" / "TEMPFAIL"
+ * @property {string|undefined} [sdid]
+ * @property {string|undefined} [auid]
+ * @property {string|undefined} [selector]
  * @property {dkimSigWarningV2[]} [warnings]
- *           Array of warning_objects.
- *           required if result="SUCCESS"
- * @property {string} [errorType]
- *           if result="PERMFAIL: DKIM_SigError.errorType or Undefined
- *           if result="TEMPFAIL: DKIM_InternalError.errorType or Undefined
+ * Array of warning_objects.
+ * Required if result="SUCCESS".
+ * @property {string|undefined} [errorType]
+ * - if result="PERMFAIL: DKIM_SigError.errorType or Undefined
+ * - if result="TEMPFAIL: DKIM_InternalError.errorType or Undefined
  * @property {string[]} [errorStrParams]
- * @property {boolean} [hideFail]
+ * @property {boolean|undefined} [hideFail]
  * @property {boolean} [keySecure]
  */
 
@@ -92,7 +92,7 @@ import RfcParser from "../rfcParser.mjs.js";
  *
  * @typedef {object} dkimResultV2
  * @property {string} version
- *           result version ("2.0")
+ * Result version ("2.0").
  * @property {dkimSigResultV2[]} signatures
  */
 
@@ -231,7 +231,7 @@ class DkimSignatureHeader {
 	 */
 	static _parseSignatureAlgorithms(tagMap, warnings) {
 		// get signature algorithm (plain-text;REQUIRED)
-		// currently only "rsa-sha1" or "rsa-sha256"
+		// currently only "rsa-sha1" or "rsa-sha256" or "ed25519-sha256"
 		const sig_a_tag_k = "(rsa|ed25519|[A-Za-z](?:[A-Za-z]|[0-9])*)";
 		const sig_a_tag_h = "(sha1|sha256|[A-Za-z](?:[A-Za-z]|[0-9])*)";
 		const sig_a_tag_alg = `${sig_a_tag_k}-${sig_a_tag_h}`;
@@ -369,8 +369,8 @@ class DkimSignatureHeader {
 		const signedHeaderFields = signedHeadersTag[0].replace(new RegExp(RfcParser.FWS, "g"), "");
 		// get the header field names and store them in lower case in an array
 		const signedHeaderFieldsArray = signedHeaderFields.split(":").
-			map(function (x) { return x.trim().toLowerCase(); }).
-			filter(function (x) { return x; });
+			map((x) => x.trim().toLowerCase()).
+			filter((x) => x);
 		// check that the from header is included
 		if (!signedHeaderFieldsArray.includes("from")) {
 			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_FROM");
@@ -480,8 +480,8 @@ class DkimSignatureHeader {
 			throw new DKIM_SigError("DKIM_SIGERROR_SUBDOMAIN_I");
 		}
 		return {
-			auid: auid,
-			auidDomain: auidDomain,
+			auid,
+			auidDomain,
 		};
 	}
 
@@ -677,7 +677,7 @@ class DkimKey {
 		if (algorithmTag === null) {
 			return null;
 		}
-		return algorithmTag[0].split(":").map(s => s.trim()).filter(function (x) { return x; });
+		return algorithmTag[0].split(":").map(s => s.trim()).filter((x) => x);
 	}
 
 	/**
@@ -765,7 +765,7 @@ class DkimKey {
 			return [];
 		}
 		// get the flags and store them in an array
-		return flagsTag[0].split(":").map(s => s.trim()).filter(function (x) { return x; });
+		return flagsTag[0].split(":").map(s => s.trim()).filter((x) => x);
 	}
 }
 
@@ -796,9 +796,7 @@ class DkimSignature {
 		// Convert header field name (not the header field values) to lowercase
 		let headerCanonicalized = headerField.replace(
 			/^\S[^:]*/,
-			function (match) {
-				return match.toLowerCase();
-			}
+			(match) => match.toLowerCase()
 		);
 
 		// Unfold header field continuation lines
@@ -993,14 +991,24 @@ class DkimSignature {
 	 * @returns {void}
 	 */
 	_checkValidityPeriod() {
-		const time = Math.round(Date.now() / 1000);
+		let receivedTime = null;
+		const receivedHeaders = this._msg.headerFields.get("received") ?? [];
+		if (receivedHeaders[0]) {
+			receivedTime = MsgParser.tryExtractReceivedTime(receivedHeaders[0]);
+		}
+
+		const verifyTime = receivedTime ?? new Date();
+		const time = Math.round(verifyTime.getTime() / 1000);
 		// warning if signature expired
 		if (this._header.x !== null && this._header.x < time) {
 			this._header.warnings.push({ name: "DKIM_SIGWARNING_EXPIRED" });
 			log.debug("Warning: DKIM_SIGWARNING_EXPIRED");
 		}
 		// warning if signature in future
-		if (this._header.t !== null && this._header.t > time) {
+		// We allow a difference of 15 min so small clock differenzess between
+		// sender and receiver are not causing any issues
+		const allowedDifference = 15 * 60;
+		if (this._header.t !== null && this._header.t > time + allowedDifference) {
 			this._header.warnings.push({ name: "DKIM_SIGWARNING_FUTURE" });
 			log.debug("Warning: DKIM_SIGWARNING_FUTURE");
 		}
@@ -1057,10 +1065,19 @@ class DkimSignature {
 			"Content-ID",
 			"Content-Description",
 		];
+
 		// We would like Reply-To to be in the recommended list.
 		// As some bigger domains violate this, we only enforce it if the Reply-To is not in the signing domain.
 		const replyTo = this._msg.headerFields.get("reply-to");
-		if (replyTo && replyTo[0] && addrIsInDomain(MsgParser.parseReplyToHeader(replyTo[0]), this._header.d)) {
+		let replyToAddress;
+		if (replyTo && replyTo[0]) {
+			try {
+				replyToAddress = MsgParser.parseReplyToHeader(replyTo[0]);
+			} catch (error) {
+				log.warn("Ignoring error in parsing of Reply-To header:", error);
+			}
+		}
+		if (replyToAddress && addrIsInDomain(replyToAddress, this._header.d)) {
 			desired.push("Reply-To");
 		} else {
 			recommended.push("Reply-To");
@@ -1268,7 +1285,6 @@ class DkimSignature {
 		await this._verifySignature(dkimKey.p);
 
 		// return result
-		log.trace("Everything is fine");
 		const verification_result = {
 			version: "2.0",
 			result: "SUCCESS",
@@ -1315,7 +1331,7 @@ export default class Verifier {
 				hideFail: e.errorType === "DKIM_SIGERROR_KEY_TESTMODE",
 			};
 
-			log.warn(e);
+			log.warn("Error verifying the signature", e);
 
 			return result;
 		}
@@ -1330,9 +1346,9 @@ export default class Verifier {
 
 		if (e instanceof DKIM_InternalError) {
 			result.errorType = e.errorType;
-			log.error(e);
+			log.error("Internal error during DKIM verification:", e);
 		} else {
-			log.fatal(e);
+			log.fatal("Error during DKIM verification:", e);
 		}
 
 		return result;
@@ -1379,7 +1395,6 @@ export default class Verifier {
 				log.debug(`Exception on DKIM-Signature ${iDKIMSignatureIdx + 1}`);
 			}
 
-			log.trace(`Adding DKIM-Signature ${iDKIMSignatureIdx + 1} result to result list`);
 			sigResults.push(sigRes);
 		}
 
@@ -1428,10 +1443,9 @@ export default class Verifier {
 			Verifier._checkForSignatureExistence(res.signatures);
 			return res;
 		})();
-		promise.then(null, function onReject(exception) {
+		promise.then(null, (exception) => {
 			log.warn("verify failed", exception);
 		});
 		return promise;
 	}
 }
-

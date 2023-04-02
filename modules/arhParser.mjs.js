@@ -5,7 +5,7 @@
  * - IDNA A-labels and U-labels are not verified to be valid.
  * - A-labels are not converted into U-labels (e.g. to compare "authserv-id")
  *
- * Copyright (c) 2014-2022 Philippe Lieser
+ * Copyright (c) 2014-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -102,15 +102,9 @@ class Token {
  * @property {string} method
  * @property {number} method_version
  * @property {string} result
- *           none|pass|fail|softfail|policy|neutral|temperror|permerror
+ * none|pass|fail|softfail|policy|neutral|temperror|permerror
  * @property {string} [reason]
  * @property {ArhProperties} propertys
- * property {ArhProperty} propertys.smtp
- * property {ArhProperty} propertys.header
- * property {ArhProperty} propertys.body
- * property {ArhProperty} propertys.policy
- * property {ArhProperty} [propertys._Keyword_]
- *           ArhResInfo can also include other propertys besides the aboves.
  */
 
 export default class ArhParser {
@@ -175,8 +169,6 @@ export default class ArhParser {
  * @returns {ArhResInfo|null} Parsed resinfo
  */
 function parseResInfo(str, relaxedParsing, token) {
-	log.trace("parse str: ", str);
-
 	let reg_match;
 	/** @type {ArhResInfo} */
 	const res = {};
@@ -260,7 +252,6 @@ function parseResInfo(str, relaxedParsing, token) {
 		property[reg_match[2]] = decodeBinaryString(value);
 	}
 
-	log.trace("parseResInfo res:", res);
 	return res;
 }
 
@@ -308,7 +299,6 @@ class RefString {
 function match(str, pattern, token) {
 	const reg_match = match_o(str, pattern, token);
 	if (reg_match === null) {
-		log.trace("str to match against:", JSON.stringify(str));
 		throw new Error("Parsing error");
 	}
 	return reg_match;
@@ -324,7 +314,7 @@ function match(str, pattern, token) {
  * @param {string} pattern
  * @param {Token} token - Token to use for parsing; depends on internationalized support
  * @returns {string[]|null} Null if no match for the pattern is found, else
- *                        an Array, containing the matches
+ * an Array, containing the matches.
  */
 function match_o(str, pattern, token) {
 	const regexp = new RegExp(`^${token.CFWS_op}(?:${pattern})` +
@@ -333,7 +323,6 @@ function match_o(str, pattern, token) {
 	if (reg_match === null || !reg_match[0]) {
 		return null;
 	}
-	log.trace("matched: ", JSON.stringify(reg_match[0]));
 	str.value = str.substr(reg_match[0].length);
 	return reg_match;
 }

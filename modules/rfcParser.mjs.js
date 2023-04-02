@@ -1,7 +1,7 @@
 /**
  * RegExp pattern for ABNF definitions in various RFCs.
  *
- * Copyright (c) 2020-2022 Philippe Lieser
+ * Copyright (c) 2020-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -97,9 +97,9 @@ export default class RfcParser {
 	 * Specified in Section 3.2 of RFC 6376.
 	 *
 	 * @param {string} str
-	 * @returns {Map<string, string>|number} Map
-	 *                       -1 if a tag-spec is ill-formed
-	 *                       -2 duplicate tag names
+	 * @returns {Map<string, string>|number} Map of the parsed list or:
+	 * - -1 if a tag-spec is ill-formed.
+	 * - -2 duplicate tag names.
 	 */
 	static parseTagValueList(str) {
 		const tval = "[!-:<-~]+";
@@ -120,7 +120,7 @@ export default class RfcParser {
 			const tmp = elem.match(new RegExp(
 				`^${this.FWS}?(${tagName})${this.FWS}?=${this.FWS}?(${tagValue})${this.FWS}?$`
 			));
-			if (tmp === null || !tmp[1] || !tmp[2]) {
+			if (tmp === null || !tmp[1] || tmp[2] === undefined) {
 				return RfcParser.TAG_PARSE_ERROR.ILL_FORMED;
 			}
 			const name = tmp[1];

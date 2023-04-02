@@ -32,17 +32,25 @@
     "rules": {
         // Possible Problems
         "array-callback-return": "warn",
+        "no-constant-binary-expression": "warn",
         "no-constructor-return": "warn",
+        "no-duplicate-imports": "warn",
+        "no-new-native-nonconstructor": "warn",
+        "no-promise-executor-return": "warn", // causes error
+        "no-self-compare": "warn",
+        "no-template-curly-in-string": "warn",
+        "no-unmodified-loop-condition": "warn",
+        "no-unreachable-loop": "warn",
+        "no-unused-private-class-members": "warn",
         "no-unused-vars": [
             "error",
             {
                 "argsIgnorePattern": "^_"
             }
         ],
-        "no-self-compare": "warn",
-        "no-unmodified-loop-condition": "warn",
         "no-use-before-define": "error",
         "require-atomic-updates": "warn",
+
         // Suggestions
         "block-scoped-var": "warn",
         "camelcase": [
@@ -58,12 +66,17 @@
         "consistent-return": "warn",
         "curly": "warn",
         "default-case": "warn",
+        "default-case-last": "warn",
         "default-param-last": "warn",
         "dot-notation": "warn",
         "eqeqeq": "warn",
+        "grouped-accessor-pairs": "warn",
         "guard-for-in": "warn",
+        "logical-assignment-operators": "error",
         "no-alert": "error",
+        "no-array-constructor": "error",
         "no-caller": "warn",
+        "no-confusing-arrow": "warn",
         "no-div-regex": "warn",
         "no-else-return": "warn",
         "no-empty-function": "warn",
@@ -94,9 +107,12 @@
                 ]
             }
         ],
+        "no-multi-assign": "warn",
         "no-multi-str": "warn",
+        "no-nested-ternary": "warn",
         "no-new": "warn",
         "no-new-func": "warn",
+        "no-new-object": "warn",
         "no-new-wrappers": "warn",
         "no-octal-escape": "warn",
         "no-param-reassign": "warn",
@@ -107,15 +123,24 @@
         "no-sequences": "warn",
         "no-shadow": "warn",
         "no-throw-literal": "warn",
+        "no-undef-init": "warn",
+        "no-unneeded-ternary": "warn",
         "no-unused-expressions": "warn",
         "no-useless-call": "warn",
+        "no-useless-computed-key": "warn",
         "no-useless-concat": "warn",
+        "no-useless-constructor": "warn",
         "no-useless-return": "warn",
         "no-var": "warn",
         "no-void": "warn",
         "no-warning-comments": "warn",
+        "object-shorthand": "warn",
+        "one-var": ["warn", "never"],
+        "operator-assignment": "warn",
         "prefer-const": "warn",
+        "prefer-exponentiation-operator": "warn",
         "prefer-numeric-literals": "warn",
+        "prefer-object-spread": "warn",
         "prefer-promise-reject-errors": "warn",
         "prefer-rest-params": "warn",
         "prefer-spread": "warn",
@@ -128,7 +153,9 @@
             "global"
         ],
         "yoda": "warn",
+
         // Layout & Formatting
+        "comma-dangle": ["warn", "only-multiline"],
         "dot-location": "warn",
         "no-extra-parens": [
             "warn",
@@ -142,11 +169,14 @@
             "smart-tabs"
         ],
         "no-multi-spaces": "warn",
+        "quotes": ["warn", "double", {"avoidEscape": true}],
         "semi": "warn",
         "template-curly-spacing": "warn",
         "wrap-iife": "warn",
+
         // JSDoc
         "jsdoc/check-line-alignment": "warn",
+        "jsdoc/check-syntax": "warn",
         "jsdoc/match-description": "warn",
         "jsdoc/no-bad-blocks": "warn",
         "jsdoc/no-defaults": "warn",
@@ -162,8 +192,11 @@
             }
         ],
         "jsdoc/require-returns-description": "off",
+
         // Mocha
         "mocha/no-return-from-async": "warn",
+        "mocha/prefer-arrow-callback": "warn",
+
         // Mozilla
         "mozilla/avoid-removeChild": "warn",
         "mozilla/consistent-if-bracing": "warn",

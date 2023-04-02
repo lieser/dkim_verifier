@@ -1,7 +1,7 @@
 /**
  * Unified crypto interface for Thunderbird/Browser and Node
  *
- * Copyright (c) 2020;2022 Philippe Lieser
+ * Copyright (c) 2020-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -304,7 +304,6 @@ class DkimCryptoNode extends DkimCryptoBase {
 	 */
 	async verifyRSA(key, digestAlgorithm, signature, data) {
 		const crypto = await this._crypto();
-		/** @type {import("crypto").VerifyKeyWithOptions} */
 		let cryptoKey;
 		try {
 			cryptoKey = crypto.createPublicKey({
@@ -316,11 +315,13 @@ class DkimCryptoNode extends DkimCryptoBase {
 			log.error("error in createPublicKey: ", e);
 			throw new DKIM_SigError("DKIM_SIGERROR_KEYDECODE");
 		}
-		cryptoKey.padding = crypto.constants.RSA_PKCS1_PADDING;
 		const valid = crypto.verify(
 			digestAlgorithm,
 			Buffer.from(data, "latin1"),
-			cryptoKey,
+			{
+				key: cryptoKey,
+				padding: crypto.constants.RSA_PKCS1_PADDING,
+			},
 			Buffer.from(signature, "base64")
 		);
 		// TODO: get key size, e.g. with asn.1 parser in https://www.npmjs.com/package/node-forge

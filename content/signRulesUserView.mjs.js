@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020 Philippe Lieser
+ * Copyright (c) 2020-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -53,11 +53,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 	);
 	table.showData(userRules, ["domain"]);
 
-	browser.runtime.onMessage.addListener((request, sender, /*sendResponse*/) => {
+	browser.runtime.onMessage.addListener((request, sender /*, sendResponse*/) => {
 		if (sender.id !== "dkim_verifier@pl") {
 			return;
 		}
-		if (typeof request !== 'object' || request === null) {
+		if (typeof request !== "object" || request === null) {
 			return;
 		}
 		if (request.event === "ruleAdded") {

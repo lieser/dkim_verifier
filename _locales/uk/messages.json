@@ -262,7 +262,7 @@
 	},
 	// DKIM_SIGERROR - POLICY
 	"DKIM_POLICYERROR_MISSING_SIG": {
-		"message": "Повинен бути підписаний $1"
+		"message": "Без підпису, повинен бути підписаний $1"
 	},
 	"DKIM_POLICYERROR_KEYMISMATCH": {
 		"message": "Збережений ключ DKIM відрізняється від поточного"
@@ -301,7 +301,7 @@
 	},
 	"DKIM_SIGWARNING_UNSIGNED_HEADER": {
 		"message": "Заголовок '$1' не підписаний",
-		"description": "Warding if an important header is not signed"
+		"description": "Warning if an important header is not signed"
 	},
 	// JSDNS
 	"TOO_MANY_HOPS": {
@@ -369,7 +369,8 @@
 		"message": "DNS-сервери (Синтаксис (EBNF): host[\":\"port]{\";\"host[\":\"port]} )"
 	},
 	"options_dns.timeout_connect": {
-		"message": "Час очікування підключення DNS (у секундах)"
+		"message": "Час очікування підключення DNS (у секундах)",
+		"description": "Чекання на з'єднання з DNS-серверами (як на встановлення з'єднання, так і на надсилання/отримання даних)"
 	},
 	"options_dns.proxy.enable": {
 		"message": "Використовувати проксі для підключення до DNS-серверів"
@@ -436,7 +437,7 @@
 		"message": "Використовуйте DMARC, щоб евристично визначити, чи потрібно підписувати електронний лист"
 	},
 	"options_policy.dkim.unsignedHeadersWarning.mode": {
-		"message": "Попереджати про непідписані заголовки, які рекомендується підписувати: ",
+		"message": "Попереджати про непідписані заголовки, які рекомендується підписувати:",
 		"description": "Description for the setting of the unsigned headers warning mode."
 	},
 	"options_policy.dkim.unsignedHeadersWarning.mode.relaxed": {
