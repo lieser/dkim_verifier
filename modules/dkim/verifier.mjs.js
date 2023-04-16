@@ -28,7 +28,7 @@
 /* eslint-disable no-magic-numbers */
 
 import { DKIM_InternalError, DKIM_SigError } from "../error.mjs.js";
-import { addrIsInDomain, stringEndsWith, stringEqual } from "../utils.mjs.js";
+import { addrIsInDomain, copy, stringEndsWith, stringEqual } from "../utils.mjs.js";
 import prefs, { BasePreferences } from "../preferences.mjs.js";
 import DkimCrypto from "./crypto.mjs.js";
 import KeyStore from "./keyStore.mjs.js";
@@ -132,9 +132,12 @@ class DkimSignatureHeader {
 	 * @param {string} dkimSignatureHeader
 	 */
 	constructor(dkimSignatureHeader) {
+		/**
+		 * The unparsed original header.
+		 *
+		 * @readonly
+		 */
 		this.original_header = dkimSignatureHeader;
-		/** @type {dkimSigWarningV2[]} */
-		this.warnings = [];
 
 		// strip DKIM-Signature header name
 		let dkimHeader = dkimSignatureHeader.replace(/^DKIM-Signature[ \t]*:/i, "");
@@ -151,63 +154,142 @@ class DkimSignatureHeader {
 			throw new DKIM_InternalError(`unexpected return value from RfcParser.parseTagValueList: ${tagMap}`);
 		}
 
-		// Version
+		/** @type {dkimSigWarningV2[]} */
+		const warnings = [];
+
+		/**
+		 * Version.
+		 *
+		 * @readonly
+		 */
 		this.v = DkimSignatureHeader._parseVersion(tagMap);
 
-		const signatureAlgorithms = DkimSignatureHeader._parseSignatureAlgorithms(tagMap, this.warnings);
-		// signature algorithm (signing part)
+		const signatureAlgorithms = DkimSignatureHeader._parseSignatureAlgorithms(tagMap, warnings);
+		/**
+		 * Signature algorithm (signing part).
+		 *
+		 * @readonly
+		 */
 		this.a_sig = signatureAlgorithms.signature;
-		// signature algorithm (hashing part)
+		/**
+		 * Signature algorithm (hashing part).
+		 *
+		 * @readonly
+		 */
 		this.a_hash = signatureAlgorithms.hash;
 
 		const signatureData = DkimSignatureHeader._parseSignatureData(tagMap);
-		// signature (unfolded)
+		/**
+		 * Signature (unfolded).
+		 *
+		 * @readonly
+		 */
 		this.b = signatureData.b;
-		// signature (still folded)
+		/**
+		 * Signature (still folded).
+		 *
+		 * @readonly
+		 */
 		this.b_folded = signatureData.bFolded;
 
-		// body hash
+		/**
+		 * Body hash.
+		 *
+		 * @readonly
+		 */
 		this.bh = DkimSignatureHeader._parseBodyHash(tagMap);
 
 		const canonicalization = DkimSignatureHeader._parseCanonicalization(tagMap);
-		// canonicalization for header
+		/**
+		 * Canonicalization for header.
+		 *
+		 * @readonly
+		 */
 		this.c_header = canonicalization.header;
-		// canonicalization for body
+		/**
+		 * Canonicalization for body.
+		 *
+		 * @readonly
+		 */
 		this.c_body = canonicalization.body;
 
-		// Signing Domain Identifier (SDID) claiming responsibility
+		/**
+		 * Signing Domain Identifier (SDID) claiming responsibility.
+		 *
+		 * @readonly
+		 */
 		this.d = DkimSignatureHeader._parseSdid(tagMap);
 
-		// array of Signed header fields
+		/**
+		 * Array of Signed header fields.
+		 *
+		 * @readonly
+		 * @type {Readonly<string[]>}
+		 */
 		this.h_array = DkimSignatureHeader._parseSignedHeaders(tagMap);
 
-		const auid = DkimSignatureHeader._parseAuid(tagMap, this.d, this.warnings);
-		// Agent or User Identifier (AUID) on behalf of which the SDID is taking responsibility
+		const auid = DkimSignatureHeader._parseAuid(tagMap, this.d, warnings);
+		/**
+		 * Agent or User Identifier (AUID) on behalf of which the SDID is taking responsibility.
+		 *
+		 * @readonly
+		 */
 		this.i = auid.auid;
-		// domain part of AUID
+		/**
+		 * Domain part of AUID.
+		 *
+		 * @readonly
+		 */
 		this.i_domain = auid.auidDomain;
 
-		// Body length count
+		/**
+		 * Body length count.
+		 *
+		 * @readonly
+		 */
 		this.l = DkimSignatureHeader._parseBodyLength(tagMap);
 
-		// query methods for public key retrieval
+		/**
+		 * Query methods for public key retrieval.
+		 *
+		 * @readonly
+		 */
 		this.q = DkimSignatureHeader._parseQueryMethod(tagMap);
 
-		// selector
-		this.s = DkimSignatureHeader._parseSelector(tagMap, this.warnings);
+		/**
+		 * Selector.
+		 *
+		 * @readonly
+		 */
+		this.s = DkimSignatureHeader._parseSelector(tagMap, warnings);
 
-		// Signature Timestamp
+		/**
+		 * Signature Timestamp.
+		 *
+		 * @readonly
+		 */
 		this.t = DkimSignatureHeader._parseSignatureTimestamp(tagMap);
-		// Signature Expiration
+		/**
+		 * Signature Expiration.
+		 *
+		 * @readonly
+		 */
 		this.x = DkimSignatureHeader._parseSignatureExpiration(tagMap, this.t);
 
-		// Copied header fields
+		/**
+		 * Copied header fields.
+		 *
+		 * @readonly
+		 */
 		this.z = DkimSignatureHeader._parseCopiedHeaders(tagMap);
+
+		/** @type {Readonly<dkimSigWarningV2[]>} */
+		this.warnings = warnings;
 	}
 
 	/**
 	 * @private
-	 * @param {Map<string, string>} tagMap
+	 * @param {ReadonlyMap<string, string>} tagMap
 	 * @returns {string}
 	 */
 	static _parseVersion(tagMap) {
@@ -225,7 +307,7 @@ class DkimSignatureHeader {
 
 	/**
 	 * @private
-	 * @param {Map<string, string>} tagMap
+	 * @param {ReadonlyMap<string, string>} tagMap
 	 * @param {dkimSigWarningV2[]} warnings
 	 * @returns {{signature: string, hash: string}}
 	 */
@@ -269,7 +351,7 @@ class DkimSignatureHeader {
 
 	/**
 	 * @private
-	 * @param {Map<string, string>} tagMap
+	 * @param {ReadonlyMap<string, string>} tagMap
 	 * @returns {{b: string, bFolded: string}}
 	 */
 	static _parseSignatureData(tagMap) {
@@ -286,7 +368,7 @@ class DkimSignatureHeader {
 
 	/**
 	 * @private
-	 * @param {Map<string, string>} tagMap
+	 * @param {ReadonlyMap<string, string>} tagMap
 	 * @returns {string}
 	 */
 	static _parseBodyHash(tagMap) {
@@ -300,7 +382,7 @@ class DkimSignatureHeader {
 
 	/**
 	 * @private
-	 * @param {Map<string, string>} tagMap
+	 * @param {ReadonlyMap<string, string>} tagMap
 	 * @returns {{header: string, body: string}}
 	 */
 	static _parseCanonicalization(tagMap) {
@@ -342,7 +424,7 @@ class DkimSignatureHeader {
 
 	/**
 	 * @private
-	 * @param {Map<string, string>} tagMap
+	 * @param {ReadonlyMap<string, string>} tagMap
 	 * @returns {string}
 	 */
 	static _parseSdid(tagMap) {
@@ -356,7 +438,7 @@ class DkimSignatureHeader {
 
 	/**
 	 * @private
-	 * @param {Map<string, string>} tagMap
+	 * @param {ReadonlyMap<string, string>} tagMap
 	 * @returns {string[]}
 	 */
 	static _parseSignedHeaders(tagMap) {
@@ -380,7 +462,7 @@ class DkimSignatureHeader {
 
 	/**
 	 * @private
-	 * @param {Map<string, string>} tagMap
+	 * @param {ReadonlyMap<string, string>} tagMap
 	 * @param {string} sdid
 	 * @param {dkimSigWarningV2[]} warnings
 	 * @returns {{auid: string, auidDomain: string}}
@@ -487,7 +569,7 @@ class DkimSignatureHeader {
 
 	/**
 	 * @private
-	 * @param {Map<string, string>} tagMap
+	 * @param {ReadonlyMap<string, string>} tagMap
 	 * @returns {number?}
 	 */
 	static _parseBodyLength(tagMap) {
@@ -501,7 +583,7 @@ class DkimSignatureHeader {
 
 	/**
 	 * @private
-	 * @param {Map<string, string>} tagMap
+	 * @param {ReadonlyMap<string, string>} tagMap
 	 * @returns {string}
 	 */
 	static _parseQueryMethod(tagMap) {
@@ -520,7 +602,7 @@ class DkimSignatureHeader {
 
 	/**
 	 * @private
-	 * @param {Map<string, string>} tagMap
+	 * @param {ReadonlyMap<string, string>} tagMap
 	 * @param {dkimSigWarningV2[]} warnings
 	 * @returns {string}
 	 */
@@ -557,7 +639,7 @@ class DkimSignatureHeader {
 
 	/**
 	 * @private
-	 * @param {Map<string, string>} tagMap
+	 * @param {ReadonlyMap<string, string>} tagMap
 	 * @returns {number?}
 	 */
 	static _parseSignatureTimestamp(tagMap) {
@@ -572,7 +654,7 @@ class DkimSignatureHeader {
 
 	/**
 	 * @private
-	 * @param {Map<string, string>} tagMap
+	 * @param {ReadonlyMap<string, string>} tagMap
 	 * @param {number?} signatureTimestamp
 	 * @returns {number?}
 	 */
@@ -593,7 +675,7 @@ class DkimSignatureHeader {
 
 	/**
 	 * @private
-	 * @param {Map<string, string>} tagMap
+	 * @param {ReadonlyMap<string, string>} tagMap
 	 * @returns {string?}
 	 */
 	static _parseCopiedHeaders(tagMap) {
@@ -631,25 +713,55 @@ class DkimKey {
 			throw new DKIM_InternalError(`unexpected return value from RfcParser.parseTagValueList: ${tagMap}`);
 		}
 
-		// Version
+		/**
+		 * Version.
+		 *
+		 * @readonly
+		 */
 		this.v = DkimKey._parseVersion(tagMap);
-		// array hash algorithms
+		/**
+		 * Array hash algorithms.
+		 *
+		 * @readonly
+		 * @type {Readonly<string[]|null>}
+		 */
 		this.h_array = DkimKey._parseAcceptableHash(tagMap);
-		// key type
+		/**
+		 * Key type.
+		 *
+		 * @readonly
+		 */
 		this.k = DkimKey._parseKeyType(tagMap);
-		// notes
+		/**
+		 * Notes.
+		 *
+		 * @readonly
+		 */
 		this.n = DkimKey._parseNotes(tagMap);
-		// Public-key data
+		/**
+		 * Public-key data.
+		 *
+		 * @readonly
+		 */
 		this.p = DkimKey._parsePublicKey(tagMap);
-		// Service Type
+		/**
+		 * Service Type.
+		 *
+		 * @readonly
+		 */
 		this.s = DkimKey._parseServiceType(tagMap);
-		// array of all flags
+		/**
+		 * Array of all flags.
+		 *
+		 * @readonly
+		 * @type {Readonly<string[]>}
+		 */
 		this.t_array = DkimKey._parseFlags(tagMap);
 	}
 
 	/**
 	 * @private
-	 * @param {Map<string, string>} tagMap
+	 * @param {ReadonlyMap<string, string>} tagMap
 	 * @returns {string}
 	 */
 	static _parseVersion(tagMap) {
@@ -666,7 +778,7 @@ class DkimKey {
 
 	/**
 	 * @private
-	 * @param {Map<string, string>} tagMap
+	 * @param {ReadonlyMap<string, string>} tagMap
 	 * @returns {string[]|null}
 	 */
 	static _parseAcceptableHash(tagMap) {
@@ -682,7 +794,7 @@ class DkimKey {
 
 	/**
 	 * @private
-	 * @param {Map<string, string>} tagMap
+	 * @param {ReadonlyMap<string, string>} tagMap
 	 * @returns {string}
 	 */
 	static _parseKeyType(tagMap) {
@@ -699,7 +811,7 @@ class DkimKey {
 
 	/**
 	 * @private
-	 * @param {Map<string, string>} tagMap
+	 * @param {ReadonlyMap<string, string>} tagMap
 	 * @returns {string?}
 	 */
 	static _parseNotes(tagMap) {
@@ -715,7 +827,7 @@ class DkimKey {
 
 	/**
 	 * @private
-	 * @param {Map<string, string>} tagMap
+	 * @param {ReadonlyMap<string, string>} tagMap
 	 * @returns {string}
 	 */
 	static _parsePublicKey(tagMap) {
@@ -733,7 +845,7 @@ class DkimKey {
 
 	/**
 	 * @private
-	 * @param {Map<string, string>} tagMap
+	 * @param {ReadonlyMap<string, string>} tagMap
 	 * @returns {string}
 	 */
 	static _parseServiceType(tagMap) {
@@ -753,7 +865,7 @@ class DkimKey {
 
 	/**
 	 * @private
-	 * @param {Map<string, string>} tagMap
+	 * @param {ReadonlyMap<string, string>} tagMap
 	 * @returns {string[]}
 	 */
 	static _parseFlags(tagMap) {
@@ -774,13 +886,19 @@ class DkimKey {
  */
 class DkimSignature {
 	/**
-	 * @param {Msg} msg
+	 * @param {import("ts-essentials").DeepReadonly<Msg>} msg
 	 * @param {DkimSignatureHeader} header
 	 */
 	constructor(msg, header) {
-		/** @private */
+		/**
+		 * @private
+		 * @readonly
+		 */
 		this._msg = msg;
-		/** @private */
+		/**
+		 * @private
+		 * @readonly
+		 */
 		this._header = header;
 	}
 
@@ -867,9 +985,10 @@ class DkimSignature {
 	 * specified in Section 3.7 of RFC 6376.
 	 *
 	 * @private
+	 * @param {dkimSigWarningV2[]} warnings
 	 * @returns {Promise<string>}
 	 */
-	async _computeBodyHash() {
+	async _computeBodyHash(warnings) {
 		// canonicalize body
 		let bodyCanon;
 		switch (this._header.c_body) {
@@ -892,7 +1011,7 @@ class DkimSignature {
 				throw new DKIM_SigError("DKIM_SIGERROR_TOOLARGE_L");
 			} else if (this._header.l < bodyCanon.length) {
 				// length tag smaller when body size
-				this._header.warnings.push({ name: "DKIM_SIGWARNING_SMALL_L" });
+				warnings.push({ name: "DKIM_SIGWARNING_SMALL_L" });
 				log.debug("Warning: DKIM_SIGWARNING_SMALL_L");
 			}
 
@@ -971,15 +1090,16 @@ class DkimSignature {
 	 * Check alignment of the from address.
 	 *
 	 * @private
+	 * @param {dkimSigWarningV2[]} warnings
 	 * @returns {void}
 	 */
-	_checkFromAlignment() {
+	_checkFromAlignment(warnings) {
 		// warning if from is not in SDID or AUID
 		if (!addrIsInDomain(this._msg.from, this._header.d)) {
-			this._header.warnings.push({ name: "DKIM_SIGWARNING_FROM_NOT_IN_SDID" });
+			warnings.push({ name: "DKIM_SIGWARNING_FROM_NOT_IN_SDID" });
 			log.debug("Warning: DKIM_SIGWARNING_FROM_NOT_IN_SDID");
 		} else if (!stringEndsWith(this._msg.from, this._header.i)) {
-			this._header.warnings.push({ name: "DKIM_SIGWARNING_FROM_NOT_IN_AUID" });
+			warnings.push({ name: "DKIM_SIGWARNING_FROM_NOT_IN_AUID" });
 			log.debug("Warning: DKIM_SIGWARNING_FROM_NOT_IN_AUID");
 		}
 	}
@@ -988,9 +1108,10 @@ class DkimSignature {
 	 * Check the validity period of the signature.
 	 *
 	 * @private
+	 * @param {dkimSigWarningV2[]} warnings
 	 * @returns {void}
 	 */
-	_checkValidityPeriod() {
+	_checkValidityPeriod(warnings) {
 		let receivedTime = null;
 		const receivedHeaders = this._msg.headerFields.get("received") ?? [];
 		if (receivedHeaders[0]) {
@@ -1001,7 +1122,7 @@ class DkimSignature {
 		const time = Math.round(verifyTime.getTime() / 1000);
 		// warning if signature expired
 		if (this._header.x !== null && this._header.x < time) {
-			this._header.warnings.push({ name: "DKIM_SIGWARNING_EXPIRED" });
+			warnings.push({ name: "DKIM_SIGWARNING_EXPIRED" });
 			log.debug("Warning: DKIM_SIGWARNING_EXPIRED");
 		}
 		// warning if signature in future
@@ -1009,7 +1130,7 @@ class DkimSignature {
 		// sender and receiver are not causing any issues
 		const allowedDifference = 15 * 60;
 		if (this._header.t !== null && this._header.t > time + allowedDifference) {
-			this._header.warnings.push({ name: "DKIM_SIGWARNING_FUTURE" });
+			warnings.push({ name: "DKIM_SIGWARNING_FUTURE" });
 			log.debug("Warning: DKIM_SIGWARNING_FUTURE");
 		}
 	}
@@ -1019,9 +1140,10 @@ class DkimSignature {
 	 * - Warn if recommended headers are not signed.
 	 * - Try detecting maliciously added unsigned headers.
 	 *
+	 * @param {dkimSigWarningV2[]} warnings
 	 * @returns {void}
 	 */
-	#checkSignedHeaders() {
+	#checkSignedHeaders(warnings) {
 		// The list of recommended headers to sign is mostly based on
 		// https://www.rfc-editor.org/rfc/rfc6376.html#section-5.4.
 
@@ -1085,7 +1207,7 @@ class DkimSignature {
 
 		// If the body is not completely signed, a manipulated Content-Type header
 		// can cause completely different content to be shown.
-		if (this._header.warnings.some(warning => warning.name === "DKIM_SIGWARNING_SMALL_L")) {
+		if (warnings.some(warning => warning.name === "DKIM_SIGWARNING_SMALL_L")) {
 			required.push("Content-Type");
 		} else if (this._header.l !== null) {
 			recommended.push("Content-Type");
@@ -1106,7 +1228,7 @@ class DkimSignature {
 				throw new DKIM_SigError("DKIM_POLICYERROR_UNSIGNED_HEADER_ADDED", [header]);
 			}
 			if (warnIfUnsigned && signedCount < unsignedCount) {
-				this._header.warnings.push({ name: "DKIM_SIGWARNING_UNSIGNED_HEADER", params: [header] });
+				warnings.push({ name: "DKIM_SIGWARNING_UNSIGNED_HEADER", params: [header] });
 				log.debug(`Warning: DKIM_SIGWARNING_UNSIGNED_HEADER (${header})`);
 			}
 		};
@@ -1129,13 +1251,14 @@ class DkimSignature {
 	 * Verify that the body of the message is unmodified.
 	 *
 	 * @private
+	 * @param {dkimSigWarningV2[]} warnings
 	 * @returns {Promise<void>}
 	 * @throws {DKIM_SigError}
 	 * @throws {DKIM_InternalError}
 	 */
-	async _verifyBody() {
+	async _verifyBody(warnings) {
 		// Compute the Message hash for the body
-		const bodyHash = await this._computeBodyHash();
+		const bodyHash = await this._computeBodyHash(warnings);
 		log.debug("computed body hash:", bodyHash);
 
 		// compare body hash
@@ -1149,11 +1272,12 @@ class DkimSignature {
 	 *
 	 * @private
 	 * @param {KeyStore} keyStore
+	 * @param {dkimSigWarningV2[]} warnings
 	 * @returns {Promise<import("./keyStore.mjs.js").DkimKeyResult>}
 	 * @throws {DKIM_SigError}
 	 * @throws {DKIM_InternalError}
 	 */
-	async _fetchKey(keyStore) {
+	async _fetchKey(keyStore, warnings) {
 		const keyQueryResult = await keyStore.fetchKey(this._header.d, this._header.s);
 
 		// if key is not signed by DNSSEC
@@ -1162,7 +1286,7 @@ class DkimSignature {
 				case 0: // error
 					throw new DKIM_SigError("DKIM_POLICYERROR_KEY_INSECURE");
 				case 1: // warning
-					this._header.warnings.push({ name: "DKIM_POLICYERROR_KEY_INSECURE" });
+					warnings.push({ name: "DKIM_POLICYERROR_KEY_INSECURE" });
 					log.debug("Warning: DKIM_POLICYERROR_KEY_INSECURE");
 					break;
 				case 2: // ignore
@@ -1180,13 +1304,14 @@ class DkimSignature {
 	 *
 	 * @private
 	 * @param {DkimKey} dkimKey
+	 * @param {dkimSigWarningV2[]} warnings
 	 * @throws {DKIM_SigError}
 	 */
-	_checkKey(dkimKey) {
+	_checkKey(dkimKey, warnings) {
 		// check that the testing flag is not set
 		if (dkimKey.t_array.includes("y")) {
 			if (prefs["error.key_testmode.ignore"]) {
-				this._header.warnings.push({ name: "DKIM_SIGERROR_KEY_TESTMODE" });
+				warnings.push({ name: "DKIM_SIGERROR_KEY_TESTMODE" });
 				log.debug("Warning: DKIM_SIGERROR_KEY_TESTMODE");
 			} else {
 				throw new DKIM_SigError("DKIM_SIGERROR_KEY_TESTMODE");
@@ -1219,8 +1344,9 @@ class DkimSignature {
 	 *
 	 * @private
 	 * @param {string} publicKey
+	 * @param {dkimSigWarningV2[]} warnings
 	 */
-	async _verifySignature(publicKey) {
+	async _verifySignature(publicKey, warnings) {
 		// Compute the input for the header hash
 		const headerHashInput = this._computeHeaderHashInput();
 		log.debug(`Header hash input:\n${headerHashInput}`);
@@ -1250,7 +1376,7 @@ class DkimSignature {
 					case 0: // error
 						throw new DKIM_SigError("DKIM_SIGWARNING_KEY_IS_WEAK");
 					case 1: // warning
-						this._header.warnings.push({ name: "DKIM_SIGWARNING_KEY_IS_WEAK" });
+						warnings.push({ name: "DKIM_SIGWARNING_KEY_IS_WEAK" });
 						log.debug("Warning: DKIM_SIGWARNING_KEY_IS_WEAK");
 						break;
 					case 2: // ignore
@@ -1271,18 +1397,21 @@ class DkimSignature {
 	 * @throws {DKIM_InternalError}
 	 */
 	async verify(keyStore) {
-		this._checkFromAlignment();
-		this._checkValidityPeriod();
-		this.#checkSignedHeaders();
+		/** @type {dkimSigWarningV2[]} */
+		const warnings = copy(this._header.warnings);
 
-		await this._verifyBody();
+		this._checkFromAlignment(warnings);
+		this._checkValidityPeriod(warnings);
+		this.#checkSignedHeaders(warnings);
 
-		const keyQueryResult = await this._fetchKey(keyStore);
+		await this._verifyBody(warnings);
+
+		const keyQueryResult = await this._fetchKey(keyStore, warnings);
 		const dkimKey = new DkimKey(keyQueryResult.key);
 		log.debug("Parsed DKIM-Key:", dkimKey);
-		this._checkKey(dkimKey);
+		this._checkKey(dkimKey, warnings);
 
-		await this._verifySignature(dkimKey.p);
+		await this._verifySignature(dkimKey.p, warnings);
 
 		// return result
 		const verification_result = {
@@ -1291,7 +1420,7 @@ class DkimSignature {
 			sdid: this._header.d,
 			auid: this._header.i,
 			selector: this._header.s,
-			warnings: this._header.warnings,
+			warnings,
 			keySecure: keyQueryResult.secure,
 		};
 		return verification_result;
@@ -1358,7 +1487,7 @@ export default class Verifier {
 	 * Processes signatures.
 	 *
 	 * @private
-	 * @param {Msg} msg
+	 * @param {import("ts-essentials").DeepReadonly<Msg>} msg
 	 * @returns {Promise<dkimSigResultV2[]>}
 	 */
 	async _processSignatures(msg) {
@@ -1430,7 +1559,7 @@ export default class Verifier {
 	/**
 	 * Verifies the DKIM signatures in the given message.
 	 *
-	 * @param {Msg} msg
+	 * @param {import("ts-essentials").DeepReadonly<Msg>} msg
 	 * @returns {Promise<dkimResultV2>}
 	 */
 	verify(msg) {

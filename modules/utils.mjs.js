@@ -61,7 +61,7 @@ export function addrIsInDomain2(addr, domain) {
  *
  * @template T
  * @param {T} src
- * @returns {T}
+ * @returns {import("ts-essentials").DeepWritable<T>}
  */
 export function copy(src) {
 	return JSON.parse(JSON.stringify(src));
