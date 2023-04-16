@@ -30,11 +30,10 @@ this.migration = class extends ExtensionCommon.ExtensionAPI {
 	/**
 	 * Returns the preferences set in a preference branch.
 	 *
-	 * @private
 	 * @param {nsIPrefBranch} prefBranch
 	 * @returns {Object<string, boolean|number|string>}
 	 */
-	_getChildPrefs(prefBranch) {
+	#getChildPrefs(prefBranch) {
 		const setPrefNames = prefBranch.getChildList("");
 		/** @type {Object<string, boolean|number|string>} */
 		const childPrefs = {};
@@ -60,11 +59,10 @@ this.migration = class extends ExtensionCommon.ExtensionAPI {
 	/**
 	 * Open connection to an SQLite database if it exist.
 	 *
-	 * @private
 	 * @param {string} fileName
 	 * @returns {Promise<any>?}
 	 */
-	_openSqlite(fileName) {
+	#openSqlite(fileName) {
 		// Retains absolute paths and normalizes relative as relative to profile.
 		const path = OS.Path.join(OS.Constants.Path.profileDir, fileName);
 		const file = FileUtils.File(path);
@@ -87,7 +85,7 @@ this.migration = class extends ExtensionCommon.ExtensionAPI {
 			migration: {
 				getUserPrefs: () => {
 					const dkimPrefs = Services.prefs.getBranch("extensions.dkim_verifier.");
-					return Promise.resolve(this._getChildPrefs(dkimPrefs));
+					return Promise.resolve(this.#getChildPrefs(dkimPrefs));
 				},
 				getAccountPrefs: () => {
 					const mailPrefs = Services.prefs.getBranch("mail.");
@@ -97,7 +95,7 @@ this.migration = class extends ExtensionCommon.ExtensionAPI {
 					for (const account of accounts) {
 						const server = mailPrefs.getCharPref(`account.${account}.server`);
 						const dkimAccountPrefs = Services.prefs.getBranch(`mail.server.${server}.dkim_verifier.`);
-						const prefs = this._getChildPrefs(dkimAccountPrefs);
+						const prefs = this.#getChildPrefs(dkimAccountPrefs);
 						if (Object.keys(prefs).length) {
 							accountPrefs[account] = prefs;
 						}
@@ -105,7 +103,7 @@ this.migration = class extends ExtensionCommon.ExtensionAPI {
 					return Promise.resolve(accountPrefs);
 				},
 				getDkimKeys: async () => {
-					const conn = await this._openSqlite("dkimKey.sqlite");
+					const conn = await this.#openSqlite("dkimKey.sqlite");
 					if (!conn) {
 						return null;
 					}
@@ -130,7 +128,7 @@ this.migration = class extends ExtensionCommon.ExtensionAPI {
 					return { maxId, keys };
 				},
 				getSignRulesUser: async () => {
-					const conn = await this._openSqlite("dkimPolicy.sqlite");
+					const conn = await this.#openSqlite("dkimPolicy.sqlite");
 					if (!conn) {
 						return null;
 					}

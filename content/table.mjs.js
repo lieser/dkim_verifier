@@ -185,10 +185,10 @@ export default class DataTable {
 
 		const tbody = document.createElement("tbody");
 		if (this._isEditable) {
-			tbody.onclick = (event) => this._select(event);
-			tbody.ondblclick = (event) => this._startEdit(event);
-			tbody.addEventListener("focusout", (event) => this._stopEditFocusout(event));
-			tbody.onkeydown = (event) => this._stopEditKeydown(event);
+			tbody.onclick = (event) => this.#select(event);
+			tbody.ondblclick = (event) => this.#startEdit(event);
+			tbody.addEventListener("focusout", (event) => this.#stopEditFocusout(event));
+			tbody.onkeydown = (event) => this.#stopEditKeydown(event);
 		}
 
 		for (const item of data) {
@@ -251,15 +251,14 @@ export default class DataTable {
 	}
 
 	/**
-	 * @private
 	 * @param {Event} event
 	 * @returns {void}
 	 */
-	_select(event) {
+	#select(event) {
 		if (this._isEditing) {
 			return;
 		}
-		this._unselect();
+		this.#unselect();
 		const cell = TableCellEditable.getFromEvent(event);
 		const tr = cell.getRow();
 		tr.setAttribute("selected", "true");
@@ -267,10 +266,9 @@ export default class DataTable {
 	}
 
 	/**
-	 * @private
 	 * @returns {void}
 	 */
-	_unselect() {
+	#unselect() {
 		for (const tr of this._selectedRows) {
 			tr.removeAttribute("selected");
 		}
@@ -278,26 +276,24 @@ export default class DataTable {
 	}
 
 	/**
-	 * @private
 	 * @param {Event} event
 	 * @returns {void}
 	 */
-	_startEdit(event) {
+	#startEdit(event) {
 		if (this._isEditing) {
 			return;
 		}
-		this._unselect();
+		this.#unselect();
 		this._isEditing = true;
 		const cell = TableCellEditable.getFromEvent(event);
 		cell.startEdit();
 	}
 
 	/**
-	 * @private
 	 * @param {TableCellEditable} cell
 	 * @returns {Promise<void>}
 	 */
-	async _completeEdit(cell) {
+	async #completeEdit(cell) {
 		try {
 			const tr = cell.getRow();
 			if (this._updatedCellValueCallback) {
@@ -343,25 +339,23 @@ export default class DataTable {
 	}
 
 	/**
-	 * @private
 	 * @param {FocusEvent} event
 	 * @returns {void}
 	 */
-	_stopEditFocusout(event) {
+	#stopEditFocusout(event) {
 		if (!this._isEditing) {
 			return;
 		}
 		this._isEditing = false;
 		const cell = TableCellEditable.getFromEvent(event);
-		this._completeEdit(cell);
+		this.#completeEdit(cell);
 	}
 
 	/**
-	 * @private
 	 * @param {KeyboardEvent} event
 	 * @returns {void}
 	 */
-	_stopEditKeydown(event) {
+	#stopEditKeydown(event) {
 		if (!this._isEditing) {
 			return;
 		}
@@ -373,7 +367,7 @@ export default class DataTable {
 				break;
 			case "Enter":
 				this._isEditing = false;
-				this._completeEdit(cell);
+				this.#completeEdit(cell);
 				break;
 			default:
 		}

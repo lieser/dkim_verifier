@@ -247,12 +247,11 @@ class DisplayAction {
 	/**
 	 * Reverify a message in a specific tab and display the result.
 	 *
-	 * @private
 	 * @param {number} tabId
 	 * @param {browser.messages.MessageHeader} message
 	 * @returns {Promise<void>}
 	 */
-	static async _reverifyMessage(tabId, message) {
+	static async #reverifyMessage(tabId, message) {
 		browser.dkimHeader.reset(tabId, message.id);
 		AuthVerifier.resetResult(message);
 		await verifyMessage(tabId, message);
@@ -267,7 +266,7 @@ class DisplayAction {
 	static async reverifyDKIMSignature(tabId) {
 		const message = await browser.messageDisplay.getDisplayedMessage(tabId);
 		if (message) {
-			await DisplayAction._reverifyMessage(tabId, message);
+			await DisplayAction.#reverifyMessage(tabId, message);
 		}
 	}
 
@@ -286,7 +285,7 @@ class DisplayAction {
 		const from = MsgParser.parseFromHeader(`From: ${message.author}\r\n`, prefs["internationalized.enable"]);
 		await SignRules.addException(from);
 
-		await DisplayAction._reverifyMessage(tabId, message);
+		await DisplayAction.#reverifyMessage(tabId, message);
 	}
 
 	/**
@@ -307,7 +306,7 @@ class DisplayAction {
 
 		const message = await browser.messageDisplay.getDisplayedMessage(tabId);
 		if (message) {
-			await DisplayAction._reverifyMessage(tabId, message);
+			await DisplayAction.#reverifyMessage(tabId, message);
 		}
 	}
 
@@ -325,7 +324,7 @@ class DisplayAction {
 
 		const message = await browser.messageDisplay.getDisplayedMessage(tabId);
 		if (message) {
-			await DisplayAction._reverifyMessage(tabId, message);
+			await DisplayAction.#reverifyMessage(tabId, message);
 		}
 	}
 }

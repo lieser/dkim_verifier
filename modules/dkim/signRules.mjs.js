@@ -473,7 +473,7 @@ export default class SignRules {
 			result.hideFail = true;
 		}
 		if (!policy.foundRule) {
-			await SignRules._autoAddRule(from, dkimResult);
+			await SignRules.#autoAddRule(from, dkimResult);
 		}
 		return result;
 	}
@@ -640,12 +640,11 @@ export default class SignRules {
 	/**
 	 * Adds should be signed rule if no enabled rule for fromAddress is found.
 	 *
-	 * @private
 	 * @param {string} fromAddress
 	 * @param {VerifierModule.dkimSigResultV2} dkimResult
 	 * @returns {Promise<void>}
 	 */
-	static _autoAddRule(fromAddress, dkimResult) {
+	static #autoAddRule(fromAddress, dkimResult) {
 		const promise = (async () => {
 			if (dkimResult.result !== "SUCCESS") {
 				return;

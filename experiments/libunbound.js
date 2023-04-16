@@ -89,7 +89,7 @@ class LibunboundWorker {
 		this.worker =
 			//@ts-expect-error
 			new ChromeWorker("chrome://dkim_verifier_libunbound/content/libunboundWorker.jsm.js");
-		this.worker.onmessage = (msg) => this._onmessage(msg);
+		this.worker.onmessage = (msg) => this.#onmessage(msg);
 
 		this.config = {
 			getNameserversFromOS: true,
@@ -212,11 +212,10 @@ class LibunboundWorker {
 	/**
 	 * Handle the callbacks from the ChromeWorker.
 	 *
-	 * @private
 	 * @param {Libunbound.WorkerResponse} msg
 	 * @returns {void}
 	 */
-	_onmessage(msg) {
+	#onmessage(msg) {
 		try {
 			// handle log messages
 			if (msg.data.type && msg.data.type === "log") {
