@@ -15,30 +15,33 @@
 /* eslint-env webextensions */
 /* eslint-disable camelcase */
 /* eslint-disable no-use-before-define */
-/* eslint no-unused-vars: ["error", { "varsIgnorePattern": "ArhParserModule|VerifierModule" }]*/
 
 export const moduleVersion = "2.0.0";
 
-import ArhParser, * as ArhParserModule from "./arhParser.mjs.js";
-import Verifier, * as VerifierModule from "./dkim/verifier.mjs.js";
 import { addrIsInDomain2, domainIsInDomain, getDomainFromAddr } from "./utils.mjs.js";
+import ArhParser from "./arhParser.mjs.js";
 import { DKIM_InternalError } from "./error.mjs.js";
 import DMARC from "./dkim/dmarc.mjs.js";
 import ExtensionUtils from "./extensionUtils.mjs.js";
 import Logging from "./logging.mjs.js";
 import MsgParser from "./msgParser.mjs.js";
 import SignRules from "./dkim/signRules.mjs.js";
+import Verifier from "./dkim/verifier.mjs.js";
 import { getFavicon } from "./dkim/favicon.mjs.js";
 import prefs from "./preferences.mjs.js";
 
 const log = Logging.getLogger("AuthVerifier");
 
+/** @typedef {import("./arhParser.mjs.js").ArhResInfo} ArhResInfo */
+/** @typedef {import("./dkim/verifier.mjs.js").dkimResultV1} dkimResultV1 */
+/** @typedef {import("./dkim/verifier.mjs.js").dkimSigResultV2} dkimSigResultV2 */
+
 /**
  * @typedef {object} AuthResultV2
  * @property {string} version Result version ("2.1").
  * @property {AuthResultDKIM[]} dkim
- * @property {ArhParserModule.ArhResInfo[]} [spf]
- * @property {ArhParserModule.ArhResInfo[]} [dmarc]
+ * @property {ArhResInfo[]} [spf]
+ * @property {ArhResInfo[]} [dmarc]
  * @property {{dkim?: AuthResultDKIM[]}} [arh]
  * added in version 2.1
  */
@@ -49,10 +52,10 @@ const log = Logging.getLogger("AuthVerifier");
 /**
  * @typedef {object} SavedAuthResultV3
  * @property {string} version Result version ("3.0").
- * @property {VerifierModule.dkimSigResultV2[]} dkim
- * @property {ArhParserModule.ArhResInfo[]|undefined} [spf]
- * @property {ArhParserModule.ArhResInfo[]|undefined} [dmarc]
- * @property {{dkim?: VerifierModule.dkimSigResultV2[]}|undefined} [arh]
+ * @property {dkimSigResultV2[]} dkim
+ * @property {ArhResInfo[]|undefined} [spf]
+ * @property {ArhResInfo[]|undefined} [dmarc]
+ * @property {{dkim?: dkimSigResultV2[]}|undefined} [arh]
  */
 /**
  * @typedef {SavedAuthResultV3} SavedAuthResult
@@ -225,14 +228,14 @@ async function getARHResult(message, headers, from, listId, account, dmarc) {
 	}
 
 	// get DKIM, SPF and DMARC res
-	/** @type {ArhParserModule.ArhResInfo[]} */
+	/** @type {ArhResInfo[]} */
 	let arhDKIM = [];
-	/** @type {ArhParserModule.ArhResInfo[]} */
+	/** @type {ArhResInfo[]} */
 	let arhSPF = [];
-	/** @type {ArhParserModule.ArhResInfo[]} */
+	/** @type {ArhResInfo[]} */
 	let arhDMARC = [];
 	for (const header of arHeaders) {
-		/** @type {ArhParserModule.ArhHeader} */
+		/** @type {import("./arhParser.mjs.js").ArhHeader} */
 		let arh;
 		try {
 			arh = ArhParser.parse(header, prefs["arh.relaxedParsing"], prefs["internationalized.enable"]);
@@ -365,7 +368,7 @@ async function loadAuthResult(message) {
 	}
 	log.debug("AuthResult result found: ", savedAuthResultJSON);
 
-	/** @type {VerifierModule.dkimResultV1|AuthResultV2|SavedAuthResultV3} */
+	/** @type {dkimResultV1|AuthResultV2|SavedAuthResultV3} */
 	const savedAuthResult = JSON.parse(savedAuthResultJSON);
 
 	const versionMatch = savedAuthResult.version.match(/^[0-9]+/);
@@ -375,7 +378,7 @@ async function loadAuthResult(message) {
 	const majorVersion = versionMatch[0];
 	if (majorVersion === "1") {
 		// old dkimResultV1 (AuthResult version 1)
-		/** @type {VerifierModule.dkimResultV1} */
+		/** @type {dkimResultV1} */
 		// @ts-expect-error
 		const resultV1 = savedAuthResult;
 		/** @type {SavedAuthResultV3} */
@@ -421,7 +424,7 @@ async function loadAuthResult(message) {
  * Checks the DKIM results against the sign rules.
  *
  * @param {browser.messages.MessageHeader} message
- * @param {VerifierModule.dkimSigResultV2[]} dkimResults
+ * @param {dkimSigResultV2[]} dkimResults
  * @param {string} from
  * @param {string?} listId
  * @param {DMARC} dmarc
@@ -441,14 +444,14 @@ async function checkSignRules(message, dkimResults, from, listId, dmarc) {
 		// eslint-disable-next-line require-atomic-updates
 		dkimResults[i] = await SignRules.check(
 			// eslint-disable-next-line no-extra-parens
-			/** @type {VerifierModule.dkimSigResultV2} */(dkimResults[i]), from, listId, isOutgoingCallback, dmarcToUse);
+			/** @type {dkimSigResultV2} */(dkimResults[i]), from, listId, isOutgoingCallback, dmarcToUse);
 	}
 }
 
 /**
  * Sort the given DKIM signatures.
  *
- * @param {VerifierModule.dkimSigResultV2[]} signatures
+ * @param {dkimSigResultV2[]} signatures
  * @param {string} from
  * @param {string?} listId
  * @returns {void}
@@ -457,8 +460,8 @@ function sortSignatures(signatures, from, listId) {
 	/**
 	 * Compare the results of two signatures.
 	 *
-	 * @param {VerifierModule.dkimSigResultV2} sig1
-	 * @param {VerifierModule.dkimSigResultV2} sig2
+	 * @param {dkimSigResultV2} sig1
+	 * @param {dkimSigResultV2} sig2
 	 * @returns {number}
 	 */
 	function result_compare(sig1, sig2) {
@@ -490,8 +493,8 @@ function sortSignatures(signatures, from, listId) {
 	/**
 	 * Compare the warnings of two signatures.
 	 *
-	 * @param {VerifierModule.dkimSigResultV2} sig1
-	 * @param {VerifierModule.dkimSigResultV2} sig2
+	 * @param {dkimSigResultV2} sig1
+	 * @param {dkimSigResultV2} sig2
 	 * @returns {number}
 	 */
 	function warnings_compare(sig1, sig2) {
@@ -519,8 +522,8 @@ function sortSignatures(signatures, from, listId) {
 	/**
 	 * Compare the SDIDs of two signatures in regards to the from and list-id header.
 	 *
-	 * @param {VerifierModule.dkimSigResultV2} sig1
-	 * @param {VerifierModule.dkimSigResultV2} sig2
+	 * @param {dkimSigResultV2} sig1
+	 * @param {dkimSigResultV2} sig2
 	 * @returns {number}
 	 */
 	function sdid_compare(sig1, sig2) {
@@ -548,8 +551,8 @@ function sortSignatures(signatures, from, listId) {
 	/**
 	 * Compare the error reason of two signatures.
 	 *
-	 * @param {VerifierModule.dkimSigResultV2} sig1
-	 * @param {VerifierModule.dkimSigResultV2} sig2
+	 * @param {dkimSigResultV2} sig1
+	 * @param {dkimSigResultV2} sig2
 	 * @returns {number}
 	 */
 	function error_compare(sig1, sig2) {
@@ -599,11 +602,11 @@ function sortSignatures(signatures, from, listId) {
 /**
  * Convert DKIM ARHresinfo to dkimResult.
  *
- * @param {ArhParserModule.ArhResInfo} arhDKIM
- * @returns {VerifierModule.dkimSigResultV2}
+ * @param {ArhResInfo} arhDKIM
+ * @returns {dkimSigResultV2}
  */
 function arhDKIM_to_dkimSigResultV2(arhDKIM) {
-	/** @type {VerifierModule.dkimSigResultV2} */
+	/** @type {dkimSigResultV2} */
 	const dkimSigResult = {};
 	dkimSigResult.version = "2.0";
 	switch (arhDKIM.result) {
@@ -655,11 +658,11 @@ function arhDKIM_to_dkimSigResultV2(arhDKIM) {
 /**
  * Convert dkimResultV1 to dkimSigResultV2.
  *
- * @param {VerifierModule.dkimResultV1} dkimResultV1
- * @returns {VerifierModule.dkimSigResultV2}
+ * @param {dkimResultV1} dkimResultV1
+ * @returns {dkimSigResultV2}
  */
 function dkimResultV1_to_dkimSigResultV2(dkimResultV1) {
-	/** @type {VerifierModule.dkimSigResultV2} */
+	/** @type {dkimSigResultV2} */
 	const sigResultV2 = {
 		version: "2.0",
 		result: dkimResultV1.result,
@@ -688,7 +691,7 @@ function dkimResultV1_to_dkimSigResultV2(dkimResultV1) {
 /**
  * Convert dkimSigResultV2 to AuthResultDKIM.
  *
- * @param {VerifierModule.dkimSigResultV2} dkimSigResult
+ * @param {dkimSigResultV2} dkimSigResult
  * @returns {AuthResultDKIM}
  * @throws DKIM_InternalError
  */
@@ -860,10 +863,10 @@ function SavedAuthResult_to_AuthResult(savedAuthResult) {
  * Convert AuthResultDKIMV2 to dkimSigResultV2.
  *
  * @param {AuthResultDKIMV2} authResultDKIM
- * @returns {VerifierModule.dkimSigResultV2} dkimSigResultV2
+ * @returns {dkimSigResultV2} dkimSigResultV2
  */
 function AuthResultDKIMV2_to_dkimSigResultV2(authResultDKIM) {
-	/** @type {VerifierModule.dkimSigResultV2} */
+	/** @type {dkimSigResultV2} */
 	const dkimSigResult = authResultDKIM;
 	// @ts-expect-error
 	dkimSigResult.res_num = undefined;

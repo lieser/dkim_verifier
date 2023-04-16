@@ -8,14 +8,13 @@
  */
 
 // @ts-check
-/* eslint no-unused-vars: ["error", { "varsIgnorePattern": "VerifierModule" }]*/
 
 import "../helpers/initWebExtensions.mjs.js";
-import Verifier, * as VerifierModule from "../../modules/dkim/verifier.mjs.js";
 import { createTxtQueryCallback, queryDnsTxt } from "../helpers/dnsStub.mjs.js";
 import prefs, { BasePreferences } from "../../modules/preferences.mjs.js";
 import KeyStore from "../../modules/dkim/keyStore.mjs.js";
 import MsgParser from "../../modules/msgParser.mjs.js";
+import Verifier from "../../modules/dkim/verifier.mjs.js";
 import expect from "../helpers/chaiUtils.mjs.js";
 import { readTestFile } from "../helpers/testUtils.mjs.js";
 
@@ -24,7 +23,7 @@ import { readTestFile } from "../helpers/testUtils.mjs.js";
  *
  * @param {string} file - path to file relative to test data directory
  * @param {Map<string, string>} [dnsEntries]
- * @returns {Promise<VerifierModule.dkimResultV2>}
+ * @returns {Promise<import("../../modules/dkim/verifier.mjs.js").dkimResultV2>}
  */
 async function verifyEmlFile(file, dnsEntries) {
 	const msgPlain = await readTestFile(file);
