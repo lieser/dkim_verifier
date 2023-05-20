@@ -1096,7 +1096,7 @@ class DkimResetMessageListener {
 	 */
 	static register(window) {
 		if (DkimResetMessageListener.#mapping.has(window)) {
-			console.error("MessageListener.register(): already registered");
+			console.error("DkimResetMessageListener.register(): already registered");
 		}
 		const messageListener = new DkimResetMessageListener(window);
 		DkimResetMessageListener.#mapping.set(window, messageListener);
@@ -1340,13 +1340,18 @@ this.dkimHeader = class extends ExtensionCommon.ExtensionAPI {
 		}
 
 		const displayedMessages = ExtensionParent.apiManager.global.getDisplayedMessages(tab);
-		const id = displayedMessages[0]?.id;
-		if (id === undefined || displayedMessages.length !== 1) {
+		let displayedMessage = displayedMessages[0];
+		if (!displayedMessage || displayedMessages.length !== 1) {
 			return {
 				window: msgWindow,
 				id: null,
 			};
 		}
+		if (!("id" in displayedMessage)) {
+			// TB >= 115
+			displayedMessage = this.extension.messageManager.convert(displayedMessage);
+		}
+		const id = displayedMessage.id;
 		return {
 			window: msgWindow,
 			id,

@@ -67,7 +67,7 @@ declare module ExtensionCommon {
         ////////////////////////////////////////////////////////////////////////
         //// https://searchfox.org/comm-central/source/mail/components/extensions/parent/ext-mail.js
         readonly messageManager: {
-            readonly convert: (msgDBHdr: nsIMsgDBHdr) => browser.messageDisplay.MessageHeader;
+            readonly convert: (msgDBHdr: nsIMsgDBHdr) => browser.messages.MessageHeader;
             readonly get: (messageId: number) => nsIMsgDBHdr;
         };
         readonly tabManager: ExtensionParentM.TabManagerBase;
@@ -133,7 +133,8 @@ declare module ExtensionParentM {
         declare module global {
             const tabTracker: TabTrackerBase;
 
-            const getDisplayedMessages: (tab: TabBase) => browser.messageDisplay.MessageHeader[];
+            // Returns nsIMsgDBHdr in TB >= 115
+            const getDisplayedMessages: (tab: TabBase) => browser.messages.MessageHeader[] | nsIMsgDBHdr[];
         }
     }
 }

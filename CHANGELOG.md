@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 
 ### Enhancements
 
+- Fixed incompatibility with Thunderbird 115 (#364).
 - Support the offline mode of Thunderbird.
   No DNS queries are done if Thunderbird is in the offline mode (#129).
 - JSDNS: Support IPv6 addresses (#363)
