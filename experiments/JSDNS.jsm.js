@@ -558,9 +558,10 @@ function queryDNSRecursive(servers, host, recordtype, callback, callbackdata, ho
 	};
 
 	// allow server to be either a hostname or hostname:port
+	// Note: Port is not supported for IPv6 addresses.
 	var server_hostname = server;
 	var port = 53;
-	if (server.includes(":")) {
+	if ((server.match(/:/g) ?? []).length === 1) {
 		server_hostname = server.substring(0, server.indexOf(":"));
 		port = parseInt(server.substring(server.indexOf(":") + 1), 10);
 	}
