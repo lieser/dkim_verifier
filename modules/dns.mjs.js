@@ -3,7 +3,7 @@
  *  - JSDNS
  *  - libunbound
  *
- * Copyright (c) 2020-2022 Philippe Lieser
+ * Copyright (c) 2020-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -14,8 +14,9 @@
 // @ts-check
 ///<reference path="../experiments/jsdns.d.ts" />
 ///<reference path="../experiments/libunbound.d.ts" />
-/* eslint-env webextensions */
+/* eslint-env webextensions, browser */
 
+import { DKIM_InternalError } from "./error.mjs.js";
 import Logging from "../modules/logging.mjs.js";
 import prefs from "../modules/preferences.mjs.js";
 
@@ -39,29 +40,45 @@ let jsdnsIsConfigured = null;
 /** @type {Promise<void>?} */
 let libunboundIsConfigured = null;
 
-let listenerAdded = false;
 /**
- * Add Listener to monitor preference changes for the DNS resolvers.
+ * Reset configuration of the DNS resolvers.
  *
  * @returns {void}
  */
-function addPrefsListener() {
+function resetDNSConfiguration() {
+	jsdnsIsConfigured = null;
+	libunboundIsConfigured = null;
+}
+
+let listenerAdded = false;
+/**
+ * Add various listener for the configuration of the DNS resolvers.
+ *
+ * @returns {void}
+ */
+function addListeners() {
 	if (listenerAdded) {
 		return;
 	}
 	listenerAdded = true;
+
+	// Monitor preference changes for the DNS resolvers
 	browser.storage.onChanged.addListener((changes, areaName) => {
 		if (areaName !== "local") {
 			return;
 		}
 		if (Object.keys(changes).some(name => name.startsWith("dns."))) {
-			jsdnsIsConfigured = null;
-			libunboundIsConfigured = null;
+			resetDNSConfiguration();
 		}
 		if (Object.keys(changes).some(name => name === "debug")) {
-			jsdnsIsConfigured = null;
-			libunboundIsConfigured = null;
+			resetDNSConfiguration();
 		}
+	});
+
+	// Monitor online status
+	addEventListener("online", (_event) => {
+		log.debug("Online event fired, resetting DNS configuration");
+		resetDNSConfiguration();
 	});
 }
 
@@ -73,7 +90,7 @@ function addPrefsListener() {
 function configureJsdns() {
 	if (!jsdnsIsConfigured) {
 		log.debug("configure jsdns");
-		addPrefsListener();
+		addListeners();
 		jsdnsIsConfigured = browser.jsdns.configure(
 			prefs["dns.getNameserversFromOS"],
 			prefs["dns.nameserver"],
@@ -99,7 +116,7 @@ function configureJsdns() {
 function configureLibunbound() {
 	if (!libunboundIsConfigured) {
 		log.debug("configure libunbound");
-		addPrefsListener();
+		addListeners();
 		libunboundIsConfigured = browser.libunbound.configure(
 			prefs["dns.getNameserversFromOS"],
 			prefs["dns.nameserver"],
@@ -110,6 +127,17 @@ function configureLibunbound() {
 		);
 	}
 	return libunboundIsConfigured;
+}
+
+/**
+ * Check that Thunderbird is online.
+ *
+ * @throws {DKIM_SigError} if Thunderbird is offline.
+ */
+function checkOnlineStatus() {
+	if (!navigator.onLine) {
+		throw new DKIM_InternalError(null, "DKIM_DNSERROR_OFFLINE");
+	}
 }
 
 export default class DNS {
@@ -132,11 +160,14 @@ export default class DNS {
 	 */
 	static async txt(name) {
 		switch (prefs["dns.resolver"]) {
-			case RESOLVER_JSDNS:
+			case RESOLVER_JSDNS: {
 				await configureJsdns();
+				checkOnlineStatus();
 				return browser.jsdns.txt(name);
+			}
 			case RESOLVER_LIBUNBOUND: {
 				await configureLibunbound();
+				checkOnlineStatus();
 				return browser.libunbound.txt(name);
 			}
 			default:

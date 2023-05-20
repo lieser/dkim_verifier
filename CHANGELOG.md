@@ -4,6 +4,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+### Enhancements
+
+- Support the offline mode of Thunderbird.
+  No DNS queries are done if Thunderbird is in the offline mode (#129).
+
 ## 5.2.0 (2023-04-02)
 
 ### Enhancements
