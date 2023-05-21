@@ -216,57 +216,46 @@ function getOsDnsServers() {
 			// nsIWindowsRegKey doesn't support REG_MULTI_SZ type out of the box
 			// from http://mxr.mozilla.org/comm-central/source/mozilla/browser/components/migration/src/IEProfileMigrator.js#129
 			// slice(1,-1) to remove the " at the beginning and end
-			var str = registryLinkage.readStringValue("Route");
-			var interfaces = str.split("\0").
+			const linkageRoute = registryLinkage.readStringValue("Route");
+			const interfaceGUIDs = linkageRoute.split("\0").
 				map((e) => e.slice(1, -1)).
 				filter((e) => e);
-			log.debug("Found " + interfaces.length + " interfaces.");
 
-			// filter out deactivated interfaces
-			var registryNetworkAdapters = registry.openChild(
+			// Get Name and PnpInstanceID of interfaces
+			const registryNetworkAdapters = registry.openChild(
 				"Control\\Network\\{4D36E972-E325-11CE-BFC1-08002BE10318}",
 				registry.ACCESS_QUERY_VALUE);
-			var registryDevInterfaces = registry.openChild(
-				"Control\\DeviceClasses\\{cac88484-7515-4c03-82e6-71a87abac361}",
-				registry.ACCESS_QUERY_VALUE);
-			var interfacesOnline = interfaces.filter((element /*, index, array*/) => {
-				reg = registryNetworkAdapters.openChild(element + "\\Connection",
+			let interfaces = interfaceGUIDs.map(interfaceGUID => {
+				reg = registryNetworkAdapters.openChild(interfaceGUID + "\\Connection",
 					registry.ACCESS_READ);
-				if (!reg.hasValue("PnpInstanceID")) {
-					log.debug("Network Adapter has no PnpInstanceID: " + element);
-					return false;
+				let Name = null;
+				if (reg.hasValue("Name")) {
+					Name = reg.readStringValue("Name");
 				}
-				var interfaceID = reg.readStringValue("PnpInstanceID");
+				let PnpInstanceID = null;
+				if (reg.hasValue("PnpInstanceID")) {
+					PnpInstanceID = reg.readStringValue("PnpInstanceID");
+				}
 				reg.close();
-				var interfaceID_ = interfaceID.replace(/\\/g, "#");
-				interfaceID_ = "##?#" + interfaceID_ +
-					"#{cac88484-7515-4c03-82e6-71a87abac361}";
-				var linked;
-				if (registryDevInterfaces.hasChild(interfaceID_ + "\\#\\Control")) {
-					reg = registryDevInterfaces.openChild(interfaceID_ + "\\#\\Control",
-						registry.ACCESS_READ);
-					if (reg.hasValue("Linked")) {
-						linked = reg.readIntValue("Linked");
-					}
-					reg.close();
-				}
-				if (linked === 1) {
-					return true;
-				}
-				log.debug("Interface deactivated: " + interfaceID);
-				return false;
+				return {
+					guid: interfaceGUID,
+					Name,
+					PnpInstanceID,
+				};
 			});
-			if (interfacesOnline.length === 0) {
-				interfacesOnline = interfaces;
-			}
+			registryNetworkAdapters.close();
+			log.debug("Found interfaces: ", interfaces);
+
+			// Filter out interfaces without PnpInstanceID
+			interfaces = interfaces.filter(element => element.PnpInstanceID);
 
 			// get NameServer and DhcpNameServer of all interfaces
 			registryInterfaces = registry.openChild(
 				"Services\\Tcpip\\Parameters\\Interfaces",
 				registry.ACCESS_READ);
 			var ns = "";
-			for (const onlineInterface of interfacesOnline) {
-				reg = registryInterfaces.openChild(onlineInterface, registry.ACCESS_READ);
+			for (const intf of interfaces) {
+				reg = registryInterfaces.openChild(intf.guid, registry.ACCESS_READ);
 				if (reg.hasValue("NameServer")) {
 					ns += " " + reg.readStringValue("NameServer");
 				}
