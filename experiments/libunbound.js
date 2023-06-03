@@ -374,14 +374,6 @@ this.libunbound = class extends ExtensionCommon.ExtensionAPI {
 	 * @returns {{libunbound: browser.libunbound}}
 	 */
 	getAPI(_context) {
-		const RCODE = {
-			NoError: 0, // No Error [RFC1035]
-			FormErr: 1, // Format Error [RFC1035]
-			ServFail: 2, // Server Failure [RFC1035]
-			NXDomain: 3, // Non-Existent Domain [RFC1035]
-			NotImp: 4, // Non-Existent Domain [RFC1035]
-			Refused: 5, // Query Refused [RFC1035]
-		};
 		const libunboundWorker = this.libunboundWorker;
 		return {
 			libunbound: {
@@ -401,15 +393,6 @@ this.libunbound = class extends ExtensionCommon.ExtensionAPI {
 				},
 				async txt(name) {
 					const res = await libunboundWorker.resolve(name, LibunboundWorker.Constants.RR_TYPE_TXT);
-					if (res === null) {
-						// error in libunbound
-						return {
-							data: null,
-							rcode: RCODE.ServFail,
-							secure: false,
-							bogus: false,
-						};
-					}
 					const data = res.havedata ? res.data.map(rdata => {
 						if (typeof rdata !== "string") {
 							throw Error(`DNS result has unexpected type ${typeof rdata}`);

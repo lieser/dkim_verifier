@@ -694,7 +694,7 @@ function DNS_getRDData(str, server, host, recordtype, callback, callbackdata, ho
 	var rcode = flags & 0xF;
 	if (rcode !== 0) {
 		log.debug(debugstr + "Lookup failed with rcode " + rcode);
-		callback(null, callbackdata, "Lookup failed with rcode " + rcode, rcode);
+		callback(null, callbackdata, undefined, rcode);
 		return;
 	}
 

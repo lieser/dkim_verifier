@@ -132,7 +132,7 @@ function configureLibunbound() {
 /**
  * Check that Thunderbird is online.
  *
- * @throws {DKIM_SigError} if Thunderbird is offline.
+ * @throws {DKIM_InternalError} if Thunderbird is offline.
  */
 function checkOnlineStatus() {
 	if (!navigator.onLine) {
@@ -157,13 +157,18 @@ export default class DNS {
 	 *
 	 * @param {string} name
 	 * @returns {Promise<DnsTxtResult>}
+	 * @throws {DKIM_InternalError} if no DNS response could be retrieved.
 	 */
 	static async txt(name) {
 		switch (prefs["dns.resolver"]) {
 			case RESOLVER_JSDNS: {
 				await configureJsdns();
 				checkOnlineStatus();
-				return browser.jsdns.txt(name);
+				const res = await browser.jsdns.txt(name);
+				if ("error" in res) {
+					throw new DKIM_InternalError(res.error, "DKIM_DNSERROR_SERVER_ERROR");
+				}
+				return res;
 			}
 			case RESOLVER_LIBUNBOUND: {
 				await configureLibunbound();
