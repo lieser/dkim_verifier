@@ -22,7 +22,11 @@
 var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 // @ts-expect-error
 // eslint-disable-next-line no-var
-var { OS } = ChromeUtils.import("resource://gre/modules/osfile.jsm");
+var OS;
+if (typeof PathUtils === "undefined") {
+	// TB < 115
+	({ OS } = ChromeUtils.import("resource://gre/modules/osfile.jsm"));
+}
 
 /**
  * The result of the query.
@@ -119,7 +123,12 @@ class LibunboundWorker {
 		if (this.config.pathRelToProfileDir) {
 			path = this.config.path.
 				split(";").
-				map(e => { return OS.Path.join(OS.Constants.Path.profileDir, e); }).
+				map(e => {
+					if (OS) {
+						return OS.Path.join(OS.Constants.Path.profileDir, e);
+					}
+					return PathUtils.join(PathUtils.profileDir, e);
+				}).
 				join(";");
 		} else {
 			path = this.config.path;

@@ -161,7 +161,7 @@ declare module FileUtils {
     function File(path: string): nsIFile;
 }
 
-/** JavaScript code module "resource://gre/modules/osfile.jsm" */
+/** JavaScript code module "resource://gre/modules/osfile.jsm" (removed in TB >= 115) */
 declare module OS {
     declare module Path {
         function join(path1: string, path2: string, ...paths: string[]): string;
@@ -172,6 +172,13 @@ declare module OS {
             profileDir: string;
         }
     }
+}
+
+/** https://searchfox.org/mozilla-central/source/dom/chrome-webidl/PathUtils.webidl */
+declare module PathUtils {
+    function join(path1: string, path2: string, ...paths: string[]): string;
+
+    const profileDir: string;
 }
 
 /** JavaScript code module "resource://gre/modules/Services.jsm" */
