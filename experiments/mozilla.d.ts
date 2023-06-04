@@ -3,6 +3,7 @@
 
 interface ChromeUtils {
     import(url: string): any;
+    readonly generateQI: (interfaces: nsISupports[]) => nsISupports["QueryInterface"];
 }
 declare let ChromeUtils: ChromeUtils;
 
@@ -15,9 +16,11 @@ declare module Components {
     interface ComponentsInterfaces {
         [key: string]: object;
         readonly amIAddonManagerStartup: amIAddonManagerStartup;
+        readonly nsIAsyncInputStream: nsIAsyncInputStream;
         readonly nsIBinaryInputStream: nsIBinaryInputStream;
         readonly nsIFile: nsIFile;
         readonly nsIFileInputStream: nsIFileInputStream;
+        readonly nsIInputStreamCallback: nsIInputStreamCallback;
         readonly nsIInputStreamPump: nsIInputStreamPump;
         readonly nsILineInputStream: nsILineInputStream;
         readonly nsIProtocolProxyService: nsIProtocolProxyService;
@@ -104,10 +107,10 @@ declare module ExtensionParentM {
         // The following is specific to a tab in TB
         // https://searchfox.org/comm-central/source/mail/components/extensions/parent/ext-mail.js
         readonly type: null
-            | "messageCompose"
-            | "messageDisplay"
-            | "content"
-            // This list is incomplete, more are specified for TabmailTab
+        | "messageCompose"
+        | "messageDisplay"
+        | "content"
+        // This list is incomplete, more are specified for TabmailTab
         ;
     }
 
@@ -124,7 +127,7 @@ declare module ExtensionParentM {
     }
 
     interface WindowManagerBase {
-        readonly getWrapper: (window: Window) => WindowBase|undefined;
+        readonly getWrapper: (window: Window) => WindowBase | undefined;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -188,6 +191,7 @@ declare module Services {
     const io: nsIIOService;
     const obs: nsIObserverService;
     const prefs: nsIPrefService;
+    const tm: nsIThreadManager;
     const vc: nsIVersionComparator;
 }
 
@@ -198,12 +202,16 @@ interface amIAddonManagerStartup {
     readonly registerChrome: (manifestURI: nsIURI, entries: string[][]) => nsIJSRAIIHelper;
 }
 
+declare class MozXULElement extends XULElement { };
+
+interface nsIAsyncInputStream extends nsIInputStream {
+    readonly asyncWait: (aCallback: nsIInputStreamCallback, aFlags: number, aRequestedCount: number, aEventTarget: nsIEventTarget | null) => void;
+}
+
 interface nsIEffectiveTLDService {
     readonly getBaseDomain: (aURI: nsIURI, aAdditionalParts: number = 0) => string;
     readonly getBaseDomainFromHost: (aHost: string, aAdditionalParts: number = 0) => string;
 }
-
-declare class MozXULElement extends XULElement { };
 
 interface nsIBinaryInputStream extends nsIInputStream {
     readonly read8: () => number;
@@ -214,10 +222,14 @@ interface nsIDNSRecord { nsIDNSRecord: never };
 
 interface nsIEventTarget { nsIEventTarget: never }
 
-interface nsIInputStream {
+interface nsIInputStream extends nsISupports {
     available(): number;
     close(): void;
     isNonBlocking(): boolean;
+}
+
+interface nsIInputStreamCallback extends nsISupports {
+    readonly onInputStreamReady: (aStream: nsIAsyncInputStream) => void;
 }
 
 interface nsIInputStreamPump extends nsIRequest {
@@ -275,6 +287,10 @@ interface nsISupports {
 interface nsITransport {
     readonly openInputStream: (aFlags: number, aSegmentSize: number, aSegmentCount: number) => nsIInputStream;
     readonly openOutputStream: (aFlags: number, aSegmentSize: number, aSegmentCount: number) => nsIOutputStream;
+}
+
+interface nsIThreadManager extends nsISupports {
+    readonly mainThreadEventTarget: nsIEventTarget;
 }
 
 interface nsIFile {
