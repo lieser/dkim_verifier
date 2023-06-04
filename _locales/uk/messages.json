@@ -65,6 +65,10 @@
 	"DKIM_DNSERROR_UNKNOWN": {
 		"message": "Помилка в DNS-резольвері"
 	},
+	"DKIM_DNSERROR_OFFLINE": {
+		"message": "Не вдалося виконати DNS-запит, оскільки Thunderbird перебуває в автономному режимі.",
+		"description": "Error message if the addon needs to do a DNS query, but Thunderbird is in the offline mode."
+	},
 	"DKIM_DNSERROR_SERVER_ERROR": {
 		"message": "Помилка підключення до DNS-сервера"
 	},
