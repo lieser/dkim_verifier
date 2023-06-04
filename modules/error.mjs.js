@@ -10,11 +10,11 @@
 // @ts-check
 
 /**
- * DKIM signature error.
+ * DKIM signature error (PERMFAIL).
  */
 export class DKIM_SigError extends Error {
 	/**
-	 * DKIM signature error.
+	 * DKIM signature error (PERMFAIL).
 	 *
 	 * @param {string} errorType
 	 * @param {any[]} [errorStrParams]

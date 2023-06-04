@@ -4,8 +4,6 @@
  * Based on Joshua Tauberer's DNS LIBRARY IN JAVASCRIPT
  * from "Sender Verification Extension" version 0.9.0.6
  *
- * Version: 2.1.2 (01 April 2023)
- *
  * Copyright (c) 2013-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
@@ -50,132 +48,6 @@
  * can be scanned for a DNS server to use.
  */
 /* ***** END ORIGINAL LICENSE/COPYRIGHT NOTICE ***** */
-
-/*
- * Changelog:
- * ==========
- *
- * 2.1.2
- * -----
- * - some ESLint and TS fixes
- *
- * 2.1.1
- * -----
- * - some ESLint and TS fixes
- *
- * 2.1.0
- * -----
- * - add configure debug preference
- *
- * 2.0.1
- * -----
- * - fixed incompatibility with Gecko 89
- *
- * 2.0.0
- * -----
- * - configure preferences from outside
- * - removed unused code
- * - requires at least Gecko 69
- * - some ESLint and TS fixes
- * - use console.createInstance() for logging
- *
- * 1.4.4
- * -----
- * - add defaults for preferences
- *
- * 1.4.3
- * -----
- * - fixed proxy support
- *
- * 1.4.2
- * -----
- *  - requires at least Gecko 68
- *  - fixed incompatibility with Gecko 68/69
- *
- * 1.4.1
- * -----
- *  - fixed a problem getting the default DNS servers on Windows
- *
- * 1.4.0
- * -----
- *  - fixed incompatibility with Gecko 57
- *  - no longer needs ModuleGetter.jsm
- *  - fixed ESLint warnings, removed options for JSHint
- *
- * 1.3.0
- * -----
- *  - added support for rcode
- *
- * 1.2.0
- * -----
- *  - added support to use a proxy
- *
- * 1.1.1
- * -----
- *  - fixed incompatibility with Gecko 46
- *
- * 1.1.0
- * -----
- *  - no longer get the DNS servers from deactivated interfaces under windows
- *
- * 1.0.3
- * -----
- *  - increased max read length of TXT record
- *
- * 1.0.2
- * -----
- *  - fixed last line of /etc/resolv.conf not being read
- *
- * 1.0.1
- * -----
- *  - fixed use of stringbundle
- *  - added read and write timeout
- *  - added option to automatically reset all server to alive if all are marked down
- *
- * 1.0.0
- * -----
- *  - added close() calls in catch blocks
- *  - now uses Log.jsm for logging
- *  - preferences are no longer set form the outside,
- *    but are loaded by the module itself
- *  - now uses stringbundle
- *
- * 0.6.3
- * -----
- *  - fixed bug for detection of configured DNS Servers in Windows
- *    (if more then one DNS server was configured for an adapter)
- *
- * 0.6.1
- * -----
- *  - better detection of configured DNS Servers in Windows
- *
- * 0.5.1
- * -----
- *  - reenabled support to get DNS Servers from OS
- *   - modified and renamed DNS_LoadPrefs() to DNS_get_OS_DNSServers()
- *  - fixed jshint errors/warnings
- *
- * 0.5.0
- * -----
- *  - added support of multiple DNS servers
- *
- * 0.3.4
- * -----
- *  - CNAME record type partial supported
- *   - doesn't throw a exception anymore
- *   - data not read, and not included in the returned result
- *
- * 0.3.0
- * -----
- *  - changed to a JavaScript code module
- *  - DNS_LoadPrefs() not executed
- *  - added debug on/off setting
- *
- * 0.1.0
- * -----
- *  original DNS LIBRARY IN JAVASCRIPT by Joshua Tauberer
- *  from "Sender Verification Extension" version 0.9.0.6
- */
 
 //@ts-check
 // options for ESLint
@@ -344,57 +216,46 @@ function getOsDnsServers() {
 			// nsIWindowsRegKey doesn't support REG_MULTI_SZ type out of the box
 			// from http://mxr.mozilla.org/comm-central/source/mozilla/browser/components/migration/src/IEProfileMigrator.js#129
 			// slice(1,-1) to remove the " at the beginning and end
-			var str = registryLinkage.readStringValue("Route");
-			var interfaces = str.split("\0").
+			const linkageRoute = registryLinkage.readStringValue("Route");
+			const interfaceGUIDs = linkageRoute.split("\0").
 				map((e) => e.slice(1, -1)).
 				filter((e) => e);
-			log.debug("Found " + interfaces.length + " interfaces.");
 
-			// filter out deactivated interfaces
-			var registryNetworkAdapters = registry.openChild(
+			// Get Name and PnpInstanceID of interfaces
+			const registryNetworkAdapters = registry.openChild(
 				"Control\\Network\\{4D36E972-E325-11CE-BFC1-08002BE10318}",
 				registry.ACCESS_QUERY_VALUE);
-			var registryDevInterfaces = registry.openChild(
-				"Control\\DeviceClasses\\{cac88484-7515-4c03-82e6-71a87abac361}",
-				registry.ACCESS_QUERY_VALUE);
-			var interfacesOnline = interfaces.filter((element /*, index, array*/) => {
-				reg = registryNetworkAdapters.openChild(element + "\\Connection",
+			let interfaces = interfaceGUIDs.map(interfaceGUID => {
+				reg = registryNetworkAdapters.openChild(interfaceGUID + "\\Connection",
 					registry.ACCESS_READ);
-				if (!reg.hasValue("PnpInstanceID")) {
-					log.debug("Network Adapter has no PnpInstanceID: " + element);
-					return false;
+				let Name = null;
+				if (reg.hasValue("Name")) {
+					Name = reg.readStringValue("Name");
 				}
-				var interfaceID = reg.readStringValue("PnpInstanceID");
+				let PnpInstanceID = null;
+				if (reg.hasValue("PnpInstanceID")) {
+					PnpInstanceID = reg.readStringValue("PnpInstanceID");
+				}
 				reg.close();
-				var interfaceID_ = interfaceID.replace(/\\/g, "#");
-				interfaceID_ = "##?#" + interfaceID_ +
-					"#{cac88484-7515-4c03-82e6-71a87abac361}";
-				var linked;
-				if (registryDevInterfaces.hasChild(interfaceID_ + "\\#\\Control")) {
-					reg = registryDevInterfaces.openChild(interfaceID_ + "\\#\\Control",
-						registry.ACCESS_READ);
-					if (reg.hasValue("Linked")) {
-						linked = reg.readIntValue("Linked");
-					}
-					reg.close();
-				}
-				if (linked === 1) {
-					return true;
-				}
-				log.debug("Interface deactivated: " + interfaceID);
-				return false;
+				return {
+					guid: interfaceGUID,
+					Name,
+					PnpInstanceID,
+				};
 			});
-			if (interfacesOnline.length === 0) {
-				interfacesOnline = interfaces;
-			}
+			registryNetworkAdapters.close();
+			log.debug("Found interfaces: ", interfaces);
+
+			// Filter out interfaces without PnpInstanceID
+			interfaces = interfaces.filter(element => element.PnpInstanceID);
 
 			// get NameServer and DhcpNameServer of all interfaces
 			registryInterfaces = registry.openChild(
 				"Services\\Tcpip\\Parameters\\Interfaces",
 				registry.ACCESS_READ);
 			var ns = "";
-			for (const onlineInterface of interfacesOnline) {
-				reg = registryInterfaces.openChild(onlineInterface, registry.ACCESS_READ);
+			for (const intf of interfaces) {
+				reg = registryInterfaces.openChild(intf.guid, registry.ACCESS_READ);
 				if (reg.hasValue("NameServer")) {
 					ns += " " + reg.readStringValue("NameServer");
 				}
@@ -686,9 +547,10 @@ function queryDNSRecursive(servers, host, recordtype, callback, callbackdata, ho
 	};
 
 	// allow server to be either a hostname or hostname:port
+	// Note: Port is not supported for IPv6 addresses.
 	var server_hostname = server;
 	var port = 53;
-	if (server.includes(":")) {
+	if ((server.match(/:/g) ?? []).length === 1) {
 		server_hostname = server.substring(0, server.indexOf(":"));
 		port = parseInt(server.substring(server.indexOf(":") + 1), 10);
 	}
@@ -832,7 +694,7 @@ function DNS_getRDData(str, server, host, recordtype, callback, callbackdata, ho
 	var rcode = flags & 0xF;
 	if (rcode !== 0) {
 		log.debug(debugstr + "Lookup failed with rcode " + rcode);
-		callback(null, callbackdata, "Lookup failed with rcode " + rcode, rcode);
+		callback(null, callbackdata, undefined, rcode);
 		return;
 	}
 

@@ -676,7 +676,7 @@ class DkimHeaderRow {
 		let position;
 		if (headerRowContainer) {
 			// TB < 96
-			headerRowElement = this._createTableRowElement(document);
+			headerRowElement = this.#createTableRowElement(document);
 			position = "beforeend";
 		} else {
 			// TB >= 96
@@ -684,7 +684,7 @@ class DkimHeaderRow {
 			if (!headerRowContainer) {
 				throw Error("Could not find the expandedHeaders2 element");
 			}
-			headerRowElement = this._createDivRowElement(document);
+			headerRowElement = this.#createDivRowElement(document);
 			position = "beforebegin";
 		}
 		const headerRow = new DkimHeaderRow(document, headerRowElement);
@@ -741,11 +741,10 @@ class DkimHeaderRow {
 	 * Used in TB 78-95.
 	 * Should be added to the `expandedHeaders2` element.
 	 *
-	 * @private
 	 * @param {Document} document
 	 * @returns {HTMLElement}
 	 */
-	static _createTableRowElement(document) {
+	static #createTableRowElement(document) {
 		const headerRow = document.createElement("tr");
 		headerRow.id = DkimHeaderRow._id;
 
@@ -769,11 +768,10 @@ class DkimHeaderRow {
 	 * Used in TB >= 96.
 	 * Should be added to the `extraHeadersArea` element.
 	 *
-	 * @private
 	 * @param {Document} document
 	 * @returns {HTMLElement}
 	 */
-	static _createDivRowElement(document) {
+	static #createDivRowElement(document) {
 		const headerRow = document.createElement("div");
 		headerRow.id = DkimHeaderRow._id;
 		headerRow.classList.add("message-header-row");
@@ -823,7 +821,7 @@ class DkimFavicon {
 		// @ts-expect-error
 		this.element = document.createXULElement("description");
 
-		this.element.id = DkimFavicon._id;
+		this.element.id = DkimFavicon.#id;
 		this.element.classList.add("headerValue");
 		this.element.setAttribute("tooltip", DkimFavicon.idTooltip);
 		// dummy text for align baseline
@@ -869,7 +867,7 @@ class DkimFavicon {
 	 * @returns {DkimFavicon|null}
 	 */
 	static get(document) {
-		const element = document.getElementById(DkimFavicon._id);
+		const element = document.getElementById(DkimFavicon.#id);
 		if (!element) {
 			return null;
 		}
@@ -940,10 +938,9 @@ class DkimFavicon {
 	}
 
 	/**
-	 * @private
 	 * @readonly
 	 */
-	static _id = "dkimFavicon";
+	static #id = "dkimFavicon";
 	/** @readonly */
 	static idTooltip = "dkim-verifier-header-tooltip-from";
 }
@@ -959,11 +956,10 @@ class DkimFromAddress {
 	 * Can return multiple elements, as newer Thunderbird version have
 	 * both a single line and a multi line from address.
 	 *
-	 * @private
 	 * @param {Document} document
 	 * @returns {HTMLElement[]}
 	 */
-	static _getFromAddress(document) {
+	static #getFromAddress(document) {
 		// TB >=102
 		const fromRecipient0Display = document.getElementById("fromRecipient0Display");
 		if (fromRecipient0Display) {
@@ -1013,7 +1009,7 @@ class DkimFromAddress {
 	 * @returns {void}
 	 */
 	static setHighlightColor(document, color, backgroundColor) {
-		const emailValues = this._getFromAddress(document);
+		const emailValues = this.#getFromAddress(document);
 		if (!emailValues) {
 			return;
 		}
@@ -1032,7 +1028,7 @@ class DkimFromAddress {
 	 * @returns {void}
 	 */
 	static showTooltip(document, show) {
-		const emailValues = this._getFromAddress(document);
+		const emailValues = this.#getFromAddress(document);
 		if (!emailValues) {
 			return;
 		}
@@ -1099,11 +1095,11 @@ class DkimResetMessageListener {
 	 * @returns {void}
 	 */
 	static register(window) {
-		if (DkimResetMessageListener._mapping.has(window)) {
-			console.error("MessageListener.register(): already registered");
+		if (DkimResetMessageListener.#mapping.has(window)) {
+			console.error("DkimResetMessageListener.register(): already registered");
 		}
 		const messageListener = new DkimResetMessageListener(window);
-		DkimResetMessageListener._mapping.set(window, messageListener);
+		DkimResetMessageListener.#mapping.set(window, messageListener);
 		window.gMessageListeners.push(messageListener);
 	}
 
@@ -1114,7 +1110,7 @@ class DkimResetMessageListener {
 	 * @returns {void}
 	 */
 	static unregister(window) {
-		const listener = DkimResetMessageListener._mapping.get(window);
+		const listener = DkimResetMessageListener.#mapping.get(window);
 		if (!listener) {
 			console.error("MessageListener.unregister(): could not find a listener for the window");
 			return;
@@ -1125,7 +1121,7 @@ class DkimResetMessageListener {
 		} else {
 			console.error("MessageListener.unregister(): could not find the listener");
 		}
-		DkimResetMessageListener._mapping.delete(window);
+		DkimResetMessageListener.#mapping.delete(window);
 	}
 
 	/**
@@ -1156,10 +1152,9 @@ class DkimResetMessageListener {
 	onEndAttachments() { }
 
 	/**
-	 * @private
 	 * @type {Map<Window, DkimResetMessageListener>}
 	 */
-	static _mapping = new Map();
+	static #mapping = new Map();
 }
 
 this.dkimHeader = class extends ExtensionCommon.ExtensionAPI {
@@ -1345,13 +1340,18 @@ this.dkimHeader = class extends ExtensionCommon.ExtensionAPI {
 		}
 
 		const displayedMessages = ExtensionParent.apiManager.global.getDisplayedMessages(tab);
-		const id = displayedMessages[0]?.id;
-		if (id === undefined || displayedMessages.length !== 1) {
+		let displayedMessage = displayedMessages[0];
+		if (!displayedMessage || displayedMessages.length !== 1) {
 			return {
 				window: msgWindow,
 				id: null,
 			};
 		}
+		if (!("id" in displayedMessage)) {
+			// TB >= 115
+			displayedMessage = this.extension.messageManager.convert(displayedMessage);
+		}
+		const id = displayedMessage.id;
 		return {
 			window: msgWindow,
 			id,

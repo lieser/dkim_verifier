@@ -275,7 +275,7 @@
 		"message": "El servidor DNS $1 agotó el tiempo de espera en una conexión TCP"
 	},
 	"SERVER_ERROR": {
-		"message": "Error al conectarse al servidor DNS &1"
+		"message": "Error al conectarse al servidor DNS $1"
 	},
 	"INCOMPLETE_RESPONSE": {
 		"message": "Respuesta incompleta de $1"

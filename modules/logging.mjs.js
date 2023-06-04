@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2022 Philippe Lieser
+ * Copyright (c) 2020-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -99,7 +99,7 @@ export default class Logging {
 	static getLogger(loggerName) {
 		const name = loggerName ? `${LOG_NAME}.${loggerName}` : `${LOG_NAME}`;
 		const logger = new Logger(name);
-		Logging._loggers.push(logger);
+		Logging.#loggers.push(logger);
 		// @ts-expect-error
 		return logger;
 	}
@@ -112,13 +112,13 @@ export default class Logging {
 	 * @returns {void}
 	 */
 	static setLogLevel(logLevel) {
-		Logging._logLevel = logLevel;
-		Logging._loggers.forEach(logger => {
+		Logging.#logLevel = logLevel;
+		Logging.#loggers.forEach(logger => {
 			logger.logLevel = logLevel;
 		});
 	}
 	static get logLevel() {
-		return Logging._logLevel;
+		return Logging.#logLevel;
 	}
 
 	/**
@@ -157,11 +157,9 @@ export default class Logging {
 		});
 	}
 
-	/** @private */
-	static _logLevel = Logging.Level.Debug;
+	static #logLevel = Logging.Level.Debug;
 	/**
-	 * @private
 	 * @type {Logger[]}
 	 */
-	static _loggers = [];
+	static #loggers = [];
 }

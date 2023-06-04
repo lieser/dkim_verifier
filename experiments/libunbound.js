@@ -22,7 +22,11 @@
 var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 // @ts-expect-error
 // eslint-disable-next-line no-var
-var { OS } = ChromeUtils.import("resource://gre/modules/osfile.jsm");
+var OS;
+if (typeof PathUtils === "undefined") {
+	// TB < 115
+	({ OS } = ChromeUtils.import("resource://gre/modules/osfile.jsm"));
+}
 
 /**
  * The result of the query.
@@ -89,7 +93,7 @@ class LibunboundWorker {
 		this.worker =
 			//@ts-expect-error
 			new ChromeWorker("chrome://dkim_verifier_libunbound/content/libunboundWorker.jsm.js");
-		this.worker.onmessage = (msg) => this._onmessage(msg);
+		this.worker.onmessage = (msg) => this.#onmessage(msg);
 
 		this.config = {
 			getNameserversFromOS: true,
@@ -119,7 +123,12 @@ class LibunboundWorker {
 		if (this.config.pathRelToProfileDir) {
 			path = this.config.path.
 				split(";").
-				map(e => { return OS.Path.join(OS.Constants.Path.profileDir, e); }).
+				map(e => {
+					if (OS) {
+						return OS.Path.join(OS.Constants.Path.profileDir, e);
+					}
+					return PathUtils.join(PathUtils.profileDir, e);
+				}).
 				join(";");
 		} else {
 			path = this.config.path;
@@ -212,11 +221,10 @@ class LibunboundWorker {
 	/**
 	 * Handle the callbacks from the ChromeWorker.
 	 *
-	 * @private
 	 * @param {Libunbound.WorkerResponse} msg
 	 * @returns {void}
 	 */
-	_onmessage(msg) {
+	#onmessage(msg) {
 		try {
 			// handle log messages
 			if (msg.data.type && msg.data.type === "log") {
@@ -375,14 +383,6 @@ this.libunbound = class extends ExtensionCommon.ExtensionAPI {
 	 * @returns {{libunbound: browser.libunbound}}
 	 */
 	getAPI(_context) {
-		const RCODE = {
-			NoError: 0, // No Error [RFC1035]
-			FormErr: 1, // Format Error [RFC1035]
-			ServFail: 2, // Server Failure [RFC1035]
-			NXDomain: 3, // Non-Existent Domain [RFC1035]
-			NotImp: 4, // Non-Existent Domain [RFC1035]
-			Refused: 5, // Query Refused [RFC1035]
-		};
 		const libunboundWorker = this.libunboundWorker;
 		return {
 			libunbound: {
@@ -402,15 +402,6 @@ this.libunbound = class extends ExtensionCommon.ExtensionAPI {
 				},
 				async txt(name) {
 					const res = await libunboundWorker.resolve(name, LibunboundWorker.Constants.RR_TYPE_TXT);
-					if (res === null) {
-						// error in libunbound
-						return {
-							data: null,
-							rcode: RCODE.ServFail,
-							secure: false,
-							bogus: false,
-						};
-					}
 					const data = res.havedata ? res.data.map(rdata => {
 						if (typeof rdata !== "string") {
 							throw Error(`DNS result has unexpected type ${typeof rdata}`);

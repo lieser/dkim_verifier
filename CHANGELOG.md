@@ -8,16 +8,25 @@ All notable changes to this project will be documented in this file.
 
 ### Enhancements
 
+- Fixed incompatibility with Thunderbird 115 (#364).
+- Support the offline mode of Thunderbird.
+  No DNS queries are done if Thunderbird is in the offline mode (#129).
+- JSDNS: Support IPv6 addresses (#363)
+
+## 5.2.0 (2023-04-02)
+
+### Enhancements
+
 - Extract the received time from the last Received header and use it as the verification time (#336).
-- Fixed incompatibility with Thunderbird 113 (#352)
+- Fixed incompatibility with Thunderbird 113 (#352).
 
 ### Fixes
 
 - Fixed extension not working for attached or external messages (#216).
   Requires Thunderbird 106 or later.
 - Fixed empty tags being treated as ill-formed. This e.g. fixes revoked DKIM keys.
-- Fixed tooltip for From header in Thunderbird 102 or newer (#311)
-- Fixed missing body resulting in internal error (#347)
+- Fixed tooltip for From header in Thunderbird 102 or newer (#311).
+- Fixed missing body resulting in internal error (#347).
 
 ### Other
 

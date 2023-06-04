@@ -8,7 +8,6 @@
  */
 
 // @ts-check
-///<reference path="../../WebExtensions.d.ts" />
 /* eslint-env shared-node-browser, webextensions */
 
 import expect, { expectAsyncError } from "../helpers/chaiUtils.mjs.js";
