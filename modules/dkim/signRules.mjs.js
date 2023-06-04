@@ -10,13 +10,10 @@
  */
 
 // @ts-check
-///<reference path="../../WebExtensions.d.ts" />
 ///<reference path="../../RuntimeMessage.d.ts" />
 ///<reference path="../../experiments/mailUtils.d.ts" />
 /* eslint-env webextensions */
-/* eslint no-unused-vars: ["error", { "varsIgnorePattern": "VerifierModule" }] */
 
-import * as VerifierModule from "./verifier.mjs.js";
 import { Deferred, addrIsInDomain, copy, stringEndsWith, stringEqual } from "../utils.mjs.js";
 import { DKIM_InternalError } from "../error.mjs.js";
 import ExtensionUtils from "../extensionUtils.mjs.js";
@@ -24,6 +21,8 @@ import Logging from "../logging.mjs.js";
 import prefs from "../preferences.mjs.js";
 
 const log = Logging.getLogger("SignRules");
+
+/** @typedef {import("./verifier.mjs.js").dkimSigResultV2} dkimSigResultV2 */
 
 /**
  * DKIM signing policy for a message.
@@ -317,9 +316,9 @@ async function checkIfShouldBeSigned(fromAddress, listId, dmarc) {
 /**
  * Checks the SDID and AUID of a DKIM signatures.
  *
- * @param {VerifierModule.dkimSigResultV2} dkimResult
+ * @param {dkimSigResultV2} dkimResult
  * @param {string[]} allowedSDIDs
- * @returns {VerifierModule.dkimSigResultV2}
+ * @returns {dkimSigResultV2}
  */
 function checkSDID(dkimResult, allowedSDIDs) {
 	const result = copy(dkimResult);
@@ -444,12 +443,12 @@ export default class SignRules {
 	/**
 	 * Checks the DKIM result against the sign rules.
 	 *
-	 * @param {VerifierModule.dkimSigResultV2} dkimResult
+	 * @param {dkimSigResultV2} dkimResult
 	 * @param {string} from
 	 * @param {string?} [listId]
 	 * @param {function(void): Promise<boolean>} [isOutgoingCallback]
 	 * @param {DMARC} [dmarc]
-	 * @returns {Promise<VerifierModule.dkimSigResultV2>}
+	 * @returns {Promise<dkimSigResultV2>}
 	 */
 	static async check(dkimResult, from, listId, isOutgoingCallback, dmarc) {
 		await prefs.init();
@@ -474,7 +473,7 @@ export default class SignRules {
 			result.hideFail = true;
 		}
 		if (!policy.foundRule) {
-			await SignRules._autoAddRule(from, dkimResult);
+			await SignRules.#autoAddRule(from, dkimResult);
 		}
 		return result;
 	}
@@ -641,12 +640,11 @@ export default class SignRules {
 	/**
 	 * Adds should be signed rule if no enabled rule for fromAddress is found.
 	 *
-	 * @private
 	 * @param {string} fromAddress
-	 * @param {VerifierModule.dkimSigResultV2} dkimResult
+	 * @param {dkimSigResultV2} dkimResult
 	 * @returns {Promise<void>}
 	 */
-	static _autoAddRule(fromAddress, dkimResult) {
+	static #autoAddRule(fromAddress, dkimResult) {
 		const promise = (async () => {
 			if (dkimResult.result !== "SUCCESS") {
 				return;

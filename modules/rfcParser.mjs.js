@@ -141,7 +141,7 @@ export default class RfcParser {
 	/**
 	 * Parse a tag value stored in a Map.
 	 *
-	 * @param {Map<string, string>} map
+	 * @param {ReadonlyMap<string, string>} map
 	 * @param {string} tagName - name of the tag
 	 * @param {string} patternTagValue - Pattern for the tag-value
 	 * @param {number} [expType] - Type of exception to throw. 1 for DKIM header, 2 for DKIM key, 3 for general.

@@ -65,6 +65,10 @@
 	"DKIM_DNSERROR_UNKNOWN": {
 		"message": "Error in the DNS resolver"
 	},
+	"DKIM_DNSERROR_OFFLINE": {
+		"message": "Failed to make DNS query because Thunderbird is in offline mode.",
+		"description": "Error message if the addon needs to do a DNS query, but Thunderbird is in the offline mode."
+	},
 	"DKIM_DNSERROR_SERVER_ERROR": {
 		"message": "Error connecting to the DNS server"
 	},
@@ -315,7 +319,7 @@
 		"message": "DNS server $1 timed out on a TCP connection."
 	},
 	"SERVER_ERROR": {
-		"message": "Error connecting to DNS server &1."
+		"message": "Error connecting to DNS server $1."
 	},
 	"INCOMPLETE_RESPONSE": {
 		"message": "Incomplete response from $1."

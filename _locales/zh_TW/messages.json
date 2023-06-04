@@ -65,6 +65,9 @@
 	"DKIM_DNSERROR_UNKNOWN": {
 		"message": "DNS 解析內部錯誤"
 	},
+	"DKIM_DNSERROR_OFFLINE": {
+		"message": "無法在離線模式下進行 DNS 查詢"
+	},
 	"DKIM_DNSERROR_SERVER_ERROR": {
 		"message": "無法連線到 DNS 伺服器"
 	},

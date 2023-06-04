@@ -8,7 +8,6 @@
  */
 
 // @ts-check
-///<reference path="../../WebExtensions.d.ts" />
 /* eslint-env webextensions */
 /* eslint-disable camelcase */
 
@@ -25,7 +24,7 @@ import { readTestFile } from "../helpers/testUtils.mjs.js";
 import sinon from "../helpers/sinonUtils.mjs.js";
 
 /**
- * @returns {browser.messageDisplay.MessageHeader}
+ * @returns {browser.messages.MessageHeader}
  */
 function createFakeMessageHeader() {
 	return {
@@ -33,13 +32,18 @@ function createFakeMessageHeader() {
 		bccList: [],
 		ccList: [],
 		date: new Date(),
+		external: false,
 		flagged: false,
-		folder: { accountId: "fakeAccount" },
+		folder: { accountId: "fakeAccount", path: "", type: "inbox" },
+		headerMessageId: "",
+		headersOnly: false,
 		id: 42,
 		junk: false,
 		junkScore: 0,
 		read: true,
+		new: false,
 		recipients: ["to@example.com"],
+		size: 42,
 		subject: "A fake message",
 		tags: [],
 	};
@@ -61,7 +65,7 @@ function extractHeaderValue(headers, name) {
 
 /**
  * @param {string} file - path to file relative to test data directory
- * @returns {Promise<browser.messageDisplay.MessageHeader>}
+ * @returns {Promise<browser.messages.MessageHeader>}
  */
 async function createMessageHeader(file) {
 	const fakeMessageHeader = createFakeMessageHeader();
@@ -70,10 +74,9 @@ async function createMessageHeader(file) {
 	fakeMessageHeader.author = extractHeaderValue(msgParsed.headers, "from")[0] ?? "";
 	fakeMessageHeader.recipients = extractHeaderValue(msgParsed.headers, "to");
 	fakeMessageHeader.subject = extractHeaderValue(msgParsed.headers, "subject")[0] ?? "";
-	browser.messages = {
-		getRaw: sinon.fake.resolves(msgPlain),
-		getFull: sinon.fake.throws("no fake for browser.messages.getFull"),
-	};
+	// @ts-expect-error
+	browser.messages = {};
+	browser.messages.getRaw = sinon.fake.resolves(msgPlain);
 	return fakeMessageHeader;
 }
 

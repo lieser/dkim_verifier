@@ -19,20 +19,6 @@
 // eslint-disable-next-line no-var
 var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
-/**
- * From https://javascriptweblog.wordpress.com/2011/08/08/fixing-the-javascript-typeof-operator/.
- *
- * @param {any} obj
- * @returns {string}
- */
-function toType(obj) {
-	const typeMatch = Object.prototype.toString.call(obj).match(/\s([a-zA-Z]+)/);
-	if (!typeMatch || !typeMatch[1]) {
-		throw new Error(`Failed to get type for ${obj}`);
-	}
-	return typeMatch[1];
-}
-
 this.jsdns = class extends ExtensionCommon.ExtensionAPI {
 	/**
 	 * @param {ExtensionCommon.Extension} extension
@@ -86,18 +72,18 @@ this.jsdns = class extends ExtensionCommon.ExtensionAPI {
 							if (rcode !== undefined) {
 								resRcode = rcode;
 							} else if (queryError !== undefined) {
-								/** @type {string|string[]} */
 								let error = "";
 								if (typeof queryError === "string") {
-									error = context.extension.localeData.localizeMessage(queryError);
-								} else if (toType(queryError) === "Array" && queryError[0]) {
-									error = context.extension.localeData.localizeMessage(queryError[0], queryError[1]);
-								}
-								if (!error) {
 									error = queryError;
+								} else {
+									error = context.extension.localeData.localizeMessage(queryError[0] ?? "DKIM_DNSERROR_UNKNOWN", queryError[1]) ||
+										(queryError[0] ?? "Unknown DNS error");
 								}
 								console.warn(`JSDNS failed with: ${error}`);
-								resRcode = RCODE.ServFail;
+								defer.resolve({
+									error,
+								});
+								return;
 							}
 
 							const results = dnsResult && dnsResult.map(rdata => {

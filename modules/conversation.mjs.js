@@ -10,7 +10,6 @@
  */
 
 // @ts-check
-///<reference path="../WebExtensions.d.ts" />
 /* eslint-env webextensions */
 
 import AuthVerifier from "../modules/authVerifier.mjs.js";
@@ -70,7 +69,7 @@ const verifier = new AuthVerifier();
 /**
  * Verify a message and display the result in Conversation.
  *
- * @param {browser.messageDisplay.MessageHeader} MessageHeader
+ * @param {browser.messages.MessageHeader} MessageHeader
  * @returns {Promise<void>}
  */
 export default async function verifyMessage(MessageHeader) {

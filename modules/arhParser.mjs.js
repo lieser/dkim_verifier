@@ -5,6 +5,9 @@
  * - IDNA A-labels and U-labels are not verified to be valid.
  * - A-labels are not converted into U-labels (e.g. to compare "authserv-id")
  *
+ * Email Authentication Parameters:
+ * https://www.iana.org/assignments/email-auth/email-auth.xhtml
+ *
  * Copyright (c) 2014-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.

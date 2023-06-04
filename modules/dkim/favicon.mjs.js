@@ -8,7 +8,6 @@
  */
 
 // @ts-check
-///<reference path="../../WebExtensions.d.ts" />
 /* eslint-env webextensions */
 
 import ExtensionUtils from "../extensionUtils.mjs.js";

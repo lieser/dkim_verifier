@@ -158,11 +158,10 @@ class DkimCryptoWeb extends DkimCryptoBase {
 	}
 
 	/**
-	 * @private
 	 * @param {Uint8Array} data
 	 * @returns {string}
 	 */
-	_encodeBase64(data) {
+	#encodeBase64(data) {
 		return btoa(String.fromCharCode(...data));
 	}
 
@@ -176,7 +175,7 @@ class DkimCryptoWeb extends DkimCryptoBase {
 	 */
 	async digest(algorithm, message) {
 		const digest = await this.digestRaw(algorithm, message);
-		return this._encodeBase64(digest);
+		return this.#encodeBase64(digest);
 	}
 
 	/**
@@ -241,10 +240,9 @@ class DkimCryptoWeb extends DkimCryptoBase {
  */
 class DkimCryptoNode extends DkimCryptoBase {
 	/**
-	 * @private
 	 * @returns {Promise<typeof import("crypto")>}
 	 */
-	async _crypto() {
+	async #crypto() {
 		if (!this.crypto) {
 			this.crypto = await import("crypto");
 		}
@@ -270,7 +268,7 @@ class DkimCryptoNode extends DkimCryptoBase {
 	 * @returns {Promise<string>} b64 encoded hash
 	 */
 	async digest(algorithm, message) {
-		const crypto = await this._crypto();
+		const crypto = await this.#crypto();
 		const hash = crypto.createHash(algorithm);
 		hash.update(message, "latin1");
 		return hash.digest("base64");
@@ -285,7 +283,7 @@ class DkimCryptoNode extends DkimCryptoBase {
 	 * @returns {Promise<Uint8Array>} b64 encoded hash
 	 */
 	async digestRaw(algorithm, message) {
-		const crypto = await this._crypto();
+		const crypto = await this.#crypto();
 		const hash = crypto.createHash(algorithm);
 		hash.update(message, "latin1");
 		return hash.digest();
@@ -303,7 +301,7 @@ class DkimCryptoNode extends DkimCryptoBase {
 	 * @throws DKIM_SigError
 	 */
 	async verifyRSA(key, digestAlgorithm, signature, data) {
-		const crypto = await this._crypto();
+		const crypto = await this.#crypto();
 		let cryptoKey;
 		try {
 			cryptoKey = crypto.createPublicKey({

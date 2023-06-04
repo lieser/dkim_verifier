@@ -296,7 +296,7 @@
 		"message": "O servidor DNS $1 atingiu o tempo limite em uma conexão TCP."
 	},
 	"SERVER_ERROR": {
-		"message": "Erro ao conectar ao servidor DNS &1."
+		"message": "Erro ao conectar ao servidor DNS $1."
 	},
 	"INCOMPLETE_RESPONSE": {
 		"message": "Resposta incompleta de $1."

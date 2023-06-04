@@ -9,7 +9,9 @@ declare module browser {
             debug: boolean,
         ) => Promise<void>;
 
-        type TxtResult = import("../modules/dns.mjs.js").DnsTxtResult;
+        type TxtResult = import("../modules/dns.mjs.js").DnsTxtResult | {
+            error: string,
+        }
         const txt: (name: string) => Promise<TxtResult>;
     }
 }

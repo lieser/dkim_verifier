@@ -67,7 +67,7 @@ declare module ExtensionCommon {
         ////////////////////////////////////////////////////////////////////////
         //// https://searchfox.org/comm-central/source/mail/components/extensions/parent/ext-mail.js
         readonly messageManager: {
-            readonly convert: (msgDBHdr: nsIMsgDBHdr) => browser.messageDisplay.MessageHeader;
+            readonly convert: (msgDBHdr: nsIMsgDBHdr) => browser.messages.MessageHeader;
             readonly get: (messageId: number) => nsIMsgDBHdr;
         };
         readonly tabManager: ExtensionParentM.TabManagerBase;
@@ -133,7 +133,8 @@ declare module ExtensionParentM {
         declare module global {
             const tabTracker: TabTrackerBase;
 
-            const getDisplayedMessages: (tab: TabBase) => browser.messageDisplay.MessageHeader[];
+            // Returns nsIMsgDBHdr in TB >= 115
+            const getDisplayedMessages: (tab: TabBase) => browser.messages.MessageHeader[] | nsIMsgDBHdr[];
         }
     }
 }
@@ -160,7 +161,7 @@ declare module FileUtils {
     function File(path: string): nsIFile;
 }
 
-/** JavaScript code module "resource://gre/modules/osfile.jsm" */
+/** JavaScript code module "resource://gre/modules/osfile.jsm" (removed in TB >= 115) */
 declare module OS {
     declare module Path {
         function join(path1: string, path2: string, ...paths: string[]): string;
@@ -171,6 +172,13 @@ declare module OS {
             profileDir: string;
         }
     }
+}
+
+/** https://searchfox.org/mozilla-central/source/dom/chrome-webidl/PathUtils.webidl */
+declare module PathUtils {
+    function join(path1: string, path2: string, ...paths: string[]): string;
+
+    const profileDir: string;
 }
 
 /** JavaScript code module "resource://gre/modules/Services.jsm" */

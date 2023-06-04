@@ -13,6 +13,33 @@
 				"kind": "build",
 				"isDefault": true
 			}
-		}
+		},
+		{
+			"label": "lint",
+			"detail": "Run ESLint",
+			"type": "npm",
+			"script": "lint",
+			"problemMatcher": [
+				"$eslint-stylish"
+			],
+		},
+		{
+			"label": "lint:ci",
+			"detail": "Run ESLint with config for CI",
+			"type": "npm",
+			"script": "lint:ci",
+			"problemMatcher": [
+				"$eslint-stylish"
+			],
+		},
+		{
+			"label": "checkJs",
+			"detail": "Run type checking with TS",
+			"type": "npm",
+			"script": "checkJs",
+			"problemMatcher": [
+				"$tsc"
+			],
+		},
 	]
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2022 Philippe Lieser
+ * Copyright (c) 2020-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -16,11 +16,10 @@
 
 this.storageMessage = class extends ExtensionCommon.ExtensionAPI {
 	/**
-	 * @private
 	 * @param {number} messageId
 	 * @returns {nsIMsgDBHdr}
 	 */
-	_getMsgHdr(messageId) {
+	#getMsgHdr(messageId) {
 		const msgHdr = this.extension.messageManager.get(messageId);
 		if (!msgHdr.folder) {
 			throw new Error("Cannot set/get data on an external message");
@@ -36,12 +35,12 @@ this.storageMessage = class extends ExtensionCommon.ExtensionAPI {
 		return {
 			storageMessage: {
 				set: (messageId, key, value) => {
-					const msgHdr = this._getMsgHdr(messageId);
+					const msgHdr = this.#getMsgHdr(messageId);
 					msgHdr.setStringProperty(key, value);
 					return Promise.resolve();
 				},
 				get: (messageId, key) => {
-					const msgHdr = this._getMsgHdr(messageId);
+					const msgHdr = this.#getMsgHdr(messageId);
 					const value = msgHdr.getStringProperty(key);
 					return Promise.resolve(value);
 				},
