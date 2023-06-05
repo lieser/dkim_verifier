@@ -65,6 +65,10 @@
 	"DKIM_DNSERROR_UNKNOWN": {
 		"message": "Errore nel risolutore DNS"
 	},
+	"DKIM_DNSERROR_OFFLINE": {
+		"message": "Impossibile eseguire la query DNS perché Thunderbird è in modalità offline.",
+		"description": "Error message if the addon needs to do a DNS query, but Thunderbird is in the offline mode."
+	},
 	"DKIM_DNSERROR_SERVER_ERROR": {
 		"message": "Errore durante la connessione al server DNS"
 	},
