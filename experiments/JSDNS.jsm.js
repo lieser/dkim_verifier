@@ -91,19 +91,33 @@ var log = chromeConsole.createInstance({
  * @property {boolean} alive Whether the server is alive.
  */
 
-// Preferences
-/** @type {DnsServer[]} */
-var DNS_ROOT_NAME_SERVERS = [];
-var timeout_connect = 0xFFFF;
-/** @type {number|null} */
-var timeout_read_write = null;
-var PROXY_CONFIG = {
-	enable: false,
-	type: "",
-	host: "",
-	port: 0
+/**
+ * Preferences that are set from outside.
+ */
+const prefs = {
+	getServerFromOS: false,
+	additionalNameServer: "",
+
+	autoResetServerToAlive: true,
+
+	timeoutConnect: 0xFFFF,
+	/** @type {number|null} */
+	timeoutReadWrite: null,
+
+	proxy: {
+		enable: false,
+		type: "",
+		host: "",
+		port: 0
+	},
 };
-var AUTO_RESET_SERVER_ALIVE = false;
+
+/**
+ * The current DNS servers to use.
+ *
+ * @type {DnsServer[]}
+ */
+var DNS_ROOT_NAME_SERVERS = [];
 
 /**
  * Set preferences to use.
@@ -129,6 +143,26 @@ function configureDNS(getNameserversFromOS, nameServer, timeoutConnect, proxy, a
 		maxLogLevel,
 	});
 
+	updateDnsServers(getNameserversFromOS, nameServer);
+
+	prefs.getServerFromOS = getNameserversFromOS;
+	prefs.additionalNameServer = nameServer;
+	prefs.timeoutConnect = timeoutConnect;
+	prefs.timeoutReadWrite = timeoutConnect;
+	prefs.proxy = proxy;
+	prefs.autoResetServerToAlive = autoResetServerAlive;
+}
+
+/**
+ * Update the DNS server to use.
+ *
+ * @param {boolean} getNameserversFromOS
+ * @param {string} nameServer
+ * @returns {void}
+ */
+function updateDnsServers(getNameserversFromOS, nameServer) {
+	"use strict";
+
 	/** @type {DnsServer[]} */
 	const prefDnsRootNameServers = [];
 	nameServer.split(";").forEach((element /*, index, array*/) => {
@@ -149,14 +183,7 @@ function configureDNS(getNameserversFromOS, nameServer, timeoutConnect, proxy, a
 		DNS_ROOT_NAME_SERVERS = prefDnsRootNameServers;
 	}
 
-	log.info("changed DNS Servers to :", DNS_ROOT_NAME_SERVERS);
-
-	timeout_connect = timeoutConnect;
-	timeout_read_write = timeoutConnect;
-
-	PROXY_CONFIG = proxy;
-
-	AUTO_RESET_SERVER_ALIVE = autoResetServerAlive;
+	log.info("Changed DNS Servers to:", DNS_ROOT_NAME_SERVERS);
 }
 
 /**
@@ -369,11 +396,15 @@ function getOsDnsServers() {
 async function queryDNS(host, recordtype) {
 	"use strict";
 
-	for (const server of DNS_ROOT_NAME_SERVERS) {
-		if (!server.alive) {
-			continue;
+	DNS_ROOT_NAME_SERVERS = DNS_ROOT_NAME_SERVERS.filter(server => server.alive);
+	if (DNS_ROOT_NAME_SERVERS.length === 0) {
+		log.debug("No DNS Server alive.");
+		if (prefs.autoResetServerToAlive) {
+			updateDnsServers(prefs.getServerFromOS, prefs.additionalNameServer);
 		}
+	}
 
+	for (const server of DNS_ROOT_NAME_SERVERS) {
 		const res = await querySingleDNSRecursive(server.server, host, recordtype, 0);
 		if (res.queryError) {
 			// Set current server to not alive and query next server.
@@ -381,14 +412,6 @@ async function queryDNS(host, recordtype) {
 			continue;
 		}
 		return res;
-	}
-
-	log.debug("no DNS Server alive");
-	if (AUTO_RESET_SERVER_ALIVE) {
-		DNS_ROOT_NAME_SERVERS.forEach((element /*, index, array*/) => {
-			element.alive = true;
-		});
-		log.debug("set all servers to alive");
 	}
 
 	return {
@@ -866,16 +889,16 @@ class Socket {
 	 */
 	constructor(host, port) {
 		let proxy = null;
-		if (PROXY_CONFIG.enable) {
+		if (prefs.proxy.enable) {
 			const pps = Cc["@mozilla.org/network/protocol-proxy-service;1"]?.
 				getService(Ci.nsIProtocolProxyService);
 			if (!pps) {
 				throw new Error("Could not get protocol-proxy-service service");
 			}
 			proxy = pps.newProxyInfo(
-				PROXY_CONFIG.type,
-				PROXY_CONFIG.host,
-				PROXY_CONFIG.port,
+				prefs.proxy.type,
+				prefs.proxy.host,
+				prefs.proxy.port,
 				"", "", 0, 0xffffffff, null
 			);
 		}
@@ -889,9 +912,9 @@ class Socket {
 		const transport = transportService.createTransport([], host, port, proxy, null);
 
 		// change timeout for connection
-		transport.setTimeout(transport.TIMEOUT_CONNECT, timeout_connect);
-		if (timeout_read_write) {
-			transport.setTimeout(transport.TIMEOUT_READ_WRITE, timeout_read_write);
+		transport.setTimeout(transport.TIMEOUT_CONNECT, prefs.timeoutConnect);
+		if (prefs.timeoutReadWrite) {
+			transport.setTimeout(transport.TIMEOUT_READ_WRITE, prefs.timeoutReadWrite);
 		}
 
 		// Open output and input streams.

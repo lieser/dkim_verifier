@@ -313,7 +313,7 @@ export class BasePreferences {
 		return this.#tryGetNumberValue("dns.proxy.port", 1080);
 	}
 	get "dns.jsdns.autoResetServerAlive"() {
-		return this.#tryGetBoolValue("dns.jsdns.autoResetServerAlive", false);
+		return this.#tryGetBoolValue("dns.jsdns.autoResetServerAlive", true);
 	}
 	get "dns.libunbound.path"() {
 		return this.#tryGetStringValue("dns.libunbound.path", "");
