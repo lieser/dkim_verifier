@@ -16,6 +16,10 @@ All notable changes to this project will be documented in this file.
   By default the addon will now try them again instead of getting in a state there all further DNS queries will fail (#269).
   If getting DNS servers from OS configuration is enabled, they will now also be read from the OS again (#90).
 
+### Other
+
+- Updated default rules and favicons (#365).
+
 ## 5.2.0 (2023-04-02)
 
 ### Enhancements
