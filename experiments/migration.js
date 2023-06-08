@@ -21,7 +21,11 @@ var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 var { Sqlite } = ChromeUtils.import("resource://gre/modules/Sqlite.jsm");
 // @ts-expect-error
 // eslint-disable-next-line no-var
-var { OS } = ChromeUtils.import("resource://gre/modules/osfile.jsm");
+var OS;
+if (typeof PathUtils === "undefined") {
+	// TB < 115
+	({ OS } = ChromeUtils.import("resource://gre/modules/osfile.jsm"));
+}
 // @ts-expect-error
 // eslint-disable-next-line no-var
 var { FileUtils } = ChromeUtils.import("resource://gre/modules/FileUtils.jsm");
@@ -64,7 +68,12 @@ this.migration = class extends ExtensionCommon.ExtensionAPI {
 	 */
 	#openSqlite(fileName) {
 		// Retains absolute paths and normalizes relative as relative to profile.
-		const path = OS.Path.join(OS.Constants.Path.profileDir, fileName);
+		let path;
+		if (OS) {
+			path = OS.Path.join(OS.Constants.Path.profileDir, fileName);
+		} else {
+			path = PathUtils.join(PathUtils.profileDir, fileName);
+		}
 		const file = FileUtils.File(path);
 
 		// test that db exists

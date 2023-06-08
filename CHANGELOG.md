@@ -4,6 +4,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+### Fixes
+
+- Fixed incompatibility with Thunderbird 115 if no preferences exist, e.g. a new installation.
+
 ## 5.3.0 (2023-06-06)
 
 ### Enhancements
