@@ -1593,7 +1593,7 @@
 			"sdid": "interactadvocates.org interactadvocates-org.20210112.gappssmtp.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
-		}, {
+ 		}, {
 			"domain": "iode.tech",
 			"addr": "*",
 			"sdid": "iode.tech",
@@ -1719,7 +1719,7 @@
 			"sdid": "latex.org latex-org.20210112.gappssmtp.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
-		}, {
+ 		}, {
 			"domain": "latex-project.org",
 			"addr": "*",
 			"sdid": "latex-project.org",
