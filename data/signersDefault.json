@@ -4,6 +4,12 @@
 	"versionData": 38,
 	"rules": [
 		{
+			"domain": "11880.com",
+			"addr": "*",
+			"sdid": "11880.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "1und1.de",
 			"addr": "*",
 			"sdid": "1und1.de 1and1.com",
@@ -963,7 +969,7 @@
 			"sdid": "europcar.com europcar-com.20210112.gappssmtp.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
- 		}, {
+		}, {
 			"domain": "europcar-news.com",
 			"addr": "*",
 			"sdid": "europcar-news.com",
@@ -1297,6 +1303,12 @@
 			"domain": "gmx.net",
 			"addr": "*@sicher.gmx.net",
 			"sdid": "gmx.net sicher.gmx.net",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
+			"domain": "gmx.net",
+			"addr": "*@system.gmx.net",
+			"sdid": "gmx.net system.gmx.net",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
@@ -1768,6 +1780,24 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "lmu.de",
+			"addr": "*",
+			"sdid": "lmu.de",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "lmu.de",
+			"addr": "*@ifi.lmu.de",
+			"sdid": "lmu.de ifi.lmu.de",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
+			"domain": "lmu.de",
+			"addr": "*@sosy.ifi.lmu.de",
+			"sdid": "lmu.de ifi.lmu.de sosy.ifi.lmu.de",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
 			"domain": "loox.io",
 			"addr": "*",
 			"sdid": "loox.io",
@@ -2049,6 +2079,12 @@
 			"sdid": "",
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_NEUTRAL"
+		}, {
+			"domain": "nivona.com",
+			"addr": "*",
+			"sdid": "nivona.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
 		}, {
 			"domain": "noip.com",
 			"addr": "*",
@@ -2524,6 +2560,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "sosy-lab.org",
+			"addr": "*",
+			"sdid": "sosy-lab.org",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "sourceforge.com",
 			"addr": "*",
 			"sdid": "sourceforge.com",
@@ -2551,6 +2593,12 @@
 			"domain": "sparkasse-uelzen.de",
 			"addr": "*",
 			"sdid": "sparkasse-uelzen.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "spektrum.de",
+			"addr": "*",
+			"sdid": "spektrum.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -2781,6 +2829,18 @@
 			"sdid": "trello.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "trendtours.com",
+			"addr": "*",
+			"sdid": "trendtours.com",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "trendtours.com",
+			"addr": "*@info.trendtours.com",
+			"sdid": "trendtours.com info.trendtours.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
 			"domain": "tropen-schrader.de",
 			"addr": "*",
