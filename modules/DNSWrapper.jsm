@@ -54,8 +54,6 @@ var log = Logging.getLogger("DNSWrapper");
 
 // This variable is set to true in case of an switch-to-online-mode event, so DNS config will be updated before the next query
 var doUpdateDNSConfig = false;
-// This variable will be set to true, when the observer for the network online event is in place
-var isNetworkObserverAdded = false;
 
 /**
  * The result of the query.
@@ -119,7 +117,7 @@ var DNS = {
 					}					
 					result.rcode = res.rcode;
 					result.secure = res.secure;
-					result.bogus = res.bogus;					
+					result.bogus = res.bogus;
 				} else {
 					// error in libunbound
 					result.data = null;
@@ -154,7 +152,7 @@ function asyncJSDNS_QueryDNS(name, rrtype) {
 			if (rcode !== undefined) {
 				result.rcode = rcode;
 			} else if (queryError !== undefined) {
-				result.rcode = RCODE.ServFail;				
+				result.rcode = RCODE.ServFail;
 			} else {
 				result.rcode = RCODE.NoError;
 			}
@@ -184,7 +182,4 @@ function observeNetworkChange(subject, topic, data) {
 	}
 }
 
-if (!isNetworkObserverAdded) {
-	Services.obs.addObserver(observeNetworkChange, "network:offline-status-changed", false);
-	isNetworkObserverAdded = true;
-}
+Services.obs.addObserver(observeNetworkChange, "network:offline-status-changed", false);
