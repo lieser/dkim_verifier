@@ -697,7 +697,7 @@ function queryDNSRecursive(servers, host, recordtype, callback, callbackdata, ho
 		responseHeader : "",
 		responseBody : "",
 		done : false,
-		finished : function(data, status) {			
+		finished : function(data, status) {
 			if (status !== 0) {
 				if (status === 2152398861) { // NS_ERROR_CONNECTION_REFUSED
 					log.debug("Resolving " + host + "/" + recordtype + ": DNS server " + server + " refused a TCP connection.");
@@ -771,7 +771,6 @@ function queryDNSRecursive(servers, host, recordtype, callback, callbackdata, ho
 	// Note: Port is not supported for IPv6 addresses.
 	var server_hostname = server;
 	var port = 53;
-	
 	if (server.match(/:/g) && server.match(/:/g).length == 1) {
 		server_hostname = server.substring(0, server.indexOf(':'));
 		port = parseInt(server.substring(server.indexOf(':') + 1), 10);
