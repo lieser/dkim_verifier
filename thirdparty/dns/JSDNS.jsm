@@ -637,9 +637,6 @@ function queryDNSRecursive(servers, host, recordtype, callback, callbackdata, ho
 			log.debug("no DNS Server alive");
 			if (prefs.getBoolPref("jsdns.autoResetServerAlive")) {
 				updateConfig();
-				servers.forEach(function(element /*, index, array*/) {
-					element.alive = true;
-				});
 				log.debug("set all servers to alive");
 			}
 			callback(null, callbackdata, "no DNS Server alive");
