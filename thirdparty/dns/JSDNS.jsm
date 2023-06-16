@@ -423,7 +423,7 @@ function DNS_get_OS_DNSServers() {
 			});
 			registryNetworkAdapters.close();
 			log.debug("Found interfaces: ", interfaces);
-			
+
 			// Filter out interfaces without PnpInstanceID
 			interfaces = interfaces.filter(function(element) { return (element.PnpInstanceID !== null) });
 			// get NameServer and DhcpNameServer of all interfaces

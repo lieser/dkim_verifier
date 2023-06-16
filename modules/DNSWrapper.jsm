@@ -88,22 +88,22 @@ var DNS = {
 	 * @return {Promise<DNSResult>}
 	 */
 	resolve: async function DNS_resolve(name, rrtype="A") {
-		
+
 		if (Services.netUtils.offline) {
 			throw new DKIM_InternalError(null, "DKIM_DNSERROR_OFFLINE");
 		}
-				
+
 		switch (prefs.getIntPref("resolver")) {
 			case PREF.DNS.RESOLVER.JSDNS:
-				if (doUpdateDNSConfig) { 
-					JSDNS.updateConfig(); 
-					doUpdateDNSConfig = false; 
+				if (doUpdateDNSConfig) {
+					JSDNS.updateConfig();
+					doUpdateDNSConfig = false;
 				}
 				return asyncJSDNS_QueryDNS(name, rrtype);
 			case PREF.DNS.RESOLVER.LIBUNBOUND: {
-				if (doUpdateDNSConfig) { 
-					libunbound.updateConfig(); 
-					doUpdateDNSConfig = false; 
+				if (doUpdateDNSConfig) {
+					libunbound.updateConfig();
+					doUpdateDNSConfig = false;
 				}
 				let res = await libunbound.
 					resolve(name, libunbound.Constants["RR_TYPE_"+rrtype]);
@@ -114,7 +114,7 @@ var DNS = {
 						result.data = res.data;
 					} else {
 						result.data = null;
-					}					
+					}
 					result.rcode = res.rcode;
 					result.secure = res.secure;
 					result.bogus = res.bogus;
