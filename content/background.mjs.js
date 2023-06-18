@@ -205,7 +205,6 @@ browser.messageDisplay.onMessagesDisplayed.addListener(async (tab, messages) => 
 			for (const message of messages) {
 				await verifyMessageForConversation(message);
 			}
-			return;
 		}
 		// Normal Thunderbird view ("classic") is handled in onMessageDisplayed
 	} catch (e) {

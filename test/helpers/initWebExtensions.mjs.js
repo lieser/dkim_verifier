@@ -87,6 +87,7 @@ before(async function () {
 		// @ts-expect-error
 		prefs._valueSetter = (name, value) => { prefs._prefs[name] = value; return Promise.resolve(); };
 		prefs.init = () => { return Promise.resolve(); };
+		// @ts-expect-error
 		prefs.clear = () => { prefs._prefs = {}; return Promise.resolve(); };
 		// Still allow adding stubs to browser namespace
 		globalThis.browser = {

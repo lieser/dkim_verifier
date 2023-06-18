@@ -35,11 +35,11 @@ this.migration = class extends ExtensionCommon.ExtensionAPI {
 	 * Returns the preferences set in a preference branch.
 	 *
 	 * @param {nsIPrefBranch} prefBranch
-	 * @returns {Object<string, boolean|number|string>}
+	 * @returns {{[prefName: string]: boolean|number|string}}
 	 */
 	#getChildPrefs(prefBranch) {
 		const setPrefNames = prefBranch.getChildList("");
-		/** @type {Object<string, boolean|number|string>} */
+		/** @type {{[prefName: string]: boolean|number|string}} */
 		const childPrefs = {};
 		for (const prefName of setPrefNames) {
 			prefBranch.getPrefType(prefName);
@@ -99,7 +99,7 @@ this.migration = class extends ExtensionCommon.ExtensionAPI {
 				getAccountPrefs: () => {
 					const mailPrefs = Services.prefs.getBranch("mail.");
 					const accounts = mailPrefs.getCharPref("accountmanager.accounts").split(",");
-					/** @type {Object<string, Object<string, boolean|number|string>>} */
+					/** @type {{[account: string]: {[prefName: string]: boolean|number|string}}} */
 					const accountPrefs = {};
 					for (const account of accounts) {
 						const server = mailPrefs.getCharPref(`account.${account}.server`);

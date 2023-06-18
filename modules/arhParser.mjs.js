@@ -94,7 +94,7 @@ class Token {
  */
 
 /**
- * @typedef {Object<string, string|undefined>} ArhProperty
+ * @typedef {{[x: string]: string|undefined}} ArhProperty
  */
 /**
  * @typedef {{[x: string]: ArhProperty|undefined, smtp: ArhProperty, header: ArhProperty, body: ArhProperty, policy: ArhProperty }} ArhProperties

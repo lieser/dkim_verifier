@@ -1411,7 +1411,7 @@ export default class Verifier {
 	 * Create a DKIM fail result for an exception.
 	 *
 	 * @param {unknown} e
-	 * @param {DkimSignatureHeader|Object<string, undefined>} dkimSignature
+	 * @param {DkimSignatureHeader|{[x: string]: undefined}} dkimSignature
 	 * @returns {dkimSigResultV2}
 	 */
 	static #handleException(e, dkimSignature = {}) {

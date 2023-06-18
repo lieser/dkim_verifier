@@ -199,7 +199,7 @@ function updateDnsServers(getNameserversFromOS, nameServer) {
 function arrayUniqBy(ary, key) {
 	"use strict";
 
-	/** @type {Object<string, number>} */
+	/** @type {{[x: string]: number}} */
 	var seen = {};
 	return ary.filter((elem) => {
 		var k = key(elem);
