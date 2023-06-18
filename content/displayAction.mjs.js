@@ -41,6 +41,9 @@ async function triggerDisplayAction(action) {
 			tabId,
 		},
 	};
+	// Closing the window means getting the response (which we are not interested in) from sendMessage fails,
+	// resulting in the following error that can be ignored:
+	// Promise rejected after context unloaded: Actor 'Conduits' destroyed before query 'RuntimeMessage' was resolved
 	browser.runtime.sendMessage(message);
 	window.close();
 }
