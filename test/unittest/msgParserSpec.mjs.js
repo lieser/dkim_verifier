@@ -333,6 +333,11 @@ describe("Message parser [unittest]", function () {
 				MsgParser.parseFromHeader("To: <foo@example.com>\r\n")
 			).to.throw();
 		});
+		it("From Thunderbirds authors", function () {
+			expect(
+				MsgParser.parseAuthor("foo@example.com")
+			).to.be.equal("foo@example.com");
+		});
 	});
 	describe("Extracting Reply-To address", function () {
 		it("Valid examples", function () {

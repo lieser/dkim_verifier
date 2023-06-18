@@ -32,23 +32,37 @@ describe("Favicons [unittest]", function () {
 	});
 
 	it("Domain is in known favicons", async function () {
-		expect(await getFavicon("paypal.com")).to.be.equal(iconUrl("paypal.com.ico"));
-		expect(await getFavicon("news.paypal.com")).to.be.equal(iconUrl("paypal.com.ico"));
+		expect(await getFavicon("paypal.com", undefined, null)).to.be.equal(iconUrl("paypal.com.ico"));
+		expect(await getFavicon("news.paypal.com", undefined, null)).to.be.equal(iconUrl("paypal.com.ico"));
 	});
 	it("Domain is not in known favicons", async function () {
-		expect(await getFavicon("foo.com")).to.be.undefined;
-		expect(await getFavicon("evilpaypal.com")).to.be.undefined;
+		expect(await getFavicon("foo.com", undefined, null)).to.be.undefined;
+		expect(await getFavicon("evilpaypal.com", undefined, null)).to.be.undefined;
 	});
 	it("Favicon is only defined for subdomain", async function () {
-		expect(await getFavicon("comms.yahoo.net")).to.be.equal(iconUrl("yahoo.com.png"));
-		expect(await getFavicon("yahoo.net")).to.be.undefined;
-		expect(await getFavicon("foo.yahoo.net")).to.be.undefined;
+		expect(await getFavicon("comms.yahoo.net", undefined, null)).to.be.equal(iconUrl("yahoo.com.png"));
+		expect(await getFavicon("yahoo.net", undefined, null)).to.be.undefined;
+		expect(await getFavicon("foo.yahoo.net", undefined, null)).to.be.undefined;
 	});
 	it("Top domain has multiple parts", async function () {
-		expect(await getFavicon("homeaffairs.gov.au")).to.be.equal(iconUrl("homeaffairs.gov.au.ico"));
-		expect(await getFavicon("foo.homeaffairs.gov.au")).to.be.equal(iconUrl("homeaffairs.gov.au.ico"));
+		expect(await getFavicon("homeaffairs.gov.au", undefined, null)).to.be.equal(iconUrl("homeaffairs.gov.au.ico"));
+		expect(await getFavicon("foo.homeaffairs.gov.au", undefined, null)).to.be.equal(iconUrl("homeaffairs.gov.au.ico"));
+	});
+	it("Favicon is only defined for from or auid address", async function () {
+		expect(await getFavicon("posteo.de", "@posteo.de", "support@posteo.de")).to.be.equal(iconUrl("posteo.de.png"));
+		expect(await getFavicon("posteo.de", "support@posteo.de", "support@posteo.de")).to.be.equal(iconUrl("posteo.de.png"));
+		expect(await getFavicon("posteo.de", undefined, "support@posteo.de")).to.be.equal(iconUrl("posteo.de.png"));
+		expect(await getFavicon("posteo.de", "support@posteo.de", null)).to.be.equal(iconUrl("posteo.de.png"));
+
+		expect(await getFavicon("posteo.de", undefined, "foo@posteo.de")).to.be.undefined;
+		expect(await getFavicon("foo.de", undefined, "support@posteo.de")).to.be.undefined;
+		expect(await getFavicon("posteo.de", "@posteo.de", null)).to.be.undefined;
+		expect(await getFavicon("posteo.de", "foo@posteo.de", null)).to.be.undefined;
+		expect(await getFavicon("posteo.de", undefined, null)).to.be.undefined;
 	});
 	it("Casing should not matter", async function () {
-		expect(await getFavicon("PayPal.com")).to.be.equal(iconUrl("paypal.com.ico"));
+		expect(await getFavicon("PayPal.com", undefined, null)).to.be.equal(iconUrl("paypal.com.ico"));
+		expect(await getFavicon("pOsteo.de", undefined, "SupPort@posTeo.de")).to.be.equal(iconUrl("posteo.de.png"));
+		expect(await getFavicon("poSteo.de", "Support@Posteo.De", null)).to.be.equal(iconUrl("posteo.de.png"));
 	});
 });

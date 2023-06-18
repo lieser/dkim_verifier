@@ -4,6 +4,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+### Enhancements
+
+- Added the possibility to show a favicon for a specific From address or AUID (#107).
+
 ## 5.3.1 (2023-06-08)
 
 ### Fixes

@@ -282,7 +282,7 @@ class DisplayAction {
 			return;
 		}
 
-		const from = MsgParser.parseFromHeader(`From: ${message.author}\r\n`, prefs["internationalized.enable"]);
+		const from = MsgParser.parseAuthor(message.author, prefs["internationalized.enable"]);
 		await SignRules.addException(from);
 
 		await DisplayAction.#reverifyMessage(tabId, message);

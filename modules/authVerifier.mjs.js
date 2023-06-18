@@ -112,7 +112,13 @@ export default class AuthVerifier {
 		// check for saved AuthResult
 		let savedAuthResult = await loadAuthResult(message);
 		if (savedAuthResult) {
-			return SavedAuthResult_to_AuthResult(savedAuthResult);
+			let from = null;
+			try {
+				from = MsgParser.parseAuthor(message.author, prefs["internationalized.enable"]);
+			} catch (error) {
+				log.warn("Parsing of from header failed", error);
+			}
+			return SavedAuthResult_to_AuthResult(savedAuthResult, from);
 		}
 
 		// create msg object
@@ -194,7 +200,7 @@ export default class AuthVerifier {
 		saveAuthResult(message, savedAuthResult).
 			catch(error => log.fatal("Failed to store result", error));
 
-		const authResult = await SavedAuthResult_to_AuthResult(savedAuthResult);
+		const authResult = await SavedAuthResult_to_AuthResult(savedAuthResult, msg.from);
 		log.debug("authResult: ", authResult);
 		return authResult;
 	}
@@ -836,9 +842,10 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
  * Convert SavedAuthResult to AuthResult.
  *
  * @param {SavedAuthResult} savedAuthResult
+ * @param {string?} from
  * @returns {Promise<AuthResult>} authResult
  */
-function SavedAuthResult_to_AuthResult(savedAuthResult) {
+function SavedAuthResult_to_AuthResult(savedAuthResult, from) {
 	/** @type {AuthResult} */
 	const authResult = {
 		version: "2.1",
@@ -856,7 +863,7 @@ function SavedAuthResult_to_AuthResult(savedAuthResult) {
 				dkimSigResultV2_to_AuthResultDKIM)
 		};
 	}
-	return addFavicons(authResult);
+	return addFavicons(authResult, from);
 }
 
 /**
@@ -884,9 +891,10 @@ function AuthResultDKIMV2_to_dkimSigResultV2(authResultDKIM) {
  * Add favicons to the DKIM results.
  *
  * @param {AuthResult} authResult
+ * @param {string?} from
  * @returns {Promise<AuthResult>} authResult
  */
-async function addFavicons(authResult) {
+async function addFavicons(authResult, from) {
 	if (!prefs["display.favicon.show"]) {
 		return authResult;
 	}
@@ -895,7 +903,7 @@ async function addFavicons(authResult) {
 	}
 	for (const dkim of authResult.dkim) {
 		if (dkim.sdid) {
-			dkim.favicon = await getFavicon(dkim.sdid);
+			dkim.favicon = await getFavicon(dkim.sdid, dkim.auid, from);
 		}
 	}
 	return authResult;

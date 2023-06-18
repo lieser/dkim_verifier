@@ -152,6 +152,20 @@ export default class MsgParser {
 	}
 
 	/**
+	 * Extract the address from author in Thunderbirds MessageHeader.
+	 *
+	 * @param {string} author - binary string
+	 * @param {boolean} [internationalized] - Enable internationalized support
+	 * @returns {string}
+	 */
+	static parseAuthor(author, internationalized) {
+		const from = MsgParser.#tryParseMailboxList(`${author}\r\n`, internationalized);
+		if (from === null) {
+			throw new Error("From header (author) does not contain an address");
+		}
+		return from;
+	}
+	/**
 	 * Extract the address from the From header (RFC 5322).
 	 *
 	 * @param {string} header - binary string
