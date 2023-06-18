@@ -19,9 +19,10 @@
 	"scripts": {
 		"update-thirdparty": "node ./scripts/update-thirdparty.js",
 		"lint": "eslint .",
-		"lint:ci": "eslint --config .eslintrc-ci.json .",
+		"lint:ci": "eslint --config .eslintrc-ci.json --max-warnings=0 .",
 		"checkJs": "tsc-silent --project jsconfig.json --suppress @/thirdparty/",
 		"test": "node node_modules/mocha/bin/mocha --recursive --reporter dot",
+		"test:ci": "node node_modules/mocha/bin/mocha --recursive --reporter mocha-multi --reporter-options spec=-,json=test-results.json",
 		"pack": "node ./scripts/pack.js"
 	},
 	"type": "module",
@@ -44,6 +45,7 @@
 		"http-server": "^14.1.1",
 		"jszip": "^3.10.1",
 		"mocha": "^10.2.0",
+		"mocha-multi": "^1.1.7",
 		"simple-git": "^3.19.0",
 		"sinon": "^15.1.2",
 		"ts-essentials": "^9.3.2",
