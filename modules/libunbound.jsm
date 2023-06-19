@@ -373,5 +373,6 @@ var prefObserver = {
 };
 
 libunbound.Constants = Constants;
+libunbound.updateConfig = update_ctx;
 
 init();

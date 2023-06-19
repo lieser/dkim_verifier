@@ -52,6 +52,9 @@ var prefs = Services.prefs.getBranch(PREF_BRANCH);
 // @ts-ignore
 var log = Logging.getLogger("DNSWrapper");
 
+// This variable is set to true in case of an switch-to-online-mode event, so DNS config will be updated before the next query
+var doUpdateDNSConfig = false;
+
 /**
  * The result of the query.
  * 
@@ -85,10 +88,23 @@ var DNS = {
 	 * @return {Promise<DNSResult>}
 	 */
 	resolve: async function DNS_resolve(name, rrtype="A") {
+
+		if (Services.netUtils.offline) {
+			throw new DKIM_InternalError(null, "DKIM_DNSERROR_OFFLINE");
+		}
+
 		switch (prefs.getIntPref("resolver")) {
 			case PREF.DNS.RESOLVER.JSDNS:
+				if (doUpdateDNSConfig) {
+					JSDNS.updateConfig();
+					doUpdateDNSConfig = false;
+				}
 				return asyncJSDNS_QueryDNS(name, rrtype);
 			case PREF.DNS.RESOLVER.LIBUNBOUND: {
+				if (doUpdateDNSConfig) {
+					libunbound.updateConfig();
+					doUpdateDNSConfig = false;
+				}
 				let res = await libunbound.
 					resolve(name, libunbound.Constants["RR_TYPE_"+rrtype]);
 				/** @type {DNSResult} */
@@ -140,6 +156,9 @@ function asyncJSDNS_QueryDNS(name, rrtype) {
 			} else {
 				result.rcode = RCODE.NoError;
 			}
+			if (result.rcode != RCODE.NoError && queryError) {
+				throw new DKIM_InternalError(queryError, "DKIM_DNSERROR_SERVER_ERROR");
+			}
 			result.secure = false;
 			result.bogus = false;
 			
@@ -155,3 +174,12 @@ function asyncJSDNS_QueryDNS(name, rrtype) {
 	return new Promise((resolve, reject) => JSDNS.queryDNS(
 		name, rrtype, dnsCallback, {resolve: resolve, reject: reject}));
 }
+
+function observeNetworkChange(subject, topic, data) {
+	if (data == "online") {
+		log.debug("Thunderbird switched to online mode, resetting DNS configuration before next query");
+		doUpdateDNSConfig = true;
+	}
+}
+
+Services.obs.addObserver(observeNetworkChange, "network:offline-status-changed", false);

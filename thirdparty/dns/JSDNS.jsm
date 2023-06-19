@@ -196,6 +196,18 @@ var getNameserversFromOS = null;
 var timeout_connect = 0xFFFF;
 var timeout_read_write;
 
+function updateConfig() {
+	// load preferences
+	dnsChangeNameserver(prefs.getCharPref("nameserver"));
+	dnsChangeGetNameserversFromOS(
+		prefs.getBoolPref("getNameserversFromOS")
+	);
+	dnsChangeTimeoutConnect(prefs.getIntPref("timeout_connect"));
+	if (prefs.getPrefType("timeout_read_write") === prefs.PREF_INT) {
+		timeout_read_write = prefs.getIntPref("timeout_read_write");
+	}
+}
+
 /**
  * init
  * @return {void}
@@ -206,15 +218,7 @@ function init() {
 	// Register to receive notifications of preference changes
 	prefs.addObserver("", prefObserver, false);
 
-	// load preferences
-	dnsChangeNameserver(prefs.getCharPref("nameserver"));
-	dnsChangeGetNameserversFromOS(
-		prefs.getBoolPref("getNameserversFromOS")
-	);
-	dnsChangeTimeoutConnect(prefs.getIntPref("timeout_connect"));
-	if (prefs.getPrefType("timeout_read_write") === prefs.PREF_INT) {
-		timeout_read_write = prefs.getIntPref("timeout_read_write");
-	}
+	updateConfig();
 
 }
 
@@ -388,60 +392,47 @@ function DNS_get_OS_DNSServers() {
 			// nsIWindowsRegKey doesn't support REG_MULTI_SZ type out of the box
 			// from http://mxr.mozilla.org/comm-central/source/mozilla/browser/components/migration/src/IEProfileMigrator.js#129
 			// slice(1,-1) to remove the " at the beginning and end
-			var str = registryLinkage.readStringValue("Route");
-			var interfaces = str.split("\0").map(function (e) {
+			const linkageRoute = registryLinkage.readStringValue("Route");
+			const interfaceGUIDs = linkageRoute.split("\0").map(function (e) {
 				return e.slice(1,-1);
 			}).filter(function (e) {
 				return e;
 			});
-			log.debug("Found " + interfaces.length + " interfaces.");
 
-			// filter out deactivated interfaces
-			var registryNetworkAdapters = registry.openChild(
+			// Get Name and PnpInstanceID of interfaces
+			const registryNetworkAdapters = registry.openChild(
 				"Control\\Network\\{4D36E972-E325-11CE-BFC1-08002BE10318}",
 				registry.ACCESS_QUERY_VALUE);
-			var registryDevInterfaces = registry.openChild(
-				"Control\\DeviceClasses\\{cac88484-7515-4c03-82e6-71a87abac361}",
-				registry.ACCESS_QUERY_VALUE);
-			var interfacesOnline = interfaces.filter(function (element /*, index, array*/) {
-				reg = registryNetworkAdapters.openChild(element + "\\Connection",
-					registry.ACCESS_READ);
-				if (!reg.hasValue("PnpInstanceID")) {
-					log.debug("Network Adapter has no PnpInstanceID: " + element);
-					return false;
-				}
-				var interfaceID = reg.readStringValue("PnpInstanceID");
+			let interfaces = interfaceGUIDs.map(function(interfaceGUID) {
+				reg = registryNetworkAdapters.openChild(interfaceGUID + "\\Connection",
+ 					registry.ACCESS_READ);
+				let Name = null;
+				if (reg.hasValue("Name")) {
+					Name = reg.readStringValue("Name");
+ 				}
+				let PnpInstanceID = null;
+				if (reg.hasValue("PnpInstanceID")) {
+					PnpInstanceID = reg.readStringValue("PnpInstanceID");
+ 				}
 				reg.close();
-				var interfaceID_ = interfaceID.replace(/\\/g, "#");
-				interfaceID_ = "##?#" + interfaceID_ +
-					"#{cac88484-7515-4c03-82e6-71a87abac361}";
-				var linked;
-				if (registryDevInterfaces.hasChild(interfaceID_ + "\\#\\Control")) {
-					reg = registryDevInterfaces.openChild(interfaceID_ + "\\#\\Control",
-						registry.ACCESS_READ);
-					if (reg.hasValue("Linked")) {
-						linked = reg.readIntValue("Linked");
-					}
-					reg.close();
-				}
-				if (linked === 1) {
-					log.trace("Interface activated: " + interfaceID);
-					return true;
-				}
-				log.debug("Interface deactivated: " + interfaceID);
-				return false;
+				return {
+					guid: interfaceGUID,
+					Name,
+					PnpInstanceID
+				};
 			});
-			if (interfacesOnline.length === 0) {
-				interfacesOnline = interfaces;
-			}
+			registryNetworkAdapters.close();
+			log.debug("Found interfaces: ", interfaces);
 
+			// Filter out interfaces without PnpInstanceID
+			interfaces = interfaces.filter(function(element) { return (element.PnpInstanceID !== null) });
 			// get NameServer and DhcpNameServer of all interfaces
 			registryInterfaces = registry.openChild(
 				"Services\\Tcpip\\Parameters\\Interfaces",
 				registry.ACCESS_READ);
 			var ns = "";
-			for (const onlineInterface of interfacesOnline) {
-				reg = registryInterfaces.openChild(onlineInterface, registry.ACCESS_READ);
+			for (const intf of interfaces) {
+				reg = registryInterfaces.openChild(intf.guid, registry.ACCESS_READ);
 				if (reg.hasValue("NameServer")) {
 					ns += " " + reg.readStringValue("NameServer");
 				}
@@ -645,9 +636,7 @@ function queryDNSRecursive(servers, host, recordtype, callback, callbackdata, ho
 		if (serverObj === null) {
 			log.debug("no DNS Server alive");
 			if (prefs.getBoolPref("jsdns.autoResetServerAlive")) {
-				servers.forEach(function(element /*, index, array*/) {
-					element.alive = true;
-				});
+				updateConfig();
 				log.debug("set all servers to alive");
 			}
 			callback(null, callbackdata, "no DNS Server alive");
@@ -779,9 +768,10 @@ function queryDNSRecursive(servers, host, recordtype, callback, callbackdata, ho
 	};
 
 	// allow server to be either a hostname or hostname:port
+	// Note: Port is not supported for IPv6 addresses.
 	var server_hostname = server;
 	var port = 53;
-	if (server.includes(':')) {
+	if ((server.match(/:/g) || []).length == 1) {
 		server_hostname = server.substring(0, server.indexOf(':'));
 		port = parseInt(server.substring(server.indexOf(':') + 1), 10);
 	}
@@ -1117,5 +1107,6 @@ function DNS_IsDottedQuad(ip) {
 
 JSDNS.queryDNS = queryDNS;
 JSDNS.reverseDNS = reverseDNS;
+JSDNS.updateConfig = updateConfig;
 
 init();
