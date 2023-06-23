@@ -511,20 +511,32 @@ var Policy = {
 	 * Get the URL to the favicon, if available.
 	 * 
 	 * @param {String} sdid
+	 * @param {String|undefined} auid
+	 * @param {String|undefined} from
 	 * @return {Promise<String|undefined>} url to favicon
 	 */
-	getFavicon: function Policy_getFavicon(sdid) {
+	getFavicon: function Policy_getFavicon(sdid, auid, from) {
 		"use strict";
 
-		var promise = (async () => {
+		let promise = (async () => {
 			if (!favicons) {
-				var faviconsStr = await readStringFrom("resource://dkim_verifier_data/favicon.json");
+				let faviconsStr = await readStringFrom("resource://dkim_verifier_data/favicon.json");
 				favicons = JSON.parse(faviconsStr);
 			}
 
-			var url = favicons[sdid];
+			// Check if enabled for SDID.
+			let url = favicons[sdid.toLowerCase()];
 			if (!url) {
+				// Check if enabled for the base domain of the SDID.
 				url = favicons[getBaseDomainFromAddr(sdid)];
+			}
+			if (!url && auid) {
+				// Check if enabled for AUID
+				url = favicons[auid.toLowerCase()];
+			}
+			if (!url && from && addrIsInDomain(from, sdid)) {
+				// Check if enabled for from
+				url = favicons[from.toLowerCase()];
 			}
 			if (url) {
 				url = "resource://dkim_verifier_data/favicon/" + url;

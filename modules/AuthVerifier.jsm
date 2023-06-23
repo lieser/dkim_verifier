@@ -117,9 +117,13 @@ var AuthVerifier = {
 	verify: function _authVerifier_verify(msgHdr, msgURI) {
 		let promise = (async () => {
 			// check for saved AuthResult
+			const msgHeaderParser = Cc["@mozilla.org/messenger/headerparser;1"].createInstance(Ci.nsIMsgHeaderParser);
 			let savedAuthResult = loadAuthResult(msgHdr);
+			let author = msgHdr.mime2DecodedAuthor;
+			let fromAddress = msgHeaderParser.extractHeaderAddressMailboxes(author);
+			fromAddress = fromAddress.toLowerCase();
 			if (savedAuthResult) {
-				return SavedAuthResult_to_AuthResult(savedAuthResult);
+				return SavedAuthResult_to_AuthResult(savedAuthResult, fromAddress);
 			}
 
 			// get msgURI if not specified
@@ -182,7 +186,7 @@ var AuthVerifier = {
 			// save AuthResult
 			saveAuthResult(msgHdr, savedAuthResult);
 
-			let authResult = await SavedAuthResult_to_AuthResult(savedAuthResult);
+			let authResult = await SavedAuthResult_to_AuthResult(savedAuthResult, fromAddress);
 			// @ts-ignore
 			log.debug("authResult: " + authResult.toSource());
 			return authResult;
@@ -673,9 +677,10 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
  * Convert SavedAuthResult to AuthResult
  * 
  * @param {SavedAuthResult} savedAuthResult
+ * @param {String|undefined} from
  * @return {Promise<AuthResult>} authResult
  */
-async function SavedAuthResult_to_AuthResult(savedAuthResult) { // eslint-disable-line require-await
+async function SavedAuthResult_to_AuthResult(savedAuthResult, from) { // eslint-disable-line require-await
 	/** @type {AuthResult} */
 	let authResult = savedAuthResult;
 	authResult.version = "2.1";
@@ -684,7 +689,7 @@ async function SavedAuthResult_to_AuthResult(savedAuthResult) { // eslint-disabl
 		authResult.arh.dkim = authResult.arh.dkim.map(
 			dkimSigResultV2_to_AuthResultDKIM);
 	}
-	return addFavicons(authResult);
+	return addFavicons(authResult, from);
 }
 
 /**
@@ -706,15 +711,16 @@ function AuthResultDKIMV2_to_dkimSigResultV2(authResultDKIM) {
  * Add favicons to the DKIM results.
  * 
  * @param {AuthResult} authResult
+ * @param {String|undefined} from
  * @return {Promise<AuthResult>} authResult
  */
-async function addFavicons(authResult) {
+async function addFavicons(authResult, from) {
 	if (!prefs.getBoolPref("display.favicon.show")) {
 		return authResult;
 	}
 	for (let i = 0; i < authResult.dkim.length; i++) {
 		authResult.dkim[i].favicon =
-			await DKIM.Policy.getFavicon(authResult.dkim[i].sdid);
+			await DKIM.Policy.getFavicon(authResult.dkim[i].sdid, authResult.dkim[i].auid, from);
 	}
 	return authResult;
 }
