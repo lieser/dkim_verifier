@@ -32,4 +32,5 @@ jobs:
           event_file: artifacts/Event File/event.json
           event_name: ${{ github.event.workflow_run.event }}
           files: artifacts/test-results/test-results.json
+          time_unit: milliseconds
           comment_mode: "off"
