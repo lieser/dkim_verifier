@@ -510,7 +510,7 @@ var Policy = {
 	/**
 	 * Get the URL to the favicon, if available.
 	 * 
-	 * @param {String|undefined} sdid
+	 * @param {String} sdid
 	 * @param {String|undefined} auid
 	 * @param {String|undefined} from
 	 * @return {Promise<String|undefined>} url to favicon
@@ -525,7 +525,6 @@ var Policy = {
 			}
 
 			// Check if enabled for SDID.
-			if (!sdid) { return undefined; }
 			let url = favicons[sdid.toLowerCase()];
 			if (!url) {
 				// Check if enabled for the base domain of the SDID.
