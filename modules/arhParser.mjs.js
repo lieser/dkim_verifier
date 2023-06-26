@@ -215,7 +215,7 @@ function parseResInfo(str, relaxedParsing, token) {
 	const reasonspec_p = `reason${token.CFWS_op}=${token.CFWS_op}${token.value_cp}`;
 	reg_match = match_o(str, reasonspec_p, token);
 	if (reg_match !== null) {
-		const value = reg_match[1] || reg_match[2];
+		const value = reg_match[1] ?? reg_match[2];
 		if (!value) {
 			throw new Error(`Error matching the ARH reason value for "${res.method}".`);
 		}

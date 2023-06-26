@@ -216,6 +216,25 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo[0]?.result).to.be.equal("pass");
 			expect(res.resinfo[0]?.propertys.header.a).to.be.equal("rsa-sha256");
 		});
+		it("With reason", function () {
+			let res = ArhParser.parse(toBinaryString(
+				"Authentication-Results: example.com;\r\n" +
+				"      dkim=fail reason=reasonToken\r\n"
+			), false, true);
+			expect(res.authserv_id).to.be.equal("example.com");
+			expect(res.resinfo[0]?.method).to.be.equal("dkim");
+			expect(res.resinfo[0]?.result).to.be.equal("fail");
+			expect(res.resinfo[0]?.reason).to.be.equal("reasonToken");
+
+			res = ArhParser.parse(toBinaryString(
+				"Authentication-Results: example.com;\r\n" +
+				'      dkim=fail reason="reason quoted string"\r\n'
+			), false, true);
+			expect(res.authserv_id).to.be.equal("example.com");
+			expect(res.resinfo[0]?.method).to.be.equal("dkim");
+			expect(res.resinfo[0]?.result).to.be.equal("fail");
+			expect(res.resinfo[0]?.reason).to.be.equal("reason quoted string");
+		});
 	});
 	describe("Internationalized Email", function () {
 		it("Disabled by default", function () {

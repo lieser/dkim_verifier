@@ -159,7 +159,7 @@ async function getDMARCPolicy(fromAddress, queryDnsTxt) {
 
 			if (dmarcRecord) {
 				// overrides Receiver policy if one for subdomains was specified
-				dmarcRecord.p = dmarcRecord.sp || dmarcRecord.p;
+				dmarcRecord.p = dmarcRecord.sp ?? dmarcRecord.p;
 			}
 		}
 	}
@@ -194,7 +194,7 @@ async function getDMARCPolicy(fromAddress, queryDnsTxt) {
 		pct: dmarcRecord.pct,
 		p: dmarcRecord.p,
 		domain,
-		source: baseDomain || domain,
+		source: baseDomain ?? domain,
 	};
 	log.debug("DMARCPolicy:", dmarcPolicy);
 
