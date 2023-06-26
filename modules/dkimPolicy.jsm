@@ -525,6 +525,7 @@ var Policy = {
 			}
 
 			// Check if enabled for SDID.
+			if (!sdid) { return undefined; }
 			let url = favicons[sdid.toLowerCase()];
 			if (!url) {
 				// Check if enabled for the base domain of the SDID.
