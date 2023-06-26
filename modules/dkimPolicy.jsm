@@ -510,7 +510,7 @@ var Policy = {
 	/**
 	 * Get the URL to the favicon, if available.
 	 * 
-	 * @param {String} sdid
+	 * @param {String|undefined} sdid
 	 * @param {String|undefined} auid
 	 * @param {String|undefined} from
 	 * @return {Promise<String|undefined>} url to favicon
