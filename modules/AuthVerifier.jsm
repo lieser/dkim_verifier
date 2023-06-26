@@ -719,8 +719,10 @@ async function addFavicons(authResult, from) {
 		return authResult;
 	}
 	for (let i = 0; i < authResult.dkim.length; i++) {
-		authResult.dkim[i].favicon =
-			await DKIM.Policy.getFavicon(authResult.dkim[i].sdid, authResult.dkim[i].auid, from);
+		if (authResult.dkim[i].sdid) {
+			authResult.dkim[i].favicon =
+				await DKIM.Policy.getFavicon(authResult.dkim[i].sdid, authResult.dkim[i].auid, from);
+		}
 	}
 	return authResult;
 }
