@@ -68,7 +68,9 @@ var EXPORTED_SYMBOLS = [
 
 
 // @ts-expect-error
-var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
+var Services = globalThis.Services || ChromeUtils.import(
+  "resource://gre/modules/Services.jsm"
+).Services;
 
 
 const LOG_NAME = "DKIM_Verifier.JSDNS";

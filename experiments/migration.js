@@ -10,13 +10,10 @@
 // @ts-check
 ///<reference path="./migration.d.ts" />
 ///<reference path="./mozilla.d.ts" />
-/* global ExtensionCommon */
+/* global ExtensionCommon, Services */
 
 "use strict";
 
-// @ts-expect-error
-// eslint-disable-next-line no-var
-var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 // eslint-disable-next-line no-var
 var { Sqlite } = ChromeUtils.import("resource://gre/modules/Sqlite.jsm");
 // @ts-expect-error
