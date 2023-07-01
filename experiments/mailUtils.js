@@ -10,13 +10,9 @@
 // @ts-check
 ///<reference path="./mailUtils.d.ts" />
 ///<reference path="./mozilla.d.ts" />
-/* global ExtensionCommon */
+/* global ExtensionCommon, Services */
 
 "use strict";
-
-// @ts-expect-error
-// eslint-disable-next-line no-var
-var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 this.mailUtils = class extends ExtensionCommon.ExtensionAPI {
 	/**

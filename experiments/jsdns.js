@@ -11,13 +11,9 @@
 // @ts-check
 ///<reference path="./jsdns.d.ts" />
 ///<reference path="./mozilla.d.ts" />
-/* global ExtensionCommon */
+/* global ExtensionCommon, Services */
 
 "use strict";
-
-// @ts-expect-error
-// eslint-disable-next-line no-var
-var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 this.jsdns = class extends ExtensionCommon.ExtensionAPI {
 	/**
