@@ -344,8 +344,8 @@ async function saveAuthResult(message, savedAuthResult) {
 		// reset result
 		log.debug("reset AuthResult result");
 		await browser.storageMessage.set(message.id, "dkim_verifier@pl-result", "");
-	} else if (savedAuthResult.dkim[0]?.result === "TEMPFAIL") {
-		// don't save result if DKIM result is a TEMPFAIL
+	} else if (savedAuthResult.dkim.some(res => res.result === "TEMPFAIL")) {
+		// don't save result if DKIM result contains a TEMPFAIL
 		log.debug("result not saved because DKIM result is a TEMPFAIL");
 	} else {
 		log.debug("save AuthResult result");
