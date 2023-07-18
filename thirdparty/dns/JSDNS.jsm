@@ -393,11 +393,7 @@ function DNS_get_OS_DNSServers() {
 			// from http://mxr.mozilla.org/comm-central/source/mozilla/browser/components/migration/src/IEProfileMigrator.js#129
 			// slice(1,-1) to remove the " at the beginning and end
 			const linkageRoute = registryLinkage.readStringValue("Route");
-			const interfaceGUIDs = linkageRoute.split("\0").map(function (e) {
-				return e.slice(1,-1);
-			}).filter(function (e) {
-				return e;
-			});
+			const interfaceGUIDs = linkageRoute.split("\0").map(e => e.slice(1,-1)).filter(e => e);
 
 			// Get Name and PnpInstanceID of interfaces
 			const registryNetworkAdapters = registry.openChild(
@@ -425,7 +421,7 @@ function DNS_get_OS_DNSServers() {
 			log.debug("Found interfaces: ", interfaces);
 
 			// Filter out interfaces without PnpInstanceID
-			interfaces = interfaces.filter(function(element) { return (element.PnpInstanceID !== null) });
+			interfaces = interfaces.filter(e => e.PnpInstanceID !== null);
 			// get NameServer and DhcpNameServer of all interfaces
 			registryInterfaces = registry.openChild(
 				"Services\\Tcpip\\Parameters\\Interfaces",

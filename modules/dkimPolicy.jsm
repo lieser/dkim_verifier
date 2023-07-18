@@ -326,7 +326,7 @@ var Policy = {
 			
 			if (sqlRes.length > 0) {
 				result.sdid = sqlRes[0].getResultByName("sdid").
-					split(" ").filter(function (x) {return x;});
+					split(" ").filter(x => x);
 				result.foundRule = true;
 				
 				switch (sqlRes[0].getResultByName("ruletype")) {
@@ -683,12 +683,7 @@ var Policy = {
 	removeRulesUpdatedObserver: function Policy_addRulesUpdatedListener(handler) {
 		"use strict";
 
-		rulesUpdatedObservers = rulesUpdatedObservers.filter(function(item) {
-			if (item === handler) {
-				return false;
-			}
-			return true;
-		});
+		rulesUpdatedObservers = rulesUpdatedObservers.filter(item => item !== handler);
 	},
 
 	/**

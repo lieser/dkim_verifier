@@ -257,8 +257,7 @@ DKIM_Verifier.Display = (function() {
 				result.dkim[0].errorType === "DKIM_POLICYERROR_WRONG_SDID" ||
 				(
 					result.dkim[0].warnings &&
-					result.dkim[0].warnings.findIndex((e) => {
-						return e.name === "DKIM_POLICYERROR_WRONG_SDID";}) !== -1
+					result.dkim[0].warnings.findIndex(e => e.name === "DKIM_POLICYERROR_WRONG_SDID") !== -1
 				)
 			) && policyAddUserExceptionButton)
 		{

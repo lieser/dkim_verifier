@@ -65,9 +65,7 @@ class SQLiteTreeView {
 		}
 
 		this.tableName = tableName.replace(/\W/g, "");
-		this.columns = columns.map(function (elem) {
-			return elem.replace(/\W/g, "");
-		});
+		this.columns = columns.map(e => e.replace(/\W/g, ""));
 		this.columnClause = this.columns.join(", ");
 		this.insertParamsClause = ":"+this.columns.join(", :");
 
@@ -91,9 +89,7 @@ class SQLiteTreeView {
 	 * @return {void}
 	 */
 	_updateOrderClause() {
-		this.orderClause = this.sortOrder.map(function (elem) {
-			return this.columns[elem.index] + (elem.orderDesc ? " DESC": "");
-		}, this).join(", ");
+		this.orderClause = this.sortOrder.map(e => this.columns[e.index] + (e.orderDesc ? " DESC": ""), this).join(", ");
 		// dump(this.orderClause+"\n");
 	}
 		

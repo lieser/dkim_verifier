@@ -256,9 +256,7 @@ var Verifier = (function() {
 				var hash = hasher.finish(false);
 
 				// convert the binary hash data to a hex string.
-				hash = hash.split("").map(function (e/*, i*/) {
-					return toHexString(e.charCodeAt(0));
-				}).join("");
+				hash = hash.split("").map(e => toHexString(e.charCodeAt(0))).join("");
 				return hash;
 			case "b64":
 				// true for base-64, false for binary data output
@@ -621,8 +619,8 @@ var Verifier = (function() {
 		DKIMSignature.h = signedHeadersTag[0].replace(new RegExp(pattFWS,"g"), "");
 		// get the header field names and store them in lower case in an array
 		DKIMSignature.h_array = DKIMSignature.h.split(":").
-			map(function (x) {return x.trim().toLowerCase();}).
-			filter(function (x) {return x;});
+			map(x => x.trim().toLowerCase()).
+			filter(x => x);
 		// check that the from header is included
 		if (!DKIMSignature.h_array.includes("from")) {
 			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_FROM");
@@ -857,7 +855,7 @@ var Verifier = (function() {
 		var algorithmTag = parseTagValue(tagMap, "h", key_h_tag, 2);
 		if (algorithmTag !== null) {
 			DKIMKey.h = algorithmTag[0];
-			DKIMKey.h_array = DKIMKey.h.split(":").map(s => s.trim()).filter(function (x) {return x;});
+			DKIMKey.h_array = DKIMKey.h.split(":").map(s => s.trim()).filter(x => x);
 		}
 
 		// get Key type (plain-text; OPTIONAL, default is "rsa")
@@ -914,7 +912,7 @@ var Verifier = (function() {
 		if (flagsTag !== null) {
 			DKIMKey.t = flagsTag[0];
 			// get the flags and store them in an array
-			DKIMKey.t_array = DKIMKey.t.split(":").map(s => s.trim()).filter(function (x) {return x;});
+			DKIMKey.t_array = DKIMKey.t.split(":").map(s => s.trim()).filter(x => x);
 		} else {
 			DKIMKey.t = "";
 		}
@@ -1463,7 +1461,7 @@ var that = {
 					SDID : sigResults[0].sdid,
 					selector : sigResults[0].selector,
 					warnings : sigResults[0].warnings &&
-						sigResults[0].warnings.map(function (e) {return e.name;}),
+						sigResults[0].warnings.map(e => e.name),
 					errorType : sigResults[0].errorType,
 					shouldBeSignedBy : msg.DKIMSignPolicy.sdid[0],
 					hideFail : sigResults[0].hideFail,
