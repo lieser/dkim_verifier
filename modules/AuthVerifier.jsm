@@ -373,7 +373,7 @@ function saveAuthResult(msgHdr, savedAuthResult) {
 			// reset result
 			log.debug("reset AuthResult result");
 			msgHdr.setStringProperty("dkim_verifier@pl-result", "");
-		} else if (savedAuthResult.dkim[0] && savedAuthResult.dkim[0].result === "TEMPFAIL") {
+		} else if (savedAuthResult.dkim.some(res => res.result === "TEMPFAIL")) {
 			// don't save result if DKIM result is a TEMPFAIL
 			log.debug("result not saved because DKIM result is a TEMPFAIL");
 		} else {
