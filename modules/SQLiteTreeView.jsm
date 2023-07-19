@@ -65,9 +65,7 @@ class SQLiteTreeView {
 		}
 
 		this.tableName = tableName.replace(/\W/g, "");
-		this.columns = columns.map(function (elem) {
-			return elem.replace(/\W/g, "");
-		});
+		this.columns = columns.map(e => e.replace(/\W/g, ""));
 		this.columnClause = this.columns.join(", ");
 		this.insertParamsClause = ":"+this.columns.join(", :");
 

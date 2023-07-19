@@ -265,8 +265,7 @@ function getARHResult(msgHdr, msg) {
 		let allowedAuthserv;
 		if (msgHdr.folder) {
 			allowedAuthserv = msgHdr.folder.server.
-				getCharValue("dkim_verifier.arh.allowedAuthserv").split(" ").
-				filter(function (e) {return e;});
+				getCharValue("dkim_verifier.arh.allowedAuthserv").split(" ").filter(e => e);
 		} else {
 			// no option exist for external messages, allow all
 			allowedAuthserv = [];
@@ -276,15 +275,9 @@ function getARHResult(msgHdr, msg) {
 			continue;
 		}
 
-		arhDKIM = arhDKIM.concat(arh.resinfo.filter(function (element) {
-			return element.method === "dkim";
-		}));
-		arhSPF = arhSPF.concat(arh.resinfo.filter(function (element) {
-			return element.method === "spf";
-		}));
-		arhDMARC = arhDMARC.concat(arh.resinfo.filter(function (element) {
-			return element.method === "dmarc";
-		}));
+		arhDKIM = arhDKIM.concat(arh.resinfo.filter(e => e.method === "dkim"));
+		arhSPF = arhSPF.concat(arh.resinfo.filter(e => e.method === "spf"));
+		arhDMARC = arhDMARC.concat(arh.resinfo.filter(e => e.method === "dmarc"));
 	}
 
 	// convert DKIM results
