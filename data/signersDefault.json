@@ -1,7 +1,7 @@
 {
 	"$schema": "./signersDefault-schema.json",
 	"versionTable": 1,
-	"versionData": 38,
+	"versionData": 39,
 	"rules": [
 		{
 			"domain": "11880.com",
@@ -31,6 +31,12 @@
 			"domain": "acop.com",
 			"addr": "*",
 			"sdid": "acop.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "actalis.com",
+			"addr": "*",
+			"sdid": "aruba.it",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
