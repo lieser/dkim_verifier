@@ -1,0 +1,10 @@
+<a href="https://en.wikipedia.org/wiki/DomainKeys_Identified_Mail">DomainKeys Identified Mail (DKIM)</a> to metoda, która pozwala domenie na podpisanie wiadomości. Dodatek weryfikuje ten podpis i wyświetla rezultat w nagłówku e-maila. W ten sposób można zobaczyć, która domena odpowiada za tą wiadomość. Sposób wyświetlania weryfikacji, można skonfigurować w Opcjach dodatku.
+
+Warto pamiętać, że wiadomość może być podpisana przez dowolną domenę. Ważny podpis DKIM nie jest wyznacznikiem wiarygodności e-mail. Zawsze sprawdzaj nadawcę podpisującego wiadomość, aby określić wiarygodność e-mail!
+
+W niektórych przypadkach, brak podpisu DKIM, pomaga zidentyfikować oszustwo, szczególnie jeżeli wiemy, że dana domena wykorzystuje DKIM do podpisu e-mail. W takim przypadku brak DKIM, najczęściej oznacza sfałszowaną wiadomość e-mail.
+
+
+Dodatek wspiera stosowanie reguł, które pozwalają na określenie parametrów weryfikacji wiadomości. Można w ten sposób wskazać nadawców, których wiadomości muszą być podpisane przez określone domeny (określany jako SDID). Więcej o regułach podpisywania na stronie https://github.com/lieser/dkim_verifier/wiki/Sign-rules.
+
+Opis wszystkich dostępnych opcji rozszerzenia, dostępny jest na stronie https://github.com/lieser/dkim_verifier/wiki/Options.
