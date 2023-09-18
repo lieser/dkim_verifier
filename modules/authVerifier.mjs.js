@@ -20,7 +20,6 @@ export const moduleVersion = "2.0.0";
 
 import { addrIsInDomain2, domainIsInDomain, getDomainFromAddr } from "./utils.mjs.js";
 import ArhParser from "./arhParser.mjs.js";
-import { DKIM_InternalError } from "./error.mjs.js";
 import DMARC from "./dkim/dmarc.mjs.js";
 import ExtensionUtils from "./extensionUtils.mjs.js";
 import Logging from "./logging.mjs.js";
@@ -308,7 +307,7 @@ async function getARHResult(message, headers, from, listId, account, dmarc) {
 					case 2: // ignore
 						break;
 					default:
-						throw new DKIM_InternalError("invalid error.algorithm.sign.rsa-sha1.treatAs");
+						throw new Error("invalid error.algorithm.sign.rsa-sha1.treatAs");
 				}
 			}
 		}
@@ -493,7 +492,7 @@ function sortSignatures(signatures, from, listId) {
 			return 1;
 		}
 
-		throw new DKIM_InternalError(`result_compare: sig1.result: ${sig1.result}; sig2.result: ${sig2.result}`);
+		throw new Error(`result_compare: sig1.result: ${sig1.result}; sig2.result: ${sig2.result}`);
 	}
 
 	/**
@@ -644,7 +643,7 @@ function arhDKIM_to_dkimSigResultV2(arhDKIM) {
 			}
 			break;
 		default:
-			throw new DKIM_InternalError(`invalid dkim result in arh: ${arhDKIM.result}`);
+			throw new Error(`invalid dkim result in arh: ${arhDKIM.result}`);
 	}
 	let sdid = arhDKIM.propertys.header.d;
 	let auid = arhDKIM.propertys.header.i;
@@ -699,7 +698,6 @@ function dkimResultV1_to_dkimSigResultV2(dkimResultV1) {
  *
  * @param {dkimSigResultV2} dkimSigResult
  * @returns {AuthResultDKIM}
- * @throws DKIM_InternalError
  */
 function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-line complexity
 	/** @type {AuthResultDKIM} */
@@ -832,7 +830,7 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 			authResultDKIM.result_str = browser.i18n.getMessage("NOSIG");
 			break;
 		default:
-			throw new DKIM_InternalError(`unknown result: ${dkimSigResult.result}`);
+			throw new Error(`unknown result: ${dkimSigResult.result}`);
 	}
 
 	return authResultDKIM;

@@ -57,8 +57,9 @@
             "warn",
             {
                 "allow": [
-                    "DKIM_InternalError",
-                    "DKIM_SigError"
+                    "DKIM_Error",
+                    "DKIM_SigError",
+                    "DKIM_TempError"
                 ]
             }
         ],

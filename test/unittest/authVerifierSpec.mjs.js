@@ -13,7 +13,7 @@
 /* eslint-disable no-extra-parens */
 
 import AuthVerifier from "../../modules/authVerifier.mjs.js";
-import { DKIM_InternalError } from "../../modules/error.mjs.js";
+import { DKIM_TempError } from "../../modules/error.mjs.js";
 import DMARC from "../../modules/dkim/dmarc.mjs.js";
 import DNS from "../../modules/dns.mjs.js";
 import KeyStore from "../../modules/dkim/keyStore.mjs.js";
@@ -152,7 +152,7 @@ describe("AuthVerifier [unittest]", function () {
 						bogus: false,
 					});
 				}
-				throw new DKIM_InternalError(null, "DKIM_DNSERROR_SERVER_ERROR");
+				throw new DKIM_TempError("DKIM_DNSERROR_SERVER_ERROR");
 			};
 			const verifier = new AuthVerifier(new Verifier(new KeyStore(queryFunktion)));
 			const fakePayPalMessage = await createMessageHeader("rfc8463-A.3.eml");

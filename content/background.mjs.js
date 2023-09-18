@@ -274,6 +274,7 @@ class DisplayAction {
 	 *
 	 * @param {number} tabId
 	 * @returns {Promise<void>}
+	 * @throws {DKIM_Error}
 	 */
 	static async policyAddUserException(tabId) {
 		const message = await browser.messageDisplay.getDisplayedMessage(tabId);

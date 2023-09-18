@@ -15,7 +15,6 @@
 /* eslint-env webextensions */
 
 import { Deferred, addrIsInDomain, copy, stringEndsWith, stringEqual } from "../utils.mjs.js";
-import { DKIM_InternalError } from "../error.mjs.js";
 import ExtensionUtils from "../extensionUtils.mjs.js";
 import Logging from "../logging.mjs.js";
 import prefs from "../preferences.mjs.js";
@@ -685,7 +684,7 @@ export default class SignRules {
 						fromAddressToAdd = "*";
 						break;
 					default:
-						throw new DKIM_InternalError("invalid signRules.autoAddRule.for");
+						throw new Error("invalid signRules.autoAddRule.for");
 				}
 				await SignRules.addRule(domain, null, fromAddressToAdd, sdid, RULE_TYPE.ALL, PRIORITY.AUTOINSERT_RULE_ALL);
 			}

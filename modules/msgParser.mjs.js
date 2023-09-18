@@ -12,7 +12,7 @@
 // @ts-check
 
 import RfcParser, { RfcParserI } from "./rfcParser.mjs.js";
-import { DKIM_InternalError } from "./error.mjs.js";
+import { DKIM_Error } from "./error.mjs.js";
 import Logging from "./logging.mjs.js";
 import { decodeBinaryString } from "./utils.mjs.js";
 
@@ -25,7 +25,7 @@ export default class MsgParser {
 	 *
 	 * @param {string} rawMsg - binary string
 	 * @returns {{headers: Map<string, string[]>, body: string}}
-	 * @throws DKIM_InternalError
+	 * @throws {DKIM_Error}
 	 */
 	static parseMsg(rawMsg) {
 		const newlineLength = 2;
@@ -41,8 +41,7 @@ export default class MsgParser {
 		let body;
 		if (posEndHeader === -1) {
 			if (!msg.endsWith("\r\n")) {
-				throw new DKIM_InternalError("Last header is not ending with a newline",
-					"DKIM_INTERNALERROR_INCORRECT_EMAIL_FORMAT");
+				throw new DKIM_Error("Last header is not ending with a newline");
 			}
 			headerPlain = msg;
 			body = "";
@@ -64,6 +63,7 @@ export default class MsgParser {
 	 * @returns {Map<string, string[]>}
 	 * - key - Header name in lower case.
 	 * - value - Array of complete headers, including the header name at the beginning (binary string).
+	 * @throws {DKIM_Error}
 	 */
 	static parseHeader(headerPlain) {
 		const headerFields = new Map();
@@ -83,8 +83,7 @@ export default class MsgParser {
 				}
 				headerFields.get(hName).push(`${header}\r\n`);
 			} else {
-				throw new DKIM_InternalError("Could not split header into name and value",
-					"DKIM_INTERNALERROR_INCORRECT_EMAIL_FORMAT");
+				throw new DKIM_Error("Could not split header into name and value");
 			}
 		}
 
@@ -157,11 +156,12 @@ export default class MsgParser {
 	 * @param {string} author - binary string
 	 * @param {boolean} [internationalized] - Enable internationalized support
 	 * @returns {string}
+	 * @throws {DKIM_Error}
 	 */
 	static parseAuthor(author, internationalized) {
 		const from = MsgParser.#tryParseMailboxList(`${author}\r\n`, internationalized);
 		if (from === null) {
-			throw new Error("From header (author) does not contain an address");
+			throw new DKIM_Error("From header (author) does not contain an address");
 		}
 		return from;
 	}
@@ -171,6 +171,7 @@ export default class MsgParser {
 	 * @param {string} header - binary string
 	 * @param {boolean} [internationalized] - Enable internationalized support
 	 * @returns {string}
+	 * @throws {DKIM_Error}
 	 */
 	static parseFromHeader(header, internationalized) {
 		const headerStart = "from:";
@@ -181,7 +182,7 @@ export default class MsgParser {
 
 		const from = MsgParser.#tryParseMailboxList(headerValue, internationalized);
 		if (from === null) {
-			throw new Error("From header does not contain an address");
+			throw new DKIM_Error("From header does not contain an address");
 		}
 		return from;
 	}
@@ -194,6 +195,7 @@ export default class MsgParser {
 	 * @param {string} header - binary string
 	 * @param {boolean} [internationalized] - Enable internationalized support
 	 * @returns {string}
+	 * @throws {DKIM_Error}
 	 */
 	static parseReplyToHeader(header, internationalized) {
 		const headerStart = "reply-to:";
@@ -204,7 +206,7 @@ export default class MsgParser {
 
 		const replyTo = MsgParser.#tryParseMailboxList(headerValue, internationalized);
 		if (replyTo === null) {
-			throw new Error("Reply-To header does not contain an address");
+			throw new DKIM_Error("Reply-To header does not contain an address");
 		}
 		return replyTo;
 	}
@@ -216,6 +218,7 @@ export default class MsgParser {
 	 *
 	 * @param {string} header
 	 * @returns {string}
+	 * @throws {DKIM_Error}
 	 */
 	static parseListIdHeader(header) {
 		const headerStart = "list-id:";
@@ -230,7 +233,7 @@ export default class MsgParser {
 		if (regExpMatch !== null && regExpMatch[1]) {
 			return regExpMatch[1];
 		}
-		throw new Error("Cannot extract the list identifier from the List-Id header.");
+		throw new DKIM_Error("Cannot extract the list identifier from the List-Id header.");
 	}
 
 	/**

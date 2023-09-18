@@ -21,6 +21,7 @@
 /* eslint-disable no-use-before-define */
 
 import RfcParser, { RfcParserI } from "./rfcParser.mjs.js";
+import { DKIM_Error } from "./error.mjs.js";
 import Logging from "./logging.mjs.js";
 import { decodeBinaryString } from "./utils.mjs.js";
 
@@ -118,6 +119,7 @@ export default class ArhParser {
 	 * @param {boolean} [relaxedParsing] - Enable relaxed parsing
 	 * @param {boolean} [internationalized] - Enable internationalized support
 	 * @returns {ArhHeader} Parsed Authentication-Results header
+	 * @throws {DKIM_Error}
 	 */
 	static parse(authResHeader, relaxedParsing = false, internationalized = false) {
 		const token = new Token(internationalized);
@@ -170,6 +172,7 @@ export default class ArhParser {
  * @param {boolean} relaxedParsing - Enable relaxed parsing
  * @param {Token} token - Token to use for parsing; depends on internationalized support
  * @returns {ArhResInfo|null} Parsed resinfo
+ * @throws {DKIM_Error}
  */
 function parseResInfo(str, relaxedParsing, token) {
 	let reg_match;
@@ -297,12 +300,12 @@ class RefString {
  * @param {string} pattern
  * @param {Token} token - Token to use for parsing; depends on internationalized support
  * @returns {string[]} An Array, containing the matches
- * @throws if match no match found
+ * @throws {DKIM_Error} if match no match found
  */
 function match(str, pattern, token) {
 	const reg_match = match_o(str, pattern, token);
 	if (reg_match === null) {
-		throw new Error("Parsing error");
+		throw new DKIM_Error("Parsing error");
 	}
 	return reg_match;
 }
