@@ -19,7 +19,6 @@ import {
 	promiseWithTimeout,
 	stringEndsWith,
 	stringEqual,
-	toType
 } from "../../modules/utils.mjs.js";
 import expect from "../helpers/chaiUtils.mjs.js";
 
@@ -219,29 +218,6 @@ describe("utils [unittest]", function () {
 			expect(
 				stringEqual("foobar", "muh")
 			).to.be.false;
-		});
-	});
-
-	describe("toType", function () {
-		it("Number", function () {
-			expect(
-				toType(42)
-			).to.be.equal("Number");
-		});
-		it("Boolean", function () {
-			expect(
-				toType(true)
-			).to.be.equal("Boolean");
-		});
-		it("Object", function () {
-			expect(
-				toType({})
-			).to.be.equal("Object");
-		});
-		it("Map", function () {
-			expect(
-				toType(new Map())
-			).to.be.equal("Map");
 		});
 	});
 });
