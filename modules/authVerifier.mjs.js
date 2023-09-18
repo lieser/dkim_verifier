@@ -122,7 +122,21 @@ export default class AuthVerifier {
 
 		// create msg object
 		const rawMessage = await browser.messages.getRaw(message.id);
-		const msgParsed = MsgParser.parseMsg(rawMessage);
+		let msgParsed;
+		try {
+			msgParsed = MsgParser.parseMsg(rawMessage);
+		} catch (error) {
+			log.error("Parsing of message failed", error);
+			return Promise.resolve({
+				version: "2.1",
+				dkim: [{
+					version: "2.0",
+					result: "PERMFAIL",
+					res_num: 30,
+					result_str: browser.i18n.getMessage("DKIM_INTERNALERROR_INCORRECT_EMAIL_FORMAT"),
+				}],
+			});
+		}
 		const fromHeader = msgParsed.headers.get("from");
 		if (!fromHeader || !fromHeader[0]) {
 			throw new Error("message does not contain a from header");

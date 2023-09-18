@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 
 - Added the possibility to show a favicon for a specific From address or AUID (#107).
 - Don't save DKIM results that contain a temporary error.
+- Show proper error message if parsing of a message failed.
 
 ### Other
 
