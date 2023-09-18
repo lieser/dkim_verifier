@@ -401,7 +401,7 @@ this.libunbound = class extends ExtensionCommon.ExtensionAPI {
 					const res = await libunboundWorker.resolve(name, LibunboundWorker.Constants.RR_TYPE_TXT);
 					const data = res.havedata ? res.data.map(rdata => {
 						if (typeof rdata !== "string") {
-							throw Error(`DNS result has unexpected type ${typeof rdata}`);
+							throw new Error(`DNS result has unexpected type ${typeof rdata}`);
 						}
 						return rdata;
 					}) : null;

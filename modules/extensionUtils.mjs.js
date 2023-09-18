@@ -142,7 +142,7 @@ async function safeGetLocalStorage() {
 			retrySleepTime = Math.max(retrySleepTime + retrySleepTimeIncrease, retrySleepTimeMax);
 		}
 	}
-	throw Error("browser.storage.local.get() failed");
+	throw new Error("browser.storage.local.get() failed");
 }
 
 const ExtensionUtils = {

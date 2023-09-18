@@ -49,7 +49,7 @@ function wrap(element, wrapper) {
 function unwrap(wrapper) {
 	const parent = wrapper.parentNode;
 	if (!parent) {
-		throw Error("Wrapper element has no parent");
+		throw new Error("Wrapper element has no parent");
 	}
 	while (wrapper.firstChild) {
 		parent.insertBefore(wrapper.firstChild, wrapper);
@@ -98,14 +98,14 @@ class DKIMWarningsTooltipXUL {
 	 */
 	set warnings(warnings) {
 		if (!this.element._warningsBox) {
-			throw Error("Underlying element of DKIMTooltipXUL does not contain _warningsBox");
+			throw new Error("Underlying element of DKIMTooltipXUL does not contain _warningsBox");
 		}
 
 		// delete old warnings from tooltips
 		this.element._warningsBox.replaceChildren();
 
 		if (!this.element.ownerDocument) {
-			throw Error("Underlying element of DKIMTooltipXUL does not contain ownerDocument");
+			throw new Error("Underlying element of DKIMTooltipXUL does not contain ownerDocument");
 		}
 
 		if (this._warningsSeparator && warnings.length) {
@@ -310,7 +310,7 @@ class DkimResultTooltip extends DKIMTooltip {
 	 */
 	set value(val) {
 		if (!this.element._value) {
-			throw Error("Underlying element of DkimResultTooltip does not contain _value");
+			throw new Error("Underlying element of DkimResultTooltip does not contain _value");
 		}
 		this.element._value.textContent = val;
 	}
@@ -322,14 +322,14 @@ class DkimResultTooltip extends DKIMTooltip {
 	 */
 	set warnings(warnings) {
 		if (!this.element._warningsBox) {
-			throw Error("Underlying element of DkimResultTooltip does not contain _warningsBox");
+			throw new Error("Underlying element of DkimResultTooltip does not contain _warningsBox");
 		}
 
 		// delete old warnings from tooltips
 		this.element._warningsBox.replaceChildren();
 
 		if (!this.element.ownerDocument) {
-			throw Error("Underlying element of DKIMTooltip does not contain ownerDocument");
+			throw new Error("Underlying element of DKIMTooltip does not contain ownerDocument");
 		}
 
 		if (this._warningsSeparator && warnings.length) {
@@ -590,7 +590,7 @@ class DKIMHeaderField {
 	static getOrThrow(document) {
 		const element = document.getElementById(DKIMHeaderField._id);
 		if (!element) {
-			throw Error("Could not find the DKIMHeaderField element");
+			throw new Error("Could not find the DKIMHeaderField element");
 		}
 		return new DKIMHeaderField(document, element);
 	}
@@ -658,7 +658,7 @@ class DkimHeaderRow {
 	static getOrThrow(document) {
 		const dkimHeaderRow = DkimHeaderRow.get(document);
 		if (!dkimHeaderRow) {
-			throw Error("Could not find the DkimHeaderRow element");
+			throw new Error("Could not find the DkimHeaderRow element");
 		}
 		return dkimHeaderRow;
 	}
@@ -682,7 +682,7 @@ class DkimHeaderRow {
 			// TB >= 96
 			headerRowContainer = document.getElementById("extraHeadersArea");
 			if (!headerRowContainer) {
-				throw Error("Could not find the expandedHeaders2 element");
+				throw new Error("Could not find the expandedHeaders2 element");
 			}
 			headerRowElement = this.#createDivRowElement(document);
 			position = "beforebegin";
@@ -883,7 +883,7 @@ class DkimFavicon {
 	static getOrThrow(document) {
 		const dkimFavicon = DkimFavicon.get(document);
 		if (!dkimFavicon) {
-			throw Error("Could not find the DkimFavicon element");
+			throw new Error("Could not find the DkimFavicon element");
 		}
 		return dkimFavicon;
 	}
@@ -899,7 +899,7 @@ class DkimFavicon {
 		// eslint-disable-next-line no-extra-parens
 		const expandedFromBox = /** @type {expandedfromBox?} */ (document.getElementById("expandedfromBox"));
 		if (!expandedFromBox) {
-			throw Error("Could not find the expandedFromBox element");
+			throw new Error("Could not find the expandedFromBox element");
 		}
 
 		// Add the favicon.
