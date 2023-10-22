@@ -17,6 +17,7 @@
 		"accountsRead",
 		"downloads",
 		"messagesRead",
+		"management",
 		"notifications",
 		"storage",
 		"tabs"

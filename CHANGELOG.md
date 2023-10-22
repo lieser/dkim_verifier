@@ -12,6 +12,10 @@ All notable changes to this project will be documented in this file.
 - Don't save DKIM results that contain a temporary error.
 - Show proper error message if parsing of a message failed.
 
+### Fixes
+
+- Fixed support for Thunderbird Conversations add-on in Thunderbird 115 and later (#395).
+
 ### Other
 
 - Added Polish translation (by dMbski) (#392).

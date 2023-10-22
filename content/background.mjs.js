@@ -12,6 +12,7 @@
 ///<reference path="../experiments/dkimHeader.d.ts" />
 /* eslint-env webextensions */
 
+import * as Conversations from "../modules/conversation.mjs.js";
 import KeyStore, { KeyDb } from "../modules/dkim/keyStore.mjs.js";
 import SignRules, { initSignRulesProxy } from "../modules/dkim/signRules.mjs.js";
 import { migrateKeyStore, migratePrefs, migrateSignRulesUser } from "../modules/migration.mjs.js";
@@ -19,7 +20,6 @@ import AuthVerifier from "../modules/authVerifier.mjs.js";
 import Logging from "../modules/logging.mjs.js";
 import MsgParser from "../modules/msgParser.mjs.js";
 import prefs from "../modules/preferences.mjs.js";
-import verifyMessageForConversation from "../modules/conversation.mjs.js";
 
 const log = Logging.getLogger("background");
 
@@ -156,7 +156,7 @@ browser.messageDisplay.onMessageDisplayed.addListener(async (tab, message) => {
 	}
 	try {
 		await isInitialized;
-		if (tab.url?.startsWith("chrome://conversations/")) {
+		if (await Conversations.isConversationView(tab)) {
 			// Conversation view is handled in onMessagesDisplayed
 			return;
 		}
@@ -201,9 +201,9 @@ browser.messageDisplay.onMessageDisplayed.addListener(async (tab, message) => {
 browser.messageDisplay.onMessagesDisplayed.addListener(async (tab, messages) => {
 	try {
 		await isInitialized;
-		if (tab.url?.startsWith("chrome://conversations/")) {
+		if (await Conversations.isConversationView(tab)) {
 			for (const message of messages) {
-				await verifyMessageForConversation(message);
+				await Conversations.verifyMessage(message);
 			}
 		}
 		// Normal Thunderbird view ("classic") is handled in onMessageDisplayed
