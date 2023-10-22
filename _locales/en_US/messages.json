@@ -415,7 +415,7 @@
 		"message": "Automatically add rules based on viewed DKIM signed e-mails"
 	},
 	"options_policy.signRules.autoAddRule.onlyIfFromAddressInSDID": {
-		"message": "Only if the From address is in the SDID:"
+		"message": "Only if the From address is in the SDID"
 	},
 	"options_policy.signRules.autoAddRule.for.value.0": {
 		"message": "for From address"
@@ -665,19 +665,19 @@
 		"message": "Default signers rules"
 	},
 	"treeviewSigners.treecol.domain": {
-		"message": "Domain:"
+		"message": "Domain"
 	},
 	"treeviewSigners.treecol.listId": {
-		"message": "List-Id:"
+		"message": "List-Id"
 	},
 	"treeviewSigners.treecol.addr": {
-		"message": "From:"
+		"message": "From"
 	},
 	"treeviewSigners.treecol.sdid": {
-		"message": "SDID:"
+		"message": "SDID"
 	},
 	"treeviewSigners.treecol.ruletype": {
-		"message": "Rule type:"
+		"message": "Rule type"
 	},
 	"treeviewSigners.treecol.priority": {
 		"message": "Priority"
