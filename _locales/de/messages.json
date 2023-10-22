@@ -415,7 +415,7 @@
 		"message": "Regeln basierend auf den DKIM-signierten E-Mails automatisch hinzufügen"
 	},
 	"options_policy.signRules.autoAddRule.onlyIfFromAddressInSDID": {
-		"message": "Nur, wenn die Absenderadresse in der SDID ist:"
+		"message": "Nur, wenn die Absenderadresse in der SDID ist"
 	},
 	"options_policy.signRules.autoAddRule.for.value.0": {
 		"message": "für Absenderadresse"
@@ -609,7 +609,7 @@
 	},
 	"about_translators": {
 		"message": "Übersetzer:",
-		"description": "Heading for list of transaltors"
+		"description": "Heading for list of translators"
 	},
 	"about_dependencies": {
 		"message": "Enthaltene Abhängigkeiten:",
@@ -665,19 +665,19 @@
 		"message": "Standard-Signierregeln"
 	},
 	"treeviewSigners.treecol.domain": {
-		"message": "Domain:"
+		"message": "Domain"
 	},
 	"treeviewSigners.treecol.listId": {
-		"message": "List-ID:"
+		"message": "List-ID"
 	},
 	"treeviewSigners.treecol.addr": {
-		"message": "Von:"
+		"message": "Von"
 	},
 	"treeviewSigners.treecol.sdid": {
-		"message": "SDID:"
+		"message": "SDID"
 	},
 	"treeviewSigners.treecol.ruletype": {
-		"message": "Regeltyp:"
+		"message": "Regeltyp"
 	},
 	"treeviewSigners.treecol.priority": {
 		"message": "Priorität"
@@ -747,7 +747,7 @@
 		"message": "Hilfe für Signierregeln"
 	},
 	"domain.description": {
-		"message": "Wird mit der Basis-Domain der Absenderadresse verglichen. Die Basis-Domain von 'email.example.co.uk' ist zum Beispiel 'excample.co.uk'."
+		"message": "Wird mit der Basis-Domain der Absenderadresse verglichen. Die Basis-Domain von 'email.example.co.uk' ist zum Beispiel 'example.co.uk'."
 	},
 	"listId.description": {
 		"message": "Wird mit der List-ID verglichen, wenn die E-Mail über eine E-Mail-Liste empfangen wurde. Beachten Sie, dass nur der Teil zwischen '<' und '>' aus der List-ID-Kopfzeile die eigentliche List-ID ist. Es wird entweder Basis-Domain oder List-ID verglichen."
