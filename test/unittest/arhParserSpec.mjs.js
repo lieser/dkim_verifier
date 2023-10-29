@@ -166,7 +166,7 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo[0]?.method).to.be.equal("spf");
 			expect(res.resinfo[0]?.result).to.be.equal("pass");
 		});
-		it("Property with / not in quotes ", function () {
+		it("Property with '/' not in quotes", function () {
 			const arh =
 				"Authentication-Results: example.com;\r\n" +
 				"          dkim=pass header.b=gfT/i2HB\r\n";
@@ -179,6 +179,22 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo[0]?.method).to.be.equal("dkim");
 			expect(res.resinfo[0]?.result).to.be.equal("pass");
 			expect(res.resinfo[0]?.propertys.header.b).to.be.equal("gfT/i2HB");
+		});
+		it("Property with ':' not in quotes", function () {
+			const arh =
+				"Authentication-Results: example.com;\r\n" +
+				"  bimi=pass policy.authority-uri=\r\n" +
+				"  https://d3frv9g52qce38.cloudfront.net/amazondefault/amazon_web_services_inc.pem\r\n";
+
+			expect(() => ArhParser.parse(arh)).to.throw();
+
+			const res = ArhParser.parse(arh, true);
+			expect(res.authserv_id).to.be.equal("example.com");
+			expect(res.resinfo.length).to.be.equal(1);
+			expect(res.resinfo[0]?.method).to.be.equal("bimi");
+			expect(res.resinfo[0]?.result).to.be.equal("pass");
+			expect(res.resinfo[0]?.propertys.policy["authority-uri"]).
+				to.be.equal("https://d3frv9g52qce38.cloudfront.net/amazondefault/amazon_web_services_inc.pem");
 		});
 	});
 	describe("DKIM results", function () {

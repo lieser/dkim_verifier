@@ -228,8 +228,8 @@ function parseResInfo(str, relaxedParsing, token) {
 	// get propspec (optional)
 	let pvalue_p = `${token.value_cp}|((?:${token.local_part}?@)?${token.domain_name})`;
 	if (relaxedParsing) {
-		// allow "/" in the header.b (or other) property, even if it is not in a quoted-string
-		pvalue_p += "|([^ \\x00-\\x1F\\x7F()<>@,;:\\\\\"[\\]?=]+)";
+		// allow "/" and ":" in properties, even if it is not in a quoted-string
+		pvalue_p += "|([^ \\x00-\\x1F\\x7F()<>@,;\\\\\"[\\]?=]+)";
 	}
 	const special_smtp_verb_p = "mailfrom|rcptto";
 	const property_p = `${special_smtp_verb_p}|${Token.Keyword}`;
