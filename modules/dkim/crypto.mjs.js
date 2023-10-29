@@ -229,7 +229,7 @@ class DkimCryptoWeb extends DkimCryptoBase {
 			"RSASSA-PKCS1-v1_5",
 			cryptoKey,
 			this._decodeBase64(signature),
-			new TextEncoder().encode(data)
+			strToArrayBuffer(data)
 		);
 		return [valid, rsaKeyParams.modulusLength];
 	}
