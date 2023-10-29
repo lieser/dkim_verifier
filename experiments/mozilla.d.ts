@@ -179,7 +179,7 @@ declare module OS {
 
 /** https://searchfox.org/mozilla-central/source/dom/chrome-webidl/PathUtils.webidl */
 declare module PathUtils {
-    function join(path1: string, path2: string, ...paths: string[]): string;
+    function join(path: string, ...components: string[]): string;
 
     const profileDir: string;
 }

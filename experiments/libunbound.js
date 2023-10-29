@@ -124,7 +124,7 @@ class LibunboundWorker {
 					if (OS) {
 						return OS.Path.join(OS.Constants.Path.profileDir, e);
 					}
-					return PathUtils.join(PathUtils.profileDir, e);
+					return PathUtils.join(PathUtils.profileDir, ...e.split(/\/|\\/));
 				}).
 				join(";");
 		} else {

@@ -16,6 +16,7 @@ All notable changes to this project will be documented in this file.
 
 - Fixed signature verification if a signed header contains a non ASCII character.
 - Fixed support for Thunderbird Conversations add-on in Thunderbird 115 and later (#395).
+- Libunbound resolver: Fixed using a relative path to the profile directory in Thunderbird 115 and later (#385).
 
 ### Other
 
