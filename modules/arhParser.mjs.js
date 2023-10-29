@@ -293,6 +293,11 @@ function checkResultKeyword(method, resultKeyword) {
 		allowedKeywords = ["none", "pass", "fail", "temperror", "permerror"];
 	}
 
+	// BIMI (https://datatracker.ietf.org/doc/draft-brand-indicators-for-message-identification/04/ section 7.7.)
+	if (method === "bimi") {
+		allowedKeywords = ["pass", "none", "fail", "temperror", "declined", "skipped"];
+	}
+
 	// Note: Both the ARH RFC and the IANA registry contain keywords for more than the above methods.
 	// As we don't really care about them, for simplicity we treat them the same as unknown methods,
 	// And don't restrict the keyword.
