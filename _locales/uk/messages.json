@@ -358,7 +358,7 @@
 		"message": "DNS"
 	},
 	"options_dns.resolver": {
-		"message": "Resolver"
+		"message": "Resolver:"
 	},
 	"options_dns.resolver.value.1": {
 		"message": "Бібліотека JavaScript DNS"
@@ -370,10 +370,10 @@
 		"message": "Отримати DNS-сервери з конфігурації ОС"
 	},
 	"options_dns.nameserver": {
-		"message": "DNS-сервери (Синтаксис (EBNF): host[\":\"port]{\";\"host[\":\"port]} )"
+		"message": "DNS-сервери (Синтаксис (EBNF): host[\":\"port]{\";\"host[\":\"port]} ):"
 	},
 	"options_dns.timeout_connect": {
-		"message": "Час очікування підключення DNS (у секундах)",
+		"message": "Час очікування підключення DNS (у секундах):",
 		"description": "Чекання на з'єднання з DNS-серверами (як на встановлення з'єднання, так і на надсилання/отримання даних)"
 	},
 	"options_dns.proxy.enable": {
@@ -389,7 +389,7 @@
 		"message": "Порт:"
 	},
 	"options_dns.libunbound.nameserver": {
-		"message": "DNS-сервери (Синтаксис (EBNF): IP{\";\"IP} )"
+		"message": "DNS-сервери (Синтаксис (EBNF): IP{\";\"IP} ):"
 	},
 	"options_dns.libunbound.usageWarning": {
 		"message": "Резолвер libunbound потребує встановленої зовнішньої бібліотеки"
@@ -461,10 +461,10 @@
 		"message": "Показ"
 	},
 	"options_showDKIMHeader": {
-		"message": "Показати заголовок DKIM"
+		"message": "Показати заголовок DKIM:"
 	},
 	"options_showDKIMFromTooltip": {
-		"message": "Показати підказку DKIM для заголовка 'Від'"
+		"message": "Показати підказку DKIM для заголовка 'Від':"
 	},
 	"options_showDKIM.value.0": {
 		"message": "ніколи"
@@ -525,19 +525,19 @@
 		"message": "Перевіряти підпис, навіть якщо домен лише тестує DKIM"
 	},
 	"options_error.illformed_i.treatAs": {
-		"message": "Розглядати неправильно сформований тег AUID як"
+		"message": "Розглядати неправильно сформований тег AUID як:"
 	},
 	"options_error.illformed_s.treatAs": {
-		"message": "Розглядати неправильно сформований тег селектора як"
+		"message": "Розглядати неправильно сформований тег селектора як:"
 	},
 	"options_error.policy.key_insecure.treatAs": {
-		"message": "Розглядати ключ DKIM, котрий не захищений DNSSEC, як"
+		"message": "Розглядати ключ DKIM, котрий не захищений DNSSEC, як:"
 	},
 	"options_error.algorithm.sign.rsa-sha1.treatAs": {
-		"message": "Розглядати алгоритм підпису RSA-SHA1 як"
+		"message": "Розглядати алгоритм підпису RSA-SHA1 як:"
 	},
 	"options_error.algorithm.rsa.weakKeyLength.treatAs": {
-		"message": "Розглядати слабкі ключі RSA (<2048 біт) як"
+		"message": "Розглядати слабкі ключі RSA (<2048 біт) як:"
 	},
 	"options_error.treatAs.value.0": {
 		"message": "помилка"
@@ -734,7 +734,7 @@
 		"message": "Автоматично вибрати пріоритет"
 	},
 	"signRules.priorityMode.manual": {
-		"message": "Встановити пріоритет"
+		"message": "Встановити пріоритет:"
 	},
 	"button.cancel": {
 		"message": "Скасувати"

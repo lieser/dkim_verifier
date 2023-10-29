@@ -342,7 +342,7 @@
 		"message": "DNS"
 	},
 	"options_dns.resolver": {
-		"message": "Megoldó"
+		"message": "Megoldó:"
 	},
 	"options_dns.resolver.value.1": {
 		"message": "JavaScript DNS könyvtár"
@@ -354,10 +354,10 @@
 		"message": "Szerezzen DNS-kiszolgálókat az operációs rendszer konfigurációjából"
 	},
 	"options_dns.nameserver": {
-		"message": "DNS-kiszolgálók (mondattan (EBNF): gép[\":\"kikötő]{\";\"gép[\":\"kikötő]} )"
+		"message": "DNS-kiszolgálók (mondattan (EBNF): gép[\":\"kikötő]{\";\"gép[\":\"kikötő]} ):"
 	},
 	"options_dns.timeout_connect": {
-		"message": "DNS-csatlakozás időtúllépése (másodperc)"
+		"message": "DNS-csatlakozás időtúllépése (másodperc):"
 	},
 	"options_dns.proxy.enable": {
 		"message": "Megbízott segítségével csatlakozzon a DNS-kiszolgálókhoz"
@@ -372,7 +372,7 @@
 		"message": "Kikötő:"
 	},
 	"options_dns.libunbound.nameserver": {
-		"message": "DNS-kiszolgálók (Szintaxis (EBNF): IP{\";\"IP} )"
+		"message": "DNS-kiszolgálók (Szintaxis (EBNF): IP{\";\"IP} ):"
 	},
 	"options_dns.libunbound.usageWarning": {
 		"message": "A libunbound felbontóhoz külsőleg telepített könyvtárra van szükség"
@@ -428,10 +428,10 @@
 		"message": "Megjelenítés"
 	},
 	"options_showDKIMHeader": {
-		"message": "A DKIM fejléc megjelenítése"
+		"message": "A DKIM fejléc megjelenítése:"
 	},
 	"options_showDKIMFromTooltip": {
-		"message": "A DKIM eszköztipp megjelenítése a feladóért fejléchez"
+		"message": "A DKIM eszköztipp megjelenítése a feladóért fejléchez:"
 	},
 	"options_showDKIM.value.0": {
 		"message": "soha"
@@ -492,19 +492,19 @@
 		"message": "Ellenőrizze az aláírást, ha egy tartomány csak a DKIM-et teszteli"
 	},
 	"options_error.illformed_i.treatAs": {
-		"message": "Kezelje hibás formázott AUID-címkéje mint"
+		"message": "Kezelje hibás formázott AUID-címkéje mint:"
 	},
 	"options_error.illformed_s.treatAs": {
-		"message": "Kezelje hibás formázott választócímkéje mint"
+		"message": "Kezelje hibás formázott választócímkéje mint:"
 	},
 	"options_error.policy.key_insecure.treatAs": {
-		"message": "Kezelje a DNSSEC által nem biztosított DKIM kulcsot mint"
+		"message": "Kezelje a DNSSEC által nem biztosított DKIM kulcsot mint:"
 	},
 	"options_error.algorithm.sign.rsa-sha1.treatAs": {
-		"message": "Kezelje az RSA-SHA1 jel algoritmust mint"
+		"message": "Kezelje az RSA-SHA1 jel algoritmust mint:"
 	},
 	"options_error.algorithm.rsa.weakKeyLength.treatAs": {
-		"message": "Kezelje a gyenge RSA kulcsokat (<2048 bites) mint"
+		"message": "Kezelje a gyenge RSA kulcsokat (<2048 bites) mint:"
 	},
 	"options_error.treatAs.value.0": {
 		"message": "hiba"
@@ -701,7 +701,7 @@
 		"message": "Önműködően sürgősség kiválasztása"
 	},
 	"signRules.priorityMode.manual": {
-		"message": "Sürgősség beállítása"
+		"message": "Sürgősség beállítása:"
 	},
 	"button.cancel": {
 		"message": "Mégse"

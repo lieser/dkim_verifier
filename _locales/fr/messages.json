@@ -315,7 +315,7 @@
 		"message": "DNS"
 	},
 	"options_dns.resolver": {
-		"message": "Résolution"
+		"message": "Résolution:"
 	},
 	"options_dns.resolver.value.1": {
 		"message": "Bibliothèque DNS en JavaScript"
@@ -327,10 +327,10 @@
 		"message": "Récupérer les serveurs de DNS depuis la configuration de l’OS"
 	},
 	"options_dns.nameserver": {
-		"message": "Nom du serveur DNS (Syntaxe (EBNF) : host[\":\"port]{\";\"host[\":\"port]} )"
+		"message": "Nom du serveur DNS (Syntaxe (EBNF) : host[\":\"port]{\";\"host[\":\"port]} ):"
 	},
 	"options_dns.timeout_connect": {
-		"message": "Expiration de la connexion DNS (en secondes)"
+		"message": "Expiration de la connexion DNS (en secondes):"
 	},
 	"options_dns.proxy.enable": {
 		"message": "Utiliser un « proxy » pour se connecter au serveur DNS"
@@ -345,7 +345,7 @@
 		"message": "Port :"
 	},
 	"options_dns.libunbound.nameserver": {
-		"message": "Serveur DNS (Syntaxe (EBNF): IP{\";\"IP} )"
+		"message": "Serveur DNS (Syntaxe (EBNF): IP{\";\"IP} ):"
 	},
 	"options_dns.libunbound.usageWarning": {
 		"message": "le résolveur libunbound requière une librairie externe qui doit être installée"
@@ -401,10 +401,10 @@
 		"message": "Affichage"
 	},
 	"options_showDKIMHeader": {
-		"message": "Montrer l’entête DKIM"
+		"message": "Montrer l’entête DKIM:"
 	},
 	"options_showDKIMFromTooltip": {
-		"message": "Montrer l’infobulle DKIM dans l’expéditeur de l’entête"
+		"message": "Montrer l’infobulle DKIM dans l’expéditeur de l’entête:"
 	},
 	"options_showDKIM.value.0": {
 		"message": "jamais"
@@ -465,19 +465,19 @@
 		"message": "Toujours vérifier la signature, si le domaine teste seulement le DKIM"
 	},
 	"options_error.illformed_i.treatAs": {
-		"message": "Traiter l’étiquette AUID malformée comme"
+		"message": "Traiter l’étiquette AUID malformée comme:"
 	},
 	"options_error.illformed_s.treatAs": {
-		"message": "Traiter l’étiquette du sélecteur malformée comme"
+		"message": "Traiter l’étiquette du sélecteur malformée comme:"
 	},
 	"options_error.policy.key_insecure.treatAs": {
-		"message": "Traiter une clé DKIM qui n’est pas signé par DNSSEC"
+		"message": "Traiter une clé DKIM qui n’est pas signé par DNSSEC:"
 	},
 	"options_error.algorithm.sign.rsa-sha1.treatAs": {
-		"message": "Traiter l’agorithme de signature rsa-sha1 comme"
+		"message": "Traiter l’agorithme de signature rsa-sha1 comme:"
 	},
 	"options_error.algorithm.rsa.weakKeyLength.treatAs": {
-		"message": "Traiter les clés RSA faibles (<2048 bits) comme"
+		"message": "Traiter les clés RSA faibles (<2048 bits) comme:"
 	},
 	"options_error.treatAs.value.0": {
 		"message": "erreur"
@@ -649,7 +649,7 @@
 		"message": "Sélectionner automatiquement la priorité"
 	},
 	"signRules.priorityMode.manual": {
-		"message": "Mettre la priorité à"
+		"message": "Mettre la priorité à:"
 	},
 	"button.cancel": {
 		"message": "Annuler"

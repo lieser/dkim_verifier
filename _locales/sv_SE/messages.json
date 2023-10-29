@@ -265,7 +265,7 @@
 		"message": "Kan signeras (2)"
 	},
 	"signRules.priorityMode.manual": {
-		"message": "Ändra prioritet till"
+		"message": "Ändra prioritet till:"
 	},
 	"button.help": {
 		"message": "Hjälp…"

@@ -359,7 +359,7 @@
 		"message": "DNS"
 	},
 	"options_dns.resolver": {
-		"message": "Weryfikator"
+		"message": "Weryfikator:"
 	},
 	"options_dns.resolver.value.1": {
 		"message": "JavaScript DNS library"
@@ -371,10 +371,10 @@
 		"message": "Pobierz serwery DNS z konfiguracji systemu operacyjnego"
 	},
 	"options_dns.nameserver": {
-		"message": "Serwer DNS (składnia (EBNF): host[\":\"port]{\";\"host[\":\"port]} )"
+		"message": "Serwer DNS (składnia (EBNF): host[\":\"port]{\";\"host[\":\"port]} ):"
 	},
 	"options_dns.timeout_connect": {
-		"message": "Limit czasu połączenia DNS (w sekundach)",
+		"message": "Limit czasu połączenia DNS (w sekundach):",
 		"description": "Timeout for the connection to the DNS servers (both establishing the connection and sending/receiving data)"
 	},
 	"options_dns.proxy.enable": {
@@ -390,7 +390,7 @@
 		"message": "Port:"
 	},
 	"options_dns.libunbound.nameserver": {
-		"message": "Serwer DNS (Składnia (EBNF): IP{\";\"IP} )"
+		"message": "Serwer DNS (Składnia (EBNF): IP{\";\"IP} ):"
 	},
 	"options_dns.libunbound.usageWarning": {
 		"message": "Weryfikator libunbound wymaga zainstalowania zewnętrznej biblioteki"
@@ -462,10 +462,10 @@
 		"message": "Widok"
 	},
 	"options_showDKIMHeader": {
-		"message": "Pokaż nagłówek DKIM"
+		"message": "Pokaż nagłówek DKIM:"
 	},
 	"options_showDKIMFromTooltip": {
-		"message": "Pokaż podpowiedź DKIM dla nagłówka OD"
+		"message": "Pokaż podpowiedź DKIM dla nagłówka OD:"
 	},
 	"options_showDKIM.value.0": {
 		"message": "nigdy"
@@ -526,19 +526,19 @@
 		"message": "Weryfikuj także domeny w trybie testowania DKIM"
 	},
 	"options_error.illformed_i.treatAs": {
-		"message": "Traktuj niepoprawny znacznik AUID jako"
+		"message": "Traktuj niepoprawny znacznik AUID jako:"
 	},
 	"options_error.illformed_s.treatAs": {
-		"message": "Traktuj niepoprawny znacznik selektora jako"
+		"message": "Traktuj niepoprawny znacznik selektora jako:"
 	},
 	"options_error.policy.key_insecure.treatAs": {
-		"message": "Traktuj klucz DKIM niezabezpieczony przez DNSSEC jako"
+		"message": "Traktuj klucz DKIM niezabezpieczony przez DNSSEC jako:"
 	},
 	"options_error.algorithm.sign.rsa-sha1.treatAs": {
-		"message": "Traktuj algorytm RSA-SHA1 jako"
+		"message": "Traktuj algorytm RSA-SHA1 jako:"
 	},
 	"options_error.algorithm.rsa.weakKeyLength.treatAs": {
-		"message": "Traktuj słabe klucze RSA (<2048 bitów) jako"
+		"message": "Traktuj słabe klucze RSA (<2048 bitów) jako:"
 	},
 	"options_error.treatAs.value.0": {
 		"message": "błąd"
@@ -735,7 +735,7 @@
 		"message": "Automatycznie wybierz priorytet"
 	},
 	"signRules.priorityMode.manual": {
-		"message": "Ustaw priorytet na"
+		"message": "Ustaw priorytet na:"
 	},
 	"button.cancel": {
 		"message": "Anuluj"

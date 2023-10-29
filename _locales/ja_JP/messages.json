@@ -359,7 +359,7 @@
 		"message": "DNS"
 	},
 	"options_dns.resolver": {
-		"message": "リゾルバ"
+		"message": "リゾルバ:"
 	},
 	"options_dns.resolver.value.1": {
 		"message": "JavaScript DNS ライブラリ"
@@ -371,10 +371,10 @@
 		"message": "OS の設定から DNS サーバを取得"
 	},
 	"options_dns.nameserver": {
-		"message": "DNS サーバ （書式 （EBNF）: host[\":\"port]{\";\"host[\":\"port]} ）"
+		"message": "DNS サーバ （書式 （EBNF）: host[\":\"port]{\";\"host[\":\"port]} ）:"
 	},
 	"options_dns.timeout_connect": {
-		"message": "DNS 接続タイムアウト （秒）",
+		"message": "DNS 接続タイムアウト （秒）:",
 		"description": "Timeout for the connection to the DNS servers (both establishing the connection and sending/receiving data)"
 	},
 	"options_dns.proxy.enable": {
@@ -390,7 +390,7 @@
 		"message": "ポート:"
 	},
 	"options_dns.libunbound.nameserver": {
-		"message": "DNS サーバ (書式 (EBNF): IP{\";\"IP} )"
+		"message": "DNS サーバ (書式 (EBNF): IP{\";\"IP} ):"
 	},
 	"options_dns.libunbound.usageWarning": {
 		"message": "libunbound リゾルバの利用には外部ライブラリが必要です"
@@ -462,10 +462,10 @@
 		"message": "表示"
 	},
 	"options_showDKIMHeader": {
-		"message": "DKIM ヘッダを表示"
+		"message": "DKIM ヘッダを表示:"
 	},
 	"options_showDKIMFromTooltip": {
-		"message": "差出人ヘッダに DKIM ツールチップを表示"
+		"message": "差出人ヘッダに DKIM ツールチップを表示:"
 	},
 	"options_showDKIM.value.0": {
 		"message": "非表示"
@@ -526,19 +526,19 @@
 		"message": "DKIM を検証中のドメインの場合でも、署名を検証する"
 	},
 	"options_error.illformed_i.treatAs": {
-		"message": "不正な形式の AUID タグを"
+		"message": "不正な形式の AUID タグを:"
 	},
 	"options_error.illformed_s.treatAs": {
-		"message": "不正な形式のセレクタタグを"
+		"message": "不正な形式のセレクタタグを:"
 	},
 	"options_error.policy.key_insecure.treatAs": {
-		"message": "DNSSEC によりセキュアにされていない DKIM キーを"
+		"message": "DNSSEC によりセキュアにされていない DKIM キーを:"
 	},
 	"options_error.algorithm.sign.rsa-sha1.treatAs": {
-		"message": "rsa-sha1 署名アルゴリズムを"
+		"message": "rsa-sha1 署名アルゴリズムを:"
 	},
 	"options_error.algorithm.rsa.weakKeyLength.treatAs": {
-		"message": "弱い RSA キー （<2048 ビット） を"
+		"message": "弱い RSA キー （<2048 ビット） を:"
 	},
 	"options_error.treatAs.value.0": {
 		"message": "エラーとする"
@@ -735,7 +735,7 @@
 		"message": "優先度を自動選択"
 	},
 	"signRules.priorityMode.manual": {
-		"message": "優先度を手動指定"
+		"message": "優先度を手動指定:"
 	},
 	"button.cancel": {
 		"message": "キャンセル"
