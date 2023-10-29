@@ -747,7 +747,7 @@
 		"message": "Aiuto sulle regole dei firmatari"
 	},
 	"domain.description": {
-		"message": "verrà confrontato con il dominio base dell’indirizzo del mittente. Ad esempio il dominio base di “email.example.co.uk” è example.co.uk”."
+		"message": "verrà confrontato con il dominio base dell’indirizzo del mittente. Ad esempio il dominio base di “email.example.co.uk” è “example.co.uk”."
 	},
 	"listId.description": {
 		"message": "verrà confrontato con l’id della lista, se l’email è stata ricevuta tramite una mailing list. Nota che solo la parte tra “<” e “>” dell’intestazione List-Id è l’id della lista effettivo. I confronti con il dominio e l’id della lista sono alternativi."
