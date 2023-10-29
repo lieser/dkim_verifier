@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file.
 - Show proper error message if parsing of a message failed.
 - Authentication-Results header: if reading of non RFC compliant ARHs is enabled,
   a `:` in a property value is now allowed without the value being in a quoted-string.
+- Authentication-Results header: don't restrict result keyword for unknown methods.
 
 ### Fixes
 

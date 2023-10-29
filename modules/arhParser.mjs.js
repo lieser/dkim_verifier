@@ -182,10 +182,7 @@ function parseResInfo(str, relaxedParsing, token) {
 	// get methodspec
 	const method_version_p = `${token.CFWS_op}/${token.CFWS_op}([0-9]+)`;
 	const method_p = `(${Token.Keyword})(?:${method_version_p})?`;
-	let Keyword_result_p = "none|pass|fail|softfail|policy|neutral|temperror|permerror";
-	// older SPF specs (e.g. RFC 4408) use mixed case
-	Keyword_result_p += "|None|Pass|Fail|SoftFail|Neutral|TempError|PermError";
-	const result_p = `=${token.CFWS_op}(${Keyword_result_p})`;
+	const result_p = `=${token.CFWS_op}(${Token.Keyword})`;
 	const methodspec_p = `;${token.CFWS_op}${method_p}${token.CFWS_op}${result_p}`;
 	try {
 		reg_match = match(str, methodspec_p, token);
@@ -213,6 +210,8 @@ function parseResInfo(str, relaxedParsing, token) {
 		res.method_version = 1;
 	}
 	res.result = reg_match[3].toLowerCase();
+
+	checkResultKeyword(res.method, reg_match[3]);
 
 	// get reasonspec (optional)
 	const reasonspec_p = `reason${token.CFWS_op}=${token.CFWS_op}${token.value_cp}`;
@@ -259,6 +258,48 @@ function parseResInfo(str, relaxedParsing, token) {
 	}
 
 	return res;
+}
+
+/**
+ * Check that a result keyword is valid for a known method.
+ *
+ * See also https://www.iana.org/assignments/email-auth/email-auth.xhtml.
+ *
+ * @param {string} method
+ * @param {string} resultKeyword
+ * @returns {void}
+ * @throws {DKIM_Error} if result keyword is invalid for the method.
+ */
+function checkResultKeyword(method, resultKeyword) {
+	let allowedKeywords;
+
+	// DKIM and DomainKeys (RFC 8601 section 2.7.1.)
+	if (method === "dkim" || method === "domainkeys") {
+		allowedKeywords = ["none", "pass", "fail", "policy", "neutral", "temperror", "permerror"];
+	}
+
+	// SPF and Sender ID (RFC 8601 section 2.7.2.)
+	if (method === "spf" || method === "sender-id") {
+		allowedKeywords = ["none", "pass", "fail", "softfail", "policy", "neutral", "temperror", "permerror"
+			// Deprecated from older ARH RFC 5451.
+			, "hardfail"
+			// Older SPF specs (e.g. RFC 4408) used mixed case.
+			, "None", "Pass", "Fail", "SoftFail", "Neutral", "TempError", "PermError"
+		];
+	}
+
+	// DMARC (RFC 7489 section 11.2.)
+	if (method === "dmarc") {
+		allowedKeywords = ["none", "pass", "fail", "temperror", "permerror"];
+	}
+
+	// Note: Both the ARH RFC and the IANA registry contain keywords for more than the above methods.
+	// As we don't really care about them, for simplicity we treat them the same as unknown methods,
+	// And don't restrict the keyword.
+
+	if (allowedKeywords && !allowedKeywords.includes(resultKeyword)) {
+		throw new DKIM_Error(`Result keyword "${resultKeyword}" is not allowed for method "${method}"`);
+	}
 }
 
 /**

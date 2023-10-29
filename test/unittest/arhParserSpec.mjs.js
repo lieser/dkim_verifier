@@ -151,6 +151,22 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.authres_version).to.be.equal(1);
 			expect(res.resinfo.length).to.be.equal(0);
 		});
+		it("Mixed case result value for SPF (e.g. RFC 4408)", function () {
+			const res = ArhParser.parse(
+				"Authentication-Results: example.com; spf=Pass\r\n");
+			expect(res.authserv_id).to.be.equal("example.com");
+			expect(res.resinfo.length).to.be.equal(1);
+			expect(res.resinfo[0]?.method).to.be.equal("spf");
+			expect(res.resinfo[0]?.result).to.be.equal("pass");
+		});
+		it("Don't restrict result keyword for unknown methods", function () {
+			const res = ArhParser.parse(
+				"Authentication-Results: example.com; unknown=foo\r\n");
+			expect(res.authserv_id).to.be.equal("example.com");
+			expect(res.resinfo.length).to.be.equal(1);
+			expect(res.resinfo[0]?.method).to.be.equal("unknown");
+			expect(res.resinfo[0]?.result).to.be.equal("foo");
+		});
 	});
 	describe("Relaxed parsing", function () {
 		it("Trailing ;", function () {
@@ -195,6 +211,29 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo[0]?.result).to.be.equal("pass");
 			expect(res.resinfo[0]?.propertys.policy["authority-uri"]).
 				to.be.equal("https://d3frv9g52qce38.cloudfront.net/amazondefault/amazon_web_services_inc.pem");
+		});
+	});
+	describe("Invalid examples", function () {
+		it("Unknown results for DKIM", function () {
+			expect(() => ArhParser.parse(
+				"Authentication-Results: example.com; dkim=Pass\r\n"
+			)).to.throw();
+			expect(() => ArhParser.parse(
+				"Authentication-Results: example.com; dkim=hardfail\r\n"
+			)).to.throw();
+			expect(() => ArhParser.parse(
+				"Authentication-Results: example.com; dkim=foo\r\n"
+			)).to.throw();
+		});
+		it("Unknown results for SPF", function () {
+			expect(() => ArhParser.parse(
+				"Authentication-Results: example.com; spf=foo\r\n"
+			)).to.throw();
+		});
+		it("Unknown results for DMARC", function () {
+			expect(() => ArhParser.parse(
+				"Authentication-Results: example.com; dmarc=foo\r\n"
+			)).to.throw();
 		});
 	});
 	describe("DKIM results", function () {
