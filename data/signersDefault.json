@@ -32,13 +32,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
-                       "domain": "actalis.com",
-                       "addr": "*",
-                       "sdid": "aruba.it",
-                       "ruletype": "ALL",
-                       "priority": "DEFAULT_RULE_ALL"
-                       "priority": "DEFAULT_RULE_ALL"
-        },{
+			"domain": "actalis.com",
+			"addr": "*",
+			"sdid": "aruba.it",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "active.com",
 			"addr": "*",
 			"sdid": "",
