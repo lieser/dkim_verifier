@@ -5,4 +5,5 @@
 
 # Disable end-of-line normalization for the following files
 data/favicon/** -text
+test/data/original/** -text
 thirdparty/** -text

@@ -315,7 +315,7 @@
 		"message": "DNS"
 	},
 	"options_dns.resolver": {
-		"message": "解析"
+		"message": "解析:"
 	},
 	"options_dns.resolver.value.1": {
 		"message": "JavaScript DNS 软件库"
@@ -327,10 +327,10 @@
 		"message": "从操作系统的配置获取 DNS 名称服务器"
 	},
 	"options_dns.nameserver": {
-		"message": "DNS 名称服务器 (语法 (EBNF): host[\":\"port]{\";\"host[\":\"port]} )"
+		"message": "DNS 名称服务器 (语法 (EBNF): host[\":\"port]{\";\"host[\":\"port]} ):"
 	},
 	"options_dns.timeout_connect": {
-		"message": "DNS 连接超时 (秒)"
+		"message": "DNS 连接超时 (秒):"
 	},
 	"options_dns.proxy.enable": {
 		"message": "使用代理服务器连接 DNS 服务器"
@@ -395,10 +395,10 @@
 		"message": "显示"
 	},
 	"options_showDKIMHeader": {
-		"message": "显示 DKIM 头"
+		"message": "显示 DKIM 头:"
 	},
 	"options_showDKIMFromTooltip": {
-		"message": "From 头显示 DKIM 工具提示"
+		"message": "From 头显示 DKIM 工具提示:"
 	},
 	"options_showDKIM.value.0": {
 		"message": "从不"
@@ -459,19 +459,19 @@
 		"message": "如果一个域只是在测试 DKIM，仍然验证签名"
 	},
 	"options_error.illformed_i.treatAs": {
-		"message": "将格式不良的 AUID 标签视作"
+		"message": "将格式不良的 AUID 标签视作:"
 	},
 	"options_error.illformed_s.treatAs": {
-		"message": "将格式不良的选择器标签视作"
+		"message": "将格式不良的选择器标签视作:"
 	},
 	"options_error.policy.key_insecure.treatAs": {
-		"message": "将非 DNSSEC 的 DKIM 密钥视作"
+		"message": "将非 DNSSEC 的 DKIM 密钥视作:"
 	},
 	"options_error.algorithm.sign.rsa-sha1.treatAs": {
-		"message": "将 RSA-SHA1 签名算法视作"
+		"message": "将 RSA-SHA1 签名算法视作:"
 	},
 	"options_error.algorithm.rsa.weakKeyLength.treatAs": {
-		"message": "将 RSA 弱密钥（小于 2048 位）视作"
+		"message": "将 RSA 弱密钥（小于 2048 位）视作:"
 	},
 	"options_error.treatAs.value.0": {
 		"message": "错误"
@@ -613,7 +613,7 @@
 		"message": "自动选择优先级"
 	},
 	"signRules.priorityMode.manual": {
-		"message": "设置优先级为"
+		"message": "设置优先级为:"
 	},
 	"button.help": {
 		"message": "帮助…"

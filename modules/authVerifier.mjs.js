@@ -18,15 +18,15 @@
 
 export const moduleVersion = "2.0.0";
 
-import { addrIsInDomain2, domainIsInDomain, getDomainFromAddr } from "./utils.mjs.js";
+import { addrIsInDomain, addrIsInDomain2, domainIsInDomain, getDomainFromAddr } from "./utils.mjs.js";
 import ArhParser from "./arhParser.mjs.js";
-import { DKIM_InternalError } from "./error.mjs.js";
 import DMARC from "./dkim/dmarc.mjs.js";
 import ExtensionUtils from "./extensionUtils.mjs.js";
 import Logging from "./logging.mjs.js";
 import MsgParser from "./msgParser.mjs.js";
 import SignRules from "./dkim/signRules.mjs.js";
 import Verifier from "./dkim/verifier.mjs.js";
+import { getBimiIndicator } from "./bimi.mjs.js";
 import { getFavicon } from "./dkim/favicon.mjs.js";
 import prefs from "./preferences.mjs.js";
 
@@ -51,11 +51,12 @@ const log = Logging.getLogger("AuthVerifier");
 
 /**
  * @typedef {object} SavedAuthResultV3
- * @property {string} version Result version ("3.0").
+ * @property {string} version Result version ("3.1").
  * @property {dkimSigResultV2[]} dkim
  * @property {ArhResInfo[]|undefined} [spf]
  * @property {ArhResInfo[]|undefined} [dmarc]
  * @property {{dkim?: dkimSigResultV2[]}|undefined} [arh]
+ * @property {string|undefined} [bimiIndicator] Since version 3.1
  */
 /**
  * @typedef {SavedAuthResultV3} SavedAuthResult
@@ -123,7 +124,21 @@ export default class AuthVerifier {
 
 		// create msg object
 		const rawMessage = await browser.messages.getRaw(message.id);
-		const msgParsed = MsgParser.parseMsg(rawMessage);
+		let msgParsed;
+		try {
+			msgParsed = MsgParser.parseMsg(rawMessage);
+		} catch (error) {
+			log.error("Parsing of message failed", error);
+			return Promise.resolve({
+				version: "2.1",
+				dkim: [{
+					version: "2.0",
+					result: "PERMFAIL",
+					res_num: 30,
+					result_str: browser.i18n.getMessage("DKIM_INTERNALERROR_INCORRECT_EMAIL_FORMAT"),
+				}],
+			});
+		}
 		const fromHeader = msgParsed.headers.get("from");
 		if (!fromHeader || !fromHeader[0]) {
 			throw new Error("message does not contain a from header");
@@ -166,13 +181,14 @@ export default class AuthVerifier {
 				savedAuthResult = arhResult;
 			} else {
 				savedAuthResult = {
-					version: "3.0",
+					version: "3.1",
 					dkim: [],
 					spf: arhResult.spf,
 					dmarc: arhResult.dmarc,
 					arh: {
 						dkim: arhResult.dkim
 					},
+					bimiIndicator: arhResult.bimiIndicator,
 				};
 			}
 		} else {
@@ -240,6 +256,8 @@ async function getARHResult(message, headers, from, listId, account, dmarc) {
 	let arhSPF = [];
 	/** @type {ArhResInfo[]} */
 	let arhDMARC = [];
+	/** @type {ArhResInfo[]} */
+	let arhBIMI = [];
 	for (const header of arHeaders) {
 		/** @type {import("./arhParser.mjs.js").ArhHeader} */
 		let arh;
@@ -276,6 +294,9 @@ async function getARHResult(message, headers, from, listId, account, dmarc) {
 		arhDMARC = arhDMARC.concat(arh.resinfo.filter((element) => {
 			return element.method === "dmarc";
 		}));
+		arhBIMI = arhBIMI.concat(arh.resinfo.filter((element) => {
+			return element.method === "bimi";
+		}));
 	}
 
 	// convert DKIM results
@@ -308,7 +329,7 @@ async function getARHResult(message, headers, from, listId, account, dmarc) {
 					case 2: // ignore
 						break;
 					default:
-						throw new DKIM_InternalError("invalid error.algorithm.sign.rsa-sha1.treatAs");
+						throw new Error("invalid error.algorithm.sign.rsa-sha1.treatAs");
 				}
 			}
 		}
@@ -318,10 +339,11 @@ async function getARHResult(message, headers, from, listId, account, dmarc) {
 	sortSignatures(dkimSigResults, from, listId);
 
 	const savedAuthResult = {
-		version: "3.0",
+		version: "3.1",
 		dkim: dkimSigResults,
 		spf: arhSPF,
 		dmarc: arhDMARC,
+		bimiIndicator: getBimiIndicator(headers, arhBIMI) ?? undefined,
 	};
 	log.debug("ARH result:", savedAuthResult);
 	return savedAuthResult;
@@ -493,7 +515,7 @@ function sortSignatures(signatures, from, listId) {
 			return 1;
 		}
 
-		throw new DKIM_InternalError(`result_compare: sig1.result: ${sig1.result}; sig2.result: ${sig2.result}`);
+		throw new Error(`result_compare: sig1.result: ${sig1.result}; sig2.result: ${sig2.result}`);
 	}
 
 	/**
@@ -644,7 +666,7 @@ function arhDKIM_to_dkimSigResultV2(arhDKIM) {
 			}
 			break;
 		default:
-			throw new DKIM_InternalError(`invalid dkim result in arh: ${arhDKIM.result}`);
+			throw new Error(`invalid dkim result in arh: ${arhDKIM.result}`);
 	}
 	let sdid = arhDKIM.propertys.header.d;
 	let auid = arhDKIM.propertys.header.i;
@@ -699,7 +721,6 @@ function dkimResultV1_to_dkimSigResultV2(dkimResultV1) {
  *
  * @param {dkimSigResultV2} dkimSigResult
  * @returns {AuthResultDKIM}
- * @throws DKIM_InternalError
  */
 function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-line complexity
 	/** @type {AuthResultDKIM} */
@@ -832,7 +853,7 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 			authResultDKIM.result_str = browser.i18n.getMessage("NOSIG");
 			break;
 		default:
-			throw new DKIM_InternalError(`unknown result: ${dkimSigResult.result}`);
+			throw new Error(`unknown result: ${dkimSigResult.result}`);
 	}
 
 	return authResultDKIM;
@@ -863,7 +884,7 @@ function SavedAuthResult_to_AuthResult(savedAuthResult, from) {
 				dkimSigResultV2_to_AuthResultDKIM)
 		};
 	}
-	return addFavicons(authResult, from);
+	return addFavicons(authResult, from, savedAuthResult.bimiIndicator);
 }
 
 /**
@@ -892,9 +913,10 @@ function AuthResultDKIMV2_to_dkimSigResultV2(authResultDKIM) {
  *
  * @param {AuthResult} authResult
  * @param {string?} from
+ * @param {string|undefined} bimiIndicator
  * @returns {Promise<AuthResult>} authResult
  */
-async function addFavicons(authResult, from) {
+async function addFavicons(authResult, from, bimiIndicator) {
 	if (!prefs["display.favicon.show"]) {
 		return authResult;
 	}
@@ -903,7 +925,11 @@ async function addFavicons(authResult, from) {
 	}
 	for (const dkim of authResult.dkim) {
 		if (dkim.sdid) {
-			dkim.favicon = await getFavicon(dkim.sdid, dkim.auid, from);
+			if (bimiIndicator && from && addrIsInDomain(from, dkim.sdid)) {
+				dkim.favicon = `data:image/svg+xml;base64,${bimiIndicator}`;
+			} else {
+				dkim.favicon = await getFavicon(dkim.sdid, dkim.auid, from);
+			}
 		}
 	}
 	return authResult;

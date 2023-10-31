@@ -8,8 +8,25 @@ All notable changes to this project will be documented in this file.
 
 ### Enhancements
 
+- Added support for using the Brand Indicators for Message Identification (BIMI)
+  when showing favicons is enabled (#242).
 - Added the possibility to show a favicon for a specific From address or AUID (#107).
 - Don't save DKIM results that contain a temporary error.
+- Show proper error message if parsing of a message failed.
+- Authentication-Results header: if reading of non RFC compliant ARHs is enabled,
+  a `:` in a property value is now allowed without the value being in a quoted-string.
+- Authentication-Results header: don't restrict result keyword for unknown methods.
+
+### Fixes
+
+- Fixed signature verification if a signed header contains a non ASCII character.
+- Fixed support for Thunderbird Conversations add-on in Thunderbird 115 and later (#395).
+- Libunbound resolver: Fixed using a relative path to the profile directory in Thunderbird 115 and later (#385).
+
+### Other
+
+- Added Polish translation (by dMbski) (#392).
+- Updated default rules and favicons (#387, #393).
 
 ## 5.3.1 (2023-06-08)
 

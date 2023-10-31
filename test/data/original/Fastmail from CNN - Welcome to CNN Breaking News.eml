@@ -1,0 +1,653 @@
+Return-Path: <bounce-cn2-ZH_CNNAlerts_NDBAN10232023c161596b0-h-350b0c8b5e=2@response.emailalerts.cnn.com>
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+	 by sloti53n25 (Cyrus 3.9.0-alpha0-1048-g9229b632c5-fm-20231019.001-g9229b632) with LMTPA;
+	 Tue, 24 Oct 2023 00:25:14 -0400
+X-Cyrus-Session-Id: sloti53n25-1698121514-1300581-2-2010012257177251688
+X-Sieve: CMU Sieve 3.0
+X-Spam-known-sender: no
+X-Spam-sender-reputation: 500 (none)
+X-Spam-score: 2.3
+X-Spam-hits: DATE_IN_PAST_06_12 1.103, DCC_CHECK 1.1, DCC_REPUT_95_98 0.7,
+  HTML_MESSAGE 0.001, ME_HAS_VSSU 0.001, ME_SENDERREP_NEUTRAL 0.001,
+  RCVD_IN_MSPIKE_H3 -0.01, RCVD_IN_MSPIKE_WL -0.01, SPF_HELO_NONE 0.001,
+  SPF_PASS -0.001, USER_IN_DEF_SPF_WL -0.5, LANGUAGES en, BAYES_USED none,
+  SA_VERSION 3.4.6
+X-Spam-source: IP='96.47.26.94', Host='cnn3alerts-87-1.bm16.maas.zetaglobal.net',
+  Country='US', FromHeader='com', MailFrom='com'
+X-Spam-charsets: plain='UTF-8', html='UTF-8'
+X-Resolved-to: bimi_test@fastmail.com
+X-Delivered-to: bimi_test@fastmail.com
+X-Mail-from: bounce-cn2-ZH_CNNAlerts_NDBAN10232023c161596b0-h-350b0c8b5e=2@response.emailalerts.cnn.com
+Received: from mx3 ([10.202.2.202])
+  by compute5.internal (LMTPProxy); Tue, 24 Oct 2023 00:25:14 -0400
+Received: from mx3.messagingengine.com (localhost [127.0.0.1])
+	by mailmx.nyi.internal (Postfix) with ESMTP id 1BB5C196007C
+	for <bimi_test@fastmail.com>; Tue, 24 Oct 2023 00:25:14 -0400 (EDT)
+Received: from mailmx.nyi.internal (localhost [127.0.0.1])
+    by mx3.messagingengine.com (Authentication Milter) with ESMTP
+    id 12D05A63845.B034F19600A9;
+    Tue, 24 Oct 2023 00:25:14 -0400
+ARC-Seal: i=1; a=rsa-sha256; cv=none; d=messagingengine.com; s=fm3; t=
+    1698121514; b=MyeWRa0FDtVog6rkRku/HtDfjZvIEPHRbtGDJhg2c4s2LzdrNZ
+    54QdkyTm858qVBjYuMyTMiEM1KSniUy+NwvxpQhXtHvs4DF4/z8GrmVLo5fUTsKB
+    bRGPMSlBsz0Z9pmpDSEjyU/NXWzX9HX6oRpDNZU+x7Y8gfGkRqaUITlBkY9Z9F08
+    G+d5v5/emS2vPKSpPXWMR43VgokPShxS6b199HM5GNfyZG3PvIT/I2akUzIdB6Rn
+    49sgVmuk6R34v49ylD16ENPQ/FVt9K4AXC+O737AKRHLq7w4kK1EVzr9z66gSdJO
+    hxlAsLd0LTlc+yeK4On1Pcm2WJe/HUDC1QWg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=
+    messagingengine.com; h=subject:from:to:date:message-id:reply-to
+    :list-unsubscribe:mime-version:content-type; s=fm3; t=
+    1698121514; bh=aMY2v9pvwlaxK7dqEm+kXZMOSIpEx9Yiw736pbhEdi0=; b=J
+    LXNIbyvMEc3dRiDJkGrCKjOvHd+wtpaNnm5bUhcRswukvcUgdEb7niALGYoiB2lY
+    eMzv7gYkm69AL7NCWgT9X2/BAJFDJUp/OeoYY4fDWUP9XbY/gLlW8W3FEd90rT/L
+    ZEPvJ9QmlOyFaMe+9GyXWB7GuW+yHPLjn0hU3kLE1NT3u8c9EL3HH6A8Ay363Kn2
+    SfAaIQUY0ZndpY/M+HTmGvcqIOS59x6v+NVLXhSO+BXlQ3WjHvAs9FeoL/8od5F6
+    L/rr/5NKvhcASbNYFUNmxrx++vsv+nkIhz0HZQZewvuIG3qS1f1KjD3R7mBpHGWN
+    6W7zfVl831ofGN8J0Wx2g==
+ARC-Authentication-Results: i=1; mx3.messagingengine.com;
+    x-csa=none;
+    x-me-sender=none;
+    x-ptr=pass smtp.helo=cnn3alerts-87-1.bm16.maas.zetaglobal.net
+    policy.ptr=cnn3alerts-87-1.bm16.maas.zetaglobal.net;
+    bimi=pass header.d=cnn.com header.selector=default policy.authority=pass
+    policy.mark-type="Registered Mark"
+    policy.authority-uri=
+    https://amplify.valimail.com/bimi/time-warner/LFMoxJPK5xh-cable_news_network_inc2.pem;
+    arc=none (no signatures found);
+    dkim=pass (2048-bit rsa key sha256) header.d=emailalerts.cnn.com
+    header.i=@emailalerts.cnn.com header.b=ZjEm5etY header.a=rsa-sha256
+    header.s=v2;
+    dmarc=pass policy.published-domain-policy=reject
+    policy.applied-disposition=none policy.evaluated-disposition=none
+    (p=reject,d=none,d.eval=none) policy.policy-from=p
+    header.from=emailalerts.cnn.com;
+    iprev=pass smtp.remote-ip=96.47.26.94
+    (cnn3alerts-87-1.bm16.maas.zetaglobal.net);
+    spf=pass
+    smtp.mailfrom=
+    "bounce-cn2-ZH_CNNAlerts_NDBAN10232023c161596b0-h-350b0c8b5e=2@response.emailalerts.cnn.com"
+    smtp.helo=cnn3alerts-87-1.bm16.maas.zetaglobal.net
+X-ME-Authentication-Results: mx3.messagingengine.com;
+    x-aligned-from=orgdomain_pass (Domain org match);
+    x-return-mx=pass header.domain=emailalerts.cnn.com
+      policy.org_domain=cnn.com policy.is_org=no
+      (MX Records found: mx.sendgrid.net);
+    x-return-mx=pass smtp.domain=response.emailalerts.cnn.com
+      policy.org_domain=cnn.com policy.is_org=no
+      (MX Records found: cnn.mx1.bm16.maas.zetaglobal.net,cnn.mx2.bm16.maas.zetaglobal.net);
+    x-tls=pass smtp.version=TLSv1.3 smtp.cipher=TLS_AES_256_GCM_SHA384
+      smtp.bits=256/256;
+    x-vs=transactional:account score=20 state=14
+Authentication-Results: mx3.messagingengine.com;
+    x-csa=none;
+    x-me-sender=none;
+    x-ptr=pass smtp.helo=cnn3alerts-87-1.bm16.maas.zetaglobal.net
+      policy.ptr=cnn3alerts-87-1.bm16.maas.zetaglobal.net
+Authentication-Results: mx3.messagingengine.com;
+    bimi=pass header.d=cnn.com header.selector=default policy.authority=pass
+      policy.mark-type="Registered Mark"
+      policy.authority-uri=
+      https://amplify.valimail.com/bimi/time-warner/LFMoxJPK5xh-cable_news_network_inc2.pem
+Authentication-Results: mx3.messagingengine.com;
+    arc=none (no signatures found)
+Authentication-Results: mx3.messagingengine.com;
+    dkim=pass (2048-bit rsa key sha256) header.d=emailalerts.cnn.com
+      header.i=@emailalerts.cnn.com header.b=ZjEm5etY header.a=rsa-sha256
+      header.s=v2;
+    dmarc=pass policy.published-domain-policy=reject
+      policy.applied-disposition=none policy.evaluated-disposition=none
+      (p=reject,d=none,d.eval=none) policy.policy-from=p
+      header.from=emailalerts.cnn.com;
+    iprev=pass smtp.remote-ip=96.47.26.94
+      (cnn3alerts-87-1.bm16.maas.zetaglobal.net);
+    spf=pass
+      smtp.mailfrom=
+      "bounce-cn2-ZH_CNNAlerts_NDBAN10232023c161596b0-h-350b0c8b5e=2@response.emailalerts.cnn.com"
+      smtp.helo=cnn3alerts-87-1.bm16.maas.zetaglobal.net
+BIMI-Indicator: PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3
+    I6IEFkb2JlIElsbHVzdHJhdG9yIDI0LjEuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZH
+    IFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMiIgYmFzZV
+    Byb2ZpbGU9InRpbnktcHMiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5v
+    cmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW
+    5rIgp2aWV3Qm94PSIwIDAgOTY3LjUgOTY3LjUiIHhtbDpzcGFjZT0icHJlc2VydmUiPgo8
+    dGl0bGU+Q05OPC90aXRsZT4KPHBhdGggZmlsbD0iI0NDMDAwMCIgZD0iTTc3OS41LDMyMy
+    4ydjI2MS40YzAsMTAuNC02LjUsMTkuMS0xNi4yLDIxLjhjLTEuOSwwLjUtMy44LDAuOC01
+    LjcsMC44Yy03LjQsMC0xNS44LTMuNy0yMi0xNC4xTDY3NCw0ODYuOQoJbC02MS4zLTEwNS
+    44Yy0zLjQtNS44LTguMi04LjUtMTIuNy03LjNjLTMuOSwxLTYuNCw0LjYtNi40LDl2MjAx
+    LjhjMCwxMC40LTYuNSwxOS4xLTE2LjIsMjEuOGMtOC4zLDIuMi0xOS45LTAuMS0yNy43LT
+    EzLjMKCWwtNTYuMi05Ni45bC02Ni43LTExNWMtMy40LTUuOC04LjItOC41LTEyLjgtNy4z
+    Yy00LDEuMS02LjYsNC45LTYuNCw5djE5Ny4zYzAsMTMtMTEuNCwyNC40LTI0LjQsMjQuNE
+    gyODMKCWMtNjYuOCwwLTEyMC45LTU0LjEtMTIwLjktMTIwLjhjMC02Ni44LDU0LjEtMTIw
+    LjksMTIwLjgtMTIwLjloMC4xaDUydi0zOS42aC01MmMtODguNiwxLTE1OS43LDczLjctMT
+    U4LjcsMTYyLjMKCWMxLDg3LjIsNzEuNSwxNTcuNywxNTguNywxNTguN2gxMDEuMmMzOC41
+    LDAsNjMuMi0yMi41LDYzLjEtNjQuMXYtOTEuNWMwLDAsNjQuNSwxMTEuMiw2Ny41LDExNi
+    4yYzQxLDY5LjYsMTE4LjQsNDAuOCwxMTguNC0xOS4xCgl2LTk3LjFjMCwwLDY0LjUsMTEx
+    LjIsNjcuNSwxMTYuMmM0MSw2OS42LDExOC40LDQwLjgsMTE4LjQtMTkuMVYzMjMuMkg3Nz
+    kuNXoiLz4KPHBhdGggZmlsbD0iI0NDMDAwMCIgZD0iTTE3NS4zLDQ4My43YzAuMSw1OS40
+    LDQ4LjIsMTA3LjYsMTA3LjcsMTA3LjdoMTAwLjJjNi4zLDAsMTEuMi02LDExLjItMTEuMl
+    YzODIuOQoJYzAtMTAuNCw2LjUtMTkuMSwxNi4yLTIxLjhjOC4zLTIuMiwxOS45LDAuMSwy
+    Ny43LDEzLjNjMC40LDAuNywzNC4xLDU4LjksNjYuOCwxMTUuMWMyOC43LDQ5LjQsNTUuNy
+    w5Niw1Ni4yLDk2LjgKCWMzLjQsNS44LDguMiw4LjUsMTIuOCw3LjNjNC0xLjEsNi42LTQu
+    OSw2LjQtOVYzODIuOWMwLTEwLjQsNi41LTE5LjEsMTYuMS0yMS44YzguMi0yLjIsMTkuOC
+    wwLjEsMjcuNiwxMy4zCgljMC40LDAuNywzMCw1MS43LDYxLjQsMTA1LjhjMzAsNTEuNyw2
+    MSwxMDUuMiw2MS42LDEwNi4xYzMuNCw1LjgsOC4yLDguNSwxMi44LDcuM2M0LTEuMSw2Lj
+    YtNC45LDYuNC05VjMyMy4yaC0zOS43djE1NS43CgljMCwwLTY0LjUtMTExLjItNjcuNS0x
+    MTYuMmMtNDEtNjkuNi0xMTguNC00MC44LTExOC40LDE5LjF2OTcuMWMwLDAtNjQuNS0xMT
+    EuMi02Ny41LTExNi4yYy00MS02OS42LTExOC40LTQwLjgtMTE4LjQsMTkuMXYxNTkuMQoJ
+    YzAuMSw1LjktNC41LDEwLjctMTAuMywxMC44Yy0wLjEsMC0wLjIsMC0wLjMsMGgtNjAuOG
+    MtMzcuNiwwLTY4LTMwLjQtNjgtNjhzMzAuNC02OCw2OC02OEgzMzVWMzc2aC01MgoJQzIy
+    My42LDM3Ni4xLDE3NS40LDQyNC4zLDE3NS4zLDQ4My43eiIvPgo8L3N2Zz4K
+BIMI-Location: v=BIMI1;
+    l=https://amplify.valimail.com/bimi/time-warner/LFMoxJPK5xh-cable_news_network_inc2.svg
+    a=https://amplify.valimail.com/bimi/time-warner/LFMoxJPK5xh-cable_news_network_inc2.pem
+X-ME-VSSU: VW5zdWI9aHR0cHM6Ly9lLmVtYWlsYWxlcnRzLmNubi5jb20vY2xpY2s_RVltbHRhVjkwWl
+    hOMFFHWmhjM1J0WVdsc0xtTnZiUS9DZXlKdGFXUWlPaUl4TmprNE1EazFPRGs0TmpBeFpE
+    RmxNR0ZpT1RneE1tUm1JaXdpWTNRaU9pSmpibTR0Tm1NM09XRTFNelV4WW1ZMU5UQTFNbV
+    JpWVRFMVlUVmhNakZqWldJd05XWXRNQ0lzSW5Ka0lqb2labUZ6ZEcxaGFXd3VZMjl0SW4w
+    L0hXa2hmUTA1T1FXeGxjblJ6WDA1RVFrRk9NVEF5TXpJd01qTmpNVFl4TlRrMllqQXNZMj
+    R5TEdoMGRIQnpPaTh2ZDNkM0xtTnViaTVqYjIwL3FQM1YwYlY5MFpYSnRQVEUyT1Rnd09U
+    VTRPVGcyTURGa01XVXdZV0k1T0RFeVpHWW1kWFJ0WDNOdmRYSmpaVDFDY21WaGEybHVaeX
+    RPWlhkekt5MHJWMlZzWTI5dFpTdERiMjVtYVhKdFlYUnBiMjRtZFhSdFgyMWxaR2wxYlQx
+    bGJXRnBiQ1oxZEcxZlkyRnRjR0ZwWjI0OU1UWXhOVGsyWHpFMk9UZ3dPVFU0T1RnMk1ESW
+    1ZblJmWldVOVltZDFaRXhZVTNGS2N6Ukhka05VVVVaMWQwWlFUMmxOUVZWT1RVNUxNbWRO
+    ZDJoSlIzVm1VWFphYW1FMVZFWTFiREZRSlRKR1NXdGtZMFozUTJoSFJIWkdKbUowWDNSel
+    BURTJPVGd3T1RVNE9UZzJNREkvczlpNTFiYzcxNzM
+X-ME-VSSU: VW5zdWI9bWFpbHRvOnVuc3Vic2NyaWJlLTE2OTgwOTU4OTg2MDFkMWUwYWI5ODEyZGZAcm
+    VzcG9uc2UuZW1haWxhbGVydHMuY25uLmNvbT9zdWJqZWN0PVVuc3Vic2NyaWJl
+X-ME-VSSU: VW5zdWI9aHR0cHM6Ly92aWV3LmVtYWlsYWxlcnRzLmNubi5jb20vbWVzc2FnZXMvMTY5OD
+    A5NTg5ODYwMWQxZTBhYjk4MTJkZi91bnN1YnNjcmliZQ
+X-ME-VSCause: gggruggvucftvghtrhhoucdtuddrgedvkedrkeejgdektdcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpggftfghnshhusghstghrihgsvgdpuffr
+    tefokffrpgfnqfghnecuuegrihhlohhuthemuceftddtnecundettggtohhunhhtucdlvd
+    dtmdenucfjughrpefuhffvfffkrhfjgggtsegrtderredttdejnecuhfhrohhmpeevpffp
+    ucfpvgifshcutehlvghrthcuoeevpffppfgvfihstehlvghrthesvghmrghilhgrlhgvrh
+    htshdrtghnnhdrtghomheqnecuggftrfgrthhtvghrnhepfeegvdekveeuvefhfeeitefh
+    tdekudehgfehgfeludfgfeeutdfhvdefjeeufeegnecuffhomhgrihhnpegtnhhnrdgtoh
+    hmnecukfhppeeliedrgeejrddviedrleegnecuvehluhhsthgvrhfuihiivgeptdenucfr
+    rghrrghmpehinhgvthepleeirdegjedrvdeirdelgedphhgvlhhopegtnhhnfegrlhgvrh
+    htshdqkeejqddurdgsmhduiedrmhgrrghsrdiivghtrghglhhosggrlhdrnhgvthdpmhgr
+    ihhlfhhrohhmpeeosghouhhntggvqdgtnhdvqdgkjfgpvefppfetlhgvrhhtshgppfffue
+    etpfdutddvfedvtddvfegtudeiudehleeisgdtqdhhqdefhedtsgdttgeksgehvgepvdes
+    rhgvshhpohhnshgvrdgvmhgrihhlrghlvghrthhsrdgtnhhnrdgtohhmqedpnhgspghrtg
+    hpthhtohepuddprhgtphhtthhopeeosghimhhipghtvghsthesfhgrshhtmhgrihhlrdgt
+    ohhmqe
+X-ME-VSScore: 20
+X-ME-VSCategory: transactional:account
+X-ME-CSA: none
+Received-SPF: pass
+    (response.emailalerts.cnn.com: Sender is authorized to use 'bounce-cn2-ZH_CNNAlerts_NDBAN10232023c161596b0-h-350b0c8b5e=2@response.emailalerts.cnn.com' in 'mfrom' identity (mechanism 'include:bm16.maas.zetaglobal.net' matched))
+    receiver=mx3.messagingengine.com;
+    identity=mailfrom;
+    envelope-from="bounce-cn2-ZH_CNNAlerts_NDBAN10232023c161596b0-h-350b0c8b5e=2@response.emailalerts.cnn.com";
+    helo=cnn3alerts-87-1.bm16.maas.zetaglobal.net;
+    client-ip=96.47.26.94
+Received: from cnn3alerts-87-1.bm16.maas.zetaglobal.net (cnn3alerts-87-1.bm16.maas.zetaglobal.net [96.47.26.94])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mx3.messagingengine.com (Postfix) with ESMTPS id B034F19600A9
+	for <bimi_test@fastmail.com>; Tue, 24 Oct 2023 00:25:13 -0400 (EDT)
+DKIM-Signature: a=rsa-sha256; bh=aMY2v9pvwlaxK7dqEm+kXZMOSIpEx9Yiw736pbhEdi0=;
+ c=simple/simple; d=emailalerts.cnn.com;
+ h=X-Mailer-Info:X-Mailer-Info-Extra:Subject:From:To:Date:Message-ID:Reply-to:List-Unsubscribe:Feedback-ID:X-rpcampaign:X-cid:X-messageuid:List-Unsubscribe-Post:campaign_token:campaign_id:rcpt_domain:MIME-Version:Content-Type;
+ s=v2; t=1698095914; v=1;
+ b=ZjEm5etY8rFFuSHYcpdc39JOYEa4CIX9uWWBxrFztwMReM+fM1I4TpMjr3sCWJXpTdDruThZ
+ EH22fQgCPL3JHf/Ol39nX6Vn7cFd5lVxIfiWzOP1Q2QZ6PbtIHo40cXTNBPKeXcAd1+9qt8g1Bi
+ blU0YuVFfKuQwdoJT5GaNsJQ8foNhZRM18TmEob/Taww45MEEWKroXrSGg+r5fRUJ23mHl29FQx
+ R3+27/+CewYcBVVmAGWRFHcbI0POMdjLleAmlEAiKvJF4hSQCaiuJd7y88tum66jC8ScLrDvVHf
+ zFs8iaPYhSqgoznSx3eHWPOq0YHQ4xKxqctiPNqlpxLHg==
+X-Mailer-Info: 10.j5mM.oHafNmbuFGblJHdz9lbkJWYuFDMyMjMwIzMjFjNxUTO2IGM.gYp1Wa
+ fRXZzRHQmF2c01WYpxmLj9Wb.snItlGZiojIxYTO4ATO1gTO4YDMxQWMlBTYilDOxIDZmJCLiMGd
+ iojIj5mbtYzY3kTY1MTNxImZ1UDM1IDZiFWM1EWNhJTMjVmYwUjZtAjIsIickJiOiYWYzRXbhlGb
+ uM2btJSf....
+X-Mailer-Info-Extra: 350b0c8b5e:09JSbvNmLslWYtR3chZmI6ICZyJCLiATLmVDMi
+ V2YxITY1EWNxEmYkJTNwUTNmJWM1MTNhlzNjZTLu52YiojI0NmIsIiZkJTM4kjYhBTZxQ
+ WMwYDO5gTN5ADO5YTMiojIklWbisHAjBQbvNmLslWYtR3chZGQ0NXZ09VatlmY++
+Subject: Welcome to CNN Breaking News
+From: CNN News Alert <CNNNewsAlert@emailalerts.cnn.com>
+To: bimi_test@fastmail.com
+Date: 23 Oct 2023 21:18:34 -0000
+Message-ID: <mid-1698095898601d1e0ab9812df@response.emailalerts.cnn.com>
+Reply-to: "CNN News Alert"<CNNNewsAlert@response.emailalerts.cnn.com>
+List-Unsubscribe: <https://view.emailalerts.cnn.com/messages/1698095898601d1e0ab9812df/unsubscribe>, <mailto:unsubscribe-1698095898601d1e0ab9812df@response.emailalerts.cnn.com?subject=Unsubscribe>
+Feedback-ID: 6c79a5351bf55052dba15a5a21ceb05f:cnn:trigger:bme
+X-rpcampaign: cnn161596_0
+X-cid: cnn161596_0
+X-messageuid: 1698095898601d1e0ab9812df
+List-Unsubscribe-Post: List-Unsubscribe=One-Click
+campaign_token: cnn-6c79a5351bf55052dba15a5a21ceb05f-0
+campaign_id: 161596
+rcpt_domain: fastmail.com
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+ boundary="==9fc950e30113790df99cc308c2aa03ab"
+
+This is a multi-part message in MIME format.
+
+--==9fc950e30113790df99cc308c2aa03ab
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+It looks like your email client might not support HTML formatted email.
+
+Try opening this email in another email client.
+
+Or, open the following link to view this email in a browser:
+https://e.emailalerts.cnn.com/click?EYmltaV90ZXN0QGZhc3RtYWlsLmNvbQ/CeyJ=
+taWQiOiIxNjk4MDk1ODk4NjAxZDFlMGFiOTgxMmRmIiwiY3QiOiJjbm4tNmM3OWE1MzUxYmY=
+1NTA1MmRiYTE1YTVhMjFjZWIwNWYtMCIsInJkIjoiZmFzdG1haWwuY29tIn0/TWkhfQ05OQW=
+xlcnRzX05EQkFOMTAyMzIwMjNjMTYxNTk2YjAsY24yLGh0dHBzOi8vdmlldy5lbWFpbGFsZX=
+J0cy5jbm4uY29tL21lc3NhZ2VzLzE2OTgwOTU4OTg2MDFkMWUwYWI5ODEyZGYvcmF3/qP3V0=
+bV90ZXJtPTE2OTgwOTU4OTg2MDFkMWUwYWI5ODEyZGYmdXRtX3NvdXJjZT1CcmVha2luZytO=
+ZXdzKy0rV2VsY29tZStDb25maXJtYXRpb24mdXRtX21lZGl1bT1lbWFpbCZ1dG1fY2FtcGFp=
+Z249MTYxNTk2XzE2OTgwOTU4OTg2MDImYnRfZWU9Ymd1ZExYU3FKczRHdkNUUUZ1d0ZQT2lN=
+QVVOTU5LMmdNd2hJR3VmUXZaamE1VEY1bDFQJTJGSWtkY0Z3Q2hHRHZGJmJ0X3RzPTE2OTgw=
+OTU4OTg2MDI/seu01e06f13
+
+------------------------------------------------------------------------=
+-------
+
+We respect your privacy, if this e-mail has been sent to you by error or=
+ you no longer wish to receive email, open the following link in a brows=
+er to unsubscribe:
+https://e.emailalerts.cnn.com/click?EYmltaV90ZXN0QGZhc3RtYWlsLmNvbQ/CeyJ=
+taWQiOiIxNjk4MDk1ODk4NjAxZDFlMGFiOTgxMmRmIiwiY3QiOiJjbm4tNmM3OWE1MzUxYmY=
+1NTA1MmRiYTE1YTVhMjFjZWIwNWYtMCIsInJkIjoiZmFzdG1haWwuY29tIn0/TWkhfQ05OQW=
+xlcnRzX05EQkFOMTAyMzIwMjNjMTYxNTk2YjAsY24yLGh0dHBzOi8vZm9ybS5jbm4uY29tL3=
+Vuc3Vic2NyaWJl/qP2VuY2F1PWZHYXpjcUVJMVlHR1RPSWpvSlRoOEdMU1E0UHlqNHNoUE52=
+UDk1S0ZQQ25LSFFSWDVuTlVKWWRHTGYwaiUwQXVGd2wlMEEmbWVzc2FnZV91aWQ9MTY5ODA5=
+NTg5ODYwMWQxZTBhYjk4MTJkZiZ1dG1fdGVybT0xNjk4MDk1ODk4NjAxZDFlMGFiOTgxMmRm=
+JnV0bV9zb3VyY2U9QnJlYWtpbmcrTmV3cystK1dlbGNvbWUrQ29uZmlybWF0aW9uJnV0bV9t=
+ZWRpdW09ZW1haWwmdXRtX2NhbXBhaWduPTE2MTU5Nl8xNjk4MDk1ODk4NjAyJmJ0X2VlPWJn=
+dWRMWFNxSnM0R3ZDVFFGdXdGUE9pTUFVTk1OSzJnTXdoSUd1ZlF2WmphNVRGNWwxUCUyRklr=
+ZGNGd0NoR0R2RiZidF90cz0xNjk4MDk1ODk4NjAy/s8mf291dca1
+
+--==9fc950e30113790df99cc308c2aa03ab
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html>
+<html xmlns:v=3D"urn:schemas-microsoft-com:vml" xmlns:o=3D"urn:schemas-m=
+icrosoft-com:office:office" lang=3D"en">
+<head>
+<title></title>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dutf-8"=
+>
+<meta name=3D"viewport" content=3D"width=3Ddevice-width,initial-scale=3D=
+1">
+<!--[if mso]><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:Pixel=
+sPerInch><o:AllowPNG/></o:OfficeDocumentSettings></xml><![endif]--><!--[=
+if !mso]><!--><!--<![endif]--><style>
+*{box-sizing:border-box}body{margin:0;padding:0}a[x-apple-data-detectors=
+]{color:inherit!important;text-decoration:inherit!important}#MessageView=
+Body a{color:inherit;text-decoration:none}p{line-height:inherit}@media (=
+max-width:600px){.row-content{width:100%!important}.column .border{displ=
+ay:none}table{table-layout:fixed!important}.stack .column{width:100%;dis=
+play:block}}</style>
+</head>
+<body style=3D"margin:0;background-color:#fafafa;padding:0;-webkit-text-=
+size-adjust:none;text-size-adjust:none">
+<div style=3D"display: none; max-height: 0px; overflow: hidden;">Email a=
+lerts to your inbox from CNN</div><img src=3D"https://e.emailalerts.cnn.=
+com/open?EYmltaV90ZXN0QGZhc3RtYWlsLmNvbQ/CeyJtaWQiOiIxNjk4MDk1ODk4NjAxZD=
+FlMGFiOTgxMmRmIiwiY3QiOiJjbm4tNmM3OWE1MzUxYmY1NTA1MmRiYTE1YTVhMjFjZWIwNW=
+YtMCIsInJkIjoiZmFzdG1haWwuY29tIn0/HWkhfQ05OQWxlcnRzX05EQkFOMTAyMzIwMjNjM=
+TYxNTk2YjAsY24yLA/s6gf5516304" height=3D"2" width=3D"3" alt=3D"">
+<table class=3D"nl-container" width=3D"100%" border=3D"0" cellpadding=3D=
+"0" cellspacing=3D"0" role=3D"presentation" style=3D"mso-table-lspace:0;=
+mso-table-rspace:0;background-color:#fafafa"><tbody><tr><td>
+<table class=3D"row row-1" align=3D"center" width=3D"100%" border=3D"0" =
+cellpadding=3D"0" cellspacing=3D"0" role=3D"presentation" style=3D"mso-t=
+able-lspace:0;mso-table-rspace:0"><tbody><tr><td><table class=3D"row-con=
+tent stack" align=3D"center" border=3D"0" cellpadding=3D"0" cellspacing=3D=
+"0" role=3D"presentation" style=3D"mso-table-lspace:0;mso-table-rspace:0=
+;background-color:#fafafa;color:#000;width:580px" width=3D"580"><tbody><=
+tr><td class=3D"column column-1" width=3D"100%" style=3D"mso-table-lspac=
+e:0;mso-table-rspace:0;font-weight:400;text-align:left;vertical-align:to=
+p;padding-top:10px;padding-bottom:10px;border-top:0;border-right:0;borde=
+r-bottom:0;border-left:0"><table class=3D"text_block" width=3D"100%" bor=
+der=3D"0" cellpadding=3D"0" cellspacing=3D"0" role=3D"presentation" styl=
+e=3D"mso-table-lspace:0;mso-table-rspace:0;word-break:break-word"><tr><t=
+d><div style=3D"font-family:sans-serif"><div class=3D"txtTinyMce-wrapper=
+" style=3D"font-size:12px;mso-line-height-alt:14.399999999999999px;color=
+:#959595;line-height:1.2;font-family:Helvetica Neue,Helvetica,Arial,sans=
+-serif"><p style=3D"margin:0;font-size:12px;mso-line-height-alt:14.39999=
+9999999999px">=C2=A0</p></div></div></td></tr></table></td></tr></tbody>=
+</table></td></tr></tbody></table>
+<table class=3D"row row-2" align=3D"center" width=3D"100%" border=3D"0" =
+cellpadding=3D"0" cellspacing=3D"0" role=3D"presentation" style=3D"mso-t=
+able-lspace:0;mso-table-rspace:0"><tbody><tr><td><table class=3D"row-con=
+tent" align=3D"center" border=3D"0" cellpadding=3D"0" cellspacing=3D"0" =
+role=3D"presentation" style=3D"mso-table-lspace:0;mso-table-rspace:0;bac=
+kground-color:#000;color:#000;width:580px" width=3D"580"><tbody><tr>
+<td class=3D"column column-1" width=3D"50%" style=3D"mso-table-lspace:0;=
+mso-table-rspace:0;font-weight:400;text-align:left;vertical-align:top;bo=
+rder-top:0;border-right:0;border-bottom:0;border-left:0"><table class=3D=
+"image_block" width=3D"100%" border=3D"0" cellpadding=3D"0" cellspacing=3D=
+"0" role=3D"presentation" style=3D"mso-table-lspace:0;mso-table-rspace:0=
+"><tr><td style=3D"width:100%;padding-right:0;padding-left:0"><div style=
+=3D"line-height:10px"><a href=3D"https://e.emailalerts.cnn.com/click?EYm=
+ltaV90ZXN0QGZhc3RtYWlsLmNvbQ/CeyJtaWQiOiIxNjk4MDk1ODk4NjAxZDFlMGFiOTgxMm=
+RmIiwiY3QiOiJjbm4tNmM3OWE1MzUxYmY1NTA1MmRiYTE1YTVhMjFjZWIwNWYtMCIsInJkIj=
+oiZmFzdG1haWwuY29tIn0/HWkhfQ05OQWxlcnRzX05EQkFOMTAyMzIwMjNjMTYxNTk2YjAsY=
+24yLGh0dHBzOi8vd3d3LmNubi5jb20v/qP3V0bV90ZXJtPTE2OTgwOTU4OTg2MDFkMWUwYWI=
+5ODEyZGYmdXRtX3NvdXJjZT1CcmVha2luZytOZXdzKy0rV2VsY29tZStDb25maXJtYXRpb24=
+mdXRtX21lZGl1bT1lbWFpbCZ1dG1fY2FtcGFpZ249MTYxNTk2XzE2OTgwOTU4OTg2MDImYnR=
+fZWU9Ymd1ZExYU3FKczRHdkNUUUZ1d0ZQT2lNQVVOTU5LMmdNd2hJR3VmUXZaamE1VEY1bDF=
+QJTJGSWtkY0Z3Q2hHRHZGJmJ0X3RzPTE2OTgwOTU4OTg2MDI/s8l1b2b2444" target=3D"=
+_blank" style=3D"outline:none" tabindex=3D"-1" data-location=3D"t1"><img=
+ src=3D"https://images.emailalerts.cnn.com/images/3dfe4d97843b307b4fa50e=
+553d3f9467/Breaking%20News/BreakingNews_Banner_CNNBreakingNews.png" styl=
+e=3D"display:block;height:auto;border:0;width:290px;max-width:100%" widt=
+h=3D"290" alt=3D"CNN" title=3D"CNN"></a></div></td></tr></table></td>
+<td class=3D"column column-2" width=3D"50%" style=3D"mso-table-lspace:0;=
+mso-table-rspace:0;font-weight:400;text-align:left;vertical-align:top;bo=
+rder-top:0;border-right:0;border-bottom:0;border-left:0"><table class=3D=
+"image_block" width=3D"100%" border=3D"0" cellpadding=3D"0" cellspacing=3D=
+"0" role=3D"presentation" style=3D"mso-table-lspace:0;mso-table-rspace:0=
+"><tr><td style=3D"width:100%;padding-right:0;padding-left:0"><div align=
+=3D"right" style=3D"line-height:10px"><a href=3D"https://e.emailalerts.c=
+nn.com/click?EYmltaV90ZXN0QGZhc3RtYWlsLmNvbQ/CeyJtaWQiOiIxNjk4MDk1ODk4Nj=
+AxZDFlMGFiOTgxMmRmIiwiY3QiOiJjbm4tNmM3OWE1MzUxYmY1NTA1MmRiYTE1YTVhMjFjZW=
+IwNWYtMCIsInJkIjoiZmFzdG1haWwuY29tIn0/HWkhfQ05OQWxlcnRzX05EQkFOMTAyMzIwM=
+jNjMTYxNTk2YjAsY24yLGh0dHBzOi8vd3d3LmNubi5jb20vYWNjb3VudC9yZWdpc3Rlcg/qP=
+3NvdXJjZT1ubF9oZWFkZXImdXRtX3Rlcm09MTY5ODA5NTg5ODYwMWQxZTBhYjk4MTJkZiZ1d=
+G1fc291cmNlPUJyZWFraW5nK05ld3MrLStXZWxjb21lK0NvbmZpcm1hdGlvbiZ1dG1fbWVka=
+XVtPWVtYWlsJnV0bV9jYW1wYWlnbj0xNjE1OTZfMTY5ODA5NTg5ODYwMiZidF9lZT1iZ3VkT=
+FhTcUpzNEd2Q1RRRnV3RlBPaU1BVU5NTksyZ013aElHdWZRdlpqYTVURjVsMVAlMkZJa2RjR=
+ndDaEdEdkYmYnRfdHM9MTY5ODA5NTg5ODYwMg/sfq448d9236" target=3D"_blank" sty=
+le=3D"outline:none" tabindex=3D"-1" data-location=3D"t2"><img src=3D"htt=
+ps://images.emailalerts.cnn.com/images/3dfe4d97843b307b4fa50e553d3f9467/=
+BreakingNews_Banner_Profile.png" style=3D"display:block;height:auto;bord=
+er:0;width:290px;max-width:100%" width=3D"290" alt=3D"Account Preference=
+s" title=3D"Account Preferences"></a></div></td></tr></table></td>
+</tr></tbody></table></td></tr></tbody></table>
+<table class=3D"row row-3" align=3D"center" width=3D"100%" border=3D"0" =
+cellpadding=3D"0" cellspacing=3D"0" role=3D"presentation" style=3D"mso-t=
+able-lspace:0;mso-table-rspace:0"><tbody><tr><td><table class=3D"row-con=
+tent" align=3D"center" border=3D"0" cellpadding=3D"0" cellspacing=3D"0" =
+role=3D"presentation" style=3D"mso-table-lspace:0;mso-table-rspace:0;bac=
+kground-color:#fff;color:#000;width:580px" width=3D"580"><tbody><tr><td =
+class=3D"column column-1" width=3D"100%" style=3D"mso-table-lspace:0;mso=
+-table-rspace:0;font-weight:400;text-align:left;vertical-align:top;borde=
+r-bottom:0 dotted transparent;border-left:0 dotted transparent;border-ri=
+ght:0 dotted transparent;border-top:0 dotted transparent;padding-left:30=
+px;padding-right:30px;padding-top:30px;padding-bottom:30px">
+<table class=3D"text_block" width=3D"100%" border=3D"0" cellpadding=3D"0=
+" cellspacing=3D"0" role=3D"presentation" style=3D"mso-table-lspace:0;ms=
+o-table-rspace:0;word-break:break-word"><tr><td><div style=3D"font-famil=
+y:sans-serif"><div class=3D"txtTinyMce-wrapper" style=3D"font-size:12px;=
+mso-line-height-alt:18px;color:#202020;line-height:1.5;font-family:Helve=
+tica Neue,Helvetica,Arial,sans-serif"><p style=3D"margin:0;font-size:14p=
+x;text-align:left">
+<strong><span style=3D"font-size:20px;"><a href=3D"https://e.emailalerts=
+.cnn.com/click?EYmltaV90ZXN0QGZhc3RtYWlsLmNvbQ/CeyJtaWQiOiIxNjk4MDk1ODk4=
+NjAxZDFlMGFiOTgxMmRmIiwiY3QiOiJjbm4tNmM3OWE1MzUxYmY1NTA1MmRiYTE1YTVhMjFj=
+ZWIwNWYtMCIsInJkIjoiZmFzdG1haWwuY29tIn0/HWkhfQ05OQWxlcnRzX05EQkFOMTAyMzI=
+wMjNjMTYxNTk2YjAsY24yLGh0dHA6Ly93d3cuY25uLmNvbQ/qP3V0bV90ZXJtPTE2OTgwOTU=
+4OTg2MDFkMWUwYWI5ODEyZGYmdXRtX3NvdXJjZT1CcmVha2luZytOZXdzKy0rV2VsY29tZSt=
+Db25maXJtYXRpb24mdXRtX21lZGl1bT1lbWFpbCZ1dG1fY2FtcGFpZ249MTYxNTk2XzE2OTg=
+wOTU4OTg2MDImYnRfZWU9Ymd1ZExYU3FKczRHdkNUUUZ1d0ZQT2lNQVVOTU5LMmdNd2hJR3V=
+mUXZaamE1VEY1bDFQJTJGSWtkY0Z3Q2hHRHZGJmJ0X3RzPTE2OTgwOTU4OTg2MDI/sch60f8=
+8426" target=3D"_blank" style=3D"text-decoration: none; color: #202020;"=
+ rel=3D"noopener" data-location=3D"t3">Thank you for signing up to recei=
+ve CNN Breaking News Alerts.</a></span></strong></p></div></div></td></t=
+r></table>
+<table class=3D"text_block" width=3D"100%" border=3D"0" cellpadding=3D"0=
+" cellspacing=3D"0" role=3D"presentation" style=3D"mso-table-lspace:0;ms=
+o-table-rspace:0;word-break:break-word"><tr><td style=3D"padding-bottom:=
+25px;padding-top:20px"><div style=3D"font-family:sans-serif"><div class=3D=
+"txtTinyMce-wrapper" style=3D"font-size:12px;mso-line-height-alt:18px;co=
+lor:#202020;line-height:1.5;font-family:Helvetica Neue,Helvetica,Arial,s=
+ans-serif">
+<p style=3D"margin:0;font-size:16px;mso-line-height-alt:24px"><span styl=
+e=3D"font-size:16px;">When something important happens in the world, we =
+want you to know as soon as possible. We'll send breaking news updates d=
+irectly to your inbox so you can stay informed.</span></p>
+<p style=3D"margin:0;font-size:16px;mso-line-height-alt:18px">=C2=A0</p>=
+
+<p style=3D"margin:0;font-size:16px;mso-line-height-alt:24px"><span styl=
+e=3D"font-size:16px;">Looking for more breaking news? <strong><a href=3D=
+"https://e.emailalerts.cnn.com/click?EYmltaV90ZXN0QGZhc3RtYWlsLmNvbQ/Cey=
+JtaWQiOiIxNjk4MDk1ODk4NjAxZDFlMGFiOTgxMmRmIiwiY3QiOiJjbm4tNmM3OWE1MzUxYm=
+Y1NTA1MmRiYTE1YTVhMjFjZWIwNWYtMCIsInJkIjoiZmFzdG1haWwuY29tIn0/HWkhfQ05OQ=
+WxlcnRzX05EQkFOMTAyMzIwMjNjMTYxNTk2YjAsY24yLGh0dHBzOi8vY25uLnNtYXJ0Lmxpb=
+msveTU2aDFqYW5y/sdi1579528b" target=3D"_blank" style=3D"text-decoration:=
+ none; color: #cc0000;" rel=3D"noopener" data-location=3D"t4">Download t=
+he CNN App</a></strong>.</span></p>
+<p style=3D"margin:0;font-size:16px;mso-line-height-alt:18px">=C2=A0</p>=
+
+<p style=3D"margin:0;font-size:16px;mso-line-height-alt:24px">
+<span style=3D"font-size:16px;">Set up your <strong><a href=3D"https://e=
+.emailalerts.cnn.com/click?EYmltaV90ZXN0QGZhc3RtYWlsLmNvbQ/CeyJtaWQiOiIx=
+Njk4MDk1ODk4NjAxZDFlMGFiOTgxMmRmIiwiY3QiOiJjbm4tNmM3OWE1MzUxYmY1NTA1MmRi=
+YTE1YTVhMjFjZWIwNWYtMCIsInJkIjoiZmFzdG1haWwuY29tIn0/HWkhfQ05OQWxlcnRzX05=
+EQkFOMTAyMzIwMjNjMTYxNTk2YjAsY24yLGh0dHBzOi8vd3d3LmNubi5jb20vYWNjb3VudC9=
+yZWdpc3Rlcg/qP3NvdXJjZT1ubF93ZWxjb21lJnV0bV90ZXJtPTE2OTgwOTU4OTg2MDFkMWU=
+wYWI5ODEyZGYmdXRtX3NvdXJjZT1CcmVha2luZytOZXdzKy0rV2VsY29tZStDb25maXJtYXR=
+pb24mdXRtX21lZGl1bT1lbWFpbCZ1dG1fY2FtcGFpZ249MTYxNTk2XzE2OTgwOTU4OTg2MDI=
+mYnRfZWU9Ymd1ZExYU3FKczRHdkNUUUZ1d0ZQT2lNQVVOTU5LMmdNd2hJR3VmUXZaamE1VEY=
+1bDFQJTJGSWtkY0Z3Q2hHRHZGJmJ0X3RzPTE2OTgwOTU4OTg2MDI/s9s3bff5cb7" target=
+=3D"_blank" style=3D"text-decoration: none; color: #cc0000;" rel=3D"noop=
+ener" data-location=3D"t5">CNN account</a></strong> to easily manage you=
+r newsletter subscriptions and get access to exclusive CNN.com tools and=
+ resources.</span></p>
+</div></div></td></tr></table>
+<table class=3D"button_block" width=3D"100%" border=3D"0" cellpadding=3D=
+"0" cellspacing=3D"0" role=3D"presentation" style=3D"mso-table-lspace:0;=
+mso-table-rspace:0"><tr><td style=3D"text-align:center"><div align=3D"ce=
+nter">
+<!--[if mso]><v:roundrect xmlns:v=3D"urn:schemas-microsoft-com:vml" xmln=
+s:w=3D"urn:schemas-microsoft-com:office:word" href=3D"https://e.emailale=
+rts.cnn.com/click?EYmltaV90ZXN0QGZhc3RtYWlsLmNvbQ/CeyJtaWQiOiIxNjk4MDk1O=
+Dk4NjAxZDFlMGFiOTgxMmRmIiwiY3QiOiJjbm4tNmM3OWE1MzUxYmY1NTA1MmRiYTE1YTVhM=
+jFjZWIwNWYtMCIsInJkIjoiZmFzdG1haWwuY29tIn0/HWkhfQ05OQWxlcnRzX05EQkFOMTAy=
+MzIwMjNjMTYxNTk2YjAsY24yLGh0dHBzOi8vd3d3LmNubi5jb20/qP3V0bV90ZXJtPTE2OTg=
+wOTU4OTg2MDFkMWUwYWI5ODEyZGYmdXRtX3NvdXJjZT1CcmVha2luZytOZXdzKy0rV2VsY29=
+tZStDb25maXJtYXRpb24mdXRtX21lZGl1bT1lbWFpbCZ1dG1fY2FtcGFpZ249MTYxNTk2XzE=
+2OTgwOTU4OTg2MDImYnRfZWU9Ymd1ZExYU3FKczRHdkNUUUZ1d0ZQT2lNQVVOTU5LMmdNd2h=
+JR3VmUXZaamE1VEY1bDFQJTJGSWtkY0Z3Q2hHRHZGJmJ0X3RzPTE2OTgwOTU4OTg2MDI/s9i=
+51bc7173" style=3D"height:42px;width:150px;v-text-anchor:middle;" arcsiz=
+e=3D"10%" stroke=3D"false" fillcolor=3D"#cc0000"><w:anchorlock/><v:textb=
+ox inset=3D"0px,0px,0px,0px"><center style=3D"color:#ffffff; font-family=
+:Arial, sans-serif; font-size:16px"><![endif]-->
+<a href=3D"https://e.emailalerts.cnn.com/click?EYmltaV90ZXN0QGZhc3RtYWls=
+LmNvbQ/CeyJtaWQiOiIxNjk4MDk1ODk4NjAxZDFlMGFiOTgxMmRmIiwiY3QiOiJjbm4tNmM3=
+OWE1MzUxYmY1NTA1MmRiYTE1YTVhMjFjZWIwNWYtMCIsInJkIjoiZmFzdG1haWwuY29tIn0/=
+HWkhfQ05OQWxlcnRzX05EQkFOMTAyMzIwMjNjMTYxNTk2YjAsY24yLGh0dHBzOi8vd3d3LmN=
+ubi5jb20/qP3V0bV90ZXJtPTE2OTgwOTU4OTg2MDFkMWUwYWI5ODEyZGYmdXRtX3NvdXJjZT=
+1CcmVha2luZytOZXdzKy0rV2VsY29tZStDb25maXJtYXRpb24mdXRtX21lZGl1bT1lbWFpbC=
+Z1dG1fY2FtcGFpZ249MTYxNTk2XzE2OTgwOTU4OTg2MDImYnRfZWU9Ymd1ZExYU3FKczRHdk=
+NUUUZ1d0ZQT2lNQVVOTU5LMmdNd2hJR3VmUXZaamE1VEY1bDFQJTJGSWtkY0Z3Q2hHRHZGJm=
+J0X3RzPTE2OTgwOTU4OTg2MDI/s9i51bc7173" target=3D"_blank" style=3D"text-d=
+ecoration:none;display:inline-block;color:#ffffff;background-color:#cc00=
+00;border-radius:4px;width:auto;border-top:1px solid #cc0000;font-weight=
+:undefined;border-right:1px solid #cc0000;border-bottom:1px solid #cc000=
+0;border-left:1px solid #cc0000;padding-top:5px;padding-bottom:5px;font-=
+family:'Helvetica Neue', Helvetica, Arial, sans-serif;text-align:center;=
+mso-border-alt:none;word-break:keep-all;" data-location=3D"t6"><span sty=
+le=3D"padding-left:20px;padding-right:20px;font-size:16px;display:inline=
+-block;letter-spacing:normal;"><span style=3D"font-size: 16px; line-heig=
+ht: 2; word-break: break-word; mso-line-height-alt: 32px;"><strong>Visit=
+ CNN.com</strong></span></span></a>
+<!--[if mso]></center></v:textbox></v:roundrect><![endif]-->
+</div></td></tr></table>
+</td></tr></tbody></table></td></tr></tbody></table>
+<table class=3D"row row-4" align=3D"center" width=3D"100%" border=3D"0" =
+cellpadding=3D"0" cellspacing=3D"0" role=3D"presentation" style=3D"mso-t=
+able-lspace:0;mso-table-rspace:0"><tbody><tr><td><table class=3D"row-con=
+tent stack" align=3D"center" border=3D"0" cellpadding=3D"0" cellspacing=3D=
+"0" role=3D"presentation" style=3D"mso-table-lspace:0;mso-table-rspace:0=
+;background-color:#0c0c0c;color:#000;width:580px" width=3D"580"><tbody><=
+tr><td class=3D"column column-1" width=3D"100%" style=3D"mso-table-lspac=
+e:0;mso-table-rspace:0;font-weight:400;text-align:left;vertical-align:to=
+p;border-bottom:0 solid #ececec;border-left:0 solid #ececec;border-right=
+:0 solid #ececec;border-top:0 solid #ececec;padding-left:20px;padding-ri=
+ght:20px;padding-top:20px;padding-bottom:20px">
+<table class=3D"image_block" width=3D"100%" border=3D"0" cellpadding=3D"=
+0" cellspacing=3D"0" role=3D"presentation" style=3D"mso-table-lspace:0;m=
+so-table-rspace:0"><tr><td style=3D"width:100%;padding-right:0;padding-l=
+eft:0"><div style=3D"line-height:10px"><a href=3D"https://e.emailalerts.=
+cnn.com/click?EYmltaV90ZXN0QGZhc3RtYWlsLmNvbQ/CeyJtaWQiOiIxNjk4MDk1ODk4N=
+jAxZDFlMGFiOTgxMmRmIiwiY3QiOiJjbm4tNmM3OWE1MzUxYmY1NTA1MmRiYTE1YTVhMjFjZ=
+WIwNWYtMCIsInJkIjoiZmFzdG1haWwuY29tIn0/HWkhfQ05OQWxlcnRzX05EQkFOMTAyMzIw=
+MjNjMTYxNTk2YjAsY24yLGh0dHBzOi8vd3d3LmNubi5jb20/qP3V0bV90ZXJtPTE2OTgwOTU=
+4OTg2MDFkMWUwYWI5ODEyZGYmdXRtX3NvdXJjZT1CcmVha2luZytOZXdzKy0rV2VsY29tZSt=
+Db25maXJtYXRpb24mdXRtX21lZGl1bT1lbWFpbCZ1dG1fY2FtcGFpZ249MTYxNTk2XzE2OTg=
+wOTU4OTg2MDImYnRfZWU9Ymd1ZExYU3FKczRHdkNUUUZ1d0ZQT2lNQVVOTU5LMmdNd2hJR3V=
+mUXZaamE1VEY1bDFQJTJGSWtkY0Z3Q2hHRHZGJmJ0X3RzPTE2OTgwOTU4OTg2MDI/s9i51bc=
+7173" target=3D"_blank" style=3D"outline:none" tabindex=3D"-1" data-loca=
+tion=3D"t7"><img src=3D"https://images.emailalerts.cnn.com/images/3dfe4d=
+97843b307b4fa50e553d3f9467/CNN%20Logos/CNN_Red-Logo_Footer_Left.png" sty=
+le=3D"display:block;height:auto;border:0;width:216px;max-width:100%" wid=
+th=3D"216" alt=3D"CNN" title=3D"CNN"></a></div></td></tr></table>
+<table class=3D"text_block" width=3D"100%" border=3D"0" cellpadding=3D"0=
+" cellspacing=3D"0" role=3D"presentation" style=3D"mso-table-lspace:0;ms=
+o-table-rspace:0;word-break:break-word"><tr><td style=3D"padding-top:20p=
+x"><div style=3D"font-family:sans-serif"><div class=3D"txtTinyMce-wrappe=
+r" style=3D"font-family:Helvetica Neue,Helvetica,Arial,sans-serif;font-s=
+ize:12px;mso-line-height-alt:18px;color:#fff;line-height:1.5"><div style=
+=3D"font-size:12px"><p style=3D"margin:0;font-size:12px;text-align:left;=
+letter-spacing:1px"><strong><span style=3D"font-size:12px;">CNN BREAKING=
+ NEWS</span></strong></p></div></div></div></td></tr></table>
+<table class=3D"text_block" width=3D"100%" border=3D"0" cellpadding=3D"0=
+" cellspacing=3D"0" role=3D"presentation" style=3D"mso-table-lspace:0;ms=
+o-table-rspace:0;word-break:break-word"><tr><td style=3D"padding-bottom:=
+20px;padding-top:15px"><div style=3D"font-family:sans-serif"><div class=3D=
+"txtTinyMce-wrapper" style=3D"font-family:Helvetica Neue,Helvetica,Arial=
+,sans-serif;font-size:12px;mso-line-height-alt:18px;color:#fff;line-heig=
+ht:1.5">
+<div style=3D"font-size:12px">
+<p style=3D"margin:0;font-size:12px;text-align:left;mso-line-height-alt:=
+18px;letter-spacing:normal"><span style=3D"font-size:12px;">You are rece=
+iving this newsletter because you're subscribed to CNN Breaking News ale=
+rts.</span></p>
+<p style=3D"margin:0;font-size:12px;text-align:left;letter-spacing:norma=
+l;mso-line-height-alt:18px">=C2=A0</p>
+<p style=3D"margin:0;font-size:12px;text-align:left;mso-line-height-alt:=
+18px;letter-spacing:normal"><span style=3D"font-size:12px;">No longer wa=
+nt to receive this newsletter? <a href=3D"https://e.emailalerts.cnn.com/=
+click?EYmltaV90ZXN0QGZhc3RtYWlsLmNvbQ/CeyJtaWQiOiIxNjk4MDk1ODk4NjAxZDFlM=
+GFiOTgxMmRmIiwiY3QiOiJjbm4tNmM3OWE1MzUxYmY1NTA1MmRiYTE1YTVhMjFjZWIwNWYtM=
+CIsInJkIjoiZmFzdG1haWwuY29tIn0/HWkhfQ05OQWxlcnRzX05EQkFOMTAyMzIwMjNjMTYx=
+NTk2YjAsY24yLGh0dHBzOi8vZm9ybS5jbm4uY29tL3Vuc3Vic2NyaWJl/qP2VuY2F1PVFnSj=
+RhQzh0enZMNVpvdDU3ODQ0MHBNcjRud3lwcnJXTFhqVnhaeUpzaXoycGpKeHhoNG9RT3IwTm=
+clMkZBJTBBJTJCQlA0JTBBJnNpZD1icmVha2luZ19uZXdzJnV0bV90ZXJtPTE2OTgwOTU4OT=
+g2MDFkMWUwYWI5ODEyZGYmdXRtX3NvdXJjZT1CcmVha2luZytOZXdzKy0rV2VsY29tZStDb2=
+5maXJtYXRpb24mdXRtX21lZGl1bT1lbWFpbCZ1dG1fY2FtcGFpZ249MTYxNTk2XzE2OTgwOT=
+U4OTg2MDImYnRfZWU9Ymd1ZExYU3FKczRHdkNUUUZ1d0ZQT2lNQVVOTU5LMmdNd2hJR3VmUX=
+ZaamE1VEY1bDFQJTJGSWtkY0Z3Q2hHRHZGJmJ0X3RzPTE2OTgwOTU4OTg2MDI/s2k3282a33=
+8" target=3D"_blank" style=3D"text-decoration: underline; color: #ffffff=
+;" rel=3D"noopener" data-location=3D"t8">Unsubscribe</a>. </span></p>
+<p style=3D"margin:0;font-size:12px;text-align:left;mso-line-height-alt:=
+18px;letter-spacing:normal"><span style=3D"font-size:12px;">I</span><spa=
+n style=3D"font-size:12px;">nterested in more? <u><a href=3D"https://e.e=
+mailalerts.cnn.com/click?EYmltaV90ZXN0QGZhc3RtYWlsLmNvbQ/CeyJtaWQiOiIxNj=
+k4MDk1ODk4NjAxZDFlMGFiOTgxMmRmIiwiY3QiOiJjbm4tNmM3OWE1MzUxYmY1NTA1MmRiYT=
+E1YTVhMjFjZWIwNWYtMCIsInJkIjoiZmFzdG1haWwuY29tIn0/HWkhfQ05OQWxlcnRzX05EQ=
+kFOMTAyMzIwMjNjMTYxNTk2YjAsY24yLGh0dHBzOi8vd3d3LmNubi5jb20vbmV3c2xldHRlc=
+nM/qP3NvdXJjZT1ubF9mb290ZXImdXRtX3Rlcm09MTY5ODA5NTg5ODYwMWQxZTBhYjk4MTJk=
+ZiZ1dG1fc291cmNlPUJyZWFraW5nK05ld3MrLStXZWxjb21lK0NvbmZpcm1hdGlvbiZ1dG1f=
+bWVkaXVtPWVtYWlsJnV0bV9jYW1wYWlnbj0xNjE1OTZfMTY5ODA5NTg5ODYwMiZidF9lZT1i=
+Z3VkTFhTcUpzNEd2Q1RRRnV3RlBPaU1BVU5NTksyZ013aElHdWZRdlpqYTVURjVsMVAlMkZJ=
+a2RjRndDaEdEdkYmYnRfdHM9MTY5ODA5NTg5ODYwMg/s3k19298a30" target=3D"_blank=
+" style=3D"text-decoration: none; color: #ffffff;" rel=3D"noopener" data=
+-location=3D"t9">See all of our newsletters</a></u>.</span></p>
+<p style=3D"margin:0;font-size:12px;text-align:left;letter-spacing:norma=
+l;mso-line-height-alt:18px">=C2=A0</p>
+<p style=3D"margin:0;font-size:12px;text-align:left;mso-line-height-alt:=
+19.5px;letter-spacing:normal">
+<span style=3D"font-size:13px;"><a href=3D"https://e.emailalerts.cnn.com=
+/click?EYmltaV90ZXN0QGZhc3RtYWlsLmNvbQ/CeyJtaWQiOiIxNjk4MDk1ODk4NjAxZDFl=
+MGFiOTgxMmRmIiwiY3QiOiJjbm4tNmM3OWE1MzUxYmY1NTA1MmRiYTE1YTVhMjFjZWIwNWYt=
+MCIsInJkIjoiZmFzdG1haWwuY29tIn0/HWkhfQ05OQWxlcnRzX05EQkFOMTAyMzIwMjNjMTY=
+xNTk2YjAsY24yLGh0dHBzOi8vd3d3LmNubi5jb20vYWNjb3VudC9yZWdpc3Rlcg/qP3NvdXJ=
+jZT1ubF9mb290ZXImdXRtX3Rlcm09MTY5ODA5NTg5ODYwMWQxZTBhYjk4MTJkZiZ1dG1fc29=
+1cmNlPUJyZWFraW5nK05ld3MrLStXZWxjb21lK0NvbmZpcm1hdGlvbiZ1dG1fbWVkaXVtPWV=
+tYWlsJnV0bV9jYW1wYWlnbj0xNjE1OTZfMTY5ODA5NTg5ODYwMiZidF9lZT1iZ3VkTFhTcUp=
+zNEd2Q1RRRnV3RlBPaU1BVU5NTksyZ013aElHdWZRdlpqYTVURjVsMVAlMkZJa2RjRndDaEd=
+EdkYmYnRfdHM9MTY5ODA5NTg5ODYwMg/s9m9b8a8b26" target=3D"_blank" style=3D"=
+text-decoration: underline; color: #ffffff;" rel=3D"noopener" data-locat=
+ion=3D"t10">Create CNN Account</a> | <a href=3D"https://e.emailalerts.cn=
+n.com/click?EYmltaV90ZXN0QGZhc3RtYWlsLmNvbQ/CeyJtaWQiOiIxNjk4MDk1ODk4NjA=
+xZDFlMGFiOTgxMmRmIiwiY3QiOiJjbm4tNmM3OWE1MzUxYmY1NTA1MmRiYTE1YTVhMjFjZWI=
+wNWYtMCIsInJkIjoiZmFzdG1haWwuY29tIn0/HWkhfQ05OQWxlcnRzX05EQkFOMTAyMzIwMj=
+NjMTYxNTk2YjAsY24yLGh0dHBzOi8vd3d3LmNubi5jb20vYXVkaW8/qP3V0bV9zb3VyY2U9b=
+mxfZm9vdGVyJnV0bV90ZXJtPTE2OTgwOTU4OTg2MDFkMWUwYWI5ODEyZGYmdXRtX3NvdXJjZ=
+T1CcmVha2luZytOZXdzKy0rV2VsY29tZStDb25maXJtYXRpb24mdXRtX21lZGl1bT1lbWFpb=
+CZ1dG1fY2FtcGFpZ249MTYxNTk2XzE2OTgwOTU4OTg2MDImYnRfZWU9Ymd1ZExYU3FKczRHd=
+kNUUUZ1d0ZQT2lNQVVOTU5LMmdNd2hJR3VmUXZaamE1VEY1bDFQJTJGSWtkY0Z3Q2hHRHZGJ=
+mJ0X3RzPTE2OTgwOTU4OTg2MDI/s2k6ab5f5ba" target=3D"_blank" style=3D"text-=
+decoration: underline; color: #ffffff;" rel=3D"noopener" data-location=3D=
+"t11">Listen to CNN Audio</a> | <a href=3D"https://e.emailalerts.cnn.com=
+/click?EYmltaV90ZXN0QGZhc3RtYWlsLmNvbQ/CeyJtaWQiOiIxNjk4MDk1ODk4NjAxZDFl=
+MGFiOTgxMmRmIiwiY3QiOiJjbm4tNmM3OWE1MzUxYmY1NTA1MmRiYTE1YTVhMjFjZWIwNWYt=
+MCIsInJkIjoiZmFzdG1haWwuY29tIn0/HWkhfQ05OQWxlcnRzX05EQkFOMTAyMzIwMjNjMTY=
+xNTk2YjAsY24yLGh0dHBzOi8vY25uLnNtYXJ0LmxpbmsvdHhzNHRsN2Nq/s8pe404360e" t=
+arget=3D"_blank" style=3D"text-decoration: underline; color: #ffffff;" r=
+el=3D"noopener" data-location=3D"t12">Download the CNN App</a></span>
+</p>
+<p style=3D"margin:0;font-size:12px;text-align:left;letter-spacing:norma=
+l;mso-line-height-alt:18px">=C2=A0</p>
+<p style=3D"margin:0;font-size:12px;text-align:left;letter-spacing:norma=
+l">=C2=A0=C2=AE =C2=A9 2023 Cable News Network, Inc.</p>
+<p style=3D"margin:0;font-size:12px;text-align:left;letter-spacing:norma=
+l">A Warner Bros. Discovery Company. All Rights Reserved.</p>
+<p style=3D"margin:0;font-size:12px;text-align:left;letter-spacing:norma=
+l">One CNN Center Atlanta, GA 30303</p>
+</div>
+</div></div></td></tr></table>
+<table class=3D"social_block" width=3D"100%" border=3D"0" cellpadding=3D=
+"0" cellspacing=3D"0" role=3D"presentation" style=3D"mso-table-lspace:0;=
+mso-table-rspace:0"><tr><td style=3D"text-align:left;padding-right:0;pad=
+ding-left:0"><table class=3D"social-table" width=3D"208px" border=3D"0" =
+cellpadding=3D"0" cellspacing=3D"0" role=3D"presentation" align=3D"left"=
+ style=3D"mso-table-lspace:0;mso-table-rspace:0"><tr>
+<td style=3D"padding:0 20px 0 0"><a href=3D"https://e.emailalerts.cnn.co=
+m/click?EYmltaV90ZXN0QGZhc3RtYWlsLmNvbQ/CeyJtaWQiOiIxNjk4MDk1ODk4NjAxZDF=
+lMGFiOTgxMmRmIiwiY3QiOiJjbm4tNmM3OWE1MzUxYmY1NTA1MmRiYTE1YTVhMjFjZWIwNWY=
+tMCIsInJkIjoiZmFzdG1haWwuY29tIn0/HWkhfQ05OQWxlcnRzX05EQkFOMTAyMzIwMjNjMT=
+YxNTk2YjAsY24yLGh0dHBzOi8vd3d3LmZhY2Vib29rLmNvbS9jbm4/qP3V0bV9zb3VyY2U9b=
+mxfZm9vdGVy/sar48e30571" target=3D"_blank" data-location=3D"t13"><img sr=
+c=3D"https://app-rsrc.getbee.io/public/resources/social-networks-icon-se=
+ts/t-only-logo-white/facebook@2x.png" width=3D"32" height=3D"32" alt=3D"=
+Facebook" title=3D"Facebook" style=3D"display:block;height:auto;border:0=
+"></a></td>
+<td style=3D"padding:0 20px 0 0"><a href=3D"https://e.emailalerts.cnn.co=
+m/click?EYmltaV90ZXN0QGZhc3RtYWlsLmNvbQ/CeyJtaWQiOiIxNjk4MDk1ODk4NjAxZDF=
+lMGFiOTgxMmRmIiwiY3QiOiJjbm4tNmM3OWE1MzUxYmY1NTA1MmRiYTE1YTVhMjFjZWIwNWY=
+tMCIsInJkIjoiZmFzdG1haWwuY29tIn0/HWkhfQ05OQWxlcnRzX05EQkFOMTAyMzIwMjNjMT=
+YxNTk2YjAsY24yLGh0dHBzOi8vdHdpdHRlci5jb20vY25u/qP3V0bV9zb3VyY2U9bmxfZm9v=
+dGVy/seu0819137c" target=3D"_blank" data-location=3D"t14"><img src=3D"ht=
+tps://app-rsrc.getbee.io/public/resources/social-networks-icon-sets/t-on=
+ly-logo-white/twitter@2x.png" width=3D"32" height=3D"32" alt=3D"Twitter"=
+ title=3D"Twitter" style=3D"display:block;height:auto;border:0"></a></td=
+>
+<td style=3D"padding:0 20px 0 0"><a href=3D"https://e.emailalerts.cnn.co=
+m/click?EYmltaV90ZXN0QGZhc3RtYWlsLmNvbQ/CeyJtaWQiOiIxNjk4MDk1ODk4NjAxZDF=
+lMGFiOTgxMmRmIiwiY3QiOiJjbm4tNmM3OWE1MzUxYmY1NTA1MmRiYTE1YTVhMjFjZWIwNWY=
+tMCIsInJkIjoiZmFzdG1haWwuY29tIn0/HWkhfQ05OQWxlcnRzX05EQkFOMTAyMzIwMjNjMT=
+YxNTk2YjAsY24yLGh0dHBzOi8vaW5zdGFncmFtLmNvbS9jbm4/qP3V0bV9zb3VyY2U9bmxfZ=
+m9vdGVy/s6m9833fbf0" target=3D"_blank" data-location=3D"t15"><img src=3D=
+"https://app-rsrc.getbee.io/public/resources/social-networks-icon-sets/t=
+-only-logo-white/instagram@2x.png" width=3D"32" height=3D"32" alt=3D"Ins=
+tagram" title=3D"Instagram" style=3D"display:block;height:auto;border:0"=
+></a></td>
+<td style=3D"padding:0 20px 0 0"><a href=3D"https://e.emailalerts.cnn.co=
+m/click?EYmltaV90ZXN0QGZhc3RtYWlsLmNvbQ/CeyJtaWQiOiIxNjk4MDk1ODk4NjAxZDF=
+lMGFiOTgxMmRmIiwiY3QiOiJjbm4tNmM3OWE1MzUxYmY1NTA1MmRiYTE1YTVhMjFjZWIwNWY=
+tMCIsInJkIjoiZmFzdG1haWwuY29tIn0/HWkhfQ05OQWxlcnRzX05EQkFOMTAyMzIwMjNjMT=
+YxNTk2YjAsY24yLGh0dHBzOi8vd3d3LnlvdXR1YmUuY29tL2Nubg/qP3V0bV9zb3VyY2U9bm=
+xfZm9vdGVy/scg2c7d8eb5" target=3D"_blank" data-location=3D"t16"><img src=
+=3D"https://app-rsrc.getbee.io/public/resources/social-networks-icon-set=
+s/t-only-logo-white/youtube@2x.png" width=3D"32" height=3D"32" alt=3D"Yo=
+uTube" title=3D"YouTube" style=3D"display:block;height:auto;border:0"></=
+a></td>
+</tr></table></td></tr></table>
+</td></tr></tbody></table></td></tr></tbody></table>
+</td></tr></tbody></table>
+<!-- End -->
+</body>
+</html>
+
+--==9fc950e30113790df99cc308c2aa03ab--

@@ -15,7 +15,7 @@
 ///<reference path="../dns.d.ts" />
 /* eslint-env webextensions */
 
-import { DKIM_InternalError, DKIM_SigError } from "../error.mjs.js";
+import { DKIM_SigError, DKIM_TempError } from "../error.mjs.js";
 import { Deferred, dateToString } from "../utils.mjs.js";
 import DNS from "../dns.mjs.js";
 import Logging from "../logging.mjs.js";
@@ -320,6 +320,8 @@ export default class KeyStore {
 	 * @param {string} sdid
 	 * @param {string} selector
 	 * @returns {Promise<DkimKeyResult>}
+	 * @throws {DKIM_SigError}
+	 * @throws {DKIM_TempError}
 	 */
 	async fetchKey(sdid, selector) {
 		switch (prefs["key.storing"]) {
@@ -363,18 +365,19 @@ export default class KeyStore {
 	 * @param {string} sdid
 	 * @param {string} selector
 	 * @returns {Promise<DkimKeyResult>}
+	 * @throws {DKIM_SigError}
+	 * @throws {DKIM_TempError}
 	 */
 	async #getKeyFromDNS(sdid, selector) {
 		const dnsRes = await this._queryDnsTxt(`${selector}._domainkey.${sdid}`);
 		log.debug("dns result", dnsRes);
 
 		if (dnsRes.bogus) {
-			throw new DKIM_InternalError(null, "DKIM_DNSERROR_DNSSEC_BOGUS");
+			throw new DKIM_TempError("DKIM_DNSERROR_DNSSEC_BOGUS");
 		}
 		if (dnsRes.rcode !== DNS.RCODE.NoError && dnsRes.rcode !== DNS.RCODE.NXDomain) {
 			log.info("DNS query failed with result:", dnsRes);
-			throw new DKIM_InternalError(`rcode: ${dnsRes.rcode}`,
-				"DKIM_DNSERROR_SERVER_ERROR");
+			throw new DKIM_TempError("DKIM_DNSERROR_SERVER_ERROR");
 		}
 		if (dnsRes.data === null || !dnsRes.data[0]) {
 			throw new DKIM_SigError("DKIM_SIGERROR_NOKEY");

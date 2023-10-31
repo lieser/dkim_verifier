@@ -63,6 +63,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "agu.org",
+			"addr": "*",
+			"sdid": "agu.org AGUORG.onmicrosoft.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "airberlin.com",
 			"addr": "*",
 			"sdid": "airberlin.com news.airberlin.com service.airberlin.com plusgrade.airberlin.com",
@@ -270,6 +276,12 @@
 			"domain": "bauen.de",
 			"addr": "*",
 			"sdid": "bauen.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "bequiet.com",
+			"addr": "*",
+			"sdid": "bequiet.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -531,6 +543,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "co2online.de",
+			"addr": "*@news.co2online.de",
+			"sdid": "co2online.de news.co2online.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
 			"domain": "coinbase.com",
 			"addr": "*",
 			"sdid": "coinbase.com",
@@ -566,6 +584,12 @@
 			"sdid": "connect.sncf",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "conrad.de",
+			"addr": "*@news.conrad.de",
+			"sdid": "conrad.de news.conrad.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
 			"domain": "cordongroup.com",
 			"addr": "*",
@@ -795,6 +819,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "drrocke.de",
+			"addr": "*",
+			"sdid": "drrocke.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "duh.de",
 			"addr": "*",
 			"sdid": "duh.de",
@@ -968,6 +998,12 @@
 			"sdid": "espruino.com messaging-master.net",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "europa.eu",
+			"addr": "*@nomail.ec.europa.eu",
+			"sdid": "europa.eu nomail.ec.europa.eu",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
 			"domain": "europcar.com",
 			"addr": "*",
@@ -1161,6 +1197,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "fotoparadies.de",
+			"addr": "*@mail.fotoparadies.de",
+			"sdid": "fotoparadies.de mail.fotoparadies.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
 			"domain": "framasoft.org",
 			"addr": "*",
 			"sdid": "framasoft.org",
@@ -1221,6 +1263,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "ga.de",
+			"addr": "*@info.ga.de",
+			"sdid": "ga.de info.ga.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
 			"domain": "gellersen.de",
 			"addr": "*",
 			"sdid": "gellersen.de",
@@ -1230,6 +1278,12 @@
 			"domain": "gelsh.it",
 			"addr": "*",
 			"sdid": "gelsh.it",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "genderleicht.de",
+			"addr": "*",
+			"sdid": "genderleicht.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -1284,6 +1338,12 @@
 			"domain": "githubsupport.com",
 			"addr": "*",
 			"sdid": "githubsupport.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "glasgow.ac.uk",
+			"addr": "*",
+			"sdid": "glasgow.ac.uk gla.onmicrosoft.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -1689,6 +1749,18 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
+			"domain": "kleinanzeigen.de",
+			"addr": "*@news.kleinanzeigen.de",
+			"sdid": "kleinanzeigen.de news.kleinanzeigen.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
+			"domain": "ko-fi.com",
+			"addr": "*",
+			"sdid": "ko-fi.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "krasserstoff.com",
 			"addr": "*",
 			"sdid": "krasserstoff.com",
@@ -1875,6 +1947,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "medicover.de",
+			"addr": "*",
+			"sdid": "medicover.de fireeye.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "medimops.de",
 			"addr": "*",
 			"sdid": "medimops.de",
@@ -1941,6 +2019,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "miele.de",
+			"addr": "*",
+			"sdid": "miele.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "milesandmore.com",
 			"addr": "*@mailing.milesandmore.com",
 			"sdid": "milesandmore.com mailing.milesandmore.com",
@@ -1992,6 +2076,12 @@
 			"domain": "muenze-deutschland.de",
 			"addr": "*",
 			"sdid": "muenze-deutschland.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "muenzen.eu",
+			"addr": "*",
+			"sdid": "muenzen.eu",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -2115,6 +2205,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "nrw.de",
+			"addr": "*@gd.nrw.de",
+			"sdid": "gd.nrw.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
 			"domain": "nz-k.de",
 			"addr": "*",
 			"sdid": "nz-k.de",
@@ -2169,6 +2265,18 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "openpetition.org",
+			"addr": "*",
+			"sdid": "openpetition.org",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "openstreetmap.org",
+			"addr": "*",
+			"sdid": "openstreetmap.org",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "otto.de",
 			"addr": "*@info.otto.de",
 			"sdid": "otto.de info.otto.de",
@@ -2178,6 +2286,12 @@
 			"domain": "owad.de",
 			"addr": "*@mailbutler.owad.de",
 			"sdid": "owad.de mailbutler.owad.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "pagure.io",
+			"addr": "*",
+			"sdid": "pagure.io",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -2337,6 +2451,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "queeres-netzwerk.nrw",
+			"addr": "*",
+			"sdid": "queeres-netzwerk.nrw crsend.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "quoka.de",
 			"addr": "*@reply.quoka.de",
 			"sdid": "quoka.de reply.quoka.de",
@@ -2346,6 +2466,12 @@
 			"domain": "quokamail.de",
 			"addr": "*",
 			"sdid": "quokamail.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "rarechromo.org",
+			"addr": "*",
+			"sdid": "rarechromo.org auth.ccsend.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -2511,6 +2637,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "sissa.it",
+			"addr": "*@medialab.sissa.it",
+			"sdid": "sissa.it medialab.sissa.it cbsolt.net",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
 			"domain": "sky.de",
 			"addr": "*",
 			"sdid": "sky.de infoservice.sky.de",
@@ -2646,6 +2778,12 @@
 			"domain": "stadt-koeln.de",
 			"addr": "*",
 			"sdid": "stadt-koeln.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "stadtfruechtchen.de",
+			"addr": "*",
+			"sdid": "stadtfruechtchen.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -2961,9 +3099,21 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "usmint.gov",
+			"addr": "*@email.usmint.gov",
+			"sdid": "usmint.gov email.usmint.gov",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
 			"domain": "vaillant.de",
 			"addr": "*@email.vaillant.de",
 			"sdid": "vaillant.de email.vaillant.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
+			"domain": "verivox.de",
+			"addr": "*@mail.verivox.de",
+			"sdid": "verivox.de mail.verivox.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
@@ -2988,6 +3138,12 @@
 			"domain": "vergoelst.de",
 			"addr": "*@email.vergoelst.de",
 			"sdid": "vergoelst.de email.vergoelst.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
+			"domain": "vgwort.de",
+			"addr": "*",
+			"sdid": "vgwort.de news.vgwort.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
 		}, {

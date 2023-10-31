@@ -1,0 +1,18 @@
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=example.com; i=@example.com; 
+ q=dns/txt; s=brisbane; t=1698597711; h=from : to : subject : date : 
+ message-id : from : subject : date; 
+ bh=2jUSOH9NhtVGCQWNr9BrIAPreKQjO6Sn7XIkfJVOzv8=; 
+ b=CE3Oslfk2qB38RAmRCRhIIbMvP5u/kuP1KEswe4Gx2qSScrl/cZm2WCstkEbcapJxH6qu0
+ Xw/AE7TWypWitV46qscm2GrDVselmWoSmxFl9Sji1p/5ouWc2UQJGNSDUYCpMJN0T3UMVHYv
+ +Bx0myqvZbYbKXp6jZsPami5g1Xcg=
+From: Joe SixPack <joe@example.com>
+To: Suzie ß <suzie@shopping.example.net>
+Subject: DKIM test - To header with non ASCII char
+Date: Fri, 11 Jul 2003 21:00:37 -0700 (PDT)
+Message-ID: <20030712040037.46341.5F8J+test_0001@example.com>
+
+Hi.
+
+We lost the game. Are you hungry yet?
+
+Joe.

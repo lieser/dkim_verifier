@@ -75,6 +75,12 @@ describe("DKIM Verifier [unittest]", function () {
 			expect(res.signatures[1]?.auid).to.be.equal("@football.example.com");
 			expect(res.signatures[1]?.selector).to.be.equal("brisbane");
 		});
+		it("Signed header with non ASCII char", async function () {
+			const res = await verifyEmlFile("dkim/header_with_non_ascii_char.eml");
+			expect(res.signatures.length).to.be.equal(1);
+			expect(res.signatures[0]?.result).to.be.equal("SUCCESS");
+			expect(res.signatures[0]?.warnings).to.be.empty;
+		});
 		it("DKIM key with empty notes tag", async function () {
 			const res = await verifyEmlFile("rfc6376-A.2.eml", new Map([
 				["brisbane._domainkey.example.com",

@@ -9,7 +9,7 @@
 
 // @ts-check
 
-import { DKIM_InternalError } from "../../modules/error.mjs.js";
+import { DKIM_Error } from "../../modules/error.mjs.js";
 import MsgParser from "../../modules/msgParser.mjs.js";
 import expect from "../helpers/chaiUtils.mjs.js";
 import { toBinaryString } from "../helpers/testUtils.mjs.js";
@@ -102,7 +102,7 @@ describe("Message parser [unittest]", function () {
 		it("missing newline between header and body", function () {
 			expect(
 				() => MsgParser.parseMsg(msgPlain.replace(/\r\n\r\n/g, "\r\n"))
-			).to.throw(DKIM_InternalError).with.property("errorType", "DKIM_INTERNALERROR_INCORRECT_EMAIL_FORMAT");
+			).to.throw(DKIM_Error).with.property("message", "Could not split header into name and value");
 		});
 		it("Valid missing body", function () {
 			let msg = MsgParser.parseMsg(msgPlain.replace(/\r\n\r\n.+/gs, "\r\n"));
@@ -118,7 +118,7 @@ describe("Message parser [unittest]", function () {
 		it("With a missing body the headers still need to end with a newline", function () {
 			expect(
 				() => MsgParser.parseMsg(msgPlain.replace(/\r\n\r\n.+/gs, ""))
-			).to.throw(DKIM_InternalError).with.property("errorType", "DKIM_INTERNALERROR_INCORRECT_EMAIL_FORMAT");
+			).to.throw(DKIM_Error).with.property("message", "Last header is not ending with a newline");
 		});
 		it("Valid empty body", function () {
 			const msg = MsgParser.parseMsg(msgPlain.replace(/\r\n\r\n.+/gs, "\r\n\r\n"));

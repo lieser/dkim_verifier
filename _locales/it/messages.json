@@ -359,7 +359,7 @@
 		"message": "DNS"
 	},
 	"options_dns.resolver": {
-		"message": "Risolutore"
+		"message": "Risolutore:"
 	},
 	"options_dns.resolver.value.1": {
 		"message": "Libreria JavaScript DNS"
@@ -371,10 +371,10 @@
 		"message": "Ricava i server DNS dalla configurazione del sistema operativo"
 	},
 	"options_dns.nameserver": {
-		"message": "Server DNS (sintassi (EBNF): host[\":\"porta]{\";\"host[\":\"porta]} )"
+		"message": "Server DNS (sintassi (EBNF): host[\":\"porta]{\";\"host[\":\"porta]} ):"
 	},
 	"options_dns.timeout_connect": {
-		"message": "Scadenza connessione DNS (in secondi)",
+		"message": "Scadenza connessione DNS (in secondi):",
 		"description": "Timeout for the connection to the DNS servers (both establishing the connection and sending/receiving data)"
 	},
 	"options_dns.proxy.enable": {
@@ -390,7 +390,7 @@
 		"message": "Porta:"
 	},
 	"options_dns.libunbound.nameserver": {
-		"message": "Server DNS (sintassi (EBNF): IP{\";\"IP} )"
+		"message": "Server DNS (sintassi (EBNF): IP{\";\"IP} ):"
 	},
 	"options_dns.libunbound.usageWarning": {
 		"message": "Il risolutore libunbound richiede una libreria installata esternamente"
@@ -462,10 +462,10 @@
 		"message": "Visualizza"
 	},
 	"options_showDKIMHeader": {
-		"message": "Mostra intestazione DKIM"
+		"message": "Mostra intestazione DKIM:"
 	},
 	"options_showDKIMFromTooltip": {
-		"message": "Mostra aiuti DKIM per il campo del mittente"
+		"message": "Mostra aiuti DKIM per il campo del mittente:"
 	},
 	"options_showDKIM.value.0": {
 		"message": "mai"
@@ -526,19 +526,19 @@
 		"message": "Verifica le firme anche se un dominio sta solo provando DKIM"
 	},
 	"options_error.illformed_i.treatAs": {
-		"message": "Considera tag AUID con sintassi errata come"
+		"message": "Considera tag AUID con sintassi errata come:"
 	},
 	"options_error.illformed_s.treatAs": {
-		"message": "Considera tag di selezione con sintassi errata come"
+		"message": "Considera tag di selezione con sintassi errata come:"
 	},
 	"options_error.policy.key_insecure.treatAs": {
-		"message": "Considera chiavi DKIM non firmate da DNSSEC come"
+		"message": "Considera chiavi DKIM non firmate da DNSSEC come:"
 	},
 	"options_error.algorithm.sign.rsa-sha1.treatAs": {
-		"message": "Considera algoritmo di firma RSA-SHA1 come"
+		"message": "Considera algoritmo di firma RSA-SHA1 come:"
 	},
 	"options_error.algorithm.rsa.weakKeyLength.treatAs": {
-		"message": "Considera chiavi RSA deboli (<2048 bit) come"
+		"message": "Considera chiavi RSA deboli (<2048 bit) come:"
 	},
 	"options_error.treatAs.value.0": {
 		"message": "errore"
@@ -735,7 +735,7 @@
 		"message": "Selezione automatica priorità"
 	},
 	"signRules.priorityMode.manual": {
-		"message": "Imposta priorità a"
+		"message": "Imposta priorità a:"
 	},
 	"button.cancel": {
 		"message": "Annulla"
@@ -747,7 +747,7 @@
 		"message": "Aiuto sulle regole dei firmatari"
 	},
 	"domain.description": {
-		"message": "verrà confrontato con il dominio base dell’indirizzo del mittente. Ad esempio il dominio base di “email.example.co.uk” è example.co.uk”."
+		"message": "verrà confrontato con il dominio base dell’indirizzo del mittente. Ad esempio il dominio base di “email.example.co.uk” è “example.co.uk”."
 	},
 	"listId.description": {
 		"message": "verrà confrontato con l’id della lista, se l’email è stata ricevuta tramite una mailing list. Nota che solo la parte tra “<” e “>” dell’intestazione List-Id è l’id della lista effettivo. I confronti con il dominio e l’id della lista sono alternativi."

@@ -27,7 +27,7 @@
 /* eslint-disable camelcase */
 /* eslint-disable no-magic-numbers */
 
-import { DKIM_InternalError, DKIM_SigError } from "../error.mjs.js";
+import { DKIM_SigError, DKIM_TempError } from "../error.mjs.js";
 import { addrIsInDomain, copy, stringEndsWith, stringEqual } from "../utils.mjs.js";
 import prefs, { BasePreferences } from "../preferences.mjs.js";
 import DkimCrypto from "./crypto.mjs.js";
@@ -52,7 +52,7 @@ import RfcParser from "../rfcParser.mjs.js";
  * Required if result="SUCCESS".
  * @property {string} [errorType]
  * - if result="PERMFAIL: DKIM_SigError.errorType
- * - if result="TEMPFAIL: DKIM_InternalError.errorType or Undefined
+ * - if result="TEMPFAIL: DKIM_TempError.errorType or Undefined
  * @property {string} [shouldBeSignedBy]
  * Added in version 1.1.
  * @property {boolean} [hideFail]
@@ -81,7 +81,7 @@ import RfcParser from "../rfcParser.mjs.js";
  * Required if result="SUCCESS".
  * @property {string|undefined} [errorType]
  * - if result="PERMFAIL: DKIM_SigError.errorType or Undefined
- * - if result="TEMPFAIL: DKIM_InternalError.errorType or Undefined
+ * - if result="TEMPFAIL: DKIM_TempError.errorType or Undefined
  * @property {string[]} [errorStrParams]
  * @property {boolean|undefined} [hideFail]
  * @property {boolean} [keySecure]
@@ -130,6 +130,7 @@ class DkimSignatureHeader {
 	 * The header field is specified in Section 3.5 of RFC 6376.
 	 *
 	 * @param {string} dkimSignatureHeader
+	 * @throws {DKIM_SigError}
 	 */
 	constructor(dkimSignatureHeader) {
 		/**
@@ -151,7 +152,7 @@ class DkimSignatureHeader {
 			throw new DKIM_SigError("DKIM_SIGERROR_DUPLICATE_TAG");
 		}
 		if (!(tagMap instanceof Map)) {
-			throw new DKIM_InternalError(`unexpected return value from RfcParser.parseTagValueList: ${tagMap}`);
+			throw new Error(`unexpected return value from RfcParser.parseTagValueList: ${tagMap}`);
 		}
 
 		/** @type {dkimSigWarningV2[]} */
@@ -290,6 +291,7 @@ class DkimSignatureHeader {
 	/**
 	 * @param {ReadonlyMap<string, string>} tagMap
 	 * @returns {string}
+	 * @throws {DKIM_SigError}
 	 */
 	static #parseVersion(tagMap) {
 		// get Version (plain-text; REQUIRED)
@@ -299,7 +301,7 @@ class DkimSignatureHeader {
 			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_V");
 		}
 		if (versionTag[0] !== "1") {
-			throw new DKIM_InternalError(null, "DKIM_SIGERROR_VERSION");
+			throw new DKIM_SigError("DKIM_SIGERROR_VERSION");
 		}
 		return "1";
 	}
@@ -308,6 +310,7 @@ class DkimSignatureHeader {
 	 * @param {ReadonlyMap<string, string>} tagMap
 	 * @param {dkimSigWarningV2[]} warnings
 	 * @returns {{signature: string, hash: string}}
+	 * @throws {DKIM_SigError}
 	 */
 	static #parseSignatureAlgorithms(tagMap, warnings) {
 		// get signature algorithm (plain-text;REQUIRED)
@@ -320,7 +323,7 @@ class DkimSignatureHeader {
 			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_A");
 		}
 		if (!algorithmTag[1] || !algorithmTag[2]) {
-			throw new DKIM_InternalError("Error matching the a-tag.");
+			throw new Error("Error matching the a-tag.");
 		}
 		if (algorithmTag[0] === "rsa-sha256" || algorithmTag[0] === "ed25519-sha256") {
 			return {
@@ -337,7 +340,7 @@ class DkimSignatureHeader {
 				case 2: // ignore
 					break;
 				default:
-					throw new DKIM_InternalError("invalid error.algorithm.sign.rsa-sha1.treatAs");
+					throw new Error("invalid error.algorithm.sign.rsa-sha1.treatAs");
 			}
 			return {
 				signature: algorithmTag[1],
@@ -350,6 +353,7 @@ class DkimSignatureHeader {
 	/**
 	 * @param {ReadonlyMap<string, string>} tagMap
 	 * @returns {{b: string, bFolded: string}}
+	 * @throws {DKIM_SigError}
 	 */
 	static #parseSignatureData(tagMap) {
 		// get signature data (base64;REQUIRED)
@@ -366,6 +370,7 @@ class DkimSignatureHeader {
 	/**
 	 * @param {ReadonlyMap<string, string>} tagMap
 	 * @returns {string}
+	 * @throws {DKIM_SigError}
 	 */
 	static #parseBodyHash(tagMap) {
 		// get body hash (base64;REQUIRED)
@@ -379,6 +384,7 @@ class DkimSignatureHeader {
 	/**
 	 * @param {ReadonlyMap<string, string>} tagMap
 	 * @returns {{header: string, body: string}}
+	 * @throws {DKIM_SigError}
 	 */
 	static #parseCanonicalization(tagMap) {
 		// get Message canonicalization (plain-text; OPTIONAL, default is "simple/simple")
@@ -420,6 +426,7 @@ class DkimSignatureHeader {
 	/**
 	 * @param {ReadonlyMap<string, string>} tagMap
 	 * @returns {string}
+	 * @throws {DKIM_SigError}
 	 */
 	static #parseSdid(tagMap) {
 		// get SDID (plain-text; REQUIRED)
@@ -433,6 +440,7 @@ class DkimSignatureHeader {
 	/**
 	 * @param {ReadonlyMap<string, string>} tagMap
 	 * @returns {string[]}
+	 * @throws {DKIM_SigError}
 	 */
 	static #parseSignedHeaders(tagMap) {
 		// get Signed header fields (plain-text, but see description; REQUIRED)
@@ -458,6 +466,7 @@ class DkimSignatureHeader {
 	 * @param {string} sdid
 	 * @param {dkimSigWarningV2[]} warnings
 	 * @returns {{auid: string, auidDomain: string}}
+	 * @throws {DKIM_SigError}
 	 */
 	static #parseAuid(tagMap, sdid, warnings) {
 		// get AUID (dkim-quoted-printable; OPTIONAL, default is an empty local-part
@@ -533,7 +542,7 @@ class DkimSignatureHeader {
 					case 2: // ignore
 						break;
 					default:
-						throw new DKIM_InternalError("invalid error.illformed_i.treatAs");
+						throw new Error("invalid error.illformed_i.treatAs");
 				}
 			} else {
 				throw exception;
@@ -546,7 +555,7 @@ class DkimSignatureHeader {
 			};
 		}
 		if (!AUIDTag[1]) {
-			throw new DKIM_InternalError("Error matching the i-tag.");
+			throw new Error("Error matching the i-tag.");
 		}
 		const auid = AUIDTag[0];
 		const auidDomain = AUIDTag[1];
@@ -562,6 +571,7 @@ class DkimSignatureHeader {
 	/**
 	 * @param {ReadonlyMap<string, string>} tagMap
 	 * @returns {number?}
+	 * @throws {DKIM_SigError}
 	 */
 	static #parseBodyLength(tagMap) {
 		// get Body length count (plain-text unsigned decimal integer; OPTIONAL, default is entire body)
@@ -575,6 +585,7 @@ class DkimSignatureHeader {
 	/**
 	 * @param {ReadonlyMap<string, string>} tagMap
 	 * @returns {string}
+	 * @throws {DKIM_SigError}
 	 */
 	static #parseQueryMethod(tagMap) {
 		// get query methods (plain-text; OPTIONAL, default is "dns/txt")
@@ -594,6 +605,7 @@ class DkimSignatureHeader {
 	 * @param {ReadonlyMap<string, string>} tagMap
 	 * @param {dkimSigWarningV2[]} warnings
 	 * @returns {string}
+	 * @throws {DKIM_SigError}
 	 */
 	static #parseSelector(tagMap, warnings) {
 		// get selector subdividing the namespace for the "d=" (domain) tag (plain-text; REQUIRED)
@@ -614,7 +626,7 @@ class DkimSignatureHeader {
 					case 2: // ignore
 						break;
 					default:
-						throw new DKIM_InternalError("invalid error.illformed_s.treatAs");
+						throw new Error("invalid error.illformed_s.treatAs");
 				}
 			} else {
 				throw exception;
@@ -629,6 +641,7 @@ class DkimSignatureHeader {
 	/**
 	 * @param {ReadonlyMap<string, string>} tagMap
 	 * @returns {number?}
+	 * @throws {DKIM_SigError}
 	 */
 	static #parseSignatureTimestamp(tagMap) {
 		// get Signature Timestamp (plain-text unsigned decimal integer; RECOMMENDED,
@@ -644,6 +657,7 @@ class DkimSignatureHeader {
 	 * @param {ReadonlyMap<string, string>} tagMap
 	 * @param {number?} signatureTimestamp
 	 * @returns {number?}
+	 * @throws {DKIM_SigError}
 	 */
 	static #parseSignatureExpiration(tagMap, signatureTimestamp) {
 		// get Signature Expiration (plain-text unsigned decimal integer;
@@ -663,6 +677,7 @@ class DkimSignatureHeader {
 	/**
 	 * @param {ReadonlyMap<string, string>} tagMap
 	 * @returns {string?}
+	 * @throws {DKIM_SigError}
 	 */
 	static #parseCopiedHeaders(tagMap) {
 		// get Copied header fields (dkim-quoted-printable, but see description; OPTIONAL, default is null)
@@ -686,6 +701,7 @@ class DkimKey {
 	 * The key record is specified in Section 3.6.1 of RFC 6376.
 	 *
 	 * @param {string} DkimKeyRecord
+	 * @throws {DKIM_SigError}
 	 */
 	constructor(DkimKeyRecord) {
 		// parse tag-value list
@@ -696,7 +712,7 @@ class DkimKey {
 			throw new DKIM_SigError("DKIM_SIGERROR_KEY_DUPLICATE_TAG");
 		}
 		if (!(tagMap instanceof Map)) {
-			throw new DKIM_InternalError(`unexpected return value from RfcParser.parseTagValueList: ${tagMap}`);
+			throw new Error(`unexpected return value from RfcParser.parseTagValueList: ${tagMap}`);
 		}
 
 		/**
@@ -748,6 +764,7 @@ class DkimKey {
 	/**
 	 * @param {ReadonlyMap<string, string>} tagMap
 	 * @returns {string}
+	 * @throws {DKIM_SigError}
 	 */
 	static #parseVersion(tagMap) {
 		// get version (plain-text; RECOMMENDED, default is "DKIM1")
@@ -764,6 +781,7 @@ class DkimKey {
 	/**
 	 * @param {ReadonlyMap<string, string>} tagMap
 	 * @returns {string[]|null}
+	 * @throws {DKIM_SigError}
 	 */
 	static #parseAcceptableHash(tagMap) {
 		// get Acceptable hash algorithms (plain-text; OPTIONAL, defaults to allowing all algorithms)
@@ -779,6 +797,7 @@ class DkimKey {
 	/**
 	 * @param {ReadonlyMap<string, string>} tagMap
 	 * @returns {string}
+	 * @throws {DKIM_SigError}
 	 */
 	static #parseKeyType(tagMap) {
 		// get Key type (plain-text; OPTIONAL, default is "rsa")
@@ -795,6 +814,7 @@ class DkimKey {
 	/**
 	 * @param {ReadonlyMap<string, string>} tagMap
 	 * @returns {string?}
+	 * @throws {DKIM_SigError}
 	 */
 	static #parseNotes(tagMap) {
 		// get Notes (qp-section; OPTIONAL, default is empty)
@@ -810,6 +830,7 @@ class DkimKey {
 	/**
 	 * @param {ReadonlyMap<string, string>} tagMap
 	 * @returns {string}
+	 * @throws {DKIM_SigError}
 	 */
 	static #parsePublicKey(tagMap) {
 		// get Public-key data (base64; REQUIRED)
@@ -827,6 +848,7 @@ class DkimKey {
 	/**
 	 * @param {ReadonlyMap<string, string>} tagMap
 	 * @returns {string}
+	 * @throws {DKIM_SigError}
 	 */
 	static #parseServiceType(tagMap) {
 		// get Service Type (plain-text; OPTIONAL; default is "*")
@@ -846,6 +868,7 @@ class DkimKey {
 	/**
 	 * @param {ReadonlyMap<string, string>} tagMap
 	 * @returns {string[]}
+	 * @throws {DKIM_SigError}
 	 */
 	static #parseFlags(tagMap) {
 		// get Flags (plaintext; OPTIONAL, default is no flags set)
@@ -962,6 +985,7 @@ class DkimSignature {
 	 *
 	 * @param {dkimSigWarningV2[]} warnings
 	 * @returns {Promise<string>}
+	 * @throws {DKIM_SigError}
 	 */
 	async #computeBodyHash(warnings) {
 		// canonicalize body
@@ -974,7 +998,7 @@ class DkimSignature {
 				bodyCanon = DkimSignature.#canonicalizationBodyRelaxed(this._msg.bodyPlain);
 				break;
 			default:
-				throw new DKIM_InternalError("unsupported canonicalization algorithm got parsed");
+				throw new Error("unsupported canonicalization algorithm got parsed");
 		}
 
 		// if a body length count is given
@@ -1019,7 +1043,7 @@ class DkimSignature {
 				headerCanonAlgo = DkimSignature.#canonicalizationHeaderFieldRelaxed;
 				break;
 			default:
-				throw new DKIM_InternalError("unsupported canonicalization algorithm (header) got parsed");
+				throw new Error("unsupported canonicalization algorithm (header) got parsed");
 		}
 
 		// copy header fields
@@ -1114,6 +1138,7 @@ class DkimSignature {
 	 *
 	 * @param {dkimSigWarningV2[]} warnings
 	 * @returns {void}
+	 * @throws {DKIM_SigError}
 	 */
 	#checkSignedHeaders(warnings) {
 		// The list of recommended headers to sign is mostly based on
@@ -1225,7 +1250,6 @@ class DkimSignature {
 	 * @param {dkimSigWarningV2[]} warnings
 	 * @returns {Promise<void>}
 	 * @throws {DKIM_SigError}
-	 * @throws {DKIM_InternalError}
 	 */
 	async #verifyBody(warnings) {
 		// Compute the Message hash for the body
@@ -1245,7 +1269,7 @@ class DkimSignature {
 	 * @param {dkimSigWarningV2[]} warnings
 	 * @returns {Promise<import("./keyStore.mjs.js").DkimKeyResult>}
 	 * @throws {DKIM_SigError}
-	 * @throws {DKIM_InternalError}
+	 * @throws {DKIM_TempError}
 	 */
 	async #fetchKey(keyStore, warnings) {
 		const keyQueryResult = await keyStore.fetchKey(this._header.d, this._header.s);
@@ -1262,7 +1286,7 @@ class DkimSignature {
 				case 2: // ignore
 					break;
 				default:
-					throw new DKIM_InternalError("invalid error.policy.key_insecure.treatAs");
+					throw new Error("invalid error.policy.key_insecure.treatAs");
 			}
 		}
 
@@ -1313,6 +1337,7 @@ class DkimSignature {
 	 *
 	 * @param {string} publicKey
 	 * @param {dkimSigWarningV2[]} warnings
+	 * @throws {DKIM_SigError}
 	 */
 	async #verifySignature(publicKey, warnings) {
 		// Compute the input for the header hash
@@ -1350,7 +1375,7 @@ class DkimSignature {
 					case 2: // ignore
 						break;
 					default:
-						throw new DKIM_InternalError("invalid error.algorithm.rsa.weakKeyLength.treatAs");
+						throw new Error("invalid error.algorithm.rsa.weakKeyLength.treatAs");
 				}
 			}
 		}
@@ -1362,7 +1387,7 @@ class DkimSignature {
 	 * @param {KeyStore} keyStore
 	 * @returns {Promise<dkimSigResultV2>}
 	 * @throws {DKIM_SigError}
-	 * @throws {DKIM_InternalError}
+	 * @throws {DKIM_TempError}
 	 */
 	async verify(keyStore) {
 		/** @type {dkimSigWarningV2[]} */
@@ -1440,9 +1465,9 @@ export default class Verifier {
 			selector: dkimSignature.s,
 		};
 
-		if (e instanceof DKIM_InternalError) {
+		if (e instanceof DKIM_TempError) {
 			result.errorType = e.errorType;
-			log.error("Internal error during DKIM verification:", e);
+			log.error("Temporary error during DKIM verification:", e);
 		} else {
 			log.fatal("Error during DKIM verification:", e);
 		}

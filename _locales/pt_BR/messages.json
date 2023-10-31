@@ -336,7 +336,7 @@
 		"message": "DNS"
 	},
 	"options_dns.resolver": {
-		"message": "Resolvedor"
+		"message": "Resolvedor:"
 	},
 	"options_dns.resolver.value.1": {
 		"message": "Biblioteca DNS JavaScript"
@@ -348,10 +348,10 @@
 		"message": "Obter servidores DNS da configuração do Sistema Operacional"
 	},
 	"options_dns.nameserver": {
-		"message": "Servidores DNS (Sintaxe (EBNF): host[\":\"porta]{\";\"host[\":\"porta]} )"
+		"message": "Servidores DNS (Sintaxe (EBNF): host[\":\"porta]{\";\"host[\":\"porta]} ):"
 	},
 	"options_dns.timeout_connect": {
-		"message": "Tempo limite de conexão do DNS (em segundos)"
+		"message": "Tempo limite de conexão do DNS (em segundos):"
 	},
 	"options_dns.proxy.enable": {
 		"message": "Usar um proxy para se conectar aos servidores DNS"
@@ -366,7 +366,7 @@
 		"message": "Porta:"
 	},
 	"options_dns.libunbound.nameserver": {
-		"message": "Servidores DNS (Sintaxe (EBNF): IP {\";\"IP})"
+		"message": "Servidores DNS (Sintaxe (EBNF): IP {\";\"IP}):"
 	},
 	"options_dns.libunbound.usageWarning": {
 		"message": "O resolvedor libunbound requer uma biblioteca instalada externamente"
@@ -422,10 +422,10 @@
 		"message": "Exibição"
 	},
 	"options_showDKIMHeader": {
-		"message": "Mostrar cabeçalho DKIM"
+		"message": "Mostrar cabeçalho DKIM:"
 	},
 	"options_showDKIMFromTooltip": {
-		"message": "Mostrar dica de ferramenta DKIM para cabeçalho 'De'"
+		"message": "Mostrar dica de ferramenta DKIM para cabeçalho 'De':"
 	},
 	"options_showDKIM.value.0": {
 		"message": "Nunca"
@@ -486,19 +486,19 @@
 		"message": "Ainda verificar a assinatura, se um domínio estiver apenas testando DKIM"
 	},
 	"options_error.illformed_i.treatAs": {
-		"message": "Tratar a etiqueta AUID malformada como"
+		"message": "Tratar a etiqueta AUID malformada como:"
 	},
 	"options_error.illformed_s.treatAs": {
-		"message": "Tratar a etiqueta do seletor malformada como"
+		"message": "Tratar a etiqueta do seletor malformada como:"
 	},
 	"options_error.policy.key_insecure.treatAs": {
-		"message": "Tratar chave DKIM não protegida por DNSSEC como"
+		"message": "Tratar chave DKIM não protegida por DNSSEC como:"
 	},
 	"options_error.algorithm.sign.rsa-sha1.treatAs": {
-		"message": "Tratar algoritmo de sinal RSA-SHA1 como"
+		"message": "Tratar algoritmo de sinal RSA-SHA1 como:"
 	},
 	"options_error.algorithm.rsa.weakKeyLength.treatAs": {
-		"message": "Tratar chaves RSA fracas (<2048 bits) como"
+		"message": "Tratar chaves RSA fracas (<2048 bits) como:"
 	},
 	"options_error.treatAs.value.0": {
 		"message": "erro"
@@ -682,7 +682,7 @@
 		"message": "Selecionar prioridade automaticamente"
 	},
 	"signRules.priorityMode.manual": {
-		"message": "Definir prioridade para"
+		"message": "Definir prioridade para:"
 	},
 	"button.cancel": {
 		"message": "Cancelar"

@@ -12,7 +12,7 @@
 // @ts-check
 /* eslint-disable camelcase */
 
-import { DKIM_InternalError, DKIM_SigError } from "./error.mjs.js";
+import { DKIM_Error, DKIM_SigError } from "./error.mjs.js";
 
 export default class RfcParser {
 	////// RFC 2045 - Multipurpose Internet Mail Extensions (MIME) Part One: Format of Internet Message Bodies
@@ -146,7 +146,7 @@ export default class RfcParser {
 	 * @param {string} patternTagValue - Pattern for the tag-value
 	 * @param {number} [expType] - Type of exception to throw. 1 for DKIM header, 2 for DKIM key, 3 for general.
 	 * @returns {[string, ...string[]]|null} The match from the RegExp if tag_name exists, otherwise null
-	 * @throws {DKIM_SigError|DKIM_InternalError} Throws if tag_value does not match.
+	 * @throws {DKIM_SigError|DKIM_Error} Throws if tag_value does not match.
 	 */
 	static parseTagValue(map, tagName, patternTagValue, expType = 1) {
 		const tagValue = map.get(tagName);
@@ -164,7 +164,7 @@ export default class RfcParser {
 			} else if (expType === 2) {
 				throw new DKIM_SigError(`DKIM_SIGERROR_KEY_ILLFORMED_${tagName.toUpperCase()}`);
 			} else {
-				throw new DKIM_InternalError(`illformed tag ${tagName}`);
+				throw new DKIM_Error(`illformed tag ${tagName}`);
 			}
 		}
 

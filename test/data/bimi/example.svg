@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"  standalone="yes"?>
+<svg version="1.2" baseProfile="tiny-ps" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+<title>Example</title>
+<circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red" />
+</svg>

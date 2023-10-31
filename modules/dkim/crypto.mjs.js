@@ -63,7 +63,7 @@ class DkimCryptoBase {
 	 * @param {string} signature - b64 encoded signature
 	 * @param {string} data - data whose signature is to be verified (binary string)
 	 * @returns {Promise<[boolean, number]>} - valid, key length
-	 * @throws DKIM_SigError
+	 * @throws {DKIM_SigError}
 	 */
 	verify(signAlgorithm, key, digestAlgorithm, signature, data) {
 		if (signAlgorithm === "rsa") {
@@ -82,7 +82,7 @@ class DkimCryptoBase {
 	 * @param {string} _signature - b64 encoded signature
 	 * @param {string} _data - data whose signature is to be verified (binary string)
 	 * @returns {Promise<[boolean, number]>} - valid, key length
-	 * @throws DKIM_SigError
+	 * @throws {DKIM_SigError}
 	 */
 	verifyRSA(_key, _digestAlgorithm, _signature, _data) {
 		throw new Error("Not implemented");
@@ -203,7 +203,7 @@ class DkimCryptoWeb extends DkimCryptoBase {
 	 * @param {string} signature - b64 encoded signature
 	 * @param {string} data - data whose signature is to be verified (binary string)
 	 * @returns {Promise<[boolean, number]>} - valid, key length
-	 * @throws DKIM_SigError
+	 * @throws {DKIM_SigError}
 	 */
 	async verifyRSA(key, digestAlgorithm, signature, data) {
 		let cryptoKey;
@@ -229,7 +229,7 @@ class DkimCryptoWeb extends DkimCryptoBase {
 			"RSASSA-PKCS1-v1_5",
 			cryptoKey,
 			this._decodeBase64(signature),
-			new TextEncoder().encode(data)
+			strToArrayBuffer(data)
 		);
 		return [valid, rsaKeyParams.modulusLength];
 	}
@@ -298,7 +298,7 @@ class DkimCryptoNode extends DkimCryptoBase {
 	 * @param {string} signature - b64 encoded signature
 	 * @param {string} data - data whose signature is to be verified (binary string)
 	 * @returns {Promise<[boolean, number]>} - valid, key length
-	 * @throws DKIM_SigError
+	 * @throws {DKIM_SigError}
 	 */
 	async verifyRSA(key, digestAlgorithm, signature, data) {
 		const crypto = await this.#crypto();

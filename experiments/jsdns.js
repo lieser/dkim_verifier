@@ -82,7 +82,7 @@ this.jsdns = class extends ExtensionCommon.ExtensionAPI {
 
 					const results = res.results?.map(rdata => {
 						if (typeof rdata !== "string") {
-							throw Error(`DNS result has unexpected type ${typeof rdata}`);
+							throw new Error(`DNS result has unexpected type ${typeof rdata}`);
 						}
 						return rdata;
 					});

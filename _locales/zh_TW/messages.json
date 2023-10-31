@@ -357,7 +357,7 @@
 		"message": "DNS"
 	},
 	"options_dns.resolver": {
-		"message": "解析器"
+		"message": "解析器:"
 	},
 	"options_dns.resolver.value.1": {
 		"message": "JavaScript DNS 函式庫"
@@ -369,10 +369,10 @@
 		"message": "從系統設定取得 DNS 伺服器"
 	},
 	"options_dns.nameserver": {
-		"message": "DNS 伺服器 (語法 (EBNF): host[\":\"port]{\";\"host[\":\"port]} )"
+		"message": "DNS 伺服器 (語法 (EBNF): host[\":\"port]{\";\"host[\":\"port]} ):"
 	},
 	"options_dns.timeout_connect": {
-		"message": "DNS 連線超時 (秒)"
+		"message": "DNS 連線超時 (秒):"
 	},
 	"options_dns.proxy.enable": {
 		"message": "使用代理伺服器連接 DNS 伺服器"
@@ -387,7 +387,7 @@
 		"message": "埠號:"
 	},
 	"options_dns.libunbound.nameserver": {
-		"message": "DNS 伺服器 (語法 (EBNF): IP{\";\"IP} )"
+		"message": "DNS 伺服器 (語法 (EBNF): IP{\";\"IP} ):"
 	},
 	"options_dns.libunbound.usageWarning": {
 		"message": "libunbound 解析器需要外部安裝的函式庫"
@@ -459,10 +459,10 @@
 		"message": "顯示"
 	},
 	"options_showDKIMHeader": {
-		"message": "顯示 DKIM 標頭"
+		"message": "顯示 DKIM 標頭:"
 	},
 	"options_showDKIMFromTooltip": {
-		"message": "在寄件者欄位的提示中顯示 DKIM 資訊"
+		"message": "在寄件者欄位的提示中顯示 DKIM 資訊:"
 	},
 	"options_showDKIM.value.0": {
 		"message": "永不"
@@ -523,19 +523,19 @@
 		"message": "即便域名只是測試 DKIM，也要驗證簽章"
 	},
 	"options_error.illformed_i.treatAs": {
-		"message": "將錯誤的 AUID 欄位視為"
+		"message": "將錯誤的 AUID 欄位視為:"
 	},
 	"options_error.illformed_s.treatAs": {
-		"message": "將錯誤的選擇器視為"
+		"message": "將錯誤的選擇器視為:"
 	},
 	"options_error.policy.key_insecure.treatAs": {
-		"message": "將未受到 DNSSEC 保護的 DKIM 金鑰視為"
+		"message": "將未受到 DNSSEC 保護的 DKIM 金鑰視為:"
 	},
 	"options_error.algorithm.sign.rsa-sha1.treatAs": {
-		"message": "將 RSA-SHA1 簽章演算法視為"
+		"message": "將 RSA-SHA1 簽章演算法視為:"
 	},
 	"options_error.algorithm.rsa.weakKeyLength.treatAs": {
-		"message": "將脆弱的 RSA 金鑰 (<2048 bits) 視為"
+		"message": "將脆弱的 RSA 金鑰 (<2048 bits) 視為:"
 	},
 	"options_error.treatAs.value.0": {
 		"message": "錯誤"
@@ -732,7 +732,7 @@
 		"message": "自動選取優先順序"
 	},
 	"signRules.priorityMode.manual": {
-		"message": "將優先權重設定為"
+		"message": "將優先權重設定為:"
 	},
 	"button.cancel": {
 		"message": "取消"

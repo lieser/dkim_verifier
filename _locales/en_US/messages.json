@@ -359,7 +359,7 @@
 		"message": "DNS"
 	},
 	"options_dns.resolver": {
-		"message": "Resolver"
+		"message": "Resolver:"
 	},
 	"options_dns.resolver.value.1": {
 		"message": "JavaScript DNS library"
@@ -371,10 +371,10 @@
 		"message": "Get DNS servers from OS configuration"
 	},
 	"options_dns.nameserver": {
-		"message": "DNS servers (Syntax (EBNF): host[\":\"port]{\";\"host[\":\"port]} )"
+		"message": "DNS servers (Syntax (EBNF): host[\":\"port]{\";\"host[\":\"port]} ):"
 	},
 	"options_dns.timeout_connect": {
-		"message": "DNS connection timeout (in seconds)",
+		"message": "DNS connection timeout (in seconds):",
 		"description": "Timeout for the connection to the DNS servers (both establishing the connection and sending/receiving data)"
 	},
 	"options_dns.proxy.enable": {
@@ -390,7 +390,7 @@
 		"message": "Port:"
 	},
 	"options_dns.libunbound.nameserver": {
-		"message": "DNS servers (Syntax (EBNF): IP{\";\"IP} )"
+		"message": "DNS servers (Syntax (EBNF): IP{\";\"IP} ):"
 	},
 	"options_dns.libunbound.usageWarning": {
 		"message": "The libunbound resolver requires an externally installed library"
@@ -462,10 +462,10 @@
 		"message": "Display"
 	},
 	"options_showDKIMHeader": {
-		"message": "Show DKIM header"
+		"message": "Show DKIM header:"
 	},
 	"options_showDKIMFromTooltip": {
-		"message": "Show DKIM tooltip for From header"
+		"message": "Show DKIM tooltip for From header:"
 	},
 	"options_showDKIM.value.0": {
 		"message": "never"
@@ -526,19 +526,19 @@
 		"message": "Still verify the signature, if a domain is only testing DKIM"
 	},
 	"options_error.illformed_i.treatAs": {
-		"message": "Treat ill-formed AUID tag as"
+		"message": "Treat ill-formed AUID tag as:"
 	},
 	"options_error.illformed_s.treatAs": {
-		"message": "Treat ill-formed selector tag as"
+		"message": "Treat ill-formed selector tag as:"
 	},
 	"options_error.policy.key_insecure.treatAs": {
-		"message": "Treat DKIM key not secured by DNSSEC as"
+		"message": "Treat DKIM key not secured by DNSSEC as:"
 	},
 	"options_error.algorithm.sign.rsa-sha1.treatAs": {
-		"message": "Treat RSA-SHA1 sign algorithm as"
+		"message": "Treat RSA-SHA1 sign algorithm as:"
 	},
 	"options_error.algorithm.rsa.weakKeyLength.treatAs": {
-		"message": "Treat weak RSA keys (<2048 bits) as"
+		"message": "Treat weak RSA keys (<2048 bits) as:"
 	},
 	"options_error.treatAs.value.0": {
 		"message": "error"
@@ -735,7 +735,7 @@
 		"message": "Automatically select priority"
 	},
 	"signRules.priorityMode.manual": {
-		"message": "Set priority to"
+		"message": "Set priority to:"
 	},
 	"button.cancel": {
 		"message": "Cancel"
