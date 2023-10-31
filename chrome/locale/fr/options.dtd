@@ -6,13 +6,13 @@
 <!ENTITY dkim.enable.label "Verification des signatures DKIM">
 
 <!ENTITY dns.label "DNS">
-<!ENTITY dns.resolver.label "Résolution">
+<!ENTITY dns.resolver.label "Résolution:">
 <!ENTITY dns.resolver.value.1.label "Bibliothèque DNS en JavaScript">
 <!ENTITY dns.resolver.value.2.label "libunbound">
 <!ENTITY dns.getNameserversFromOS.label "Récupérer les serveurs de DNS depuis la configuration de l'OS">
-<!ENTITY dns.nameserver.label "Nom de serveur DNS (Syntaxe (EBNF): host[&quot;:&quot;port]{&quot;;&quot;host[&quot;:&quot;port]} )">
+<!ENTITY dns.nameserver.label "Nom de serveur DNS (Syntaxe (EBNF): host[&quot;:&quot;port]{&quot;;&quot;host[&quot;:&quot;port]} ):">
 
-<!ENTITY dns.timeout_connect.label "Expiration de la connexion DNS (en secondes)">
+<!ENTITY dns.timeout_connect.label "Expiration de la connexion DNS (en secondes):">
 <!ENTITY dns.proxy.enable.label "Utiliser un proxy pour se connecter au serveur DNS">
 <!ENTITY dns.proxy.type.label "Type de proxy:">
 <!ENTITY dns.proxy.host.label "Serveur proxy:">
@@ -45,14 +45,14 @@
 
 <!ENTITY display.label "Affichage">
 
-<!ENTITY showDKIMHeader.label  "Montrer l'entête DKIM">
-<!ENTITY showDKIMStatusbarpanel.label  "Montrer la signature DKIM dans la barre de status">
-<!ENTITY showDKIMFromTooltip.label  "Montrer l'infobulle DKIM dans l'expéditeur de l'entête">
-<!ENTITY showDKIM.value.0.label  "jamais">
-<!ENTITY showDKIM.value.10.label "quand un courriel avec une signature DKIM valide est vu">
-<!ENTITY showDKIM.value.30.label "quand un courriel avec une signature DKIM est vu">
-<!ENTITY showDKIM.value.40.label "quand le courriel est vu">
-<!ENTITY showDKIM.value.50.label "quand le message est vu">
+<!ENTITY showDKIMHeader.label  "Montrer l'entête DKIM:">
+<!ENTITY showDKIMStatusbarpanel.label  "Montrer la signature DKIM dans la barre de status:">
+<!ENTITY showDKIMFromTooltip.label  "Montrer l'infobulle DKIM dans l'expéditeur de l'entête:">
+<!ENTITY showDKIM.value.0.label  "Jamais">
+<!ENTITY showDKIM.value.10.label "Quand un courriel avec une signature DKIM valide est vu">
+<!ENTITY showDKIM.value.30.label "Quand un courriel avec une signature DKIM est vu">
+<!ENTITY showDKIM.value.40.label "Quand le courriel est vu">
+<!ENTITY showDKIM.value.50.label "Quand le message est vu">
 <!ENTITY statusbarpanel.result.style.value.1.label "Montrer le texte">
 <!ENTITY statusbarpanel.result.style.value.2.label "Montrer l'icône">
 
@@ -74,15 +74,15 @@
 <!ENTITY debug.label "Activer le deboggage (Les sorties d'erreur et de debug seront dans la console d'erreur)">
 <!ENTITY error.detailedReasons.label "Montrer la raison de l'erreur en détail">
 <!ENTITY error.key_testmode.ignore.label "Toujours vérifier la signature, si le domaine teste seulement le DKIM">
-<!ENTITY error.illformed_i.treatAs.label "Traiter l'étiquette AUID malformée comme">
-<!ENTITY error.illformed_s.treatAs.label "Traiter l'étiquette du sélecteur malformée comme">
-<!ENTITY error.policy.key_insecure.treatAs.label "Traiter une clé DKIM qui n'est pas signé par DNSSEC">
-<!ENTITY error.algorithm.sign.rsa-sha1.treatAs.label "Traiter l'agorithme de signature rsa-sha1 comme">
-<!ENTITY error.algorithm.rsa.weakKeyLength.treatAs "Traitez les clés RSA faibles (&lt;2048 bits) comme">
+<!ENTITY error.illformed_i.treatAs.label "Traiter l'étiquette AUID malformée comme:">
+<!ENTITY error.illformed_s.treatAs.label "Traiter l'étiquette du sélecteur malformée comme:">
+<!ENTITY error.policy.key_insecure.treatAs.label "Traiter une clé DKIM qui n'est pas signé par DNSSEC:">
+<!ENTITY error.algorithm.sign.rsa-sha1.treatAs.label "Traiter l'agorithme de signature rsa-sha1 comme:">
+<!ENTITY error.algorithm.rsa.weakKeyLength.treatAs "Traitez les clés RSA faibles (&lt;2048 bits) comme:">
 
-<!ENTITY error.treatAs.value.0.label "erreur">
-<!ENTITY error.treatAs.value.1.label "avertissement">
-<!ENTITY error.treatAs.value.2.label "rien">
+<!ENTITY error.treatAs.value.0.label "Erreur">
+<!ENTITY error.treatAs.value.1.label "Avertissement">
+<!ENTITY error.treatAs.value.2.label "Rien">
 
 <!ENTITY display.keySecure.label "Indiquez le succès de la validation DNSSEC avec un verrou après le SSID">
 

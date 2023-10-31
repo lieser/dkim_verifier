@@ -6,13 +6,13 @@
 <!ENTITY dkim.enable.label "Ellenőrizze a DKIM aláírásait">
 
 <!ENTITY dns.label "DNS">
-<!ENTITY dns.resolver.label "Megoldó">
+<!ENTITY dns.resolver.label "Megoldó:">
 <!ENTITY dns.resolver.value.1.label "JavaScript DNS könyvtár">
 <!ENTITY dns.resolver.value.2.label "libunbound">
 <!ENTITY dns.getNameserversFromOS.label "Szerezzen DNS-kiszolgálókat az operációs rendszer konfigurációjából">
-<!ENTITY dns.nameserver.label "DNS-kiszolgálók (mondattan (EBNF): gép[&quot;:&quot;kikötő]{&quot;;&quot;gép[&quot;:&quot;kikötő]} )">
+<!ENTITY dns.nameserver.label "DNS-kiszolgálók (mondattan (EBNF): gép[&quot;:&quot;kikötő]{&quot;;&quot;gép[&quot;:&quot;kikötő]} ):">
 
-<!ENTITY dns.timeout_connect.label "DNS-csatlakozás időtúllépése (másodperc)">
+<!ENTITY dns.timeout_connect.label "DNS-csatlakozás időtúllépése (másodperc):">
 <!ENTITY dns.proxy.enable.label "Megbízott segítségével csatlakozzon a DNS-kiszolgálókhoz">
 <!ENTITY dns.proxy.type.label "Megbízott típus:">
 <!ENTITY dns.proxy.host.label "Megbízott-kiszolgáló:">
@@ -45,14 +45,14 @@
 
 <!ENTITY display.label "Megjelenítés">
 
-<!ENTITY showDKIMHeader.label  "A DKIM fejléc megjelenítése">
-<!ENTITY showDKIMStatusbarpanel.label  "A DKIM állapotsor megjelenítése">
-<!ENTITY showDKIMFromTooltip.label  "A DKIM eszköztipp megjelenítése a feladóért fejléchez">
-<!ENTITY showDKIM.value.0.label  "soha">
-<!ENTITY showDKIM.value.10.label "érvényes DKIM aláírással rendelkező e-mail megtekintésekor">
+<!ENTITY showDKIMHeader.label  "A DKIM fejléc megjelenítése:">
+<!ENTITY showDKIMStatusbarpanel.label  "A DKIM állapotsor megjelenítése:">
+<!ENTITY showDKIMFromTooltip.label  "A DKIM eszköztipp megjelenítése a feladóért fejléchez:">
+<!ENTITY showDKIM.value.0.label  "Soha">
+<!ENTITY showDKIM.value.10.label "Érvényes DKIM aláírással rendelkező e-mail megtekintésekor">
 <!ENTITY showDKIM.value.30.label "DKIM aláírással ellátott e-mailek megtekintésekor">
-<!ENTITY showDKIM.value.40.label "e-mail megtekintésekor">
-<!ENTITY showDKIM.value.50.label "üzenet megtekintésekor">
+<!ENTITY showDKIM.value.40.label "E-mail megtekintésekor">
+<!ENTITY showDKIM.value.50.label "Üzenet megtekintésekor">
 <!ENTITY statusbarpanel.result.style.value.1.label "Szöveg megjelenítése">
 <!ENTITY statusbarpanel.result.style.value.2.label "Ikon megjelenítése">
 
@@ -74,15 +74,15 @@
 <!ENTITY debug.label "A hibakeresés engedélyezése (Kimenetek és hibakeresési információk a hibakonzolhoz)">
 <!ENTITY error.detailedReasons.label "A hiba okának részletes bemutatása">
 <!ENTITY error.key_testmode.ignore.label "Ellenőrizze az aláírást, ha egy tartomány csak a DKIM-et teszteli">
-<!ENTITY error.illformed_i.treatAs.label "Kezelje hibás formázott AUID-címkéje mint">
-<!ENTITY error.illformed_s.treatAs.label "Kezelje hibás formázott választócímkéje mint">
-<!ENTITY error.policy.key_insecure.treatAs.label "Kezelje a DNSSEC által nem biztosított DKIM kulcsot mint">
-<!ENTITY error.algorithm.sign.rsa-sha1.treatAs.label "Kezelje az RSA-SHA1 jel algoritmust mint">
-<!ENTITY error.algorithm.rsa.weakKeyLength.treatAs "Kezelje a gyenge RSA kulcsokat (&lt;2048 bites) mint">
+<!ENTITY error.illformed_i.treatAs.label "Kezelje hibás formázott AUID-címkéje mint:">
+<!ENTITY error.illformed_s.treatAs.label "Kezelje hibás formázott választócímkéje mint:">
+<!ENTITY error.policy.key_insecure.treatAs.label "Kezelje a DNSSEC által nem biztosított DKIM kulcsot mint:">
+<!ENTITY error.algorithm.sign.rsa-sha1.treatAs.label "Kezelje az RSA-SHA1 jel algoritmust mint:">
+<!ENTITY error.algorithm.rsa.weakKeyLength.treatAs "Kezelje a gyenge RSA kulcsokat (&lt;2048 bites) mint:">
 
-<!ENTITY error.treatAs.value.0.label "hiba">
-<!ENTITY error.treatAs.value.1.label "figyelmeztetés">
-<!ENTITY error.treatAs.value.2.label "semmi">
+<!ENTITY error.treatAs.value.0.label "Hiba">
+<!ENTITY error.treatAs.value.1.label "Figyelmeztetés">
+<!ENTITY error.treatAs.value.2.label "Semmi">
 
 <!ENTITY display.keySecure.label "Jelölje meg a sikeres DNSSEC-érvényesítést egy zárral az SDID után">
 

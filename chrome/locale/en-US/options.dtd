@@ -6,13 +6,13 @@
 <!ENTITY dkim.enable.label "Verify DKIM signatures">
 
 <!ENTITY dns.label "DNS">
-<!ENTITY dns.resolver.label "Resolver">
+<!ENTITY dns.resolver.label "Resolver:">
 <!ENTITY dns.resolver.value.1.label "JavaScript DNS library">
 <!ENTITY dns.resolver.value.2.label "libunbound">
 <!ENTITY dns.getNameserversFromOS.label "Get DNS servers from OS configuration">
-<!ENTITY dns.nameserver.label "DNS servers (Syntax (EBNF): host[&quot;:&quot;port]{&quot;;&quot;host[&quot;:&quot;port]} )">
+<!ENTITY dns.nameserver.label "DNS servers (Syntax (EBNF): host[&quot;:&quot;port]{&quot;;&quot;host[&quot;:&quot;port]} ):">
 
-<!ENTITY dns.timeout_connect.label "DNS connect timeout (in seconds)">
+<!ENTITY dns.timeout_connect.label "DNS connect timeout (in seconds):">
 <!ENTITY dns.proxy.enable.label "Use a Proxy to connect to the DNS servers">
 <!ENTITY dns.proxy.type.label "Proxy type:">
 <!ENTITY dns.proxy.host.label "Proxy server:">
@@ -45,14 +45,14 @@
 
 <!ENTITY display.label "Display">
 
-<!ENTITY showDKIMHeader.label  "Show DKIM header">
-<!ENTITY showDKIMStatusbarpanel.label  "Show DKIM status bar">
-<!ENTITY showDKIMFromTooltip.label  "Show DKIM tooltip for From header">
-<!ENTITY showDKIM.value.0.label  "never">
-<!ENTITY showDKIM.value.10.label "when an e-mail with a valid DKIM signature is viewed">
-<!ENTITY showDKIM.value.30.label "when an e-mail with a DKIM signature is viewed">
-<!ENTITY showDKIM.value.40.label "when an e-mail is viewed">
-<!ENTITY showDKIM.value.50.label "when a message is viewed">
+<!ENTITY showDKIMHeader.label  "Show DKIM header:">
+<!ENTITY showDKIMStatusbarpanel.label  "Show DKIM status bar:">
+<!ENTITY showDKIMFromTooltip.label  "Show DKIM tooltip for From header:">
+<!ENTITY showDKIM.value.0.label  "Never">
+<!ENTITY showDKIM.value.10.label "When an e-mail with a valid DKIM signature is viewed">
+<!ENTITY showDKIM.value.30.label "When an e-mail with a DKIM signature is viewed">
+<!ENTITY showDKIM.value.40.label "When an e-mail is viewed">
+<!ENTITY showDKIM.value.50.label "When a message is viewed">
 <!ENTITY statusbarpanel.result.style.value.1.label "Show text">
 <!ENTITY statusbarpanel.result.style.value.2.label "Show icon">
 
@@ -74,15 +74,15 @@
 <!ENTITY debug.label "Enable debugging (Outputs errors and debug info in the Error Console)">
 <!ENTITY error.detailedReasons.label "Show detailed error reasons">
 <!ENTITY error.key_testmode.ignore.label "Still verify the signature, if a domain is only testing DKIM">
-<!ENTITY error.illformed_i.treatAs.label "Treat ill-formed AUID tag as">
-<!ENTITY error.illformed_s.treatAs.label "Treat ill-formed selector tag as">
-<!ENTITY error.policy.key_insecure.treatAs.label "Treat DKIM key not secured by DNSSEC as">
-<!ENTITY error.algorithm.sign.rsa-sha1.treatAs.label "Treat RSA-SHA1 sign algorithm as">
-<!ENTITY error.algorithm.rsa.weakKeyLength.treatAs "Treat weak RSA keys (&lt;2048 bits) as">
+<!ENTITY error.illformed_i.treatAs.label "Treat ill-formed AUID tag as:">
+<!ENTITY error.illformed_s.treatAs.label "Treat ill-formed selector tag as:">
+<!ENTITY error.policy.key_insecure.treatAs.label "Treat DKIM key not secured by DNSSEC as:">
+<!ENTITY error.algorithm.sign.rsa-sha1.treatAs.label "Treat RSA-SHA1 sign algorithm as:">
+<!ENTITY error.algorithm.rsa.weakKeyLength.treatAs "Treat weak RSA keys (&lt;2048 bits) as:">
 
-<!ENTITY error.treatAs.value.0.label "error">
-<!ENTITY error.treatAs.value.1.label "warning">
-<!ENTITY error.treatAs.value.2.label "nothing">
+<!ENTITY error.treatAs.value.0.label "Error">
+<!ENTITY error.treatAs.value.1.label "Warning">
+<!ENTITY error.treatAs.value.2.label "Nothing">
 
 <!ENTITY display.keySecure.label "Indicate successful DNSSEC validation with a lock after the SDID">
 
