@@ -6,20 +6,20 @@
 <!ENTITY dkim.enable.label "Überprüfe DKIM-Signaturen">
 
 <!ENTITY dns.label "DNS">
-<!ENTITY dns.resolver.label "Resolver">
+<!ENTITY dns.resolver.label "Resolver:">
 <!ENTITY dns.resolver.value.1.label "JavaScript-DNS-Bibliothek">
 <!ENTITY dns.resolver.value.2.label "libunbound">
 <!ENTITY dns.getNameserversFromOS.label "Lade DNS-Server aus den Einstellungen des Betriebssystems">
-<!ENTITY dns.nameserver.label "DNS-Server (Syntax (EBNF): host[&quot;:&quot;port]{&quot;;&quot;host[&quot;:&quot;port]} )">
+<!ENTITY dns.nameserver.label "DNS-Server (Syntax (EBNF): host[&quot;:&quot;port]{&quot;;&quot;host[&quot;:&quot;port]} ):">
 
-<!ENTITY dns.timeout_connect.label "Timeout für DNS-Verbindungsaufbau (in Sekunden)">
+<!ENTITY dns.timeout_connect.label "Timeout für DNS-Verbindungsaufbau (in Sekunden):">
 <!ENTITY dns.proxy.enable.label "Benutze einen Proxy für die Verbindung zu den DNS-Servern">
 <!ENTITY dns.proxy.type.label "Proxy-Typ:">
 <!ENTITY dns.proxy.host.label "Proxy-Server:">
 <!ENTITY dns.proxy.port.label "Port:">
 
-<!ENTITY dns.libunbound.path.label "Pfadname">
-<!ENTITY dns.libunbound.path.relToProfileDir.label "Pfadname relativ zu Profilordner">
+<!ENTITY dns.libunbound.path.label "Pfad:">
+<!ENTITY dns.libunbound.path.relToProfileDir.label "Pfad ist relativ zum Profilordner">
 
 <!ENTITY key.storing.value.0.label "Speichere DKIM-Schlüssel nicht">
 <!ENTITY key.storing.value.1.label "Speichere DKIM-Schlüssel">
@@ -45,14 +45,14 @@
 
 <!ENTITY display.label "Anzeige">
 
-<!ENTITY showDKIMHeader.label  "Zeige DKIM-Kopfzeile">
-<!ENTITY showDKIMStatusbarpanel.label  "Zeige DKIM-Statusbar">
-<!ENTITY showDKIMFromTooltip.label  "Zeige DKIM-Tooltip für Absenderadresse">
-<!ENTITY showDKIM.value.0.label  "nie">
-<!ENTITY showDKIM.value.10.label "wenn eine E-Mail mit gültiger DKIM-Signatur angezeigt wird">
-<!ENTITY showDKIM.value.30.label "wenn eine E-Mail mit DKIM-Signatur angezeigt wird">
-<!ENTITY showDKIM.value.40.label "wenn eine E-Mail angezeigt wird">
-<!ENTITY showDKIM.value.50.label "wenn eine Nachricht angezeigt wird">
+<!ENTITY showDKIMHeader.label  "Zeige DKIM-Kopfzeile:">
+<!ENTITY showDKIMStatusbarpanel.label  "Zeige DKIM-Statusbar:">
+<!ENTITY showDKIMFromTooltip.label  "Zeige DKIM-Tooltip für Absenderadresse:">
+<!ENTITY showDKIM.value.0.label  "Nie">
+<!ENTITY showDKIM.value.10.label "Wenn eine E-Mail mit gültiger DKIM-Signatur angezeigt wird">
+<!ENTITY showDKIM.value.30.label "Wenn eine E-Mail mit DKIM-Signatur angezeigt wird">
+<!ENTITY showDKIM.value.40.label "Wenn eine E-Mail angezeigt wird">
+<!ENTITY showDKIM.value.50.label "Wenn eine Nachricht angezeigt wird">
 <!ENTITY statusbarpanel.result.style.value.1.label "Zeige Text">
 <!ENTITY statusbarpanel.result.style.value.2.label "Zeige Symbol">
 
@@ -74,11 +74,11 @@
 <!ENTITY debug.label "Aktiviere Debuggen (Zeigt Fehler- und Debug-Informationen in der Fehlerkonsole an)">
 <!ENTITY error.detailedReasons.label "Zeige detaillierte Fehlerursachen">
 <!ENTITY error.key_testmode.ignore.label "Überprüfe die Signatur auch, falls die Domain DKIM nur testet">
-<!ENTITY error.illformed_i.treatAs.label "Behandle falsch formatierten AUID-Tag als">
-<!ENTITY error.illformed_s.treatAs.label "Behandle falsch formatierten Selector-Tag als">
-<!ENTITY error.policy.key_insecure.treatAs.label "Behandle nicht durch DNSSEC gesicherte DKIM-Schlüssel als">
-<!ENTITY error.algorithm.sign.rsa-sha1.treatAs.label "Behandle rsa-sha1-Signaturalgorithmus als">
-<!ENTITY error.algorithm.rsa.weakKeyLength.treatAs "Behandle schwachen RSA-Schlüssel (&lt;2048 bits) als">
+<!ENTITY error.illformed_i.treatAs.label "Behandle falsch formatierten AUID-Tag als:">
+<!ENTITY error.illformed_s.treatAs.label "Behandle falsch formatierten Selector-Tag als:">
+<!ENTITY error.policy.key_insecure.treatAs.label "Behandle nicht durch DNSSEC gesicherte DKIM-Schlüssel als:">
+<!ENTITY error.algorithm.sign.rsa-sha1.treatAs.label "Behandle rsa-sha1-Signaturalgorithmus als:">
+<!ENTITY error.algorithm.rsa.weakKeyLength.treatAs "Behandle schwachen RSA-Schlüssel (&lt;2048 bits) als:">
 
 <!ENTITY error.treatAs.value.0.label "Fehler">
 <!ENTITY error.treatAs.value.1.label "Warnung">

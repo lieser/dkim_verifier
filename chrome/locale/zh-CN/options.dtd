@@ -3,12 +3,12 @@
 <!ENTITY general.general.label "常规">
 <!ENTITY dkim.enable.label "验证 DKIM 签名">
 <!ENTITY dns.label "DNS">
-<!ENTITY dns.resolver.label "解析">
+<!ENTITY dns.resolver.label "解析:">
 <!ENTITY dns.resolver.value.1.label "JavaScript DNS 软件库">
 <!ENTITY dns.resolver.value.2.label "libunbound">
 <!ENTITY dns.getNameserversFromOS.label "从操作系统的配置获取 DNS 名称服务器">
-<!ENTITY dns.nameserver.label "DNS 名称服务器 (语法 (EBNF): host[&quot;:&quot;port]{&quot;;&quot;host[&quot;:&quot;port]} )">
-<!ENTITY dns.timeout_connect.label "DNS 连接超时 (秒)">
+<!ENTITY dns.nameserver.label "DNS 名称服务器 (语法 (EBNF): host[&quot;:&quot;port]{&quot;;&quot;host[&quot;:&quot;port]} ):">
+<!ENTITY dns.timeout_connect.label "DNS 连接超时 (秒):">
 <!ENTITY dns.proxy.enable.label "使用代理服务器连接 DNS 服务器">
 <!ENTITY dns.proxy.type.label "代理类型:">
 <!ENTITY dns.proxy.host.label "代理服务器:">
@@ -34,9 +34,9 @@
 <!ENTITY viewSignerDefaults.label "默认签名者规则">
 <!ENTITY policy.DMARC.shouldBeSigned.enable.label "如果一个邮件应该被签名，使用 DMARC 来试探性地测定">
 <!ENTITY display.label "显示">
-<!ENTITY showDKIMHeader.label "显示 DKIM 头">
-<!ENTITY showDKIMStatusbarpanel.label "显示 DKIM 状态栏">
-<!ENTITY showDKIMFromTooltip.label "From 头显示 DKIM 工具提示">
+<!ENTITY showDKIMHeader.label "显示 DKIM 头:">
+<!ENTITY showDKIMStatusbarpanel.label "显示 DKIM 状态栏:">
+<!ENTITY showDKIMFromTooltip.label "From 头显示 DKIM 工具提示:">
 <!ENTITY showDKIM.value.0.label "从不">
 <!ENTITY showDKIM.value.10.label "当一封具有有效的 DKIM 签名的邮件被查看">
 <!ENTITY showDKIM.value.30.label "当一封具有 DKIM 签名的邮件被查看">
@@ -58,11 +58,11 @@
 <!ENTITY debug.label "启用调试（在错误控制台中输出错误和调试信息）">
 <!ENTITY error.detailedReasons.label "Show detailed error reasons">
 <!ENTITY error.key_testmode.ignore.label "如果一个域只是在测试 DKIM，仍然验证签名">
-<!ENTITY error.illformed_i.treatAs.label "将格式不良的 AUID 标签视作">
-<!ENTITY error.illformed_s.treatAs.label "将格式不良的选择器标签视作">
-<!ENTITY error.policy.key_insecure.treatAs.label "将非 DNSSEC 的 DKIM 密钥视作">
-<!ENTITY error.algorithm.sign.rsa-sha1.treatAs.label "将 RSA-SHA1 签名算法视作">
-<!ENTITY error.algorithm.rsa.weakKeyLength.treatAs "将 RSA 弱密钥（小于 2048 位）视作">
+<!ENTITY error.illformed_i.treatAs.label "将格式不良的 AUID 标签视作:">
+<!ENTITY error.illformed_s.treatAs.label "将格式不良的选择器标签视作:">
+<!ENTITY error.policy.key_insecure.treatAs.label "将非 DNSSEC 的 DKIM 密钥视作:">
+<!ENTITY error.algorithm.sign.rsa-sha1.treatAs.label "将 RSA-SHA1 签名算法视作:">
+<!ENTITY error.algorithm.rsa.weakKeyLength.treatAs "将 RSA 弱密钥（小于 2048 位）视作:">
 <!ENTITY error.treatAs.value.0.label "错误">
 <!ENTITY error.treatAs.value.1.label "警告">
 <!ENTITY error.treatAs.value.2.label "无事">
