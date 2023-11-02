@@ -48,11 +48,11 @@
 <!ENTITY showDKIMHeader.label  "A DKIM fejléc megjelenítése:">
 <!ENTITY showDKIMStatusbarpanel.label  "A DKIM állapotsor megjelenítése:">
 <!ENTITY showDKIMFromTooltip.label  "A DKIM eszköztipp megjelenítése a feladóért fejléchez:">
-<!ENTITY showDKIM.value.0.label  "Soha">
-<!ENTITY showDKIM.value.10.label "Érvényes DKIM aláírással rendelkező e-mail megtekintésekor">
+<!ENTITY showDKIM.value.0.label  "soha">
+<!ENTITY showDKIM.value.10.label "érvényes DKIM aláírással rendelkező e-mail megtekintésekor">
 <!ENTITY showDKIM.value.30.label "DKIM aláírással ellátott e-mailek megtekintésekor">
-<!ENTITY showDKIM.value.40.label "E-mail megtekintésekor">
-<!ENTITY showDKIM.value.50.label "Üzenet megtekintésekor">
+<!ENTITY showDKIM.value.40.label "e-mail megtekintésekor">
+<!ENTITY showDKIM.value.50.label "üzenet megtekintésekor">
 <!ENTITY statusbarpanel.result.style.value.1.label "Szöveg megjelenítése">
 <!ENTITY statusbarpanel.result.style.value.2.label "Ikon megjelenítése">
 
@@ -80,9 +80,9 @@
 <!ENTITY error.algorithm.sign.rsa-sha1.treatAs.label "Kezelje az RSA-SHA1 jel algoritmust mint:">
 <!ENTITY error.algorithm.rsa.weakKeyLength.treatAs "Kezelje a gyenge RSA kulcsokat (&lt;2048 bites) mint:">
 
-<!ENTITY error.treatAs.value.0.label "Hiba">
-<!ENTITY error.treatAs.value.1.label "Figyelmeztetés">
-<!ENTITY error.treatAs.value.2.label "Semmi">
+<!ENTITY error.treatAs.value.0.label "hiba">
+<!ENTITY error.treatAs.value.1.label "figyelmeztetés">
+<!ENTITY error.treatAs.value.2.label "semmi">
 
 <!ENTITY display.keySecure.label "Jelölje meg a sikeres DNSSEC-érvényesítést egy zárral az SDID után">
 

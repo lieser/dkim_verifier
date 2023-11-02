@@ -48,11 +48,11 @@
 <!ENTITY showDKIMHeader.label  "Mostra intestazione DKIM:">
 <!ENTITY showDKIMStatusbarpanel.label  "Mostra barra di stato DKIM:">
 <!ENTITY showDKIMFromTooltip.label  "Mostra aiuti DKIM per il campo del mittente:">
-<!ENTITY showDKIM.value.0.label  "Mai">
-<!ENTITY showDKIM.value.10.label "Quando un’email con una firma DKIM valida viene visualizzata">
-<!ENTITY showDKIM.value.30.label "Quando un’email con una firma DKIM viene visualizzata">
-<!ENTITY showDKIM.value.40.label "Quando un’email viene visualizzata">
-<!ENTITY showDKIM.value.50.label "Quando un messaggio viene visualizzato">
+<!ENTITY showDKIM.value.0.label  "mai">
+<!ENTITY showDKIM.value.10.label "quando un’email con una firma DKIM valida viene visualizzata">
+<!ENTITY showDKIM.value.30.label "quando un’email con una firma DKIM viene visualizzata">
+<!ENTITY showDKIM.value.40.label "quando un’email viene visualizzata">
+<!ENTITY showDKIM.value.50.label "quando un messaggio viene visualizzato">
 <!ENTITY statusbarpanel.result.style.value.1.label "Mostra testo">
 <!ENTITY statusbarpanel.result.style.value.2.label "Mostra icona">
 
@@ -80,9 +80,9 @@
 <!ENTITY error.algorithm.sign.rsa-sha1.treatAs.label "Considera algoritmo di firma rsa-sha1 come:">
 <!ENTITY error.algorithm.rsa.weakKeyLength.treatAs "Considera chiavi RSA deboli (&lt;2048 bit) come:">
 
-<!ENTITY error.treatAs.value.0.label "Errore">
-<!ENTITY error.treatAs.value.1.label "Avviso">
-<!ENTITY error.treatAs.value.2.label "Niente">
+<!ENTITY error.treatAs.value.0.label "errore">
+<!ENTITY error.treatAs.value.1.label "avviso">
+<!ENTITY error.treatAs.value.2.label "niente">
 
 <!ENTITY display.keySecure.label "Indica una validazione DNSSEC avvenuta con successo con un blocco dopo il SDID">
 
