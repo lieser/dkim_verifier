@@ -20,7 +20,7 @@
 /* eslint strict: ["warn", "function"] */
 /* global Components, Services, XPCOMUtils */
 /* global Logging, Verifier, DNS */
-/* global getBaseDomainFromAddr, getDomainFromAddr, toType, DKIM_InternalError */
+/* global getBaseDomainFromAddr, getDomainFromAddr, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, DMARC */
 
 // @ts-ignore
@@ -323,7 +323,7 @@ function parseDMARCRecord(DMARCRecordStr) {
 	} else if (parsedTagMap === -2) {
 		throw new DKIM_InternalError("DKIM_DMARCERROR_DUPLICATE_TAG");
 	}
-	if (!(toType(parsedTagMap) === "Map")) {
+	if (!(parsedTagMap instanceof Map)) {
 		throw new DKIM_InternalError("unexpected return value from Verifier.parseTagValueList: " + parsedTagMap);
 	}
 	/** @type {Map} */
