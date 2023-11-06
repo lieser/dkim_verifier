@@ -494,15 +494,15 @@ var Policy = {
 		};
 
 		for (const header of SIGNEDHEADERS.REQUIRED) {
-			checkSignedHeader(header, prefs["dkim.unsignedHeadersWarning.mode"] >=
+			checkSignedHeader(header, prefs.getIntPref("dkim.unsignedHeadersWarning.mode") >=
 				POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE.RELAXED);
 		}
 		for (const header of SIGNEDHEADERS.RECOMMENDED) {
-			checkSignedHeader(header, prefs["dkim.unsignedHeadersWarning.mode"] >=
+			checkSignedHeader(header, prefs.getIntPref("dkim.unsignedHeadersWarning.mode") >=
 				POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE.RECOMMENDED);
 		}
 		for (const header of SIGNEDHEADERS.DESIRED) {
-			checkSignedHeader(header, prefs["dkim.unsignedHeadersWarning.mode"] >=
+			checkSignedHeader(header, prefs.getIntPref("dkim.unsignedHeadersWarning.mode") >=
 				POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE.STRICT);
 		}
 	},
