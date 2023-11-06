@@ -373,8 +373,6 @@ var Verifier = (function() {
 	 */
 	function verifyED25519Sig(key, str, hash_algo, signature, warnings, keyInfo = {}) {
 		let hashedStr = dkim_hash(str, hash_algo, "b64");
-		// Only SHA-256 is allowed, needed to pass tests in verifySignature
-		keyInfo.algName = "sha256";
 		return NaCl.nacl.sign.detached.verify(NaClUtil.nacl.util.decodeBase64(hashedStr),
 											NaClUtil.nacl.util.decodeBase64(signature),
 											NaClUtil.nacl.util.decodeBase64(key));
@@ -1314,7 +1312,8 @@ var Verifier = (function() {
 		}
 
 		// hash algorithm defined in public-key data must be the same as in the header
-		if (keyInfo.algName !== DKIMSignature.a_hash) {
+		// RSA verifier uses the algo defined in the ASN1 structure, not the one defined in dkim header
+		if (keyInfo.algName && keyInfo.algName !== DKIMSignature.a_hash) {
 			throw new DKIM_SigError("DKIM_SIGERROR_KEY_HASHMISMATCH");
 		}
 
