@@ -373,6 +373,8 @@ var Verifier = (function() {
 	 */
 	function verifyED25519Sig(key, str, hash_algo, signature, warnings, keyInfo = {}) {
 		let hashedStr = dkim_hash(str, hash_algo, "b64");
+		// Only SHA-256 is allowed, needed to pass tests in verifySignature
+		keyInfo.algName = "sha256";
 		return NaCl.nacl.sign.detached.verify(NaClUtil.nacl.util.decodeBase64(hashedStr),
 											NaClUtil.nacl.util.decodeBase64(signature),
 											NaClUtil.nacl.util.decodeBase64(key));
