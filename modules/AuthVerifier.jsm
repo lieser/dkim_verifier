@@ -308,7 +308,7 @@ function getARHResult(msgHdr, msg) {
 		// check for weak signature type rsa-sha1
 		for (let i = 0; i < dkimSigResults.length; i++) {
 			if (arhDKIM[i] && arhDKIM[i].propertys.header.a === "rsa-sha1") {
-				switch (prefs["error.algorithm.sign.rsa-sha1.treatAs"]) {
+				switch (prefs.getIntPref("error.algorithm.sign.rsa-sha1.treatAs")) {
 					case 0: { // error
 						dkimSigResults[i] = {
 							version: "2.0",
