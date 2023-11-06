@@ -1,9 +1,9 @@
 /*
- * DNSWrapper.jsm
+ * DNSWrapper.jsm.js
  *
  * Wrapper to resolve DNS lookups via the following libraries:
- *  - JSDNS.jsm
- *  - libunbound.jsm
+ *  - JSDNS.jsm.js
+ *  - libunbound.jsm.js
  * 
  * Version: 2.3.0 (28 January 2018)
  * 
@@ -35,12 +35,12 @@ const Cu = Components.utils;
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 
-Cu.import("resource://dkim_verifier/logging.jsm");
-Cu.import("resource://dkim_verifier/helper.jsm");
+Cu.import("resource://dkim_verifier/logging.jsm.js");
+Cu.import("resource://dkim_verifier/helper.jsm.js");
 XPCOMUtils.defineLazyModuleGetter(this, "JSDNS", // eslint-disable-line no-invalid-this
-	"resource://dkim_verifier_3p/dns/JSDNS.jsm");
+	"resource://dkim_verifier_3p/dns/JSDNS.jsm.js");
 XPCOMUtils.defineLazyModuleGetter(this, "libunbound", // eslint-disable-line no-invalid-this
-	"resource://dkim_verifier/libunbound.jsm");
+	"resource://dkim_verifier/libunbound.jsm.js");
 
 
 // @ts-ignore
@@ -137,7 +137,7 @@ var DNS = {
 
 
 /**
- * Promise wrapper for the dns result of JSDNS.jsm
+ * Promise wrapper for the dns result of JSDNS.jsm.js
  * @param {string} name
  * @param {string} rrtype
  * @return {Promise<DNSResult>}

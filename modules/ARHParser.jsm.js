@@ -1,5 +1,5 @@
 /*
- * ARHParser.jsm
+ * ARHParser.jsm.js
  * 
  * Parser for the Authentication-Results header as specified in RFC 7601.
  *
@@ -35,7 +35,7 @@ const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
 
-Cu.import("resource://dkim_verifier/logging.jsm");
+Cu.import("resource://dkim_verifier/logging.jsm.js");
 
 
 // @ts-ignore

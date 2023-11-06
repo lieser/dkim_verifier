@@ -1,5 +1,5 @@
 /*
- * SQLiteTreeView.jsm
+ * SQLiteTreeView.jsm.js
  * 
  * Implements a nsITreeView for a SQLite DB table.
  *

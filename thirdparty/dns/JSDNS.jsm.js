@@ -1,5 +1,5 @@
 /*
- * JSDNS.jsm
+ * JSDNS.jsm.js
  *
  * Based on Joshua Tauberer's DNS LIBRARY IN JAVASCRIPT
  * from "Sender Verification Extension" version 0.9.0.6

@@ -1,5 +1,5 @@
 /*
- * Modified by Philippe Lieser for dkimVerifier.jsm
+ * Modified by Philippe Lieser for dkimVerifier.jsm.js
  *
  * Modifications:
  *  - RSAKey.prototype.verify returns algName via additional info param

@@ -1,5 +1,5 @@
 /*
- * helper.jsm
+ * helper.jsm.js
  *
  * Version: 2.1.0 (13 January 2019)
  * 
@@ -47,7 +47,7 @@ Cu.import("resource://gre/modules/NetUtil.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://services-common/utils.js");
 
-Cu.import("resource://dkim_verifier/logging.jsm");
+Cu.import("resource://dkim_verifier/logging.jsm.js");
 
 
 // @ts-ignore

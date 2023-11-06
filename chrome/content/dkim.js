@@ -20,11 +20,11 @@
 // namespace
 // @ts-ignore
 var DKIM_Verifier = {};
-Cu.import("resource://dkim_verifier/logging.jsm", DKIM_Verifier);
-Cu.import("resource://dkim_verifier/helper.jsm", DKIM_Verifier);
-Cu.import("resource://dkim_verifier/AuthVerifier.jsm", DKIM_Verifier);
-Cu.import("resource://dkim_verifier/dkimPolicy.jsm", DKIM_Verifier);
-Cu.import("resource://dkim_verifier/dkimKey.jsm", DKIM_Verifier);
+Cu.import("resource://dkim_verifier/logging.jsm.js", DKIM_Verifier);
+Cu.import("resource://dkim_verifier/helper.jsm.js", DKIM_Verifier);
+Cu.import("resource://dkim_verifier/AuthVerifier.jsm.js", DKIM_Verifier);
+Cu.import("resource://dkim_verifier/dkimPolicy.jsm.js", DKIM_Verifier);
+Cu.import("resource://dkim_verifier/dkimKey.jsm.js", DKIM_Verifier);
 
 
 // @ts-ignore

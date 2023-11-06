@@ -1,5 +1,5 @@
 /*
- * MsgReader.jsm
+ * MsgReader.jsm.js
  * 
  * Reads and parses a message.
  *
@@ -35,8 +35,8 @@ const Ci = Components.interfaces;
 // @ts-ignore
 const Cu = Components.utils;
 
-Cu.import("resource://dkim_verifier/logging.jsm");
-Cu.import("resource://dkim_verifier/helper.jsm");
+Cu.import("resource://dkim_verifier/logging.jsm.js");
+Cu.import("resource://dkim_verifier/helper.jsm.js");
 
 // @ts-ignore
 let log = Logging.getLogger("MsgReader");

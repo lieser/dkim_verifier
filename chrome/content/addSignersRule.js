@@ -1,5 +1,5 @@
-Components.utils.import("resource://dkim_verifier/logging.jsm");
-Components.utils.import("resource://dkim_verifier/dkimPolicy.jsm");
+Components.utils.import("resource://dkim_verifier/logging.jsm.js");
+Components.utils.import("resource://dkim_verifier/dkimPolicy.jsm.js");
 
 var log = Logging.getLogger("addSignersRule");
 

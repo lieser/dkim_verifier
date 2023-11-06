@@ -1,5 +1,5 @@
 /*
- * logging.jsm
+ * logging.jsm.js
  *
  * Version: 1.1.0 (31 December 2017)
  *

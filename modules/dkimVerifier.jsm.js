@@ -1,5 +1,5 @@
 /*
- * dkimVerifier.jsm
+ * dkimVerifier.jsm.js
  *
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
@@ -47,11 +47,11 @@ const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
 
-Cu.import("resource://dkim_verifier/logging.jsm");
-Cu.import("resource://dkim_verifier/helper.jsm");
-Cu.import("resource://dkim_verifier/dkimKey.jsm");
-Cu.import("resource://dkim_verifier/dkimPolicy.jsm");
-Cu.import("resource://dkim_verifier/MsgReader.jsm");
+Cu.import("resource://dkim_verifier/logging.jsm.js");
+Cu.import("resource://dkim_verifier/helper.jsm.js");
+Cu.import("resource://dkim_verifier/dkimKey.jsm.js");
+Cu.import("resource://dkim_verifier/dkimPolicy.jsm.js");
+Cu.import("resource://dkim_verifier/MsgReader.jsm.js");
 
 // namespaces
 var RSA = {};

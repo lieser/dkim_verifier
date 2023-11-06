@@ -1,8 +1,8 @@
 /*
- * libunbound.jsm
+ * libunbound.jsm.js
  * 
  * Wrapper for the libunbound DNS library. The actual work is done in the
- * ChromeWorker libunboundWorker.jsm.
+ * ChromeWorker libunboundWorker.jsm.js.
  *
  * Version: 2.2.0 (02 January 2018)
  * 
@@ -34,8 +34,8 @@ const Cu = Components.utils;
 Cu.import("resource://gre/modules/osfile.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
 
-Cu.import("resource://dkim_verifier/logging.jsm");
-Cu.import("resource://dkim_verifier/helper.jsm");
+Cu.import("resource://dkim_verifier/logging.jsm.js");
+Cu.import("resource://dkim_verifier/helper.jsm.js");
 
 
 // @ts-ignore
@@ -151,7 +151,7 @@ var log = Logging.getLogger("libunbound");
 
 /** @type {Libunbound.LibunboundWorker} */
 var libunboundWorker =
-	new ChromeWorker("resource://dkim_verifier/libunboundWorker.jsm");
+	new ChromeWorker("resource://dkim_verifier/libunboundWorker.jsm.js");
 var maxCallId = 0;
 /** @type {Map<number, IDeferred<ub_result>>} */
 var openCalls = new Map();

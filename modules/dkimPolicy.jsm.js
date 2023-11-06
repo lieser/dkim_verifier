@@ -1,5 +1,5 @@
 /*
- * dkimPolicy.jsm
+ * dkimPolicy.jsm.js
  * 
  * Version: 1.4.0 (01 April 2018)
  * 
@@ -33,9 +33,9 @@ const Cu = Components.utils;
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/Sqlite.jsm");
 
-Cu.import("resource://dkim_verifier/logging.jsm");
-Cu.import("resource://dkim_verifier/helper.jsm");
-Cu.import("resource://dkim_verifier/dkimDMARC.jsm");
+Cu.import("resource://dkim_verifier/logging.jsm.js");
+Cu.import("resource://dkim_verifier/helper.jsm.js");
+Cu.import("resource://dkim_verifier/dkimDMARC.jsm.js");
 
 
 const DB_POLICY_NAME = "dkimPolicy.sqlite";

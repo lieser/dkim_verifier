@@ -1,5 +1,5 @@
 /*
- * AuthVerifier.jsm
+ * AuthVerifier.jsm.js
  * 
  * Authentication Verifier.
  *
@@ -39,14 +39,14 @@ Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource:///modules/mailServices.js");
 Cu.import("resource:///modules/iteratorUtils.jsm");
 
-Cu.import("resource://dkim_verifier/logging.jsm");
-Cu.import("resource://dkim_verifier/helper.jsm");
-Cu.import("resource://dkim_verifier/MsgReader.jsm");
-Cu.import("resource://dkim_verifier/ARHParser.jsm");
+Cu.import("resource://dkim_verifier/logging.jsm.js");
+Cu.import("resource://dkim_verifier/helper.jsm.js");
+Cu.import("resource://dkim_verifier/MsgReader.jsm.js");
+Cu.import("resource://dkim_verifier/ARHParser.jsm.js");
 // @ts-ignore
 let DKIM = {};
-Cu.import("resource://dkim_verifier/dkimPolicy.jsm", DKIM);
-Cu.import("resource://dkim_verifier/dkimVerifier.jsm", DKIM);
+Cu.import("resource://dkim_verifier/dkimPolicy.jsm.js", DKIM);
+Cu.import("resource://dkim_verifier/dkimVerifier.jsm.js", DKIM);
 
 // @ts-ignore
 const PREF_BRANCH = "extensions.dkim_verifier.";
