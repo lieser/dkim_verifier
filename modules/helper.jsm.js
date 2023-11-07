@@ -414,6 +414,7 @@ class DKIM_SigError extends Error {
 		this.name = dkimStrings.getString("DKIM_SIGERROR") + " (" + errorType + ")";
 		this.errorType = errorType;
 		this.errorStrParams = errorStrParams;
+		// @ts-expect-error
 		this.stack = this.stack.substring(this.stack.indexOf('\n')+1);
 	}
 }
@@ -437,6 +438,7 @@ class DKIM_InternalError extends Error {
 			dkimStrings.getString("DKIM_INTERNALERROR_DEFAULT"));
 		this.name = dkimStrings.getString("DKIM_INTERNALERROR") + " (" + errorType + ")";
 		this.errorType = errorType;
+		// @ts-expect-error
 		this.stack = this.stack.substring(this.stack.indexOf('\n')+1);
 	}
 }

@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 var gDKIMOptionsGeneralPane = {
 	init: function () {
 		gDKIMonpaneload("paneGeneral");

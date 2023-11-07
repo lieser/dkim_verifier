@@ -89,6 +89,7 @@ var DNS = {
 	 */
 	resolve: async function DNS_resolve(name, rrtype="A") {
 
+		// @ts-expect-error
 		if (Services.netUtils.offline) {
 			throw new DKIM_InternalError(null, "DKIM_DNSERROR_OFFLINE");
 		}
@@ -108,6 +109,7 @@ var DNS = {
 				let res = await libunbound.
 					resolve(name, libunbound.Constants["RR_TYPE_"+rrtype]);
 				/** @type {DNSResult} */
+				// @ts-expect-error
 				let result = {};
 				if (res !== null) {
 					if (res.havedata) {
@@ -182,4 +184,5 @@ function observeNetworkChange(subject, topic, data) {
 	}
 }
 
+// @ts-expect-error
 Services.obs.addObserver(observeNetworkChange, "network:offline-status-changed", false);

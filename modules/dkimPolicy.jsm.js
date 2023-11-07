@@ -27,7 +27,9 @@ var EXPORTED_SYMBOLS = [
 
 // @ts-ignore
 const Cc = Components.classes;
+// @ts-ignore
 const Ci = Components.interfaces;
+// @ts-ignore
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
@@ -424,7 +426,7 @@ var Policy = {
 	 * will cause problems there added headers is normal
 	 * e.g. the Received header.
 	 *
- 	 * @param {MAP<String,String>} msgHeaders
+	 * @param {Map<String,String>} msgHeaders
 	 *			All headers of the message to check as headername-value-pair
 	 * @param {Object} DKIMSignature
 	 *			DKIMSignature of the message
@@ -483,6 +485,7 @@ var Policy = {
 		const checkSignedHeader = (header, warnIfUnsigned) => {
 			const headerLowerCase = header.toLowerCase();
 			const signedCount = DKIMSignature.h_array.filter(e => e === headerLowerCase).length;
+			// @ts-expect-error
 			const unsignedCount = msgHeaders.get(headerLowerCase) ? msgHeaders.get(headerLowerCase).length : 0;
 			if (signedCount > 0 && signedCount < unsignedCount) {
 				throw new DKIM_SigError("DKIM_POLICYERROR_UNSIGNED_HEADER_ADDED", [header]);

@@ -673,8 +673,14 @@ var that = {
 	markKeyAsSecure : function Display_markKeyAsSecure() {
 		let promise = (async () => {
 			log.trace("markKeyAsSecure Task");
+			const sdid = header.dkimResults[0].sdid;
+			const selector = header.dkimResults[0].selector;
+			if (sdid === undefined || selector === undefined) {
+				log.error("Can not mark key as secure, result does not contain an sdid or selector");
+				return;
+			}
 			await DKIM_Verifier.Key.markKeyAsSecure(
-				header.dkimResults[0].sdid, header.dkimResults[0].selector);
+				sdid, selector);
 
 			that.reverify();
 		})();
@@ -690,8 +696,13 @@ var that = {
 		let promise = (async () => {
 			log.trace("updateKey Task");
 			for (let dkimResult of header.dkimResults) {
-				await DKIM_Verifier.Key.deleteKey(
-					dkimResult.sdid, dkimResult.selector);
+				const sdid = dkimResult.sdid;
+				const selector = dkimResult.selector;
+				if (sdid === undefined || selector === undefined) {
+					log.error("Can not delete key, result does not contain an sdid or selector");
+					return;
+				}
+				await DKIM_Verifier.Key.deleteKey(sdid, selector);
 			}
 
 			that.reverify();

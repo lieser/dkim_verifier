@@ -221,9 +221,11 @@ class SQLiteTreeView {
 		var selectedRows = [];
 		var start = {value: 0};
 		var end ={value: -1};
+		// @ts-expect-error
 		var numRanges = this.selection.getRangeCount();
 
 		for (var t = 0; t < numRanges; t++) {
+			// @ts-expect-error
 			this.selection.getRangeAt(t,start,end);
 			for (var v = start.value; v <= end.value; v++) {
 				selectedRows.push(v);
@@ -365,7 +367,7 @@ class SQLiteTreeView {
 
 			if (this.observable) {
 				this.observable.unsubscribe(this.updateHandler);
-				this.observable = null;
+				this.observable = undefined;
 			}
 		}
 	}

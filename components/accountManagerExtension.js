@@ -22,6 +22,7 @@ function DkimVerifierAccountManagerExtension() {}
 DkimVerifierAccountManagerExtension.prototype = {
 	name : "dkim_verifier-prefs",
 	chromePackageName : "dkim_verifier",
+	// @ts-expect-error
 	classID: Components.ID("{850258f2-ae8b-421a-8a9c-bd99fdcc8097}"),
 	classDescription: "DKIM Verifier Account Manager Extension",
 	contractID: "@mozilla.org/accountmanager/extension;1?name=dkim_verifier-prefs",

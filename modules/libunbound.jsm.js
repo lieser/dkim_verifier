@@ -151,6 +151,7 @@ var log = Logging.getLogger("libunbound");
 
 /** @type {Libunbound.LibunboundWorker} */
 var libunboundWorker =
+	// @ts-expect-error
 	new ChromeWorker("resource://dkim_verifier/libunboundWorker.jsm.js");
 var maxCallId = 0;
 /** @type {Map<number, IDeferred<ub_result>>} */

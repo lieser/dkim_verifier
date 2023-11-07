@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 Components.utils.import("resource://dkim_verifier/logging.jsm.js");
 Components.utils.import("resource://dkim_verifier/dkimPolicy.jsm.js");
 

@@ -1529,6 +1529,7 @@ var that = {
 		var promise = (async () => {
 			// read msg
 			/** @type {Msg} */
+			// @ts-expect-error
 			let msg = await MsgReader.read(msgURI);
 			msg.msgURI = msgURI;
 
@@ -1561,6 +1562,7 @@ var that = {
 				// @ts-ignore
 				let listId = "";
 				try {
+					// @ts-expect-error
 					listId = msg.headerFields.get("list-id")[0];
 					listId = msgHeaderParser.extractHeaderAddressMailboxes(listId);
 				} catch (error) {
@@ -1708,6 +1710,7 @@ return that;
 }()); // the parens here cause the anonymous function to execute and return
 
 // for logging in rsasign
+// @ts-expect-error
 var DKIMVerifier = {};
 DKIMVerifier.log = Verifier.log;
 

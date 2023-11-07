@@ -1,3 +1,4 @@
+// @ts-expect-error
 if (!DKIMVerifier) var DKIMVerifier = {};
 
 // var gPref = null;

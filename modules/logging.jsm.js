@@ -97,6 +97,7 @@ function init() {
 	
 	setupLogging(LOG_NAME);
 
+	// @ts-ignore
 	log = Logging.getLogger("Logging");
 	log.debug("initialized");
 }
@@ -137,6 +138,7 @@ class SimpleConsoleAppender extends Log.ConsoleAppender {
 	}
 
 	/**
+	 * @override
 	 * @param {Log.LogMessage} message
 	 * @return {void}
 	 */

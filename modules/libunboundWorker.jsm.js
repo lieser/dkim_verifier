@@ -365,8 +365,8 @@ function load(paths) {
 /**
  * updates ctx by deleting old an creating new
  *
- * @param {String|undefined} [conf]
- * @param {Number|undefined} [debuglevel]
+ * @param {String|undefined} conf
+ * @param {Number|undefined} debuglevel
  * @param {Boolean} getNameserversFromOS
  * @param {String[]} nameservers
  * @param {String[]} trustAnchors
@@ -494,6 +494,7 @@ onmessage = function(msg) {
 			});
 		}
 	} catch (e) {
+		// @ts-expect-error
 		dump(e.toString() + "\n");
 		log.fatal(e.toString());
 	}

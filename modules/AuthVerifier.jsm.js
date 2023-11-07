@@ -89,6 +89,7 @@ let prefs = Services.prefs.getBranch(PREF_BRANCH);
  *           40: no sig
  * @property {String} result_str
  *           localized result string
+ * @property {string} [error_str] Localized error string.
  * @property {String[]} [warnings_str]
  *           localized warnings
  * @property {String} [favicon]
@@ -149,15 +150,18 @@ var AuthVerifier = {
 				} else {
 					savedAuthResult = {
 						version: "3.0",
+						dkim: [],
 						spf: arhResult.spf,
 						dmarc: arhResult.dmarc,
-						arh: {},
+						arh: {
+							dkim: arhResult.dkim
+						},
 					};
-					savedAuthResult.arh.dkim = arhResult.dkim;
 				}
 			} else {
 				savedAuthResult = {
 					version: "3.0",
+					dkim: [],
 				};
 			}
 
@@ -292,9 +296,9 @@ function getARHResult(msgHdr, msg) {
 					DKIM.Policy.checkSDID(
 						msg.DKIMSignPolicy.sdid,
 						msg.from,
-						dkimSigResults[i].sdid,
-						dkimSigResults[i].auid,
-						dkimSigResults[i].warnings
+						dkimSigResults[i].sdid || "",
+						dkimSigResults[i].auid || "",
+						dkimSigResults[i].warnings || []
 					);
 				} catch(exception) {
 					dkimSigResults[i] = DKIM.Verifier.handleException(
@@ -315,13 +319,14 @@ function getARHResult(msgHdr, msg) {
 							result: "PERMFAIL",
 							sdid: dkimSigResults[i] ? dkimSigResults[i].sdid : "",
 							auid: dkimSigResults[i] ? dkimSigResults[i].auid : "",
-							selector: dkimSigResults[i] ? dkimSigResults[i].selector : null,
+							selector: dkimSigResults[i] ? dkimSigResults[i].selector : undefined,
 							errorType: "DKIM_SIGERROR_INSECURE_A",
 						};
 						break;
 					}
 					case 1: // warning
 						if (dkimSigResults[i] && dkimSigResults[i].warnings) {
+							// @ts-expect-error
 							dkimSigResults[i].warnings.push({ name: "DKIM_SIGERROR_INSECURE_A" });
 						}
 						break;
@@ -398,7 +403,11 @@ function loadAuthResult(msgHdr) {
 			/** @type {SavedAuthResult} */
 			let savedAuthResult = JSON.parse(savedAuthResultJSON);
 
-			let majorVersion = savedAuthResult.version.match(/^[0-9]+/)[0];
+			const versionMatch = savedAuthResult.version.match(/^[0-9]+/);
+			if (!versionMatch) {
+				throw new Error("No version found in AuthResult");
+			}
+			const majorVersion = versionMatch[0];
 			if (majorVersion === "1") {
 				// old dkimResultV1 (AuthResult version 1)
 				/** @type {dkimResultV1} */
@@ -419,6 +428,7 @@ function loadAuthResult(msgHdr) {
 				savedAuthResult.dkim = resultV2.dkim.map(
 					AuthResultDKIMV2_to_dkimSigResultV2);
 				if (resultV2.arh && resultV2.arh.dkim) {
+					// @ts-expect-error
 					savedAuthResult.arh.dkim = resultV2.arh.dkim.map(
 						AuthResultDKIMV2_to_dkimSigResultV2);
 				}
@@ -515,7 +525,7 @@ function dkimResultV1_to_dkimSigResultV2(dkimResultV1) {
 		sigResultV2.warnings = dkimResultV1.warnings.map(
 			function (w) {
 				if (w === "DKIM_POLICYERROR_WRONG_SDID") {
-					return {name: w, params: [dkimResultV1.shouldBeSignedBy]};
+					return {name: w, params: [dkimResultV1.shouldBeSignedBy || ""]};
 				}
 				return {name: w};
 			}
@@ -523,7 +533,7 @@ function dkimResultV1_to_dkimSigResultV2(dkimResultV1) {
 	}
 	if (dkimResultV1.errorType === "DKIM_POLICYERROR_WRONG_SDID" ||
 	    dkimResultV1.errorType === "DKIM_POLICYERROR_MISSING_SIG") {
-		sigResultV2.errorStrParams = [dkimResultV1.shouldBeSignedBy];
+		sigResultV2.errorStrParams = [dkimResultV1.shouldBeSignedBy || ""];
 	}
 	return sigResultV2;
 }
@@ -537,6 +547,7 @@ function dkimResultV1_to_dkimSigResultV2(dkimResultV1) {
  */
 function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-line complexity
 	/** @type {IAuthVerifier.AuthResultDKIM} */
+	// @ts-expect-error
 	let authResultDKIM = dkimSigResult;
 	switch(dkimSigResult.result) {
 		case "SUCCESS": {
@@ -548,6 +559,9 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 			}
 			authResultDKIM.result_str = dkimStrings.getFormattedString("SUCCESS",
 				[dkimSigResult.sdid + keySecureStr]);
+			if (!dkimSigResult.warnings) {
+				throw new Error("expected warnings to be defined on SUCCESS result");
+			}
 			authResultDKIM.warnings_str = dkimSigResult.warnings.map(function(e) {
 				return tryGetFormattedString(dkimStrings, e.name, e.params) || e.name;
 			});
@@ -556,8 +570,9 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 		case "TEMPFAIL":
 			authResultDKIM.res_num = AuthVerifier.DKIM_RES.TEMPFAIL;
 			authResultDKIM.result_str =
-				tryGetFormattedString(dkimStrings, dkimSigResult.errorType,
-					dkimSigResult.errorStrParams) ||
+				(dkimSigResult.errorType &&
+					tryGetFormattedString(dkimStrings, dkimSigResult.errorType,
+							dkimSigResult.errorStrParams)) ||
 				dkimSigResult.errorType ||
 				dkimStrings.getString("DKIM_INTERNALERROR_NAME");
 			break;
