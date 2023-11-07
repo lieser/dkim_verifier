@@ -208,6 +208,7 @@ DKIM_Verifier.Display = (function() {
 	 * @param {IAuthVerifier.IAuthResult} result
 	 * @return {void}
 	 */
+	// eslint-disable-next-line complexity
 	function displayResult(result) {
 		log.trace("displayResult begin");
 		header.dkimResults = result.dkim;

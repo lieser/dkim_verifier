@@ -13,10 +13,15 @@
  * included in all copies or substantial portions of the Software.
  */
 
+/* eslint-env browser */
+/* eslint strict: ["warn", "function"] */
+/* global Components, XPCOMUtils */
+/* exported NSGetFactory */
+
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 
 //class constructor
-function DkimVerifierAccountManagerExtension() {}
+function DkimVerifierAccountManagerExtension() { "use strict"; }
 
 // class definition
 DkimVerifierAccountManagerExtension.prototype = {
@@ -37,6 +42,8 @@ DkimVerifierAccountManagerExtension.prototype = {
 	]),
 	showPanel: function(server) 
 	{
+		"use strict";
+
 		// this panel is only shown for imap and pop3 accounts
 		if (server.type === "imap" || server.type === "pop3") {
 			return true;

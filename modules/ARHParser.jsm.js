@@ -174,7 +174,7 @@ let ARHParser = {
 		log.debug(res.toSource());
 		return res;
 	}
-}
+};
 
 /**
  *  Parses the next resinfo in str. The parsed part of str is removed from str.
@@ -258,7 +258,7 @@ function parseResinfo(str) {
 			property = {};
 			res.propertys[reg_match[1]] = property;
 		}
-		property[reg_match[2]] = reg_match[3] ? reg_match[3] : (reg_match[4] ? reg_match[4] : (reg_match[5] ? reg_match[5] : reg_match[6]));
+		property[reg_match[2]] = reg_match[3] ? reg_match[3] : reg_match[4] ? reg_match[4] : reg_match[5] ? reg_match[5] : reg_match[6];
 	}
 
 	log.trace(res.toSource());

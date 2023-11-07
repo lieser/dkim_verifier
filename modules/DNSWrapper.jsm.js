@@ -17,7 +17,7 @@
 
 // options for ESLint
 /* global Components, Services, XPCOMUtils */
-/* global Logging, PREF, JSDNS, libunbound */
+/* global Logging, PREF, JSDNS, libunbound, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, DNS */
 
 "use strict";
@@ -158,7 +158,7 @@ function asyncJSDNS_QueryDNS(name, rrtype) {
 			} else {
 				result.rcode = RCODE.NoError;
 			}
-			if (result.rcode != RCODE.NoError && queryError) {
+			if (result.rcode !== RCODE.NoError && queryError) {
 				throw new DKIM_InternalError(queryError, "DKIM_DNSERROR_SERVER_ERROR");
 			}
 			result.secure = false;
@@ -178,7 +178,7 @@ function asyncJSDNS_QueryDNS(name, rrtype) {
 }
 
 function observeNetworkChange(subject, topic, data) {
-	if (data == "online") {
+	if (data === "online") {
 		log.debug("Thunderbird switched to online mode, resetting DNS configuration before next query");
 		doUpdateDNSConfig = true;
 	}

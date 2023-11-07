@@ -1,4 +1,9 @@
 // @ts-nocheck
+/* eslint-env browser */
+/* eslint strict: ["warn", "function"] */
+/* global Components */
+/* global Logging, Policy */
+/* exported onAccept, onCancel, init */
 
 Components.utils.import("resource://dkim_verifier/logging.jsm.js");
 Components.utils.import("resource://dkim_verifier/dkimPolicy.jsm.js");
@@ -6,6 +11,8 @@ Components.utils.import("resource://dkim_verifier/dkimPolicy.jsm.js");
 var log = Logging.getLogger("addSignersRule");
 
 function onAccept(){
+	"use strict";
+
 	try {
 		var input = {};
 		input.domain = document.getElementById("domain").value;
@@ -32,7 +39,7 @@ function onAccept(){
 			input.priority = document.getElementById("priority").value;
 		}
 		input.enabled = document.getElementById("enabled").checked;
-		
+
 		window.arguments[0].addRow(input);
 	} catch (exception) {
 		log.fatal(exception);
@@ -42,14 +49,20 @@ function onAccept(){
 }
 
 function onCancel(){
+	"use strict";
+
   return true;
 }
 
 function updatePriorityMode() {
+	"use strict";
+
 	document.getElementById("priority").disabled =
-		(document.getElementById("priorityMode").value === "1");
+		document.getElementById("priorityMode").value === "1";
 }
 
 function init() {
+	"use strict";
+
 	updatePriorityMode();
 }

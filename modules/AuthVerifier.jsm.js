@@ -14,7 +14,7 @@
  */
 
 // options for ESLint
-/* global Components, Services, MailServices, fixIterator */
+/* global Components, Services, MailServices */
 /* global Logging, ARHParser */
 /* global PREF, dkimStrings, domainIsInDomain, getDomainFromAddr, tryGetFormattedString, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, AuthVerifier */
@@ -208,6 +208,7 @@ var AuthVerifier = {
 	 * @return {Promise<void>}
 	 */
 	resetResult: function _authVerifier_resetResult(msgHdr) {
+		// eslint-disable-next-line require-await
 		var promise = (async () => {
 			saveAuthResult(msgHdr, null);
 		})();
@@ -225,12 +226,15 @@ var AuthVerifier = {
  * @param {Object} msg
  * @return {SavedAuthResult|Null}
  */
+// eslint-disable-next-line complexity
 function getARHResult(msgHdr, msg) {
 	function testAllowedAuthserv(e) {
+		// eslint-disable-next-line no-invalid-this
 		if (this.authserv_id === e) {
 			return true;
 		}
 		if (e.charAt(0) === "@") {
+			// eslint-disable-next-line no-invalid-this
 			return domainIsInDomain(this.authserv_id, e.substr(1));
 		}
 		return false;
@@ -785,7 +789,7 @@ function isOutgoing(msgHdr) {
 
 			// check if INBOX is redirected to another account
 			// if so, add all email addresses from this account to the redirected account
-			if (account.incomingServer && account.incomingServer.rootFolder != account.incomingServer.rootMsgFolder) {
+			if (account.incomingServer && account.incomingServer.rootFolder !== account.incomingServer.rootMsgFolder) {
 				let rAccount = accMgr.FindAccountForServer(account.incomingServer.rootMsgFolder.server);
 				let rKey = rAccount.key;
 				let rAccAddr = accountAddressMap.has(rKey) ? accountAddressMap.get(rKey) : new Array();
@@ -807,5 +811,5 @@ function isOutgoing(msgHdr) {
 	fromAddress = fromAddress.toLowerCase();
 	let key = accMgr.FindAccountForServer(msgHdr.folder.server).key;
 
-	return accountAddressMap.has(key) ? (accountAddressMap.get(key)).includes(fromAddress) : false;
+	return accountAddressMap.has(key) ? accountAddressMap.get(key).includes(fromAddress) : false;
 }
