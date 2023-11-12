@@ -783,9 +783,15 @@ class DkimHeaderRow {
 		headerRowLabel.classList.add("message-header-label");
 		headerRowLabel.setAttribute("value", "DKIM");
 
+		// Show the DKIM label if "Hide labels column" is enabled
+		const rowHeading = document.createElement("span");
+		rowHeading.classList.add("row-heading");
+		rowHeading.textContent = "DKIM";
+
 		const headerRowValue = document.createElement("div");
 		headerRowValue.classList.add("headerValue");
 		const dkimHeaderField = new DKIMHeaderField(document);
+		headerRowValue.appendChild(rowHeading);
 		headerRowValue.appendChild(dkimHeaderField.element);
 
 		headerRow.appendChild(headerRowLabel);

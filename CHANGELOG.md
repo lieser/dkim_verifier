@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file.
 - Added the possibility to show a favicon for a specific From address or AUID (#107).
 - Don't save DKIM results that contain a temporary error.
 - Show proper error message if parsing of a message failed.
+- Show DKIM label if "Hide labels column" is enabled.
 - Authentication-Results header: if reading of non RFC compliant ARHs is enabled,
   a `:` in a property value is now allowed without the value being in a quoted-string.
 - Authentication-Results header: don't restrict result keyword for unknown methods.
