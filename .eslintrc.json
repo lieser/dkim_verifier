@@ -1,6 +1,5 @@
 {
     "extends": [
-        "eslint:all",
         "eslint:recommended"
     ],
     "env": {
@@ -13,6 +12,9 @@
         "ecmaFeatures": {},
         "sourceType": "script"
     },
+    "ignorePatterns": [
+        "thirdparty/**"
+    ],
     "rules": {
         // Possible Errors
         "for-direction": "warn",
@@ -49,7 +51,6 @@
         "no-labels": "warn",
         "no-lone-blocks": "warn",
         "no-loop-func": "warn",
-        "no-magic-numbers": ["warn", { "ignoreArrayIndexes": true }],
         "no-multi-spaces": "warn",
         "no-multi-str": "warn",
         "no-new": "warn",
@@ -81,7 +82,12 @@
         "strict": ["warn", "global"],
         // Variables
         "no-undef": "error",
-        "no-unused-vars": "error",
+        "no-unused-vars": [
+            "error",
+            {
+                "argsIgnorePattern": "^_"
+            }
+        ],
         // Stylistic Issues
         "no-mixed-spaces-and-tabs": ["warn", "smart-tabs"],
         "semi": "warn",

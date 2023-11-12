@@ -5,8 +5,25 @@
             "es2017",
             "dom"
         ],
+        // Type Checking
+        // "strict": true, // TODO: fix
         "strictNullChecks": true,
-        "checkJs": true
+        // "exactOptionalPropertyTypes": true, // TODO: fix
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitOverride": true,
+        "noImplicitReturns": true,
+        // conflict with ESLint dot-notation
+        // "noPropertyAccessFromIndexSignature": true,
+        // "noUncheckedIndexedAccess": true, // TODO: fix
+        // "noUnusedLocals": true, // TODO: fix
+        // "noUnusedParameters": true, // TODO: fix
+        // Modules
+        "moduleResolution": "node",
+        // JavaScript Support
+        "checkJs": true,
+        // Interop Constraints
+        "forceConsistentCasingInFileNames": true,
+        "isolatedModules": true,
     },
     "exclude": [
     ]

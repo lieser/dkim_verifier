@@ -13,15 +13,21 @@
  * included in all copies or substantial portions of the Software.
  */
 
+/* eslint-env browser */
+/* eslint strict: ["warn", "function"] */
+/* global Components, XPCOMUtils */
+/* exported NSGetFactory */
+
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 
 //class constructor
-function DkimVerifierAccountManagerExtension() {}
+function DkimVerifierAccountManagerExtension() { "use strict"; }
 
 // class definition
 DkimVerifierAccountManagerExtension.prototype = {
 	name : "dkim_verifier-prefs",
 	chromePackageName : "dkim_verifier",
+	// @ts-expect-error
 	classID: Components.ID("{850258f2-ae8b-421a-8a9c-bd99fdcc8097}"),
 	classDescription: "DKIM Verifier Account Manager Extension",
 	contractID: "@mozilla.org/accountmanager/extension;1?name=dkim_verifier-prefs",
@@ -36,6 +42,8 @@ DkimVerifierAccountManagerExtension.prototype = {
 	]),
 	showPanel: function(server) 
 	{
+		"use strict";
+
 		// this panel is only shown for imap and pop3 accounts
 		if (server.type === "imap" || server.type === "pop3") {
 			return true;

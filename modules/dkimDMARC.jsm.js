@@ -1,5 +1,5 @@
 /*
- * dkimDMARC.jsm
+ * dkimDMARC.jsm.js
  * 
  * Implements a very small part of DMARC to determined if an e-mail should
  * have a DKIM signature.
@@ -36,14 +36,14 @@ const Cu = Components.utils;
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 
-Cu.import("resource://dkim_verifier/logging.jsm");
-Cu.import("resource://dkim_verifier/helper.jsm");
-Cu.import("resource://dkim_verifier/DNSWrapper.jsm");
+Cu.import("resource://dkim_verifier/logging.jsm.js");
+Cu.import("resource://dkim_verifier/helper.jsm.js");
+Cu.import("resource://dkim_verifier/DNSWrapper.jsm.js");
 
 XPCOMUtils.defineLazyModuleGetter(
   this,
   "Verifier",
-  "resource://dkim_verifier/dkimVerifier.jsm"
+  "resource://dkim_verifier/dkimVerifier.jsm.js"
 );
 
 

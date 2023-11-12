@@ -8,8 +8,8 @@
    onload="setView();">
 
 <script type="text/javascript">
-Components.utils.import("resource://dkim_verifier/SQLiteTreeView.jsm");
-Components.utils.import("resource://dkim_verifier/dkimPolicy.jsm");
+Components.utils.import("resource://dkim_verifier/SQLiteTreeView.jsm.js");
+Components.utils.import("resource://dkim_verifier/dkimPolicy.jsm.js");
 
 function setView(){
 	(async () => {

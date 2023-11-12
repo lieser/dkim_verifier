@@ -1,9 +1,9 @@
 /*
- * DNSWrapper.jsm
+ * DNSWrapper.jsm.js
  *
  * Wrapper to resolve DNS lookups via the following libraries:
- *  - JSDNS.jsm
- *  - libunbound.jsm
+ *  - JSDNS.jsm.js
+ *  - libunbound.jsm.js
  * 
  * Version: 2.3.0 (28 January 2018)
  * 
@@ -17,7 +17,7 @@
 
 // options for ESLint
 /* global Components, Services, XPCOMUtils */
-/* global Logging, PREF, JSDNS, libunbound */
+/* global Logging, PREF, JSDNS, libunbound, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, DNS */
 
 "use strict";
@@ -35,12 +35,12 @@ const Cu = Components.utils;
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 
-Cu.import("resource://dkim_verifier/logging.jsm");
-Cu.import("resource://dkim_verifier/helper.jsm");
+Cu.import("resource://dkim_verifier/logging.jsm.js");
+Cu.import("resource://dkim_verifier/helper.jsm.js");
 XPCOMUtils.defineLazyModuleGetter(this, "JSDNS", // eslint-disable-line no-invalid-this
-	"resource://dkim_verifier_3p/dns/JSDNS.jsm");
+	"resource://dkim_verifier_3p/dns/JSDNS.jsm.js");
 XPCOMUtils.defineLazyModuleGetter(this, "libunbound", // eslint-disable-line no-invalid-this
-	"resource://dkim_verifier/libunbound.jsm");
+	"resource://dkim_verifier/libunbound.jsm.js");
 
 
 // @ts-ignore
@@ -89,6 +89,7 @@ var DNS = {
 	 */
 	resolve: async function DNS_resolve(name, rrtype="A") {
 
+		// @ts-expect-error
 		if (Services.netUtils.offline) {
 			throw new DKIM_InternalError(null, "DKIM_DNSERROR_OFFLINE");
 		}
@@ -108,6 +109,7 @@ var DNS = {
 				let res = await libunbound.
 					resolve(name, libunbound.Constants["RR_TYPE_"+rrtype]);
 				/** @type {DNSResult} */
+				// @ts-expect-error
 				let result = {};
 				if (res !== null) {
 					if (res.havedata) {
@@ -137,7 +139,7 @@ var DNS = {
 
 
 /**
- * Promise wrapper for the dns result of JSDNS.jsm
+ * Promise wrapper for the dns result of JSDNS.jsm.js
  * @param {string} name
  * @param {string} rrtype
  * @return {Promise<DNSResult>}
@@ -156,7 +158,7 @@ function asyncJSDNS_QueryDNS(name, rrtype) {
 			} else {
 				result.rcode = RCODE.NoError;
 			}
-			if (result.rcode != RCODE.NoError && queryError) {
+			if (result.rcode !== RCODE.NoError && queryError) {
 				throw new DKIM_InternalError(queryError, "DKIM_DNSERROR_SERVER_ERROR");
 			}
 			result.secure = false;
@@ -176,10 +178,11 @@ function asyncJSDNS_QueryDNS(name, rrtype) {
 }
 
 function observeNetworkChange(subject, topic, data) {
-	if (data == "online") {
+	if (data === "online") {
 		log.debug("Thunderbird switched to online mode, resetting DNS configuration before next query");
 		doUpdateDNSConfig = true;
 	}
 }
 
+// @ts-expect-error
 Services.obs.addObserver(observeNetworkChange, "network:offline-status-changed", false);

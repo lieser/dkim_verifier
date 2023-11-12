@@ -20,11 +20,11 @@
 // namespace
 // @ts-ignore
 var DKIM_Verifier = {};
-Cu.import("resource://dkim_verifier/logging.jsm", DKIM_Verifier);
-Cu.import("resource://dkim_verifier/helper.jsm", DKIM_Verifier);
-Cu.import("resource://dkim_verifier/AuthVerifier.jsm", DKIM_Verifier);
-Cu.import("resource://dkim_verifier/dkimPolicy.jsm", DKIM_Verifier);
-Cu.import("resource://dkim_verifier/dkimKey.jsm", DKIM_Verifier);
+Cu.import("resource://dkim_verifier/logging.jsm.js", DKIM_Verifier);
+Cu.import("resource://dkim_verifier/helper.jsm.js", DKIM_Verifier);
+Cu.import("resource://dkim_verifier/AuthVerifier.jsm.js", DKIM_Verifier);
+Cu.import("resource://dkim_verifier/dkimPolicy.jsm.js", DKIM_Verifier);
+Cu.import("resource://dkim_verifier/dkimKey.jsm.js", DKIM_Verifier);
 
 
 // @ts-ignore
@@ -208,6 +208,7 @@ DKIM_Verifier.Display = (function() {
 	 * @param {IAuthVerifier.IAuthResult} result
 	 * @return {void}
 	 */
+	// eslint-disable-next-line complexity
 	function displayResult(result) {
 		log.trace("displayResult begin");
 		header.dkimResults = result.dkim;
@@ -673,8 +674,14 @@ var that = {
 	markKeyAsSecure : function Display_markKeyAsSecure() {
 		let promise = (async () => {
 			log.trace("markKeyAsSecure Task");
+			const sdid = header.dkimResults[0].sdid;
+			const selector = header.dkimResults[0].selector;
+			if (sdid === undefined || selector === undefined) {
+				log.error("Can not mark key as secure, result does not contain an sdid or selector");
+				return;
+			}
 			await DKIM_Verifier.Key.markKeyAsSecure(
-				header.dkimResults[0].sdid, header.dkimResults[0].selector);
+				sdid, selector);
 
 			that.reverify();
 		})();
@@ -690,8 +697,13 @@ var that = {
 		let promise = (async () => {
 			log.trace("updateKey Task");
 			for (let dkimResult of header.dkimResults) {
-				await DKIM_Verifier.Key.deleteKey(
-					dkimResult.sdid, dkimResult.selector);
+				const sdid = dkimResult.sdid;
+				const selector = dkimResult.selector;
+				if (sdid === undefined || selector === undefined) {
+					log.error("Can not delete key, result does not contain an sdid or selector");
+					return;
+				}
+				await DKIM_Verifier.Key.deleteKey(sdid, selector);
 			}
 
 			that.reverify();

@@ -1,0 +1,37 @@
+{
+	"description": "A DKIM verifier add-on for Thunderbird",
+	"keywords": [
+		"thunderbird",
+		"dkim"
+	],
+	"homepage": "https://github.com/lieser/dkim_verifier/wiki",
+	"bugs": {
+		"url": "https://github.com/lieser/dkim_verifier/issues"
+	},
+	"license": "MIT",
+	"author": "Philippe Lieser",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/lieser/dkim_verifier.git"
+	},
+	"scripts": {
+		"lint": "eslint .",
+		"lint:ci": "eslint --config .eslintrc-ci.json --max-warnings=0 .",
+		"checkJs": "tsc-silent --project jsconfig.json --suppress @/thirdparty/"
+	},
+	"type": "module",
+	"dependencies": {
+		"tweetnacl-es6": "1.0.3"
+	},
+	"devDependencies": {
+		"eslint": "^8.53.0",
+		"eslint-plugin-jsdoc": "^46.8.2",
+		"eslint-plugin-mocha": "^10.2.0",
+		"eslint-plugin-mozilla": "^3.2.0",
+		"tsc-silent": "^1.2.2",
+		"typescript": "^5.2.2"
+	},
+	"engines": {
+		"node": ">=16.15.0"
+	}
+}

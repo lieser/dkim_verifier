@@ -1,5 +1,5 @@
 /*
- * dkimPolicy.jsm
+ * dkimPolicy.jsm.js
  * 
  * Version: 1.4.0 (01 April 2018)
  * 
@@ -27,15 +27,17 @@ var EXPORTED_SYMBOLS = [
 
 // @ts-ignore
 const Cc = Components.classes;
+// @ts-ignore
 const Ci = Components.interfaces;
+// @ts-ignore
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/Sqlite.jsm");
 
-Cu.import("resource://dkim_verifier/logging.jsm");
-Cu.import("resource://dkim_verifier/helper.jsm");
-Cu.import("resource://dkim_verifier/dkimDMARC.jsm");
+Cu.import("resource://dkim_verifier/logging.jsm.js");
+Cu.import("resource://dkim_verifier/helper.jsm.js");
+Cu.import("resource://dkim_verifier/dkimDMARC.jsm.js");
 
 
 const DB_POLICY_NAME = "dkimPolicy.sqlite";
@@ -424,19 +426,20 @@ var Policy = {
 	 * will cause problems there added headers is normal
 	 * e.g. the Received header.
 	 *
- 	 * @param {MAP<String,String>} msgHeaders
+	 * @param {Map<String,String>} msgHeaders
 	 *			All headers of the message to check as headername-value-pair
 	 * @param {Object} DKIMSignature
 	 *			DKIMSignature of the message
 	 * @returns {void}
 	 */	
 	checkHeadersSigned: function Policy_checkHeadersSigned(msgHeaders, DKIMSignature) {
+		"use strict";
 		
 		const POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE = {
 			RELAXED : 10,
 			RECOMMENDED : 20,
 			STRICT : 30
-		}
+		};
 		
 		// The list of recommended headers to sign is mostly based on
 		// https://www.rfc-editor.org/rfc/rfc6376.html#section-5.4.
@@ -483,6 +486,7 @@ var Policy = {
 		const checkSignedHeader = (header, warnIfUnsigned) => {
 			const headerLowerCase = header.toLowerCase();
 			const signedCount = DKIMSignature.h_array.filter(e => e === headerLowerCase).length;
+			// @ts-expect-error
 			const unsignedCount = msgHeaders.get(headerLowerCase) ? msgHeaders.get(headerLowerCase).length : 0;
 			if (signedCount > 0 && signedCount < unsignedCount) {
 				throw new DKIM_SigError("DKIM_POLICYERROR_UNSIGNED_HEADER_ADDED", [header]);

@@ -22,6 +22,8 @@ declare module Components {
 
     interface ComponentsInterfaces {
         [key: string]: object;
+        readonly nsIMsgAccount: nsIMsgAccount;
+        readonly nsIMsgAccountManagerExtension: nsIMsgAccountManagerExtension;
         readonly nsMsgFolderFlags: nsMsgFolderFlags;
         readonly nsIMsgIdentity: nsIMsgIdentity;
     }
@@ -168,7 +170,7 @@ declare module OS {
 declare module Services {
     const appinfo: nsIXULAppInfo;
     const io: nsIIOService;
-    const prefs: nsIPrefService;
+    const prefs: nsIPrefService & nsIPrefBranch;
     const scriptloader: mozIJSSubScriptLoader;
     const storage: mozIStorageService;
     const strings: nsIStringBundleService;
@@ -182,6 +184,8 @@ declare module Services {
 /** JavaScript code module "resource://gre/modules/XPCOMUtils.jsm" */
 declare module XPCOMUtils {
     function defineLazyModuleGetter(aObject: Object, aName: string, aResource: string, aSymbol?: string): void;
+    function generateNSGetFactory(components: Object[]): any;
+    function generateQI(interfaces: nsISupports[]): nsISupports["QueryInterface"];
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -194,6 +198,12 @@ declare module MailServices {
 
 ////////////////////////////////////////////////////////////////////////////////
 //// Mozilla specific interfaces/types
+
+interface nsIArray {
+    readonly queryElementAt: <nsIIDRef>(index: number, uuid: nsIIDRef) => nsIIDRef;
+
+    readonly length: number;
+}
 
 interface mozIStorageBaseStatement extends mozIStorageBindingParams {
     readonly finalize: () => void;
@@ -270,6 +280,10 @@ interface nsIIOService {
     newURI(aSpec: string, aOriginCharset: string|null, aBaseURI: nsIURI|null): nsIURI;
 }
 
+interface nsISupports {
+    readonly QueryInterface: <nsIIDRef>(uuid: nsIIDRef) => nsIIDRef;
+}
+
 interface nsITreeSelection {
     readonly getRangeAt: (i: number, /*out*/ min: nsITreeSelection_out_number, /*out*/max: nsITreeSelection_out_number) => void;
     readonly getRangeCount: () => number;
@@ -333,6 +347,8 @@ interface nsresult {nsresult: never};
 ////////////////////////////////////////////////////////////////////////////////
 //// Thunderbird specific interfaces
 
+interface nsIMsgAccountManagerExtension extends nsISupports { nsIMsgAccountManagerExtension: never };
+
 interface nsIMsgDBHdr {
     getStringProperty(propertyName: string): string;
     setStringProperty(propertyName: string, propertyValue: string);
@@ -348,15 +364,29 @@ interface nsIMsgFolder {
 
 interface nsMsgFolderFlags {
     readonly SentMail: number;
+    readonly Junk: number;
 }
 
 interface nsIMsgIncomingServer {
     getCharValue(attr: string): string;
     getIntValue(attr: string): number;
+
+    readonly rootFolder: nsIMsgFolder;
+    readonly rootMsgFolder: nsIMsgFolder;
+}
+
+interface nsIMsgAccount {
+    readonly key: string;
+    readonly incomingServer: nsIMsgIncomingServer;
+    readonly identities: nsIArray;
 }
 
 interface nsIMsgAccountManager {
     getIdentitiesForServer(server: nsIMsgIncomingServer): nsIMsgIdentity[];
+    readonly FindAccountForServer: (server: nsIMsgIncomingServer) => nsIMsgAccount;
+
+    readonly accounts: nsIArray;
+    readonly localFoldersServer: nsIMsgIncomingServer;
 }
 
 interface nsIMsgIdentity {
