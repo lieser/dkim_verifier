@@ -4,6 +4,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+- TODO: List backports (by dodmi)
+
 ## 2.2.1 (2021-04-08)
 
 - Added integration with Silvermel and Charamel themes for favicons (#254 by dodmi)
