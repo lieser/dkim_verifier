@@ -16,6 +16,7 @@
 // options for ESLint
 /* global Components, Services */
 /* global Logging */
+/* global DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, ARHParser */
 
 "use strict";
@@ -35,6 +36,7 @@ const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
 
+Cu.import("resource://dkim_verifier/helper.jsm.js");
 Cu.import("resource://dkim_verifier/logging.jsm.js");
 
 
