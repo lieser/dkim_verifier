@@ -27,7 +27,7 @@ indent_size = 2
 indent_style = space
 indent_size = 2
 
-[.vscode/cSpell.json]
+[{.vscode/cSpell.json,.vscode/cspell.json}]
 indent_style = space
 
 [.vscode/settings.json]
