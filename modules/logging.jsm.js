@@ -1,5 +1,5 @@
 /*
- * logging.jsm
+ * logging.jsm.js
  *
  * Version: 1.1.0 (31 December 2017)
  *
@@ -97,6 +97,7 @@ function init() {
 	
 	setupLogging(LOG_NAME);
 
+	// @ts-ignore
 	log = Logging.getLogger("Logging");
 	log.debug("initialized");
 }
@@ -137,6 +138,7 @@ class SimpleConsoleAppender extends Log.ConsoleAppender {
 	}
 
 	/**
+	 * @override
 	 * @param {Log.LogMessage} message
 	 * @return {void}
 	 */

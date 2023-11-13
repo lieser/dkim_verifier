@@ -61,7 +61,7 @@ namespace Libunbound {
         data: Log|Response;
     }
 }
-// for libunboundWorker.jsm
+// for libunboundWorker.jsm.js
 declare function postMessage(WorkerResponse: Libunbound.Log|Libunbound.Result|Libunbound.Exception): void;
 
 // for chrome\content\dkim.js
@@ -85,7 +85,7 @@ namespace _DKIM_Verifier {
     let _Logging = Logging;
     let _Policy = Policy;
     let _Verifier = Verifier;
-    // helper.jsm
+    // helper.jsm.js
     let _DKIM_InternalError = DKIM_InternalError;
     let _PREF = PREF;
 }
@@ -97,18 +97,18 @@ namespace DKIM_Verifier {
     let Key = _DKIM_Verifier._Key;
     let Logging = _DKIM_Verifier._Logging;
     let Policy = _DKIM_Verifier._Policy;
-    // helper.jsm
+    // helper.jsm.js
     let DKIM_InternalError = _DKIM_Verifier._DKIM_InternalError;
     let PREF = _DKIM_Verifier._PREF;
 };
 
-// for AuthVerifier.jsm
+// for AuthVerifier.jsm.js
 namespace DKIM {
     let Policy = _DKIM_Verifier._Policy;
     let Verifier = _DKIM_Verifier._Verifier;
 };
 
-// for dkimVerifier.jsm
+// for dkimVerifier.jsm.js
     interface dkimResultCallback {
     (msgURI: string, result: dkimResultV1): void;
 }

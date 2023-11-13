@@ -1,0 +1,42 @@
+name: CI 2.x
+
+on:
+  - push
+  - pull_request
+
+permissions:
+  contents: read
+  # implicitly all other scopes not listed become none
+
+jobs:
+  ESLint:
+    name: ESLint
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Install Node.js dependencies
+        run: npm ci
+      - name: Run ESLint
+        run: npm run lint:ci
+
+  checkJs:
+    name: Type Check
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Install Node.js dependencies
+        run: npm ci
+      - name: Register Problem Matcher for colored tsc output
+        run: echo "##[add-matcher].github/problemMatchers/tsc-pretty.json"
+      - name: Run type checking
+        run: npm run checkJs

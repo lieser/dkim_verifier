@@ -1,5 +1,5 @@
 /*
- * dkimVerifier.jsm
+ * dkimVerifier.jsm.js
  *
  * Verifies the DKIM-Signatures as specified in RFC 6376
  * http://tools.ietf.org/html/rfc6376
@@ -47,11 +47,11 @@ const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
 
-Cu.import("resource://dkim_verifier/logging.jsm");
-Cu.import("resource://dkim_verifier/helper.jsm");
-Cu.import("resource://dkim_verifier/dkimKey.jsm");
-Cu.import("resource://dkim_verifier/dkimPolicy.jsm");
-Cu.import("resource://dkim_verifier/MsgReader.jsm");
+Cu.import("resource://dkim_verifier/logging.jsm.js");
+Cu.import("resource://dkim_verifier/helper.jsm.js");
+Cu.import("resource://dkim_verifier/dkimKey.jsm.js");
+Cu.import("resource://dkim_verifier/dkimPolicy.jsm.js");
+Cu.import("resource://dkim_verifier/MsgReader.jsm.js");
 
 // namespaces
 var RSA = {};
@@ -368,10 +368,10 @@ var Verifier = (function() {
 	 * @param {String} signature
 	 *        b64 encoded signature
 	 * @param {dkimSigWarning[]} warnings - out param
-	 * @param {Object} [keyInfo] - out param
+	 * @param {Object} [_keyInfo] - out param
 	 * @return {Boolean}
 	 */
-	function verifyED25519Sig(key, str, hash_algo, signature, warnings, keyInfo = {}) {
+	function verifyED25519Sig(key, str, hash_algo, signature, warnings, _keyInfo = {}) {
 		let hashedStr = dkim_hash(str, hash_algo, "b64");
 		return NaCl.nacl.sign.detached.verify(NaClUtil.nacl.util.decodeBase64(hashedStr),
 											NaClUtil.nacl.util.decodeBase64(signature),
@@ -735,7 +735,7 @@ var Verifier = (function() {
 		if (QueryMetTag === null) {
 			DKIMSignature.q = "dns/txt";
 		} else {
-			if (!(new RegExp("dns/txt")).test(QueryMetTag[0])) {
+			if (!new RegExp("dns/txt").test(QueryMetTag[0])) {
 				throw new DKIM_SigError("DKIM_SIGERROR_UNKNOWN_Q");
 			}
 			DKIMSignature.q = "dns/txt";
@@ -1159,14 +1159,15 @@ var Verifier = (function() {
 	 * @throws DKIM_SigError
 	 * @throws DKIM_InternalError
 	 */
+	// eslint-disable-next-line complexity
 	async function verifySignature(msg, DKIMSignature) {
 		// check SDID and AUID
 		Policy.checkSDID(msg.DKIMSignPolicy.sdid, msg.from, DKIMSignature.d,
 			DKIMSignature.i, DKIMSignature.warnings);
-		
+
 		// check signed headers
 		Policy.checkHeadersSigned(msg.headerFields, DKIMSignature);
-		
+
 		// get time of received header or use system time as reference for signature expiration check
 		let receivedTime = null;
 		const receivedHeaders = msg.headerFields.get("received");
@@ -1187,7 +1188,7 @@ var Verifier = (function() {
 		const verifyTime = receivedTime ? receivedTime : new Date();
 		const time = Math.round(verifyTime.getTime() / 1000);
 		log.debug("Info: Using '"+verifyTime+"' as timestamp for expiration check");
-		
+
 		// warning if signature expired
 		if (DKIMSignature.x !== null && DKIMSignature.x < time) {
 			DKIMSignature.warnings.push({name: "DKIM_SIGWARNING_EXPIRED"});
@@ -1255,7 +1256,7 @@ var Verifier = (function() {
 		// the hash algorithm implied by the "a=" tag in the DKIM-Signature header field
 		// must be included in the contents of the "h=" tag
 		if (DKIMSignature.DKIMKey.h_array &&
-		    (!DKIMSignature.DKIMKey.h_array.includes(DKIMSignature.a_hash))) {
+		    !DKIMSignature.DKIMKey.h_array.includes(DKIMSignature.a_hash)) {
 			throw new DKIM_SigError( "DKIM_SIGERROR_KEY_HASHNOTINCLUDED" );
 		}
 
@@ -1529,6 +1530,7 @@ var that = {
 		var promise = (async () => {
 			// read msg
 			/** @type {Msg} */
+			// @ts-expect-error
 			let msg = await MsgReader.read(msgURI);
 			msg.msgURI = msgURI;
 
@@ -1561,6 +1563,7 @@ var that = {
 				// @ts-ignore
 				let listId = "";
 				try {
+					// @ts-expect-error
 					listId = msg.headerFields.get("list-id")[0];
 					listId = msgHeaderParser.extractHeaderAddressMailboxes(listId);
 				} catch (error) {
@@ -1624,20 +1627,17 @@ var that = {
 				if (!sig2.warnings || sig2.warnings.length === 0) {
 					// both sigs have no warnings
 					return 0;
-				} else {
-					// sig2 has warings
-					return -1;
 				}
-			} else {
-				// sig1 has warnings
-				if (!sig2.warnings || sig2.warnings.length === 0) {
-					// sig2 has no warings
-					return 1;
-				} else {
-					// both sigs have warnings
-					return 0;
-				}
+				// sig2 has warings
+				return -1;
 			}
+			// sig1 has warnings
+			if (!sig2.warnings || sig2.warnings.length === 0) {
+				// sig2 has no warings
+				return 1;
+			}
+			// both sigs have warnings
+			return 0;
 		}
 
 		function sdid_compare(sig1, sig2) {
@@ -1708,6 +1708,7 @@ return that;
 }()); // the parens here cause the anonymous function to execute and return
 
 // for logging in rsasign
+// @ts-expect-error
 var DKIMVerifier = {};
 DKIMVerifier.log = Verifier.log;
 

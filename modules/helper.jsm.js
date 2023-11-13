@@ -1,5 +1,5 @@
 /*
- * helper.jsm
+ * helper.jsm.js
  *
  * Version: 2.1.0 (13 January 2019)
  * 
@@ -47,7 +47,7 @@ Cu.import("resource://gre/modules/NetUtil.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://services-common/utils.js");
 
-Cu.import("resource://dkim_verifier/logging.jsm");
+Cu.import("resource://dkim_verifier/logging.jsm.js");
 
 
 // @ts-ignore
@@ -308,8 +308,8 @@ function stringEqual(str1, str2) {
 function toType(obj) {
 	const typeMatch = Object.prototype.toString.call(obj).match(/\s([a-zA-Z]+)/);
 	if (!typeMatch || !typeMatch[1]) {
- 		throw new Error(`Failed to get type for ${obj}`);
- 	}
+		throw new Error(`Failed to get type for ${obj}`);
+	}
 	return typeMatch[1];
 }
 
@@ -414,6 +414,7 @@ class DKIM_SigError extends Error {
 		this.name = dkimStrings.getString("DKIM_SIGERROR") + " (" + errorType + ")";
 		this.errorType = errorType;
 		this.errorStrParams = errorStrParams;
+		// @ts-expect-error
 		this.stack = this.stack.substring(this.stack.indexOf('\n')+1);
 	}
 }
@@ -437,6 +438,7 @@ class DKIM_InternalError extends Error {
 			dkimStrings.getString("DKIM_INTERNALERROR_DEFAULT"));
 		this.name = dkimStrings.getString("DKIM_INTERNALERROR") + " (" + errorType + ")";
 		this.errorType = errorType;
+		// @ts-expect-error
 		this.stack = this.stack.substring(this.stack.indexOf('\n')+1);
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * dkimKey.jsm
+ * dkimKey.jsm.js
  * 
  * Version: 1.2.0 (28 January 2018)
  * 
@@ -31,9 +31,9 @@ const Cu = Components.utils;
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/Sqlite.jsm");
 
-Cu.import("resource://dkim_verifier/logging.jsm");
-Cu.import("resource://dkim_verifier/helper.jsm");
-Cu.import("resource://dkim_verifier/DNSWrapper.jsm");
+Cu.import("resource://dkim_verifier/logging.jsm.js");
+Cu.import("resource://dkim_verifier/helper.jsm.js");
+Cu.import("resource://dkim_verifier/DNSWrapper.jsm.js");
 
 
 /**

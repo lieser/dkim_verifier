@@ -1,5 +1,5 @@
 /*
- * libunboundWorker.jsm
+ * libunboundWorker.jsm.js
  * 
  * A ChromeWorker wrapper for the libunbound DNS library.
  * Currently only the TXT resource record is completely supported.
@@ -365,8 +365,8 @@ function load(paths) {
 /**
  * updates ctx by deleting old an creating new
  *
- * @param {String|undefined} [conf]
- * @param {Number|undefined} [debuglevel]
+ * @param {String|undefined} conf
+ * @param {Number|undefined} debuglevel
  * @param {Boolean} getNameserversFromOS
  * @param {String[]} nameservers
  * @param {String[]} trustAnchors
@@ -435,7 +435,7 @@ function update_ctx(conf, debuglevel, getNameserversFromOS, nameservers, trustAn
 }
 
 /**
- * Handle the requests from libunbound.jsm
+ * Handle the requests from libunbound.jsm.js
  * @param {Libunbound.WorkerRequest} msg
  * @return {void}
  */
@@ -494,6 +494,7 @@ onmessage = function(msg) {
 			});
 		}
 	} catch (e) {
+		// @ts-expect-error
 		dump(e.toString() + "\n");
 		log.fatal(e.toString());
 	}

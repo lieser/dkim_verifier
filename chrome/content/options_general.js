@@ -1,5 +1,13 @@
+// @ts-nocheck
+/* eslint-env browser */
+/* eslint strict: ["warn", "function"] */
+/* global gDKIMonpaneload */
+/* exported gDKIMOptionsGeneralPane */
+
 var gDKIMOptionsGeneralPane = {
 	init: function () {
+		"use strict";
+
 		gDKIMonpaneload("paneGeneral");
 		this.update_key_storing();
 		this.update_dns_resolver();
@@ -8,24 +16,33 @@ var gDKIMOptionsGeneralPane = {
 	},
 	
 	update_key_storing: function () {
+		"use strict";
+
+		// eslint-disable-next-line eqeqeq
 		var disabled = document.getElementById("key.storing").value == 0;
 		document.getElementById("key.viewKeys").disabled = disabled;
 	},
 	
 	update_dns_resolver: function () {
+		"use strict";
+
 		var deckIndex = document.getElementById("dns.resolver.label").value - 1;
 		document.getElementById("resolverDeck").selectedIndex = deckIndex;
 	},
 
 	update_dns_proxy: function () {
+		"use strict";
+
 		var disabled = !document.getElementById("dns.proxy.enable").checked;
-		var proxyConfigs = document.querySelectorAll(".proxyConfig")
+		var proxyConfigs = document.querySelectorAll(".proxyConfig");
 		for (var e of proxyConfigs) {
 			e.disabled = disabled;
 		}
 	},
 
 	update_Policy_signRules_enable: function () {
+		"use strict";
+
 		var disabled = !document.getElementById("policy.signRules.enable").checked;
 		document.getElementById("policy.signRules.checkDefaultRules").disabled = disabled;
 		document.getElementById("policy.signRules.autoAddRule").disabled = disabled;
@@ -39,10 +56,12 @@ var gDKIMOptionsGeneralPane = {
 	},
 	
 	update_Policy_autoAddRule_enable: function () {
+		"use strict";
+
 		var disabled = !document.getElementById("policy.signRules.enable").checked ||
 			!document.getElementById("policy.signRules.autoAddRule").checked;
 		document.getElementById("policy.signRules.autoAddRule.onlyIfFromAddressInSDID").
 			disabled = disabled;
 		document.getElementById("policy.signRules.autoAddRule.for").disabled = disabled;
 	},
-}
+};
