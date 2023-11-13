@@ -22,22 +22,26 @@ async function collectFiles() {
 
 	files.push(...await globby("_locales", {
 		expandDirectories: {
+			files: ["*"],
 			extensions: ["json"],
 		}
 	}));
 	files.push(...await globby("content", {
 		expandDirectories: {
+			files: ["*"],
 			extensions: ["html", "css", "js"],
 		}
 	}));
 	files.push(...await globby("data", { expandDirectories: true }));
 	files.push(...await globby("experiments", {
 		expandDirectories: {
+			files: ["*"],
 			extensions: ["js", "json"],
 		}
 	}));
 	files.push(...await globby("modules", {
 		expandDirectories: {
+			files: ["*"],
 			extensions: ["js"],
 		}
 	}));
