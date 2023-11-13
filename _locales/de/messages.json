@@ -399,7 +399,7 @@
 		"message": "Pfad"
 	},
 	"options_dns.libunbound.path.relToProfileDir": {
-		"message": "Pfad relativ zum Profilordner"
+		"message": "Pfad ist relativ zum Profilordner"
 	},
 	// ---------- Policy options tab ----------
 	"options_general.policy": {
@@ -468,19 +468,19 @@
 		"message": "DKIM-Tooltipp für Absenderadresse anzeigen:"
 	},
 	"options_showDKIM.value.0": {
-		"message": "nie"
+		"message": "Nie"
 	},
 	"options_showDKIM.value.10": {
-		"message": "wenn eine E-Mail mit gültiger DKIM-Signatur angezeigt wird"
+		"message": "Wenn eine E-Mail mit gültiger DKIM-Signatur angezeigt wird"
 	},
 	"options_showDKIM.value.30": {
-		"message": "wenn eine E-Mail mit DKIM-Signatur angezeigt wird"
+		"message": "Wenn eine E-Mail mit DKIM-Signatur angezeigt wird"
 	},
 	"options_showDKIM.value.40": {
-		"message": "wenn eine E-Mail angezeigt wird"
+		"message": "Wenn eine E-Mail angezeigt wird"
 	},
 	"options_showDKIM.value.50": {
-		"message": "wenn eine Nachricht angezeigt wird"
+		"message": "Wenn eine Nachricht angezeigt wird"
 	},
 	"options_colorFrom": {
 		"message": "Absenderadresse hervorheben"
