@@ -15,7 +15,7 @@
 
 // options for ESLint
 /* global Components, Services */
-/* global Logging */
+/* global Logging, DKIM_InternalError */
 /* exported EXPORTED_SYMBOLS, ARHParser */
 
 "use strict";
@@ -36,6 +36,7 @@ const Cu = Components.utils;
 Cu.import("resource://gre/modules/Services.jsm");
 
 Cu.import("resource://dkim_verifier/logging.jsm.js");
+Cu.import("resource://dkim_verifier/helper.jsm.js");
 
 
 // @ts-ignore
@@ -192,10 +193,7 @@ function parseResinfo(str) {
 	// get methodspec
 	const method_version_p = `${CFWS_op}/${CFWS_op}([0-9]+)`;
 	const method_p = `(${Keyword_p})(?:${method_version_p})?`;
-	let Keyword_result_p = "none|pass|fail|softfail|policy|neutral|temperror|permerror";
-	// older SPF specs (e.g. RFC 4408) use mixed case
-	Keyword_result_p += "|None|Pass|Fail|SoftFail|Neutral|TempError|PermError";
-	const result_p = `=${CFWS_op}(${Keyword_result_p})`;
+	const result_p = `=${CFWS_op}(${Keyword_p})`;
 	const methodspec_p = `;${CFWS_op}${method_p}${CFWS_op}${result_p}`;
 	try {
 		reg_match = match(str, methodspec_p);
@@ -224,6 +222,7 @@ function parseResinfo(str) {
 		res.method_version = 1;
 	}
 	res.result = reg_match[3].toLowerCase();
+	checkResultKeyword(res.method, reg_match[3]);
 
 	// get reasonspec (optional)
 	const reasonspec_p = `reason${CFWS_op}=${CFWS_op}${value_cp}`;
@@ -235,8 +234,8 @@ function parseResinfo(str) {
 	// get propspec (optional)
 	let pvalue_p = `${value_cp}|((?:${local_part_p}?@)?${domain_name_p})`;
 	if (prefs.getBoolPref("relaxedParsing")) {
-		// allow "/" in the header.b (or other) property, even if it is not in a quoted-string
-		pvalue_p += "|([^ \\x00-\\x1F\\x7F()<>@,;:\\\\\"[\\]?=]+)";
+		// allow "/" and ":" in properties, even if it is not in a quoted-string
+		pvalue_p += "|([^ \\x00-\\x1F\\x7F()<>@,;\\\\\"[\\]?=]+)";
 	}
 	const special_smtp_verb_p = "mailfrom|rcptto";
 	const property_p = `${special_smtp_verb_p}|${Keyword_p}`;
@@ -263,6 +262,53 @@ function parseResinfo(str) {
 
 	log.trace(res.toSource());
 	return res;
+}
+
+/**
+ * Check that a result keyword is valid for a known method.
+ *
+ * See also https://www.iana.org/assignments/email-auth/email-auth.xhtml.
+ *
+ * @param {string} method
+ * @param {string} resultKeyword
+ * @returns {void}
+ * @throws {DKIM_InternalError} if result keyword is invalid for the method.
+ */
+function checkResultKeyword(method, resultKeyword) {
+	let allowedKeywords;
+
+	// DKIM and DomainKeys (RFC 8601 section 2.7.1.)
+	if (method === "dkim" || method === "domainkeys") {
+		allowedKeywords = ["none", "pass", "fail", "policy", "neutral", "temperror", "permerror"];
+	}
+
+	// SPF and Sender ID (RFC 8601 section 2.7.2.)
+	if (method === "spf" || method === "sender-id") {
+		allowedKeywords = ["none", "pass", "fail", "softfail", "policy", "neutral", "temperror", "permerror"
+			// Deprecated from older ARH RFC 5451.
+			, "hardfail"
+			// Older SPF specs (e.g. RFC 4408) used mixed case.
+			, "None", "Pass", "Fail", "SoftFail", "Neutral", "TempError", "PermError"
+		];
+	}
+
+	// DMARC (RFC 7489 section 11.2.)
+	if (method === "dmarc") {
+		allowedKeywords = ["none", "pass", "fail", "temperror", "permerror"];
+	}
+
+	// BIMI (https://datatracker.ietf.org/doc/draft-brand-indicators-for-message-identification/04/ section 7.7.)
+	if (method === "bimi") {
+		allowedKeywords = ["pass", "none", "fail", "temperror", "declined", "skipped"];
+	}
+
+	// Note: Both the ARH RFC and the IANA registry contain keywords for more than the above methods.
+	// As we don't really care about them, for simplicity we treat them the same as unknown methods,
+	// And don't restrict the keyword.
+
+	if (allowedKeywords && !allowedKeywords.includes(resultKeyword)) {
+		throw new DKIM_InternalError(`Result keyword "${resultKeyword}" is not allowed for method "${method}"`);
+	}
 }
 
 /**
