@@ -4,7 +4,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased
+## 5.4.0 (2023-11-16)
 
 ### Enhancements
 
@@ -28,7 +28,7 @@ All notable changes to this project will be documented in this file.
 
 - Added Polish translation (by dMbski) (#392).
 - Options navigation is now flat.
-- Updated default rules and favicons (#387, #393).
+- Updated default rules and favicons (#387, #393, #399).
 
 ## 5.3.1 (2023-06-08)
 

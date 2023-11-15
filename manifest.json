@@ -2,7 +2,7 @@
 	"manifest_version": 2,
 	"name": "__MSG_about_name__",
 	"description": "__MSG_about_summary__",
-	"version": "5.3.1",
+	"version": "5.4.0",
 	"author": "Philippe Lieser",
 	"homepage_url": "https://github.com/lieser/dkim_verifier/wiki",
 	"default_locale": "en_US",
@@ -10,7 +10,7 @@
 		"gecko": {
 			"id": "dkim_verifier@pl",
 			"strict_min_version": "91.0",
-			"strict_max_version": "116.*"
+			"strict_max_version": "121.*"
 		}
 	},
 	"permissions": [
