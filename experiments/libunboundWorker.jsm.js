@@ -147,7 +147,7 @@ let ub_ctx_delete;
 let ub_ctx_config;
 /** @type {(ctx: p_ub_ctx, addr: string)=>number} */
 let ub_ctx_set_fwd;
-/** @type {(ctx: p_ub_ctx, fname: string?)=>number} */
+/** @type {(ctx: p_ub_ctx, fname: string|null)=>number} */
 let ub_ctx_resolvconf;
 /** @type {(ctx: p_ub_ctx, ta: string)=>number} */
 let ub_ctx_add_ta;

@@ -12,6 +12,7 @@
 ///<reference path="../experiments/dkimHeader.d.ts" />
 /* eslint-env webextensions */
 
+import * as Conversations from "../modules/conversation.mjs.js";
 import KeyStore, { KeyDb } from "../modules/dkim/keyStore.mjs.js";
 import SignRules, { initSignRulesProxy } from "../modules/dkim/signRules.mjs.js";
 import { migrateKeyStore, migratePrefs, migrateSignRulesUser } from "../modules/migration.mjs.js";
@@ -19,7 +20,6 @@ import AuthVerifier from "../modules/authVerifier.mjs.js";
 import Logging from "../modules/logging.mjs.js";
 import MsgParser from "../modules/msgParser.mjs.js";
 import prefs from "../modules/preferences.mjs.js";
-import verifyMessageForConversation from "../modules/conversation.mjs.js";
 
 const log = Logging.getLogger("background");
 
@@ -84,7 +84,7 @@ async function verifyMessage(tabId, message) {
 			throw new Error("Result does not contain a DKIM result.");
 		}
 		displayedResultsCache.set(tabId, res);
-		const warnings = res.dkim[0].warnings_str || [];
+		const warnings = res.dkim[0].warnings_str ?? [];
 		/** @type {Parameters<typeof browser.dkimHeader.setDkimHeaderResult>[5]} */
 		const arh = {};
 		if (res.arh && res.arh.dkim && res.arh.dkim[0]) {
@@ -156,7 +156,7 @@ browser.messageDisplay.onMessageDisplayed.addListener(async (tab, message) => {
 	}
 	try {
 		await isInitialized;
-		if (tab.url?.startsWith("chrome://conversations/")) {
+		if (await Conversations.isConversationView(tab)) {
 			// Conversation view is handled in onMessagesDisplayed
 			return;
 		}
@@ -201,11 +201,10 @@ browser.messageDisplay.onMessageDisplayed.addListener(async (tab, message) => {
 browser.messageDisplay.onMessagesDisplayed.addListener(async (tab, messages) => {
 	try {
 		await isInitialized;
-		if (tab.url?.startsWith("chrome://conversations/")) {
+		if (await Conversations.isConversationView(tab)) {
 			for (const message of messages) {
-				await verifyMessageForConversation(message);
+				await Conversations.verifyMessage(message);
 			}
-			return;
 		}
 		// Normal Thunderbird view ("classic") is handled in onMessageDisplayed
 	} catch (e) {
@@ -275,6 +274,7 @@ class DisplayAction {
 	 *
 	 * @param {number} tabId
 	 * @returns {Promise<void>}
+	 * @throws {DKIM_Error}
 	 */
 	static async policyAddUserException(tabId) {
 		const message = await browser.messageDisplay.getDisplayedMessage(tabId);
@@ -282,7 +282,7 @@ class DisplayAction {
 			return;
 		}
 
-		const from = MsgParser.parseFromHeader(`From: ${message.author}\r\n`, prefs["internationalized.enable"]);
+		const from = MsgParser.parseAuthor(message.author, prefs["internationalized.enable"]);
 		await SignRules.addException(from);
 
 		await DisplayAction.#reverifyMessage(tabId, message);

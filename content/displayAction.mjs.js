@@ -41,6 +41,9 @@ async function triggerDisplayAction(action) {
 			tabId,
 		},
 	};
+	// Closing the window means getting the response (which we are not interested in) from sendMessage fails,
+	// resulting in the following error that can be ignored:
+	// Promise rejected after context unloaded: Actor 'Conduits' destroyed before query 'RuntimeMessage' was resolved
 	browser.runtime.sendMessage(message);
 	window.close();
 }
@@ -68,7 +71,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 	const reverifyDKIMSignature = getElementById("reverifyDKIMSignature");
 	if (!(reverifyDKIMSignature instanceof HTMLButtonElement)) {
-		throw Error("reverifyDKIMSignature element is not a button");
+		throw new Error("reverifyDKIMSignature element is not a button");
 	}
 	reverifyDKIMSignature.addEventListener("click", async () => {
 		await triggerDisplayAction("reverifyDKIMSignature");
@@ -79,7 +82,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 	const policyAddUserException = getElementById("policyAddUserException");
 	if (!(policyAddUserException instanceof HTMLButtonElement)) {
-		throw Error("policyAddUserException element is not a button");
+		throw new Error("policyAddUserException element is not a button");
 	}
 	policyAddUserException.addEventListener("click", async () => {
 		await triggerDisplayAction("policyAddUserException");
@@ -90,7 +93,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 	const markKeyAsSecure = getElementById("markKeyAsSecure");
 	if (!(markKeyAsSecure instanceof HTMLButtonElement)) {
-		throw Error("markKeyAsSecure element is not a button");
+		throw new Error("markKeyAsSecure element is not a button");
 	}
 	markKeyAsSecure.addEventListener("click", async () => {
 		await triggerDisplayAction("markKeyAsSecure");
@@ -101,7 +104,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 	const updateKey = getElementById("updateKey");
 	if (!(updateKey instanceof HTMLButtonElement)) {
-		throw Error("updateKey element is not a button");
+		throw new Error("updateKey element is not a button");
 	}
 	updateKey.addEventListener("click", async () => {
 		await triggerDisplayAction("updateKey");

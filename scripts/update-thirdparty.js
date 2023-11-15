@@ -9,7 +9,7 @@ import * as fs from "node:fs/promises";
 /**
  * Append information about an npm package to the readme.
  *
- * @param {{packages: Object<string, {version: string, resolved: string}>}} packageLock
+ * @param {{packages: {[x: string]: {version: string, resolved: string}}}} packageLock
  * @param {string} packageName
  */
 async function writePackageInfo(packageLock, packageName) {

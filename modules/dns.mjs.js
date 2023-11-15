@@ -16,7 +16,7 @@
 ///<reference path="../experiments/libunbound.d.ts" />
 /* eslint-env webextensions, browser */
 
-import { DKIM_InternalError } from "./error.mjs.js";
+import { DKIM_TempError } from "./error.mjs.js";
 import Logging from "../modules/logging.mjs.js";
 import prefs from "../modules/preferences.mjs.js";
 
@@ -132,11 +132,11 @@ function configureLibunbound() {
 /**
  * Check that Thunderbird is online.
  *
- * @throws {DKIM_InternalError} if Thunderbird is offline.
+ * @throws {DKIM_TempError} if Thunderbird is offline.
  */
 function checkOnlineStatus() {
 	if (!navigator.onLine) {
-		throw new DKIM_InternalError(null, "DKIM_DNSERROR_OFFLINE");
+		throw new DKIM_TempError("DKIM_DNSERROR_OFFLINE");
 	}
 }
 
@@ -157,7 +157,7 @@ export default class DNS {
 	 *
 	 * @param {string} name
 	 * @returns {Promise<DnsTxtResult>}
-	 * @throws {DKIM_InternalError} if no DNS response could be retrieved.
+	 * @throws {DKIM_TempError} if no DNS response could be retrieved.
 	 */
 	static async txt(name) {
 		switch (prefs["dns.resolver"]) {
@@ -166,7 +166,8 @@ export default class DNS {
 				checkOnlineStatus();
 				const res = await browser.jsdns.txt(name);
 				if ("error" in res) {
-					throw new DKIM_InternalError(res.error, "DKIM_DNSERROR_SERVER_ERROR");
+					log.debug(`JSDNS failed with: ${res.error}`);
+					throw new DKIM_TempError("DKIM_DNSERROR_SERVER_ERROR");
 				}
 				return res;
 			}

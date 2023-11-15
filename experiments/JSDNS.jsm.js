@@ -50,6 +50,7 @@
 /* ***** END ORIGINAL LICENSE/COPYRIGHT NOTICE ***** */
 
 //@ts-check
+///<reference path="./mozilla.d.ts" />
 // options for ESLint
 /* eslint-disable prefer-template */
 /* eslint-disable no-use-before-define */
@@ -64,6 +65,12 @@
 var EXPORTED_SYMBOLS = [
 	"JSDNS"
 ];
+
+
+// @ts-expect-error
+var Services = globalThis.Services || ChromeUtils.import(
+  "resource://gre/modules/Services.jsm"
+).Services;
 
 
 const LOG_NAME = "DKIM_Verifier.JSDNS";
@@ -86,19 +93,33 @@ var log = chromeConsole.createInstance({
  * @property {boolean} alive Whether the server is alive.
  */
 
-// Preferences
-/** @type {DnsServer[]} */
-var DNS_ROOT_NAME_SERVERS = [];
-var timeout_connect = 0xFFFF;
-/** @type {number|null} */
-var timeout_read_write = null;
-var PROXY_CONFIG = {
-	enable: false,
-	type: "",
-	host: "",
-	port: 0
+/**
+ * Preferences that are set from outside.
+ */
+const prefs = {
+	getServerFromOS: false,
+	additionalNameServer: "",
+
+	autoResetServerToAlive: true,
+
+	timeoutConnect: 0xFFFF,
+	/** @type {number|null} */
+	timeoutReadWrite: null,
+
+	proxy: {
+		enable: false,
+		type: "",
+		host: "",
+		port: 0
+	},
 };
-var AUTO_RESET_SERVER_ALIVE = false;
+
+/**
+ * The current DNS servers to use.
+ *
+ * @type {DnsServer[]}
+ */
+var DNS_ROOT_NAME_SERVERS = [];
 
 /**
  * Set preferences to use.
@@ -124,6 +145,26 @@ function configureDNS(getNameserversFromOS, nameServer, timeoutConnect, proxy, a
 		maxLogLevel,
 	});
 
+	updateDnsServers(getNameserversFromOS, nameServer);
+
+	prefs.getServerFromOS = getNameserversFromOS;
+	prefs.additionalNameServer = nameServer;
+	prefs.timeoutConnect = timeoutConnect;
+	prefs.timeoutReadWrite = timeoutConnect;
+	prefs.proxy = proxy;
+	prefs.autoResetServerToAlive = autoResetServerAlive;
+}
+
+/**
+ * Update the DNS server to use.
+ *
+ * @param {boolean} getNameserversFromOS
+ * @param {string} nameServer
+ * @returns {void}
+ */
+function updateDnsServers(getNameserversFromOS, nameServer) {
+	"use strict";
+
 	/** @type {DnsServer[]} */
 	const prefDnsRootNameServers = [];
 	nameServer.split(";").forEach((element /*, index, array*/) => {
@@ -144,14 +185,7 @@ function configureDNS(getNameserversFromOS, nameServer, timeoutConnect, proxy, a
 		DNS_ROOT_NAME_SERVERS = prefDnsRootNameServers;
 	}
 
-	log.info("changed DNS Servers to :", DNS_ROOT_NAME_SERVERS);
-
-	timeout_connect = timeoutConnect;
-	timeout_read_write = timeoutConnect;
-
-	PROXY_CONFIG = proxy;
-
-	AUTO_RESET_SERVER_ALIVE = autoResetServerAlive;
+	log.info("Changed DNS Servers to:", DNS_ROOT_NAME_SERVERS);
 }
 
 /**
@@ -167,7 +201,7 @@ function configureDNS(getNameserversFromOS, nameServer, timeoutConnect, proxy, a
 function arrayUniqBy(ary, key) {
 	"use strict";
 
-	/** @type {Object<string, number>} */
+	/** @type {{[x: string]: number}} */
 	var seen = {};
 	return ary.filter((elem) => {
 		var k = key(elem);
@@ -359,64 +393,49 @@ function getOsDnsServers() {
  *
  * @param {string} host
  * @param {string} recordtype
- * @template T
- * @param {QueryDnsCallback<T>} callback
- * @param {T} callbackdata
- * @returns {void}
+ * @returns {Promise<{results?: any[]|null, queryError?: string|string[], rcode?: number}>}
  */
-function queryDNS(host, recordtype, callback, callbackdata) {
+async function queryDNS(host, recordtype) {
 	"use strict";
 
-	queryDNSRecursive(DNS_ROOT_NAME_SERVERS, host, recordtype, callback, callbackdata, 0);
+	DNS_ROOT_NAME_SERVERS = DNS_ROOT_NAME_SERVERS.filter(server => server.alive);
+	if (DNS_ROOT_NAME_SERVERS.length === 0) {
+		log.debug("No DNS Server alive.");
+		if (prefs.autoResetServerToAlive) {
+			updateDnsServers(prefs.getServerFromOS, prefs.additionalNameServer);
+		}
+	}
+
+	for (const server of DNS_ROOT_NAME_SERVERS) {
+		const res = await querySingleDNSRecursive(server.server, host, recordtype, 0);
+		if (res.queryError) {
+			// Set current server to not alive and query next server.
+			server.alive = false;
+			continue;
+		}
+		return res;
+	}
+
+	return {
+		queryError: "no DNS Server alive",
+	};
 }
 
 /**
- * @param {DnsServer[]|string} servers
+ * @param {string} server
  * @param {string} host
  * @param {string} recordtype
- * @template T
- * @param {QueryDnsCallback<T>} callback
- * @param {T} callbackdata
  * @param {number} hops
- * @returns {void}
+ * @returns {Promise<{results?: any[]|null, queryError?: string|string[], rcode?: number}>}
  */
-function queryDNSRecursive(servers, host, recordtype, callback, callbackdata, hops) {
+async function querySingleDNSRecursive(server, host, recordtype, hops) {
 	"use strict";
-
-	/** @type {string} */
-	let server;
-	/** @type {DnsServer|null} */
-	let serverObj = null;
-	// if more when one server is given
-	if (typeof servers === "object") {
-		// set server to next alive DNS server
-		for (const serv of servers) {
-			if (serv.alive) {
-				serverObj = serv;
-				break;
-			}
-		}
-
-		if (serverObj === null) {
-			log.debug("no DNS Server alive");
-			if (AUTO_RESET_SERVER_ALIVE) {
-				servers.forEach((element /*, index, array*/) => {
-					element.alive = true;
-				});
-				log.debug("set all servers to alive");
-			}
-			callback(null, callbackdata, "no DNS Server alive");
-			return;
-		}
-		server = serverObj.server;
-	} else {
-		server = servers;
-	}
 
 	if (hops === 10) {
 		log.debug("Maximum number of recursive steps taken in resolving " + host);
-		callback(null, callbackdata, "TOO_MANY_HOPS");
-		return;
+		return {
+			queryError: "TOO_MANY_HOPS",
+		};
 	}
 
 	log.info("Resolving " + host + " " + recordtype + " by querying " + server);
@@ -465,61 +484,55 @@ function queryDNSRecursive(servers, host, recordtype, callback, callbackdata, ho
 		responseBody: "",
 		done: false,
 		/**
-		 * @param {string} data
+		 * Check the error state if no DNS reply is received before the stream is closed.
+		 *
 		 * @param {number} status
-		 * @returns {void}
+		 * @returns {{queryError?: string|string[]}}
 		 */
-		finished(data, status) {
-			if (!server) {
-				server = "unknown";
-			}
+		checkErrorState(status) {
 			if (status !== 0) {
 				if (status === 2152398861) { // NS_ERROR_CONNECTION_REFUSED
 					log.debug("Resolving " + host + "/" + recordtype + ": DNS server " + server + " refused a TCP connection.");
-					if (servers === undefined) {
-						callback(null, callbackdata, ["CONNECTION_REFUSED", server]);
-					}
+					return {
+						queryError: ["CONNECTION_REFUSED", server],
+					};
 				} else if (status === 2152398868) { // NS_ERROR_NET_RESET
 					log.debug("Resolving " + host + "/" + recordtype + ": DNS server " + server + " timed out on a TCP connection.");
-					if (servers === undefined) {
-						callback(null, callbackdata, ["TIMED_OUT", server]);
-					}
+					return {
+						queryError: ["TIMED_OUT", server],
+					};
 				} else if (status === Cr.NS_ERROR_NET_TIMEOUT) {
 					log.debug("Resolving " + host + "/" + recordtype + ": DNS server " + server + " timed out on a TCP connection (NS_ERROR_NET_TIMEOUT).");
-					if (servers === undefined) {
-						callback(null, callbackdata, ["TIMED_OUT", server]);
-					}
-				} else {
-					log.debug("Resolving " + host + "/" + recordtype + ": Failed to connect to DNS server " + server + " with error code " + status + ".");
-					if (servers === undefined) {
-						callback(null, callbackdata, ["SERVER_ERROR", server]);
-					}
+					return {
+						queryError: ["TIMED_OUT", server],
+					};
 				}
-
-				// if more when one server is given
-				if (serverObj !== null) {
-					// set current server to not alive
-					serverObj.alive = false;
-
-					// start query again for next server
-					queryDNSRecursive(servers, host, recordtype, callback, callbackdata, hops);
-				}
-				return;
+				log.debug("Resolving " + host + "/" + recordtype + ": Failed to connect to DNS server " + server + " with error code " + status + ".");
+				return {
+					queryError: ["SERVER_ERROR", server],
+				};
 			}
 
-			this.process(data);
 			if (!this.done) {
 				log.debug("Resolving " + host + "/" + recordtype + ": Response was incomplete.");
-				callback(null, callbackdata, ["INCOMPLETE_RESPONSE", server]);
+				return {
+					queryError: ["INCOMPLETE_RESPONSE", server],
+				};
 			}
+			throw new Error("Process was done but finished called. This should never happen.");
 		},
 		/**
+		 * Process the incoming data.
+		 *
+		 * Will return the DNS result if the reply is completely read.
+		 * Will return null if the reply is still incomplete.
+		 *
 		 * @param {string} data
-		 * @returns {boolean}
+		 * @returns {Promise<{results?: any[]|null, rcode?: number}|null>}
 		 */
 		process(data) {
 			if (this.done) {
-				return false;
+				throw new Error("Process called after it was already done.");
 			}
 
 			this.readcount += data.length;
@@ -538,11 +551,10 @@ function queryDNSRecursive(servers, host, recordtype, callback, callbackdata, ho
 				if (this.readcount >= this.msgsize + 2) {
 					this.responseHeader = this.responseHeader.substr(2); // chop the length field
 					this.done = true;
-					DNS_getRDData(this.responseHeader + this.responseBody, server, host, recordtype, callback, callbackdata, hops);
-					return false;
+					return DNS_getRDData(this.responseHeader + this.responseBody, server, host, recordtype, hops);
 				}
 			}
-			return true;
+			return Promise.resolve(null);
 		}
 	};
 
@@ -555,10 +567,17 @@ function queryDNSRecursive(servers, host, recordtype, callback, callbackdata, ho
 		port = parseInt(server.substring(server.indexOf(":") + 1), 10);
 	}
 
-	var ex = DNS_readAllFromSocket(server_hostname, port, query, listener);
-	if (ex !== null) {
-		log.error(`${ex}\n${ex.stack}`);
+	const socket = new Socket(server_hostname, port);
+	socket.write(query);
+	for await (const data of socket.read()) {
+		const res = await listener.process(data);
+		if (res) {
+			socket.close();
+			return res;
+		}
 	}
+	socket.close();
+	return listener.checkErrorState(socket.status ?? -1);
 }
 
 /**
@@ -670,17 +689,19 @@ function DNS_readRec(ctx) {
 }
 
 /**
+ * Parse the RD data and return the results if available.
+ *
+ * If no results are included but a NS authority is returned,
+ * will recurs on the NS authority.
+ *
  * @param {string} str
  * @param {string} server
  * @param {string} host
  * @param {string} recordtype
- * @template T
- * @param {QueryDnsCallback<T>} callback
- * @param {T} callbackdata
  * @param {number} hops
- * @returns {void}
+ * @returns {Promise<{results?: any[]|null, rcode?: number}>}
  */
-function DNS_getRDData(str, server, host, recordtype, callback, callbackdata, hops) {
+async function DNS_getRDData(str, server, host, recordtype, hops) {
 	"use strict";
 
 	const debugstr = `${host}/${recordtype}: `;
@@ -694,8 +715,9 @@ function DNS_getRDData(str, server, host, recordtype, callback, callbackdata, ho
 	var rcode = flags & 0xF;
 	if (rcode !== 0) {
 		log.debug(debugstr + "Lookup failed with rcode " + rcode);
-		callback(null, callbackdata, undefined, rcode);
-		return;
+		return {
+			rcode,
+		};
 	}
 
 	var ctx = { str, idx: 12 };
@@ -773,26 +795,35 @@ function DNS_getRDData(str, server, host, recordtype, callback, callbackdata, ho
 
 	if (results.length) {
 		// We have an answer.
-		callback(results, callbackdata);
-
-	} else {
-		// No answer.  If there is an NS authority, recurse.
-		// Note that we can do without the IP address of the NS authority (given in the additional
-		// section) because we're able to do DNS lookups without knowing the IP address
-		// of the DNS server -- Thunderbird and the OS take care of that.
-		for (const authority of authorities) {
-			if (authority.type === "NS" && authority.rddata !== server) {
-				log.debug(debugstr + "Recursing on Authority: " + authority.rddata);
-				// @ts-expect-error
-				queryDNSRecursive(authority.rddata, host, recordtype, callback, callbackdata, hops + 1);
-				return;
-			}
-		}
-
-		// No authority was able to help us.
-		log.debug(debugstr + "No answer, no authority to recurse on.  DNS lookup failed.");
-		callback(null, callbackdata);
+		return {
+			results,
+		};
 	}
+
+	// No answer. If there is an NS authority, recurse.
+	// Note that we can do without the IP address of the NS authority (given in the additional
+	// section) because we're able to do DNS lookups without knowing the IP address
+	// of the DNS server -- Thunderbird and the OS take care of that.
+	for (const authority of authorities) {
+		if (authority.type === "NS" && authority.rddata !== server) {
+			log.debug(debugstr + "Recursing on Authority: " + authority.rddata);
+			// @ts-expect-error
+			const res = await querySingleDNSRecursive(authority.rddata, host, recordtype, hops + 1);
+			if (res.results) {
+				return res;
+			}
+			// We only try one NS authority, and ignore any errors for the query.
+			return {
+				results: null,
+			};
+		}
+	}
+
+	// No authority was able to help us.
+	log.debug(debugstr + "No answer, no authority to recurse on. DNS lookup failed.");
+	return {
+		results: null,
+	};
 }
 
 /**
@@ -837,35 +868,44 @@ function DNS_octetToStr(octet) {
 	return String.fromCharCode(octet);
 }
 
-/**
- * This comes from http://xulplanet.com/tutorials/mozsdk/sockets.php.
- *
- * @param {string} host
- * @param {number} port
- * @param {string} outputData
- * @param {{finished: function(string, number): void, process: function(string): boolean}} listener
- * @returns {Error|null}
- */
-function DNS_readAllFromSocket(host, port, outputData, listener) {
-	"use strict";
+class Socket {
+	/**
+	 * Status of the socket.
+	 *
+	 * - null: Socket is still open.
+	 * - 0: Socket is closed and all data read.
+	 * - number: Socket failed with error number.
+	 *
+	 * @type {number|null}
+	 */
+	status = null;
 
-	try {
-		var proxy = null;
-		if (PROXY_CONFIG.enable) {
-			var pps = Cc["@mozilla.org/network/protocol-proxy-service;1"]?.
+	#outStream;
+	#inStream;
+
+	/**
+	 * Open a socket.
+	 *
+	 * @param {string} host
+	 * @param {number} port
+	 */
+	constructor(host, port) {
+		let proxy = null;
+		if (prefs.proxy.enable) {
+			const pps = Cc["@mozilla.org/network/protocol-proxy-service;1"]?.
 				getService(Ci.nsIProtocolProxyService);
 			if (!pps) {
 				throw new Error("Could not get protocol-proxy-service service");
 			}
 			proxy = pps.newProxyInfo(
-				PROXY_CONFIG.type,
-				PROXY_CONFIG.host,
-				PROXY_CONFIG.port,
+				prefs.proxy.type,
+				prefs.proxy.host,
+				prefs.proxy.port,
 				"", "", 0, 0xffffffff, null
 			);
 		}
 
-		var transportService =
+		const transportService =
 			Cc["@mozilla.org/network/socket-transport-service;1"]?.
 				getService(Ci.nsISocketTransportService);
 		if (!transportService) {
@@ -874,67 +914,93 @@ function DNS_readAllFromSocket(host, port, outputData, listener) {
 		const transport = transportService.createTransport([], host, port, proxy, null);
 
 		// change timeout for connection
-		transport.setTimeout(transport.TIMEOUT_CONNECT, timeout_connect);
-		if (timeout_read_write) {
-			transport.setTimeout(transport.TIMEOUT_READ_WRITE, timeout_read_write);
+		transport.setTimeout(transport.TIMEOUT_CONNECT, prefs.timeoutConnect);
+		if (prefs.timeoutReadWrite) {
+			transport.setTimeout(transport.TIMEOUT_READ_WRITE, prefs.timeoutReadWrite);
 		}
 
-		var outstream = transport.openOutputStream(0, 0, 0);
-		outstream.write(outputData, outputData.length);
+		// Open output and input streams.
+		this.#outStream = transport.openOutputStream(0, 0, 0);
+		this.#inStream = transport.openInputStream(0, 0, 0).
+			QueryInterface(Ci.nsIAsyncInputStream);
+	}
 
-		var stream = transport.openInputStream(0, 0, 0);
-		var instream = Cc["@mozilla.org/binaryinputstream;1"]?.
+	/**
+	 * Synchronously write data to the socket.
+	 *
+	 * @param {string} data
+	 * @returns {number}
+	 */
+	write(data) {
+		return this.#outStream.write(data, data.length);
+	}
+
+	/**
+	 * Asynchronously read data from the socket.
+	 *
+	 * @yields
+	 * @returns {AsyncGenerator<string, void, void>}
+	 */
+	async * read() {
+		const binaryInputStream = Cc["@mozilla.org/binaryinputstream;1"]?.
 			createInstance(Ci.nsIBinaryInputStream);
-		if (!instream) {
+		if (!binaryInputStream) {
 			throw new Error("Could not create binaryinputstream instance");
 		}
-		instream.setInputStream(stream);
+		binaryInputStream.setInputStream(this.#inStream);
 
-		/** @type {nsIStreamListener & {data: string}} */
-		var dataListener = {
-			data: "",
-			// eslint-disable-next-line no-empty-function
-			onStartRequest(/* request, context */) { },
-			onStopRequest(_request, status) {
-				if (listener.finished !== null) {
-					listener.finished(this.data, status);
-				}
-				outstream.close();
-				stream.close();
-				//DNS_Debug("DNS: Connection closed (" + host + ")");
-			},
-			/**
-			 * @this {typeof dataListener}
-			 * @type {nsIStreamListener["onDataAvailable"]}
-			 */
-			onDataAvailable(_request, _inputStream, _offset, count) {
-				//DNS_Debug("DNS: Got data (" + host + ")");
-				for (var i = 0; i < count; i++) {
-					// @ts-expect-error
-					this.data += String.fromCharCode(instream.read8());
-				}
-				if (listener.process !== null) {
-					if (!listener.process(this.data)) {
-						outstream.close();
-						stream.close();
+		while (true) {
+			// Wait for the stream to be readable or closed.
+			// eslint-disable-next-line no-extra-parens
+			await /** @type {Promise<void>} */ (new Promise(resolve => {
+				this.#inStream.asyncWait({
+					QueryInterface: ChromeUtils.generateQI([
+						Ci.nsIInputStreamCallback]),
+					onInputStreamReady() {
+						resolve();
 					}
-					this.data = "";
-				}
-			}
-		};
+				}, 0, 0, Services.tm.mainThreadEventTarget);
+			}));
 
-		var pump = Cc["@mozilla.org/network/input-stream-pump;1"]?.
-			createInstance(Ci.nsIInputStreamPump);
-		if (!pump) {
-			throw new Error("Could not create input-stream-pump instance");
+			// Get number of bytes available in the stream.
+			let count;
+			try {
+				count = binaryInputStream.available();
+			} catch (error) {
+				// @ts-expect-error
+				if (!("result" in error)) {
+					log.warn("available() failed with unexpected exception", error);
+					this.status = Cr.NS_ERROR_FAILURE ?? -1;
+				} else if (error.result === Cr.NS_BASE_STREAM_CLOSED) {
+					this.status = 0;
+				} else {
+					// @ts-expect-error
+					this.status = error.result;
+				}
+				return;
+			}
+			if (count === 0) {
+				log.debug("asyncWait was triggered but no data available");
+				continue;
+			}
+
+			// Read the data from the stream.
+			let data = "";
+			for (var i = 0; i < count; i++) {
+				data += String.fromCharCode(binaryInputStream.read8());
+			}
+
+			yield data;
 		}
-		pump.init(stream, 0, 0, false);
-		pump.asyncRead(dataListener, null);
-	} catch (ex) {
-		// @ts-expect-error
-		return ex;
 	}
-	return null;
+
+	/**
+	 * Close the socket.
+	 */
+	close() {
+		this.#outStream.close();
+		this.#inStream.close();
+	}
 }
 
 /**

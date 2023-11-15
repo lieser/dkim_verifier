@@ -57,8 +57,9 @@
             "warn",
             {
                 "allow": [
-                    "DKIM_InternalError",
-                    "DKIM_SigError"
+                    "DKIM_Error",
+                    "DKIM_SigError",
+                    "DKIM_TempError"
                 ]
             }
         ],
@@ -135,7 +136,10 @@
         "no-void": "warn",
         "no-warning-comments": "warn",
         "object-shorthand": "warn",
-        "one-var": ["warn", "never"],
+        "one-var": [
+            "warn",
+            "never"
+        ],
         "operator-assignment": "warn",
         "prefer-const": "warn",
         "prefer-exponentiation-operator": "warn",
@@ -155,7 +159,10 @@
         "yoda": "warn",
 
         // Layout & Formatting
-        "comma-dangle": ["warn", "only-multiline"],
+        "comma-dangle": [
+            "warn",
+            "only-multiline"
+        ],
         "dot-location": "warn",
         "no-extra-parens": [
             "warn",
@@ -169,7 +176,13 @@
             "smart-tabs"
         ],
         "no-multi-spaces": "warn",
-        "quotes": ["warn", "double", {"avoidEscape": true}],
+        "quotes": [
+            "warn",
+            "double",
+            {
+                "avoidEscape": true
+            }
+        ],
         "semi": "warn",
         "template-curly-spacing": "warn",
         "wrap-iife": "warn",
@@ -192,6 +205,13 @@
             }
         ],
         "jsdoc/require-returns-description": "off",
+        "jsdoc/tag-lines": [
+            "warn",
+            "never",
+            {
+                "startLines": 1
+            }
+        ],
 
         // Mocha
         "mocha/no-return-from-async": "warn",

@@ -8,10 +8,48 @@ All notable changes to this project will be documented in this file.
 
 ### Enhancements
 
+- Added support for using the Brand Indicators for Message Identification (BIMI)
+  when showing favicons is enabled (#242).
+- Added the possibility to show a favicon for a specific From address or AUID (#107).
+- Don't save DKIM results that contain a temporary error.
+- Show proper error message if parsing of a message failed.
+- Show DKIM label if "Hide labels column" is enabled.
+- Authentication-Results header: if reading of non RFC compliant ARHs is enabled,
+  a `:` in a property value is now allowed without the value being in a quoted-string.
+- Authentication-Results header: don't restrict result keyword for unknown methods.
+
+### Fixes
+
+- Fixed signature verification if a signed header contains a non ASCII character.
+- Fixed support for Thunderbird Conversations add-on in Thunderbird 115 and later (#395).
+- Libunbound resolver: Fixed using a relative path to the profile directory in Thunderbird 115 and later (#385).
+
+### Other
+
+- Added Polish translation (by dMbski) (#392).
+- Updated default rules and favicons (#387, #393).
+
+## 5.3.1 (2023-06-08)
+
+### Fixes
+
+- Fixed incompatibility with Thunderbird 115 if no preferences exist, e.g. a new installation.
+
+## 5.3.0 (2023-06-06)
+
+### Enhancements
+
 - Fixed incompatibility with Thunderbird 115 (#364).
 - Support the offline mode of Thunderbird.
   No DNS queries are done if Thunderbird is in the offline mode (#129).
 - JSDNS: Support IPv6 addresses (#363)
+- JSDNS: Improved how the addon behaves if all DNS servers were not reachable.
+  By default the addon will now try them again instead of getting in a state there all further DNS queries will fail (#269).
+  If getting DNS servers from OS configuration is enabled, they will now also be read from the OS again (#90).
+
+### Other
+
+- Updated default rules and favicons (#365).
 
 ## 5.2.0 (2023-04-02)
 

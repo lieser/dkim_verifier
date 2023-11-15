@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  - push
+  - pull_request
+
+permissions:
+  contents: read
+  # implicitly all other scopes not listed become none
+
+jobs:
+  ESLint:
+    name: ESLint
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      - name: Install Node.js dependencies
+        run: npm ci
+      - name: Run ESLint
+        run: npm run lint:ci
+
+  checkJs:
+    name: Type Check
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      - name: Install Node.js dependencies
+        run: npm ci
+      - name: Register Problem Matcher for colored tsc output
+        run: echo "##[add-matcher].github/problemMatchers/tsc-pretty.json"
+      - name: Run type checking
+        run: npm run checkJs
+
+  test:
+    name: Unittest
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      - name: Install Node.js dependencies
+        run: npm ci
+      - name: Run tests
+        run: npm run test:ci
+      - name: Upload test results
+        uses: actions/upload-artifact@v3
+        if: success() || failure()
+        with:
+          name: test-results
+          path: test-results.json
+
+  event_file:
+    name: Event File
+    runs-on: ubuntu-latest
+    steps:
+    - name: Upload
+      uses: actions/upload-artifact@v3
+      with:
+        name: Event File
+        path: ${{ github.event_path }}
+

@@ -10,6 +10,7 @@
 		"spoonscen.es6-mocha-snippets",
 		"leighlondon.eml",
 		"aeschli.vscode-css-formatter",
-		"nhoizey.gremlins"
+		"nhoizey.gremlins",
+		"github.vscode-github-actions"
 	]
 }

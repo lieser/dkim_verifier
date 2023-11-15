@@ -4,6 +4,6 @@ Es ist wichtig zu beachten, dass eine E-Mail von einer beliebigen Domain signier
 
 In einigen Fällen kann das Fehlen einer DKIM-Signatur nützlich sein, um betrügerische E-Mails zu erkennen. Wenn bekannt ist, dass eine Domain alle ihre E-Mails mittels DKIM signiert, ist das Fehlen einer DKIM-Signatur ein starker Hinweis auf eine gefälschte E-Mail.
 
-Um die Überprüfung, ob und von wem eine E-Mail signiert ist, zu erleichtern, unterstützt das Add-on die Verwendung von Signierregeln. Mit Signierregeln kann man festzulegen, dass E-Mails von einem bestimmtem Absender immer von einer bestimmten Domain (auch SDID genannt) signiert sein müssen. Mehr über Signierregeln in Englisch unter https://github.com/lieser/dkim_verifier/wiki/Sign-rules.
+Um die Überprüfung, ob und von wem eine E-Mail signiert ist, zu erleichtern, unterstützt das Add-on die Verwendung von Signierregeln. Mit Signierregeln kann man festlegen, dass E-Mails von einem bestimmtem Absender immer von einer bestimmten Domain (auch SDID genannt) signiert sein müssen. Mehr über Signierregeln in Englisch unter https://github.com/lieser/dkim_verifier/wiki/Sign-rules.
 
 Eine Beschreibung aller verfügbaren Add-on-Einstellungen finden Sie in Englisch unter https://github.com/lieser/dkim_verifier/wiki/Options.

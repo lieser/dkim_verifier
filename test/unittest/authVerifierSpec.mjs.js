@@ -10,9 +10,12 @@
 // @ts-check
 /* eslint-env webextensions */
 /* eslint-disable camelcase */
+/* eslint-disable no-extra-parens */
 
 import AuthVerifier from "../../modules/authVerifier.mjs.js";
+import { DKIM_TempError } from "../../modules/error.mjs.js";
 import DMARC from "../../modules/dkim/dmarc.mjs.js";
+import DNS from "../../modules/dns.mjs.js";
 import KeyStore from "../../modules/dkim/keyStore.mjs.js";
 import MsgParser from "../../modules/msgParser.mjs.js";
 import Verifier from "../../modules/dkim/verifier.mjs.js";
@@ -97,6 +100,102 @@ describe("AuthVerifier [unittest]", function () {
 	});
 
 	describe("saving of results", function () {
+		beforeEach(async function () {
+			await prefs.setValue("saveResult", true);
+
+			browser.storageMessage = {
+				get: sinon.fake.resolves(""),
+				set: sinon.fake.resolves(undefined),
+			};
+		});
+
+		it("Store SUCCESS result", async function () {
+			const message = await createMessageHeader("rfc8463-A.3.eml");
+			const res = await authVerifier.verify(message);
+			expect(res.dkim.length).to.be.equal(2);
+			expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
+			expect(res.dkim[1]?.result).to.be.equal("SUCCESS");
+
+			const setSpy = /** @type {import("sinon").SinonSpy} */(browser.storageMessage.set);
+			expect(setSpy.calledOnce).to.be.true;
+			const savedRes = JSON.parse(setSpy.firstCall.lastArg);
+			expect(savedRes).to.be.deep.equal({
+				"version": "3.0",
+				"dkim": [
+					{
+						"version": "2.0",
+						"result": "SUCCESS",
+						"sdid": "football.example.com",
+						"auid": "@football.example.com",
+						"selector": "test",
+						"warnings": [],
+						"keySecure": false
+					}, {
+						"version": "2.0",
+						"result": "SUCCESS",
+						"sdid": "football.example.com",
+						"auid": "@football.example.com",
+						"selector": "brisbane",
+						"warnings": [],
+						"keySecure": false
+					}]
+			});
+		});
+
+		it("Don't store TEMPFAIL result", async function () {
+			const queryFunktion = (/** @type {string} */ name) => {
+				if (name === "brisbane._domainkey.football.example.com") {
+					return Promise.resolve({
+						rcode: DNS.RCODE.NoError,
+						data: ["v=DKIM1; k=ed25519; p=11qYAYKxCrfVS/7TyWQHOg7hcvPapiMlrwIaaPcHURo="],
+						secure: false,
+						bogus: false,
+					});
+				}
+				throw new DKIM_TempError("DKIM_DNSERROR_SERVER_ERROR");
+			};
+			const verifier = new AuthVerifier(new Verifier(new KeyStore(queryFunktion)));
+			const message = await createMessageHeader("rfc8463-A.3.eml");
+			const res = await verifier.verify(message);
+			expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
+			expect(res.dkim[1]?.result).to.be.equal("TEMPFAIL");
+
+			const setSpy = /** @type {import("sinon").SinonSpy} */(browser.storageMessage.set);
+			expect(setSpy.notCalled).to.be.true;
+		});
+
+		it("Store BIMI result", async function () {
+			await prefs.setValue("arh.read", true);
+
+			const message = await createMessageHeader("bimi/rfc6376-A.2-with_bimi.eml");
+			const res = await authVerifier.verify(message);
+			expect(res.dkim.length).to.be.equal(1);
+			expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
+
+			const setSpy = /** @type {import("sinon").SinonSpy} */(browser.storageMessage.set);
+			expect(setSpy.calledOnce).to.be.true;
+			const savedRes = JSON.parse(setSpy.firstCall.lastArg);
+			expect(savedRes).to.be.deep.equal({
+				"version": "3.1",
+				"dkim": [
+					{
+						"version": "2.0",
+						"result": "SUCCESS",
+						"sdid": "example.com",
+						"auid": "joe@football.example.com",
+						"selector": "brisbane",
+						"warnings": [],
+						"keySecure": false
+					}
+				],
+				"spf": [],
+				"dmarc": [],
+				"bimiIndicator": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiICBzdGFuZGFsb25lPSJ5ZXMiPz4KPHN2ZyB2ZXJzaW9uPSIxLjIiIGJhc2VQcm9maWxlPSJ0aW55LXBzIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHRpdGxlPkV4YW1wbGU8L3RpdGxlPgo8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0MCIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIzIiBmaWxsPSJyZWQiIC8+Cjwvc3ZnPg=="
+			});
+		});
+	});
+
+	describe("loading of results", function () {
 		/** @type {import("../../modules/dkim/verifier.mjs.js").dkimResultV1|import("../../modules/authVerifier.mjs.js").AuthResultV2|import("../../modules/authVerifier.mjs.js").SavedAuthResultV3} */
 		let storedData;
 
@@ -210,6 +309,31 @@ describe("AuthVerifier [unittest]", function () {
 			expect(res.dkim[0]?.result_str).to.be.equal("Invalid (Signature has an unsupported version)");
 
 			expect(res.dmarc && res.dmarc[0]?.result).to.be.equal("pass");
+		});
+
+		it("loading SavedAuthResult 3.1 with BIMI result", async function () {
+			storedData = {
+				"version": "3.1",
+				"dkim": [
+					{
+						"version": "2.0",
+						"result": "SUCCESS",
+						"sdid": "example.com",
+						"auid": "joe@football.example.com",
+						"selector": "brisbane",
+						"warnings": [],
+						"keySecure": false
+					}
+				],
+				"spf": [],
+				"dmarc": [],
+				"bimiIndicator": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiICBzdGFuZGFsb25lPSJ5ZXMiPz4KPHN2ZyB2ZXJzaW9uPSIxLjIiIGJhc2VQcm9maWxlPSJ0aW55LXBzIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHRpdGxlPkV4YW1wbGU8L3RpdGxlPgo8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0MCIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIzIiBmaWxsPSJyZWQiIC8+Cjwvc3ZnPg=="
+			};
+			const res = await authVerifier.verify(createFakeMessageHeader());
+			expect(res.dkim[0]?.res_num).to.be.equal(10);
+			expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
+			expect(res.dkim[0]?.favicon).to.be.a("string").and.satisfy(
+				(/** @type {string} */ favicon) => favicon.startsWith("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiICBzdGFuZGFsb25l"));
 		});
 	});
 
@@ -396,6 +520,30 @@ describe("AuthVerifier [unittest]", function () {
 			const message = await createMessageHeader("rfc6376-A.2-ill_formed-list_id.eml");
 			const res = await authVerifier.verify(message);
 			expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
+		});
+	});
+
+	describe("BIMI", function () {
+		beforeEach(async function () {
+			await prefs.setValue("arh.read", true);
+		});
+
+		it("RFC 6376 example with add BIMI", async function () {
+			const message = await createMessageHeader("bimi/rfc6376-A.2-with_bimi.eml");
+			const res = await authVerifier.verify(message);
+			expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
+			expect(res.dkim[0]?.favicon).to.be.a("string").and.satisfy(
+				(/** @type {string} */ favicon) => favicon.startsWith("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiICBzdGFuZGFsb25l"));
+		});
+
+		it("CNN received by Fastmail", async function () {
+			await prefs.setValue("arh.relaxedParsing", true);
+
+			const message = await createMessageHeader("original/Fastmail from CNN - Welcome to CNN Breaking News.eml");
+			const res = await authVerifier.verify(message);
+			expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
+			expect(res.dkim[0]?.favicon).to.be.a("string").and.satisfy(
+				(/** @type {string} */ favicon) => favicon.startsWith("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3"));
 		});
 	});
 });

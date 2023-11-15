@@ -11,13 +11,9 @@
 // @ts-check
 ///<reference path="./jsdns.d.ts" />
 ///<reference path="./mozilla.d.ts" />
-/* global ExtensionCommon */
+/* global ExtensionCommon, Services */
 
 "use strict";
-
-// @ts-expect-error
-// eslint-disable-next-line no-var
-var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 this.jsdns = class extends ExtensionCommon.ExtensionAPI {
 	/**
@@ -64,48 +60,39 @@ this.jsdns = class extends ExtensionCommon.ExtensionAPI {
 					JSDNS.configureDNS(getNameserversFromOS, nameServer, timeoutConnect, proxy, autoResetServerAlive, debug);
 					return Promise.resolve();
 				},
-				txt(name) {
-					/** @type {QueryDnsCallback<{resolve: function(browser.jsdns.TxtResult): void, reject: function(unknown): void}>} */
-					function dnsCallback(dnsResult, defer, queryError, rcode) {
-						try {
-							let resRcode = RCODE.NoError;
-							if (rcode !== undefined) {
-								resRcode = rcode;
-							} else if (queryError !== undefined) {
-								let error = "";
-								if (typeof queryError === "string") {
-									error = queryError;
-								} else {
-									error = context.extension.localeData.localizeMessage(queryError[0] ?? "DKIM_DNSERROR_UNKNOWN", queryError[1]) ||
-										(queryError[0] ?? "Unknown DNS error");
-								}
-								console.warn(`JSDNS failed with: ${error}`);
-								defer.resolve({
-									error,
-								});
-								return;
-							}
+				async txt(name) {
+					const res = await JSDNS.queryDNS(name, "TXT");
 
-							const results = dnsResult && dnsResult.map(rdata => {
-								if (typeof rdata !== "string") {
-									throw Error(`DNS result has unexpected type ${typeof rdata}`);
-								}
-								return rdata;
-							});
-
-							defer.resolve({
-								data: results,
-								rcode: resRcode,
-								secure: false,
-								bogus: false,
-							});
-						} catch (e) {
-							defer.reject(e);
+					let resRcode = RCODE.NoError;
+					if (res.rcode !== undefined) {
+						resRcode = res.rcode;
+					} else if (res.queryError !== undefined) {
+						let error = "";
+						if (typeof res.queryError === "string") {
+							error = res.queryError;
+						} else {
+							error = context.extension.localeData.localizeMessage(res.queryError[0] ?? "DKIM_DNSERROR_UNKNOWN", res.queryError[1]) ||
+								(res.queryError[0] ?? "Unknown DNS error");
 						}
+						console.warn(`JSDNS failed with: ${error}`);
+						return {
+							error,
+						};
 					}
-					return new Promise((resolve, reject) => {
-						JSDNS.queryDNS(name, "TXT", dnsCallback, { resolve, reject });
+
+					const results = res.results?.map(rdata => {
+						if (typeof rdata !== "string") {
+							throw new Error(`DNS result has unexpected type ${typeof rdata}`);
+						}
+						return rdata;
 					});
+
+					return {
+						data: results ?? null,
+						rcode: resRcode,
+						secure: false,
+						bogus: false,
+					};
 				},
 			},
 		};

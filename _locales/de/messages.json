@@ -66,7 +66,7 @@
 		"message": "Fehler im DNS-Resolver"
 	},
 	"DKIM_DNSERROR_OFFLINE": {
-		"message": "DNS-Anfrage fehlgeschlagen weil Thunderbird im Offline-Modus ist.",
+		"message": "DNS-Anfrage fehlgeschlagen, weil Thunderbird im Offline-Modus ist.",
 		"description": "Error message if the addon needs to do a DNS query, but Thunderbird is in the offline mode."
 	},
 	"DKIM_DNSERROR_SERVER_ERROR": {
@@ -120,7 +120,7 @@
 		"message": "Fehlende Signatur"
 	},
 	"DKIM_SIGERROR_BADSIG": {
-		"message": "Signatur falsch"
+		"message": "Signatur ist falsch"
 	},
 	"DKIM_SIGERROR_ILLFORMED_B": {
 		"message": "Signatur-Tag hat falsches Format"
@@ -180,10 +180,10 @@
 		"message": "Query-Methoden-Tag hat falsches Format"
 	},
 	"DKIM_SIGERROR_MISSING_S": {
-		"message": "Fehlender Selector-Tag"
+		"message": "Fehlender Selektor-Tag"
 	},
 	"DKIM_SIGERROR_ILLFORMED_S": {
-		"message": "Selector-Tag hat falsches Format"
+		"message": "Selektor-Tag hat falsches Format"
 	},
 	"DKIM_SIGERROR_ILLFORMED_T": {
 		"message": "Signatur-Zeitstempel-Tag hat falsches Format"
@@ -359,7 +359,7 @@
 		"message": "DNS"
 	},
 	"options_dns.resolver": {
-		"message": "Resolver"
+		"message": "Resolver:"
 	},
 	"options_dns.resolver.value.1": {
 		"message": "JavaScript-DNS-Bibliothek"
@@ -371,10 +371,10 @@
 		"message": "DNS-Server aus den Einstellungen des Betriebssystems laden"
 	},
 	"options_dns.nameserver": {
-		"message": "DNS-Server (EBNF-Syntax: host[\":\"port]{\";\"host[\":\"port]} )"
+		"message": "DNS-Server (EBNF-Syntax: host[\":\"port]{\";\"host[\":\"port]} ):"
 	},
 	"options_dns.timeout_connect": {
-		"message": "DNS-Verbindungs-Timeout (in Sekunden)",
+		"message": "DNS-Verbindungs-Timeout (in Sekunden):",
 		"description": "Timeout for the connection to the DNS servers (both establishing the connection and sending/receiving data)"
 	},
 	"options_dns.proxy.enable": {
@@ -390,16 +390,16 @@
 		"message": "Port:"
 	},
 	"options_dns.libunbound.nameserver": {
-		"message": "DNS-Server (EBNF-Syntax: IP{\";\"IP} )"
+		"message": "DNS-Server (EBNF-Syntax: IP{\";\"IP} ):"
 	},
 	"options_dns.libunbound.usageWarning": {
 		"message": "Der libunbound-Resolver benötigt eine extern installierte Bibliothek!"
 	},
 	"options_dns.libunbound.path": {
-		"message": "Pfadname"
+		"message": "Pfad"
 	},
 	"options_dns.libunbound.path.relToProfileDir": {
-		"message": "Pfadname relativ zum Profilordner"
+		"message": "Pfad ist relativ zum Profilordner"
 	},
 	// ---------- Policy options tab ----------
 	"options_general.policy": {
@@ -442,7 +442,7 @@
 		"message": "DMARC benutzen, um heuristisch zu bestimmen, ob eine E-Mail signiert sein sollte"
 	},
 	"options_policy.dkim.unsignedHeadersWarning.mode": {
-		"message": "Warne vor unsignierten Kopfzeilen, die signiert sein sollten:",
+		"message": "Vor unsignierten Kopfzeilen, die signiert sein sollten, warnen:",
 		"description": "Description for the setting of the unsigned headers warning mode."
 	},
 	"options_policy.dkim.unsignedHeadersWarning.mode.relaxed": {
@@ -462,25 +462,25 @@
 		"message": "Anzeige"
 	},
 	"options_showDKIMHeader": {
-		"message": "DKIM-Kopfzeile anzeigen"
+		"message": "DKIM-Kopfzeile anzeigen:"
 	},
 	"options_showDKIMFromTooltip": {
-		"message": "DKIM-Tooltip für Absenderadresse anzeigen"
+		"message": "DKIM-Tooltipp für Absenderadresse anzeigen:"
 	},
 	"options_showDKIM.value.0": {
-		"message": "nie"
+		"message": "Nie"
 	},
 	"options_showDKIM.value.10": {
-		"message": "wenn eine E-Mail mit gültiger DKIM-Signatur angezeigt wird"
+		"message": "Wenn eine E-Mail mit gültiger DKIM-Signatur angezeigt wird"
 	},
 	"options_showDKIM.value.30": {
-		"message": "wenn eine E-Mail mit DKIM-Signatur angezeigt wird"
+		"message": "Wenn eine E-Mail mit DKIM-Signatur angezeigt wird"
 	},
 	"options_showDKIM.value.40": {
-		"message": "wenn eine E-Mail angezeigt wird"
+		"message": "Wenn eine E-Mail angezeigt wird"
 	},
 	"options_showDKIM.value.50": {
-		"message": "wenn eine Nachricht angezeigt wird"
+		"message": "Wenn eine Nachricht angezeigt wird"
 	},
 	"options_colorFrom": {
 		"message": "Absenderadresse hervorheben"
@@ -526,19 +526,19 @@
 		"message": "Signatur auch überprüfen, wenn die Domain DKIM nur testet"
 	},
 	"options_error.illformed_i.treatAs": {
-		"message": "Falsch formatierten AUID-Tag behandeln als"
+		"message": "Falsch formatierten AUID-Tag behandeln als:"
 	},
 	"options_error.illformed_s.treatAs": {
-		"message": "Falsch formatierten Selector-Tag behandeln als"
+		"message": "Falsch formatierten Selektor-Tag behandeln als:"
 	},
 	"options_error.policy.key_insecure.treatAs": {
-		"message": "Nicht durch DNSSEC gesicherte DKIM-Schlüssel behandeln als"
+		"message": "Nicht durch DNSSEC gesicherte DKIM-Schlüssel behandeln als:"
 	},
 	"options_error.algorithm.sign.rsa-sha1.treatAs": {
-		"message": "RSA-SHA1-Signaturalgorithmus behandeln als"
+		"message": "RSA-SHA1-Signaturalgorithmus behandeln als:"
 	},
 	"options_error.algorithm.rsa.weakKeyLength.treatAs": {
-		"message": "Schwachen RSA-Schlüssel (< 2048 Bits) behandeln als"
+		"message": "Schwachen RSA-Schlüssel (< 2048 Bits) behandeln als:"
 	},
 	"options_error.treatAs.value.0": {
 		"message": "Fehler"
@@ -609,7 +609,7 @@
 	},
 	"about_translators": {
 		"message": "Übersetzer:",
-		"description": "Heading for list of transaltors"
+		"description": "Heading for list of translators"
 	},
 	"about_dependencies": {
 		"message": "Enthaltene Abhängigkeiten:",
@@ -641,7 +641,7 @@
 		"message": "SDID"
 	},
 	"treeviewKeys.treecol.selector": {
-		"message": "Selector"
+		"message": "Selektor"
 	},
 	"treeviewKeys.treecol.key": {
 		"message": "DKIM-Schlüssel"
@@ -704,7 +704,7 @@
 		"description": "Title for import dialog"
 	},
 	"importRules.replaceQuestion": {
-		"message": "Sollen die importierten Regeln zu den existierenden Regeln hinzugefügt werden oder die existierenden Regeln ersetzen?",
+		"message": "Sollen die importierten Regeln zu den existierenden Regeln hinzugefügt oder die existierenden Regeln ersetzt werden?",
 		"description": "Question asked in import dialog"
 	},
 	"importRules.addRules": {
@@ -735,7 +735,7 @@
 		"message": "Priorität automatisch bestimmen"
 	},
 	"signRules.priorityMode.manual": {
-		"message": "Priorität setzen auf"
+		"message": "Priorität setzen auf:"
 	},
 	"button.cancel": {
 		"message": "Abbrechen"
@@ -747,7 +747,7 @@
 		"message": "Hilfe für Signierregeln"
 	},
 	"domain.description": {
-		"message": "Wird mit der Basis-Domain der Absenderadresse verglichen. Die Basis-Domain von 'email.example.co.uk' ist zum Beispiel 'excample.co.uk'."
+		"message": "Wird mit der Basis-Domain der Absenderadresse verglichen. Die Basis-Domain von 'email.example.co.uk' ist zum Beispiel 'example.co.uk'."
 	},
 	"listId.description": {
 		"message": "Wird mit der List-ID verglichen, wenn die E-Mail über eine E-Mail-Liste empfangen wurde. Beachten Sie, dass nur der Teil zwischen '<' und '>' aus der List-ID-Kopfzeile die eigentliche List-ID ist. Es wird entweder Basis-Domain oder List-ID verglichen."

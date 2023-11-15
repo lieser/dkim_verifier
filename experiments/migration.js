@@ -10,18 +10,19 @@
 // @ts-check
 ///<reference path="./migration.d.ts" />
 ///<reference path="./mozilla.d.ts" />
-/* global ExtensionCommon */
+/* global ExtensionCommon, Services */
 
 "use strict";
 
-// @ts-expect-error
-// eslint-disable-next-line no-var
-var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 // eslint-disable-next-line no-var
 var { Sqlite } = ChromeUtils.import("resource://gre/modules/Sqlite.jsm");
 // @ts-expect-error
 // eslint-disable-next-line no-var
-var { OS } = ChromeUtils.import("resource://gre/modules/osfile.jsm");
+var OS;
+if (typeof PathUtils === "undefined") {
+	// TB < 115
+	({ OS } = ChromeUtils.import("resource://gre/modules/osfile.jsm"));
+}
 // @ts-expect-error
 // eslint-disable-next-line no-var
 var { FileUtils } = ChromeUtils.import("resource://gre/modules/FileUtils.jsm");
@@ -31,11 +32,11 @@ this.migration = class extends ExtensionCommon.ExtensionAPI {
 	 * Returns the preferences set in a preference branch.
 	 *
 	 * @param {nsIPrefBranch} prefBranch
-	 * @returns {Object<string, boolean|number|string>}
+	 * @returns {{[prefName: string]: boolean|number|string}}
 	 */
 	#getChildPrefs(prefBranch) {
 		const setPrefNames = prefBranch.getChildList("");
-		/** @type {Object<string, boolean|number|string>} */
+		/** @type {{[prefName: string]: boolean|number|string}} */
 		const childPrefs = {};
 		for (const prefName of setPrefNames) {
 			prefBranch.getPrefType(prefName);
@@ -64,7 +65,12 @@ this.migration = class extends ExtensionCommon.ExtensionAPI {
 	 */
 	#openSqlite(fileName) {
 		// Retains absolute paths and normalizes relative as relative to profile.
-		const path = OS.Path.join(OS.Constants.Path.profileDir, fileName);
+		let path;
+		if (OS) {
+			path = OS.Path.join(OS.Constants.Path.profileDir, fileName);
+		} else {
+			path = PathUtils.join(PathUtils.profileDir, fileName);
+		}
 		const file = FileUtils.File(path);
 
 		// test that db exists
@@ -90,7 +96,7 @@ this.migration = class extends ExtensionCommon.ExtensionAPI {
 				getAccountPrefs: () => {
 					const mailPrefs = Services.prefs.getBranch("mail.");
 					const accounts = mailPrefs.getCharPref("accountmanager.accounts").split(",");
-					/** @type {Object<string, Object<string, boolean|number|string>>} */
+					/** @type {{[account: string]: {[prefName: string]: boolean|number|string}}} */
 					const accountPrefs = {};
 					for (const account of accounts) {
 						const server = mailPrefs.getCharPref(`account.${account}.server`);

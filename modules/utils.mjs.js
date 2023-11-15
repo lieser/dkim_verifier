@@ -171,19 +171,3 @@ export function stringEndsWith(str, x) {
 export function stringEqual(str1, str2) {
 	return str1.toLowerCase() === str2.toLowerCase();
 }
-
-/**
- * Get the type an object as a string.
- *
- * From https://javascriptweblog.wordpress.com/2011/08/08/fixing-the-javascript-typeof-operator/.
- *
- * @param {any} obj
- * @returns {string}
- */
-export function toType(obj) {
-	const typeMatch = Object.prototype.toString.call(obj).match(/\s([a-zA-Z]+)/);
-	if (!typeMatch || !typeMatch[1]) {
-		throw new Error(`Failed to get type for ${obj}`);
-	}
-	return typeMatch[1];
-}

@@ -117,7 +117,7 @@ async function readFile(path) {
  * - TransactionInactiveError resulting in Promise never being resolved.
  * - Getting rejected with "An unexpected error occurred".
  *
- * @returns {Promise<Object<string, any>>}
+ * @returns {Promise<{[x: string]: any}>}
  */
 async function safeGetLocalStorage() {
 	const overallTimeout = 15000;
@@ -142,7 +142,7 @@ async function safeGetLocalStorage() {
 			retrySleepTime = Math.max(retrySleepTime + retrySleepTimeIncrease, retrySleepTimeMax);
 		}
 	}
-	throw Error("browser.storage.local.get() failed");
+	throw new Error("browser.storage.local.get() failed");
 }
 
 const ExtensionUtils = {
