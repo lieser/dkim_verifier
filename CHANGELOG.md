@@ -27,6 +27,7 @@ All notable changes to this project will be documented in this file.
 ### Other
 
 - Added Polish translation (by dMbski) (#392).
+- Options navigation is now flat.
 - Updated default rules and favicons (#387, #393).
 
 ## 5.3.1 (2023-06-08)
