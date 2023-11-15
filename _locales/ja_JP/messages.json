@@ -526,19 +526,19 @@
 		"message": "DKIM を検証中のドメインの場合でも、署名を検証する"
 	},
 	"options_error.illformed_i.treatAs": {
-		"message": "不正な形式の AUID タグを:"
+		"message": "不正な形式の AUID タグ:"
 	},
 	"options_error.illformed_s.treatAs": {
-		"message": "不正な形式のセレクタタグを:"
+		"message": "不正な形式のセレクタタグ:"
 	},
 	"options_error.policy.key_insecure.treatAs": {
-		"message": "DNSSEC によりセキュアにされていない DKIM キーを:"
+		"message": "DNSSEC によりセキュアにされていない DKIM キー:"
 	},
 	"options_error.algorithm.sign.rsa-sha1.treatAs": {
-		"message": "rsa-sha1 署名アルゴリズムを:"
+		"message": "rsa-sha1 署名アルゴリズム:"
 	},
 	"options_error.algorithm.rsa.weakKeyLength.treatAs": {
-		"message": "弱い RSA キー （<2048 ビット） を:"
+		"message": "弱い RSA キー （<2048 ビット）:"
 	},
 	"options_error.treatAs.value.0": {
 		"message": "エラーとする"
