@@ -494,6 +494,12 @@
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_NEUTRAL"
 		}, {
+			"domain": "caraudioforum.it",
+			"addr": "*",
+			"sdid": "caraudioforum.it",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "carglass.de",
 			"addr": "*",
 			"sdid": "carglass.de",
