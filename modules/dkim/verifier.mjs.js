@@ -1036,8 +1036,7 @@ class DkimSignature {
 		let headerCanonAlgo;
 		switch (this._header.c_header) {
 			case "simple":
-				// @ts-expect-error
-				headerCanonAlgo = function (headerField) { return headerField; };
+				headerCanonAlgo = function (/** @type {string} */ headerField) { return headerField; };
 				break;
 			case "relaxed":
 				headerCanonAlgo = DkimSignature.#canonicalizationHeaderFieldRelaxed;

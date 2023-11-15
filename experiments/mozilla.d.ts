@@ -133,6 +133,7 @@ declare module ExtensionParentM {
     ////////////////////////////////////////////////////////////////////////////
 
     declare module apiManager {
+        // Internals that should be avoided.
         declare module global {
             const tabTracker: TabTrackerBase;
 
