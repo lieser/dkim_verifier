@@ -41,7 +41,6 @@ Cu.import("resource:///modules/iteratorUtils.jsm");
 
 Cu.import("resource://dkim_verifier/logging.jsm.js");
 Cu.import("resource://dkim_verifier/helper.jsm.js");
-Cu.import("resource://dkim_verifier/MsgReader.jsm.js");
 Cu.import("resource://dkim_verifier/ARHParser.jsm.js");
 // @ts-ignore
 let DKIM = {};
@@ -133,7 +132,22 @@ var AuthVerifier = {
 			}
 
 			// create msg object
-			let msg = await DKIM.Verifier.createMsg(msgURI);
+			let msg = null;
+			try {
+				msg = await DKIM.Verifier.createMsg(msgURI);
+			}
+			catch (error) {
+				log.error("Parsing of message failed", error);
+				return Promise.resolve({
+					version: "2.1",
+					dkim: [{
+						version: "2.0",
+						result: "PERMFAIL",
+						res_num: this.DKIM_RES.PERMFAIL,
+						result_str: dkimStrings.getString("DKIM_INTERNALERROR_INCORRECT_EMAIL_FORMAT"),
+					}],
+				});
+			}
 
 			// ignore must be signed for outgoing messages
 			if (msg.DKIMSignPolicy.shouldBeSigned && isOutgoing(msgHdr)) {
