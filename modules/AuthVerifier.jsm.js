@@ -16,7 +16,7 @@
 // options for ESLint
 /* global Components, Services, MailServices */
 /* global Logging, ARHParser */
-/* global PREF, dkimStrings, domainIsInDomain, getDomainFromAddr, tryGetFormattedString, DKIM_InternalError */
+/* global PREF, dkimStrings, domainIsInDomain, getDomainFromAddr, tryGetFormattedString */
 /* exported EXPORTED_SYMBOLS, AuthVerifier */
 
 "use strict";
@@ -239,6 +239,7 @@ var AuthVerifier = {
  * @param {nsIMsgDBHdr} msgHdr
  * @param {Object} msg
  * @return {SavedAuthResult|Null}
+ * @throws Error
  */
 // eslint-disable-next-line complexity
 function getARHResult(msgHdr, msg) {
@@ -351,7 +352,7 @@ function getARHResult(msgHdr, msg) {
 					case 2: // ignore
 						break;
 					default:
-						throw new DKIM_InternalError("invalid error.algorithm.sign.rsa-sha1.treatAs");
+						throw new Error("invalid error.algorithm.sign.rsa-sha1.treatAs");
 				}
 			}
 		}
@@ -405,6 +406,7 @@ function saveAuthResult(msgHdr, savedAuthResult) {
  * 
  * @param {nsIMsgDBHdr} msgHdr
  * @return {SavedAuthResult|Null} savedAuthResult
+ * @throws {Error}
  */
 function loadAuthResult(msgHdr) {
 	if (prefs.getBoolPref("saveResult")) {
@@ -457,8 +459,7 @@ function loadAuthResult(msgHdr) {
 				return savedAuthResult;
 			}
 
-			throw new DKIM_InternalError("AuthResult result has wrong Version (" +
-				savedAuthResult.version + ")");
+			throw new Error(`AuthResult result has wrong Version (${savedAuthResult.version})`);
 		}
 	}
 
@@ -470,6 +471,7 @@ function loadAuthResult(msgHdr) {
  * 
  * @param {ARHResinfo} arhDKIM
  * @return {dkimSigResultV2}
+ * @throws {Error}
  */
 function arhDKIM_to_dkimSigResultV2(arhDKIM) {
 	/** @type {dkimSigResultV2} */
@@ -504,8 +506,7 @@ function arhDKIM_to_dkimSigResultV2(arhDKIM) {
 			}
 			break;
 		default:
-			throw new DKIM_InternalError("invalid dkim result in arh: " +
-				arhDKIM.result);
+			throw new Error(`invalid dkim result in arh: ${arhDKIM.result}`);
 	}
 	
 	let sdid = arhDKIM.propertys.header.d;
@@ -561,7 +562,7 @@ function dkimResultV1_to_dkimSigResultV2(dkimResultV1) {
  * 
  * @param {dkimSigResultV2} dkimSigResult
  * @return {AuthResultDKIM}
- * @throws DKIM_InternalError
+ * @throws {Error}
  */
 function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-line complexity
 	/** @type {IAuthVerifier.AuthResultDKIM} */
@@ -692,7 +693,7 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 			authResultDKIM.result_str = dkimStrings.getString("NOSIG");
 			break;
 		default:
-			throw new DKIM_InternalError("unknown result: " + dkimSigResult.result);
+			throw new Error(`unknown result: ${dkimSigResult.result}`);
 	}
 
 	return authResultDKIM;

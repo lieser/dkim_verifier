@@ -20,7 +20,7 @@
 /* eslint strict: ["warn", "function"] */
 /* global Components, Services, XPCOMUtils */
 /* global Logging, Verifier, DNS */
-/* global getBaseDomainFromAddr, getDomainFromAddr, toType, DKIM_InternalError */
+/* global getBaseDomainFromAddr, getDomainFromAddr, toType, DKIM_TempError, DKIM_Error */
 /* exported EXPORTED_SYMBOLS, DMARC */
 
 // @ts-ignore
@@ -162,7 +162,7 @@ var DMARC = {
  * 
  * @return {Promise<DMARCPolicy|Null>}
  * 
- * @throws {DKIM_InternalError}
+ * @throws {DKIM_TempError}
  */
 async function getDMARCPolicy(fromAddress) {
 	"use strict";
@@ -251,7 +251,7 @@ async function getDMARCPolicy(fromAddress) {
  * 
  * @return {Promise<DMARCRecord|Null>}
  * 
- * @throws {DKIM_InternalError}
+ * @throws {DKIM_TempError}
  */
 async function getDMARCRecord(domain) {
 	"use strict";
@@ -265,11 +265,10 @@ async function getDMARCRecord(domain) {
 	
 	// throw error on bogus result or DNS error
 	if (result.bogus) {
-		throw new DKIM_InternalError(null, "DKIM_DNSERROR_DNSSEC_BOGUS");
+		throw new DKIM_TempError("DKIM_DNSERROR_DNSSEC_BOGUS");
 	}
 	if (result.rcode !== DNS.RCODE.NoError && result.rcode !== DNS.RCODE.NXDomain) {
-		throw new DKIM_InternalError(
-			"rcode: " + result.rcode, "DKIM_DNSERROR_SERVER_ERROR");
+		throw new DKIM_TempError("DKIM_DNSERROR_SERVER_ERROR");
 	}
 	
 	// try to parse DMARC Record if record was found in DNS Server
@@ -292,7 +291,7 @@ async function getDMARCRecord(domain) {
  * 
  * @return {DMARCRecord}
  * 
- * @throws {DKIM_InternalError}
+ * @throws {DKIM_Error}
  */
 function parseDMARCRecord(DMARCRecordStr) {
 	"use strict";
@@ -319,12 +318,12 @@ function parseDMARCRecord(DMARCRecordStr) {
 	// parse tag-value list
 	let parsedTagMap = Verifier.parseTagValueList(DMARCRecordStr);
 	if (parsedTagMap === -1) {
-		throw new DKIM_InternalError("DKIM_DMARCERROR_ILLFORMED_TAGSPEC");
+		throw new DKIM_Error("DKIM_DMARCERROR_ILLFORMED_TAGSPEC");
 	} else if (parsedTagMap === -2) {
-		throw new DKIM_InternalError("DKIM_DMARCERROR_DUPLICATE_TAG");
+		throw new DKIM_Error("DKIM_DMARCERROR_DUPLICATE_TAG");
 	}
 	if (!(toType(parsedTagMap) === "Map")) {
-		throw new DKIM_InternalError("unexpected return value from Verifier.parseTagValueList: " + parsedTagMap);
+		throw new DKIM_Error(`unexpected return value from Verifier.parseTagValueList: ${parsedTagMap}`);
 	}
 	/** @type {Map} */
 	// @ts-ignore
@@ -337,7 +336,7 @@ function parseDMARCRecord(DMARCRecordStr) {
 	// tag in the list.
 	let versionTag = Verifier.parseTagValue(tagMap, "v", "DMARC1", 3);
 	if (versionTag === null) {
-		throw new DKIM_InternalError("DKIM_DMARCERROR_MISSING_V");
+		throw new DKIM_Error("DKIM_DMARCERROR_MISSING_V");
 	} else {
 		dmarcRecord.v = "DMARC1";
 	}
@@ -372,7 +371,7 @@ function parseDMARCRecord(DMARCRecordStr) {
 	//    discussion of SMTP rejection methods and their implications.
 	let pTag = Verifier.parseTagValue(tagMap, "p", "(?:none|quarantine|reject)", 3);
 	if (pTag === null) {
-		throw new DKIM_InternalError("DKIM_DMARCERROR_MISSING_P");
+		throw new DKIM_Error("DKIM_DMARCERROR_MISSING_P");
 	} else {
 		dmarcRecord.p = pTag[0];
 	}
@@ -399,7 +398,7 @@ function parseDMARCRecord(DMARCRecordStr) {
 	} else {
 		dmarcRecord.pct = parseInt(pctTag[0], 10);
 		if (dmarcRecord.pct < 0 || dmarcRecord.pct > 100) {
-			throw new DKIM_InternalError("DKIM_DMARCERROR_INVALID_PCT");
+			throw new DKIM_Error("DKIM_DMARCERROR_INVALID_PCT");
 		}
 	}
 	

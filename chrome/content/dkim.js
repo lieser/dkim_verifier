@@ -178,7 +178,7 @@ DKIM_Verifier.Display = (function() {
 	function handleException(e) {
 		try {
 			// log error
-			if (e instanceof DKIM_Verifier.DKIM_InternalError) {
+			if (e instanceof DKIM_Verifier.DKIM_TempError) {
 				log.error(e);
 			} else {
 				log.fatal(e);
@@ -207,6 +207,7 @@ DKIM_Verifier.Display = (function() {
 	 *
 	 * @param {IAuthVerifier.IAuthResult} result
 	 * @return {void}
+	 * @throws {Error}
 	 */
 	// eslint-disable-next-line complexity
 	function displayResult(result) {
@@ -248,8 +249,7 @@ DKIM_Verifier.Display = (function() {
 				highlightHeader("nosig");
 				break;
 			default:
-				throw new DKIM_Verifier.DKIM_InternalError("unknown res_num: " +
-					result.dkim[0].res_num);
+				throw new Error(`unknown res_num: ${result.dkim[0].res_num}`);
 		}
 
 		// policyAddUserExceptionButton

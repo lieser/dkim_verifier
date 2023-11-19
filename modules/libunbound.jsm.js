@@ -16,7 +16,7 @@
 
 // options for ESLint
 /* global Components, OS, Services, ChromeWorker */
-/* global Logging, Deferred, DKIM_InternalError */
+/* global Logging, Deferred */
 /* exported EXPORTED_SYMBOLS, libunbound */
 
 "use strict";
@@ -270,6 +270,7 @@ function update_ctx() {
  * Handle the callbacks from the ChromeWorker
  * @param {Libunbound.WorkerResponse} msg
  * @return {void}
+ * @throws {Error}
  */
 libunboundWorker.onmessage = function(msg) {
 	try {
@@ -303,7 +304,7 @@ libunboundWorker.onmessage = function(msg) {
 					log.trace(logMsg.message);
 					break;
 				default:
-					throw new Error("Unknown log type: " + logMsg.subType);
+					throw new Error(`Unknown log type: ${logMsg.subType}`);
 			}
 			return;
 		}
@@ -316,7 +317,7 @@ libunboundWorker.onmessage = function(msg) {
 			/** @type {Libunbound.Exception} */
 			// @ts-ignore
 			let ex = response;
-			exception = new DKIM_InternalError(ex.message, ex.subType);
+			exception = new Error(`Error in libunboundWorker: ${ex.message}; subType: ${ex.subType}`);
 		}
 
 		let defer = openCalls.get(response.callId);

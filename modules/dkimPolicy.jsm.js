@@ -15,7 +15,7 @@
 /* eslint strict: ["warn", "function"] */
 /* global Components, Services, Sqlite */
 /* global Logging, DMARC */
-/* global addrIsInDomain, Deferred, getBaseDomainFromAddr, PREF, readStringFrom, stringEndsWith, stringEqual, DKIM_SigError, DKIM_InternalError */
+/* global addrIsInDomain, Deferred, getBaseDomainFromAddr, PREF, readStringFrom, stringEndsWith, stringEqual, DKIM_SigError */
 /* exported EXPORTED_SYMBOLS, Policy */
 
 // @ts-ignore
@@ -107,6 +107,7 @@ var Policy = {
 	 * May be called more then once
 	 * 
 	 * @return {Promise<boolean>} initialized
+	 * @throws {Error}
 	 */
 	initDB: function Policy_initDB() {
 		"use strict";
@@ -181,7 +182,7 @@ var Policy = {
 					);
 					versionTableSigners = 1;
 				} else if (versionTableSigners !== TABLE_SIGNERS_VERSION_CURRENT) {
-						throw new DKIM_InternalError("unsupported versionTableSigners");
+						throw new Error("unsupported versionTableSigners");
 				}
 				
 				// table signersDefault
@@ -204,7 +205,7 @@ var Policy = {
 					);
 					versionTableSignersDefault = 1;
 				} else if (versionTableSignersDefault !== TABLE_SIGNERS_DEFAULT_VERSION_CURRENT) {
-						throw new DKIM_InternalError("unsupported versionTableSignersDefault");
+						throw new Error("unsupported versionTableSignersDefault");
 				}
 				
 				// data signersDefault
@@ -215,7 +216,7 @@ var Policy = {
 				if (versionDataSignersDefault < signersDefault.versionData) {
 					log.trace("update default rules");
 					if (signersDefault.versionTable !== versionTableSignersDefault) {
-						throw new DKIM_InternalError("different versionTableSignersDefault in .json file");
+						throw new Error("different versionTableSignersDefault in .json file");
 					}
 					// delete old rules
 					await conn.execute(
@@ -266,6 +267,7 @@ var Policy = {
 	 * @param {String|Null} [listID]
 	 * 
 	 * @return {Promise<DKIMSignPolicy>}
+	 * @throws {Error}
 	 */
 	shouldBeSigned: function Policy_shouldBeSigned(fromAddress, listID) {
 		"use strict";
@@ -345,7 +347,7 @@ var Policy = {
 						result.hideFail = true;
 						break;
 					default:
-						throw new DKIM_InternalError("unknown rule type");
+						throw new Error("unknown rule type");
 				}
 			} else {
 				var dmarcRes = await DMARC.shouldBeSigned(fromAddress);
@@ -377,7 +379,7 @@ var Policy = {
 	 * @param {String} auid
 	 * @param {dkimSigWarning[]} warnings - in/out paramter
 	 * @return {void}
-	 * @throws DKIM_SigError
+	 * @throws {DKIM_SigError}
 	 */
 	checkSDID: function Policy_checkSDID(allowedSDIDs, from, sdid, auid, warnings) {
 		"use strict";
@@ -562,6 +564,7 @@ var Policy = {
 	 * @param {String} sdid
 	 * 
 	 * @return {Promise<void>}
+	 * @throws {Error}
 	 */
 	signedBy: function Policy_signedBy(fromAddress, sdid) {
 		"use strict";
@@ -600,7 +603,7 @@ var Policy = {
 						fromAddressToAdd = "*";
 						break;
 					default:
-						throw new DKIM_InternalError("invalid signRules.autoAddRule.for");
+						throw new Error("invalid signRules.autoAddRule.for");
 				}
 				await addRule(domain, fromAddressToAdd, sdid, "ALL", "AUTOINSERT_RULE_ALL");
 			}

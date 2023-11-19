@@ -163,7 +163,7 @@ function resolve(name, rrtype=Constants.RR_TYPE_A) {
 	);
 	if (retval !== 0) {
 		log.debug("resolve error: "+ub_strerror(retval).readString()+"\n");
-		throw new Error("resolve error: "+ub_strerror(retval).readString());
+		throw new Error(`resolve error: ${ub_strerror(retval).readString()}`);
 	}
 
 	// array of converted rdata
@@ -394,40 +394,35 @@ function update_ctx(conf, debuglevel, getNameserversFromOS, nameservers, trustAn
 	// read config file if specified
 	if (conf) {
 		if((retval=ub_ctx_config(ctx, conf)) !== 0) {
-			throw new Error("error in ub_ctx_config: " +
-				ub_strerror(retval).readString() + ". errno: " + ctypes.errno);
+			throw new Error(`error in ub_ctx_config: ${ub_strerror(retval).readString()}. errno: ${ctypes.errno}`);
 		}
 	}
 
 	// set debuglevel if specified
 	if (debuglevel) {
 		if((retval=ub_ctx_debuglevel(ctx, debuglevel)) !== 0) {
-			throw new Error("error in ub_ctx_debuglevel: " +
-				ub_strerror(retval).readString() + ". errno: "+ctypes.errno);
+			throw new Error(`error in ub_ctx_debuglevel: ${ub_strerror(retval).readString()}. errno: ${ctypes.errno}`);
 		}
 	}
 
 	// get DNS servers form OS
 	if (getNameserversFromOS) {
 		if((retval=ub_ctx_resolvconf(ctx, null)) !== 0) {
-			throw new Error("error in ub_ctx_resolvconf: " +
-				ub_strerror(retval).readString() + ". errno: " + ctypes.errno);
+			throw new Error(`error in ub_ctx_resolvconf: ${ub_strerror(retval).readString()}. errno: ${ctypes.errno}`);
 		}
 	}
 
 	// set additional DNS servers
 	nameservers.forEach(function(element /*, index, array*/) {
 		if((retval=ub_ctx_set_fwd(ctx, element.trim())) !== 0) {
-			throw new Error("error in ub_ctx_set_fwd: " +
-				ub_strerror(retval).readString() + ". errno: " + ctypes.errno);
+			throw new Error(`error in ub_ctx_set_fwd: ${ub_strerror(retval).readString()}. errno: ${ctypes.errno}`);
 		}
 	});
 
 	// add root trust anchors
 	trustAnchors.forEach(function(element /*, index, array*/) {
 		if((retval=ub_ctx_add_ta(ctx, element.trim())) !== 0) {
-			throw new Error("error in ub_ctx_add_ta: " +
-				ub_strerror(retval).readString() + ". errno: " + ctypes.errno);
+			throw new Error(`error in ub_ctx_add_ta: ${ub_strerror(retval).readString()}. errno: ${ctypes.errno}`);
 		}
 	});
 
@@ -471,7 +466,7 @@ onmessage = function(msg) {
 					break;
 				}
 				default:
-					throw new Error("unknown method " + msg.data.method);
+					throw new Error(`unknown method ${msg.data.method}`);
 			}
 
 			// return result if available

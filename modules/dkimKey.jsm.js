@@ -15,7 +15,7 @@
 /* eslint strict: ["warn", "function"] */
 /* global Components, Services, Sqlite */
 /* global Logging, DNS */
-/* global Deferred, DKIM_SigError, DKIM_InternalError, PREF */
+/* global Deferred, DKIM_SigError, DKIM_TempError, PREF */
 /* exported EXPORTED_SYMBOLS, Key */
 
 // @ts-ignore
@@ -61,6 +61,7 @@ var Key = {
 	 * May be called more then once
 	 * 
 	 * @return {Promise<boolean>} initialized
+	 * @throws {Error}
 	 */
 	initDB: function Key_initDB() {
 		"use strict";
@@ -122,7 +123,7 @@ var Key = {
 					);
 					versionTableKeys = 1;
 				} else if (versionTableKeys !== TABLE_KEYS_VERSION_CURRENT) {
-						throw new DKIM_InternalError("unsupported versionTableKeys");
+						throw new Error("unsupported versionTableKeys");
 				}
 			} finally {
 				await conn.close();
@@ -158,7 +159,7 @@ var Key = {
 	 * 
 	 * @return {Promise<dkimKeyResult>}
 	 * 
-	 * @throws {DKIM_SigError|DKIM_InternalError}
+	 * @throws {DKIM_SigError|Error}
 	 */
 	getKey: async function Key_getKey(d_val, s_val) {
 		"use strict";
@@ -198,7 +199,7 @@ var Key = {
 				}
 				break;
 			default:
-				throw new DKIM_InternalError("invalid key.storing setting");
+				throw new Error("invalid key.storing setting");
 		}
 		res.key = tmp.key;
 		res.secure = tmp.secure;
@@ -294,7 +295,7 @@ var Key = {
  * 
  * @return {Promise<{key: string, secure: boolean}>}
  * 
- * @throws {DKIM_SigError|DKIM_InternalError}
+ * @throws {DKIM_SigError|DKIM_TempError}
  */
 async function getKeyFromDNS(d_val, s_val) {
 	"use strict";
@@ -305,12 +306,11 @@ async function getKeyFromDNS(d_val, s_val) {
 	var result = await DNS.resolve(s_val+"._domainkey."+d_val, "TXT");
 	
 	if (result.bogus) {
-		throw new DKIM_InternalError(null, "DKIM_DNSERROR_DNSSEC_BOGUS");
+		throw new DKIM_TempError("DKIM_DNSERROR_DNSSEC_BOGUS");
 	}
 	if (result.rcode !== DNS.RCODE.NoError && result.rcode !== DNS.RCODE.NXDomain) {
 		log.info("DNS query failed with result: " + result.toSource());
-		throw new DKIM_InternalError("rcode: " + result.rcode,
-			"DKIM_DNSERROR_SERVER_ERROR");
+		throw new DKIM_TempError("DKIM_DNSERROR_SERVER_ERROR");
 	}
 	if (result.data === null || !result.data[0]) {
 		throw new DKIM_SigError("DKIM_SIGERROR_NOKEY");
