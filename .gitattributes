@@ -1,0 +1,8 @@
+# https://www.git-scm.com/docs/gitattributes#_checking_out_and_checking_in
+# Normalize line endings (use LF) of text files during checkin,
+# and prevent conversion to CRLF when the files are checked out
+* text=auto eol=lf
+
+# Disable end-of-line normalization for the following files
+data/favicon/** -text
+thirdparty/** -text
