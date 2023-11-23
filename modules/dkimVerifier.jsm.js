@@ -1066,7 +1066,7 @@ var Verifier = (function() {
 		var headerCanonAlgo;
 		switch (DKIMSignature.c_header) {
 			case "simple":
-				headerCanonAlgo = function (headerField) {return headerField;};
+				headerCanonAlgo = function (/** @type {string} */ headerField) {return headerField;};
 				break;
 			case "relaxed":
 				headerCanonAlgo = canonicalizationHeaderFieldRelaxed;
