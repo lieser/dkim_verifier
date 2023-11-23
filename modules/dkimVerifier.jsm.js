@@ -28,7 +28,7 @@
 /* eslint strict: ["warn", "function"] */
 /* global Components, Services */
 /* global Logging, Key, Policy, MsgReader */
-/* global dkimStrings, addrIsInDomain2, domainIsInDomain, stringEndsWith, stringEqual, writeStringToTmpFile, DKIM_SigError, DKIM_InternalError */
+/* global dkimStrings, addrIsInDomain2, domainIsInDomain, stringEndsWith, stringEqual, writeStringToTmpFile, DKIM_SigError, DKIM_TempError, DKIM_Error */
 /* exported EXPORTED_SYMBOLS, Verifier */
 
 // @ts-ignore
@@ -100,7 +100,7 @@ const PREF_BRANCH = "extensions.dkim_verifier.";
  *           required if result="SUCCESS
  * @property {String|undefined} [errorType]
  *           if result="PERMFAIL: DKIM_SigError.errorType or Undefined
- *           if result="TEMPFAIL: DKIM_InternalError.errorType or Undefined
+ *           if result="TEMPFAIL: DKIM_TempError.errorType or Undefined
  * @property {String} [shouldBeSignedBy]
  *           added in version 1.1
  * @property {Boolean} [hideFail]
@@ -129,7 +129,7 @@ const PREF_BRANCH = "extensions.dkim_verifier.";
  *           required if result="SUCCESS"
  * @property {String} [errorType]
  *           if result="PERMFAIL: DKIM_SigError.errorType
- *           if result="TEMPFAIL: DKIM_InternalError.errorType or Undefined
+ *           if result="TEMPFAIL: DKIM_TempError.errorType or Undefined
  * @property {String[]} [errorStrParams]
  * @property {Boolean} [hideFail]
  * @property {Boolean} [keySecure]
@@ -212,6 +212,8 @@ var Verifier = (function() {
 	 * outputFormat: "hex", "b64"
 	 *
 	 * from https://developer.mozilla.org/en-US/docs/XPCOM_Interface_Reference/nsICryptoHash
+	 *
+	 * @throws {Error}
 	 */
 	function dkim_hash(str, hashAlgorithm, outputFormat) {
 		/*
@@ -262,7 +264,7 @@ var Verifier = (function() {
 				// true for base-64, false for binary data output
 				return hasher.finish(true);
 			default:
-				throw new DKIM_InternalError("unsupported hash output selected");
+				throw new Error("unsupported hash output selected");
 
 		}
 	}
@@ -282,7 +284,7 @@ var Verifier = (function() {
 	 * @param {dkimSigWarning[]} warnings - out param
 	 * @param {Object} [keyInfo] - out param
 	 * @return {Boolean}
-	 * @throws DKIM_SigError
+	 * @throws {DKIM_SigError|Error}
 	 */
 	function verifyRSASig(key, str, hash_algo, signature, warnings, keyInfo = {}) {
 		// get RSA-key
@@ -305,11 +307,11 @@ var Verifier = (function() {
 		// check format by comparing the 1. child in the top element
 		posTopArray = RSA.ASN1HEX.getChildIdx(asnKey,0);
 		if (posTopArray === null || posTopArray.length !== 2) {
-			throw new DKIM_SigError( "DKIM_SIGERROR_KEYDECODE" );
+			throw new DKIM_SigError("DKIM_SIGERROR_KEYDECODE");
 		}
 		if (RSA.ASN1HEX.getTLV(asnKey, posTopArray[0]) !==
 		    "300d06092a864886f70d0101010500") {
-			throw new DKIM_SigError( "DKIM_SIGERROR_KEYDECODE" );
+			throw new DKIM_SigError("DKIM_SIGERROR_KEYDECODE");
 		}
 
 		// get pos of SEQUENCE under BIT STRING
@@ -319,7 +321,7 @@ var Verifier = (function() {
 		// get pos of modulus and publicExponent
 		posKeyArray = RSA.ASN1HEX.getChildIdx(asnKey, pos);
 		if (posKeyArray === null || posKeyArray.length !== 2) {
-			throw new DKIM_SigError( "DKIM_SIGERROR_KEYDECODE" );
+			throw new DKIM_SigError("DKIM_SIGERROR_KEYDECODE");
 		}
 
 		// get modulus
@@ -330,7 +332,7 @@ var Verifier = (function() {
 		if (m_hex.length * 4 < 1024) {
 			// error if key is too short
 			log.debug("rsa key size: " + m_hex.length * 4);
-			throw new DKIM_SigError( "DKIM_SIGWARNING_KEYSMALL" );
+			throw new DKIM_SigError("DKIM_SIGWARNING_KEYSMALL");
 		} else if (m_hex.length * 4 < 2048) {
 			// weak key
 			log.debug("rsa key size: " + m_hex.length * 4);
@@ -344,7 +346,7 @@ var Verifier = (function() {
 				case 2: // ignore
 					break;
 				default:
-					throw new DKIM_InternalError("invalid error.algorithm.rsa.weakKeyLength.treatAs");
+					throw new Error("invalid error.algorithm.rsa.weakKeyLength.treatAs");
 			}
 		}
 
@@ -439,7 +441,7 @@ var Verifier = (function() {
 	 *
 	 * @return {RegExpMatchArray|Null} The match from the RegExp if tag_name exists, otherwise null
 	 *
-	 * @throws {DKIM_SigError|DKIM_InternalError} Throws if tag_value does not match.
+	 * @throws {DKIM_SigError|DKIM_Error} Throws if tag_value does not match.
 	 */
 	function parseTagValue(map, tag_name, pattern_tag_value, expType = 1) {
 		var tag_value = map.get(tag_name);
@@ -453,11 +455,11 @@ var Verifier = (function() {
 		// throw DKIM_SigError if tag_value is ill-formed
 		if (res === null) {
 			if (expType === 1) {
-				throw new DKIM_SigError("DKIM_SIGERROR_ILLFORMED_"+tag_name.toUpperCase());
+				throw new DKIM_SigError(`DKIM_SIGERROR_ILLFORMED_${tag_name.toUpperCase()}`);
 			} else if (expType === 2) {
-				throw new DKIM_SigError("DKIM_SIGERROR_KEY_ILLFORMED_"+tag_name.toUpperCase());
+				throw new DKIM_SigError(`DKIM_SIGERROR_KEY_ILLFORMED_${tag_name.toUpperCase()}`);
 			} else {
-				throw new DKIM_InternalError("illformed tag "+tag_name);
+				throw new DKIM_Error(`illformed tag ${tag_name}`);
 			}
 		}
 
@@ -494,6 +496,8 @@ var Verifier = (function() {
 	/*
 	 * parse the DKIM-Signature header field
 	 * header field is specified in Section 3.5 of RFC 6376
+	 *
+	 * @throws {DKIM_SigError|DKIM_Error|Error}
 	 */
 	function parseDKIMSignature(DKIMSignature) { // eslint-disable-line complexity
 		var DKIMSignatureHeader = DKIMSignature.original_header;
@@ -510,7 +514,7 @@ var Verifier = (function() {
 			throw new DKIM_SigError("DKIM_SIGERROR_DUPLICATE_TAG");
 		}
 		if (!(tagMap instanceof Map)) {
-			throw new DKIM_InternalError("unexpected return value from parseTagValueList: " + tagMap);
+			throw new Error(`unexpected return value from parseTagValueList: ${tagMap}`);
 		}
 
 		// get Version (plain-text; REQUIRED)
@@ -522,7 +526,7 @@ var Verifier = (function() {
 		if (versionTag[0] === "1") {
 			DKIMSignature.v = "1";
 		} else {
-			throw new DKIM_InternalError(null, "DKIM_SIGERROR_VERSION");
+			throw new DKIM_SigError("DKIM_SIGERROR_VERSION");
 		}
 
 		// get signature algorithm (plain-text;REQUIRED)
@@ -535,7 +539,7 @@ var Verifier = (function() {
 			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_A");
 		}
 		if (!algorithmTag[1] || !algorithmTag[2]) {
-			throw new DKIM_InternalError("Error matching the a-tag.");
+			throw new Error("Error matching the a-tag.");
 		}
 		if (algorithmTag[0] === "ed25519-sha256" || algorithmTag[0] === "rsa-sha256") {
 			DKIMSignature.a_sig = algorithmTag[1];
@@ -550,7 +554,7 @@ var Verifier = (function() {
 				case 2: // ignore
 					break;
 				default:
-					throw new DKIM_InternalError("invalid error.algorithm.sign.rsa-sha1.treatAs");
+					throw new Error("invalid error.algorithm.sign.rsa-sha1.treatAs");
 			}
 			DKIMSignature.a_sig = algorithmTag[1];
 			DKIMSignature.a_hash = algorithmTag[2];
@@ -702,7 +706,7 @@ var Verifier = (function() {
 					case 2: // ignore
 						break;
 					default:
-						throw new DKIM_InternalError("invalid error.illformed_i.treatAs");
+						throw new Error("invalid error.illformed_i.treatAs");
 				}
 			} else {
 				throw exception;
@@ -713,7 +717,7 @@ var Verifier = (function() {
 			DKIMSignature.i_domain = DKIMSignature.d;
 		} else {
 			if (!AUIDTag[1]) {
-				throw new DKIM_InternalError("Error matching the i-tag.");
+				throw new Error("Error matching the i-tag.");
 			}
 			DKIMSignature.i = AUIDTag[0];
 			DKIMSignature.i_domain = AUIDTag[1];
@@ -761,7 +765,7 @@ var Verifier = (function() {
 					case 2: // ignore
 						break;
 					default:
-						throw new DKIM_InternalError("invalid error.illformed_s.treatAs");
+						throw new Error("invalid error.illformed_s.treatAs");
 				}
 			} else {
 				throw exception;
@@ -805,6 +809,8 @@ var Verifier = (function() {
 	/*
 	 * parse the DKIM key record
 	 * key record is specified in Section 3.6.1 of RFC 6376
+	 *
+	 * @throws {Error|DKIM_SigError}
 	 */
 	function parseDKIMKeyRecord(DKIMKeyRecord) {
 		var DKIMKey = {
@@ -835,7 +841,7 @@ var Verifier = (function() {
 			throw new DKIM_SigError("DKIM_SIGERROR_KEY_DUPLICATE_TAG");
 		}
 		if (!(tagMap instanceof Map)) {
-			throw new DKIM_InternalError("unexpected return value from parseTagValueList: " + tagMap);
+			throw new Error(`unexpected return value from parseTagValueList: ${tagMap}`);
 		}
 
 		// get version (plain-text; RECOMMENDED, default is "DKIM1")
@@ -991,6 +997,8 @@ var Verifier = (function() {
 	/*
 	 * Computing the Message Hash for the body
 	 * specified in Section 3.7 of RFC 6376
+	 *
+	 * @throws {DKIM_SigError}
 	 */
 	function computeBodyHash(msg, DKIMSignature) {
 		// canonicalize body
@@ -1003,7 +1011,7 @@ var Verifier = (function() {
 				bodyCanon = canonicalizationBodyRelaxed(msg.bodyPlain);
 				break;
 			default:
-				throw new DKIM_InternalError("unsupported canonicalization algorithm got parsed");
+				throw new Error("unsupported canonicalization algorithm got parsed");
 		}
 
 		if (prefs.getIntPref("debugLevel") >= 2) {
@@ -1038,7 +1046,7 @@ var Verifier = (function() {
 				bodyHash = dkim_hash(bodyCanon, "sha256", "b64");
 				break;
 			default:
-				throw new DKIM_InternalError("unsupported hash algorithm (body) got parsed");
+				throw new Error("unsupported hash algorithm (body) got parsed");
 		}
 
 		return bodyHash;
@@ -1047,6 +1055,8 @@ var Verifier = (function() {
 	/*
 	 * Computing the input for the header Hash
 	 * specified in Section 3.7 of RFC 6376
+	 *
+	 * @throws {Error}
 	 */
 	function computeHeaderHashInput(msg, DKIMSignature) {
 		var hashInput = "";
@@ -1062,7 +1072,7 @@ var Verifier = (function() {
 				headerCanonAlgo = canonicalizationHeaderFieldRelaxed;
 				break;
 			default:
-				throw new DKIM_InternalError("unsupported canonicalization algorithm (header) got parsed");
+				throw new Error("unsupported canonicalization algorithm (header) got parsed");
 		}
 
 		// copy header fileds
@@ -1140,9 +1150,9 @@ var Verifier = (function() {
 			selector : dkimSignature.s,
 		};
 
-		if (e instanceof DKIM_InternalError) {
+		if (e instanceof DKIM_TempError) {
 			result.errorType = e.errorType;
-			log.error("Internal error during DKIM verification:", e);
+			log.error("Temporary error during DKIM verification:", e);
 		} else {
 			log.fatal("Error during DKIM verification:", e);
 		}
@@ -1156,8 +1166,7 @@ var Verifier = (function() {
 	 * @param {Object} msg
 	 * @param {Object} DKIMSignature
 	 * @return {Promise<dkimSigResultV2>}
-	 * @throws DKIM_SigError
-	 * @throws DKIM_InternalError
+	 * @throws {DKIM_SigError|Error}
 	 */
 	// eslint-disable-next-line complexity
 	async function verifySignature(msg, DKIMSignature) {
@@ -1228,7 +1237,7 @@ var Verifier = (function() {
 				case 2: // ignore
 					break;
 				default:
-					throw new DKIM_InternalError("invalid error.policy.key_insecure.treatAs");
+					throw new Error("invalid error.policy.key_insecure.treatAs");
 			}
 		}
 
@@ -1241,7 +1250,7 @@ var Verifier = (function() {
 				DKIMSignature.warnings.push({name: "DKIM_SIGERROR_KEY_TESTMODE"});
 				log.debug("Warning: DKIM_SIGERROR_KEY_TESTMODE");
 			} else {
-				throw new DKIM_SigError( "DKIM_SIGERROR_KEY_TESTMODE" );
+				throw new DKIM_SigError("DKIM_SIGERROR_KEY_TESTMODE");
 			}
 		}
 
@@ -1257,7 +1266,7 @@ var Verifier = (function() {
 		// must be included in the contents of the "h=" tag
 		if (DKIMSignature.DKIMKey.h_array &&
 		    !DKIMSignature.DKIMKey.h_array.includes(DKIMSignature.a_hash)) {
-			throw new DKIM_SigError( "DKIM_SIGERROR_KEY_HASHNOTINCLUDED" );
+			throw new DKIM_SigError("DKIM_SIGERROR_KEY_HASHNOTINCLUDED");
 		}
 
 		// Compute the input for the header hash
@@ -1525,6 +1534,7 @@ var that = {
 	 *
 	 * @param {String} msgURI
 	 * @return {Promise<Msg>}
+	 * @throws {DKIM_Error}
 	 */
 	createMsg: function Verifier_createMsg(msgURI) {
 		var promise = (async () => {
@@ -1551,11 +1561,11 @@ var that = {
 				try {
 					from = msgHeaderParser.extractHeaderAddressMailboxes(author);
 				} catch (error) {
-					throw new DKIM_InternalError("From address is ill-formed",	"DKIM_INTERNALERROR_INCORRECT_FROM");
+					throw new DKIM_Error("From address is ill-formed");
 				}
 				msg.from = from;
 			} else {
-				throw new DKIM_InternalError("E-Mail has no from address");
+				throw new DKIM_Error("E-Mail has no from address");
 			}
 
 			// get list-id
@@ -1589,6 +1599,7 @@ var that = {
 	 * @param {Object} msg
 	 * @param {dkimSigResultV2[]} signatures
 	 * @return {void}
+	 * @throws {Error}
 	 */
 	sortSignatures: function Verifier_sortSignatures(msg, signatures) {
 		function result_compare(sig1, sig2) {
@@ -1614,8 +1625,7 @@ var that = {
 				return 1;
 			}
 
-			throw new DKIM_InternalError("result_compare: sig1.result: " +
-				sig1.result + "; sig2.result: " + sig2.result);
+			throw new Error(`result_compare: sig1.result: ${sig1.result}; sig2.result: ${sig2.result}`);
 		}
 
 		function warnings_compare(sig1, sig2) {

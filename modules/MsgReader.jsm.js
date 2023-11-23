@@ -16,7 +16,7 @@
 // options for ESLint
 /* global Components */
 /* global Logging */
-/* global Deferred, DKIM_InternalError */
+/* global Deferred, DKIM_Error */
 /* exported EXPORTED_SYMBOLS, MsgReader */
 
 "use strict";
@@ -50,7 +50,7 @@ var MsgReader = {
 	 *
 	 * @param {String} msgURI
 	 * @return {Promise<{headerPlain: string, bodyPlain: string}>}
-	 * @throws DKIM_InternalError
+	 * @throws {DKIM_Error}
 	 */
 	read: function _MsgReader_read(msgURI) {
 		/** @type {IDeferred<{headerPlain: string, bodyPlain: string}>} */
@@ -98,8 +98,7 @@ var MsgReader = {
 					if (posEndHeader === -1) {
 						// in this case, the message has no body, but headers must end with a newline
 						if (!str.endsWith("\r\n")) {
-							throw new DKIM_InternalError("Message is not in correct e-mail format",
-								"DKIM_INTERNALERROR_INCORRECT_EMAIL_FORMAT");
+							throw new DKIM_Error("Message is not in correct e-mail format");
 						}
 						res.headerPlain = str;
 						res.bodyPlain = "";
@@ -138,6 +137,7 @@ var MsgReader = {
 	 * @return {Map}
 	 *           key: {String} <header name>
 	 *           value: {Array[String]}
+	 * @throws {DKIM_Error}
 	 */
 	parseHeader: function _MsgReader_parseHeader(headerPlain) {
 		var headerFields = new Map();
@@ -157,8 +157,7 @@ var MsgReader = {
 				}
 				headerFields.get(hName).push(headerArray[i]+"\r\n");
 			} else {
-				throw new DKIM_InternalError("Could not split header into name and value",
-					"DKIM_INTERNALERROR_INCORRECT_EMAIL_FORMAT");
+				throw new DKIM_Error("Could not split header into name and value");
 			}
 		}
 

@@ -15,7 +15,7 @@
 
 // options for ESLint
 /* global Components, Services */
-/* global Logging, DKIM_InternalError */
+/* global Logging, DKIM_Error */
 /* exported EXPORTED_SYMBOLS, ARHParser */
 
 "use strict";
@@ -132,6 +132,7 @@ let ARHParser = {
 	 *  
 	 *  @param {String} authresHeader Authentication-Results header
 	 *  @return {ARHHeader} Parsed Authentication-Results header
+	 *  @throws {DKIM_Error}
 	 */
 	parse: function _ARHParser_parse(authresHeader) {
 		// remove header name
@@ -148,7 +149,7 @@ let ARHParser = {
 		reg_match = match(authresHeaderRef, `${value_cp}(?:${CFWS_p}([0-9]+)${CFWS_op})?`);
 		const authserv_id = reg_match[1] || reg_match[2];
 		if (!authserv_id) {
-			throw new Error("Error matching the ARH authserv-id.");
+			throw new DKIM_Error("Error matching the ARH authserv-id.");
 		}
 		res.authserv_id = authserv_id;
 		if (reg_match[3]) {
@@ -182,6 +183,7 @@ let ARHParser = {
  *  
  *  @param {RefString} str
  *  @return {ARHResinfo|null} Parsed resinfo
+ *  @throws {DKIM_Error|Error}
  */
 function parseResinfo(str) {
 	log.trace("parse str: " + str.toSource());
@@ -210,10 +212,10 @@ function parseResinfo(str) {
 		throw exception;
 	}
 	if (!reg_match[1]) {
-		throw new Error("Error matching the ARH method.");
+		throw new DKIM_Error("Error matching the ARH method.");
 	}
 	if (!reg_match[3]) {
-		throw new Error("Error matching the ARH result.");
+		throw new DKIM_Error("Error matching the ARH result.");
 	}
 	res.method = reg_match[1];
 	if (reg_match[2]) {
@@ -247,10 +249,10 @@ function parseResinfo(str) {
 	res.propertys.policy = {};
 	while ((reg_match = match_o(str, propspec_p)) !== null) {
 		if (!reg_match[1]) {
-			throw new Error("Error matching the ARH property name.");
+			throw new DKIM_Error("Error matching the ARH property name.");
 		}
 		if (!reg_match[2]) {
-			throw new Error("Error matching the ARH property sub-name.");
+			throw new DKIM_Error("Error matching the ARH property sub-name.");
 		}		
 		let property = res.propertys[reg_match[1]];
 		if (!property) {
@@ -272,7 +274,7 @@ function parseResinfo(str) {
  * @param {string} method
  * @param {string} resultKeyword
  * @returns {void}
- * @throws {DKIM_InternalError} if result keyword is invalid for the method.
+ * @throws {DKIM_Error} if result keyword is invalid for the method.
  */
 function checkResultKeyword(method, resultKeyword) {
 	let allowedKeywords;
@@ -307,7 +309,7 @@ function checkResultKeyword(method, resultKeyword) {
 	// And don't restrict the keyword.
 
 	if (allowedKeywords && !allowedKeywords.includes(resultKeyword)) {
-		throw new DKIM_InternalError(`Result keyword "${resultKeyword}" is not allowed for method "${method}"`);
+		throw new DKIM_Error(`Result keyword "${resultKeyword}" is not allowed for method "${method}"`);
 	}
 }
 
@@ -343,13 +345,13 @@ class RefString {
  *  @param {RefString} str
  *  @param {String} pattern
  *  @return {String[]} An Array, containing the matches
- *  @throws if match no match found
+ *  @throws {DKIM_Error} if match no match found
  */
 function match(str, pattern) {
 	const reg_match = match_o(str, pattern);
 	if (reg_match === null) {
 		log.trace("str to match against:" + str.toSource());
-		throw new Error("Parsing error");
+		throw new DKIM_Error("Parsing error");
 	}
 	return reg_match;
 }

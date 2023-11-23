@@ -17,7 +17,7 @@
 
 // options for ESLint
 /* global Components, Services, XPCOMUtils */
-/* global Logging, PREF, JSDNS, libunbound, DKIM_InternalError */
+/* global Logging, PREF, JSDNS, libunbound, DKIM_TempError */
 /* exported EXPORTED_SYMBOLS, DNS */
 
 "use strict";
@@ -86,12 +86,13 @@ var DNS = {
 	 * @param {String} [rrtype="TXT"]
 	 * 
 	 * @return {Promise<DNSResult>}
+	 * @throws {DKIM_TempError|Error}
 	 */
 	resolve: async function DNS_resolve(name, rrtype="A") {
 
 		// @ts-expect-error
 		if (Services.netUtils.offline) {
-			throw new DKIM_InternalError(null, "DKIM_DNSERROR_OFFLINE");
+			throw new DKIM_TempError("DKIM_DNSERROR_OFFLINE");
 		}
 
 		switch (prefs.getIntPref("resolver")) {
@@ -143,6 +144,7 @@ var DNS = {
  * @param {string} name
  * @param {string} rrtype
  * @return {Promise<DNSResult>}
+ * @throws {DKIM_TempError}
  */
 function asyncJSDNS_QueryDNS(name, rrtype) {
 	function dnsCallback(dnsResult, defer, queryError, rcode) {
@@ -159,7 +161,7 @@ function asyncJSDNS_QueryDNS(name, rrtype) {
 				result.rcode = RCODE.NoError;
 			}
 			if (result.rcode !== RCODE.NoError && queryError) {
-				throw new DKIM_InternalError(queryError, "DKIM_DNSERROR_SERVER_ERROR");
+				throw new DKIM_TempError("DKIM_DNSERROR_SERVER_ERROR");
 			}
 			result.secure = false;
 			result.bogus = false;

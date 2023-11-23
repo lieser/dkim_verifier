@@ -2,11 +2,11 @@
  * helper.jsm.js
  *
  * Version: 2.1.0 (13 January 2019)
- * 
+ *
  * Copyright (c) 2013-2019 Philippe Lieser
- * 
+ *
  * This software is licensed under the terms of the MIT License.
- * 
+ *
  * The above copyright and license notice shall be
  * included in all copies or substantial portions of the Software.
  */
@@ -14,7 +14,7 @@
 // options for ESLint
 /* global Components, FileUtils, NetUtil, Services */
 /* global Logging */
-/* exported EXPORTED_SYMBOLS, addrIsInDomain, addrIsInDomain2, domainIsInDomain, getBaseDomainFromAddr, getDomainFromAddr, PREF, readStringFrom, stringEndsWith, stringEqual, toType, tryGetString, tryGetFormattedString, writeStringToTmpFile, DKIM_SigError, DKIM_InternalError */
+/* exported EXPORTED_SYMBOLS, addrIsInDomain, addrIsInDomain2, domainIsInDomain, getBaseDomainFromAddr, getDomainFromAddr, PREF, readStringFrom, stringEndsWith, stringEqual, toType, tryGetString, tryGetFormattedString, writeStringToTmpFile, DKIM_SigError, DKIM_TempError, DKIM_Error */
 
 "use strict";
 
@@ -35,7 +35,8 @@ var EXPORTED_SYMBOLS = [
 	"tryGetFormattedString",
 	"writeStringToTmpFile",
 	"DKIM_SigError",
-	"DKIM_InternalError"
+	"DKIM_TempError",
+	"DKIM_Error"
 ];
 
 const Cr = Components.results;
@@ -127,7 +128,7 @@ class Deferred {
 class Stringbundle {
 	/**
 	 * DKIM stringbundle with the same access methods as XUL:stringbundle
-	 * 
+	 *
 	 * @constructor
 	 * @param {string} propertiesPath
 	 */
@@ -151,10 +152,10 @@ var dkimStrings = new Stringbundle("chrome://dkim_verifier/locale/dkim.propertie
 
 /**
  * Returns true if e-mail address is from domain or a subdomain of it.
- * 
+ *
  * @param {String} addr
  * @param {String} domain
- * 
+ *
  * @return {Boolean}
  */
 function addrIsInDomain(addr, domain) {
@@ -165,10 +166,10 @@ function addrIsInDomain(addr, domain) {
 /**
  * Returns true if e-mail address is from the domain or a subdomain of it or if
  * the domain is a subdomain of the e-mail address.
- * 
+ *
  * @param {String} addr
  * @param {String} domain
- * 
+ *
  * @return {Boolean}
  */
 function addrIsInDomain2(addr, domain) {
@@ -179,10 +180,10 @@ function addrIsInDomain2(addr, domain) {
 
 /**
  * Returns true if domain1 is the same or a subdomain of domain2.
- * 
+ *
  * @param {String} domain1
  * @param {String} domain2
- * 
+ *
  * @return {Boolean}
  */
 function domainIsInDomain(domain1, domain2) {
@@ -193,10 +194,10 @@ function domainIsInDomain(domain1, domain2) {
 /**
  * Returns the base domain for an e-mail address; that is, the public suffix
  * with a given number of additional domain name parts.
- * 
+ *
  * @param {String} addr
  * @param {Number} [aAdditionalParts=0]
- * 
+ *
  * @return {String}
  */
 function getBaseDomainFromAddr(addr, aAdditionalParts=0) {
@@ -223,9 +224,9 @@ function getBaseDomainFromAddr(addr, aAdditionalParts=0) {
 
 /**
  * Returns the full domain for an e-mail address
- * 
+ *
  * @param {String} addr
- * 
+ *
  * @return {String}
  */
 function getDomainFromAddr(addr) {
@@ -234,12 +235,13 @@ function getDomainFromAddr(addr) {
 
 /**
  * Reads from a source asynchronously into a String.
- * 
+ *
  * Based on https://developer.mozilla.org/en-US/docs/Code_snippets/File_I_O#Asynchronously
- * 
+ *
  * @param {String} aSource The source to read from.
- * 
+ *
  * @return {Promise<String>}
+ * @throws {Error}
  */
 function readStringFrom(aSource) {
 	log.trace("readStringFrom begin");
@@ -253,7 +255,7 @@ function readStringFrom(aSource) {
 	}, function(inputStream, status) {
 		if (!Components.isSuccessCode(status)) {
 			// Handle error!
-			defer.reject(new Error("readStringFrom: nsresult: "+status));
+			defer.reject(new Error(`readStringFrom: nsresult: ${status}`));
 			// defer.reject(Object.keys(Components.results).find(o=>o[status] === value));
 			log.trace("readStringFrom nsresult: "+status);
 			return;
@@ -265,17 +267,17 @@ function readStringFrom(aSource) {
 		defer.resolve(data);
 		log.trace("readStringFrom begin");
 	});
-	
+
 	return defer.promise;
 }
 
 /**
  * Returns true if str ends with x.
  * Comparison is done case insensitive.
- * 
+ *
  * @param {String} str
  * @param {String} x
- * 
+ *
  * @return {Boolean}
  */
 function stringEndsWith(str, x) {
@@ -286,10 +288,10 @@ function stringEndsWith(str, x) {
 /**
  * Returns true if str1 is equal str2.
  * Comparison is done case insensitive.
- * 
+ *
  * @param {String} str1
  * @param {String} str2
- * 
+ *
  * @return {Boolean}
  */
 function stringEqual(str1, str2) {
@@ -298,12 +300,13 @@ function stringEqual(str1, str2) {
 
 /**
  * Get the type an object as a string.
- * 
+ *
  * From https://javascriptweblog.wordpress.com/2011/08/08/fixing-the-javascript-typeof-operator/
- * 
+ *
  * @param {any} obj
- * 
+ *
  * @return {String}
+ * @throws {Error}
  */
 function toType(obj) {
 	const typeMatch = Object.prototype.toString.call(obj).match(/\s([a-zA-Z]+)/);
@@ -315,10 +318,10 @@ function toType(obj) {
 
 /**
  * try to get string from stringbundle
- * 
+ *
  * @param {Stringbundle} stringbundle
  * @param {string|undefined} name
- * 
+ *
  * @return {String|null}
  */
 function tryGetString(stringbundle, name) {
@@ -336,11 +339,11 @@ function tryGetString(stringbundle, name) {
 
 /**
  * try to get formatted string from stringbundle
- * 
+ *
  * @param {Stringbundle} stringbundle
  * @param {String} name
  * @param {(string|string[])[]} [params]
- * 
+ *
  * @return {String|null}
  */
 function tryGetFormattedString(stringbundle, name, params = []) {
@@ -358,9 +361,9 @@ function tryGetFormattedString(stringbundle, name, params = []) {
 
 /**
  * Writes a String to a file in the operating system's temporary files directory.
- * 
+ *
  * Based on https://developer.mozilla.org/en-US/docs/Code_snippets/File_I_O#Write_a_string
- * 
+ *
  * @param {String} string
  * @param {String} fileName
  * @return {void}
@@ -370,7 +373,7 @@ function writeStringToTmpFile(string, fileName) {
 					getService(Components.interfaces.nsIProperties).
 					get("TmpD", Components.interfaces.nsIFile);
 	file.append(fileName);
-	
+
 	// file is nsIFile, data is a string
 
 	// You can also optionally pass a flags parameter here. It defaults to
@@ -401,9 +404,9 @@ function writeStringToTmpFile(string, fileName) {
 class DKIM_SigError extends Error {
 	/**
 	 * DKIM signature error.
-	 * 
+	 *
 	 * @constructor
-	 * 
+	 *
 	 * @param {String} errorType
 	 * @param {any[]} [errorStrParams]
 	 */
@@ -420,24 +423,43 @@ class DKIM_SigError extends Error {
 }
 
 /**
- * DKIM internal error
+ * Temporary DKIM signature error.
  */
-class DKIM_InternalError extends Error {
+class DKIM_TempError extends Error {
 	/**
-	 * DKIM internal error
-	 * 
+	 * Temporary DKIM signature error.
+	 *
 	 * @constructor
-	 * 
-	 * @param {String|null} [message]
-	 * @param {String} [errorType]
+	 *
+	 * @param {String} errorType
+	 * @param {any[]} [errorStrParams]
 	 */
-	constructor(message, errorType) {
-		super(message ||
-			tryGetString(dkimStrings, errorType) ||
+	constructor(errorType, errorStrParams = []) {
+		super(tryGetFormattedString(dkimStrings, errorType, errorStrParams) ||
 			errorType ||
 			dkimStrings.getString("DKIM_INTERNALERROR_DEFAULT"));
 		this.name = dkimStrings.getString("DKIM_INTERNALERROR") + " (" + errorType + ")";
 		this.errorType = errorType;
+		this.errorStrParams = errorStrParams;
+		// @ts-expect-error
+		this.stack = this.stack.substring(this.stack.indexOf('\n')+1);
+	}
+}
+
+/**
+ * General DKIM error.
+ */
+class DKIM_Error extends Error {
+	/**
+	 * General DKIM error.
+	 *
+	 * @constructor
+	 *
+	 * @param {String} message
+	 */
+	constructor(message) {
+		super(message);
+		this.name = this.constructor.name;
 		// @ts-expect-error
 		this.stack = this.stack.substring(this.stack.indexOf('\n')+1);
 	}

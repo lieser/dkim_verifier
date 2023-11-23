@@ -61,7 +61,7 @@ class SQLiteTreeView {
 
 		// test that db exists
 		if (!this.file.exists()) {
-			throw new Error("SQLite File "+path+" must exist");
+			throw new Error(`SQLite File ${path} must exist`);
 		}
 
 		this.tableName = tableName.replace(/\W/g, "");
@@ -346,7 +346,7 @@ class SQLiteTreeView {
 			
 			// test that table exists
 			if (!this.conn.tableExists(this.tableName)) {
-				throw new Error("Table "+this.tableName+" must exist");
+				throw new Error(`Table ${this.tableName} must exist`);
 			}
 	
 			if ( treeBox.columns.count !== this.columns.length) {
