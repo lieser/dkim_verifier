@@ -15,8 +15,8 @@
 
 // options for ESLint
 /* global Components, Services, MailServices */
-/* global Logging, ARHParser */
-/* global PREF, dkimStrings, domainIsInDomain, getDomainFromAddr, tryGetFormattedString */
+/* global Logging, ARHParser, BIMI */
+/* global PREF, dkimStrings, domainIsInDomain, getDomainFromAddr, tryGetFormattedString, addrIsInDomain */
 /* exported EXPORTED_SYMBOLS, AuthVerifier */
 
 "use strict";
@@ -42,6 +42,7 @@ Cu.import("resource:///modules/iteratorUtils.jsm");
 Cu.import("resource://dkim_verifier/logging.jsm.js");
 Cu.import("resource://dkim_verifier/helper.jsm.js");
 Cu.import("resource://dkim_verifier/ARHParser.jsm.js");
+Cu.import("resource://dkim_verifier/bimi.jsm.js");
 // @ts-ignore
 let DKIM = {};
 Cu.import("resource://dkim_verifier/dkimPolicy.jsm.js", DKIM);
@@ -69,12 +70,13 @@ let prefs = Services.prefs.getBranch(PREF_BRANCH);
 /**
  * @typedef {Object} SavedAuthResult|SavedAuthResultV3
  * @property {String} version
- *           result version ("3.0")
+ *           result version ("3.1")
  * @property {dkimSigResultV2[]} dkim
  * @property {ARHResinfo[]} [spf]
  * @property {ARHResinfo[]} [dmarc]
  * @property {Object} [arh]
  * @property {dkimSigResultV2[]} [arh.dkim]
+ * @property {string|undefined} [bimiIndicator] Since version 3.1
  */
 
 /**
@@ -163,13 +165,14 @@ var AuthVerifier = {
 					savedAuthResult = arhResult;
 				} else {
 					savedAuthResult = {
-						version: "3.0",
+						version: "3.1",
 						dkim: [],
 						spf: arhResult.spf,
 						dmarc: arhResult.dmarc,
 						arh: {
 							dkim: arhResult.dkim
 						},
+						bimiIndicator: arhResult.bimiIndicator,
 					};
 				}
 			} else {
@@ -275,6 +278,7 @@ function getARHResult(msgHdr, msg) {
 	let arhDKIM = [];
 	let arhSPF = [];
 	let arhDMARC = [];
+	let arhBIMI = [];
 	for (let i = 0; i < msg.headerFields.get("authentication-results").length; i++) {
 		let arh;
 		try {
@@ -301,6 +305,7 @@ function getARHResult(msgHdr, msg) {
 		arhDKIM = arhDKIM.concat(arh.resinfo.filter(e => e.method === "dkim"));
 		arhSPF = arhSPF.concat(arh.resinfo.filter(e => e.method === "spf"));
 		arhDMARC = arhDMARC.concat(arh.resinfo.filter(e => e.method === "dmarc"));
+		arhBIMI = arhBIMI.concat(arh.resinfo.filter(e => e.method === "bimi"));
 	}
 
 	// convert DKIM results
@@ -362,10 +367,11 @@ function getARHResult(msgHdr, msg) {
 	DKIM.Verifier.sortSignatures(msg, dkimSigResults);
 
 	let savedAuthResult = {
-		version: "3.0",
+		version: "3.1",
 		dkim: dkimSigResults,
 		spf: arhSPF,
 		dmarc: arhDMARC,
+		bimiIndicator: BIMI.getBimiIndicator(msg.headerFields, arhBIMI) || undefined,
 	};
 	log.debug("ARH result:", savedAuthResult);
 	return savedAuthResult;
@@ -716,7 +722,7 @@ async function SavedAuthResult_to_AuthResult(savedAuthResult, from) { // eslint-
 		authResult.arh.dkim = authResult.arh.dkim.map(
 			dkimSigResultV2_to_AuthResultDKIM);
 	}
-	return addFavicons(authResult, from);
+	return addFavicons(authResult, from, savedAuthResult.bimiIndicator);
 }
 
 /**
@@ -739,16 +745,21 @@ function AuthResultDKIMV2_to_dkimSigResultV2(authResultDKIM) {
  * 
  * @param {AuthResult} authResult
  * @param {String|undefined} from
+ * @param {String|undefined} bimiIndicator
  * @return {Promise<AuthResult>} authResult
  */
-async function addFavicons(authResult, from) {
+async function addFavicons(authResult, from, bimiIndicator) {
 	if (!prefs.getBoolPref("display.favicon.show")) {
 		return authResult;
 	}
 	for (let i = 0; i < authResult.dkim.length; i++) {
 		if (authResult.dkim[i].sdid) {
+			if (bimiIndicator && from && addrIsInDomain(from, authResult.dkim[i].sdid)) {
+				authResult.dkim[i].favicon = `data:image/svg+xml;base64,${bimiIndicator}`;
+			} else {
 			authResult.dkim[i].favicon =
 				await DKIM.Policy.getFavicon(authResult.dkim[i].sdid, authResult.dkim[i].auid, from);
+			}
 		}
 	}
 	return authResult;
