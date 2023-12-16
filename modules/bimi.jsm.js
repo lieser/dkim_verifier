@@ -18,7 +18,7 @@
  
 // options for ESLint
 /* global Components */
-/* global Logging */
+/* global Logging, rfcParser */
 /* exported EXPORTED_SYMBOLS, BIMI */
 
 "use strict";
@@ -32,17 +32,11 @@ const Cu = Components.utils;
 
 Cu.import("resource://dkim_verifier/logging.jsm.js");
 Cu.import("resource://dkim_verifier/ARHParser.jsm.js");
+Cu.import("resource://dkim_verifier/rfcParser.jsm.js");
 
 let BIMI = (function() {	
 	
 	const log = Logging.getLogger("BIMI");
-
-	// WSP as specified in Appendix B.1 of RFC 5234
-	const WSP_p = "[ \t]";
-	// obs-FWS as specified in Section 4.2 of RFC 5322
-	const obs_FWS_p = `(?:${WSP_p}+(?:\r\n${WSP_p}+)*)`;
-	// FWS as specified in Section 3.2.2 of RFC 5322
-	const FWS_p = `(?:(?:(?:${WSP_p}*\r\n)?${WSP_p}+)|${obs_FWS_p})`;
 
 	let that = {
 		/**
@@ -87,7 +81,7 @@ let BIMI = (function() {
 			// Remove header name and new line at end
 			bimiIndicator = bimiIndicator.slice("bimi-indicator:".length, -"\r\n".length);
 			// Remove all whitespace
-			bimiIndicator = bimiIndicator.replace(new RegExp(`${FWS_p}`, "g"), "");
+			bimiIndicator = bimiIndicator.replace(new RegExp(`${rfcParser.get("FWS")}`, "g"), "");
 		
 			return bimiIndicator;
 		}

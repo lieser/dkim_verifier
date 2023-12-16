@@ -18,8 +18,8 @@
 
 // options for ESLint
 /* eslint strict: ["warn", "function"] */
-/* global Components, Services, XPCOMUtils */
-/* global Logging, Verifier, DNS */
+/* global Components, Services */
+/* global Logging, DNS, rfcParser */
 /* global getBaseDomainFromAddr, getDomainFromAddr, toType, DKIM_TempError, DKIM_Error */
 /* exported EXPORTED_SYMBOLS, DMARC */
 
@@ -34,19 +34,11 @@ var EXPORTED_SYMBOLS = [
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
-Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 
 Cu.import("resource://dkim_verifier/logging.jsm.js");
 Cu.import("resource://dkim_verifier/helper.jsm.js");
 Cu.import("resource://dkim_verifier/DNSWrapper.jsm.js");
-
-XPCOMUtils.defineLazyModuleGetter(
-  this,
-  "Verifier",
-  "resource://dkim_verifier/dkimVerifier.jsm.js"
-);
-
-
+Cu.import("resource://dkim_verifier/rfcParser.jsm.js");
 
 /**
  * @public
@@ -316,14 +308,14 @@ function parseDMARCRecord(DMARCRecordStr) {
 	};
 	
 	// parse tag-value list
-	let parsedTagMap = Verifier.parseTagValueList(DMARCRecordStr);
+	let parsedTagMap = rfcParser.parseTagValueList(DMARCRecordStr);
 	if (parsedTagMap === -1) {
 		throw new DKIM_Error("DKIM_DMARCERROR_ILLFORMED_TAGSPEC");
 	} else if (parsedTagMap === -2) {
 		throw new DKIM_Error("DKIM_DMARCERROR_DUPLICATE_TAG");
 	}
 	if (!(toType(parsedTagMap) === "Map")) {
-		throw new DKIM_Error(`unexpected return value from Verifier.parseTagValueList: ${parsedTagMap}`);
+		throw new DKIM_Error(`unexpected return value from rfcParser.parseTagValueList: ${parsedTagMap}`);
 	}
 	/** @type {Map} */
 	// @ts-ignore
@@ -334,7 +326,7 @@ function parseDMARCRecord(DMARCRecordStr) {
 	// of this tag MUST match precisely; if it does not or it is absent,
 	// the entire retrieved record MUST be ignored.  It MUST be the first
 	// tag in the list.
-	let versionTag = Verifier.parseTagValue(tagMap, "v", "DMARC1", 3);
+	let versionTag = rfcParser.parseTagValue(tagMap, "v", "DMARC1", 3);
 	if (versionTag === null) {
 		throw new DKIM_Error("DKIM_DMARCERROR_MISSING_V");
 	} else {
@@ -344,7 +336,7 @@ function parseDMARCRecord(DMARCRecordStr) {
 	// adkim:  (plain-text; OPTIONAL, default is "r".)  Indicates whether
 	// strict or relaxed DKIM identifier alignment mode is required by
 	// the Domain Owner.
-	let adkimTag = Verifier.parseTagValue(tagMap, "adkim", "[rs]", 3);
+	let adkimTag = rfcParser.parseTagValue(tagMap, "adkim", "[rs]", 3);
 	if (adkimTag === null || versionTag[0] === "DMARC1") {
 		dmarcRecord.adkim = "r";
 	} else {
@@ -369,7 +361,7 @@ function parseDMARCRecord(DMARCRecordStr) {
 	//    email that fails the DMARC mechanism check.  Rejection SHOULD
 	//    occur during the SMTP transaction.  See Section 15.4 for some
 	//    discussion of SMTP rejection methods and their implications.
-	let pTag = Verifier.parseTagValue(tagMap, "p", "(?:none|quarantine|reject)", 3);
+	let pTag = rfcParser.parseTagValue(tagMap, "p", "(?:none|quarantine|reject)", 3);
 	if (pTag === null) {
 		throw new DKIM_Error("DKIM_DMARCERROR_MISSING_P");
 	} else {
@@ -392,7 +384,7 @@ function parseDMARCRecord(DMARCRecordStr) {
 	//    selected = true
 	//  else
 	//    selected = false
-	let pctTag = Verifier.parseTagValue(tagMap, "pct", "[0-9]{1,3}", 3);
+	let pctTag = rfcParser.parseTagValue(tagMap, "pct", "[0-9]{1,3}", 3);
 	if (pctTag === null) {
 		dmarcRecord.pct = 100;
 	} else {
@@ -411,7 +403,7 @@ function parseDMARCRecord(DMARCRecordStr) {
 	// Note that "sp" will be ignored for DMARC records published on sub-
 	// domains of Organizational Domains due to the effect of the DMARC
 	// Policy Discovery mechanism described in Section 8.
-	let spTag = Verifier.parseTagValue(tagMap, "sp", "(?:none|quarantine|reject)", 3);
+	let spTag = rfcParser.parseTagValue(tagMap, "sp", "(?:none|quarantine|reject)", 3);
 	if (spTag !== null) {
 		dmarcRecord.sp = spTag[0];
 	}
