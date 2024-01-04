@@ -644,7 +644,7 @@ var Verifier = (function() {
 			if (exception instanceof DKIM_SigError &&
 				exception.errorType === "DKIM_SIGERROR_ILLFORMED_S")
 			{
-				// @ToDo: Find an internationalized more relaxed version
+				// TODO: Find an internationalized more relaxed version, if needed
 				// try to parse selector in a more relaxed way
 				var sub_domain_ = "(?:[A-Za-z0-9_](?:[A-Za-z0-9_-]*[A-Za-z0-9_])?)";
 				SelectorTag = rfcParser.parseTagValue(tagMap, "s", `${sub_domain_}(?:\\.${sub_domain_})*`);
