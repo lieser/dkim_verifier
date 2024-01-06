@@ -24,7 +24,7 @@
 "use strict";
 
 var EXPORTED_SYMBOLS = [
-    "BIMI"
+	"BIMI"
 ];
 
 // @ts-ignore
@@ -36,55 +36,55 @@ Cu.import("resource://dkim_verifier/rfcParser.jsm.js");
 
 let BIMI = (function() {
 
-    const log = Logging.getLogger("BIMI");
+	const log = Logging.getLogger("BIMI");
 
-    let that = {
-        /**
-        * Try to get the BIMI Indicator if available.
-        *
-        * @param {Map<string, string[]>} headers
-        * @param {ARHResinfo[]} arhBIMI - Trusted ARHs containing a BIMI result.
-        * @returns {string|null}
-        */
-        getBimiIndicator: function(headers, arhBIMI) {
-            // Assuming:
-            // 1. We only get ARHs that can be trusted (i.e. from the receiving MTA).
-            // 2. If the receiving MTA does not supports BIMI,
-            //    we will not see an ARH with a BIMI result (because of 1)
-            // 3. If the receiving MTA supports BIMI,
-            //    it will make sure we only see his BIMI-Indicator headers (as required by the RFC).
-            //
-            // Given the above, it should be safe to trust the BIMI indicator from the BIMI-Indicator header
-            // if we have a passing BIMI result there the MTA claims to have checked the Authority Evidence.
-            const hasAuthorityPassBIMI = arhBIMI.some(
-                arh => arh.method === "bimi" &&
-                    arh.result === "pass" &&
-                    arh.propertys.policy.authority === "pass"
-            );
-            if (!hasAuthorityPassBIMI) {
-                return null;
-            }
+	let that = {
+		/**
+		* Try to get the BIMI Indicator if available.
+		*
+		* @param {Map<string, string[]>} headers
+		* @param {ARHResinfo[]} arhBIMI - Trusted ARHs containing a BIMI result.
+		* @returns {string|null}
+		*/
+		getBimiIndicator: function(headers, arhBIMI) {
+			// Assuming:
+			// 1. We only get ARHs that can be trusted (i.e. from the receiving MTA).
+			// 2. If the receiving MTA does not supports BIMI,
+			//	  we will not see an ARH with a BIMI result (because of 1)
+			// 3. If the receiving MTA supports BIMI,
+			//	  it will make sure we only see his BIMI-Indicator headers (as required by the RFC).
+			//
+			// Given the above, it should be safe to trust the BIMI indicator from the BIMI-Indicator header
+			// if we have a passing BIMI result there the MTA claims to have checked the Authority Evidence.
+			const hasAuthorityPassBIMI = arhBIMI.some(
+				arh => arh.method === "bimi" &&
+					arh.result === "pass" &&
+					arh.propertys.policy.authority === "pass"
+			);
+			if (!hasAuthorityPassBIMI) {
+				return null;
+			}
 
-            const bimiIndicators = headers.get("bimi-indicator") || [];
-            if (bimiIndicators.length > 1) {
-                log.warn("Message contains more than one BIMI-Indicator header");
-                return null;
-            }
-            let bimiIndicator = bimiIndicators[0];
-            if (!bimiIndicator) {
-                log.warn("Message contains an ARH with passing BIMI but does not have a BIMI-Indicator header");
-                return null;
-            }
+			const bimiIndicators = headers.get("bimi-indicator") || [];
+			if (bimiIndicators.length > 1) {
+				log.warn("Message contains more than one BIMI-Indicator header");
+				return null;
+			}
+			let bimiIndicator = bimiIndicators[0];
+			if (!bimiIndicator) {
+				log.warn("Message contains an ARH with passing BIMI but does not have a BIMI-Indicator header");
+				return null;
+			}
 
-            // TODO: If in the future we support ARC we might want to check the policy.indicator-hash
+			// TODO: If in the future we support ARC we might want to check the policy.indicator-hash
 
-            // Remove header name and new line at end
-            bimiIndicator = bimiIndicator.slice("bimi-indicator:".length, -"\r\n".length);
-            // Remove all whitespace
-            bimiIndicator = bimiIndicator.replace(new RegExp(`${rfcParser.get("FWS")}`, "g"), "");
+			// Remove header name and new line at end
+			bimiIndicator = bimiIndicator.slice("bimi-indicator:".length, -"\r\n".length);
+			// Remove all whitespace
+			bimiIndicator = bimiIndicator.replace(new RegExp(`${rfcParser.get("FWS")}`, "g"), "");
 
-            return bimiIndicator;
-        }
-    };
-    return that;
+			return bimiIndicator;
+		}
+	};
+	return that;
 }());
