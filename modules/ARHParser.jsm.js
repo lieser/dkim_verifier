@@ -1,14 +1,14 @@
 /*
  * ARHParser.jsm.js
- *
+ * 
  * Parser for the Authentication-Results header as specified in RFC 7601.
  *
  * Version: 1.2.1 (13 January 2019)
- *
+ * 
  * Copyright (c) 2014-2019 Philippe Lieser
- *
+ * 
  * This software is licensed under the terms of the MIT License.
- *
+ * 
  * The above copyright and license notice shall be
  * included in all copies or substantial portions of the Software.
  */
@@ -56,7 +56,7 @@ const log = Logging.getLogger("ARHParser");
  * @property {String} method
  * @property {Number} [method_version]
  * @property {String} result
- *			 none|pass|fail|softfail|policy|neutral|temperror|permerror
+ *           none|pass|fail|softfail|policy|neutral|temperror|permerror
  * @property {String} [reason]
  * @property {Object} propertys
  * @property {Object} propertys.smtp
@@ -64,18 +64,18 @@ const log = Logging.getLogger("ARHParser");
  * @property {Object} propertys.body
  * @property {Object} propertys.policy
  * @property {Object} [propertys._Keyword_]
- *			 ARHResinfo can also include other propertys besides the aboves.
+ *           ARHResinfo can also include other propertys besides the aboves.
  */
 
 let ARHParser = {
 	get version() { return module_version; },
 
 	/**
-	 *	Parses an Authentication-Results header.
-	 *
-	 *	@param {String} authresHeader Authentication-Results header
-	 *	@return {ARHHeader} Parsed Authentication-Results header
-	 *	@throws {DKIM_Error}
+	 *  Parses an Authentication-Results header.
+	 *  
+	 *  @param {String} authresHeader Authentication-Results header
+	 *  @return {ARHHeader} Parsed Authentication-Results header
+	 *  @throws {DKIM_Error}
 	 */
 	parse: function _ARHParser_parse(authresHeader) {
 		// remove header name
@@ -122,11 +122,11 @@ let ARHParser = {
 };
 
 /**
- *	Parses the next resinfo in str. The parsed part of str is removed from str.
- *
- *	@param {RefString} str
- *	@return {ARHResinfo|null} Parsed resinfo
- *	@throws {DKIM_Error|Error}
+ *  Parses the next resinfo in str. The parsed part of str is removed from str.
+ *  
+ *  @param {RefString} str
+ *  @return {ARHResinfo|null} Parsed resinfo
+ *  @throws {DKIM_Error|Error}
  */
 function parseResinfo(str) {
 	log.trace("parse str: " + str.toSource());
@@ -134,7 +134,7 @@ function parseResinfo(str) {
 	let reg_match;
 	/** @type {ARHResinfo} */
 	let res = {};
-
+	
 	// get methodspec
 	const method_version_p = `${rfcParser.get("CFWS_op")}/${rfcParser.get("CFWS_op")}([0-9]+)`;
 	const method_p = `(${rfcParser.get("Keyword")})(?:${method_version_p})?`;
@@ -196,7 +196,7 @@ function parseResinfo(str) {
 		}
 		if (!reg_match[2]) {
 			throw new DKIM_Error("Error matching the ARH property sub-name.");
-		}
+		}		
 		let property = res.propertys[reg_match[1]];
 		if (!property) {
 			property = {};
@@ -280,15 +280,15 @@ class RefString {
 }
 
 /**
- *	Matches a pattern to the beginning of str.
- *	Adds CFWS_op to the beginning of pattern.
- *	pattern must be followed by string end, ";" or CFWS_p.
- *	Removes the found match from str.
- *
- *	@param {RefString} str
- *	@param {String} pattern
- *	@return {String[]} An Array, containing the matches
- *	@throws {DKIM_Error} if match no match found
+ *  Matches a pattern to the beginning of str.
+ *  Adds CFWS_op to the beginning of pattern.
+ *  pattern must be followed by string end, ";" or CFWS_p.
+ *  Removes the found match from str.
+ *  
+ *  @param {RefString} str
+ *  @param {String} pattern
+ *  @return {String[]} An Array, containing the matches
+ *  @throws {DKIM_Error} if match no match found
  */
 function match(str, pattern) {
 	const reg_match = match_o(str, pattern);
@@ -300,15 +300,15 @@ function match(str, pattern) {
 }
 
 /**
- *	Tries to matches a pattern to the beginning of str.
- *	Adds CFWS_op to the beginning of pattern.
- *	pattern must be followed by string end, ";" or CFWS_p.
- *	If match is found, removes it from str.
- *
- *	@param {RefString} str
- *	@param {String} pattern
- *	@return {String[]|Null} Null if no match for the pattern is found, else
- *						  an Array, containing the matches
+ *  Tries to matches a pattern to the beginning of str.
+ *  Adds CFWS_op to the beginning of pattern.
+ *  pattern must be followed by string end, ";" or CFWS_p.
+ *  If match is found, removes it from str.
+ *  
+ *  @param {RefString} str
+ *  @param {String} pattern
+ *  @return {String[]|Null} Null if no match for the pattern is found, else
+ *                        an Array, containing the matches
  */
 function match_o(str, pattern) {
 	const regexp = new RegExp(`^${rfcParser.get("CFWS_op")}(?:${pattern})(?:(?:${rfcParser.get("CFWS_op")}\r\n$)|(?=;)|(?=${rfcParser.get("CFWS")}))`);

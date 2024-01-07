@@ -36,22 +36,22 @@ let rfcParser = (function() {
 	RfcParserStd.token = "[^ \\x00-\\x1F\\x7F()<>@,;:\\\\\"/[\\]?=\\u0080-\\uFFFF]+";
 
 	////// RFC 5234 - Augmented BNF for Syntax Specifications: ABNF
-	//// Appendix B.1.	Core Rules
+	//// Appendix B.1.  Core Rules
 	RfcParserStd.VCHAR = "[!-~]";
 	RfcParserStd.WSP = "[ \t]";
 
 	////// RFC 5321 - Simple Mail Transfer Protocol
-	//// 4.1.2.	 Command Argument Syntax
+	//// 4.1.2.  Command Argument Syntax
 	RfcParserStd.Let_dig = "[A-Za-z0-9]";
 	RfcParserStd.Ldh_str = `(?:[A-Za-z0-9-]*${RfcParserStd.Let_dig})`;
 	RfcParserStd.Keyword = RfcParserStd.Ldh_str;
 	RfcParserStd.sub_domain = `(?:${RfcParserStd.Let_dig}${RfcParserStd.Ldh_str}?)`;
 
 	////// RFC 5322 - Internet Message Format
-	//// 3.2.1.	 Quoted characters
+	//// 3.2.1.  Quoted characters
 	// Note: this is incomplete (obs-qp is missing)
 	RfcParserStd.quoted_pair = `(?:\\\\(?:${RfcParserStd.VCHAR}|${RfcParserStd.WSP}))`;
-	//// 3.2.2.	 Folding White Space and Comments
+	//// 3.2.2.  Folding White Space and Comments
 	// Note: this is incomplete (obs-FWS is missing)
 	// Note: this is as specified in Section 2.8. of RFC 6376 [DKIM]
 	RfcParserStd.FWS = `(?:${RfcParserStd.WSP}*(?:\r\n)?${RfcParserStd.WSP}+)`;
@@ -65,19 +65,19 @@ let rfcParser = (function() {
 	RfcParserStd.CFWS = `(?:(?:(?:${RfcParserStd.FWS_op}${RfcParserStd.comment})+${RfcParserStd.FWS_op})|${RfcParserStd.FWS})`;
 	// Note: helper only, not part of the RFC
 	RfcParserStd.CFWS_op = `${RfcParserStd.CFWS}?`;
-	//// 3.2.3.	 Atom
+	//// 3.2.3.  Atom
 	RfcParserStd.atext = "[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]";
 	RfcParserStd.atom = `(?:${RfcParserStd.CFWS_op}${RfcParserStd.atext}+${RfcParserStd.CFWS_op})`;
 	// Note: helper only, not part of the RFC: an atom without the optional surrounding CFWS. dot is included for obs-phrase
 	RfcParserStd.atom_b_obs = `(?:(?:${RfcParserStd.atext}|\\.)+)`;
 	RfcParserStd.dot_atom_text = `(?:${RfcParserStd.atext}+(?:\\.${RfcParserStd.atext}+)*)`;
 	RfcParserStd.dot_atom = `(?:${RfcParserStd.CFWS_op}${RfcParserStd.dot_atom_text}${RfcParserStd.CFWS_op})`;
-	//// 3.2.4.	 Quoted Strings
+	//// 3.2.4.  Quoted Strings
 	// Note: this is incomplete (obs-qtext is missing)
 	RfcParserStd.qtext = "[!#-[\\]-~]";
 	RfcParserStd.qcontent = `(?:${RfcParserStd.qtext}|${RfcParserStd.quoted_pair})`;
 	RfcParserStd.quoted_string = `(?:${RfcParserStd.CFWS_op}"(?:${RfcParserStd.FWS_op}${RfcParserStd.qcontent})*${RfcParserStd.FWS_op}"${RfcParserStd.CFWS_op})`;
-	//// 3.2.5.	 Miscellaneous Tokens
+	//// 3.2.5.  Miscellaneous Tokens
 	RfcParserStd.word = `(?:${RfcParserStd.atom}|${RfcParserStd.quoted_string})`;
 	// Note: helper only, not part of the RFC: chain of word (including dot for obs-phrase) without whitespace between, or quoted string chain
 	RfcParserStd.word_chain = `(?:(?:${RfcParserStd.atom_b_obs}|(?:${RfcParserStd.atom_b_obs}?${RfcParserStd.quoted_string})+${RfcParserStd.atom_b_obs}?))`;
@@ -89,7 +89,7 @@ let rfcParser = (function() {
 	// Note: this is incomplete (obs-angle-addr is missing)
 	RfcParserStd.angle_addr = `(?:${RfcParserStd.CFWS_op}<${RfcParserStd.addr_spec}>${RfcParserStd.CFWS_op})`;
 	RfcParserStd.display_name = `(?:${RfcParserStd.phrase})`;
-	//// 3.4.1.	 Addr-Spec Specification
+	//// 3.4.1.  Addr-Spec Specification
 	RfcParserStd.addr_spec = `(?:${RfcParserStd.local_part}@${RfcParserStd.domain})`;
 	// Note: this is incomplete (obs-local-part is missing)
 	RfcParserStd.local_part = `(?:${RfcParserStd.dot_atom}|${RfcParserStd.quoted_string})`;
@@ -124,7 +124,7 @@ let rfcParser = (function() {
 
 	let RfcParserI = {};
 	////// RFC 3629 - UTF-8, a transformation format of ISO 10646
-	//// 4.	 Syntax of UTF-8 Byte Sequences
+	//// 4.  Syntax of UTF-8 Byte Sequences
 	//// https://datatracker.ietf.org/doc/html/rfc3629#section-4
 	RfcParserI.UTF8_tail = "[\x80-\xBF]";
 	RfcParserI.UTF8_2 = `(?:[\xC2-\xDF]${RfcParserI.UTF8_tail})`;

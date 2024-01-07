@@ -15,7 +15,7 @@
  * The above copyright and license notice shall be
  * included in all copies or substantial portions of the Software.
  */
-
+ 
 // options for ESLint
 /* global Components */
 /* global Logging, rfcParser */
@@ -34,8 +34,8 @@ Cu.import("resource://dkim_verifier/logging.jsm.js");
 Cu.import("resource://dkim_verifier/ARHParser.jsm.js");
 Cu.import("resource://dkim_verifier/rfcParser.jsm.js");
 
-let BIMI = (function() {
-
+let BIMI = (function() {	
+	
 	const log = Logging.getLogger("BIMI");
 
 	let that = {
@@ -50,9 +50,9 @@ let BIMI = (function() {
 			// Assuming:
 			// 1. We only get ARHs that can be trusted (i.e. from the receiving MTA).
 			// 2. If the receiving MTA does not supports BIMI,
-			//	  we will not see an ARH with a BIMI result (because of 1)
+			//    we will not see an ARH with a BIMI result (because of 1)
 			// 3. If the receiving MTA supports BIMI,
-			//	  it will make sure we only see his BIMI-Indicator headers (as required by the RFC).
+			//    it will make sure we only see his BIMI-Indicator headers (as required by the RFC).
 			//
 			// Given the above, it should be safe to trust the BIMI indicator from the BIMI-Indicator header
 			// if we have a passing BIMI result there the MTA claims to have checked the Authority Evidence.
@@ -64,7 +64,7 @@ let BIMI = (function() {
 			if (!hasAuthorityPassBIMI) {
 				return null;
 			}
-
+		
 			const bimiIndicators = headers.get("bimi-indicator") || [];
 			if (bimiIndicators.length > 1) {
 				log.warn("Message contains more than one BIMI-Indicator header");
@@ -75,14 +75,14 @@ let BIMI = (function() {
 				log.warn("Message contains an ARH with passing BIMI but does not have a BIMI-Indicator header");
 				return null;
 			}
-
+		
 			// TODO: If in the future we support ARC we might want to check the policy.indicator-hash
-
+		
 			// Remove header name and new line at end
 			bimiIndicator = bimiIndicator.slice("bimi-indicator:".length, -"\r\n".length);
 			// Remove all whitespace
 			bimiIndicator = bimiIndicator.replace(new RegExp(`${rfcParser.get("FWS")}`, "g"), "");
-
+		
 			return bimiIndicator;
 		}
 	};

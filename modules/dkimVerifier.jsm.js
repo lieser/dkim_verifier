@@ -18,9 +18,9 @@
 /*
  * Violations against RFC 6376:
  * ============================
- *	- at the moment, only a subset of valid Local-part in the i-Tag is recognized
- *	- no test for multiple key records in an DNS RRset (Section 3.6.2.2)
- *	- no test that the version tag of the DKIM key is the first tag in the record
+ *  - at the moment, only a subset of valid Local-part in the i-Tag is recognized
+ *  - no test for multiple key records in an DNS RRset (Section 3.6.2.2)
+ *  - no test that the version tag of the DKIM key is the first tag in the record
  *
  */
 
@@ -64,19 +64,19 @@ var NaClUtil = {};
 
 // ASN.1
 Services.scriptloader.loadSubScript("resource://dkim_verifier_3p/rsasign/asn1hex-1.1.js",
-									RSA, "UTF-8" /* The script's encoding */);
+                                    RSA, "UTF-8" /* The script's encoding */);
 // base64 converter
 Services.scriptloader.loadSubScript("resource://dkim_verifier_3p/jsbn/base64.js",
-									RSA, "UTF-8" /* The script's encoding */);
+                                    RSA, "UTF-8" /* The script's encoding */);
 // RSA
 Services.scriptloader.loadSubScript("resource://dkim_verifier_3p/jsbn/jsbn.js",
-									RSA, "UTF-8" /* The script's encoding */);
+                                    RSA, "UTF-8" /* The script's encoding */);
 Services.scriptloader.loadSubScript("resource://dkim_verifier_3p/jsbn/jsbn2.js",
-									RSA, "UTF-8" /* The script's encoding */);
+                                    RSA, "UTF-8" /* The script's encoding */);
 Services.scriptloader.loadSubScript("resource://dkim_verifier_3p/jsbn/rsa.js",
-									RSA, "UTF-8" /* The script's encoding */);
+                                    RSA, "UTF-8" /* The script's encoding */);
 Services.scriptloader.loadSubScript("resource://dkim_verifier_3p/rsasign/rsasign-1.2.js",
-									RSA, "UTF-8" /* The script's encoding */);
+                                    RSA, "UTF-8" /* The script's encoding */);
 // ed25519
 Services.scriptloader.loadSubScript("resource://dkim_verifier_3p/tweetnacl-util/nacl-util.js", NaClUtil, "UTF-8");
 Services.scriptloader.loadSubScript("resource://dkim_verifier_3p/tweetnacl/nacl-fast.js", NaCl, "UTF-8");
@@ -90,22 +90,22 @@ const PREF_BRANCH = "extensions.dkim_verifier.";
  *
  * @typedef {Object} dkimResultV1
  * @property {String} version
- *			 result version ("1.0" / "1.1")
+ *           result version ("1.0" / "1.1")
  * @property {String} result
- *			 "none" / "SUCCESS" / "PERMFAIL" / "TEMPFAIL"
+ *           "none" / "SUCCESS" / "PERMFAIL" / "TEMPFAIL"
  * @property {String} [SDID]
- *			 required if result="SUCCESS
+ *           required if result="SUCCESS
  * @property {String} [selector]
- *			 added in version 1.1
+ *           added in version 1.1
  * @property {String[]} [warnings]
- *			 required if result="SUCCESS
+ *           required if result="SUCCESS
  * @property {String|undefined} [errorType]
- *			 if result="PERMFAIL: DKIM_SigError.errorType or Undefined
- *			 if result="TEMPFAIL: DKIM_TempError.errorType or Undefined
+ *           if result="PERMFAIL: DKIM_SigError.errorType or Undefined
+ *           if result="TEMPFAIL: DKIM_TempError.errorType or Undefined
  * @property {String} [shouldBeSignedBy]
- *			 added in version 1.1
+ *           added in version 1.1
  * @property {Boolean} [hideFail]
- *			 added in  version 1.1
+ *           added in  version 1.1
  */
 
 /**
@@ -119,18 +119,18 @@ const PREF_BRANCH = "extensions.dkim_verifier.";
  *
  * @typedef {Object} dkimSigResultV2
  * @property {String} version
- *			 result version ("2.0")
+ *           result version ("2.0")
  * @property {String} result
- *			 "none" / "SUCCESS" / "PERMFAIL" / "TEMPFAIL"
+ *           "none" / "SUCCESS" / "PERMFAIL" / "TEMPFAIL"
  * @property {String} [sdid]
  * @property {String} [auid]
  * @property {String} [selector]
  * @property {dkimSigWarningV2[]} [warnings]
- *			 Array of warning_objects.
- *			 required if result="SUCCESS"
+ *           Array of warning_objects.
+ *           required if result="SUCCESS"
  * @property {String} [errorType]
- *			 if result="PERMFAIL: DKIM_SigError.errorType
- *			 if result="TEMPFAIL: DKIM_TempError.errorType or Undefined
+ *           if result="PERMFAIL: DKIM_SigError.errorType
+ *           if result="TEMPFAIL: DKIM_TempError.errorType or Undefined
  * @property {String[]} [errorStrParams]
  * @property {Boolean} [hideFail]
  * @property {Boolean} [keySecure]
@@ -141,7 +141,7 @@ const PREF_BRANCH = "extensions.dkim_verifier.";
  *
  * @typedef {Object} dkimResultV2
  * @property {String} version
- *			 result version ("2.0")
+ *           result version ("2.0")
  * @property {dkimSigResultV2[]} signatures
  */
 
@@ -159,14 +159,14 @@ var Verifier = (function() {
 	RSA.KJUR = {};
 	RSA.KJUR.crypto = {};
 	RSA.KJUR.crypto.Util = {};
-	RSA.KJUR.crypto.Util.DIGESTINFOHEAD = {
-		'sha1':		 "3021300906052b0e03021a05000414",
-		'sha224':	 "302d300d06096086480165030402040500041c",
-		'sha256':	 "3031300d060960864801650304020105000420",
-		'sha384':	 "3041300d060960864801650304020205000430",
-		'sha512':	 "3051300d060960864801650304020305000440",
-		'md2':		 "3020300c06082a864886f70d020205000410",
-		'md5':		 "3020300c06082a864886f70d020505000410",
+    RSA.KJUR.crypto.Util.DIGESTINFOHEAD = {
+		'sha1':      "3021300906052b0e03021a05000414",
+		'sha224':    "302d300d06096086480165030402040500041c",
+		'sha256':    "3031300d060960864801650304020105000420",
+		'sha384':    "3041300d060960864801650304020205000430",
+		'sha512':    "3051300d060960864801650304020305000440",
+		'md2':       "3020300c06082a864886f70d020205000410",
+		'md5':       "3020300c06082a864886f70d020505000410",
 		'ripemd160': "3021300906052b2403020105000414",
 	};
 	RSA.KJUR.crypto.Util.hashString = (s, algName) => dkim_hash(s, algName, "hex");
@@ -252,14 +252,14 @@ var Verifier = (function() {
 	 * Verifies an RSA signature.
 	 *
 	 * @param {String} key
-	 *		  b64 encoded RSA key in ASN.1 DER format
+	 *        b64 encoded RSA key in ASN.1 DER format
 	 * @param {String} str
-	 *		  plain string to be verified
+	 *        plain string to be verified
 	 * @param {String} hash_algo
-	 *		  algorithm that should be used to calculate the hash
-	 *		  (but is not used in this implementation)
+	 *        algorithm that should be used to calculate the hash
+	 *        (but is not used in this implementation)
 	 * @param {String} signature
-	 *		  b64 encoded signature
+	 *        b64 encoded signature
 	 * @param {dkimSigWarning[]} warnings - out param
 	 * @param {Object} [keyInfo] - out param
 	 * @return {Boolean}
@@ -289,7 +289,7 @@ var Verifier = (function() {
 			throw new DKIM_SigError("DKIM_SIGERROR_KEYDECODE");
 		}
 		if (RSA.ASN1HEX.getTLV(asnKey, posTopArray[0]) !==
-			"300d06092a864886f70d0101010500") {
+		    "300d06092a864886f70d0101010500") {
 			throw new DKIM_SigError("DKIM_SIGERROR_KEYDECODE");
 		}
 
@@ -341,13 +341,13 @@ var Verifier = (function() {
 	 * Verifies an ed25519 signature.
 	 *
 	 * @param {String} key
-	 *		  b64 encoded ed25519 key
+	 *        b64 encoded ed25519 key
 	 * @param {String} str
-	 *		  b64 encoded string to be verified
+	 *        b64 encoded string to be verified
 	 * @param {String} hash_algo
-	 *		  algorithm that should be used to calculate the hash
+	 *        algorithm that should be used to calculate the hash
 	 * @param {String} signature
-	 *		  b64 encoded signature
+	 *        b64 encoded signature
 	 * @param {dkimSigWarning[]} warnings - out param
 	 * @param {Object} [_keyInfo] - out param
 	 * @return {Boolean}
@@ -568,7 +568,7 @@ var Verifier = (function() {
 		atom = [CFWS] 1*atext [CFWS]
 		CFWS = (1*([FWS] comment) [FWS]) / FWS
 		quoted-pair = ("\" (VCHAR / WSP)) / obs-qp
-		VCHAR		   =  %x21-7E ; visible (printing) characters
+		VCHAR          =  %x21-7E ; visible (printing) characters
 		obs-qtext = obs-NO-WS-CTL
 		obs-NO-WS-CTL = %d1-8 / ; US-ASCII control
 						%d11 / ; characters that do not
@@ -1152,7 +1152,7 @@ var Verifier = (function() {
 		// if s flag is set in DKIM key record
 		// AUID must be from the same domain as SDID (and not a subdomain)
 		if (DKIMSignature.DKIMKey.t_array.includes("s") &&
-			!stringEqual(DKIMSignature.i_domain, DKIMSignature.d)) {
+		    !stringEqual(DKIMSignature.i_domain, DKIMSignature.d)) {
 			throw new DKIM_SigError("DKIM_SIGERROR_DOMAIN_I");
 		}
 
@@ -1160,7 +1160,7 @@ var Verifier = (function() {
 		// the hash algorithm implied by the "a=" tag in the DKIM-Signature header field
 		// must be included in the contents of the "h=" tag
 		if (DKIMSignature.DKIMKey.h_array &&
-			!DKIMSignature.DKIMKey.h_array.includes(DKIMSignature.a_hash)) {
+		    !DKIMSignature.DKIMKey.h_array.includes(DKIMSignature.a_hash)) {
 			throw new DKIM_SigError("DKIM_SIGERROR_KEY_HASHNOTINCLUDED");
 		}
 
@@ -1192,7 +1192,7 @@ var Verifier = (function() {
 				log.debug("Try with removed quotes in Content-Type charset.");
 				msg.headerFields.get("content-type")[0] =
 					msg.headerFields.get("content-type")[0].
-					replace(/charset="([^"]+)"/i, "charset=$1");
+					replace(/charset="([^"]+)"/i,	"charset=$1");
 				// Compute the input for the header hash
 				headerHashInput = computeHeaderHashInput(msg,DKIMSignature);
 				log.debug("Header hash input:\n" + headerHashInput);
@@ -1267,7 +1267,7 @@ var Verifier = (function() {
 		//
 		// The first added signature is verified first.
 		for (iDKIMSignatureIdx = msg.headerFields.get("dkim-signature").length - 1;
-			 iDKIMSignatureIdx >=0; iDKIMSignatureIdx--) {
+		     iDKIMSignatureIdx >=0; iDKIMSignatureIdx--) {
 			let sigRes;
 			try {
 				log.debug("Verifying DKIM-Signature " + (iDKIMSignatureIdx+1) + " ...");
