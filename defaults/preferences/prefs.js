@@ -18,6 +18,8 @@ pref("extensions.dkim_verifier.key.storing", 0);
 pref("extensions.dkim_verifier.saveResult", false);
 pref("extensions.dkim_verifier.arh.read", false);
 
+pref("extensions.dkim_verifier.internationalized.enable", false);
+
 ////////////////////////////////////////////////////////////////////////////////
 // general preferences - DNS
 ////////////////////////////////////////////////////////////////////////////////
