@@ -2,7 +2,7 @@
  * Proxy to a singleton SignRules to avoid problems with race conditions
  * when accessing browser.storage.local.
  *
- * Copyright (c) 2020-2021;2023 Philippe Lieser
+ * Copyright (c) 2020-2021;2024 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -149,18 +149,18 @@ export default class SignRulesProxy {
 	}
 
 	/**
-	 * Delete the user rule with the given id.
+	 * Delete the user rules with the given IDs.
 	 *
-	 * @param {number} id
+	 * @param {number[]} ids
 	 * @returns {Promise<void>}
 	 */
-	static deleteRule(id) {
-		/** @type {RuntimeMessage.SignRules.deleteRule} */
+	static deleteRules(ids) {
+		/** @type {RuntimeMessage.SignRules.deleteRules} */
 		const message = {
 			module: "SignRules",
-			method: "deleteRule",
+			method: "deleteRules",
 			parameters: {
-				id,
+				ids,
 			},
 		};
 		return browser.runtime.sendMessage(message);

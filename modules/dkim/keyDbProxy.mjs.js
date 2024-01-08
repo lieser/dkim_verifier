@@ -2,7 +2,7 @@
  * Proxy to a singleton KeyDb to avoid problems with race conditions
  * when accessing browser.storage.local.
  *
- * Copyright (c) 2021-2023 Philippe Lieser
+ * Copyright (c) 2021-2024 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -52,18 +52,18 @@ export default class KeyDbProxy {
 	}
 
 	/**
-	 * Delete the key with the given id.
+	 * Delete the key with the given IDs.
 	 *
-	 * @param {number} id
+	 * @param {number[]} ids
 	 * @returns {Promise<void>}
 	 */
-	static delete(id) {
-		/** @type {RuntimeMessage.KeyDb.deleteKey} */
+	static delete(ids) {
+		/** @type {RuntimeMessage.KeyDb.deleteKeys} */
 		const message = {
 			module: "KeyDb",
-			method: "deleteKey",
+			method: "deleteKeys",
 			parameters: {
-				id,
+				ids,
 			},
 		};
 		return browser.runtime.sendMessage(message);

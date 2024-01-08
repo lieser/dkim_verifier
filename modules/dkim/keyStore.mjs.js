@@ -2,7 +2,7 @@
  * Abstract DKIM key store for key retrieval.
  * Will get the key either from DNS or an internal cache.
  *
- * Copyright (c) 2013-2018;2021-2023 Philippe Lieser
+ * Copyright (c) 2013-2018;2021-2024 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -164,29 +164,28 @@ export class KeyDb {
 	}
 
 	/**
-	 * Delete stored DKIM key.
+	 * Delete stored DKIM keys.
 	 *
-	 * @param {number?} id
+	 * @param {number[]?} ids
 	 * @param {string} [sdid]
 	 * @param {string} [selector]
 	 * @returns {Promise<void>}
 	 */
-	static async delete(id, sdid, selector) {
+	static async delete(ids, sdid, selector) {
 		await KeyDb.#loadKeys();
-		let keyIndex;
 		let notify = false;
-		if (id === null) {
-			keyIndex = storedKeys.findIndex(key => key.sdid === sdid && key.selector === selector);
+		if (ids === null) {
+			const keyIndex = storedKeys.findIndex(key => key.sdid === sdid && key.selector === selector);
 			notify = true;
+			if (keyIndex === -1) {
+				throw new Error(`Can not delete non existing key (${sdid}, ${selector})'`);
+			}
+			const deletedKey = storedKeys.splice(keyIndex, 1);
+			log.debug(`deleting key (${deletedKey[0]?.sdid}, ${deletedKey[0]?.selector}) from storage`);
 		} else {
-			keyIndex = storedKeys.findIndex(key => key.id === id);
+			storedKeys = storedKeys.filter(key => !ids.includes(key.id));
 		}
-		if (keyIndex === -1) {
-			throw new Error(`Can not delete non existing key with id '${id}'`);
-		}
-		const deletedKey = storedKeys.splice(keyIndex, 1);
 		await KeyDb.#storeKeys(notify);
-		log.debug(`deleted key (${deletedKey[0]?.sdid}, ${deletedKey[0]?.selector}) from storage`);
 	}
 
 	/**
@@ -270,9 +269,9 @@ export class KeyDb {
 				// eslint-disable-next-line consistent-return
 				return KeyDb.update(request.parameters.id, request.parameters.propertyName, request.parameters.newValue);
 			}
-			if (request.method === "deleteKey") {
+			if (request.method === "deleteKeys") {
 				// eslint-disable-next-line consistent-return
-				return KeyDb.delete(request.parameters.id);
+				return KeyDb.delete(request.parameters.ids);
 			}
 			log.error("KeyDb proxy receiver got unknown request.", request);
 			throw new Error("KeyDb proxy receiver got unknown request.");

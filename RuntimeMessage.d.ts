@@ -51,14 +51,14 @@ namespace RuntimeMessage {
             }
         }
 
-        interface deleteRule extends SignRulesMessage {
-            readonly method: "deleteRule";
+        interface deleteRules extends SignRulesMessage {
+            readonly method: "deleteRules";
             readonly parameters: {
-                readonly id: number,
+                readonly ids: number[],
             }
         }
 
-        type Messages = getDefaultRules | getUserRules | exportUserRules | importUserRules | addRule | updateRule | deleteRule;
+        type Messages = getDefaultRules | getUserRules | exportUserRules | importUserRules | addRule | updateRule | deleteRules;
     }
 
     namespace KeyDb {
@@ -79,14 +79,14 @@ namespace RuntimeMessage {
             }
         }
 
-        interface deleteKey extends KeyDbMessage {
-            readonly method: "deleteKey";
+        interface deleteKeys extends KeyDbMessage {
+            readonly method: "deleteKeys";
             readonly parameters: {
-                readonly id: number;
+                readonly ids: number[];
             }
         }
 
-        type Messages = getKeys | updateKey | deleteKey;
+        type Messages = getKeys | updateKey | deleteKeys;
     }
 
     namespace DisplayAction {

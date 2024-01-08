@@ -27,6 +27,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"tabulator-tables": "^5.5.2",
 		"tweetnacl-es6": "1.0.3"
 	},
 	"devDependencies": {
@@ -34,6 +35,7 @@
 		"@types/mocha": "^10.0.4",
 		"@types/node": "^20.9.0",
 		"@types/sinon": "^17.0.1",
+		"@types/tabulator-tables": "^5.5.4",
 		"@types/thunderbird-webext-browser": "^109.0.3",
 		"chai": "^4.3.10",
 		"chalk": "^5.3.0",

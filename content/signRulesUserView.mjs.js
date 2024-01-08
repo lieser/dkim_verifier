@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2023 Philippe Lieser
+ * Copyright (c) 2020-2024 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -12,10 +12,10 @@
 /* eslint-disable no-magic-numbers */
 
 import { getElementById, uploadJsonData } from "./domUtils.mjs.js";
-import DataTable from "./table.mjs.js";
 import ExtensionUtils from "../modules/extensionUtils.mjs.js";
 import Logging from "../modules/logging.mjs.js";
 import SignRulesProxy from "../modules/dkim/signRulesProxy.mjs.js";
+import { TabulatorFull as Tabulator } from "../thirdparty/tabulator-tables/dist/js/tabulator_esm.js";
 
 const log = Logging.getLogger("signRulesUserView");
 
@@ -41,17 +41,124 @@ function showImportError(error) {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-	const tableElement = getElementById("rulesTable");
-	if (!(tableElement instanceof HTMLTableElement)) {
-		throw new Error("element rulesTable is not a HTMLTableElement");
-	}
+	// Initialize table
 
 	const userRules = await SignRulesProxy.getUserRules();
-	const table = new DataTable(tableElement, true,
-		(rowId, columnName, value) => SignRulesProxy.updateRule(rowId, columnName, value),
-		(rowId) => SignRulesProxy.deleteRule(rowId),
-	);
-	table.showData(userRules, ["domain"]);
+
+	/** @type {import("tabulator-tables").Tabulator} */
+	// @ts-expect-error
+	const table = new Tabulator("#rulesTable", {
+		height: "100%",
+		data: userRules,
+		// Note: basic renderVertical does not remember the scroll position
+		// during adding/deleting rows, so we have to do it ourself.
+		// The virtual renderer would be nicer, but there are multiple scrolling issues.
+		renderVertical: "basic",
+		layout: "fitColumns",
+		columnDefaults: {
+			editable: false,
+			cellDblClick: /** @type {import("tabulator-tables").CellEventCallback} */ (_e, cell) => {
+				cell.edit(true);
+			},
+		},
+		columns: [
+			{
+				formatter: "rowSelection",
+				titleFormatter: "rowSelection",
+				align: "center",
+				headerSort: false,
+				width: 1,
+			},
+			{
+				field: "id",
+				visible: false,
+			},
+			{
+				title: browser.i18n.getMessage("treeviewSigners.treecol.domain"),
+				field: "domain",
+				formatter: "textarea",
+				editor: true,
+			},
+			{
+				title: browser.i18n.getMessage("treeviewSigners.treecol.listId"),
+				field: "listId",
+				formatter: "textarea",
+				editor: true,
+			},
+			{
+				title: browser.i18n.getMessage("treeviewSigners.treecol.addr"),
+				field: "addr",
+				formatter: "textarea",
+				editor: true,
+			},
+			{
+				title: browser.i18n.getMessage("treeviewSigners.treecol.sdid"),
+				field: "sdid",
+				formatter: "textarea",
+				editor: true,
+			},
+			{
+				title: browser.i18n.getMessage("treeviewSigners.treecol.ruletype"),
+				field: "type",
+				editor: "number",
+				editorParams: {
+					min: 1,
+					max: 3,
+					verticalNavigation: "table",
+				},
+				validator: [
+					"required",
+					"integer",
+					"numeric",
+					"min:1",
+					"max:3",
+				],
+				maxWidth: 130,
+			},
+			{
+				title: browser.i18n.getMessage("treeviewSigners.treecol.priority"),
+				field: "priority",
+				editor: "number",
+				editorParams: {
+					min: 0,
+					verticalNavigation: "table",
+				},
+				validator: [
+					"required",
+					"integer",
+					"numeric",
+					"min:0",
+				],
+				maxWidth: 130,
+			},
+			{
+				title: browser.i18n.getMessage("treeviewSigners.treecol.enabled"),
+				field: "enabled",
+				formatter: "tickCross",
+				editor: true,
+				maxWidth: 130,
+			},
+		],
+		initialSort: [
+			{ column: "domain", dir: "asc" },
+		],
+		selectable: true,
+		selectableRangeMode: "click",
+	});
+
+	// Workaround for https://github.com/olifolkerd/tabulator/issues/4277
+	// @ts-expect-error
+	table.eventBus?.subscribe("table-redraw", (/** @type {boolean} */ force) => {
+		if (!force) {
+			for (const row of table.getRows()) {
+				row.normalizeHeight();
+			}
+		}
+	});
+
+	table.on("cellEdited", async (cell) => {
+		await SignRulesProxy.updateRule(cell.getRow().getIndex(), cell.getColumn().getField(), cell.getValue());
+	});
 
 	browser.runtime.onMessage.addListener((request, sender /*, sendResponse*/) => {
 		if (sender.id !== "dkim_verifier@pl") {
@@ -63,10 +170,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 		if (request.event === "ruleAdded") {
 			(async () => {
 				const rules = await SignRulesProxy.getUserRules();
-				table.showData(rules, ["domain"]);
+				const scrollLeft = table.rowManager.element.scrollLeft;
+				const scrollTop = table.rowManager.element.scrollTop;
+				table.replaceData(rules);
+				table.rowManager.element.scrollTo(scrollLeft, scrollTop);
 			})();
 		}
 	});
+
+	// Initialize buttons
 
 	const addSignersRule = getElementById("addSignersRule");
 	addSignersRule.addEventListener("click", () => {
@@ -78,8 +190,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 	});
 
 	const deleteSelectedRows = getElementById("deleteSelectedRows");
-	deleteSelectedRows.addEventListener("click", () => {
-		table.deleteSelectedRows();
+	deleteSelectedRows.addEventListener("click", async () => {
+		const rows = table.getSelectedRows();
+		const rowIDs = rows.map(row => row.getIndex());
+		await SignRulesProxy.deleteRules(rowIDs);
+		const scrollLeft = table.rowManager.element.scrollLeft;
+		const scrollTop = table.rowManager.element.scrollTop;
+		table.deleteRow(rows);
+		table.rowManager.element.scrollTo(scrollLeft, scrollTop);
 	});
 
 	const buttonHelp = getElementById("buttonHelp");

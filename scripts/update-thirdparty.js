@@ -40,6 +40,16 @@ await fs.rm("thirdparty", { recursive: true, force: true });
 await fs.mkdir("thirdparty");
 await fs.writeFile("thirdparty/README.md", readme);
 
+await fs.mkdir("thirdparty/tabulator-tables");
+await fs.copyFile("node_modules/tabulator-tables/LICENSE", "thirdparty/tabulator-tables/LICENSE");
+await fs.mkdir("thirdparty/tabulator-tables/dist");
+await fs.mkdir("thirdparty/tabulator-tables/dist/css");
+await fs.copyFile("node_modules/tabulator-tables/dist/css/tabulator.css", "thirdparty/tabulator-tables/dist/css/tabulator.css");
+await fs.copyFile("node_modules/tabulator-tables/dist/css/tabulator_midnight.css", "thirdparty/tabulator-tables/dist/css/tabulator_midnight.css");
+await fs.mkdir("thirdparty/tabulator-tables/dist/js");
+await fs.copyFile("node_modules/tabulator-tables/dist/js/tabulator_esm.js", "thirdparty/tabulator-tables/dist/js/tabulator_esm.js");
+await writePackageInfo(packageLock, "tabulator-tables");
+
 await fs.mkdir("thirdparty/tweetnacl-es6");
 await fs.copyFile("node_modules/tweetnacl-es6/LICENSE", "thirdparty/tweetnacl-es6/LICENSE");
 await fs.copyFile("node_modules/tweetnacl-es6/AUTHORS.md", "thirdparty/tweetnacl-es6/AUTHORS.md");

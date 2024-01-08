@@ -71,4 +71,5 @@ Other directories and files are used only for development. This includes:
 
 - Joshua Tauberer's DNS Library (part of Thunderbird Sender Verification Extension) (<https://github.com/tauberer/thunderbird-spf>)
   - dns.js - DNS Library
+- [Tabulator](https://tabulator.info)
 - ES6 version of the [tweetnacl-js](https://github.com/dchest/tweetnacl-js) `nacl-fast.js` (<https://github.com/hakanols/tweetnacl-es6>)

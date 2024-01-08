@@ -66,7 +66,7 @@ describe("Key store [unittest]", function () {
 
 			let key = await KeyDb.fetch("domainB", "selector1");
 			expect(key).is.not.null;
-			await KeyDb.delete(2);
+			await KeyDb.delete([2]);
 			key = await KeyDb.fetch("domainB", "selector1");
 			expect(key).is.null;
 

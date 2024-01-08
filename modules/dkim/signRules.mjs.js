@@ -621,18 +621,14 @@ export default class SignRules {
 	}
 
 	/**
-	 * Delete the user rule with the given id.
+	 * Delete the user rules with the given IDs.
 	 *
-	 * @param {number} id
+	 * @param {number[]} ids
 	 * @returns {Promise<void>}
 	 */
-	static async deleteRule(id) {
+	static async deleteRules(ids) {
 		await loadUserRules();
-		const ruleIndex = userRules.findIndex(rule => rule.id === id);
-		if (ruleIndex === -1) {
-			throw new Error(`Can not delete non existing rule with id '${id}'`);
-		}
-		userRules.splice(ruleIndex, 1);
+		userRules = userRules.filter(rule => !ids.includes(rule.id));
 		return storeUserRules();
 	}
 
@@ -748,9 +744,9 @@ export function initSignRulesProxy() {
 				request.parameters.enabled,
 			);
 		}
-		if (request.method === "deleteRule") {
+		if (request.method === "deleteRules") {
 			// eslint-disable-next-line consistent-return
-			return SignRules.deleteRule(request.parameters.id);
+			return SignRules.deleteRules(request.parameters.ids);
 		}
 		log.error("SignRules proxy receiver got unknown request.", request);
 		throw new Error("SignRules proxy receiver got unknown request.");

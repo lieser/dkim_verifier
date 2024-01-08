@@ -6,6 +6,13 @@ See [THIRDPARTY_LICENSE.txt](../THIRDPARTY_LICENSE.txt) in the root directory fo
 
 This file contains the information which versions of the third-party libraries are included.
 
+## tabulator-tables
+
+- Name: tabulator-tables
+- Source: npm
+- Version: 5.5.2
+- Download URL: <https://registry.npmjs.org/tabulator-tables/-/tabulator-tables-5.5.2.tgz>
+
 ## tweetnacl-es6
 
 - Name: tweetnacl-es6

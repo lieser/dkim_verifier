@@ -1,26 +1,11 @@
-#rulesTable {
-	table-layout: auto;
+.tabulator-cell[tabulator-field="domain"] {
+	overflow-wrap: break-word;
 }
 
-td[data-column-name="domain"] {
-	width: 10em;
-	max-width: max(10em, 30vw);
+.tabulator-cell[tabulator-field="addr"] {
+	overflow-wrap: break-word;
 }
 
-td[data-column-name="addr"] {
-	width: 10em;
-	max-width: max(10em, 20vw);
-}
-
-td[data-column-name="sdid"] {
-	width: 10em;
-	max-width: max(10em, 20vw);
-}
-
-td[data-column-name="type"] {
-	width: 1em;
-}
-
-td[data-column-name="priority"] {
-	width: 1em;
+.tabulator-cell[tabulator-field="sdid"] {
+	overflow-wrap: break-word;
 }
