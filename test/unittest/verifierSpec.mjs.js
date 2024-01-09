@@ -337,18 +337,30 @@ describe("DKIM Verifier [unittest]", function () {
 					that.deep.includes({ name: "DKIM_SIGWARNING_UNSIGNED_HEADER", params: ["Reply-To"] });
 			});
 			it("Unsigned Reply-To header that is not in the signing domain", async function () {
+				let res = await verifyEmlFile("dkim/unsigned_header-reply_to-invalid.eml");
+				expect(res.signatures.length).to.be.equal(1);
+				expect(res.signatures[0]?.result).to.be.equal("SUCCESS");
+				expect(res.signatures[0]?.warnings).to.be.empty;
+
 				prefs.setValue("policy.dkim.unsignedHeadersWarning.mode", BasePreferences.POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE.RECOMMENDED);
-				const res = await verifyEmlFile("dkim/unsigned_header-reply_to-not_in_domain.eml");
+				res = await verifyEmlFile("dkim/unsigned_header-reply_to-not_in_domain.eml");
 				expect(res.signatures.length).to.be.equal(1);
 				expect(res.signatures[0]?.result).to.be.equal("SUCCESS");
 				expect(res.signatures[0]?.warnings).to.be.an("array").
 					that.deep.includes({ name: "DKIM_SIGWARNING_UNSIGNED_HEADER", params: ["Reply-To"] });
 			});
 			it("Unsigned Reply-To header that is invalid", async function () {
-				const res = await verifyEmlFile("dkim/unsigned_header-reply_to-invalid.eml");
+				let res = await verifyEmlFile("dkim/unsigned_header-reply_to-invalid.eml");
 				expect(res.signatures.length).to.be.equal(1);
 				expect(res.signatures[0]?.result).to.be.equal("SUCCESS");
 				expect(res.signatures[0]?.warnings).to.be.empty;
+
+				prefs.setValue("policy.dkim.unsignedHeadersWarning.mode", BasePreferences.POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE.RECOMMENDED);
+				res = await verifyEmlFile("dkim/unsigned_header-reply_to-invalid.eml");
+				expect(res.signatures.length).to.be.equal(1);
+				expect(res.signatures[0]?.result).to.be.equal("SUCCESS");
+				expect(res.signatures[0]?.warnings).to.be.an("array").
+					that.deep.includes({ name: "DKIM_SIGWARNING_UNSIGNED_HEADER", params: ["Reply-To"] });
 			});
 		});
 	});
