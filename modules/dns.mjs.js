@@ -142,14 +142,15 @@ function checkOnlineStatus() {
 
 export default class DNS {
 	static get RCODE() {
-		return {
+		// eslint-disable-next-line no-extra-parens
+		return /** @type {const} */ ({
 			NoError: 0, // No Error [RFC1035]
 			FormErr: 1, // Format Error [RFC1035]
 			ServFail: 2, // Server Failure [RFC1035]
 			NXDomain: 3, // Non-Existent Domain [RFC1035]
 			NotImp: 4, // Non-Existent Domain [RFC1035]
 			Refused: 5, // Query Refused [RFC1035]
-		};
+		});
 	}
 
 	/**

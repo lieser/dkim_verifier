@@ -37,19 +37,23 @@ const log = Logging.getLogger("SignRules");
  * rule types
  *
  * @public
+ * @enum {number}
  */
-const RULE_TYPE = {
+// eslint-disable-next-line no-extra-parens
+const RULE_TYPE = /** @type {const} */ ({
 	ALL: 1, // all e-mails must be signed
 	NEUTRAL: 2,
 	HIDEFAIL: 3, // treat invalid signatures as nosig
-};
+});
 
 /**
  * default rule priorities
  *
  * @public
+ * @enum {number}
  */
-const PRIORITY = {
+// eslint-disable-next-line no-extra-parens
+const PRIORITY = /** @type {const} */ ({
 	AUTOINSERT_RULE_ALL: 1100,
 	DEFAULT_RULE_ALL0: 2000, // used for e-mail providers
 	USERINSERT_RULE_HIDEFAIL: 2050,
@@ -58,13 +62,15 @@ const PRIORITY = {
 	DEFAULT_RULE_NEUTRAL: 2200,
 	USERINSERT_RULE_ALL: 3100,
 	USERINSERT_RULE_NEUTRAL: 3200,
-};
+});
 
-const AUTO_ADD_RULE_FOR = {
+/** @enum {number} */
+// eslint-disable-next-line no-extra-parens
+const AUTO_ADD_RULE_FOR = /** @type {const} */ ({
 	FROM_ADDRESS: 0,
 	SUB_DOMAIN: 1,
 	BASE_DOMAIN: 2,
-};
+});
 
 /**
  * Exported DKIM user signing rule.
@@ -507,7 +513,8 @@ export default class SignRules {
 			ruleDomain = await browser.mailUtils.getBaseDomainFromAddr(addr);
 		}
 
-		if (!Object.values(RULE_TYPE).includes(type)) {
+		// eslint-disable-next-line no-extra-parens
+		if (!Object.values(/** @type {{[key: string]: number}} */(RULE_TYPE)).includes(type)) {
 			throw new Error(`unknown rule type ${type}`);
 		}
 

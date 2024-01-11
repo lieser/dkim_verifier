@@ -43,14 +43,16 @@ this.jsdns = class extends ExtensionCommon.ExtensionAPI {
 	 * @returns {{jsdns: browser.jsdns}}
 	 */
 	getAPI(context) {
-		const RCODE = {
+		/** @enum {number} */
+		// eslint-disable-next-line no-extra-parens
+		const RCODE = /** @type {const} */ ({
 			NoError: 0, // No Error [RFC1035]
 			FormErr: 1, // Format Error [RFC1035]
 			ServFail: 2, // Server Failure [RFC1035]
 			NXDomain: 3, // Non-Existent Domain [RFC1035]
 			NotImp: 4, // Non-Existent Domain [RFC1035]
 			Refused: 5, // Query Refused [RFC1035]
-		};
+		});
 		/** @type {{JSDNS: {configureDNS: typeof configureDNS, queryDNS: typeof queryDNS}}} */
 		const { JSDNS } = ChromeUtils.import("chrome://dkim_verifier_jsdns/content/JSDNS.jsm.js");
 		this.extension.callOnClose(this);
@@ -63,6 +65,7 @@ this.jsdns = class extends ExtensionCommon.ExtensionAPI {
 				async txt(name) {
 					const res = await JSDNS.queryDNS(name, "TXT");
 
+					/** @type {number} */
 					let resRcode = RCODE.NoError;
 					if (res.rcode !== undefined) {
 						resRcode = res.rcode;

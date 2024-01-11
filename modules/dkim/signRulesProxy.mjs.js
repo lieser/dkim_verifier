@@ -15,29 +15,6 @@
 /* eslint-env webextensions */
 
 export default class SignRulesProxy {
-	/** @readonly */
-	static get TYPE() {
-		return {
-			ALL: 1, // all e-mails must be signed
-			NEUTRAL: 2,
-			HIDEFAIL: 3, // treat invalid signatures as nosig
-		};
-	}
-
-	/** @readonly */
-	static get PRIORITY() {
-		return {
-			AUTOINSERT_RULE_ALL: 1100,
-			DEFAULT_RULE_ALL0: 2000, // used for e-mail providers
-			USERINSERT_RULE_HIDEFAIL: 2050,
-			DEFAULT_RULE_ALL: 2100,
-			DEFAULT_RULE_ALL_2: 2110, // used for different SDID for subdomains
-			DEFAULT_RULE_NEUTRAL: 2200,
-			USERINSERT_RULE_ALL: 3100,
-			USERINSERT_RULE_NEUTRAL: 3200,
-		};
-	}
-
 	/**
 	 * @returns {Promise<import("./signRules.mjs.js").DkimSignRuleDefault[]>}
 	 */

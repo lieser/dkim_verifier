@@ -283,7 +283,11 @@ class LibunboundWorker {
 		}
 	}
 }
-LibunboundWorker.Constants = {
+/**
+ * @enum {number}
+ */
+// eslint-disable-next-line no-extra-parens
+LibunboundWorker.Constants = /** @type {const} */ ({
 	RR_TYPE_A: 1,
 	RR_TYPE_A6: 38,
 	RR_TYPE_AAAA: 28,
@@ -346,7 +350,7 @@ LibunboundWorker.Constants = {
 	RR_TYPE_UNSPEC: 103,
 	RR_TYPE_WKS: 11,
 	RR_TYPE_X25: 19,
-};
+});
 
 
 this.libunbound = class extends ExtensionCommon.ExtensionAPI {

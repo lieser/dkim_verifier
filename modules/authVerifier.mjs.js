@@ -93,13 +93,14 @@ export default class AuthVerifier {
 	}
 
 	static get DKIM_RES() {
-		return {
+		// eslint-disable-next-line no-extra-parens
+		return /** @type {const} */ ({
 			SUCCESS: 10,
 			TEMPFAIL: 20,
 			PERMFAIL: 30,
 			PERMFAIL_NOSIG: 35,
 			NOSIG: 40,
-		};
+		});
 	}
 
 	/**

@@ -78,7 +78,8 @@ class Logger {
 
 export default class Logging {
 	static get Level() {
-		return {
+		// eslint-disable-next-line no-extra-parens
+		return /** @type {const} */ ({
 			Fatal: 70,
 			Error: 60,
 			Warn: 50,
@@ -87,7 +88,7 @@ export default class Logging {
 			Debug: 20,
 			Trace: 10,
 			All: -1,
-		};
+		});
 	}
 
 	/**
@@ -157,6 +158,7 @@ export default class Logging {
 		});
 	}
 
+	/** @type {number} */
 	static #logLevel = Logging.Level.Debug;
 	/**
 	 * @type {Logger[]}
