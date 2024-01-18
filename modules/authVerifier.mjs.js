@@ -18,7 +18,7 @@
 
 export const moduleVersion = "2.0.0";
 
-import { addrIsInDomain, addrIsInDomain2, domainIsInDomain, getDomainFromAddr } from "./utils.mjs.js";
+import { addrIsInDomain, addrIsInDomain2, copy, domainIsInDomain, getDomainFromAddr } from "./utils.mjs.js";
 import ArhParser from "./arhParser.mjs.js";
 import DMARC from "./dkim/dmarc.mjs.js";
 import ExtensionUtils from "./extensionUtils.mjs.js";
@@ -346,7 +346,7 @@ async function getARHResult(message, headers, from, listId, account, dmarc) {
 		dmarc: arhDMARC,
 		bimiIndicator: getBimiIndicator(headers, arhBIMI) ?? undefined,
 	};
-	log.debug("ARH result:", savedAuthResult);
+	log.debug("ARH result:", copy(savedAuthResult));
 	return savedAuthResult;
 }
 
