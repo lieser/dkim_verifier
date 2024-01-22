@@ -14,7 +14,7 @@
 // options for ESLint
 /* global Components, FileUtils, NetUtil, Services */
 /* global Logging */
-/* exported EXPORTED_SYMBOLS, addrIsInDomain, addrIsInDomain2, domainIsInDomain, getBaseDomainFromAddr, getDomainFromAddr, PREF, readStringFrom, stringEndsWith, stringEqual, toType, tryGetString, tryGetFormattedString, writeStringToTmpFile, DKIM_SigError, DKIM_TempError, DKIM_Error */
+/* exported EXPORTED_SYMBOLS, addrIsInDomain, addrIsInDomain2, domainIsInDomain, getBaseDomainFromAddr, getDomainFromAddr, PREF, readStringFrom, stringEndsWith, stringEqual, copy, toType, tryGetString, tryGetFormattedString, writeStringToTmpFile, DKIM_SigError, DKIM_TempError, DKIM_Error */
 
 "use strict";
 
@@ -30,6 +30,7 @@ var EXPORTED_SYMBOLS = [
 	"readStringFrom",
 	"stringEndsWith",
 	"stringEqual",
+	"copy",
 	"toType",
 	"tryGetString",
 	"tryGetFormattedString",
@@ -299,6 +300,16 @@ function stringEqual(str1, str2) {
 }
 
 /**
+ * Deep copy an object. Only works with basic types.
+ *
+ * @param {Object} src
+ * @return {Object}
+ */
+function copy(src) {
+	return JSON.parse(JSON.stringify(src));
+}
+
+/**
  * Get the type an object as a string.
  *
  * From https://javascriptweblog.wordpress.com/2011/08/08/fixing-the-javascript-typeof-operator/
@@ -399,12 +410,13 @@ function writeStringToTmpFile(string, fileName) {
 }
 
 /**
- * DKIM signature error.
+ * DKIM signature error (PERMFAIL).
+ *
+ * User visible errors that occur during DKIM signature verification,
+ * that are considered permanent failures.
  */
 class DKIM_SigError extends Error {
 	/**
-	 * DKIM signature error.
-	 *
 	 * @constructor
 	 *
 	 * @param {String} errorType
@@ -423,12 +435,12 @@ class DKIM_SigError extends Error {
 }
 
 /**
- * Temporary DKIM signature error.
+ * Temporary DKIM signature error (TEMPFAIL).
+ *
+ * User visible errors that are considered temporary failures.
  */
 class DKIM_TempError extends Error {
 	/**
-	 * Temporary DKIM signature error.
-	 *
 	 * @constructor
 	 *
 	 * @param {String} errorType
@@ -447,12 +459,17 @@ class DKIM_TempError extends Error {
 }
 
 /**
- * General DKIM error.
+ * General error.
+ *
+ * Errors that are not directly shown to the user,
+ * but are still expected to potentially occur if bad input is given.
+ *
+ * Errors that should normally not occur, and indicate a programming error,
+ * are thrown as the builtin Error type.
+ *
  */
 class DKIM_Error extends Error {
 	/**
-	 * General DKIM error.
-	 *
 	 * @constructor
 	 *
 	 * @param {String} message

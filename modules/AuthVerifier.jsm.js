@@ -16,7 +16,7 @@
 // options for ESLint
 /* global Components, Services, MailServices */
 /* global Logging, ARHParser, BIMI */
-/* global PREF, dkimStrings, domainIsInDomain, getDomainFromAddr, tryGetFormattedString, addrIsInDomain */
+/* global PREF, dkimStrings, domainIsInDomain, getDomainFromAddr, tryGetFormattedString, addrIsInDomain, copy */
 /* exported EXPORTED_SYMBOLS, AuthVerifier */
 
 "use strict";
@@ -373,7 +373,7 @@ function getARHResult(msgHdr, msg) {
 		dmarc: arhDMARC,
 		bimiIndicator: BIMI.getBimiIndicator(msg.headerFields, arhBIMI) || undefined,
 	};
-	log.debug("ARH result:", savedAuthResult);
+	log.debug("ARH result:", copy(savedAuthResult));
 	return savedAuthResult;
 }
 
