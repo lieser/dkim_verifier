@@ -1,7 +1,6 @@
 {
 	"$schema": "./signersDefault-schema.json",
 	"versionTable": 1,
-	"versionData": 40,
 	"rules": [
 		{
 			"domain": "11880.com",
