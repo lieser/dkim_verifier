@@ -2456,6 +2456,18 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
+			"domain": "pdf-xchange.com",
+			"addr": "*",
+			"sdid": "pdf-xchange.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "pdf-xchange.com",
+			"addr": "support@pdf-xchange.com",
+			"sdid": "pdf-xchange.com",
+			"ruletype": "NEUTRAL",
+			"priority": "DEFAULT_RULE_NEUTRAL"
+		}, {
 			"domain": "pec.it",
 			"addr": "*",
 			"sdid": "pec.it aruba.it",
