@@ -8,9 +8,6 @@
 		"versionTable": {
 			"type": "number"
 		},
-		"versionData": {
-			"type": "number"
-		},
 		"rules": {
 			"type": "array",
 			"items": {
@@ -107,7 +104,6 @@
 	},
 	"required": [
 		"versionTable",
-		"versionData",
 		"rules"
 	]
 }

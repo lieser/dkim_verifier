@@ -213,7 +213,15 @@ var Policy = {
 				var jsonStr = await readStringFrom("resource://dkim_verifier_data/signersDefault.json");
 				var signersDefault = JSON.parse(jsonStr);
 				// check data version
-				if (versionDataSignersDefault < signersDefault.versionData) {
+				// get timestamp of extension file
+				var currentSignersDataVersion = (new Date).getTime();
+				var extensionFile = Cc["@mozilla.org/file/directory_service;1"].getService(Ci.nsIProperties).get("ProfD", Components.interfaces.nsIFile);
+				extensionFile.append("extensions");
+				extensionFile.append("dkim_verifier@pl.xpi");
+				if (extensionFile.exists()) {
+					currentSignersDataVersion = extensionFile.lastModifiedTime;
+				}
+				if (versionDataSignersDefault < currentSignersDataVersion) {
 					log.trace("update default rules");
 					if (signersDefault.versionTable !== versionTableSignersDefault) {
 						throw new Error("different versionTableSignersDefault in .json file");
@@ -240,7 +248,7 @@ var Policy = {
 					await conn.execute(
 						"INSERT OR REPLACE INTO version (name, version)\n" +
 						"VALUES ('DataSignersDefault', :version);",
-						{"version": signersDefault.versionData}
+						{"version": currentSignersDataVersion}
 					);
 				}
 			} finally {
