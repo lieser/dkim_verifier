@@ -97,14 +97,15 @@ namespace RuntimeMessage {
             }
         }
 
-        interface queryButtonState extends DisplayActionMessage {
-            readonly method: "queryButtonState";
+        interface queryResultState extends DisplayActionMessage {
+            readonly method: "queryResultState";
         }
-        interface queryButtonStateResult {
+        interface queryResultStateResult {
             readonly reverifyDKIMSignature: boolean;
             readonly policyAddUserException: boolean;
             readonly markKeyAsSecure: boolean;
             readonly updateKey: boolean;
+            readonly dkim: AuthResultDKIM[];
         }
 
         interface reverifyDKIMSignature extends DisplayActionMessage {
@@ -123,7 +124,7 @@ namespace RuntimeMessage {
             readonly method: "updateKey";
         }
 
-        type Messages = queryButtonState | reverifyDKIMSignature | policyAddUserException | markKeyAsSecure | updateKey;
+        type Messages = queryResultState | reverifyDKIMSignature | policyAddUserException | markKeyAsSecure | updateKey;
     }
 
     type Messages = SignRules.Messages | KeyDb.Messages | DisplayAction.Messages;

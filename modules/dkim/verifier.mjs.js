@@ -6,7 +6,7 @@
  * - RFC 8301 https://www.rfc-editor.org/rfc/rfc8301.html
  * - RFC 8463 https://www.rfc-editor.org/rfc/rfc8463.html
  *
- * Copyright (c) 2013-2023 Philippe Lieser
+ * Copyright (c) 2013-2024 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -70,7 +70,7 @@ import RfcParser from "../rfcParser.mjs.js";
  *
  * @typedef {object} dkimSigResultV2
  * @property {string} version
- * Result version ("2.0").
+ * Result version ("2.1").
  * @property {string} result
  * "none" / "SUCCESS" / "PERMFAIL" / "TEMPFAIL"
  * @property {string|undefined} [sdid]
@@ -85,6 +85,11 @@ import RfcParser from "../rfcParser.mjs.js";
  * @property {string[]} [errorStrParams]
  * @property {boolean|undefined} [hideFail]
  * @property {boolean} [keySecure]
+ * @property {number|null} [timestamp]
+ * @property {number|null} [expiration]
+ * @property {string} [algorithmSignature]
+ * @property {string} [algorithmHash]
+ * @property {string[]} [signedHeaders]
  */
 
 /**
@@ -689,6 +694,27 @@ class DkimSignatureHeader {
 			return null;
 		}
 		return CopyHeaderFieldsTag[0].replace(new RegExp(RfcParser.FWS, "g"), "");
+	}
+
+	/**
+	 * Get a DKIM result with some information from the header already in it.
+	 *
+	 * @param {string} result
+	 * @returns {dkimSigResultV2}
+	 */
+	toBaseResult(result) {
+		return {
+			version: "2.1",
+			result,
+			sdid: this.d,
+			auid: this.i,
+			selector: this.s,
+			timestamp: this.t,
+			expiration: this.x,
+			algorithmSignature: this.a_sig,
+			algorithmHash: this.a_hash,
+			signedHeaders: copy(this.h_array),
+		};
 	}
 }
 
@@ -1407,11 +1433,7 @@ class DkimSignature {
 
 		// return result
 		const verification_result = {
-			version: "2.0",
-			result: "SUCCESS",
-			sdid: this._header.d,
-			auid: this._header.i,
-			selector: this._header.s,
+			...this._header.toBaseResult("SUCCESS"),
 			warnings,
 			keySecure: keyQueryResult.secure,
 		};
@@ -1435,39 +1457,40 @@ export default class Verifier {
 	 * Create a DKIM fail result for an exception.
 	 *
 	 * @param {unknown} e
-	 * @param {DkimSignatureHeader|{[x: string]: undefined}} dkimSignature
+	 * @param {DkimSignatureHeader|undefined} dkimSignature
 	 * @returns {dkimSigResultV2}
 	 */
-	static #handleException(e, dkimSignature = {}) {
-		if (e instanceof DKIM_SigError) {
-			const result = {
+	static #handleException(e, dkimSignature) {
+		let result;
+		if (dkimSignature) {
+			result = dkimSignature.toBaseResult("");
+		} else {
+			result = {
 				version: "2.0",
+			};
+		}
+
+		if (e instanceof DKIM_SigError) {
+			result = {
+				...result,
 				result: "PERMFAIL",
-				sdid: dkimSignature.d,
-				auid: dkimSignature.i,
-				selector: dkimSignature.s,
 				errorType: e.errorType,
 				errorStrParams: e.errorStrParams,
 				hideFail: e.errorType === "DKIM_SIGERROR_KEY_TESTMODE",
 			};
-
 			log.warn("Error verifying the signature", e);
-
-			return result;
-		}
-		/** @type {dkimSigResultV2} */
-		const result = {
-			version: "2.0",
-			result: "TEMPFAIL",
-			sdid: dkimSignature.d,
-			auid: dkimSignature.i,
-			selector: dkimSignature.s,
-		};
-
-		if (e instanceof DKIM_TempError) {
-			result.errorType = e.errorType;
+		} else if (e instanceof DKIM_TempError) {
+			result = {
+				...result,
+				result: "TEMPFAIL",
+				errorType: e.errorType,
+			};
 			log.error("Temporary error during DKIM verification:", e);
 		} else {
+			result = {
+				...result,
+				result: "TEMPFAIL",
+			};
 			log.fatal("Error during DKIM verification:", e);
 		}
 

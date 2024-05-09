@@ -60,6 +60,18 @@ describe("DKIM Verifier [unittest]", function () {
 			expect(res.signatures[0]?.sdid).to.be.equal("example.com");
 			expect(res.signatures[0]?.auid).to.be.equal("joe@football.example.com");
 			expect(res.signatures[0]?.selector).to.be.equal("brisbane");
+			expect(res.signatures[0]?.timestamp).to.be.equal(null);
+			expect(res.signatures[0]?.expiration).to.be.equal(null);
+			expect(res.signatures[0]?.algorithmSignature).to.be.equal("rsa");
+			expect(res.signatures[0]?.algorithmHash).to.be.equal("sha256");
+			expect(res.signatures[0]?.signedHeaders).to.be.deep.equal([
+				"received",
+				"from",
+				"to",
+				"subject",
+				"date",
+				"message-id",
+			]);
 		});
 		it("RFC 8463 Appendix A Example", async function () {
 			const res = await verifyEmlFile("rfc8463-A.3.eml");
@@ -69,11 +81,39 @@ describe("DKIM Verifier [unittest]", function () {
 			expect(res.signatures[0]?.sdid).to.be.equal("football.example.com");
 			expect(res.signatures[0]?.auid).to.be.equal("@football.example.com");
 			expect(res.signatures[0]?.selector).to.be.equal("test");
+			expect(res.signatures[0]?.timestamp).to.be.equal(1528637909);
+			expect(res.signatures[0]?.expiration).to.be.equal(null);
+			expect(res.signatures[0]?.algorithmSignature).to.be.equal("rsa");
+			expect(res.signatures[0]?.algorithmHash).to.be.equal("sha256");
+			expect(res.signatures[0]?.signedHeaders).to.be.deep.equal([
+				"from",
+				"to",
+				"subject",
+				"date",
+				"message-id",
+				"from",
+				"subject",
+				"date",
+			]);
 			expect(res.signatures[1]?.result).to.be.equal("SUCCESS");
 			expect(res.signatures[1]?.warnings).to.be.empty;
 			expect(res.signatures[1]?.sdid).to.be.equal("football.example.com");
 			expect(res.signatures[1]?.auid).to.be.equal("@football.example.com");
 			expect(res.signatures[1]?.selector).to.be.equal("brisbane");
+			expect(res.signatures[1]?.timestamp).to.be.equal(1528637909);
+			expect(res.signatures[1]?.expiration).to.be.equal(null);
+			expect(res.signatures[1]?.algorithmSignature).to.be.equal("ed25519");
+			expect(res.signatures[1]?.algorithmHash).to.be.equal("sha256");
+			expect(res.signatures[1]?.signedHeaders).to.be.deep.equal([
+				"from",
+				"to",
+				"subject",
+				"date",
+				"message-id",
+				"from",
+				"subject",
+				"date",
+			]);
 		});
 		it("Signed header with non ASCII char", async function () {
 			const res = await verifyEmlFile("dkim/header_with_non_ascii_char.eml");
