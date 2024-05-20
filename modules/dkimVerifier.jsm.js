@@ -28,7 +28,7 @@
 /* eslint strict: ["warn", "function"] */
 /* global Components, Services */
 /* global Logging, Key, Policy, MsgReader, rfcParser */
-/* global dkimStrings, addrIsInDomain2, domainIsInDomain, stringEndsWith, stringEqual, writeStringToTmpFile, toType, DKIM_SigError, DKIM_TempError, DKIM_Error */
+/* global dkimStrings, addrIsInDomain2, domainIsInDomain, stringEndsWith, stringEqual, writeStringToTmpFile, toType, DKIM_SigError, DKIM_TempError, DKIM_Error, copy */
 /* exported EXPORTED_SYMBOLS, Verifier */
 
 // @ts-ignore
@@ -119,7 +119,7 @@ const PREF_BRANCH = "extensions.dkim_verifier.";
  *
  * @typedef {Object} dkimSigResultV2
  * @property {String} version
- *           result version ("2.0")
+ *           result version ("2.1")
  * @property {String} result
  *           "none" / "SUCCESS" / "PERMFAIL" / "TEMPFAIL"
  * @property {String} [sdid]
@@ -134,6 +134,11 @@ const PREF_BRANCH = "extensions.dkim_verifier.";
  * @property {String[]} [errorStrParams]
  * @property {Boolean} [hideFail]
  * @property {Boolean} [keySecure]
+ * @property {number|null} [timestamp]
+ * @property {number|null} [expiration]
+ * @property {string} [algorithmSignature]
+ * @property {string} [algorithmHash]
+ * @property {string[]} [signedHeaders]
  */
 
 /**
@@ -698,6 +703,37 @@ var Verifier = (function() {
 		return DKIMSignature;
 	}
 
+	/**
+	 * Get a DKIM result with some information from the header already in it.
+	 *
+	 * @param {string} result
+	 * @param {Object} dkimSignature | null
+	 * @returns {dkimSigResultV2}
+	 */
+	function createBaseResult(result, dkimSignature) {
+		let baseResult;
+		if (dkimSignature) {
+			baseResult = {
+				version : "2.1",
+				result : result,
+				sdid : dkimSignature.d,
+				auid : dkimSignature.i,
+				selector : dkimSignature.s,
+				timestamp : dkimSignature.t,
+				expiration : dkimSignature.x,
+				algorithmSignature : dkimSignature.a_sig,
+				algorithmHash : dkimSignature.a_hash,
+				signedHeaders : dkimSignature.h_array ? copy(dkimSignature.h_array) : undefined,
+			};
+		} else {
+			baseResult = {
+				version : "2.1",
+				result : result,
+			};
+		}
+		return baseResult;
+	}
+
 	/*
 	 * parse the DKIM key record
 	 * key record is specified in Section 3.6.1 of RFC 6376
@@ -915,13 +951,13 @@ var Verifier = (function() {
 
 		// if a body length count is given
 		if (DKIMSignature.l !== null) {
-			// check the value of the body lenght tag
+			// check the value of the body length tag
 			if (DKIMSignature.l > bodyCanon.length) {
-				// lenght tag exceeds body size
+				// length tag exceeds body size
 				log.debug("bodyCanon.length: " + bodyCanon.length);
 				throw new DKIM_SigError("DKIM_SIGERROR_TOOLARGE_L");
 			} else if (DKIMSignature.l < bodyCanon.length){
-				// lenght tag smaller when body size
+				// length tag smaller when body size
 				DKIMSignature.warnings.push({name: "DKIM_SIGWARNING_SMALL_L"});
 				log.debug("Warning: DKIM_SIGWARNING_SMALL_L ("+
 					dkimStrings.getString("DKIM_SIGWARNING_SMALL_L")+")");
@@ -1008,7 +1044,7 @@ var Verifier = (function() {
 	}
 
 	/**
-	 * handeles Exeption
+	 * handles Exception
 	 *
 	 * @param {Error} e
 	 * @param {Object} msg
@@ -1016,39 +1052,26 @@ var Verifier = (function() {
 	 * @return {dkimSigResultV2}
 	 */
 	function handleException(e, msg, dkimSignature = {} ) {
+		let result = createBaseResult("", dkimSignature);
+
 		if (e instanceof DKIM_SigError) {
-			// return result
-			let result = {
-				version : "2.0",
-				result : "PERMFAIL",
-				sdid : dkimSignature.d,
-				auid : dkimSignature.i,
-				selector : dkimSignature.s,
-				errorType : e.errorType,
-				errorStrParams : e.errorStrParams,
-				hideFail : e.errorType === "DKIM_SIGERROR_KEY_TESTMODE" ||
-					msg.DKIMSignPolicy.hideFail,
-				keySecure : dkimSignature.keyQueryResult &&
-					dkimSignature.keyQueryResult.secure,
-			};
+			result.result = "PERMFAIL";
+			result.errorType = e.errorType;
+			result.errorStrParams = e.errorStrParams;
+			result.hideFail = e.errorType === "DKIM_SIGERROR_KEY_TESTMODE" ||
+				msg.DKIMSignPolicy.hideFail;
+			result.keySecure = dkimSignature.keyQueryResult &&
+				dkimSignature.keyQueryResult.secure;
 
 			log.warn(e);
-
-			return result;
-		}
-		// return result
-		let result = {
-			version : "2.0",
-			result : "TEMPFAIL",
-			sdid : dkimSignature.d,
-			auid : dkimSignature.i,
-			selector : dkimSignature.s,
-		};
-
-		if (e instanceof DKIM_TempError) {
+		} else if (e instanceof DKIM_TempError) {
+			result.result = "TEMPFAIL";
 			result.errorType = e.errorType;
+
 			log.error("Temporary error during DKIM verification:", e);
 		} else {
+			result.result = "TEMPFAIL";
+
 			log.fatal("Error during DKIM verification:", e);
 		}
 
@@ -1229,15 +1252,9 @@ var Verifier = (function() {
 
 		// return result
 		log.trace("Everything is fine");
-		var verification_result = {
-			version : "2.0",
-			result : "SUCCESS",
-			sdid : DKIMSignature.d,
-			auid : DKIMSignature.i,
-			selector : DKIMSignature.s,
-			warnings : DKIMSignature.warnings,
-			keySecure : DKIMSignature.keyQueryResult.secure,
-		};
+		var verification_result = createBaseResult("SUCCESS", DKIMSignature);
+		verification_result.warnings = DKIMSignature.warnings;
+		verification_result.keySecure = DKIMSignature.keyQueryResult.secure;
 		return verification_result;
 	}
 
