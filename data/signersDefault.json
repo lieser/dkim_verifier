@@ -608,6 +608,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "congenio.de",
+			"addr": "*",
+			"sdid": "congenio.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "congstarnews.de",
 			"addr": "*",
 			"sdid": "congstarnews.de int.congstar-nl.de",
