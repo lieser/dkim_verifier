@@ -602,15 +602,15 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
-			"domain": "congstar.de",
-			"addr": "*",
-			"sdid": "congstar.de",
-			"ruletype": "ALL",
-			"priority": "DEFAULT_RULE_ALL"
-		}, {
 			"domain": "congenio.de",
 			"addr": "*",
 			"sdid": "congenio.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "congstar.de",
+			"addr": "*",
+			"sdid": "congstar.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
