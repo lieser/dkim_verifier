@@ -1218,7 +1218,7 @@ var Verifier = (function() {
 
 		// hash algorithm defined in public-key data must be the same as in the header
 		// RSA verifier uses the algo defined in the ASN1 structure, not the one defined in dkim header
-		if (keyInfo.algName && keyInfo.algName !== DKIMSignature.a_hash) {
+		if (DKIMSignature.a_sig === "rsa" && keyInfo.algName !== DKIMSignature.a_hash) {
 			throw new DKIM_SigError("DKIM_SIGERROR_KEY_HASHMISMATCH");
 		}
 
