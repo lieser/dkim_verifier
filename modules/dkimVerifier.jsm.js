@@ -155,7 +155,7 @@ const PREF_BRANCH = "extensions.dkim_verifier.";
 var Verifier = (function() {
 	"use strict";
 
-	// set hash funktions used by rsasign-1.2.js
+	// set hash functions used by rsasign-1.2.js
 	RSA.KJUR = {};
 	RSA.KJUR.crypto = {};
 	RSA.KJUR.crypto.Util = {};
@@ -308,13 +308,19 @@ var Verifier = (function() {
 		// get public exponent
 		let e_hex = RSA.ASN1HEX.getV(asnKey,posKeyArray[1]);
 
-		if (m_hex.length * 4 < 1024) {
+		// trim leading zeros from modulus
+		let m_hex_trimmed = m_hex.replace(/^0+/, '');
+
+		// a hex digit represents 4 bit
+		let keyLength = 4 * m_hex_trimmed.length;
+
+		if (keyLength < 1024) {
 			// error if key is too short
-			log.debug("rsa key size: " + m_hex.length * 4);
+			log.debug("rsa key size: " + keyLength);
 			throw new DKIM_SigError("DKIM_SIGWARNING_KEYSMALL");
-		} else if (m_hex.length * 4 < 2048) {
+		} else if (keyLength < 2048) {
 			// weak key
-			log.debug("rsa key size: " + m_hex.length * 4);
+			log.debug("rsa key size: " + keyLength);
 			switch (prefs.getIntPref("error.algorithm.rsa.weakKeyLength.treatAs")) {
 				case 0: // error
 					throw new DKIM_SigError("DKIM_SIGWARNING_KEY_IS_WEAK");
@@ -377,7 +383,7 @@ var Verifier = (function() {
 			i : null, // Agent or User Identifier (AUID) on behalf of which the SDID is taking responsibility
 			i_domain : null, // domain part of AUID
 			l : null, // Body length count
-			q : null, // query methods for public key retrievel
+			q : null, // query methods for public key retrieval
 			s : null, // selector
 			t : null, // Signature Timestamp
 			x : null, // Signature Expiration
@@ -882,7 +888,7 @@ var Verifier = (function() {
 		// (especially in large strings; matching only last "\r\n")
 		body = body.replace(/((\r\n)+)?$/,"\r\n");
 
-		// If only one \r\n rests, there were only emtpy lines or body was empty.
+		// If only one \r\n rests, there were only empty lines or body was empty.
 		if (body === "\r\n") {
 			return "";
 		}
@@ -915,13 +921,13 @@ var Verifier = (function() {
 
 		// if a body length count is given
 		if (DKIMSignature.l !== null) {
-			// check the value of the body lenght tag
+			// check the value of the body length tag
 			if (DKIMSignature.l > bodyCanon.length) {
-				// lenght tag exceeds body size
+				// length tag exceeds body size
 				log.debug("bodyCanon.length: " + bodyCanon.length);
 				throw new DKIM_SigError("DKIM_SIGERROR_TOOLARGE_L");
 			} else if (DKIMSignature.l < bodyCanon.length){
-				// lenght tag smaller when body size
+				// length tag smaller when body size
 				DKIMSignature.warnings.push({name: "DKIM_SIGWARNING_SMALL_L"});
 				log.debug("Warning: DKIM_SIGWARNING_SMALL_L ("+
 					dkimStrings.getString("DKIM_SIGWARNING_SMALL_L")+")");
@@ -970,7 +976,7 @@ var Verifier = (function() {
 				throw new Error("unsupported canonicalization algorithm (header) got parsed");
 		}
 
-		// copy header fileds
+		// copy header fields
 		var headerFields = new Map();
 		for (var [key, val] of msg.headerFields) {
 			headerFields.set(key, val.slice());
@@ -1008,7 +1014,7 @@ var Verifier = (function() {
 	}
 
 	/**
-	 * handeles Exeption
+	 * handles Exception
 	 *
 	 * @param {Error} e
 	 * @param {Object} msg
@@ -1533,7 +1539,7 @@ var that = {
 					// both sigs have no warnings
 					return 0;
 				}
-				// sig2 has warings
+				// sig2 has warnings
 				return -1;
 			}
 			// sig1 has warnings
