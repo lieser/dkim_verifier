@@ -359,10 +359,20 @@ var Verifier = (function() {
 	 * @return {Boolean}
 	 */
 	function verifyED25519Sig(key, str, hash_algo, signature, warnings, _keyInfo = {}) {
+		if (hash_algo !== "sha256") {
+			throw new DKIM_SigError("DKIM_SIGERROR_KEY_HASHNOTINCLUDED");
+		}
+		let result = false;
 		let hashedStr = dkim_hash(str, hash_algo, "b64");
-		return NaCl.nacl.sign.detached.verify(NaClUtil.nacl.util.decodeBase64(hashedStr),
-											NaClUtil.nacl.util.decodeBase64(signature),
-											NaClUtil.nacl.util.decodeBase64(key));
+		let hashedStr_b64 = NaClUtil.nacl.util.decodeBase64(hashedStr);
+		let signature_b64 = NaClUtil.nacl.util.decodeBase64(signature);
+		let key_b64 = NaClUtil.nacl.util.decodeBase64(key);
+		try {
+			result = NaCl.nacl.sign.detached.verify(hashedStr_b64, signature_b64, key_b64);
+		} catch(ex){
+			throw new DKIM_SigError(ex.message);
+		}
+		return result;
 	}
 
 	function newDKIMSignature( DKIMSignatureHeader ) {
