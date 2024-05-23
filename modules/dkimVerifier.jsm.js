@@ -56,11 +56,10 @@ Cu.import("resource://dkim_verifier/rfcParser.jsm.js");
 
 // namespaces
 var RSA = {};
+var ED25519 = {};
 // for jsbn.js
 RSA.navigator = {};
 RSA.navigator.appName = "Netscape";
-var NaCl = {};
-var NaClUtil = {};
 
 // ASN.1
 Services.scriptloader.loadSubScript("resource://dkim_verifier_3p/rsasign/asn1hex-1.1.js",
@@ -77,9 +76,10 @@ Services.scriptloader.loadSubScript("resource://dkim_verifier_3p/jsbn/rsa.js",
                                     RSA, "UTF-8" /* The script's encoding */);
 Services.scriptloader.loadSubScript("resource://dkim_verifier_3p/rsasign/rsasign-1.2.js",
                                     RSA, "UTF-8" /* The script's encoding */);
-// ed25519
-Services.scriptloader.loadSubScript("resource://dkim_verifier_3p/tweetnacl-util/nacl-util.js", NaClUtil, "UTF-8");
-Services.scriptloader.loadSubScript("resource://dkim_verifier_3p/tweetnacl/nacl-fast.js", NaCl, "UTF-8");
+// ED25519
+Services.scriptloader.loadSubScript("resource://dkim_verifier_3p/tweetnacl/nacl-fast.js", ED25519, "UTF-8");
+Services.scriptloader.loadSubScript("resource://dkim_verifier_3p/tweetnacl-util/nacl-util.js", ED25519, "UTF-8");
+
 
 // @ts-ignore
 const PREF_BRANCH = "extensions.dkim_verifier.";
@@ -364,11 +364,11 @@ var Verifier = (function() {
 		}
 		let result = false;
 		let hashedStr = dkim_hash(str, hash_algo, "b64");
-		let hashedStr_b64 = NaClUtil.nacl.util.decodeBase64(hashedStr);
-		let signature_b64 = NaClUtil.nacl.util.decodeBase64(signature);
-		let key_b64 = NaClUtil.nacl.util.decodeBase64(key);
+		let hashedStr_b64 = ED25519.nacl.util.decodeBase64(hashedStr);
+		let signature_b64 = ED25519.nacl.util.decodeBase64(signature);
+		let key_b64 = ED25519.nacl.util.decodeBase64(key);
 		try {
-			result = NaCl.nacl.sign.detached.verify(hashedStr_b64, signature_b64, key_b64);
+			result = ED25519.nacl.sign.detached.verify(hashedStr_b64, signature_b64, key_b64);
 		} catch(ex){
 			throw new DKIM_SigError(ex.message);
 		}
