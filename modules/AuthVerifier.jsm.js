@@ -1,14 +1,14 @@
 /*
  * AuthVerifier.jsm.js
- * 
+ *
  * Authentication Verifier.
  *
  * Version: 1.4.0 (28 January 2018)
- * 
+ *
  * Copyright (c) 2014-2018 Philippe Lieser
- * 
+ *
  * This software is licensed under the terms of the MIT License.
- * 
+ *
  * The above copyright and license notice shall be
  * included in all copies or substantial portions of the Software.
  */
@@ -90,7 +90,9 @@ let prefs = Services.prefs.getBranch(PREF_BRANCH);
  *           40: no sig
  * @property {String} result_str
  *           localized result string
- * @property {string} [error_str] Localized error string.
+ * @property {String} details_str
+ *           localized details block
+ * @property {string} [error_str] localized error string
  * @property {String[]} [warnings_str]
  *           localized warnings
  * @property {String} [favicon]
@@ -238,7 +240,7 @@ var AuthVerifier = {
 
 /**
  * Get the Authentication-Results header as an SavedAuthResult.
- * 
+ *
  * @param {nsIMsgDBHdr} msgHdr
  * @param {Object} msg
  * @return {SavedAuthResult|Null}
@@ -311,7 +313,7 @@ function getARHResult(msgHdr, msg) {
 	// convert DKIM results
 	let dkimSigResults = arhDKIM.map(arhDKIM_to_dkimSigResultV2);
 
-	// if ARH result is replacing the add-ons,	
+	// if ARH result is replacing the add-ons,
 	if (prefs.getBoolPref("arh.replaceAddonResult")) {
 		// check SDID and AUID of DKIM results
 		for (let i = 0; i < dkimSigResults.length; i++) {
@@ -379,7 +381,7 @@ function getARHResult(msgHdr, msg) {
 
 /**
  * Save authentication result
- * 
+ *
  * @param {nsIMsgDBHdr} msgHdr
  * @param {SavedAuthResult|Null} savedAuthResult
  * @return {void}
@@ -409,7 +411,7 @@ function saveAuthResult(msgHdr, savedAuthResult) {
 
 /**
  * Get saved authentication result
- * 
+ *
  * @param {nsIMsgDBHdr} msgHdr
  * @return {SavedAuthResult|Null} savedAuthResult
  * @throws {Error}
@@ -474,7 +476,7 @@ function loadAuthResult(msgHdr) {
 
 /**
  * Convert DKIM ARHresinfo to dkimResult
- * 
+ *
  * @param {ARHResinfo} arhDKIM
  * @return {dkimSigResultV2}
  * @throws {Error}
@@ -514,7 +516,7 @@ function arhDKIM_to_dkimSigResultV2(arhDKIM) {
 		default:
 			throw new Error(`invalid dkim result in arh: ${arhDKIM.result}`);
 	}
-	
+
 	let sdid = arhDKIM.propertys.header.d;
 	let auid = arhDKIM.propertys.header.i;
 	if (sdid || auid) {
@@ -526,13 +528,13 @@ function arhDKIM_to_dkimSigResultV2(arhDKIM) {
 		dkimSigResult.sdid = sdid;
 		dkimSigResult.auid = auid;
 	}
-	
+
 	return dkimSigResult;
 }
 
 /**
  * Convert dkimResultV1 to dkimSigResultV2
- * 
+ *
  * @param {dkimResultV1} dkimResultV1
  * @return {dkimSigResultV2}
  */
@@ -565,7 +567,7 @@ function dkimResultV1_to_dkimSigResultV2(dkimResultV1) {
 
 /**
  * Convert dkimSigResultV2 to AuthResultDKIM
- * 
+ *
  * @param {dkimSigResultV2} dkimSigResult
  * @return {AuthResultDKIM}
  * @throws {Error}
@@ -685,7 +687,7 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 					dkimSigResult.errorStrParams) ||
 				errorType;
 				authResultDKIM.error_str = errorMsg;
-			}			
+			}
 			if (errorMsg) {
 				authResultDKIM.result_str = dkimStrings.getFormattedString("PERMFAIL",
 					[errorMsg]);
@@ -702,13 +704,43 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 			throw new Error(`unknown result: ${dkimSigResult.result}`);
 	}
 
+	if (dkimSigResult.errorType !== "DKIM_POLICYERROR_MISSING_SIG" && authResultDKIM.res_num !== AuthVerifier.DKIM_RES.NOSIG) {
+		let sdid = dkimSigResult.sdid;
+		let auid = dkimSigResult.auid;
+		let result = authResultDKIM.result_str;
+		let alg = dkimSigResult.algorithmSignature ? dkimSigResult.algorithmSignature.toUpperCase() : undefined;
+		let hash = dkimSigResult.algorithmHash ? dkimSigResult.algorithmHash.toUpperCase() : undefined;
+		let dnssec = dkimSigResult.keySecure ? "Yes" : "No";
+		let signingTime = dkimSigResult.timestamp ? new Date(dkimSigResult.timestamp*1000).toLocaleString() : undefined;
+		let expirationTime = dkimSigResult.expiration ? new Date(dkimSigResult.expiration*1000).toLocaleString() : "never";
+		let signedHeaders = dkimSigResult.signedHeaders ? dkimSigResult.signedHeaders.join(", ") : undefined;
+
+		authResultDKIM.details_str = "Result: " + result;
+		if (sdid && auid) {
+			authResultDKIM.details_str += "\nSigned by " + sdid + " for " + auid;
+		}
+		if (signingTime) {
+			authResultDKIM.details_str += "\nSigned at " + signingTime + ", expires " + expirationTime;
+		} else {
+			authResultDKIM.details_str += "\nNo signing time included in signature";
+		}
+		if ( alg && hash) {
+			authResultDKIM.details_str += "\nAlgorithm: " + alg + " / " + hash;
+		}
+		if (sdid) {
+			authResultDKIM.details_str += "\nDomain validated using DNSSEC: " + dnssec;
+		}
+		if (signedHeaders) {
+			authResultDKIM.details_str += "\nSigned headers: " + signedHeaders;
+		}
+	}
 	return authResultDKIM;
 }
 
 
 /**
  * Convert SavedAuthResult to AuthResult
- * 
+ *
  * @param {SavedAuthResult} savedAuthResult
  * @param {String|undefined} from
  * @return {Promise<AuthResult>} authResult
@@ -727,7 +759,7 @@ async function SavedAuthResult_to_AuthResult(savedAuthResult, from) { // eslint-
 
 /**
  * Convert AuthResultV2 to dkimSigResultV2
- * 
+ *
  * @param {AuthResultDKIMV2} authResultDKIM
  * @return {dkimSigResultV2} dkimSigResultV2
  */
@@ -735,6 +767,7 @@ function AuthResultDKIMV2_to_dkimSigResultV2(authResultDKIM) {
 	let dkimSigResult = authResultDKIM;
 	dkimSigResult.res_num = undefined;
 	dkimSigResult.result_str = undefined;
+	dkimSigResult.details_str = undefined;
 	dkimSigResult.warnings_str = undefined;
 	dkimSigResult.favicon = undefined;
 	return dkimSigResult;
@@ -742,7 +775,7 @@ function AuthResultDKIMV2_to_dkimSigResultV2(authResultDKIM) {
 
 /**
  * Add favicons to the DKIM results.
- * 
+ *
  * @param {AuthResult} authResult
  * @param {String|undefined} from
  * @param {String|undefined} bimiIndicator
@@ -767,7 +800,7 @@ async function addFavicons(authResult, from, bimiIndicator) {
 
 /**
  * Checks if a message is outgoing
- * 
+ *
  * @param {nsIMsgDBHdr} msgHdr
  * @return {boolean}
  */

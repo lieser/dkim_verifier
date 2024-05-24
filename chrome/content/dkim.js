@@ -67,11 +67,30 @@ DKIM_Verifier.Display = (function() {
 	 * Sets the result value for headerTooltips and statusbar panel.
 	 *
 	 * @param {String} value
+	 * @param {String|undefined} [details]
 	 * @return {void}
 	 */
-	function setValue(value) {
+	function setValue(value, details) {
 		headerTooltips.value = value;
 		statusbarPanel.value = value;
+
+		let verifierBox = document.getElementById("expandeddkim-verifierBox");
+
+		if (details) {
+			headerTooltips.value = details;
+			if (verifierBox) {
+				// @ts-ignore
+				verifierBox.tooltipText = details;
+			}
+			statusbarPanel.tooltipText = details;
+		} else {
+			if (verifierBox) {
+				// @ts-ignore
+				verifierBox.tooltipText = "";
+			}
+			// @ts-ignore
+			statusbarPanel.tooltipText = "";
+		}
 	}
 
 	/**
@@ -216,7 +235,22 @@ DKIM_Verifier.Display = (function() {
 		statusbarPanel.dkimStatus = result.dkim[0].result;
 		that.setCollapsed(result.dkim[0].res_num);
 		header.value = result.dkim[0].result_str;
-		setValue(result.dkim[0].result_str);
+
+		let sigCount = 0;
+		let detailsHint;
+		detailsHint	= "";
+		result.dkim.forEach(dkim => {
+			if (dkim.details_str) {
+				detailsHint += "\n----\n" + dkim.details_str;
+				sigCount += 1;
+			}
+		});
+		if (sigCount > 0) {
+			detailsHint = "Signatures: " + sigCount + detailsHint;
+		} else {
+			detailsHint = undefined;
+		}
+		setValue(result.dkim[0].result_str, detailsHint);
 
 		switch(result.dkim[0].res_num) {
 			case DKIM_Verifier.AuthVerifier.DKIM_RES.SUCCESS: {
