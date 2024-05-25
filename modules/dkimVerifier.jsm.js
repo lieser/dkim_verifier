@@ -359,16 +359,22 @@ var Verifier = (function() {
 	 * @return {Boolean}
 	 */
 	function verifyED25519Sig(key, str, hash_algo, signature, warnings, _keyInfo = {}) {
+		let result = false;
+		let hashedStr = dkim_hash(str, hash_algo, "b64");
+		let hashedStr_byte = ED25519.nacl.util.decodeBase64(hashedStr);
+		let signature_byte = ED25519.nacl.util.decodeBase64(signature);
+		let key_byte = ED25519.nacl.util.decodeBase64(key);
+		// each byte has 8 bit (a valid key_byte array has a length of 32)
+		let keyLength = key_byte.length * 8;
+		log.debug("ED25519 key length: " + keyLength);
 		if (hash_algo !== "sha256") {
 			throw new DKIM_SigError("DKIM_SIGERROR_KEY_HASHNOTINCLUDED");
 		}
-		let result = false;
-		let hashedStr = dkim_hash(str, hash_algo, "b64");
-		let hashedStr_b64 = ED25519.nacl.util.decodeBase64(hashedStr);
-		let signature_b64 = ED25519.nacl.util.decodeBase64(signature);
-		let key_b64 = ED25519.nacl.util.decodeBase64(key);
+		if (keyLength !== 256) {
+			throw new DKIM_SigError("DKIM_SIGERROR_KEYDECODE");
+		}
 		try {
-			result = ED25519.nacl.sign.detached.verify(hashedStr_b64, signature_b64, key_b64);
+			result = ED25519.nacl.sign.detached.verify(hashedStr_byte, signature_byte, key_byte);
 		} catch(ex){
 			throw new DKIM_SigError(ex.message);
 		}
