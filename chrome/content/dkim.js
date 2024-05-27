@@ -97,11 +97,13 @@ DKIM_Verifier.Display = (function() {
 	 * Sets the warnings for header, headerTooltips and statusbar panel.
 	 *
 	 * @param {String[]} warnings
+	 * @param {String|undefined} [details]
 	 * @return {void}
 	 */
-	function setWarnings(warnings) {
+	function setWarnings(warnings, details) {
 		header.warnings = warnings;
-		headerTooltips.warnings = warnings;
+		// The details hint already contains the warnings in the headerTooltip
+		if (!details) { headerTooltips.warnings = warnings; }
 		statusbarPanel.warnings = warnings;
 	}
 
@@ -246,7 +248,7 @@ DKIM_Verifier.Display = (function() {
 			}
 		});
 		if (sigCount > 0) {
-			detailsHint = "Signatures: " + sigCount + detailsHint;
+			detailsHint = dkimStrings.getFormattedString("DKIM_RESULT_DETAILS_SIG_COUNT", [sigCount]) + detailsHint;
 		} else {
 			detailsHint = undefined;
 		}
@@ -260,7 +262,7 @@ DKIM_Verifier.Display = (function() {
 				{
 					highlightHeader("success");
 				} else {
-					setWarnings(dkim.warnings_str);
+					setWarnings(dkim.warnings_str, detailsHint);
 					highlightHeader("warning");
 				}
 

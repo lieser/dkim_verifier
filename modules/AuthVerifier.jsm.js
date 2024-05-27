@@ -709,34 +709,50 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 		let auid = dkimSigResult.auid;
 		let result = authResultDKIM.result_str;
 		let alg = dkimSigResult.algorithmSignature ? dkimSigResult.algorithmSignature.toUpperCase() : undefined;
+		let keyLength; // = dkimSigResult.signatureKeyLength;
 		let hash = dkimSigResult.algorithmHash ? dkimSigResult.algorithmHash.toUpperCase() : undefined;
-		let dnssec = dkimSigResult.keySecure ? "Yes" : "No";
+		let dnssec = dkimSigResult.keySecure;
 		let signingTime = dkimSigResult.timestamp ? new Date(dkimSigResult.timestamp*1000).toLocaleString() : undefined;
-		let expirationTime = dkimSigResult.expiration ? new Date(dkimSigResult.expiration*1000).toLocaleString() : "never";
+		let expirationTime = dkimSigResult.expiration ? new Date(dkimSigResult.expiration*1000).toLocaleString() : undefined;
 		let signedHeaders = dkimSigResult.signedHeaders ? dkimSigResult.signedHeaders.join(", ") : undefined;
+		let warnings = authResultDKIM.warnings_str && authResultDKIM.warnings_str.length > 0 ? authResultDKIM.warnings_str.join("\n- ") : undefined;
 
-		authResultDKIM.details_str = "Result: " + result;
+		authResultDKIM.details_str = result;
 		if (sdid && auid) {
-			authResultDKIM.details_str += "\nSigned by " + sdid + " for " + auid;
+			authResultDKIM.details_str += "\n" + dkimStrings.getFormattedString("DKIM_RESULT_DETAILS_SIGNED_BY_FOR", [sdid, auid]);
 		}
 		if (signingTime) {
-			authResultDKIM.details_str += "\nSigned at " + signingTime + ", expires " + expirationTime;
+			if (expirationTime) {
+				authResultDKIM.details_str += "\n" + dkimStrings.getFormattedString("DKIM_RESULT_DETAILS_TIME_EXPIRY", [signingTime, expirationTime]);
+			} else {
+				authResultDKIM.details_str += "\n" + dkimStrings.getFormattedString("DKIM_RESULT_DETAILS_TIME_NO_EXPIRY", [signingTime]);
+			}
 		} else {
-			authResultDKIM.details_str += "\nNo signing time included in signature";
+			authResultDKIM.details_str += "\n" + dkimStrings.getString("DKIM_RESULT_DETAILS_NO_TIME");
 		}
 		if ( alg && hash) {
-			authResultDKIM.details_str += "\nAlgorithm: " + alg + " / " + hash;
+			if (keyLength) {
+				authResultDKIM.details_str += "\n" + dkimStrings.getFormattedString("DKIM_RESULT_DETAILS_ALGORITHM_WITH_LENGTH", [alg, keyLength, hash]);
+			} else {
+				authResultDKIM.details_str += "\n" + dkimStrings.getFormattedString("DKIM_RESULT_DETAILS_ALGORITHM", [alg, hash]);
+			}
 		}
 		if (sdid) {
-			authResultDKIM.details_str += "\nDomain validated using DNSSEC: " + dnssec;
+			if (dnssec) {
+				authResultDKIM.details_str += "\n" + dkimStrings.getString("DKIM_RESULT_DETAILS_DNSSEC");
+			} else {
+				authResultDKIM.details_str += "\n" + dkimStrings.getString("DKIM_RESULT_DETAILS_NO_DNSSEC");
+			}
 		}
 		if (signedHeaders) {
-			authResultDKIM.details_str += "\nSigned headers: " + signedHeaders;
+			authResultDKIM.details_str += "\n" + dkimStrings.getFormattedString("DKIM_RESULT_DETAILS_HEADERS", [signedHeaders]);
+		}
+		if (warnings) {
+			authResultDKIM.details_str += "\n" + dkimStrings.getFormattedString("DKIM_RESULT_DETAILS_WARNINGS", [warnings]);
 		}
 	}
 	return authResultDKIM;
 }
-
 
 /**
  * Convert SavedAuthResult to AuthResult
