@@ -240,17 +240,31 @@ DKIM_Verifier.Display = (function() {
 
 		let sigCount = 0;
 		let detailsHint;
-		detailsHint	= "";
-		result.dkim.forEach(dkim => {
-			if (dkim.details_str) {
-				detailsHint += "\n----\n" + dkim.details_str;
-				sigCount += 1;
+		if (prefs.getBoolPref("advancedInfo.show")) {
+			detailsHint	= "";
+			if (prefs.getBoolPref("advancedInfo.allSignatures")) {
+				result.dkim.forEach(dkim => {
+					if (dkim.details_str) {
+						detailsHint += "\n----\n" + dkim.details_str;
+						sigCount += 1;
+					}
+				});
+				if (sigCount === 0) {
+					// the check resulted in an error, because the signature wasn't well formed
+					// or there was no signature
+					detailsHint = undefined;
+				}
+			} else {
+				detailsHint = result.dkim[0].details_str;
 			}
-		});
-		if (sigCount > 0) {
-			detailsHint = dkimStrings.getFormattedString("DKIM_RESULT_DETAILS_SIG_COUNT", [sigCount]) + detailsHint;
-		} else {
-			detailsHint = undefined;
+			if (detailsHint) {
+				// there is extended information to display
+				let caption = "";
+				if (prefs.getBoolPref("advancedInfo.allSignatures")) {
+					caption = dkimStrings.getFormattedString("DKIM_RESULT_DETAILS_SIG_COUNT", [sigCount]);
+				}
+				detailsHint = caption + detailsHint;
+			}
 		}
 		setValue(result.dkim[0].result_str, detailsHint);
 

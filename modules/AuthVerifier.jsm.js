@@ -738,13 +738,15 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 			}
 		}
 		if (sdid) {
-			if (dnssec) {
-				authResultDKIM.details_str += "\n" + dkimStrings.getString("DKIM_RESULT_DETAILS_DNSSEC");
-			} else {
-				authResultDKIM.details_str += "\n" + dkimStrings.getString("DKIM_RESULT_DETAILS_NO_DNSSEC");
+			if (prefs.getBoolPref("advancedInfo.includeDNSSEC")) {
+				if (dnssec) {
+					authResultDKIM.details_str += "\n" + dkimStrings.getString("DKIM_RESULT_DETAILS_DNSSEC");
+				} else {
+					authResultDKIM.details_str += "\n" + dkimStrings.getString("DKIM_RESULT_DETAILS_NO_DNSSEC");
+				}
 			}
 		}
-		if (signedHeaders) {
+		if (prefs.getBoolPref("advancedInfo.includeHeaders") && signedHeaders) {
 			authResultDKIM.details_str += "\n" + dkimStrings.getFormattedString("DKIM_RESULT_DETAILS_HEADERS", [signedHeaders]);
 		}
 		if (warnings) {
