@@ -709,7 +709,7 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 		let auid = dkimSigResult.auid;
 		let result = authResultDKIM.result_str;
 		let alg = dkimSigResult.algorithmSignature ? dkimSigResult.algorithmSignature.toUpperCase() : undefined;
-		let keyLength; // = dkimSigResult.signatureKeyLength;
+		let keyLength = dkimSigResult.signatureKeyLength ? dkimSigResult.signatureKeyLength.toString() : undefined;
 		let hash = dkimSigResult.algorithmHash ? dkimSigResult.algorithmHash.toUpperCase() : undefined;
 		let dnssec = dkimSigResult.keySecure;
 		let signingTime = dkimSigResult.timestamp ? new Date(dkimSigResult.timestamp*1000).toLocaleString() : undefined;
