@@ -81,3 +81,7 @@
 <!ENTITY policy.unsigned_header.mode.value.0.label "Relaxed">
 <!ENTITY policy.unsigned_header.mode.value.1.label "Recommended">
 <!ENTITY policy.unsigned_header.mode.value.2.label "Strict">
+
+<!ENTITY display.advancedInfo.show.label "Show extended signature information in tooltips">
+<!ENTITY display.advancedInfo.allSignatures.label "Show all signatures">
+<!ENTITY display.advancedInfo.includeHeaders.label "Show signed headers">

@@ -102,3 +102,7 @@
 <!ENTITY policy.unsigned_header.mode.value.0.label "Tolerant">
 <!ENTITY policy.unsigned_header.mode.value.1.label "Empfohlen">
 <!ENTITY policy.unsigned_header.mode.value.2.label "Streng">
+
+<!ENTITY display.advancedInfo.show.label "Erweiterte Signatur-Informationen in Tooltips anzeigen">
+<!ENTITY display.advancedInfo.allSignatures.label "Alle Signaturen anzeigen">
+<!ENTITY display.advancedInfo.includeHeaders.label "Information über signierte Kopfzeilen anzeigen">
