@@ -711,7 +711,6 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 		let alg = dkimSigResult.algorithmSignature ? dkimSigResult.algorithmSignature.toUpperCase() : undefined;
 		let keyLength = dkimSigResult.signatureKeyLength ? dkimSigResult.signatureKeyLength.toString() : undefined;
 		let hash = dkimSigResult.algorithmHash ? dkimSigResult.algorithmHash.toUpperCase() : undefined;
-		let dnssec = dkimSigResult.keySecure;
 		let signingTime = dkimSigResult.timestamp ? new Date(dkimSigResult.timestamp*1000).toLocaleString() : undefined;
 		let expirationTime = dkimSigResult.expiration ? new Date(dkimSigResult.expiration*1000).toLocaleString() : undefined;
 		let signedHeaders = dkimSigResult.signedHeaders ? dkimSigResult.signedHeaders.join(", ") : undefined;
@@ -735,15 +734,6 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 				authResultDKIM.details_str += "\n" + dkimStrings.getFormattedString("DKIM_RESULT_DETAILS_ALGORITHM_WITH_LENGTH", [alg, keyLength, hash]);
 			} else {
 				authResultDKIM.details_str += "\n" + dkimStrings.getFormattedString("DKIM_RESULT_DETAILS_ALGORITHM", [alg, hash]);
-			}
-		}
-		if (sdid) {
-			if (prefs.getBoolPref("advancedInfo.includeDNSSEC")) {
-				if (dnssec) {
-					authResultDKIM.details_str += "\n" + dkimStrings.getString("DKIM_RESULT_DETAILS_DNSSEC");
-				} else {
-					authResultDKIM.details_str += "\n" + dkimStrings.getString("DKIM_RESULT_DETAILS_NO_DNSSEC");
-				}
 			}
 		}
 		if (prefs.getBoolPref("advancedInfo.includeHeaders") && signedHeaders) {

@@ -64,7 +64,7 @@ pref("extensions.dkim_verifier.policy.DMARC.shouldBeSigned.neededPolicy", "none"
 
 pref("extensions.dkim_verifier.display.favicon.show", true);
 
-/* 
+/*
  * Mode to handle headers, which should be signed, but are not
  * 10  relaxed
  * 20  recommended
@@ -125,7 +125,6 @@ pref("extensions.dkim_verifier.color.nosig.background", "unset");
 pref("extensions.dkim_verifier.advancedInfo.show", false);
 pref("extensions.dkim_verifier.advancedInfo.allSignatures", false);
 pref("extensions.dkim_verifier.advancedInfo.includeHeaders", false);
-pref("extensions.dkim_verifier.advancedInfo.includeDNSSEC", false);
 
 ////////////////////////////////////////////////////////////////////////////////
 // advanced preferences
