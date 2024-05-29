@@ -451,9 +451,11 @@ var Verifier = (function() {
 		if (!algorithmTag[1] || !algorithmTag[2]) {
 			throw new Error("Error matching the a-tag.");
 		}
+		// Detailed hints will contain the algorithm in any case
+		DKIMSignature.a_sig = algorithmTag[1];
+		DKIMSignature.a_hash = algorithmTag[2];
 		if (algorithmTag[0] === "ed25519-sha256" || algorithmTag[0] === "rsa-sha256") {
-			DKIMSignature.a_sig = algorithmTag[1];
-			DKIMSignature.a_hash = algorithmTag[2];
+			// all is fine, nothing to do at the momemnt
 		} else if (algorithmTag[0] === "rsa-sha1") {
 			switch (prefs.getIntPref("error.algorithm.sign.rsa-sha1.treatAs")) {
 				case 0: // error
@@ -466,8 +468,6 @@ var Verifier = (function() {
 				default:
 					throw new Error("invalid error.algorithm.sign.rsa-sha1.treatAs");
 			}
-			DKIMSignature.a_sig = algorithmTag[1];
-			DKIMSignature.a_hash = algorithmTag[2];
 		} else {
 			throw new DKIM_SigError("DKIM_SIGERROR_UNKNOWN_A");
 		}
