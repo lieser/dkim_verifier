@@ -255,74 +255,6 @@ var Verifier = (function() {
 	}
 
 	/**
-	 * Get the length of an RSA key in bit.
-	 *
-	 * @param {String} key
-	 *        b64 encoded RSA key in ASN.1 DER format
-	 * @return {Number}
-	 * @throws {DKIM_SigError|Error}
-	 */
-	function getRSAKeyLength(key) {
-		// get RSA-key
-		/*
-		the rsa key must be in the following ASN.1 DER format
-
-		SEQUENCE(2 elem) -- our posTopArray
-			SEQUENCE(2 elem)
-				OBJECT IDENTIFIER 1.2.840.113549.1.1.1 (Comment: PKCS #1; Description: rsaEncryption)
-				NULL
-			BIT STRING(1 elem)
-				SEQUENCE(2 elem) -- our posKeyArray
-					INTEGER (modulus)
-					INTEGER (publicExponent)
-		*/
-		let asnKey = RSA.b64tohex(key);
-		let posTopArray = null;
-		let posKeyArray = null;
-
-		// check format by comparing the 1. child in the top element
-		posTopArray = RSA.ASN1HEX.getChildIdx(asnKey,0);
-		if (posTopArray === null || posTopArray.length !== 2) {
-			throw new DKIM_SigError("DKIM_SIGERROR_KEYDECODE");
-		}
-		if (RSA.ASN1HEX.getTLV(asnKey, posTopArray[0]) !==
-		    "300d06092a864886f70d0101010500") {
-			throw new DKIM_SigError("DKIM_SIGERROR_KEYDECODE");
-		}
-
-		// get pos of SEQUENCE under BIT STRING
-		// asn1hex does not support BIT STRING, so we will compute the position
-		let pos = RSA.ASN1HEX.getVidx(asnKey, posTopArray[1]) + 2;
-
-		// get pos of modulus and publicExponent
-		posKeyArray = RSA.ASN1HEX.getChildIdx(asnKey, pos);
-		if (posKeyArray === null || posKeyArray.length !== 2) {
-			throw new DKIM_SigError("DKIM_SIGERROR_KEYDECODE");
-		}
-
-		// get modulus
-		let m_hex = RSA.ASN1HEX.getV(asnKey,posKeyArray[0]);
-		// trim leading zeros
-		m_hex = m_hex.replace(/^0+/, '');
-		// one hex digit represents 4 bits
-		return m_hex.length * 4;
-	}
-
-	/**
-	 * Get the length of an ED25519 key in bit.
-	 *
-	 * @param {String} key
-	 *        b64 encoded ED25519 key
-	 * @return {Number}
-	 * @throws {DKIM_SigError|Error}
-	 */
-	function getED25519KeyLength(key) {
-		let key_byte = NaClUtil.nacl.util.decodeBase64(key);
-		// each byte has 8 bit (a valid key_byte array has a length of 32)
-		return key_byte.length * 8;
-	}
-
-	/**
 	 * Verifies an RSA signature.
 	 *
 	 * @param {String} key
@@ -382,15 +314,16 @@ var Verifier = (function() {
 		// get public exponent
 		let e_hex = RSA.ASN1HEX.getV(asnKey,posKeyArray[1]);
 
-		let keyLength = getRSAKeyLength(key);
-
-		if (keyLength < 1024) {
+		// trim leading zeros
+		let m_hex_trimmed = m_hex.replace(/^0+/, '');
+		// one hex digit represents 4 bits
+		keyInfo.keyLength = m_hex_trimmed.length * 4;
+		log.debug("rsa key length: " + keyInfo.keyLength);
+		if (keyInfo.keyLength < 1024) {
 			// error if key is too short
-			log.debug("rsa key size: " + keyLength);
 			throw new DKIM_SigError("DKIM_SIGWARNING_KEYSMALL");
-		} else if (keyLength < 2048) {
+		} else if (keyInfo.keyLength < 2048) {
 			// weak key
-			log.debug("rsa key size: " + keyLength);
 			switch (prefs.getIntPref("error.algorithm.rsa.weakKeyLength.treatAs")) {
 				case 0: // error
 					throw new DKIM_SigError("DKIM_SIGWARNING_KEY_IS_WEAK");
@@ -430,9 +363,13 @@ var Verifier = (function() {
 	 */
 	function verifyED25519Sig(key, str, hash_algo, signature, warnings, _keyInfo = {}) {
 		let hashedStr = dkim_hash(str, hash_algo, "b64");
-		return NaCl.nacl.sign.detached.verify(NaClUtil.nacl.util.decodeBase64(hashedStr),
-											NaClUtil.nacl.util.decodeBase64(signature),
-											NaClUtil.nacl.util.decodeBase64(key));
+		let hashedStr_byte = NaClUtil.nacl.util.decodeBase64(hashedStr);
+		let signature_byte = NaClUtil.nacl.util.decodeBase64(signature);
+		let key_byte = NaClUtil.nacl.util.decodeBase64(key);
+		// each byte has 8 bit (a valid key_byte array has a length of 32)
+		_keyInfo.keyLength = key_byte.length * 8;
+		log.debug("ed25519 key length: " + _keyInfo.keyLength);
+		return NaCl.nacl.sign.detached.verify(hashedStr_byte, signature_byte, key_byte);
 	}
 
 	function newDKIMSignature( DKIMSignatureHeader ) {
@@ -1272,19 +1209,22 @@ var Verifier = (function() {
 		switch (DKIMSignature.a_sig) {
 			case "ed25519":
 				verifyFunction = verifyED25519Sig;
-				DKIMSignature.a_keylength = getED25519KeyLength(DKIMSignature.DKIMKey.p);
 				break;
 			case "rsa":
 				verifyFunction = verifyRSASig;
-				DKIMSignature.a_keylength = getRSAKeyLength(DKIMSignature.DKIMKey.p);
 				break;
 			default:
 			// this should never happen, as it's already handled in newDKIMSignature
 				throw new DKIM_SigError("DKIM_SIGERROR_UNKNOWN_A");
 		}
 
-		var isValid = verifyFunction(DKIMSignature.DKIMKey.p, headerHashInput, DKIMSignature.a_hash,
+		var isValid = false;
+		try {
+			isValid = verifyFunction(DKIMSignature.DKIMKey.p, headerHashInput, DKIMSignature.a_hash,
 			DKIMSignature.b, DKIMSignature.warnings, keyInfo);
+		} finally {
+			DKIMSignature.a_keylength = keyInfo.keyLength;
+		}
 		if (!isValid) {
 			if (prefs.getIntPref("error.contentTypeCharsetAddedQuotes.treatAs") > 0) {
 				log.debug("Try with removed quotes in Content-Type charset.");
