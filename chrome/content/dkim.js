@@ -54,6 +54,7 @@ DKIM_Verifier.Display = (function() {
 	var expandedFromBox;
 	var collapsed1LfromBox; // for CompactHeader addon
 	var collapsed2LfromBox; // for CompactHeader addon
+	var verifierBox;
 	var policyAddUserExceptionButton;
 	var markKeyAsSecureButton;
 	var updateKeyButton;
@@ -74,21 +75,26 @@ DKIM_Verifier.Display = (function() {
 		headerTooltips.value = value;
 		statusbarPanel.value = value;
 
-		let verifierBox = document.getElementById("expandeddkim-verifierBox");
+		let emailBox = expandedFromBox ? expandedFromBox.emailAddresses.boxObject.firstChild : undefined;
+		let emailBoxCH1 = collapsed1LfromBox ? collapsed1LfromBox.emailAddresses.boxObject.firstChild : undefined; // for CompactHeader addon
+		let emailBoxCH2 = collapsed2LfromBox ? collapsed2LfromBox.emailAddresses.boxObject.firstChild : undefined; // for CompactHeader addon
+
+		let showFromToolTip =
+			(emailBox && emailBox.tooltip === "dkim-verifier-header-tooltip-from")
+			|| (emailBoxCH1 && emailBoxCH1.tooltip === "dkim-verifier-header-tooltip-from")
+			|| (emailBoxCH1 && emailBoxCH2.tooltip === "dkim-verifier-header-tooltip-from");
 
 		if (details) {
-			headerTooltips.value = details;
-			if (verifierBox) {
-				// @ts-ignore
-				verifierBox.tooltipText = details;
-			}
+			if (showFromToolTip && emailBox) { emailBox.tooltipText = details; }
+			if (showFromToolTip && emailBoxCH1) { emailBoxCH1.tooltipText = details; }
+			if (showFromToolTip && emailBoxCH2) { emailBoxCH2.tooltipText = details; }
+			verifierBox.tooltipText = details;
 			statusbarPanel.tooltipText = details;
 		} else {
-			if (verifierBox) {
-				// @ts-ignore
-				verifierBox.tooltipText = "";
-			}
-			// @ts-ignore
+			if (emailBox) { emailBox.tooltipText = ""; }
+			if (emailBoxCH1) { emailBoxCH1.tooltipText = ""; }
+			if (emailBoxCH2) { emailBoxCH2.tooltipText = ""; }
+			verifierBox.tooltipText = "";
 			statusbarPanel.tooltipText = "";
 		}
 	}
@@ -97,13 +103,11 @@ DKIM_Verifier.Display = (function() {
 	 * Sets the warnings for header, headerTooltips and statusbar panel.
 	 *
 	 * @param {String[]} warnings
-	 * @param {String|undefined} [details]
 	 * @return {void}
 	 */
-	function setWarnings(warnings, details) {
+	function setWarnings(warnings) {
 		header.warnings = warnings;
-		// The details hint already contains the warnings in the headerTooltip
-		if (!details) { headerTooltips.warnings = warnings; }
+		headerTooltips.warnings = warnings;
 		statusbarPanel.warnings = warnings;
 	}
 
@@ -276,7 +280,7 @@ DKIM_Verifier.Display = (function() {
 				{
 					highlightHeader("success");
 				} else {
-					setWarnings(dkim.warnings_str, detailsHint);
+					setWarnings(dkim.warnings_str);
 					highlightHeader("warning");
 				}
 
@@ -455,6 +459,7 @@ var that = {
 			expandedFromBox = document.getElementById("expandedfromBox");
 			collapsed1LfromBox = document.getElementById("CompactHeader_collapsed1LfromBox");
 			collapsed2LfromBox = document.getElementById("CompactHeader_collapsed2LfromBox");
+			verifierBox = document.getElementById("expandeddkim-verifierBox");
 			policyAddUserExceptionButton = document.
 				getElementById("dkim_verifier.policyAddUserException");
 			markKeyAsSecureButton = document.getElementById("dkim_verifier.markKeyAsSecure");
