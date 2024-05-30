@@ -284,6 +284,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "bayern.de",
+			"addr": "*",
+			"sdid": "bayern.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "bequiet.com",
 			"addr": "*",
 			"sdid": "bequiet.com",
