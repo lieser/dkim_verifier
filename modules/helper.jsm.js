@@ -343,7 +343,7 @@ function tryGetString(stringbundle, name) {
 	try {
 		return stringbundle.getString(name);
 	} catch (ex) {
-		log.warn(ex);
+		log.warn("Couldn't get translation for: '" + name + "'");
 		return null;
 	}
 }
@@ -365,7 +365,7 @@ function tryGetFormattedString(stringbundle, name, params = []) {
 	try {
 		return stringbundle.getFormattedString(name, params);
 	} catch (ex) {
-		log.warn(ex);
+		log.warn("Couldn't get translation for: '" + name + "' and parameters: '" + params.join(", ") + "'");
 		return null;
 	}
 }
