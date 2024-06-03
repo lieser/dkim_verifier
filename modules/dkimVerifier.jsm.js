@@ -56,11 +56,10 @@ Cu.import("resource://dkim_verifier/rfcParser.jsm.js");
 
 // namespaces
 var RSA = {};
+var ED25519 = {};
 // for jsbn.js
 RSA.navigator = {};
 RSA.navigator.appName = "Netscape";
-var NaCl = {};
-var NaClUtil = {};
 
 // ASN.1
 Services.scriptloader.loadSubScript("resource://dkim_verifier_3p/rsasign/asn1hex-1.1.js",
@@ -77,9 +76,9 @@ Services.scriptloader.loadSubScript("resource://dkim_verifier_3p/jsbn/rsa.js",
                                     RSA, "UTF-8" /* The script's encoding */);
 Services.scriptloader.loadSubScript("resource://dkim_verifier_3p/rsasign/rsasign-1.2.js",
                                     RSA, "UTF-8" /* The script's encoding */);
-// ed25519
-Services.scriptloader.loadSubScript("resource://dkim_verifier_3p/tweetnacl-util/nacl-util.js", NaClUtil, "UTF-8");
-Services.scriptloader.loadSubScript("resource://dkim_verifier_3p/tweetnacl/nacl-fast.js", NaCl, "UTF-8");
+// ED25519
+Services.scriptloader.loadSubScript("resource://dkim_verifier_3p/tweetnacl/nacl-fast.js", ED25519, "UTF-8");
+Services.scriptloader.loadSubScript("resource://dkim_verifier_3p/tweetnacl-util/nacl-util.js", ED25519, "UTF-8");
 
 // @ts-ignore
 const PREF_BRANCH = "extensions.dkim_verifier.";
@@ -161,7 +160,7 @@ const PREF_BRANCH = "extensions.dkim_verifier.";
 var Verifier = (function() {
 	"use strict";
 
-	// set hash funktions used by rsasign-1.2.js
+	// set hash functions used by rsasign-1.2.js
 	RSA.KJUR = {};
 	RSA.KJUR.crypto = {};
 	RSA.KJUR.crypto.Util = {};
@@ -314,9 +313,9 @@ var Verifier = (function() {
 		// get public exponent
 		let e_hex = RSA.ASN1HEX.getV(asnKey,posKeyArray[1]);
 
-		// trim leading zeros
+		// trim leading zeros from modulus
 		let m_hex_trimmed = m_hex.replace(/^0+/, '');
-		// one hex digit represents 4 bits
+		// one hex digit represents 4 bit
 		keyInfo.keyLength = m_hex_trimmed.length * 4;
 		log.debug("rsa key length: " + keyInfo.keyLength);
 		if (keyInfo.keyLength < 1024) {
@@ -362,14 +361,26 @@ var Verifier = (function() {
 	 * @return {Boolean}
 	 */
 	function verifyED25519Sig(key, str, hash_algo, signature, warnings, _keyInfo = {}) {
+		let result = false;
 		let hashedStr = dkim_hash(str, hash_algo, "b64");
-		let hashedStr_byte = NaClUtil.nacl.util.decodeBase64(hashedStr);
-		let signature_byte = NaClUtil.nacl.util.decodeBase64(signature);
-		let key_byte = NaClUtil.nacl.util.decodeBase64(key);
+		let hashedStr_byte = ED25519.nacl.util.decodeBase64(hashedStr);
+		let signature_byte = ED25519.nacl.util.decodeBase64(signature);
+		let key_byte = ED25519.nacl.util.decodeBase64(key);
 		// each byte has 8 bit (a valid key_byte array has a length of 32)
 		_keyInfo.keyLength = key_byte.length * 8;
 		log.debug("ed25519 key length: " + _keyInfo.keyLength);
-		return NaCl.nacl.sign.detached.verify(hashedStr_byte, signature_byte, key_byte);
+		if (hash_algo !== "sha256") {
+			throw new DKIM_SigError("DKIM_SIGERROR_KEY_HASHNOTINCLUDED");
+		}
+		if (_keyInfo.keyLength !== 256) {
+			throw new DKIM_SigError("DKIM_SIGERROR_KEYDECODE");
+		}
+		try {
+			result = ED25519.nacl.sign.detached.verify(hashedStr_byte, signature_byte, key_byte);
+		} catch(ex){
+			throw new DKIM_SigError(ex.message);
+		}
+		return result;
 	}
 
 	function newDKIMSignature( DKIMSignatureHeader ) {
@@ -391,7 +402,7 @@ var Verifier = (function() {
 			i : null, // Agent or User Identifier (AUID) on behalf of which the SDID is taking responsibility
 			i_domain : null, // domain part of AUID
 			l : null, // Body length count
-			q : null, // query methods for public key retrievel
+			q : null, // query methods for public key retrieval
 			s : null, // selector
 			t : null, // Signature Timestamp
 			x : null, // Signature Expiration
@@ -455,7 +466,7 @@ var Verifier = (function() {
 		DKIMSignature.a_sig = algorithmTag[1];
 		DKIMSignature.a_hash = algorithmTag[2];
 		if (algorithmTag[0] === "ed25519-sha256" || algorithmTag[0] === "rsa-sha256") {
-			// all is fine, nothing to do at the momemnt
+			// all is fine, nothing to do at the moment
 		} else if (algorithmTag[0] === "rsa-sha1") {
 			switch (prefs.getIntPref("error.algorithm.sign.rsa-sha1.treatAs")) {
 				case 0: // error
@@ -928,7 +939,7 @@ var Verifier = (function() {
 		// (especially in large strings; matching only last "\r\n")
 		body = body.replace(/((\r\n)+)?$/,"\r\n");
 
-		// If only one \r\n rests, there were only emtpy lines or body was empty.
+		// If only one \r\n rests, there were only empty lines or body was empty.
 		if (body === "\r\n") {
 			return "";
 		}
@@ -1016,7 +1027,7 @@ var Verifier = (function() {
 				throw new Error("unsupported canonicalization algorithm (header) got parsed");
 		}
 
-		// copy header fileds
+		// copy header fields
 		var headerFields = new Map();
 		for (var [key, val] of msg.headerFields) {
 			headerFields.set(key, val.slice());
@@ -1256,7 +1267,7 @@ var Verifier = (function() {
 
 		// hash algorithm defined in public-key data must be the same as in the header
 		// RSA verifier uses the algo defined in the ASN1 structure, not the one defined in dkim header
-		if (keyInfo.algName && keyInfo.algName !== DKIMSignature.a_hash) {
+		if (DKIMSignature.a_sig === "rsa" && keyInfo.algName !== DKIMSignature.a_hash) {
 			throw new DKIM_SigError("DKIM_SIGERROR_KEY_HASHMISMATCH");
 		}
 
@@ -1565,12 +1576,12 @@ var that = {
 					// both sigs have no warnings
 					return 0;
 				}
-				// sig2 has warings
+				// sig2 has warnings
 				return -1;
 			}
 			// sig1 has warnings
 			if (!sig2.warnings || sig2.warnings.length === 0) {
-				// sig2 has no warings
+				// sig2 has no warnings
 				return 1;
 			}
 			// both sigs have warnings
