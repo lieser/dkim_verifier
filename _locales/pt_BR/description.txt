@@ -1,9 +1,9 @@
-<a href="https://en.wikipedia.org/wiki/DomainKeys_Identified_Mail">DomainKeys Identified Mail (DKIM)</a> é um método que permite que os domínios assinem e-mails. O complemento (Add-on) verifica essas assinaturas de DKIM e mostra o resultado no cabeçalho de e-mail. Dessa forma, é possível ver qual domínio está reivindicando a responsabilidade por um e-mail específico. A forma como o resultado é mostrado pode ser alterada nas opções.
+<a href="https://en.wikipedia.org/wiki/DomainKeys_Identified_Mail">DomainKeys Identified Mail (DKIM)</a> é um método que permite que domínios assinem e-mails. A extensão verifica essas assinaturas DKIM e mostra o resultado no cabeçalho do e-mail. Dessa forma, é possível ver qual domínio está assumindo a responsabilidade por um e-mail específico. A maneira como o resultado é mostrado pode ser alterada nas opções.
 
-É importante notar que um e-mail pode ser assinado por um domínio arbitrário. Uma assinatura DKIM é válida por si só, portanto, não é um indicador para um e-mail confiável. Verifique sempre quem é o assinante para determinar se um e-mail é confiável!
+É importante notar que um e-mail pode ser assinado por domínios arbitrários. Portanto, uma assinatura DKIM válida por si só não é um indicador de um e-mail confiável. Sempre verifique quem é o assinante para determinar se um e-mail é confiável!
 
-Em alguns casos, a ausência de uma assinatura DKIM pode ser útil para identificar e-mails fraudulentos (scam). Se é sabido que um determinado domínio tem todos os seus e-mails assinando com o DKIM, a ausência de uma assinatura DKIM é um forte indicador para um e-mail falso.
+Em alguns casos, a ausência de uma assinatura DKIM pode ser útil para identificar e-mails fraudulentos. Se for sabido que um determinado domínio assina todos os seus e-mails com DKIM, a ausência de uma assinatura DKIM é um forte indicador de um e-mail falsificado.
 
-Para facilitar a verificação de se e por quem um e-mail é assinado, o complemento (Add-on) suporta o uso de regras de assinatura. Com as regras de assinatura é possível especificar que os e-mails de um determinado remetente devem ser sempre assinados por um domínio específico (também chamado de SDID). Mais sobre regras de assinatura em https://github.com/lieser/dkim_verifier/wiki/Sign-rules.
+Para facilitar a verificação de se e por quem um e-mail é assinado, a extensão suporta o uso de regras de assinatura. Com as regras de assinatura, é possível especificar que e-mails de um determinado remetente devem ser sempre assinados por um domínio específico (também conhecido como SDID). Mais informações sobre regras de assinatura em https://github.com/lieser/dkim_verifier/wiki/Sign-rules.
 
-Uma descrição de todas as opções adicionais disponíveis pode ser encontrada em https://github.com/lieser/dkim_verifier/wiki/Options.
+Uma descrição de todas as opções disponíveis na extensão pode ser encontrada em https://github.com/lieser/dkim_verifier/wiki/Options.

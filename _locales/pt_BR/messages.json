@@ -22,13 +22,16 @@
 		"message": "A mensagem não é um e-mail"
 	},
 	"SUCCESS_TAG": {
-		"message": "DKIM assinado por $1"
+		"message": "DKIM assinado por $1",
+		"description": "Tag shown in Conversation add-on for valid mail. Should be kept short."
 	},
 	"TEMPFAIL_TAG": {
-		"message": "Erro DKIM"
+		"message": "Erro DKIM",
+		"description": "Tag shown in Conversation add-on for temporary failure. Should be kept short."
 	},
 	"PERMFAIL_TAG": {
-		"message": "DKIM inválido"
+		"message": "DKIM inválido",
+		"description": "Tag shown in Conversation add-on for invalid mail. Should be kept short."
 	},
 	// DKIM_INTERNALERROR
 	"DKIM_INTERNALERROR": {
@@ -47,27 +50,34 @@
 		"message": "O endereço 'De' está malformado"
 	},
 	"ERROR_IMPORT_RULES": {
-		"message": "Importação das regras de assinatura falhou."
+		"message": "Falha ao importar regras de assinatura.",
+		"description": "Error title if importing of sign rules failed."
 	},
 	"ERROR_IMPORT_RULES_UNKNOWN_DATA": {
-		"message": "O formato do arquivo importado é inválido."
+		"message": "O formato do arquivo importado é inválido.",
+		"description": "Error message if the user tries to import some unknown data as sign rules."
 	},
 	"ERROR_IMPORT_RULES_UNSUPPORTED_FORMAT": {
-		"message": "O formato das regras de assinatura tem uma versão não suportada."
+		"message": "O formato das regras de assinatura possui uma versão não suportada.",
+		"description": "Error message if the sign rules the user tried to import have an unsupported format."
 	},
 	// DKIM_INTERNALERROR - DNS
 	"DKIM_DNSERROR_UNKNOWN": {
 		"message": "Erro no resolvedor DNS"
 	},
+	"DKIM_DNSERROR_OFFLINE": {
+		"message": "Falha ao fazer consulta DNS porque o Thunderbird está no modo offline.",
+		"description": "Error message if the addon needs to do a DNS query, but Thunderbird is in the offline mode."
+	},
 	"DKIM_DNSERROR_SERVER_ERROR": {
 		"message": "Erro ao conectar ao servidor DNS"
 	},
 	"DKIM_DNSERROR_DNSSEC_BOGUS": {
-		"message": "O resultado DNS é falso"
+		"message": "O resultado do DNS é falso"
 	},
 	// DKIM_SIGERROR
 	"DKIM_SIGERROR": {
-		"message": "Erro de assinatura DKIM"
+		"message": "Erro na assinatura DKIM"
 	},
 	"DKIM_SIGERROR_DEFAULT": {
 		"message": "erro"
@@ -77,7 +87,7 @@
 		"message": "Assinatura malformada"
 	},
 	"DKIM_SIGERROR_UNSUPPORTED": {
-		"message": "A assinatura tem uma versão não suportada"
+		"message": "Assinatura com versão não suportada"
 	},
 	"DKIM_SIGERROR_ILLFORMED_TAGSPEC": {
 		"message": "Assinatura malformada"
@@ -89,10 +99,10 @@
 		"message": "Versão não suportada"
 	},
 	"DKIM_SIGERROR_MISSING_V": {
-		"message": "Falta a versão DKIM"
+		"message": "Versão DKIM ausente"
 	},
 	"DKIM_SIGERROR_ILLFORMED_V": {
-		"message": "A etiqueta de versão malformada"
+		"message": "Etiqueta de versão malformada"
 	},
 	"DKIM_SIGERROR_MISSING_A": {
 		"message": "Algoritmo de assinatura ausente"
@@ -104,40 +114,40 @@
 		"message": "Algoritmo de assinatura inseguro"
 	},
 	"DKIM_SIGERROR_ILLFORMED_A": {
-		"message": "A etiqueta de algoritmo malformada"
+		"message": "Etiqueta de algoritmo malformada"
 	},
 	"DKIM_SIGERROR_MISSING_B": {
 		"message": "Assinatura ausente"
 	},
 	"DKIM_SIGERROR_BADSIG": {
-		"message": "Assinatura errada"
+		"message": "Assinatura incorreta"
 	},
 	"DKIM_SIGERROR_ILLFORMED_B": {
-		"message": "A etiqueta de dados de assinatura malformada"
+		"message": "Etiqueta de dados da assinatura malformada"
 	},
 	"DKIM_SIGERROR_MISSING_BH": {
-		"message": "Falta hash de corpo"
+		"message": "Hash do corpo ausente"
 	},
 	"DKIM_SIGERROR_CORRUPT_BH": {
 		"message": "E-mail foi modificado"
 	},
 	"DKIM_SIGERROR_ILLFORMED_BH": {
-		"message": "A etiqueta do hash de corpo está malformada"
+		"message": "Etiqueta de hash do corpo malformada"
 	},
 	"DKIM_SIGERROR_UNKNOWN_C_H": {
-		"message": "Algoritmo de canonização não suportado para cabeçalho"
+		"message": "Algoritmo de canonicalização de cabeçalho não suportado"
 	},
 	"DKIM_SIGERROR_UNKNOWN_C_B": {
-		"message": "Algoritmo de canonização não suportado para o corpo"
+		"message": "Algoritmo de canonicalização de corpo não suportado"
 	},
 	"DKIM_SIGERROR_ILLFORMED_C": {
-		"message": "A etiqueta de canonização está malformada"
+		"message": "Etiqueta de canonicalização malformada"
 	},
 	"DKIM_SIGERROR_MISSING_D": {
-		"message": "Missing Signing Domain Identifier (SDID)"
+		"message": "Identificador de Domínio de Assinatura (SDID) ausente"
 	},
 	"DKIM_SIGERROR_ILLFORMED_D": {
-		"message": "A etiqueta SDID está malformada"
+		"message": "Etiqueta de SDID malformada"
 	},
 	"DKIM_SIGERROR_MISSING_H": {
 		"message": "Campos de cabeçalho assinados ausentes"
@@ -146,46 +156,46 @@
 		"message": "Cabeçalho 'De' não assinado"
 	},
 	"DKIM_SIGERROR_ILLFORMED_H": {
-		"message": "A etiqueta de campos de cabeçalho assinados malformada"
+		"message": "Etiqueta de campos de cabeçalho assinados malformada"
 	},
 	"DKIM_SIGERROR_SUBDOMAIN_I": {
 		"message": "AUID não está em um subdomínio de SDID"
 	},
 	"DKIM_SIGERROR_DOMAIN_I": {
-		"message": "AUID deve estar no mesmo domínio que SDID (s-flag definido no registro de chave)"
+		"message": "AUID deve estar no mesmo domínio que o SDID (s-flag configurada no registro da chave)"
 	},
 	"DKIM_SIGERROR_ILLFORMED_I": {
-		"message": "A etiqueta AUID malformada"
+		"message": "Etiqueta de AUID malformada"
 	},
 	"DKIM_SIGERROR_TOOLARGE_L": {
 		"message": "O e-mail é mais curto do que o especificado na assinatura DKIM"
 	},
 	"DKIM_SIGERROR_ILLFORMED_L": {
-		"message": "A etiqueta de comprimento de corpo malformada"
+		"message": "Etiqueta de comprimento do corpo malformada"
 	},
 	"DKIM_SIGERROR_UNKNOWN_Q": {
-		"message": "Métodos de consulta (Query) não suportados para recuperação de chave pública"
+		"message": "Métodos de consulta não suportados para recuperação de chave pública"
 	},
 	"DKIM_SIGERROR_ILLFORMED_Q": {
-		"message": " A etiqueta do método de consulta (Query) está malformada"
+		"message": "Etiqueta de método de consulta malformada"
 	},
 	"DKIM_SIGERROR_MISSING_S": {
-		"message": "A etiqueta do seletor ausente"
+		"message": "Etiqueta de seletor ausente"
 	},
 	"DKIM_SIGERROR_ILLFORMED_S": {
-		"message": "A etiqueta do seletor está malformada"
+		"message": "Etiqueta de seletor malformada"
 	},
 	"DKIM_SIGERROR_ILLFORMED_T": {
-		"message": "A etiqueta de carimbo de data/hora da assinatura está malformada"
+		"message": "Etiqueta de carimbo de tempo da assinatura malformada"
 	},
 	"DKIM_SIGERROR_TIMESTAMPS": {
-		"message": "A expiração da assinatura é anterior ao carimbo de data/hora da assinatura"
+		"message": "A expiração da assinatura é anterior ao carimbo de tempo da assinatura"
 	},
 	"DKIM_SIGERROR_ILLFORMED_X": {
-		"message": "A etiqueta de expiração da assinatura está malformada"
+		"message": "Etiqueta de expiração da assinatura malformada"
 	},
 	"DKIM_SIGERROR_ILLFORMED_Z": {
-		"message": "A etiqueta dos campos do cabeçalho copiados está malformada"
+		"message": "Etiqueta de campos de cabeçalho copiados malformada"
 	},
 	// DKIM_SIGERROR - key query
 	"DKIM_SIGERROR_NOKEY": {
@@ -193,91 +203,100 @@
 	},
 	// DKIM_SIGERROR - Key record
 	"DKIM_SIGERROR_KEY_ILLFORMED": {
-		"message": "A chave DKIM está malformado"
+		"message": "Chave DKIM malformada"
 	},
 	"DKIM_SIGERROR_KEY_INVALID": {
-		"message": "A chave DKIM é inválida"
+		"message": "Chave DKIM inválida"
 	},
 	"DKIM_SIGERROR_KEY_ILLFORMED_TAGSPEC": {
-		"message": "A chave DKIM está malformada"
+		"message": "Chave DKIM malformada"
 	},
 	"DKIM_SIGERROR_KEY_DUPLICATE_TAG": {
-		"message": "A chave DKIM está malformada (etiqueta duplicada)"
+		"message": "Chave DKIM malformada (etiqueta duplicada)"
 	},
 	"DKIM_SIGERROR_KEY_INVALID_V": {
 		"message": "Versão inválida do registro da chave DKIM"
 	},
 	"DKIM_SIGERROR_KEY_ILLFORMED_V": {
-		"message": "A etiqueta da versão da chave DKIM está malformada"
+		"message": "Etiqueta de versão da chave DKIM malformada"
 	},
 	"DKIM_SIGERROR_KEY_HASHNOTINCLUDED": {
-		"message": "O algoritmo de hash está errado no registro da chave DKIM"
+		"message": "Algoritmo de hash incorreto no registro da chave DKIM"
 	},
 	"DKIM_SIGERROR_KEY_ILLFORMED_H": {
-		"message": "A etiqueta de algoritmos de hash na chave DKIM está malformada"
+		"message": "Etiqueta de algoritmos de hash na chave DKIM malformada"
 	},
 	"DKIM_SIGERROR_KEY_UNKNOWN_K": {
 		"message": "Tipo de chave DKIM não suportado"
 	},
+	"DKIM_SIGERROR_KEY_MISMATCHED_K": {
+		"message": "Algoritmo de assinatura não corresponde ao tipo de chave DKIM",
+		"description": "Error message if the signature algorithm in the DKIM Signature header (a-tag) does not match the key type of the DKIM key (k-tag)."
+	},
 	"DKIM_SIGERROR_KEY_ILLFORMED_K": {
-		"message": "A etiqueta de tipo de chave DKIM está malformada"
+		"message": "Etiqueta de tipo de chave DKIM malformada"
 	},
 	"DKIM_SIGERROR_KEY_ILLFORMED_N": {
-		"message": "A etiqueta de notas na chave DKIM está malformada"
+		"message": "Etiqueta de notas na chave DKIM malformada"
 	},
 	"DKIM_SIGERROR_KEY_MISSING_P": {
-		"message": "A chave DKIM não contém nenhuma chave pública"
+		"message": "Chave DKIM não contém chave pública"
 	},
 	"DKIM_SIGERROR_KEY_REVOKED": {
-		"message": "A chave DKIM foi revogada"
+		"message": "Chave DKIM revogada"
 	},
 	"DKIM_SIGERROR_KEY_ILLFORMED_P": {
-		"message": "A etiqueta de dados da chave pública na chave DKIM está malformada"
+		"message": "Etiqueta de dados da chave pública na chave DKIM malformada"
 	},
 	"DKIM_SIGERROR_KEY_NOTEMAILKEY": {
-		"message": "A chave DKIM não é uma chave de e-mail"
+		"message": "Chave DKIM não é uma chave de e-mail"
 	},
 	"DKIM_SIGERROR_KEY_ILLFORMED_S": {
-		"message": "A etiqueta de tipo de serviço na chave DKIM está malformada"
+		"message": "Etiqueta de tipo de serviço na chave DKIM malformada"
 	},
 	"DKIM_SIGERROR_KEY_TESTMODE": {
-		"message": "O domínio de assinatura está testando apenas DKIM"
+		"message": "O domínio assinante está apenas testando DKIM"
 	},
 	"DKIM_SIGERROR_KEY_ILLFORMED_T": {
-		"message": "A etiqueta de sinalizadores na chave DKIM está malformada"
+		"message": "Etiqueta de sinalizadores na chave DKIM malformada"
 	},
 	// DKIM_SIGERROR - key decode
 	"DKIM_SIGERROR_KEYDECODE": {
-		"message": "A chave pública na chave DKIM não pôde ser decodificada"
+		"message": "Chave pública na chave DKIM não pôde ser decodificada"
 	},
 	// DKIM_SIGERROR - POLICY
 	"DKIM_POLICYERROR_MISSING_SIG": {
-		"message": "Deve ser assinado por $1"
+		"message": "Sem assinatura, deveria ser assinado por $1",
+		"description": "Error if a message has no signature, but the sign rules state that it should be signed"
 	},
 	"DKIM_POLICYERROR_KEYMISMATCH": {
-		"message": "A chave DKIM armazenada difere da atual"
+		"message": "Chave DKIM armazenada difere da atual"
 	},
 	"DKIM_POLICYERROR_KEY_INSECURE": {
-		"message": "A chave DKIM não é assinada por DNSSEC"
+		"message": "Chave DKIM não é assinada por DNSSEC"
 	},
 	"DKIM_POLICYERROR_WRONG_SDID": {
-		"message": "Signatário errado (deveria ser $1)"
+		"message": "Signatário incorreto (deveria ser $1)"
+	},
+	"DKIM_POLICYERROR_UNSIGNED_HEADER_ADDED": {
+		"message": "Cabeçalho não assinado '$1' foi adicionado",
+		"description": "Error if an important header was probably maliciously added later"
 	},
 	// DKIM_SIGWARNING
 	"DKIM_SIGWARNING_SMALL_L": {
 		"message": "Nem todo o e-mail está assinado"
 	},
 	"DKIM_SIGWARNING_EXPIRED": {
-		"message": "A assinatura expirou"
+		"message": "Assinatura expirada"
 	},
 	"DKIM_SIGWARNING_FUTURE": {
-		"message": "A assinatura está no futuro"
+		"message": "Assinatura está no futuro"
 	},
 	"DKIM_SIGWARNING_KEYSMALL": {
-		"message": "A assinatura é insegura (tamanho da chave muito pequeno)"
+		"message": "Assinatura insegura (tamanho da chave muito pequeno)"
 	},
 	"DKIM_SIGWARNING_KEY_IS_WEAK": {
-		"message": "A assinado com uma chave fraca"
+		"message": "Assinado com uma chave fraca"
 	},
 	"DKIM_SIGWARNING_FROM_NOT_IN_SDID": {
 		"message": "'De' não está no domínio de assinatura"
@@ -285,15 +304,19 @@
 	"DKIM_SIGWARNING_FROM_NOT_IN_AUID": {
 		"message": "'De' não corresponde ao identificador do usuário"
 	},
+	"DKIM_SIGWARNING_UNSIGNED_HEADER": {
+		"message": "Cabeçalho '$1' não assinado",
+		"description": "Warning if an important header is not signed"
+	},
 	// JSDNS
 	"TOO_MANY_HOPS": {
 		"message": "Muitos saltos."
 	},
 	"CONNECTION_REFUSED": {
-		"message": "O servidor DNS $1 recusou uma conexão TCP."
+		"message": "Servidor DNS $1 recusou uma conexão TCP."
 	},
 	"TIMED_OUT": {
-		"message": "O servidor DNS $1 atingiu o tempo limite em uma conexão TCP."
+		"message": "Servidor DNS $1 atingiu o tempo limite em uma conexão TCP."
 	},
 	"SERVER_ERROR": {
 		"message": "Erro ao conectar ao servidor DNS $1."
@@ -323,7 +346,7 @@
 		"message": "Armazenar chaves DKIM"
 	},
 	"options_key.storing.value.2": {
-		"message": "Armazene e compare as chaves DKIM com a chave atual"
+		"message": "Armazenar e comparar chaves DKIM com a chave atual"
 	},
 	"options_key.viewKeys": {
 		"message": "Chaves DKIM…"
@@ -345,13 +368,14 @@
 		"message": "libunbound"
 	},
 	"options_dns.getNameserversFromOS": {
-		"message": "Obter servidores DNS da configuração do Sistema Operacional"
+		"message": "Obter servidores DNS da configuração do sistema operacional"
 	},
 	"options_dns.nameserver": {
 		"message": "Servidores DNS (Sintaxe (EBNF): host[\":\"porta]{\";\"host[\":\"porta]} ):"
 	},
 	"options_dns.timeout_connect": {
-		"message": "Tempo limite de conexão do DNS (em segundos):"
+		"message": "Tempo limite de conexão DNS (em segundos):",
+		"description": "Timeout for the connection to the DNS servers (both establishing the connection and sending/receiving data)"
 	},
 	"options_dns.proxy.enable": {
 		"message": "Usar um proxy para se conectar aos servidores DNS"
@@ -366,7 +390,7 @@
 		"message": "Porta:"
 	},
 	"options_dns.libunbound.nameserver": {
-		"message": "Servidores DNS (Sintaxe (EBNF): IP {\";\"IP}):"
+		"message": "Servidores DNS (Sintaxe (EBNF): IP{\";\"IP} ):"
 	},
 	"options_dns.libunbound.usageWarning": {
 		"message": "O resolvedor libunbound requer uma biblioteca instalada externamente"
@@ -382,16 +406,16 @@
 		"message": "Política"
 	},
 	"options_policy.signRules.enable": {
-		"message": "Verifique se o e-mail deve ser assinado"
+		"message": "Verificar se o e-mail deve ser assinado"
 	},
 	"options_policy.signRules.checkDefaultRules": {
 		"message": "Usar regras padrão"
 	},
 	"options_policy.signRules.autoAddRule.enable": {
-		"message": "Adicionar regras automaticamente com base em e-mails assinados DKIM visualizados"
+		"message": "Adicionar automaticamente regras com base nos e-mails visualizados assinados com DKIM"
 	},
 	"options_policy.signRules.autoAddRule.onlyIfFromAddressInSDID": {
-		"message": " Somente se o endereço 'De' estiver no SDID"
+		"message": "Somente se o endereço 'De' estiver no SDID"
 	},
 	"options_policy.signRules.autoAddRule.for.value.0": {
 		"message": "para endereço 'De'"
@@ -406,16 +430,32 @@
 		"message": "Permitir também subdomínios dos SDIDs"
 	},
 	"options_policy.signRules.error.wrong_sdid.asWarning": {
-		"message": "Tratar o SDID errado como um aviso em vez de um erro"
+		"message": "Tratar SDID incorreto como um aviso em vez de um erro"
 	},
 	"options_viewSigners": {
-		"message": "Regras dos signatários…"
+		"message": "Regras de signatários…"
 	},
 	"options_viewSignerDefaults": {
-		"message": "Regras de signatários padrão…"
+		"message": "Regras padrão de signatários…"
 	},
 	"options_policy.DMARC.shouldBeSigned.enable": {
 		"message": "Usar DMARC para determinar heuristicamente se um e-mail deve ser assinado"
+	},
+	"options_policy.dkim.unsignedHeadersWarning.mode": {
+		"message": "Avisar sobre cabeçalhos não assinados que são recomendados a serem assinados:",
+		"description": "Description for the setting of the unsigned headers warning mode."
+	},
+	"options_policy.dkim.unsignedHeadersWarning.mode.relaxed": {
+		"message": "modo relaxado",
+		"description": "A relaxed mode that will try to avoid showing warnings."
+	},
+	"options_policy.dkim.unsignedHeadersWarning.mode.recommended": {
+		"message": "modo recomendado",
+		"description": "A mode trying to enforce best practice without showing to many warnings."
+	},
+	"options_policy.dkim.unsignedHeadersWarning.mode.strict": {
+		"message": "modo estrito",
+		"description": "A strict mode that will potentially show a lot of warnings."
 	},
 	// -------------------- Display options --------------------
 	"options_display": {
@@ -425,22 +465,22 @@
 		"message": "Mostrar cabeçalho DKIM:"
 	},
 	"options_showDKIMFromTooltip": {
-		"message": "Mostrar dica de ferramenta DKIM para cabeçalho 'De':"
+		"message": "Mostrar dica de ferramenta DKIM para o cabeçalho 'De':"
 	},
 	"options_showDKIM.value.0": {
-		"message": "Nunca"
+		"message": "nunca"
 	},
 	"options_showDKIM.value.10": {
 		"message": "quando um e-mail com uma assinatura DKIM válida é visualizado"
 	},
 	"options_showDKIM.value.30": {
-		"message": "quando um e-mail com assinatura DKIM é visualizado"
+		"message": "quando um e-mail com uma assinatura DKIM é visualizado"
 	},
 	"options_showDKIM.value.40": {
-		"message": "quando um e-mail é visto"
+		"message": "quando um e-mail é visualizado"
 	},
 	"options_showDKIM.value.50": {
-		"message": "quando uma mensagem é vista"
+		"message": "quando uma mensagem é visualizada"
 	},
 	"options_colorFrom": {
 		"message": "Ativar destaque do cabeçalho 'De'"
@@ -470,32 +510,32 @@
 		"message": "E-mail não assinado"
 	},
 	"options_display.favicon.show": {
-		"message": "Mostrar o favicon de domínios de assinatura conhecidos antes do endereço 'De'"
+		"message": "Mostrar o favicon de domínios assinantes conhecidos antes do endereço 'De'"
 	},
 	// -------------------- Advanced options --------------------
 	"options_advanced": {
 		"message": "Avançado"
 	},
 	"options_debug": {
-		"message": "Ativar depuração (exibe erros e informações de depuração no Console de erro)"
+		"message": "Ativar depuração (Exibe erros e informações de depuração no Console de Erros)"
 	},
 	"options_error.detailedReasons": {
-		"message": "Mostrar motivos detalhados do erro"
+		"message": "Mostrar motivos detalhados dos erros"
 	},
 	"options_error.key_testmode.ignore": {
 		"message": "Ainda verificar a assinatura, se um domínio estiver apenas testando DKIM"
 	},
 	"options_error.illformed_i.treatAs": {
-		"message": "Tratar a etiqueta AUID malformada como:"
+		"message": "Tratar etiqueta AUID malformada como:"
 	},
 	"options_error.illformed_s.treatAs": {
-		"message": "Tratar a etiqueta do seletor malformada como:"
+		"message": "Tratar etiqueta de seletor malformada como:"
 	},
 	"options_error.policy.key_insecure.treatAs": {
 		"message": "Tratar chave DKIM não protegida por DNSSEC como:"
 	},
 	"options_error.algorithm.sign.rsa-sha1.treatAs": {
-		"message": "Tratar algoritmo de sinal RSA-SHA1 como:"
+		"message": "Tratar algoritmo de assinatura RSA-SHA1 como:"
 	},
 	"options_error.algorithm.rsa.weakKeyLength.treatAs": {
 		"message": "Tratar chaves RSA fracas (<2048 bits) como:"
@@ -513,23 +553,24 @@
 		"message": "Indicar validação DNSSEC bem-sucedida com um cadeado após o SDID"
 	},
 	"options_arh.read": {
-		"message": "Ler cabeçalho de resultados de autenticação"
+		"message": "Ler o cabeçalho de resultados de autenticação"
 	},
 	"options_arh.replaceAddonResult": {
-		"message": "Ler o cabeçalho de Resultados de Autenticação substitui a verificação de add-ons"
+		"message": "Ler o cabeçalho de resultados de autenticação substitui a verificação da extensão"
 	},
 	"options_arh.relaxedParsing": {
-		"message": "Tente ler o cabeçalho de Resultados de Autenticação não compatível com RFC"
+		"message": "Tentar ler o cabeçalho de resultados de autenticação não compatível com a RFC"
 	},
 	// -------------------- Account options --------------------
 	"options_account": {
-		"message": "Conta"
+		"message": "Conta",
+		"description": "Title for account specific options"
 	},
 	"options_acc.dkim.enable": {
 		"message": "Verificar assinaturas DKIM:"
 	},
 	"options_acc.arh.read": {
-		"message": "Ler cabeçalho de Resultados de Autenticação:"
+		"message": "Ler o cabeçalho de resultados de autenticação:"
 	},
 	"options_acc.arh.allowedAuthserv": {
 		"message": "Servidores de autenticação confiáveis:"
@@ -548,35 +589,42 @@
 		"message": "Sobre"
 	},
 	"about_name": {
-		"message": "Verificador DKIM"
+		"message": "Verificador DKIM",
+		"description": "Name of the add-on"
 	},
 	"about_summary": {
-		"message": "Verifica as assinaturas DKIM de e-mails."
+		"message": "Verifica as assinaturas DKIM de e-mails.",
+		"description": "Short description of the add-on"
 	},
 	"about_homepage": {
 		"message": "Página inicial"
 	},
 	"about_documentation": {
-		"message": "Documentação"
+		"message": "Documentação",
+		"description": "Link text for GitHub documentation page"
 	},
 	"about_contributors": {
-		"message": "Contribuidores do GitHub"
+		"message": "Colaboradores no GitHub",
+		"description": "Link text for GitHub contributors page"
 	},
 	"about_translators": {
-		"message": "Tradutores:"
+		"message": "Tradutores:",
+		"description": "Heading for list of translators"
 	},
 	"about_dependencies": {
-		"message": "Dependências incluídas:"
+		"message": "Dependências incluídas:",
+		"description": "Heading for list of included dependencies"
 	},
 	"about_by": {
-		"message": "por"
+		"message": "por",
+		"description": "<dependency name> by <author>"
 	},
 	// ==================== Actions ====================
 	"dkim_verifier.reverifyDKIMSignature": {
-		"message": "Reverificar Assinatura DKIM"
+		"message": "Reverificar assinatura DKIM"
 	},
 	"dkim_verifier.policyAddUserException": {
-		"message": "Adicionar à exceção deve ser assinada"
+		"message": "Adicionar exceção de deve ser assinado"
 	},
 	"dkim_verifier.markKeyAsSecure": {
 		"message": "Marcar chave DKIM como segura"
@@ -599,10 +647,10 @@
 		"message": "Chave DKIM"
 	},
 	"treeviewKeys.treecol.insertedAt": {
-		"message": "Inserido"
+		"message": "Inserida"
 	},
 	"treeviewKeys.treecol.lastUsedAt": {
-		"message": "Usado pela última vez"
+		"message": "Último uso"
 	},
 	"treeviewKeys.treecol.secure": {
 		"message": "DNSSEC"
@@ -611,16 +659,16 @@
 		"message": "Excluir chaves selecionadas"
 	},
 	"treeviewSigners.user.title": {
-		"message": "Regras dos signatários"
+		"message": "Regras de signatários"
 	},
 	"treeviewSigners.default.title": {
-		"message": "Regras de signatários padrão"
+		"message": "Regras padrão de signatários"
 	},
 	"treeviewSigners.treecol.domain": {
 		"message": "Domínio"
 	},
 	"treeviewSigners.treecol.listId": {
-		"message": "id da lista"
+		"message": "List-ID"
 	},
 	"treeviewSigners.treecol.addr": {
 		"message": "De"
@@ -635,7 +683,7 @@
 		"message": "Prioridade"
 	},
 	"treeviewSigners.treecol.enabled": {
-		"message": "Ativado"
+		"message": "Habilitada"
 	},
 	"treeviewSigners.addSignersRule": {
 		"message": "Adicionar regra…"
@@ -644,23 +692,28 @@
 		"message": "Excluir regras selecionadas"
 	},
 	"treeviewSigners.exportRules": {
-		"message": "Exportar regras…"
+		"message": "Exportar regras…",
+		"description": "Button for exporting sign rules"
 	},
 	"treeviewSigners.importRules": {
-		"message": "Importar regras…"
+		"message": "Importar regras…",
+		"description": "Button for importing sign rules"
 	},
 	"importRules.title": {
 		"message": "Importar regras",
 		"description": "Title for import dialog"
 	},
 	"importRules.replaceQuestion": {
-		"message": "As regras importadas devem ser adicionadas às regras existentes ou substituir as regras existentes?"
+		"message": "As regras importadas devem ser adicionadas às regras existentes ou substituir as regras existentes?",
+		"description": "Question asked in import dialog"
 	},
 	"importRules.addRules": {
-		"message": "Adicionar regras"
+		"message": "Adicionar regras",
+		"description": "Button in import dialog for adding rules to existing rules"
 	},
 	"importRules.replaceRules": {
-		"message": "Substituir regras"
+		"message": "Substituir regras",
+		"description": "Button in import dialog for replacing existing rules"
 	},
 	"addSignersRule.title": {
 		"message": "Adicionar regra de signatários"
@@ -691,36 +744,36 @@
 		"message": "Ajuda…"
 	},
 	"signersRuleHelp.title": {
-		"message": "Ajuda de regras de signatários"
+		"message": "Ajuda das regras de signatários"
 	},
 	"domain.description": {
-		"message": "Será comparada com o domínio base do endereço 'De'. Por exemplo, o domínio base para 'email.example.co.uk' é 'example.co.uk'."
+		"message": "Será comparado com o domínio base do endereço 'De'. Por exemplo, o domínio base de 'email.example.com.br' é 'example.com.br'."
 	},
 	"listId.description": {
-		"message": "Será comparado com o id da lista, se o e-mail foi recebido através de uma lista de e-mail. Observe que apenas a parte entre '<' e '>' do cabeçalho List-Id é o list-id real. Apenas o domínio ou o id da lista são correspondidos ao mesmo tempo."
+		"message": "Será comparado com o list-id, se o e-mail foi recebido através de uma lista de e-mails. Note que apenas a parte entre '<' e '>' do cabeçalho List-ID é o list-id real. Somente o domínio ou o list-id são comparados ao mesmo tempo."
 	},
 	"addr.description": {
-		"message": "Será comparado com o endereço 'De'. Use um '*' para corresponder a zero ou mais caracteres."
+		"message": "Será comparado com o endereço 'De'. Use '*' para corresponder a zero ou mais caracteres."
 	},
 	"sdid.description": {
-		"message": "O domínio pelo qual os e-mails devem ser assinados. Se for deixado em branco, todos os SDID serão permitidos. Mais de um domínio pode ser especificado, separando-os com um espaço."
+		"message": "O domínio pelo qual os e-mails devem ser assinados. Se isso for deixado em branco, todo SDID é permitido. Mais de um domínio pode ser especificado separando-os com um espaço."
 	},
 	"ruletype.description": {
-		"message": "O tipo de regra."
+		"message": "O tipo da regra."
 	},
 	"ruletype.1.description": {
-		"message": "O e-mail deve ser assinado pelo SDID especificado."
+		"message": "E-mail deve ser assinado pelo SDID especificado."
 	},
 	"ruletype.2.description": {
-		"message": "O e-mail não precisa ser assinado. Se estiver assinado, deve ser pelo SDID especificado."
+		"message": "E-mail não precisa ser assinado. Se for assinado, deve ser pelo SDID especificado."
 	},
 	"ruletype.3.description": {
-		"message": "O e-mail não precisa ser assinado. Se estiver assinado, deve ser pelo SDID especificado. Se o e-mail tiver uma assinatura inválida, será tratado como se não tivesse assinatura."
+		"message": "E-mail não precisa ser assinado. Se for assinado, deve ser pelo SDID especificado. Se o e-mail tiver uma assinatura inválida, será tratado como se não tivesse assinatura."
 	},
 	"priority.description": {
-		"message": "A prioridade da regra. Se mais de uma regra corresponder, aquela com a prioridade mais alta será usada."
+		"message": "A prioridade da regra. Se mais de uma regra corresponder, a que tiver a maior prioridade será usada."
 	},
 	"enabled.description": {
-		"message": "1 se a regra estiver ativada, 0 se estiver desativada."
+		"message": "1 se a regra estiver habilitada, 0 se estiver desabilitada."
 	}
 }
