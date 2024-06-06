@@ -153,7 +153,7 @@
 		"message": "Campos de cabeçalho assinados ausentes"
 	},
 	"DKIM_SIGERROR_MISSING_FROM": {
-		"message": "Cabeçalho 'De' não está assinado"
+		"message": "Cabeçalho 'De' não assinado"
 	},
 	"DKIM_SIGERROR_ILLFORMED_H": {
 		"message": "Etiqueta de campos de cabeçalho assinados malformada"
