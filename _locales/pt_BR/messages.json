@@ -77,7 +77,7 @@
 	},
 	// DKIM_SIGERROR
 	"DKIM_SIGERROR": {
-		"message": "Erro na Assinatura DKIM"
+		"message": "Erro na assinatura DKIM"
 	},
 	"DKIM_SIGERROR_DEFAULT": {
 		"message": "erro"
