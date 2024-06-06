@@ -1,3 +1,3 @@
-O suporte é dado em https://github.com/lieser/dkim_verifier/issues ou por e-mail lieser+dkim@posteo.net (em inglês ou alemão).
+O suporte é fornecido em https://github.com/lieser/dkim_verifier/issues ou por e-mail para lieser+dkim@posteo.net (em inglês ou alemão).
 
-A maneira preferida de denunciar bugs é criando um problema (Issue) em https://github.com/lieser/dkim_verifier/issues.
+A maneira preferida de relatar bugs é criando uma issue em https://github.com/lieser/dkim_verifier/issues.
