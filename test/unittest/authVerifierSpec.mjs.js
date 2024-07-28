@@ -133,6 +133,7 @@ describe("AuthVerifier [unittest]", function () {
 						"timestamp": 1528637909,
 						"expiration": null,
 						"algorithmSignature": "rsa",
+						"keyLength": 1024,
 						"algorithmHash": "sha256",
 						"signedHeaders": [
 							"from",
@@ -217,6 +218,7 @@ describe("AuthVerifier [unittest]", function () {
 						"timestamp": null,
 						"expiration": null,
 						"algorithmSignature": "rsa",
+						"keyLength": 1024,
 						"algorithmHash": "sha256",
 						"signedHeaders": [
 							"received",
