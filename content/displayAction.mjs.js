@@ -115,17 +115,17 @@ class DkimResult extends HTMLElement {
 			throw new Error("A DkimResult musst have a result bevor it can be connected.");
 		}
 
-		DkimResult.#addTextValue(this.#content, "SDID", this.result?.sdid ?? "Unknown");
 		DkimResult.#addTextValue(this.#content, "Result", this.result?.result_str);
 		DkimResult.#addOptionalWarnings(this.#content, "Warnings", this.result?.warnings_str);
+		DkimResult.#addTextValue(this.#content, "SDID", this.result?.sdid ?? "Unknown");
 		DkimResult.#addOptionalTextValue(this.#content, "AUID", this.result?.auid);
+		DkimResult.#addOptionalTimeValue(this.#content, "Sign date", this.result?.timestamp);
+		DkimResult.#addOptionalTimeValue(this.#content, "Expiration date", this.result?.expiration);
 		let algorithm;
 		if (this.result?.algorithmSignature && this.result?.algorithmHash) {
 			algorithm = `${this.result?.algorithmSignature}-${this.result?.algorithmHash}`;
 		}
 		DkimResult.#addOptionalTextValue(this.#content, "Algorithm", algorithm);
-		DkimResult.#addOptionalTimeValue(this.#content, "Sign date", this.result?.timestamp);
-		DkimResult.#addOptionalTimeValue(this.#content, "Expiration date", this.result?.expiration);
 		DkimResult.#addOptionalTextValue(this.#content, "Signed headers", this.result?.signedHeaders?.join(", "));
 	}
 
