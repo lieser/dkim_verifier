@@ -89,6 +89,7 @@ import RfcParser from "../rfcParser.mjs.js";
  * @property {number|null} [expiration]
  * @property {string} [algorithmSignature]
  * @property {string} [algorithmHash]
+ * @property {number|undefined} [keyLength]
  * @property {string[]} [signedHeaders]
  */
 
@@ -928,6 +929,11 @@ class DkimSignature {
 		 * @readonly
 		 */
 		this._header = header;
+		/**
+		 * @private
+		 * @type {number|undefined}
+		 */
+		this._keyLength = undefined;
 	}
 
 	/**
@@ -1382,6 +1388,7 @@ class DkimSignature {
 		}
 
 		if (this._header.a_sig === "rsa") {
+			this._keyLength = keyLength;
 			// Check strength of RSA keys.
 			if (keyLength < 1024) {
 				// error if key is too short
@@ -1436,6 +1443,7 @@ class DkimSignature {
 			...this._header.toBaseResult("SUCCESS"),
 			warnings,
 			keySecure: keyQueryResult.secure,
+			keyLength: this._keyLength,
 		};
 		return verification_result;
 	}

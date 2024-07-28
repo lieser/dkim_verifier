@@ -121,12 +121,50 @@ class DkimResult extends HTMLElement {
 		DkimResult.#addOptionalTextValue(this.#content, "AUID", this.result?.auid);
 		DkimResult.#addOptionalTimeValue(this.#content, "Sign date", this.result?.timestamp);
 		DkimResult.#addOptionalTimeValue(this.#content, "Expiration date", this.result?.expiration);
-		let algorithm;
-		if (this.result?.algorithmSignature && this.result?.algorithmHash) {
-			algorithm = `${this.result?.algorithmSignature}-${this.result?.algorithmHash}`;
-		}
-		DkimResult.#addOptionalTextValue(this.#content, "Algorithm", algorithm);
+		DkimResult.#addOptionalTextValue(this.#content, "Algorithm", this.#algorithm());
 		DkimResult.#addOptionalTextValue(this.#content, "Signed headers", this.result?.signedHeaders?.join(", "));
+	}
+
+	/**
+	 * Get a string description of the used algorithm.
+	 *
+	 * @returns {string|undefined}
+	 */
+	#algorithm() {
+		if (!this.result?.algorithmSignature || !this.result?.algorithmHash) {
+			return undefined;
+		}
+		const signature = (() => {
+			switch (this.result?.algorithmSignature) {
+				case "rsa": {
+					const name = "RSA";
+					if (this.result.keyLength) {
+						return `${name} (${this.result.keyLength} bits)`;
+					}
+					return name;
+				}
+				case "ed25519": {
+					return "Ed25519";
+				}
+				default: {
+					return this.result?.algorithmSignature;
+				}
+			}
+		})();
+		const hash = (() => {
+			switch (this.result?.algorithmHash) {
+				case "sha1": {
+					return "SHA-1";
+				}
+				case "sha256": {
+					return "SHA-256";
+				}
+				default: {
+					return this.result?.algorithmHash;
+				}
+			}
+		})();
+		return `${signature} / ${hash}`;
 	}
 
 	/**
