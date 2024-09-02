@@ -11,6 +11,10 @@ All notable changes to this project will be documented in this file.
 - Improved table views for sign rules and DKIM keys (#248, #305).
   E.g. it is now possible to delete multiple entries at once.
 
+### Other
+
+- Updated default rules and favicons (#440, #444, #447).
+
 ## 5.4.0 (2023-11-16)
 
 ### Enhancements
