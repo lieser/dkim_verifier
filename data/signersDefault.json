@@ -2462,6 +2462,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "olb.de",
+			"addr": "*",
+			"sdid": "olb.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "omniva.ee",
 			"addr": "*",
 			"sdid": "omniva.ee",
