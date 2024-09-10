@@ -1,9 +1,9 @@
-<a href="https://fr.wikipedia.org/wiki/DomainKeys_Identified_Mail">DomainKeys Identified Mail (DKIM)</a> est une norme d’authentification fiable du nom de domaine de l’expéditeur d’un courrier électronique. Ce module vérifie les signatures DKIM et affiche le résultat dans l’entête du message. Ainsi il est possible de visualiser la vérification du domaine et identifier les responsabilités d’un message spécifique. L’affichage du résultat peut être modifié dans les options.
+<a href="https://en.wikipedia.org/wiki/DomainKeys_Identified_Mail">DomainKeys Identified Mail (DKIM)</a> est une méthode qui permet aux domaines de signer des e-mails. Cette extension vérifie les signatures DKIM et affiche le résultat dans l'en-tête de l'e-mail. De cette façon, il est possible de voir quel domaine revendique la responsabilité d'un e-mail spécifique. La manière dont le résultat est affiché peut être modifiée dans les options.
 
-Il est important de noter qu’un courrier peut être signé par un domaine arbitraire. Une signature DKIM valide seule n’est pas un indicateur d’un courriel authentique. Il est nécessaire de toujours vérifier le signataire pour déterminer si ce courriel est sûr!
+Il est important de noter qu'un e-mail peut être signé par un domaine quelconque. Une signature DKIM valide à elle seule n'est donc pas un indicateur de fiabilité d'un e-mail. Vérifiez toujours qui est le signataire pour déterminer si un e-mail est fiable !
 
-Dans certains cas, l’absence de signature DKIM peut aider à identifier une arnaque lorsque vous savez qu’un domaine donné signe toujours les courriels avec DKIM. C’est aussi un indicateur fort d’un courriel corrompu
+Dans certains cas, l'absence de signature DKIM peut être utile pour identifier les e-mails frauduleux. Si l'on sait qu'un certain domaine signe tous ses e-mails avec DKIM, l'absence de signature DKIM est un indicateur fort d'un e-mail falsifié.
 
-Pour faciliter la vérification du signataire d’un courriel, ce module supporte des règles de signature. Ces règles permettent d’indiquer que les courriels de certains expéditeurs ont toujours une signature DKIM SDID (veuillez vous référer au SDID). En savoir plus à propos des règles de signatures : https://github.com/lieser/dkim_verifier/wiki/Sign-rules.
+Pour faciliter la vérification de la signature d'un e-mail, le module complémentaire prend en charge l'utilisation de règles de signature. Grâce aux règles de signature, il est possible de spécifier que les e-mails d'un certain expéditeur doivent toujours être signés par un domaine spécifique (également appelé SDID). Pour en savoir plus sur les règles de signature, consultez https://github.com/lieser/dkim_verifier/wiki/Sign-rules.
 
-Une description de toutes les options disponibles peut être trouvée ici : https://github.com/lieser/dkim_verifier/wiki/Options.
+Une description de toutes les options de cette extension est disponible sur https://github.com/lieser/dkim_verifier/wiki/Options.

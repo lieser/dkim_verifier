@@ -1,4 +1,4 @@
-Ce module envoie des requêtes vers un serveur DNS (par défaut Google Public DNS (8.8.8.8) ou celui configuré sur l’OS) pour l’enregistrement spécifié dans la signature, qui contient la clé publique de la signature.
-Ceci arrive chaque fois qu’un courriel avec une signature DKIM est visualisé.
+Cette extension interroge un serveur DNS (par défaut le DNS public de Google (8.8.8.8) ou celui configuré dans le système d'exploitation) pour un enregistrement TXT spécifié dans la signature, qui contient la clé publique de la signature.
+Cela se produit à chaque fois qu'un e-mail avec une signature DKIM est consulté.
 
-si l’utilisation de DMARC est activée, des requêtes DNS additionnelles seront faites, même si le courriel visualisé n’est pas signé avec DKIM.
+Si l'utilisation de DMARC est activée, des requêtes DNS supplémentaires peuvent être effectuées, même si des e-mails non signés DKIM sont consultés.
