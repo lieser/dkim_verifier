@@ -1247,9 +1247,12 @@ var Verifier = (function() {
 				log.debug("Header hash input:\n" + headerHashInput);
 				// verify Signature
 				keyInfo = {};
-				isValid = verifyFunction(DKIMSignature.DKIMKey.p, headerHashInput,
-						DKIMSignature.a_hash, DKIMSignature.b, DKIMSignature.warnings, keyInfo);
-
+				try {
+					isValid = verifyFunction(DKIMSignature.DKIMKey.p, headerHashInput, DKIMSignature.a_hash,
+							DKIMSignature.b, DKIMSignature.warnings, keyInfo);
+				} finally {
+					DKIMSignature.a_keylength = keyInfo.keyLength;
+				}
 				if (!isValid) {
 					throw new DKIM_SigError("DKIM_SIGERROR_BADSIG");
 				} else if (prefs.getIntPref("error.contentTypeCharsetAddedQuotes.treatAs") === 1) {
