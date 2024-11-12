@@ -64,7 +64,7 @@ pref("extensions.dkim_verifier.policy.DMARC.shouldBeSigned.neededPolicy", "none"
 
 pref("extensions.dkim_verifier.display.favicon.show", true);
 
-/* 
+/*
  * Mode to handle headers, which should be signed, but are not
  * 10  relaxed
  * 20  recommended
@@ -145,7 +145,7 @@ pref("extensions.dkim_verifier.error.key_testmode.ignore", false);
 pref("extensions.dkim_verifier.error.contentTypeCharsetAddedQuotes.treatAs", 0);
 pref("extensions.dkim_verifier.error.algorithm.sign.rsa-sha1.treatAs", 1);
 pref("extensions.dkim_verifier.error.algorithm.rsa.weakKeyLength.treatAs", 2);
-
+pref("extensions.dkim_verifier.error.sanitizeSubject", false);
 
 ////////////////////////////////////////////////////////////////////////////////
 // account specific options
