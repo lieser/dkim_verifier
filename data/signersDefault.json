@@ -261,6 +261,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
  		}, {
+			"domain": "ayvensbank.de",
+			"addr": "*",
+			"sdid": "ayvensbank.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+ 		}, {
 			"domain": "babelzilla.org",
 			"addr": "*",
 			"sdid": "babelzilla.org",
@@ -291,6 +297,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "bank11.de",
+			"addr": "*",
+			"sdid": "bank11.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+ 		}, {
 			"domain": "battle.net",
 			"addr": "*",
 			"sdid": "battle.net",
