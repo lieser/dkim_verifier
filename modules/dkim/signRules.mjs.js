@@ -225,7 +225,7 @@ function glob(str, pattern) {
 	// escape all special regex charters besides *
 	let regexpPattern = pattern.replace(/[.+?^${}()|[\]\\]/g, "\\$&");
 	// replace * with correct regex
-	regexpPattern = regexpPattern.replace("*", ".*");
+	regexpPattern = regexpPattern.replace(/\*/g, ".*");
 
 	const regexp = new RegExp(`^${regexpPattern}$`, "i");
 	return regexp.test(str);
