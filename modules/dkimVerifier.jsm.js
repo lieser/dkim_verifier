@@ -133,11 +133,11 @@ const PREF_BRANCH = "extensions.dkim_verifier.";
  * @property {String[]} [errorStrParams]
  * @property {Boolean} [hideFail]
  * @property {Boolean} [keySecure]
- * @property {number|null} [signatureKeyLength]
+ * @property {number|null} [sigKeyLength]
  * @property {number|null} [timestamp]
  * @property {number|null} [expiration]
- * @property {string} [algorithmSignature]
- * @property {string} [algorithmHash]
+ * @property {string} [sigAlgo]
+ * @property {string} [hashAlgo]
  * @property {string[]} [signedHeaders]
  */
 
@@ -741,10 +741,10 @@ var Verifier = (function() {
 				selector : dkimSignature.s,
 				timestamp : dkimSignature.t,
 				expiration : dkimSignature.x,
-				algorithmSignature : dkimSignature.a_sig,
-				algorithmHash : dkimSignature.a_hash,
+				sigAlgo : dkimSignature.a_sig,
+				hashAlgo : dkimSignature.a_hash,
 				signedHeaders : dkimSignature.h_array ? copy(dkimSignature.h_array) : undefined,
-				signatureKeyLength : dkimSignature.a_keylength
+				sigKeyLength : dkimSignature.a_keylength
 			};
 		} else {
 			baseResult = {

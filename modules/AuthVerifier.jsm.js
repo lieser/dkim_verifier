@@ -708,9 +708,9 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 		let sdid = dkimSigResult.sdid;
 		let auid = dkimSigResult.auid;
 		let result = authResultDKIM.result_str;
-		let alg = dkimSigResult.algorithmSignature ? dkimSigResult.algorithmSignature.toUpperCase() : undefined;
-		let keyLength = dkimSigResult.signatureKeyLength ? dkimSigResult.signatureKeyLength.toString() : undefined;
-		let hash = dkimSigResult.algorithmHash ? dkimSigResult.algorithmHash.toUpperCase() : undefined;
+		let alg = dkimSigResult.sigAlgo ? dkimSigResult.sigAlgo.toUpperCase() : undefined;
+		let keyLength = dkimSigResult.sigKeyLength ? dkimSigResult.sigKeyLength.toString() : undefined;
+		let hash = dkimSigResult.hashAlgo ? dkimSigResult.hashAlgo.toUpperCase() : undefined;
 		let signingTime = dkimSigResult.timestamp ? new Date(dkimSigResult.timestamp*1000).toLocaleString() : undefined;
 		let expirationTime = dkimSigResult.expiration ? new Date(dkimSigResult.expiration*1000).toLocaleString() : undefined;
 		let signedHeaders = dkimSigResult.signedHeaders ? dkimSigResult.signedHeaders.join(", ") : undefined;
