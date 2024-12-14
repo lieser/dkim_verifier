@@ -1259,7 +1259,7 @@ var Verifier = (function() {
 			selector : DKIMSignature.s,
 			warnings : DKIMSignature.warnings,
 			keySecure : DKIMSignature.keyQueryResult.secure,
-			algorithmSignature : DKIMSignature.a_sig
+			sigAlgo : DKIMSignature.a_sig
 		};
 		return verification_result;
 	}
@@ -1592,11 +1592,11 @@ var that = {
 
 		function algo_compare(sig1, sig2) {
 			// prefer ed25519 over rsa
-			if (sig1.algorithmSignature === sig2.algorithmSignature) {
+			if (sig1.sigAlgo === sig2.sigAlgo) {
 				// both algorithms are equal
 				return 0;
 			}
-			if (sig1.algorithmSignature === "ed25519") {
+			if (sig1.sigAlgo === "ed25519") {
 				// there are only ed25519 and rsa allowed, so sig2.a is rsa
 				return -1;
 			}
