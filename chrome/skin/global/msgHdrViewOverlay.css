@@ -18,12 +18,24 @@
   display: none;
 }
 
+#expandeddkim-verifierBox:not([spf="false"])  [anonid="spf"] {
+  display: contents;
+}
+
 #expandeddkim-verifierBox:not([dmarc="true"])  [anonid="dmarc"] {
   display: none;
 }
 
+#expandeddkim-verifierBox:not([dmarc="false"])  [anonid="dmarc"] {
+  display: contents;
+}
+
 #expandeddkim-verifierBox:not([arhDkim="true"])  [anonid="arhDkim"] {
   display: none;
+}
+
+#expandeddkim-verifierBox:not([arhDkim="false"])  [anonid="arhDkim"] {
+  display: contents;
 }
 
 mail-multi-emailHeaderField {
