@@ -82,7 +82,7 @@ DKIM_Verifier.Display = (function() {
 		let showFromToolTip =
 			(emailBox && emailBox.tooltip === "dkim-verifier-header-tooltip-from")
 			|| (emailBoxCH1 && emailBoxCH1.tooltip === "dkim-verifier-header-tooltip-from")
-			|| (emailBoxCH1 && emailBoxCH2.tooltip === "dkim-verifier-header-tooltip-from");
+			|| (emailBoxCH2 && emailBoxCH2.tooltip === "dkim-verifier-header-tooltip-from");
 
 		if (details) {
 			if (showFromToolTip && emailBox) { emailBox.tooltipText = details; }
