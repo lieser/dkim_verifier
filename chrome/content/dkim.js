@@ -88,13 +88,13 @@ DKIM_Verifier.Display = (function() {
 			if (showFromToolTip && emailBox) { emailBox.tooltipText = details; }
 			if (showFromToolTip && emailBoxCH1) { emailBoxCH1.tooltipText = details; }
 			if (showFromToolTip && emailBoxCH2) { emailBoxCH2.tooltipText = details; }
-			verifierBox.tooltipText = details;
+			verifierBox.boxObject.firstChild.tooltipText = details;
 			statusbarPanel.tooltipText = details;
 		} else {
 			if (emailBox) { emailBox.tooltipText = ""; }
 			if (emailBoxCH1) { emailBoxCH1.tooltipText = ""; }
 			if (emailBoxCH2) { emailBoxCH2.tooltipText = ""; }
-			verifierBox.tooltipText = "";
+			verifierBox.boxObject.firstChild.tooltipText.tooltipText = "";
 			statusbarPanel.tooltipText = "";
 		}
 	}
