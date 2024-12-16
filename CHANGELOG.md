@@ -13,7 +13,7 @@ All notable changes to this project will be documented in this file.
 
 ### Other
 
-- Updated default rules and favicons (#440, #444, #447).
+- Updated default rules and favicons (#440, #444, #447, #457).
 
 ## 5.4.0 (2023-11-16)
 
