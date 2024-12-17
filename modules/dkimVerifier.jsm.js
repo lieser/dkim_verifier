@@ -139,6 +139,7 @@ const PREF_BRANCH = "extensions.dkim_verifier.";
  * @property {string} [sigAlgo]
  * @property {string} [hashAlgo]
  * @property {string[]} [signedHeaders]
+ * @property {String|undefined} [verifiedBy]
  */
 
 /**
@@ -1640,7 +1641,6 @@ var that = {
 	 * make handleException public
 	 */
 	handleException : handleException,
-	handleExeption : handleException,
 
 	/*
 	 * make checkForSignatureExsistens public

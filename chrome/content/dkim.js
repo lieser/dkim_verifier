@@ -94,7 +94,7 @@ DKIM_Verifier.Display = (function() {
 			if (emailBox) { emailBox.tooltipText = ""; }
 			if (emailBoxCH1) { emailBoxCH1.tooltipText = ""; }
 			if (emailBoxCH2) { emailBoxCH2.tooltipText = ""; }
-			verifierBox.boxObject.firstChild.tooltipText.tooltipText = "";
+			verifierBox.boxObject.firstChild.tooltipText = "";
 			statusbarPanel.tooltipText = "";
 		}
 	}

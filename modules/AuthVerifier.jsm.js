@@ -332,6 +332,7 @@ function getARHResult(msgHdr, msg) {
 						msg,
 						{d: dkimSigResults[i].sdid, i: dkimSigResults[i].auid}
 					);
+					arhDKIM[i].authserv_id += " & DKIM Verifier";
 				}
 			}
 		}
@@ -348,6 +349,7 @@ function getARHResult(msgHdr, msg) {
 							selector: dkimSigResults[i] ? dkimSigResults[i].selector : undefined,
 							errorType: "DKIM_SIGERROR_INSECURE_A",
 						};
+						arhDKIM[i].authserv_id += " & DKIM Verifier";
 						break;
 					}
 					case 1: // warning
@@ -363,6 +365,10 @@ function getARHResult(msgHdr, msg) {
 				}
 			}
 		}
+	}
+
+	for (let i = 0; i < dkimSigResults.length; i++) {
+		dkimSigResults[i].verifiedBy = arhDKIM[i].authserv_id;
 	}
 
 	// sort signatures
@@ -584,8 +590,13 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 			    prefs.getBoolPref("display.keySecure")) {
 				keySecureStr = " \uD83D\uDD12";
 			}
+			if (dkimSigResult.verifiedBy) {
+				authResultDKIM.result_str = dkimStrings.getFormattedString("SUCCESS_FROM_ARH",
+				[dkimSigResult.sdid + keySecureStr, dkimSigResult.verifiedBy]);
+			} else {
 			authResultDKIM.result_str = dkimStrings.getFormattedString("SUCCESS",
 				[dkimSigResult.sdid + keySecureStr]);
+			}
 			if (!dkimSigResult.warnings) {
 				throw new Error("expected warnings to be defined on SUCCESS result");
 			}
@@ -707,6 +718,7 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 	if (dkimSigResult.errorType !== "DKIM_POLICYERROR_MISSING_SIG" && authResultDKIM.res_num !== AuthVerifier.DKIM_RES.NOSIG) {
 		let sdid = dkimSigResult.sdid;
 		let auid = dkimSigResult.auid;
+		let verifiedBy = dkimSigResult.verifiedBy;
 		let result = authResultDKIM.result_str;
 		let alg = dkimSigResult.sigAlgo ? dkimSigResult.sigAlgo.toUpperCase() : undefined;
 		let keyLength = dkimSigResult.sigKeyLength ? dkimSigResult.sigKeyLength.toString() : undefined;
@@ -720,16 +732,23 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 		if (sdid && auid) {
 			authResultDKIM.details_str += "\n" + dkimStrings.getFormattedString("DKIM_RESULT_DETAILS_SIGNED_BY_FOR", [sdid, auid]);
 		}
+		if (verifiedBy) {
+			// exists only for ARH
+			authResultDKIM.details_str += "\n" + dkimStrings.getFormattedString("DKIM_RESULT_DETAILS_VERIFIED_BY", [verifiedBy]);
+		}
 		if (signingTime) {
+			// exists only in Addon verified signatures
 			if (expirationTime) {
 				authResultDKIM.details_str += "\n" + dkimStrings.getFormattedString("DKIM_RESULT_DETAILS_TIME_EXPIRY", [signingTime, expirationTime]);
 			} else {
 				authResultDKIM.details_str += "\n" + dkimStrings.getFormattedString("DKIM_RESULT_DETAILS_TIME_NO_EXPIRY", [signingTime]);
 			}
-		} else {
+		} else if (!verifiedBy) {
+			// Show this line only, if we're not using ARH (which contains a verifier)
 			authResultDKIM.details_str += "\n" + dkimStrings.getString("DKIM_RESULT_DETAILS_NO_TIME");
 		}
 		if ( alg && hash) {
+			// exists only in Addon verified signatures
 			if (keyLength) {
 				authResultDKIM.details_str += "\n" + dkimStrings.getFormattedString("DKIM_RESULT_DETAILS_ALGORITHM_WITH_LENGTH", [alg, keyLength, hash]);
 			} else {
@@ -737,6 +756,7 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 			}
 		}
 		if (prefs.getBoolPref("advancedInfo.includeHeaders") && signedHeaders) {
+			// exists only in Addon verified signatures
 			authResultDKIM.details_str += "\n" + dkimStrings.getFormattedString("DKIM_RESULT_DETAILS_HEADERS", [signedHeaders]);
 		}
 		if (warnings) {
