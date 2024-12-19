@@ -13,6 +13,11 @@
 
 import { getElementById } from "./domUtils.mjs.js";
 
+/**
+ * A key-value pair used by the detailed DKIM result.
+ *
+ * The element containing the value to show is added as a slot.
+ */
 class KeyValueElement extends HTMLElement {
 	#label;
 
@@ -40,6 +45,9 @@ class KeyValueElement extends HTMLElement {
 }
 customElements.define("key-value", KeyValueElement);
 
+/**
+ * Value element for KeyValueElement to show some text.
+ */
 class ValueTextElement extends HTMLElement {
 	#value;
 
@@ -60,6 +68,9 @@ class ValueTextElement extends HTMLElement {
 }
 customElements.define("value-text", ValueTextElement);
 
+/**
+ * Value element for KeyValueElement to show DKIM warnings.
+ */
 class ValueWarningsElement extends HTMLElement {
 	/** @type {string[]} */
 	warnings = [];
@@ -89,6 +100,9 @@ class ValueWarningsElement extends HTMLElement {
 }
 customElements.define("value-warnings", ValueWarningsElement);
 
+/**
+ * Shows a detailed view of a DKIM result.
+ */
 class DkimResult extends HTMLElement {
 	/** @type {import("../modules/authVerifier.mjs.js").AuthResultDKIM|null} */
 	result = null;
