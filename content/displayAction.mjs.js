@@ -208,7 +208,7 @@ class DkimResult extends HTMLElement {
 	static #addOptionalTimeValue(parent, key, value) {
 		if (value) {
 			// eslint-disable-next-line no-magic-numbers
-			DkimResult.#addTextValue(parent, key, new Date(value * 1000).toString());
+			DkimResult.#addTextValue(parent, key, new Date(value * 1000).toLocaleString());
 		} else if (value === null) {
 			DkimResult.#addTextValue(parent, key, "None");
 		}
