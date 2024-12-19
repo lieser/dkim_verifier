@@ -65,6 +65,7 @@ const log = Logging.getLogger("ARHParser");
  * @property {Object} propertys.policy
  * @property {Object} [propertys._Keyword_]
  *           ARHResinfo can also include other propertys besides the aboves.
+ * @property {String} authserv_id
  */
 
 let ARHParser = {
@@ -112,6 +113,7 @@ let ARHParser = {
 		while (authresHeaderRef.value !== "") {
 			const arhResInfo = parseResinfo(authresHeaderRef);
 			if (arhResInfo) {
+				arhResInfo.authserv_id = authserv_id;
 				res.resinfo.push(arhResInfo);
 			}
 		}

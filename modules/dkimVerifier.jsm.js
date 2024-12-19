@@ -28,7 +28,7 @@
 /* eslint strict: ["warn", "function"] */
 /* global Components, Services */
 /* global Logging, Key, Policy, MsgReader, rfcParser */
-/* global dkimStrings, addrIsInDomain2, domainIsInDomain, stringEndsWith, stringEqual, writeStringToTmpFile, toType, DKIM_SigError, DKIM_TempError, DKIM_Error */
+/* global dkimStrings, addrIsInDomain2, domainIsInDomain, stringEndsWith, stringEqual, writeStringToTmpFile, toType, DKIM_SigError, DKIM_TempError, DKIM_Error, copy */
 /* exported EXPORTED_SYMBOLS, Verifier */
 
 // @ts-ignore
@@ -80,7 +80,6 @@ Services.scriptloader.loadSubScript("resource://dkim_verifier_3p/rsasign/rsasign
 Services.scriptloader.loadSubScript("resource://dkim_verifier_3p/tweetnacl/nacl-fast.js", ED25519, "UTF-8");
 Services.scriptloader.loadSubScript("resource://dkim_verifier_3p/tweetnacl-util/nacl-util.js", ED25519, "UTF-8");
 
-
 // @ts-ignore
 const PREF_BRANCH = "extensions.dkim_verifier.";
 
@@ -119,7 +118,7 @@ const PREF_BRANCH = "extensions.dkim_verifier.";
  *
  * @typedef {Object} dkimSigResultV2
  * @property {String} version
- *           result version ("2.0")
+ *           result version ("2.1")
  * @property {String} result
  *           "none" / "SUCCESS" / "PERMFAIL" / "TEMPFAIL"
  * @property {String} [sdid]
@@ -134,6 +133,13 @@ const PREF_BRANCH = "extensions.dkim_verifier.";
  * @property {String[]} [errorStrParams]
  * @property {Boolean} [hideFail]
  * @property {Boolean} [keySecure]
+ * @property {number|null} [sigKeyLength]
+ * @property {number|null} [timestamp]
+ * @property {number|null} [expiration]
+ * @property {string} [sigAlgo]
+ * @property {string} [hashAlgo]
+ * @property {string[]} [signedHeaders]
+ * @property {String|undefined} [verifiedBy]
  */
 
 /**
@@ -310,17 +316,14 @@ var Verifier = (function() {
 
 		// trim leading zeros from modulus
 		let m_hex_trimmed = m_hex.replace(/^0+/, '');
-
-		// a hex digit represents 4 bit
-		let keyLength = 4 * m_hex_trimmed.length;
-
-		if (keyLength < 1024) {
+		// one hex digit represents 4 bit
+		keyInfo.keyLength = m_hex_trimmed.length * 4;
+		log.debug("rsa key length: " + keyInfo.keyLength);
+		if (keyInfo.keyLength < 1024) {
 			// error if key is too short
-			log.debug("rsa key size: " + keyLength);
 			throw new DKIM_SigError("DKIM_SIGWARNING_KEYSMALL");
-		} else if (keyLength < 2048) {
+		} else if (keyInfo.keyLength < 2048) {
 			// weak key
-			log.debug("rsa key size: " + keyLength);
 			switch (prefs.getIntPref("error.algorithm.rsa.weakKeyLength.treatAs")) {
 				case 0: // error
 					throw new DKIM_SigError("DKIM_SIGWARNING_KEY_IS_WEAK");
@@ -365,12 +368,12 @@ var Verifier = (function() {
 		let signature_byte = ED25519.nacl.util.decodeBase64(signature);
 		let key_byte = ED25519.nacl.util.decodeBase64(key);
 		// each byte has 8 bit (a valid key_byte array has a length of 32)
-		let keyLength = key_byte.length * 8;
-		log.debug("ED25519 key length: " + keyLength);
+		_keyInfo.keyLength = key_byte.length * 8;
+		log.debug("ed25519 key length: " + _keyInfo.keyLength);
 		if (hash_algo !== "sha256") {
 			throw new DKIM_SigError("DKIM_SIGERROR_KEY_HASHNOTINCLUDED");
 		}
-		if (keyLength !== 256) {
+		if (_keyInfo.keyLength !== 256) {
 			throw new DKIM_SigError("DKIM_SIGERROR_KEYDECODE");
 		}
 		try {
@@ -388,6 +391,7 @@ var Verifier = (function() {
 			v : null, // Version
 			a_sig : null, // signature algorithm (signing part)
 			a_hash : null, // signature algorithm (hashing part)
+			a_keylength : null, // signature algorithm: signing key length
 			b : null, // signature (unfolded)
 			b_folded : null, // signature (still folded)
 			bh : null, // body hash
@@ -459,9 +463,11 @@ var Verifier = (function() {
 		if (!algorithmTag[1] || !algorithmTag[2]) {
 			throw new Error("Error matching the a-tag.");
 		}
+		// Detailed hints will contain the algorithm in any case
+		DKIMSignature.a_sig = algorithmTag[1];
+		DKIMSignature.a_hash = algorithmTag[2];
 		if (algorithmTag[0] === "ed25519-sha256" || algorithmTag[0] === "rsa-sha256") {
-			DKIMSignature.a_sig = algorithmTag[1];
-			DKIMSignature.a_hash = algorithmTag[2];
+			// all is fine, nothing to do at the moment
 		} else if (algorithmTag[0] === "rsa-sha1") {
 			switch (prefs.getIntPref("error.algorithm.sign.rsa-sha1.treatAs")) {
 				case 0: // error
@@ -474,8 +480,6 @@ var Verifier = (function() {
 				default:
 					throw new Error("invalid error.algorithm.sign.rsa-sha1.treatAs");
 			}
-			DKIMSignature.a_sig = algorithmTag[1];
-			DKIMSignature.a_hash = algorithmTag[2];
 		} else {
 			throw new DKIM_SigError("DKIM_SIGERROR_UNKNOWN_A");
 		}
@@ -718,6 +722,38 @@ var Verifier = (function() {
 		}
 
 		return DKIMSignature;
+	}
+
+	/**
+	 * Get a DKIM result with some information from the header already in it.
+	 *
+	 * @param {string} result
+	 * @param {Object} dkimSignature | null
+	 * @returns {dkimSigResultV2}
+	 */
+	function createBaseResult(result, dkimSignature) {
+		let baseResult;
+		if (dkimSignature) {
+			baseResult = {
+				version : "2.1",
+				result : result,
+				sdid : dkimSignature.d,
+				auid : dkimSignature.i,
+				selector : dkimSignature.s,
+				timestamp : dkimSignature.t,
+				expiration : dkimSignature.x,
+				sigAlgo : dkimSignature.a_sig,
+				hashAlgo : dkimSignature.a_hash,
+				signedHeaders : dkimSignature.h_array ? copy(dkimSignature.h_array) : undefined,
+				sigKeyLength : dkimSignature.a_keylength
+			};
+		} else {
+			baseResult = {
+				version : "2.1",
+				result : result,
+			};
+		}
+		return baseResult;
 	}
 
 	/*
@@ -1038,39 +1074,26 @@ var Verifier = (function() {
 	 * @return {dkimSigResultV2}
 	 */
 	function handleException(e, msg, dkimSignature = {} ) {
+		let result = createBaseResult("", dkimSignature);
+
 		if (e instanceof DKIM_SigError) {
-			// return result
-			let result = {
-				version : "2.0",
-				result : "PERMFAIL",
-				sdid : dkimSignature.d,
-				auid : dkimSignature.i,
-				selector : dkimSignature.s,
-				errorType : e.errorType,
-				errorStrParams : e.errorStrParams,
-				hideFail : e.errorType === "DKIM_SIGERROR_KEY_TESTMODE" ||
-					msg.DKIMSignPolicy.hideFail,
-				keySecure : dkimSignature.keyQueryResult &&
-					dkimSignature.keyQueryResult.secure,
-			};
+			result.result = "PERMFAIL";
+			result.errorType = e.errorType;
+			result.errorStrParams = e.errorStrParams;
+			result.hideFail = e.errorType === "DKIM_SIGERROR_KEY_TESTMODE" ||
+				msg.DKIMSignPolicy.hideFail;
+			result.keySecure = dkimSignature.keyQueryResult &&
+				dkimSignature.keyQueryResult.secure;
 
 			log.warn(e);
-
-			return result;
-		}
-		// return result
-		let result = {
-			version : "2.0",
-			result : "TEMPFAIL",
-			sdid : dkimSignature.d,
-			auid : dkimSignature.i,
-			selector : dkimSignature.s,
-		};
-
-		if (e instanceof DKIM_TempError) {
+		} else if (e instanceof DKIM_TempError) {
+			result.result = "TEMPFAIL";
 			result.errorType = e.errorType;
+
 			log.error("Temporary error during DKIM verification:", e);
 		} else {
+			result.result = "TEMPFAIL";
+
 			log.fatal("Error during DKIM verification:", e);
 		}
 
@@ -1207,8 +1230,13 @@ var Verifier = (function() {
 				throw new DKIM_SigError("DKIM_SIGERROR_UNKNOWN_A");
 		}
 
-		var isValid = verifyFunction(DKIMSignature.DKIMKey.p, headerHashInput, DKIMSignature.a_hash,
+		var isValid = false;
+		try {
+			isValid = verifyFunction(DKIMSignature.DKIMKey.p, headerHashInput, DKIMSignature.a_hash,
 			DKIMSignature.b, DKIMSignature.warnings, keyInfo);
+		} finally {
+			DKIMSignature.a_keylength = keyInfo.keyLength;
+		}
 		if (!isValid) {
 			if (prefs.getIntPref("error.contentTypeCharsetAddedQuotes.treatAs") > 0) {
 				log.debug("Try with removed quotes in Content-Type charset.");
@@ -1220,9 +1248,12 @@ var Verifier = (function() {
 				log.debug("Header hash input:\n" + headerHashInput);
 				// verify Signature
 				keyInfo = {};
-				isValid = verifyFunction(DKIMSignature.DKIMKey.p, headerHashInput,
-						DKIMSignature.a_hash, DKIMSignature.b, DKIMSignature.warnings, keyInfo);
-
+				try {
+					isValid = verifyFunction(DKIMSignature.DKIMKey.p, headerHashInput, DKIMSignature.a_hash,
+							DKIMSignature.b, DKIMSignature.warnings, keyInfo);
+				} finally {
+					DKIMSignature.a_keylength = keyInfo.keyLength;
+				}
 				if (!isValid) {
 					throw new DKIM_SigError("DKIM_SIGERROR_BADSIG");
 				} else if (prefs.getIntPref("error.contentTypeCharsetAddedQuotes.treatAs") === 1) {
@@ -1251,15 +1282,9 @@ var Verifier = (function() {
 
 		// return result
 		log.trace("Everything is fine");
-		var verification_result = {
-			version : "2.0",
-			result : "SUCCESS",
-			sdid : DKIMSignature.d,
-			auid : DKIMSignature.i,
-			selector : DKIMSignature.s,
-			warnings : DKIMSignature.warnings,
-			keySecure : DKIMSignature.keyQueryResult.secure,
-		};
+		var verification_result = createBaseResult("SUCCESS", DKIMSignature);
+		verification_result.warnings = DKIMSignature.warnings;
+		verification_result.keySecure = DKIMSignature.keyQueryResult.secure;
 		return verification_result;
 	}
 
@@ -1560,7 +1585,7 @@ var that = {
 			}
 			// sig1 has warnings
 			if (!sig2.warnings || sig2.warnings.length === 0) {
-				// sig2 has no warings
+				// sig2 has no warnings
 				return 1;
 			}
 			// both sigs have warnings
@@ -1616,7 +1641,6 @@ var that = {
 	 * make handleException public
 	 */
 	handleException : handleException,
-	handleExeption : handleException,
 
 	/*
 	 * make checkForSignatureExsistens public

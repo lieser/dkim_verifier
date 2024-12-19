@@ -54,6 +54,7 @@ DKIM_Verifier.Display = (function() {
 	var expandedFromBox;
 	var collapsed1LfromBox; // for CompactHeader addon
 	var collapsed2LfromBox; // for CompactHeader addon
+	var verifierBox;
 	var policyAddUserExceptionButton;
 	var markKeyAsSecureButton;
 	var updateKeyButton;
@@ -67,11 +68,35 @@ DKIM_Verifier.Display = (function() {
 	 * Sets the result value for headerTooltips and statusbar panel.
 	 *
 	 * @param {String} value
+	 * @param {String|undefined} [details]
 	 * @return {void}
 	 */
-	function setValue(value) {
+	function setValue(value, details) {
 		headerTooltips.value = value;
 		statusbarPanel.value = value;
+
+		let emailBox = expandedFromBox ? expandedFromBox.emailAddresses.boxObject.firstChild : undefined;
+		let emailBoxCH1 = collapsed1LfromBox ? collapsed1LfromBox.emailAddresses.boxObject.firstChild : undefined; // for CompactHeader addon
+		let emailBoxCH2 = collapsed2LfromBox ? collapsed2LfromBox.emailAddresses.boxObject.firstChild : undefined; // for CompactHeader addon
+
+		let showFromToolTip =
+			(emailBox && emailBox.tooltip === "dkim-verifier-header-tooltip-from")
+			|| (emailBoxCH1 && emailBoxCH1.tooltip === "dkim-verifier-header-tooltip-from")
+			|| (emailBoxCH2 && emailBoxCH2.tooltip === "dkim-verifier-header-tooltip-from");
+
+		if (details) {
+			if (showFromToolTip && emailBox) { emailBox.tooltipText = details; }
+			if (showFromToolTip && emailBoxCH1) { emailBoxCH1.tooltipText = details; }
+			if (showFromToolTip && emailBoxCH2) { emailBoxCH2.tooltipText = details; }
+			verifierBox.boxObject.firstChild.tooltipText = details;
+			statusbarPanel.tooltipText = details;
+		} else {
+			if (emailBox) { emailBox.tooltipText = ""; }
+			if (emailBoxCH1) { emailBoxCH1.tooltipText = ""; }
+			if (emailBoxCH2) { emailBoxCH2.tooltipText = ""; }
+			verifierBox.boxObject.firstChild.tooltipText = "";
+			statusbarPanel.tooltipText = "";
+		}
 	}
 
 	/**
@@ -216,7 +241,36 @@ DKIM_Verifier.Display = (function() {
 		statusbarPanel.dkimStatus = result.dkim[0].result;
 		that.setCollapsed(result.dkim[0].res_num);
 		header.value = result.dkim[0].result_str;
-		setValue(result.dkim[0].result_str);
+
+		let sigCount = 0;
+		let detailsHint;
+		if (prefs.getBoolPref("advancedInfo.show")) {
+			detailsHint	= "";
+			if (prefs.getBoolPref("advancedInfo.allSignatures")) {
+				result.dkim.forEach(dkim => {
+					if (dkim.details_str) {
+						detailsHint += "\n----\n" + dkim.details_str;
+						sigCount += 1;
+					}
+				});
+				if (sigCount === 0) {
+					// the check resulted in an error, because the signature wasn't well formed
+					// or there was no signature
+					detailsHint = undefined;
+				}
+			} else {
+				detailsHint = result.dkim[0].details_str;
+			}
+			if (detailsHint) {
+				// there is extended information to display
+				let caption = "";
+				if (prefs.getBoolPref("advancedInfo.allSignatures")) {
+					caption = dkimStrings.getFormattedString("DKIM_RESULT_DETAILS_SIG_COUNT", [sigCount]);
+				}
+				detailsHint = caption + detailsHint;
+			}
+		}
+		setValue(result.dkim[0].result_str, detailsHint);
 
 		switch(result.dkim[0].res_num) {
 			case DKIM_Verifier.AuthVerifier.DKIM_RES.SUCCESS: {
@@ -405,6 +459,7 @@ var that = {
 			expandedFromBox = document.getElementById("expandedfromBox");
 			collapsed1LfromBox = document.getElementById("CompactHeader_collapsed1LfromBox");
 			collapsed2LfromBox = document.getElementById("CompactHeader_collapsed2LfromBox");
+			verifierBox = document.getElementById("expandeddkim-verifierBox");
 			policyAddUserExceptionButton = document.
 				getElementById("dkim_verifier.policyAddUserException");
 			markKeyAsSecureButton = document.getElementById("dkim_verifier.markKeyAsSecure");
