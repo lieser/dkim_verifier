@@ -115,14 +115,14 @@ class DkimResult extends HTMLElement {
 			throw new Error("A DkimResult musst have a result bevor it can be connected.");
 		}
 
-		DkimResult.#addTextValue(this.#content, "Result", this.result?.result_str);
-		DkimResult.#addOptionalWarnings(this.#content, "Warnings", this.result?.warnings_str);
-		DkimResult.#addTextValue(this.#content, "SDID", this.result?.sdid ?? "Unknown");
-		DkimResult.#addOptionalTextValue(this.#content, "AUID", this.result?.auid);
-		DkimResult.#addOptionalTimeValue(this.#content, "Sign date", this.result?.timestamp);
-		DkimResult.#addOptionalTimeValue(this.#content, "Expiration date", this.result?.expiration);
-		DkimResult.#addOptionalTextValue(this.#content, "Algorithm", this.#algorithm());
-		DkimResult.#addOptionalTextValue(this.#content, "Signed headers", this.result?.signedHeaders?.join(", "));
+		DkimResult.#addTextValue(this.#content, browser.i18n.getMessage("details.result"), this.result?.result_str);
+		DkimResult.#addOptionalWarnings(this.#content, browser.i18n.getMessage("details.warnings"), this.result?.warnings_str);
+		DkimResult.#addTextValue(this.#content, browser.i18n.getMessage("details.SDID"), this.result?.sdid ?? "Unknown");
+		DkimResult.#addOptionalTextValue(this.#content, browser.i18n.getMessage("details.AUID"), this.result?.auid);
+		DkimResult.#addOptionalTimeValue(this.#content, browser.i18n.getMessage("details.signDate"), this.result?.timestamp);
+		DkimResult.#addOptionalTimeValue(this.#content, browser.i18n.getMessage("details.expirationDate"), this.result?.expiration);
+		DkimResult.#addOptionalTextValue(this.#content, browser.i18n.getMessage("details.algorithm"), this.#algorithm());
+		DkimResult.#addOptionalTextValue(this.#content, browser.i18n.getMessage("details.signedHeaders"), this.result?.signedHeaders?.join(", "));
 	}
 
 	/**
@@ -210,7 +210,7 @@ class DkimResult extends HTMLElement {
 			// eslint-disable-next-line no-magic-numbers
 			DkimResult.#addTextValue(parent, key, new Date(value * 1000).toLocaleString());
 		} else if (value === null) {
-			DkimResult.#addTextValue(parent, key, "None");
+			DkimResult.#addTextValue(parent, key, browser.i18n.getMessage("details.noDate"));
 		}
 	}
 
