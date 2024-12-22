@@ -1635,7 +1635,6 @@ var that = {
 	 * make handleException public
 	 */
 	handleException : handleException,
-	handleExeption : handleException,
 
 	/*
 	 * make checkForSignatureExsistens public
