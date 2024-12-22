@@ -369,6 +369,18 @@ function getARHResult(msgHdr, msg) {
 
 	for (let i = 0; i < dkimSigResults.length; i++) {
 		dkimSigResults[i].verifiedBy = arhDKIM[i].authserv_id;
+		if (arhDKIM[i].propertys.header.a) {
+			// get signature algorithm (plain-text;REQUIRED)
+			// currently only "rsa-sha1" or "rsa-sha256" or "ed25519-sha256"
+			let sig_a_tag_k = "(rsa|ed25519|[A-Za-z](?:[A-Za-z]|[0-9])*)";
+			let sig_a_tag_h = "(sha1|sha256|[A-Za-z](?:[A-Za-z]|[0-9])*)";
+			let sig_a_tag_alg = sig_a_tag_k+"-"+sig_a_tag_h;
+			let sig_hash_alg = arhDKIM[i].propertys.header.a.match(sig_a_tag_alg);
+			if (sig_hash_alg[1] && sig_hash_alg[2]) {
+				dkimSigResults[i].sigAlgo = sig_hash_alg[1];
+				dkimSigResults[i].hashAlgo = sig_hash_alg[2];
+			}
+		}
 	}
 
 	// sort signatures
@@ -720,9 +732,9 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 		let auid = dkimSigResult.auid;
 		let verifiedBy = dkimSigResult.verifiedBy;
 		let result = authResultDKIM.result_str;
-		let alg = dkimSigResult.sigAlgo ? dkimSigResult.sigAlgo.toUpperCase() : undefined;
+		let sigAlgo = dkimSigResult.sigAlgo ? dkimSigResult.sigAlgo.toUpperCase() : undefined;
 		let keyLength = dkimSigResult.sigKeyLength ? dkimSigResult.sigKeyLength.toString() : undefined;
-		let hash = dkimSigResult.hashAlgo ? dkimSigResult.hashAlgo.toUpperCase() : undefined;
+		let hashAlgo = dkimSigResult.hashAlgo ? dkimSigResult.hashAlgo.toUpperCase() : undefined;
 		let signingTime = dkimSigResult.timestamp ? new Date(dkimSigResult.timestamp*1000).toLocaleString() : undefined;
 		let expirationTime = dkimSigResult.expiration ? new Date(dkimSigResult.expiration*1000).toLocaleString() : undefined;
 		let signedHeaders = dkimSigResult.signedHeaders ? dkimSigResult.signedHeaders.join(", ") : undefined;
@@ -747,12 +759,11 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 			// Show this line only, if we're not using ARH (which contains a verifier)
 			authResultDKIM.details_str += "\n" + dkimStrings.getString("DKIM_RESULT_DETAILS_NO_TIME");
 		}
-		if ( alg && hash) {
-			// exists only in Addon verified signatures
+		if ( sigAlgo && hashAlgo) {
 			if (keyLength) {
-				authResultDKIM.details_str += "\n" + dkimStrings.getFormattedString("DKIM_RESULT_DETAILS_ALGORITHM_WITH_LENGTH", [alg, keyLength, hash]);
+				authResultDKIM.details_str += "\n" + dkimStrings.getFormattedString("DKIM_RESULT_DETAILS_ALGORITHM_WITH_LENGTH", [sigAlgo, keyLength, hashAlgo]);
 			} else {
-				authResultDKIM.details_str += "\n" + dkimStrings.getFormattedString("DKIM_RESULT_DETAILS_ALGORITHM", [alg, hash]);
+				authResultDKIM.details_str += "\n" + dkimStrings.getFormattedString("DKIM_RESULT_DETAILS_ALGORITHM", [sigAlgo, hashAlgo]);
 			}
 		}
 		if (prefs.getBoolPref("advancedInfo.includeHeaders") && signedHeaders) {
