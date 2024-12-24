@@ -277,6 +277,7 @@ function getARHResult(msgHdr, msg) {
 	}
 
 	// get DKIM, SPF and DMARC res
+	let arhDKIMAuthServ = [];
 	let arhDKIM = [];
 	let arhSPF = [];
 	let arhDMARC = [];
@@ -308,10 +309,18 @@ function getARHResult(msgHdr, msg) {
 		arhSPF = arhSPF.concat(arh.resinfo.filter(e => e.method === "spf"));
 		arhDMARC = arhDMARC.concat(arh.resinfo.filter(e => e.method === "dmarc"));
 		arhBIMI = arhBIMI.concat(arh.resinfo.filter(e => e.method === "bimi"));
+
+		let newArhDkimCount = arhDKIM.length - arhDKIMAuthServ.length;
+		for (let i = 0; i < newArhDkimCount; i++) {
+			arhDKIMAuthServ.push(arh.authserv_id);
+		}
 	}
 
 	// convert DKIM results
 	let dkimSigResults = arhDKIM.map(arhDKIM_to_dkimSigResultV2);
+	for (let i = 0; i < dkimSigResults.length; i++) {
+		dkimSigResults[i].verifiedBy = arhDKIMAuthServ[i];
+	}
 
 	// if ARH result is replacing the add-ons,
 	if (prefs.getBoolPref("arh.replaceAddonResult")) {
@@ -327,12 +336,13 @@ function getARHResult(msgHdr, msg) {
 						dkimSigResults[i].warnings || []
 					);
 				} catch(exception) {
+					let authServ_id = dkimSigResults[i].verifiedBy + " & DKIM Verifier";
 					dkimSigResults[i] = DKIM.Verifier.handleException(
 						exception,
 						msg,
 						{d: dkimSigResults[i].sdid, i: dkimSigResults[i].auid}
 					);
-					arhDKIM[i].authserv_id += " & DKIM Verifier";
+					dkimSigResults[i].verifiedBy = authServ_id;
 				}
 			}
 		}
@@ -342,14 +352,16 @@ function getARHResult(msgHdr, msg) {
 				switch (prefs.getIntPref("error.algorithm.sign.rsa-sha1.treatAs")) {
 					case 0: { // error
 						dkimSigResults[i] = {
-							version: "2.0",
+							version: "2.1",
 							result: "PERMFAIL",
 							sdid: dkimSigResults[i] ? dkimSigResults[i].sdid : "",
 							auid: dkimSigResults[i] ? dkimSigResults[i].auid : "",
+							sigAlgo: dkimSigResults[i] ? dkimSigResults[i].sigAlgo : undefined,
+							hashAlgo: dkimSigResults[i] ? dkimSigResults[i].hashAlgo : undefined,
 							selector: dkimSigResults[i] ? dkimSigResults[i].selector : undefined,
+							verifiedBy: dkimSigResults[i] ? dkimSigResults[i].verifiedBy + " & DKIM Verifier" : undefined,
 							errorType: "DKIM_SIGERROR_INSECURE_A",
 						};
-						arhDKIM[i].authserv_id += " & DKIM Verifier";
 						break;
 					}
 					case 1: // warning
@@ -363,22 +375,6 @@ function getARHResult(msgHdr, msg) {
 					default:
 						throw new Error("invalid error.algorithm.sign.rsa-sha1.treatAs");
 				}
-			}
-		}
-	}
-
-	for (let i = 0; i < dkimSigResults.length; i++) {
-		dkimSigResults[i].verifiedBy = arhDKIM[i].authserv_id;
-		if (arhDKIM[i].propertys.header.a) {
-			// get signature algorithm (plain-text;REQUIRED)
-			// currently only "rsa-sha1" or "rsa-sha256" or "ed25519-sha256"
-			let sig_a_tag_k = "(rsa|ed25519|[A-Za-z](?:[A-Za-z]|[0-9])*)";
-			let sig_a_tag_h = "(sha1|sha256|[A-Za-z](?:[A-Za-z]|[0-9])*)";
-			let sig_a_tag_alg = sig_a_tag_k+"-"+sig_a_tag_h;
-			let sig_hash_alg = arhDKIM[i].propertys.header.a.match(sig_a_tag_alg);
-			if (sig_hash_alg[1] && sig_hash_alg[2]) {
-				dkimSigResults[i].sigAlgo = sig_hash_alg[1];
-				dkimSigResults[i].hashAlgo = sig_hash_alg[2];
 			}
 		}
 	}
@@ -502,7 +498,8 @@ function loadAuthResult(msgHdr) {
 function arhDKIM_to_dkimSigResultV2(arhDKIM) {
 	/** @type {dkimSigResultV2} */
 	let dkimSigResult = {};
-	dkimSigResult.version = "2.0";
+	dkimSigResult.version = "2.1";
+
 	switch (arhDKIM.result) {
 		case "none":
 			dkimSigResult.result = "none";
@@ -545,6 +542,19 @@ function arhDKIM_to_dkimSigResultV2(arhDKIM) {
 		}
 		dkimSigResult.sdid = sdid;
 		dkimSigResult.auid = auid;
+	}
+
+	if (arhDKIM.propertys.header.a) {
+		// get signature algorithm (plain-text;REQUIRED)
+		// currently only "rsa-sha1" or "rsa-sha256" or "ed25519-sha256"
+		let sig_a_tag_k = "(rsa|ed25519|[A-Za-z](?:[A-Za-z]|[0-9])*)";
+		let sig_a_tag_h = "(sha1|sha256|[A-Za-z](?:[A-Za-z]|[0-9])*)";
+		let sig_a_tag_alg = sig_a_tag_k+"-"+sig_a_tag_h;
+		let sig_hash_alg = arhDKIM.propertys.header.a.match(sig_a_tag_alg);
+		if (sig_hash_alg[1] && sig_hash_alg[2]) {
+			dkimSigResult.sigAlgo = sig_hash_alg[1];
+			dkimSigResult.hashAlgo = sig_hash_alg[2];
+		}
 	}
 
 	return dkimSigResult;
