@@ -126,6 +126,14 @@ describe("Sign rules [unittest]", function () {
 
 			res = await SignRules.check(dkimNone, "bar@a.foo.comX");
 			expect(res.result).is.equal("none");
+
+			await SignRules.addRule("bar.com", null, "*@mail.*.bar.com", "bar.com", SignRules.TYPE.ALL);
+			res = await SignRules.check(dkimNone, "@mail.a.bar.com");
+			expect(res.result).is.equal("PERMFAIL");
+			res = await SignRules.check(dkimNone, "test@mail.foo.bar.com");
+			expect(res.result).is.equal("PERMFAIL");
+			res = await SignRules.check(dkimNone, "test@foo.bar.com");
+			expect(res.result).is.equal("none");
 		});
 		it("Add user exception", async function () {
 			let res = await SignRules.check(dkimNone, "bar@paypal.com");
