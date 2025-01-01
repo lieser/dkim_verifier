@@ -12,6 +12,10 @@ All notable changes to this project will be documented in this file.
 - Improved table views for sign rules and DKIM keys (#248, #305).
   E.g. it is now possible to delete multiple entries at once.
 
+### Fixes
+
+- Fixed potential parsing error when extracting the received time from the last Received header (#455).
+
 ### Other
 
 - Updated default rules and favicons (#440, #444, #447, #457).

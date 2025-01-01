@@ -1,7 +1,7 @@
 /**
  * Reads and parses a message.
  *
- * Copyright (c) 2014-2023 Philippe Lieser
+ * Copyright (c) 2014-2024 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -248,7 +248,9 @@ export default class MsgParser {
 			log.warn("Could not find the date time in the Received header");
 			return null;
 		}
-		const dateTimeStr = header.substring(dateTimeStart + 1);
+		// In Thunderbird (but not Node.js) Date parsing will fail if newlines are before the actual date string.
+		// We trim all surrounding whitespace to avoid this problem.
+		const dateTimeStr = header.substring(dateTimeStart + 1).trim();
 		const dateTime = new Date(dateTimeStr);
 		if (dateTime.toString() === "Invalid Date") {
 			log.warn("Could not parse the date time in the Received header");
