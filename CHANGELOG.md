@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 
 ### Enhancements
 
+- Show all DKIM signatures with additional details in the DKIM button pop-up (#160, #299).
 - Improved table views for sign rules and DKIM keys (#248, #305).
   E.g. it is now possible to delete multiple entries at once.
 

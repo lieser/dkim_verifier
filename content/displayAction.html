@@ -12,13 +12,16 @@
   <script type="module" src="./displayAction.mjs.js"></script>
 </head>
 
-<body>
+<body class="hbox">
+  <div id="results" class="vbox">
+  </div>
 
-  <button id="reverifyDKIMSignature" disabled="true" data-i18n="dkim_verifier.reverifyDKIMSignature"></button>
-  <button id="policyAddUserException" disabled="true" data-i18n="dkim_verifier.policyAddUserException"></button>
-  <button id="markKeyAsSecure" disabled="true" data-i18n="dkim_verifier.markKeyAsSecure"></button>
-  <button id="updateKey" disabled="true" data-i18n="dkim_verifier.updateKey"></button>
-
+  <div id="menu" class="vbox">
+    <button id="reverifyDKIMSignature" disabled="true" data-i18n="dkim_verifier.reverifyDKIMSignature"></button>
+    <button id="policyAddUserException" disabled="true" data-i18n="dkim_verifier.policyAddUserException"></button>
+    <button id="markKeyAsSecure" disabled="true" data-i18n="dkim_verifier.markKeyAsSecure"></button>
+    <button id="updateKey" disabled="true" data-i18n="dkim_verifier.updateKey"></button>
+  </div>
 </body>
 
 </html>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2023 Philippe Lieser
+ * Copyright (c) 2020-2024 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -123,21 +123,50 @@ describe("AuthVerifier [unittest]", function () {
 				"version": "3.0",
 				"dkim": [
 					{
-						"version": "2.0",
+						"version": "2.1",
 						"result": "SUCCESS",
 						"sdid": "football.example.com",
 						"auid": "@football.example.com",
 						"selector": "test",
 						"warnings": [],
-						"keySecure": false
+						"keySecure": false,
+						"timestamp": 1528637909,
+						"expiration": null,
+						"algorithmSignature": "rsa",
+						"keyLength": 1024,
+						"algorithmHash": "sha256",
+						"signedHeaders": [
+							"from",
+							"to",
+							"subject",
+							"date",
+							"message-id",
+							"from",
+							"subject",
+							"date",
+						],
 					}, {
-						"version": "2.0",
+						"version": "2.1",
 						"result": "SUCCESS",
 						"sdid": "football.example.com",
 						"auid": "@football.example.com",
 						"selector": "brisbane",
 						"warnings": [],
-						"keySecure": false
+						"keySecure": false,
+						"timestamp": 1528637909,
+						"expiration": null,
+						"algorithmSignature": "ed25519",
+						"algorithmHash": "sha256",
+						"signedHeaders": [
+							"from",
+							"to",
+							"subject",
+							"date",
+							"message-id",
+							"from",
+							"subject",
+							"date",
+						],
 					}]
 			});
 		});
@@ -179,13 +208,26 @@ describe("AuthVerifier [unittest]", function () {
 				"version": "3.1",
 				"dkim": [
 					{
-						"version": "2.0",
+						"version": "2.1",
 						"result": "SUCCESS",
 						"sdid": "example.com",
 						"auid": "joe@football.example.com",
 						"selector": "brisbane",
 						"warnings": [],
-						"keySecure": false
+						"keySecure": false,
+						"timestamp": null,
+						"expiration": null,
+						"algorithmSignature": "rsa",
+						"keyLength": 1024,
+						"algorithmHash": "sha256",
+						"signedHeaders": [
+							"received",
+							"from",
+							"to",
+							"subject",
+							"date",
+							"message-id",
+						],
 					}
 				],
 				"spf": [],

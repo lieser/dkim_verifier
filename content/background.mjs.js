@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2023 Philippe Lieser
+ * Copyright (c) 2020-2024 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -220,13 +220,13 @@ class DisplayAction {
 	 * Determinate which user actions should be enabled.
 	 *
 	 * @param {number} tabId
-	 * @returns {RuntimeMessage.DisplayAction.queryButtonStateResult}
+	 * @returns {RuntimeMessage.DisplayAction.queryResultStateResult}
 	 */
-	static queryButtonState(tabId) {
+	static queryResultState(tabId) {
 		const res = displayedResultsCache.get(tabId);
 		const keyStored = prefs["key.storing"] !== KeyStore.KEY_STORING.DISABLED &&
 			res?.dkim[0]?.sdid !== undefined && res?.dkim[0].selector !== undefined;
-		/** @type {RuntimeMessage.DisplayAction.queryButtonStateResult} */
+		/** @type {RuntimeMessage.DisplayAction.queryResultStateResult} */
 		const state = {
 			reverifyDKIMSignature: res !== null,
 			policyAddUserException:
@@ -239,6 +239,7 @@ class DisplayAction {
 				),
 			markKeyAsSecure: keyStored && res?.dkim[0]?.keySecure === false,
 			updateKey: keyStored,
+			dkim: res?.dkim ?? [],
 		};
 		return state;
 	}
@@ -344,9 +345,9 @@ browser.runtime.onMessage.addListener((runtimeMessage, sender /*, sendResponse*/
 	if (request.module !== "DisplayAction") {
 		return;
 	}
-	if (request.method === "queryButtonState") {
+	if (request.method === "queryResultState") {
 		// eslint-disable-next-line consistent-return
-		return Promise.resolve(DisplayAction.queryButtonState(request.parameters.tabId));
+		return Promise.resolve(DisplayAction.queryResultState(request.parameters.tabId));
 	}
 	if (request.method === "reverifyDKIMSignature") {
 		const promise = DisplayAction.reverifyDKIMSignature(request.parameters.tabId);
