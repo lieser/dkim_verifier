@@ -1,7 +1,7 @@
 /**
  * RegExp pattern for ABNF definitions in various RFCs.
  *
- * Copyright (c) 2020-2023 Philippe Lieser
+ * Copyright (c) 2020-2025 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -43,8 +43,13 @@ export default class RfcParser {
 	static get FWS_op() { return `${this.FWS}?`; }
 	// Note: this is incomplete (obs-ctext is missing)
 	static get ctext() { return "[!-'*-[\\]-~]"; }
-	// Note: this is incomplete (comment is missing)
-	static get ccontent() { return `(?:${this.ctext}|${this.quoted_pair})`; }
+	// Note: There is a recursion in ccontent/comment, which is not supported by the RegExp in JavaScript.
+	// We currently unroll it to support a depth of up to 3 comments.
+	static get ccontent_2() { return `(?:${this.ctext}|${this.quoted_pair})`; }
+	static get comment_2() { return `\\((?:${this.FWS_op}${this.ccontent_2})*${this.FWS_op}\\)`; }
+	static get ccontent_1() { return `(?:${this.ctext}|${this.quoted_pair}|${this.comment_2})`; }
+	static get comment_1() { return `\\((?:${this.FWS_op}${this.ccontent_1})*${this.FWS_op}\\)`; }
+	static get ccontent() { return `(?:${this.ctext}|${this.quoted_pair}|${this.comment_1})`; }
 	static get comment() { return `\\((?:${this.FWS_op}${this.ccontent})*${this.FWS_op}\\)`; }
 	static get CFWS() { return `(?:(?:(?:${this.FWS_op}${this.comment})+${this.FWS_op})|${this.FWS})`; }
 	// Note: helper only, not part of the RFC

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2023 Philippe Lieser
+ * Copyright (c) 2020-2023;2025 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -167,6 +167,15 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo[0]?.method).to.be.equal("unknown");
 			expect(res.resinfo[0]?.result).to.be.equal("foo");
 		});
+		it("Comments in comments", function () {
+			const res = ArhParser.parse(
+				"Authentication-Results: example.com;\r\n" +
+				"          dkim=pass (good (comment (another)) signature(s)) header.d=example.com\r\n");
+			expect(res.authserv_id).to.be.equal("example.com");
+			expect(res.resinfo.length).to.be.equal(1);
+			expect(res.resinfo[0]?.method).to.be.equal("dkim");
+			expect(res.resinfo[0]?.result).to.be.equal("pass");
+		});
 	});
 	describe("Relaxed parsing", function () {
 		it("Trailing ;", function () {
@@ -233,6 +242,16 @@ describe("ARH Parser [unittest]", function () {
 		it("Unknown results for DMARC", function () {
 			expect(() => ArhParser.parse(
 				"Authentication-Results: example.com; dmarc=foo\r\n"
+			)).to.throw();
+		});
+		it("Comments with mismatching number of brackets", function () {
+			expect(() => ArhParser.parse(
+				"Authentication-Results: example.com;\r\n" +
+				"          dkim=pass (good (comment (another))) signature(s)) header.d=example.com\r\n"
+			)).to.throw();
+			expect(() => ArhParser.parse(
+				"Authentication-Results: example.com;\r\n" +
+				"          dkim=pass ((good (comment (another)) signature(s)) header.d=example.com\r\n"
 			)).to.throw();
 		});
 	});

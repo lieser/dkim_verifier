@@ -15,6 +15,7 @@ All notable changes to this project will be documented in this file.
 ### Fixes
 
 - Fixed potential parsing error when extracting the received time from the last Received header (#455).
+- When parsing now support comments inside comments up to a recursion of 3 (#466).
 
 ### Other
 
