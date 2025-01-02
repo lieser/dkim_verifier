@@ -1209,12 +1209,14 @@ var Verifier = (function() {
 
 		var isValid = verifyFunction(DKIMSignature.DKIMKey.p, headerHashInput, DKIMSignature.a_hash,
 			DKIMSignature.b, DKIMSignature.warnings, keyInfo);
-		if (!isValid) {
-			if (prefs.getIntPref("error.contentTypeCharsetAddedQuotes.treatAs") > 0) {
-				log.debug("Try with removed quotes in Content-Type charset.");
-				msg.headerFields.get("content-type")[0] =
-					msg.headerFields.get("content-type")[0].
-					replace(/charset="([^"]+)"/i,	"charset=$1");
+
+		if (!isValid && prefs.getIntPref("error.contentTypeCharsetAddedQuotes.treatAs") > 0) {
+			log.debug("Try with removed quotes in Content-Type charset.");
+			const contentTypeField = msg.headerFields.get("content-type")[0];
+			const sanitizedContentTypeField = contentTypeField.replace(/charset="([^"]+)"/i, "charset=$1");
+
+			if (contentTypeField !== sanitizedContentTypeField) {
+				msg.headerFields.get("content-type")[0] = sanitizedContentTypeField;
 				// Compute the input for the header hash
 				headerHashInput = computeHeaderHashInput(msg,DKIMSignature);
 				log.debug("Header hash input:\n" + headerHashInput);
@@ -1222,16 +1224,45 @@ var Verifier = (function() {
 				keyInfo = {};
 				isValid = verifyFunction(DKIMSignature.DKIMKey.p, headerHashInput,
 						DKIMSignature.a_hash, DKIMSignature.b, DKIMSignature.warnings, keyInfo);
-
-				if (!isValid) {
-					throw new DKIM_SigError("DKIM_SIGERROR_BADSIG");
-				} else if (prefs.getIntPref("error.contentTypeCharsetAddedQuotes.treatAs") === 1) {
+				if (prefs.getIntPref("error.contentTypeCharsetAddedQuotes.treatAs") === 1) {
 					DKIMSignature.warnings.push({name: "DKIM_SIGERROR_CONTENT_TYPE_CHARSET_ADDED_QUOTES"});
 					log.debug("Warning: DKIM_SIGERROR_CONTENT_TYPE_CHARSET_ADDED_QUOTES");
 				}
 			} else {
-				throw new DKIM_SigError("DKIM_SIGERROR_BADSIG");
+				log.debug("Nothing changed, no need to reverify...");
 			}
+		}
+		if (!isValid && prefs.getBoolPref("error.sanitizeSubject")) {
+			log.debug("Trying to sanitize the subject header field");
+			const subjectField = msg.headerFields.get("subject")[0];
+			const sanitizeRegexp = /(Subject:\s)(?:\*|\[).+(?:\*|\])\s(.*)/;
+			const sanitizedSubject = subjectField.replace(sanitizeRegexp, "$2").trim();
+			const sanitizedSubjectField = subjectField.replace(sanitizeRegexp, "$1$2");
+
+			if (subjectField !== sanitizedSubjectField) {
+				msg.headerFields.get("subject")[0] = sanitizedSubjectField;
+				// Compute the input for the header hash
+				headerHashInput = computeHeaderHashInput(msg,DKIMSignature);
+				log.debug("Header hash input:\n" + headerHashInput);
+				// verify Signature
+				keyInfo = {};
+				isValid = verifyFunction(DKIMSignature.DKIMKey.p, headerHashInput,
+						DKIMSignature.a_hash, DKIMSignature.b, DKIMSignature.warnings, keyInfo);
+				if (isValid) {
+					// Adding a warning, that the subject was changed
+					DKIMSignature.warnings.push({ name: "DKIM_SIGERROR_SUBJECT_MODIFIED", params: [sanitizedSubject] });
+					log.debug("Sanitized subject: " + sanitizedSubject);
+				} else {
+					// Restoring the original subject field
+					msg.headerFields.get("subject")[0] = subjectField;
+				}
+			} else {
+				log.debug("Nothing changed, no need to reverify...");
+			}
+		}
+
+		if (!isValid) {
+			throw new DKIM_SigError("DKIM_SIGERROR_BADSIG");
 		}
 
 		if (DKIMSignature.a_sig !== DKIMSignature.DKIMKey.k) {
