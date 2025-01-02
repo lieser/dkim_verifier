@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 16 16" style="enable-background:new 0 0 16 16;" xml:space="preserve">
+  <style type="text/css">
+    .st0 {
+      fill: #D40000;
+    }
+
+    .st1 {
+      fill-rule: evenodd;
+      clip-rule: evenodd;
+      fill: #FFFFFF;
+    }
+
+    .st2 {
+      fill: #FFFFFF;
+    }
+  </style>
+  <g>
+    <circle class="st0" cx="8" cy="8" r="8"/>
+    <g>
+      <rect x="9.7" y="3.7" class="st1" width="2.2" height="8.6"/>
+    </g>
+    <polygon class="st2" points="4.2,12.4 9.6,7 6.3,7 6.3,3.7 4.2,3.7"/>
+  </g>
+</svg>
