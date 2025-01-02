@@ -18,7 +18,7 @@
   display: none;
 }
 
-#expandeddkim-verifierBox:not([spf="false"])  [anonid="spf"] {
+#expandeddkim-verifierBox[spf="true"]  [anonid="spf"] {
   display: contents;
 }
 
@@ -26,7 +26,7 @@
   display: none;
 }
 
-#expandeddkim-verifierBox:not([dmarc="false"])  [anonid="dmarc"] {
+#expandeddkim-verifierBox[dmarc="true"]  [anonid="dmarc"] {
   display: contents;
 }
 
@@ -34,7 +34,7 @@
   display: none;
 }
 
-#expandeddkim-verifierBox:not([arhDkim="false"])  [anonid="arhDkim"] {
+#expandeddkim-verifierBox[arhDkim="true"]  [anonid="arhDkim"] {
   display: contents;
 }
 
