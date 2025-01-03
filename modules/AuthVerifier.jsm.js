@@ -356,8 +356,8 @@ function getARHResult(msgHdr, msg) {
 							result: "PERMFAIL",
 							sdid: dkimSigResults[i] ? dkimSigResults[i].sdid : "",
 							auid: dkimSigResults[i] ? dkimSigResults[i].auid : "",
-							sigAlgo: dkimSigResults[i] ? dkimSigResults[i].sigAlgo : undefined,
-							hashAlgo: dkimSigResults[i] ? dkimSigResults[i].hashAlgo : undefined,
+							algorithmSignature: dkimSigResults[i] ? dkimSigResults[i].algorithmSignature : undefined,
+							algorithmHash: dkimSigResults[i] ? dkimSigResults[i].algorithmHash : undefined,
 							selector: dkimSigResults[i] ? dkimSigResults[i].selector : undefined,
 							verifiedBy: dkimSigResults[i] ? dkimSigResults[i].verifiedBy + " & DKIM Verifier" : undefined,
 							errorType: "DKIM_SIGERROR_INSECURE_A",
@@ -552,8 +552,8 @@ function arhDKIM_to_dkimSigResultV2(arhDKIM) {
 		let sig_a_tag_alg = sig_a_tag_k+"-"+sig_a_tag_h;
 		let sig_hash_alg = arhDKIM.propertys.header.a.match(sig_a_tag_alg);
 		if (sig_hash_alg[1] && sig_hash_alg[2]) {
-			dkimSigResult.sigAlgo = sig_hash_alg[1];
-			dkimSigResult.hashAlgo = sig_hash_alg[2];
+			dkimSigResult.algorithmSignature = sig_hash_alg[1];
+			dkimSigResult.algorithmHash = sig_hash_alg[2];
 		}
 	}
 
@@ -742,9 +742,9 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 		let auid = dkimSigResult.auid;
 		let verifiedBy = dkimSigResult.verifiedBy;
 		let result = authResultDKIM.result_str;
-		let sigAlgo = dkimSigResult.sigAlgo ? dkimSigResult.sigAlgo.toUpperCase() : undefined;
-		let keyLength = dkimSigResult.sigKeyLength ? dkimSigResult.sigKeyLength.toString() : undefined;
-		let hashAlgo = dkimSigResult.hashAlgo ? dkimSigResult.hashAlgo.toUpperCase() : undefined;
+		let sigAlgo = dkimSigResult.algorithmSignature ? dkimSigResult.algorithmSignature.toUpperCase() : undefined;
+		let keyLength = dkimSigResult.keyLength ? dkimSigResult.keyLength.toString() : undefined;
+		let hashAlgo = dkimSigResult.algorithmHash ? dkimSigResult.algorithmHash.toUpperCase() : undefined;
 		let signingTime = dkimSigResult.timestamp ? new Date(dkimSigResult.timestamp*1000).toLocaleString() : undefined;
 		let expirationTime = dkimSigResult.expiration ? new Date(dkimSigResult.expiration*1000).toLocaleString() : undefined;
 		let signedHeaders = dkimSigResult.signedHeaders ? dkimSigResult.signedHeaders.join(", ") : undefined;
