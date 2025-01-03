@@ -133,7 +133,7 @@ const PREF_BRANCH = "extensions.dkim_verifier.";
  * @property {String[]} [errorStrParams]
  * @property {Boolean} [hideFail]
  * @property {Boolean} [keySecure]
- * @property {number|null} [keyLength]
+ * @property {number|undefined} [keyLength]
  * @property {number|null} [timestamp]
  * @property {number|null} [expiration]
  * @property {string} [algorithmSignature]
