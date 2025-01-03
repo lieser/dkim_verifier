@@ -1102,7 +1102,8 @@ var Verifier = (function() {
 			if (recDateTimeStart === -1) {
 				log.warn("Could not find the date time in the Received header: "+receivedHeaders[0]);
 			} else {
-				const recDateTimeStr = receivedHeaders[0].substring(recDateTimeStart + 1);
+				// Trim all surrounding whitespace to avoid parsing problems.
+				const recDateTimeStr = receivedHeaders[0].substring(recDateTimeStart + 1).trim();
 				receivedTime = new Date(recDateTimeStr);
 				if (receivedTime.toString() === "Invalid Date") {
 					log.warn("Could not parse the date time in the Received header");
