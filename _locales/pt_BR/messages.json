@@ -632,6 +632,42 @@
 	"dkim_verifier.updateKey": {
 		"message": "Atualizar chave DKIM"
 	},
+	"details.result": {
+		"message": "Resultado",
+		"description": "Detailed view row name for the overall DKIM result."
+	},
+	"details.warnings": {
+		"message": "Avisos",
+		"description": "Detailed view row name for the warnings of the DKIM signature."
+	},
+	"details.SDID": {
+		"message": "SDID",
+		"description": "Detailed view row name for the SDID."
+	},
+	"details.AUID": {
+		"message": "AUID",
+		"description": "Detailed view row name for the AUID."
+	},
+	"details.signDate": {
+		"message": "Data da assinatura",
+		"description": "Detailed view row name for the date (including time) the signature was created."
+	},
+	"details.expirationDate": {
+		"message": "Data da expiração",
+		"description": "Detailed view row name for the date (including time) the signature expires."
+	},
+	"details.algorithm": {
+		"message": "Algoritmo",
+		"description": "Detailed view row name for the algorithm used in the signature."
+	},
+	"details.signedHeaders": {
+		"message": "Cabeçalhos assinados",
+		"description": "Detailed view row name for the message headers signed by DKIM."
+	},
+	"details.noDate": {
+		"message": "Sem horário incluído na assinatura",
+		"description": "Value shown for sign and expiration date if no date is given in the signature."
+	},
 	// ==================== Table Views ====================
 	"treeviewKeys.title": {
 		"message": "Chaves DKIM",
