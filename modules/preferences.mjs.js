@@ -1,7 +1,7 @@
 /**
  * Provides access to the add-ons preferences.
  *
- * Copyright (c) 2020-2023 Philippe Lieser
+ * Copyright (c) 2020-2023;2025 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -420,19 +420,19 @@ export class BasePreferences {
 		return this.#tryGetStringValue("color.success.text", "windowtext");
 	}
 	get "color.success.background"() {
-		return this.#tryGetStringValue("color.success.background", "#00FF00");
+		return this.#tryGetStringValue("color.success.background", "rgba(0,255,0,0.5)");
 	}
 	get "color.warning.text"() {
 		return this.#tryGetStringValue("color.warning.text", "windowtext");
 	}
 	get "color.warning.background"() {
-		return this.#tryGetStringValue("color.warning.background", "orange");
+		return this.#tryGetStringValue("color.warning.background", "rgba(255,150,0,0.5)");
 	}
 	get "color.permfail.text"() {
 		return this.#tryGetStringValue("color.permfail.text", "windowtext");
 	}
 	get "color.permfail.background"() {
-		return this.#tryGetStringValue("color.permfail.background", "red");
+		return this.#tryGetStringValue("color.permfail.background", "rgba(255,0,0,0.5)");
 	}
 	get "color.tempfail.text"() {
 		return this.#tryGetStringValue("color.tempfail.text", "unset");
