@@ -629,33 +629,33 @@
 	"dkim_verifier.updateKey": {
 		"message": "更新 DKIM 金鑰"
 	},
-  "details.result": {
-    "message": "結果"
-  },
-  "details.warnings": {
-    "message": "警告"
-  },
-  "details.SDID": {
-    "message": "SDID"
-  },
-  "details.AUID": {
-    "message": "AUID"
-  },
-  "details.signDate": {
-    "message": "簽署時間"
-  },
-  "details.expirationDate": {
-    "message": "失效時間"
-  },
-  "details.algorithm": {
-    "message": "演算法"
-  },
-  "details.signedHeaders": {
-    "message": "簽章包含的標頭"
-  },
-  "details.noDate": {
-    "message": "簽章內未包含時間"
-  },
+	"details.result": {
+		"message": "結果"
+	},
+	"details.warnings": {
+		"message": "警告"
+	},
+	"details.SDID": {
+		"message": "SDID"
+	},
+	"details.AUID": {
+		"message": "AUID"
+	},
+	"details.signDate": {
+		"message": "簽署時間"
+	},
+	"details.expirationDate": {
+		"message": "失效時間"
+	},
+	"details.algorithm": {
+		"message": "演算法"
+	},
+	"details.signedHeaders": {
+		"message": "簽章包含的標頭"
+	},
+	"details.noDate": {
+		"message": "簽章內未包含時間"
+	},
 	// ==================== Table Views ====================
 	"treeviewKeys.title": {
 		"message": "DKIM 金鑰",
@@ -780,7 +780,7 @@
 		"message": "會與寄件者地址進行比對。使用「*」來比對任意數量的字元。"
 	},
 	"sdid.description": {
-        "message": "符合的郵件必須由這個域名簽署。如果留空代表允許任意的 SDID。可以使用空白分隔來指定多個域名。"
+		"message": "符合的郵件必須由這個域名簽署。如果留空代表允許任意的 SDID。可以使用空白分隔來指定多個域名。"
 	},
 	"ruletype.description": {
 		"message": "規則類型"
