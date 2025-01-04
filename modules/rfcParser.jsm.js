@@ -59,8 +59,13 @@ let rfcParser = (function() {
 	RfcParserStd.FWS_op = `${RfcParserStd.FWS}?`;
 	// Note: this is incomplete (obs-ctext is missing)
 	RfcParserStd.ctext = "[!-'*-[\\]-~]";
-	// Note: this is incomplete (comment is missing)
-	RfcParserStd.ccontent = `(?:${RfcParserStd.ctext}|${RfcParserStd.quoted_pair})`;
+	// Note: There is a recursion in ccontent/comment, which is not supported by the RegExp in JavaScript.
+	// We currently unroll it to support a depth of up to 3 comments.
+	RfcParserStd.ccontent_2 = `(?:${RfcParserStd.ctext}|${RfcParserStd.quoted_pair})`;
+	RfcParserStd.comment_2 = `\\((?:${RfcParserStd.FWS_op}${RfcParserStd.ccontent_2})*${RfcParserStd.FWS_op}\\)`;
+	RfcParserStd.ccontent_1 = `(?:${RfcParserStd.ctext}|${RfcParserStd.quoted_pair}|${RfcParserStd.comment_2})`;
+	RfcParserStd.comment_1 = `\\((?:${RfcParserStd.FWS_op}${RfcParserStd.ccontent_1})*${RfcParserStd.FWS_op}\\)`;
+	RfcParserStd.ccontent = `(?:${RfcParserStd.ctext}|${RfcParserStd.quoted_pair}|${RfcParserStd.comment_1})`;
 	RfcParserStd.comment = `\\((?:${RfcParserStd.FWS_op}${RfcParserStd.ccontent})*${RfcParserStd.FWS_op}\\)`;
 	RfcParserStd.CFWS = `(?:(?:(?:${RfcParserStd.FWS_op}${RfcParserStd.comment})+${RfcParserStd.FWS_op})|${RfcParserStd.FWS})`;
 	// Note: helper only, not part of the RFC

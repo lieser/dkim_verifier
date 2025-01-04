@@ -102,3 +102,5 @@
 <!ENTITY policy.unsigned_header.mode.value.0.label "Tolerant">
 <!ENTITY policy.unsigned_header.mode.value.1.label "Empfohlen">
 <!ENTITY policy.unsigned_header.mode.value.2.label "Streng">
+
+<!ENTITY error.sanitizeSubject.label "Versuche Ergänzungen im Betreff zu korrigieren">
