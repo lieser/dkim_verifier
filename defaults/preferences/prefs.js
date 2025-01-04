@@ -148,7 +148,7 @@ pref("extensions.dkim_verifier.error.key_testmode.ignore", false);
 pref("extensions.dkim_verifier.error.contentTypeCharsetAddedQuotes.treatAs", 0);
 pref("extensions.dkim_verifier.error.algorithm.sign.rsa-sha1.treatAs", 1);
 pref("extensions.dkim_verifier.error.algorithm.rsa.weakKeyLength.treatAs", 2);
-
+pref("extensions.dkim_verifier.error.sanitizeSubject", false);
 
 ////////////////////////////////////////////////////////////////////////////////
 // account specific options
