@@ -122,6 +122,9 @@ pref("extensions.dkim_verifier.color.tempfail.background", "unset");
 pref("extensions.dkim_verifier.color.nosig.text", "unset");
 pref("extensions.dkim_verifier.color.nosig.background", "unset");
 
+pref("extensions.dkim_verifier.advancedInfo.show", false);
+pref("extensions.dkim_verifier.advancedInfo.allSignatures", false);
+pref("extensions.dkim_verifier.advancedInfo.includeHeaders", false);
 
 ////////////////////////////////////////////////////////////////////////////////
 // advanced preferences

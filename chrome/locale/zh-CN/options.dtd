@@ -83,3 +83,7 @@
 <!ENTITY policy.unsigned_header.mode.value.2.label "Strict">
 
 <!ENTITY error.sanitizeSubject.label "Try to remove amendments in the subject">
+
+<!ENTITY display.advancedInfo.show.label "Show extended signature information in tooltips">
+<!ENTITY display.advancedInfo.allSignatures.label "Show all signatures">
+<!ENTITY display.advancedInfo.includeHeaders.label "Show signed headers">

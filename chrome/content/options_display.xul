@@ -5,6 +5,7 @@
 <overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
 <prefpane id="paneDisplay" onpaneload="onLoad('paneDisplay');">
+	<script type="application/javascript" src="chrome://dkim_verifier/content/options_display.js"/>
 	<preferences>
 		<preference id="pref_colorFrom"
 		            name="extensions.dkim_verifier.colorFrom"
@@ -16,28 +17,28 @@
 		<preference id="pref_color.success.background"
 		            name="extensions.dkim_verifier.color.success.background"
 		            type="string"/>
-		
+
 		<preference id="pref_color.warning.text"
 		            name="extensions.dkim_verifier.color.warning.text"
 		            type="string"/>
 		<preference id="pref_color.warning.background"
 		            name="extensions.dkim_verifier.color.warning.background"
 		            type="string"/>
-		
+
 		<preference id="pref_color.permfail.text"
 		            name="extensions.dkim_verifier.color.permfail.text"
 		            type="string"/>
 		<preference id="pref_color.permfail.background"
 		            name="extensions.dkim_verifier.color.permfail.background"
 		            type="string"/>
-		
+
 		<preference id="pref_color.tempfail.text"
 		            name="extensions.dkim_verifier.color.tempfail.text"
 		            type="string"/>
 		<preference id="pref_color.tempfail.background"
 		            name="extensions.dkim_verifier.color.tempfail.background"
 		            type="string"/>
-		
+
 		<preference id="pref_color.nosig.text"
 		            name="extensions.dkim_verifier.color.nosig.text"
 		            type="string"/>
@@ -61,8 +62,21 @@
 		<preference id="pref_display.favicon.show"
 		            name="extensions.dkim_verifier.display.favicon.show"
 		            type="bool"/>
+
+		<preference id="pref_display.advancedInfo.show"
+		            name="extensions.dkim_verifier.advancedInfo.show"
+		            type="bool"/>
+		<preference id="pref_display.advancedInfo.allSignatures"
+		            name="extensions.dkim_verifier.advancedInfo.allSignatures"
+		            type="bool"/>
+		<preference id="pref_display.advancedInfo.includeHeaders"
+		            name="extensions.dkim_verifier.advancedInfo.includeHeaders"
+		            type="bool"/>
+		<preference id="pref_display.advancedInfo.includeDNSSEC"
+		            name="extensions.dkim_verifier.advancedInfo.includeDNSSEC"
+		            type="bool"/>
 	</preferences>
-	
+
 	<groupbox>
 		<caption label="&color.label;"/>
 		<checkbox preference="pref_colorFrom" label="&colorFrom.label;"/>
@@ -179,9 +193,22 @@
 			<spacer/>
 		</hbox>
 	</groupbox>
-
+	<groupbox>
+		<checkbox preference="pref_display.advancedInfo.show"
+				  label="&display.advancedInfo.show.label;"
+				  oncommand="toggleDetailsOptionsEnabled();"
+				  id="display.advancedInfo.show" />
+		<vbox class="indent">
+			<checkbox preference="pref_display.advancedInfo.allSignatures"
+					  label="&display.advancedInfo.allSignatures.label;"
+					  id="display.advancedInfo.allSignatures" />
+			<checkbox preference="pref_display.advancedInfo.includeHeaders"
+					  label="&display.advancedInfo.includeHeaders.label;"
+					  id="display.advancedInfo.includeHeaders" />
+		</vbox>
+	</groupbox>
 	<checkbox preference="pref_display.favicon.show"
-	          label="&display.favicon.show.label;"/>
+              label="&display.favicon.show.label;"/>
 </prefpane>
 
 </overlay>
