@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file.
   E.g. it is now possible to delete multiple entries at once.
 - Allow multiple `*` globs in the From pattern of sign rules (#471, #472).
 - Changed the default color scheme for highlighting of the From header to better work with dark mode (#460).
+- Changed the header icon to now have the same colors as Thunderbirds own icons.
 
 ### Fixes
 
