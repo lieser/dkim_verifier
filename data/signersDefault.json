@@ -111,6 +111,12 @@
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_NEUTRAL"
 		}, {
+			"domain": "aldi-sued.de",
+			"addr": "*@angebote.aldi-sued.de",
+			"sdid": "aldi-sued.de angebote.aldi-sued.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
 			"domain": "aliexpress.com",
 			"addr": "*",
 			"sdid": "aliexpress.com",
@@ -306,6 +312,12 @@
 			"domain": "avm.de",
 			"addr": "*",
 			"sdid": "avm.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "awo-bnsu.de",
+			"addr": "*",
+			"sdid": "awo-bnsu.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
  		}, {
@@ -921,6 +933,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "digitalcourage.de",
+			"addr": "*",
+			"sdid": "digitalcourage.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "digitalocean.com",
 			"addr": "*",
 			"sdid": "digitalocean.com",
@@ -1245,6 +1263,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "esyoil.com",
+			"addr": "*",
+			"sdid": "esyoil.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "europa.eu",
 			"addr": "*@nomail.ec.europa.eu",
 			"sdid": "europa.eu nomail.ec.europa.eu",
@@ -1308,6 +1332,12 @@
 			"domain": "facebookmail.com",
 			"addr": "*",
 			"sdid": "facebookmail.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "falke.com",
+			"addr": "*",
+			"sdid": "falke.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -1455,6 +1485,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
+			"domain": "fragdenstaat.de",
+			"addr": "*",
+			"sdid": "fragdenstaat.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "framasoft.org",
 			"addr": "*",
 			"sdid": "framasoft.org",
@@ -1521,6 +1557,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "fz-juelich.de",
+			"addr": "*@julumni.fz-juelich.de",
+			"sdid": "fz-juelich.de julumni.fz-juelich.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
 			"domain": "ga.de",
 			"addr": "*@info.ga.de",
 			"sdid": "ga.de info.ga.de",
@@ -1536,6 +1578,12 @@
 			"domain": "gelsh.it",
 			"addr": "*",
 			"sdid": "gelsh.it",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "gendercensus.com",
+			"addr": "*",
+			"sdid": "gendercensus.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -1976,12 +2024,6 @@
 			"sdid": "instantsystems.se",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
-		}, {
-			"domain": "interactadvocates.org",
-			"addr": "*",
-			"sdid": "interactadvocates.org interactadvocates-org.20210112.gappssmtp.com",
-			"ruletype": "ALL",
-			"priority": "DEFAULT_RULE_ALL"
  		}, {
 			"domain": "iode.tech",
 			"addr": "*",
@@ -1992,6 +2034,12 @@
 			"domain": "ionos.de",
 			"addr": "*",
 			"sdid": "ionos.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "ipp-muenchen.de",
+			"addr": "*",
+			"sdid": "ipp-muenchen.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -2012,6 +2060,12 @@
 			"sdid": "italotreno.it news.italotreno.it",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
+			"domain": "jameda.de",
+			"addr": "*",
+			"sdid": "jameda.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
 		}, {
 			"domain": "jolla-devices.com",
 			"addr": "*",
@@ -2481,6 +2535,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "muenzeoesterreich.at",
+			"addr": "*",
+			"sdid": "muenzeoesterreich.at",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "mvgm.com",
 			"addr": "*",
 			"sdid": "mvgm.com",
@@ -2841,6 +2901,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "pflanzenhof-online.de",
+			"addr": "*",
+			"sdid": "pflanzenhof-online.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "peterhahn.de",
 			"addr": "postmaster@peterhahn.de",
 			"sdid": "peterhahn.de",
@@ -3063,6 +3129,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "robinsonliste.de",
+			"addr": "*",
+			"sdid": "robinsonliste.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "rockstargames.com",
 			"addr": "*",
 			"sdid": "rockstargames.com",
@@ -3084,6 +3156,12 @@
 			"domain": "s-communication.de",
 			"addr": "*",
 			"sdid": "s-communication.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "sankt-cyprian.de",
+			"addr": "*",
+			"sdid": "sankt-cyprian.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -3258,6 +3336,12 @@
 			"domain": "soltechonline.com",
 			"addr": "*",
 			"sdid": "soltechonline.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "somany.de",
+			"addr": "*",
+			"sdid": "somany.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -3573,6 +3657,12 @@
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_NEUTRAL"
 		}, {
+			"domain": "tngtech.com",
+			"addr": "*",
+			"sdid": "tngtech.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "toogoodtogo.com",
 			"addr": "*",
 			"sdid": "toogoodtogo.com",
@@ -3704,6 +3794,12 @@
 			"sdid": "ubibanca.it",
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_NEUTRAL"
+		}, {
+			"domain": "umsteuern.org",
+			"addr": "*",
+			"sdid": "umsteuern.org",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
 		}, {
 			"domain": "uni-bonn.de",
 			"addr": "*@listen.uni-bonn.de",
@@ -4106,6 +4202,18 @@
 			"sdid": "zone.fi",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "zooplus.de",
+			"addr": "*@info.zooplus.de",
+			"sdid": "zooplus.de info.zooplus.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
+			"domain": "zooplus.de",
+			"addr": "*@mail.zooplus.de",
+			"sdid": "zooplus.de mail.zooplus.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
 			"domain": "zvab.com",
 			"addr": "*",
