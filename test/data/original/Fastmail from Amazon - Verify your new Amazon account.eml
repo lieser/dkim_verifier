@@ -1,0 +1,375 @@
+Return-Path: <20231023212308106721a263944afcb2dcb3ebed50p0na-C39VIEGRHNUE4S@bounces.amazon.com>
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+	 by sloti53n25 (Cyrus 3.9.0-alpha0-1048-g9229b632c5-fm-20231019.001-g9229b632) with LMTPA;
+	 Mon, 23 Oct 2023 17:23:11 -0400
+X-Cyrus-Session-Id: sloti53n25-1698096191-442932-2-1273141261905717759
+X-Sieve: CMU Sieve 3.0
+X-Spam-known-sender: no
+X-Spam-sender-reputation: 500 (none)
+X-Spam-score: 1.5
+X-Spam-hits: DCC_CHECK 1.1, HTML_MESSAGE 0.001, ME_SENDERREP_NEUTRAL 0.001,
+  MIME_HTML_ONLY 0.1, MIME_HTML_ONLY_MULTI 0.001, MPART_ALT_DIFF 0.724,
+  RCVD_IN_DNSWL_NONE -0.0001, SPF_HELO_NONE 0.001, SPF_PASS -0.001,
+  TVD_PH_SEC 0.1, USER_IN_DEF_SPF_WL -0.5, LANGUAGES en, BAYES_USED none,
+  SA_VERSION 3.4.6
+X-Spam-source: IP='54.240.13.167', Host='a13-167.smtp-out.amazonses.com', Country='US',
+  FromHeader='com', MailFrom='com'
+X-Spam-charsets: html='utf-8'
+X-Resolved-to: bimi_test@fastmail.com
+X-Delivered-to: bimi_test@fastmail.com
+X-Mail-from: 20231023212308106721a263944afcb2dcb3ebed50p0na-C39VIEGRHNUE4S@bounces.amazon.com
+Received: from mx1 ([10.202.2.200])
+  by compute5.internal (LMTPProxy); Mon, 23 Oct 2023 17:23:11 -0400
+Received: from mx1.messagingengine.com (localhost [127.0.0.1])
+	by mailmx.nyi.internal (Postfix) with ESMTP id A3DB623C00A5
+	for <bimi_test@fastmail.com>; Mon, 23 Oct 2023 17:23:10 -0400 (EDT)
+Received: from mailmx.nyi.internal (localhost [127.0.0.1])
+    by mx1.messagingengine.com (Authentication Milter) with ESMTP
+    id 79F91626EEB.69C5C23C00BB;
+    Mon, 23 Oct 2023 17:23:10 -0400
+ARC-Seal: i=1; a=rsa-sha256; cv=none; d=messagingengine.com; s=fm3; t=
+    1698096190; b=DedKFsbWWCg3eqLLqCEdjdIYJpcnEERgLOK5Hs4UxgvmWomSXs
+    25TExB8dR9G5N0OP4Xgd1ugUX+8orJrRcgIMVDxLOev/rf47tsNyJwAHiFSVMt8H
+    BURBp2RqtgQ++K44dEkp91UzbLoFulnOhptiQA6Z8+nTU97bhuuswO0HjiA+fW6c
+    25e3fPuJ2D/pA4KU+ZUl25Z8UaDwdEwnR610bAGoXpLD3S4yqRoFSimbq5KJT108
+    i4Bg25p4tofTX34BCwlTqK7lpt5yO6AdY0aktLXVqj+zcjBC5Y/Cm79nwNEGIXPS
+    TFtTlyQO9lL628s8mz0M7YbI5zB4QV+zskIw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=
+    messagingengine.com; h=date:from:to:message-id:subject
+    :mime-version:content-type; s=fm3; t=1698096190; bh=40RWmszKEZBr
+    Gvp3WwOByXUGItKgJgiQgWf7zH90pSw=; b=mhUrl5GkJXVNQGm/uVXe96ib7yer
+    k4/vAs8n0S6Us5dLPf/o4UlW9NuFP1whWSJ6UtU3DSeCDsv98lT2lWFlwHJLIqgE
+    kmVo5YnzT/TdNtqXJ0UYh4Ejuw1HlmHIu9OpeO5aBz9Ce6GdBLqCfA7s6iR+kl6i
+    gQLRD0z0uw8gnLglx7mBLkOBUvtIzFaTQujUs6O9zLrBu6WGVsrjgdkBoSmv+Erh
+    Jo1i/r88birfyq0nB3yWxpQWDqWXils2dOSnjKl37vt/o5918mUmWIilXWonNFiN
+    nT1Sy+HWDWH4739T7V6+IcrWcZbtNZq3VNIyZ1AuWvCJIJUUkEdNlkidbQ==
+ARC-Authentication-Results: i=1; mx1.messagingengine.com;
+    x-csa=none;
+    x-me-sender=none;
+    x-ptr=pass smtp.helo=a13-167.smtp-out.amazonses.com
+    policy.ptr=a13-167.smtp-out.amazonses.com;
+    bimi=pass header.d=amazon.com header.selector=default
+    policy.authority=pass policy.mark-type="Registered Mark"
+    policy.authority-uri=
+    https://d3frv9g52qce38.cloudfront.net/amazondefault/amazon_web_services_inc.pem;
+    arc=none (no signatures found);
+    dkim=pass (1024-bit rsa key sha256) header.d=amazon.com
+    header.i=@amazon.com header.b=d5rQb267 header.a=rsa-sha256
+    header.s=yg4mwqurec7fkhzutopddd3ytuaqrvuz;
+    dkim=pass (1024-bit rsa key sha256) header.d=amazonses.com
+    header.i=@amazonses.com header.b=P8GzRyuy header.a=rsa-sha256
+    header.s=224i4yxa5dv7c2xz3womw6peuasteono;
+    dmarc=pass policy.published-domain-policy=quarantine
+    policy.applied-disposition=none policy.evaluated-disposition=none
+    (p=quarantine,d=none,d.eval=none) policy.policy-from=p
+    header.from=amazon.com;
+    iprev=pass smtp.remote-ip=54.240.13.167
+    (a13-167.smtp-out.amazonses.com);
+    spf=pass
+    smtp.mailfrom=
+    20231023212308106721a263944afcb2dcb3ebed50p0na-C39VIEGRHNUE4S@bounces.amazon.com
+    smtp.helo=a13-167.smtp-out.amazonses.com
+X-ME-Authentication-Results: mx1.messagingengine.com;
+    x-aligned-from=orgdomain_pass (Domain org match);
+    x-return-mx=pass header.domain=amazon.com policy.is_org=yes
+      (MX Records found: amazon-smtp.amazon.com);
+    x-return-mx=pass smtp.domain=bounces.amazon.com
+      policy.org_domain=amazon.com policy.is_org=no
+      (MX Records found: inbound-smtp.us-east-1.amazonaws.com);
+    x-tls=pass smtp.version=TLSv1.2 smtp.cipher=ECDHE-RSA-AES256-GCM-SHA384
+      smtp.bits=256/256;
+    x-vs=transactional:account score=20 state=14
+Authentication-Results: mx1.messagingengine.com;
+    x-csa=none;
+    x-me-sender=none;
+    x-ptr=pass smtp.helo=a13-167.smtp-out.amazonses.com
+      policy.ptr=a13-167.smtp-out.amazonses.com
+Authentication-Results: mx1.messagingengine.com;
+    bimi=pass header.d=amazon.com header.selector=default
+      policy.authority=pass policy.mark-type="Registered Mark"
+      policy.authority-uri=
+      https://d3frv9g52qce38.cloudfront.net/amazondefault/amazon_web_services_inc.pem
+Authentication-Results: mx1.messagingengine.com;
+    arc=none (no signatures found)
+Authentication-Results: mx1.messagingengine.com;
+    dkim=pass (1024-bit rsa key sha256) header.d=amazon.com
+      header.i=@amazon.com header.b=d5rQb267 header.a=rsa-sha256
+      header.s=yg4mwqurec7fkhzutopddd3ytuaqrvuz;
+    dkim=pass (1024-bit rsa key sha256) header.d=amazonses.com
+      header.i=@amazonses.com header.b=P8GzRyuy header.a=rsa-sha256
+      header.s=224i4yxa5dv7c2xz3womw6peuasteono;
+    dmarc=pass policy.published-domain-policy=quarantine
+      policy.applied-disposition=none policy.evaluated-disposition=none
+      (p=quarantine,d=none,d.eval=none) policy.policy-from=p
+      header.from=amazon.com;
+    iprev=pass smtp.remote-ip=54.240.13.167
+      (a13-167.smtp-out.amazonses.com);
+    spf=pass
+      smtp.mailfrom=
+      20231023212308106721a263944afcb2dcb3ebed50p0na-C39VIEGRHNUE4S@bounces.amazon.com
+      smtp.helo=a13-167.smtp-out.amazonses.com
+BIMI-Indicator: PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Inllcy
+    I/Pgo8c3ZnIHZlcnNpb249IjEuMiIgYmFzZVByb2ZpbGU9InRpbnktcHMiIHZpZXdCb3g9
+    IjAgMCAxOTIgMTkyIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogID
+    x0aXRsZT5BbWF6b248L3RpdGxlPgogIDxyZWN0IGNsYXNzPSJjbHMtMSIgZmlsbD0iI2Zm
+    ZiIgd2lkdGg9IjE5MiIgaGVpZ2h0PSIxOTIiLz4KICA8cGF0aCBjbGFzcz0iY2xzLTIiIG
+    ZpbGw9IiMyMzJmM2UiIGQ9Ik0xNTQuNTQsOTQuMzZDMTM4LjQsMTA2LjI3LDExNSwxMTIu
+    Niw5NC44NSwxMTIuNkExMDguMDcsMTA4LjA3LDAsMCwxLDIxLjk0LDg0Ljc5Yy0xLjUxLT
+    EuMzctLjE2LTMuMjMsMS42Ni0yLjE4QTE0Ni42NCwxNDYuNjQsMCwwLDAsOTYuNTUsMTAy
+    LDE0NS4wOCwxNDUuMDgsMCwwLDAsMTUyLjIsOTAuNThjMi43Mi0xLjE1LDUsMS44LDIuMz
+    QsMy43OFoiLz4KICA8cGF0aCBmaWxsPSIjMjMyZjNlIiBjbGFzcz0iY2xzLTIiIGQ9Ik0x
+    NjEuMjYsODYuNjljLTIuMDctMi42NS0xMy42NS0xLjI1LTE4Ljg1LS42My0xLjU4LjE5LT
+    EuODItMS4xOS0uNC0yLjE5LDkuMjQtNi40OSwyNC4zOC00LjYxLDI2LjE0LTIuNDRTMTY3
+    LjY4LDk4LjgsMTU5LDEwNmMtMS4zMywxLjEyLTIuNi41Mi0yLTEsMS45NC00Ljg3LDYuMy
+    0xNS43Niw0LjI0LTE4LjRaIi8+Cjwvc3ZnPg==
+BIMI-Location: v=BIMI1;
+    l=https://d3frv9g52qce38.cloudfront.net/amazondefault/order_329474121_logo.svg
+    a=https://d3frv9g52qce38.cloudfront.net/amazondefault/amazon_web_services_inc.pem
+X-ME-VSCause: gggruggvucftvghtrhhoucdtuddrgedvkedrkeeigdduheelucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdggtfgfnhhsuhgsshgtrhhisggvpdfu
+    rfetoffkrfgpnffqhgenuceurghilhhouhhtmecufedttdenucdntegttghouhhnthculd
+    dvtddmnecujfgurhepfffhvffkufggtgesrgdtregstddtjeenucfhrhhomheptehmrgii
+    ohhnuceorggttghouhhnthdquhhpuggrthgvsegrmhgriihonhdrtghomheqnecuggftrf
+    grthhtvghrnhepfeelveeuueejfedttdelfefhteevtdeutdeitdffhefhueffgfefiefg
+    ueegveelnecukfhppeehgedrvdegtddrudefrdduieejnecuvehluhhsthgvrhfuihiivg
+    eptdenucfrrghrrghmpehinhgvthepheegrddvgedtrddufedrudeijedphhgvlhhopegr
+    udefqdduieejrdhsmhhtphdqohhuthdrrghmrgiiohhnshgvshdrtghomhdpmhgrihhlfh
+    hrohhmpeeovddtvdefuddtvdefvdduvdeftdekuddtieejvddurgdvieefleeggegrfhgt
+    sgdvuggtsgefvggsvgguhedtphdtnhgrqdevfeelggfkgffitffjpfgfgfegufessghouh
+    hntggvshdrrghmrgiiohhnrdgtohhmqedpnhgspghrtghpthhtohepuddprhgtphhtthho
+    peeosghimhhipghtvghsthesfhgrshhtmhgrihhlrdgtohhmqe
+X-ME-VSScore: 20
+X-ME-VSCategory: transactional:account
+X-ME-CSA: none
+Received-SPF: pass
+    (bounces.amazon.com: Sender is authorized to use '20231023212308106721a263944afcb2dcb3ebed50p0na-C39VIEGRHNUE4S@bounces.amazon.com' in 'mfrom' identity (mechanism 'include:amazon.com' matched))
+    receiver=mx1.messagingengine.com;
+    identity=mailfrom;
+    envelope-from="20231023212308106721a263944afcb2dcb3ebed50p0na-C39VIEGRHNUE4S@bounces.amazon.com";
+    helo=a13-167.smtp-out.amazonses.com;
+    client-ip=54.240.13.167
+Received: from a13-167.smtp-out.amazonses.com (a13-167.smtp-out.amazonses.com [54.240.13.167])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mx1.messagingengine.com (Postfix) with ESMTPS id 69C5C23C00BB
+	for <bimi_test@fastmail.com>; Mon, 23 Oct 2023 17:23:10 -0400 (EDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
+	s=yg4mwqurec7fkhzutopddd3ytuaqrvuz; d=amazon.com; t=1698096188;
+	h=Date:From:To:Message-ID:Subject:MIME-Version:Content-Type;
+	bh=D+F1PXj1Td2Q7fTtOLkSZ5CrHjAO0pd+Mr7wNWUsoaY=;
+	b=d5rQb267ki5nxsKn/4C6zxxMvcsRl6USL4fAmsW3IBVMmDvmAJn/ArOzwIjK8sgz
+	QRdlWc8sJcciJVvyxD9EQaGspnD38XiPb6lJpQPaSGanFIvbNGPSx2w/BdV2TmCzFTt
+	ldNf4S3jcstMFeN8kwtYuJ0VChkXzhFr7dtw8zXQ=
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
+	s=224i4yxa5dv7c2xz3womw6peuasteono; d=amazonses.com; t=1698096188;
+	h=Date:From:To:Message-ID:Subject:MIME-Version:Content-Type:Feedback-ID;
+	bh=D+F1PXj1Td2Q7fTtOLkSZ5CrHjAO0pd+Mr7wNWUsoaY=;
+	b=P8GzRyuyJ4iX1o50RuCO2qkzjmTdJI0/VVAtMSJzf3MOVw5axnSfGAJmrDCqtTbn
+	L3u0w+s+osSj1D35Ni62PwyW5nQnJc6Rl7zT2nJVadhXe9iKQPDns3UH0bBv2LkRUpW
+	S8bhdzoOrd01AsuidKOkh19XO6BqA/4dQk7SWCKU=
+Date: Mon, 23 Oct 2023 21:23:08 +0000
+From: Amazon <account-update@amazon.com>
+To: bimi_test@fastmail.com
+Message-ID: <0100018b5e6b8d12-b27a12a4-9133-4670-8328-41c120de41ec-000000@email.amazonses.com>
+Subject: Verify your new Amazon account
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+	boundary="----=_Part_4507959_298108442.1698096188681"
+X-AMAZON-MAIL-RELAY-TYPE: notification
+Bounces-to: 20231023212308106721a263944afcb2dcb3ebed50p0na-C39VIEGRHNUE4S@bounces.amazon.com
+X-AMAZON-METADATA: CA=C39VIEGRHNUE4S
+X-Original-MessageID: <urn.rtn.msg.20231023212308106721a263944afcb2dcb3ebed50p0na@1698096188681.>
+Feedback-ID: 1.us-east-1.ZHcGJK6s+x+i9lRHKog4RW3tECwWIf1xzTYCZyUaiec=:AmazonSES
+X-SES-Outgoing: 2023.10.23-54.240.13.167
+
+------=_Part_4507959_298108442.1698096188681
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+
+<html xmlns=3D"http://www.w3.org/1999/xhtml">
+<head>
+  <meta name=3D"viewport" content=3D"width=3Ddevice-width">
+  <meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3DUTF-8"/=
+>
+  <style type=3D"text/css">
+    @media only screen and (min-width:620px) {
+      table.body p{
+        font-size:14px !important;
+      }
+      table.body .otp{
+        font-size:18px !important;
+        font-weight:bold;
+      }
+      table.body #title p{
+        font-size:20px !important;
+      }
+    }
+  </style>
+  <style>
+    body {
+      margin:0;
+      color:#333;
+    }
+
+    a {
+      text-decoration:none;
+      color:#006699;
+    }
+
+    p {
+      margin:0px;
+    }
+
+    img {
+      border:0;
+      margin:0;
+    }
+
+    /* container */
+    #container {
+      width:540px;
+      margin:0 auto;
+    }
+
+    #content {
+      width:500px;
+      margin:0 20px;
+    }
+
+    /* header */
+    #header {
+      border-bottom:1px solid #eaeaea;
+      padding-top:10px;
+      padding-left:0px;
+      padding-right:0px;
+      padding-bottom:10px;
+    }
+
+    #title p{
+      font-size:26px;
+      font-family: "arial", "sans-serif";
+    }
+
+    #amazonLogo{
+      width:107px;
+      height:31px;
+    }
+
+    #customLogo{
+      width:107px;
+      height:auto;
+    }
+
+    /* verification msg */
+    #verificationMsg {
+      padding-left:0;
+      padding-top:9px;
+      padding-bottom:9px;
+    }
+
+    #verificationMsg p {
+      font-size:20px;
+      font-family: "arial", "sans-serif";
+    }
+
+    #verificationMsg .otp {
+      font-size:24px;
+      font-weight:bold;
+      padding-top:18px;
+    }
+
+    /* account security */
+    #accountSecurity {
+      padding-left:0;
+      padding-top:9px;
+      padding-bottom:9px;
+    }
+
+    #accountSecurity p {
+      font-size:20px;
+      font-family: "arial", "sans-serif";
+    }
+
+    /* closing */
+    #closing {
+      padding-left:0;
+      padding-top:9px;
+      padding-bottom:9px;
+    }
+
+    #closing p {
+      font-size:20px;
+      font-family: "arial", "sans-serif";
+    }
+  </style>
+  <title></title>
+</head>
+<body><img width=3D"1" height=3D"1" src=3D"https://www.amazon.com/gp/r.html=
+?C=3D2W75CR7G4NUVY&M=3Durn:rtn:msg:20231023212308106721a263944afcb2dcb3ebed=
+50p0na&R=3D3MUBT9447GSA7&T=3DO&U=3Dhttps%3A%2F%2Fimages-na.ssl-images-amazo=
+n.com%2Fimages%2FG%2F01%2Fnav%2Ftransp.gif&H=3DOYAKACVQBLUYAWFYDNC5CAJPJFIA=
+&ref_=3Dpe_3619770_272516070_opens" />
+<table align=3D"center" cellspacing=3D"0" id=3D"container" cellpadding=3D"0=
+" class=3D"body">
+  <tbody>
+  <tr>
+    <td>
+      <table cellspacing=3D"0" id=3D"content" cellpadding=3D"0">
+        <tbody>
+        <tr>
+          <td id=3D"header">
+            <table cellspacing=3D"0" cellpadding=3D"0">
+              <tbody>
+              <tr>
+                <td width=3D"250" id=3D"logo">
+<img src=3D"https://m.media-amazon.com/images/G/01/x-locale/cs/te/logo._CB4=
+85949097_.png" id=3D"amazonLogo"/>                </td>
+                <td width=3D"250" valign=3D"top" align=3D"right" id=3D"titl=
+e"><p>Verify your new Amazon account</p></td>
+              </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+
+        <tr>
+          <td id=3D"verificationMsg">
+            <p>To verify your email address, please use the following One T=
+ime Password (OTP):</p>
+            <p class=3D"otp">159200</p>
+          </td>
+        </tr>
+
+        <tr>
+          <td id=3D"accountSecurity">
+            <p>Do not share this OTP with anyone. Amazon takes your account=
+ security very seriously. Amazon Customer Service will never ask you to dis=
+close or verify your Amazon password, OTP, credit card, or banking account =
+number. If you receive a suspicious email with a link to update your accoun=
+t information, do not click on the link=E2=80=94instead, report the email t=
+o Amazon for investigation. </p>
+          </td>
+        </tr>
+
+        <tr>
+          <td id=3D"closing">
+            <p>Thank you!</p>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </td>
+  </tr>
+  </tbody>
+</table>
+<img width=3D"1" height=3D"1" src=3D"https://www.amazon.com/gp/r.html?C=3D2=
+W75CR7G4NUVY&M=3Durn:rtn:msg:20231023212308106721a263944afcb2dcb3ebed50p0na=
+&R=3D2706G2HP4919D&T=3DE&U=3Dhttps%3A%2F%2Fimages-na.ssl-images-amazon.com%=
+2Fimages%2FG%2F01%2Fnav%2Ftransp.gif&H=3DMA70OMSOKAGXSH1GAI8VDM08RKGA&ref_=
+=3Dpe_3619770_272516070_open" /></body>
+</html>
+
+
+
+------=_Part_4507959_298108442.1698096188681--

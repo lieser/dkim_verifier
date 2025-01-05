@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2022 Philippe Lieser
+ * Copyright (c) 2020-2022;2025 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -30,6 +30,12 @@ const txtRecords = new Map([
 		"Ip3G+2kryOTIKT+l/K4w3QIDAQAB"],
 
 	["_dmarc.paypal.com", "v=DMARC1; p=reject; rua=mailto:d@rua.agari.com; ruf=mailto:d@ruf.agari.com"],
+
+	// Real world examples
+	["yg4mwqurec7fkhzutopddd3ytuaqrvuz._domainkey.amazon.com", "p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC5bK96ORNNFosbAaVNZU/gVzhANHyd00o1O7qbEeMNLKPNpS8/TYwdlrVnQ7JtJHjIR9EPj61jgtS604XpAltDMYvic2I40AaKgSfr4dDlRcALRtlVqmG7U5MdLiMyabxXPl2s/oqkevALySg0sr/defHC+qAhmdot9Ii/ZQ3YcQIDAQAB"],
+	["v2._domainkey.newsletters.cnn.com", "v=DKIM1; k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqd2EItai1ml2NEcqHw2LVvPcAk47vsawT1VefsguODwAiEMVwZxICrfqRlaZ7HC//r42raw9ZOCk48ymgvsR9vLVXEHcBL0cHiOi1AS57GUNcMzBd3SqxSJTQbt5RWfqas4p2mf2PAcvI/pmCCGJg+8zPimNnFZrarZyuUZCdzI7N6pp3TJVXpfDyNEKa1S/wl8W1tufjkwr8As8LQgoxw7/zQyMOm1fyFyxmPh+wd1dMHOBG7a1vV/UvH8QA8ou7BINPUcmGctdCglGtXme4FONjp4jJYCfGGoxicydIKXlgUyaLIT52mhnGYmfaXQyq7ZscvXD3ygIKmTY6a+mvwIDAQAB"],
+	["v2._domainkey.emailalerts.cnn.com", "v=DKIM1; k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2c1CEPSZ2BZXPmjt//RXAU/DVIV6gouJ399kcM4oOhwLj1z1fsETHU1uXTTbdyAKBqkI0LXC1Po2f1PtPxomkUwZ39SxDpvHgmzXp0+6O/XHeu9nZtx3YXsIEN65ELqAqN4aKDrM5Dhgs/5ZJibU6YtUfqm2CbRaVQ/9Mj07gEOYXYqSkwtQcqGf1Mxq2Q3y90L7MghdavHCpz/vtvcQCBu9oZhc6thHr4+maPJghNCLDJkQRQpjMqX7oZii9oXtAAbwuSjuIauEWQqVEmSxFekXgbVMOSgBnLwlzBL5/RH/CwaZf2//GqDlMK7EgSNRY+5nyUJjbjpfu5Iy1T12rwIDAQAB"],
+	["fm3._domainkey.fastmail.com", "v=DKIM1; k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAr2KQLQU8JamLSgEKT5oooh+WmyLrLJZzR4IaNqrIiBin3rCHH3wJfWck95fJQ+MXoWnMOSTon24DxD4Pfkit5ugZvcrO8BH06F9HNcGhqEBhNtarD0rsyOfc+6YDZEGXA0WiiW6z2oIEz6aGtVotp8mRY77GY2uM8Ke5wz27ZDb3BMjNkTOxrNquIrvOfXdLCY81mPtRpEKQA3GLL1Qa4uFLvXgT3VEZApthFW2rBywSCJnKCn6fPveK3iraeTqFh0Ye3BLEGPGzfNPg5QadOPt8RrCVQ0/kF47sMg1lHkT2MrGPTCOTxcfPJKkKzHo7/XF3bqAWk6wxqK5Jq0NmIQIDAQAB"],
 ]);
 
 /**

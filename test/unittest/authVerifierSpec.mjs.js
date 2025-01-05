@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2024 Philippe Lieser
+ * Copyright (c) 2020-2025 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -550,7 +550,45 @@ describe("AuthVerifier [unittest]", function () {
 		});
 	});
 
-	describe("invalid messages", function () {
+	describe("Valid messages", function () {
+		it("Amazon received by Fastmail", async function () {
+			const message = await createMessageHeader("original/Fastmail from Amazon - Verify your new Amazon account.eml");
+			const res = await authVerifier.verify(message);
+			expect(res.dkim.length).to.be.equal(2);
+			expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
+			expect(res.dkim[0]?.warnings).to.be.empty;
+		});
+
+		it("CNN received by Fastmail", async function () {
+			let message = await createMessageHeader("original/Fastmail from CNN - Thanks for subscribing to 5 Things.eml");
+			let res = await authVerifier.verify(message);
+			expect(res.dkim.length).to.be.equal(1);
+			expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
+			expect(res.dkim[0]?.warnings).to.be.empty;
+
+			message = await createMessageHeader("original/Fastmail from CNN - Welcome to CNN Breaking News.eml");
+			res = await authVerifier.verify(message);
+			expect(res.dkim.length).to.be.equal(1);
+			expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
+			expect(res.dkim[0]?.warnings).to.be.empty;
+		});
+
+		it("Fastmail received by Fastmail", async function () {
+			let message = await createMessageHeader("original/Fastmail from Fastmail - How to keep your email private.eml");
+			let res = await authVerifier.verify(message);
+			expect(res.dkim.length).to.be.equal(2);
+			expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
+			expect(res.dkim[0]?.warnings).to.be.empty;
+
+			message = await createMessageHeader("original/Fastmail from Fastmail - Welcome! Get set up in 3 steps..eml");
+			res = await authVerifier.verify(message);
+			expect(res.dkim.length).to.be.equal(2);
+			expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
+			expect(res.dkim[0]?.warnings).to.be.empty;
+		});
+	});
+
+	describe("Invalid messages", function () {
 		it("ill-formed from shows proper error message", async function () {
 			const message = await createMessageHeader("ill_formed-from.eml");
 			const res = await authVerifier.verify(message);
@@ -570,12 +608,22 @@ describe("AuthVerifier [unittest]", function () {
 			await prefs.setValue("arh.read", true);
 		});
 
-		it("RFC 6376 example with add BIMI", async function () {
+		it("RFC 6376 example with added BIMI", async function () {
 			const message = await createMessageHeader("bimi/rfc6376-A.2-with_bimi.eml");
 			const res = await authVerifier.verify(message);
 			expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
 			expect(res.dkim[0]?.favicon).to.be.a("string").and.satisfy(
 				(/** @type {string} */ favicon) => favicon.startsWith("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiICBzdGFuZGFsb25l"));
+		});
+
+		it("Amazon received by Fastmail", async function () {
+			await prefs.setValue("arh.relaxedParsing", true);
+
+			const message = await createMessageHeader("original/Fastmail from Amazon - Verify your new Amazon account.eml");
+			const res = await authVerifier.verify(message);
+			expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
+			expect(res.dkim[0]?.favicon).to.be.a("string").and.satisfy(
+				(/** @type {string} */ favicon) => favicon.startsWith("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Inllcy"));
 		});
 
 		it("CNN received by Fastmail", async function () {
