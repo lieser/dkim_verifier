@@ -629,7 +629,7 @@ function sortSignatures(signatures, from, listId) {
 }
 
 /**
- * Convert DKIM ARHresinfo to dkimResult.
+ * Convert DKIM ArhResInfo to dkimSigResultV2.
  *
  * @param {ArhResInfo} arhDKIM
  * @returns {dkimSigResultV2}
