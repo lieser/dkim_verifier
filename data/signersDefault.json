@@ -26,6 +26,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "abfall.app",
+			"addr": "*",
+			"sdid": "abfall.app",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "abgeordnetenwatch.de",
 			"addr": "*",
 			"sdid": "abgeordnetenwatch.de",
@@ -68,15 +74,27 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
+			"domain": "adfc.de",
+			"addr": "*",
+			"sdid": "adfc.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "adlice.com",
 			"addr": "*",
 			"sdid": "adlice.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "adticket.de",
+			"addr": "*",
+			"sdid": "adticket.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "afbshop.de",
 			"addr": "*",
-			"sdid": "afbshop.de",
+			"sdid": "afbshop.de afb24.onmicrosoft.com",
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_NEUTRAL"
 		}, {
@@ -157,6 +175,18 @@
 			"sdid": "alpenverein.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "alternate.de",
+			"addr": "*",
+			"sdid": "alternate.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "alternate.de",
+			"addr": "*@newsletter.alternate.de",
+			"sdid": "alternate.de newsletter.alternate.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
 			"domain": "altroconsumo.it",
 			"addr": "*",
@@ -428,11 +458,29 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "bikeandridebox.de",
+			"addr": "*",
+			"sdid": "bikeandridebox.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "bingads.com",
 			"addr": "*",
 			"sdid": "bingads.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "bitburger.de",
+			"addr": "*@my.bitburger.de",
+			"sdid": "bitburger.de my.bitburger.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
+			"domain": "bitburger.de",
+			"addr": "*@neuigkeiten.bitburger.de",
+			"sdid": "bitburger.de neuigkeiten.bitburger.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
 			"domain": "bitly.com",
 			"addr": "*@accounts.bitly.com",
@@ -530,6 +578,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "bsd-nstob.de",
+			"addr": "*",
+			"sdid": "bsd-nstob.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "bticino.it",
 			"addr": "*@crm.bticino.it",
 			"sdid": "bticino.it crm.bticino.it",
@@ -619,6 +673,12 @@
 			"sdid": "campact.de",
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_NEUTRAL"
+		}, {
+			"domain": "casio.de",
+			"addr": "*",
+			"sdid": "casio.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
 		}, {
 			"domain": "caraudioforum.it",
 			"addr": "*",
@@ -782,6 +842,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "crottendorfer-raeucherkerzen.de",
+			"addr": "*",
+			"sdid": "crottendorfer-raeucherkerzen.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "ctan.org",
 			"addr": "*",
 			"sdid": "ctan.org",
@@ -853,6 +919,12 @@
 			"sdid": "dehashed.com",
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_NEUTRAL"
+		}, {
+			"domain": "delonghi.com",
+			"addr": "*@news.delonghi.com",
+			"sdid": "delonghi.com news.delonghi.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
 			"domain": "deutsche-stammzellspenderdatei.de",
 			"addr": "*",
@@ -965,6 +1037,12 @@
 			"domain": "disqus.com",
 			"addr": "*",
 			"sdid": "disqus.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "dlr.de",
+			"addr": "*",
+			"sdid": "dlr.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -1292,6 +1370,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
+			"domain": "ewe.de",
+			"addr": "*",
+			"sdid": "ewe.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "expert.de",
 			"addr": "*@mailing.expert.de",
 			"sdid": "expert.de mailing.expert.de",
@@ -1499,6 +1583,12 @@
 			"domain": "freefilesync.org",
 			"addr": "*",
 			"sdid": "freefilesync.org",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "freiwilligenserver.de",
+			"addr": "*",
+			"sdid": "freiwilligenserver.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -1753,6 +1843,12 @@
 			"sdid": "googlemail.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL0"
+		}, {
+			"domain": "gotinder.com",
+			"addr": "*",
+			"sdid": "gotinder.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
 		}, {
 			"domain": "gramps-project.org",
 			"addr": "*",
@@ -2096,6 +2192,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "kenwoodworld.com",
+			"addr": "*@news.kenwoodworld.com",
+			"sdid": "kenwoodworld.com news.kenwoodworld.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
 			"domain": "kickstarter.com",
 			"addr": "*",
 			"sdid": "kickstarter.com",
@@ -2105,6 +2207,12 @@
 			"domain": "kinderschutzbund-koeln.de",
 			"addr": "*",
 			"sdid": "kinderschutzbund-koeln.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "klarna.com",
+			"addr": "*",
+			"sdid": "klarna.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -2282,6 +2390,12 @@
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
+			"domain": "localcdn.org",
+			"addr": "*",
+			"sdid": "localcdn.org",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "loox.io",
 			"addr": "*",
 			"sdid": "loox.io",
@@ -2345,6 +2459,12 @@
 			"domain": "markt.de",
 			"addr": "*",
 			"sdid": "markt.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "mastercard.com",
+			"addr": "*",
+			"sdid": "mastercard.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -2540,6 +2660,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "murena.com",
+			"addr": "*",
+			"sdid": "murena.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "mvgm.com",
 			"addr": "*",
 			"sdid": "mvgm.com",
@@ -2551,6 +2677,12 @@
 			"sdid": "mybosch.com mails.mybosch.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "mycare.de",
+			"addr": "*@reply.mycare.de",
+			"sdid": "mycare.de reply.mycare.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
 			"domain": "mycommerce.com",
 			"addr": "*",
@@ -2575,6 +2707,12 @@
 			"sdid": "myhermes.de paketankuendigung.myhermes.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
+			"domain": "mypostcard.com",
+			"addr": "*",
+			"sdid": "mypostcard.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
 		}, {
 			"domain": "nadh-austria.at",
 			"addr": "*",
@@ -2771,6 +2909,12 @@
 			"domain": "openstreetmap.org",
 			"addr": "*",
 			"sdid": "openstreetmap.org",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "order-control.com",
+			"addr": "*",
+			"sdid": "order-control.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -3140,6 +3284,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "rollei.com",
+			"addr": "*",
+			"sdid": "rollei.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "rossmann.de",
 			"addr": "*@mailing.rossmann.de",
 			"sdid": "rossmann.de mailing.rossmann.de",
@@ -3428,6 +3578,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "spreadshirt.com",
+			"addr": "*",
+			"sdid": "spreadshirt.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "square-enix.com",
 			"addr": "*@xmail.square-enix.com",
 			"sdid": "xmail.square-enix.com",
@@ -3521,6 +3677,12 @@
 			"domain": "superuser.com",
 			"addr": "*",
 			"sdid": "superuser.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "supplementa.com",
+			"addr": "*",
+			"sdid": "supplementa.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -3665,6 +3827,18 @@
 			"domain": "toogoodtogo.com",
 			"addr": "*",
 			"sdid": "toogoodtogo.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "toom.de",
+			"addr": "*@mail.toom.de",
+			"sdid": "toom.de mail.toom.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
+			"domain": "tp-link.com",
+			"addr": "*",
+			"sdid": "tp-link.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -3931,6 +4105,12 @@
 			"sdid": "videolan.org",
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_NEUTRAL"
+		}, {
+			"domain": "visa.com",
+			"addr": "*",
+			"sdid": "visa.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
 		}, {
 			"domain": "vodafone.de",
 			"addr": "*",
