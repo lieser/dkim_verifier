@@ -1,4 +1,3 @@
-The Add-on queries a DNS Server (default Google Public DNS (8.8.8.8) or the one configured in the OS) for a TXT record specified in the signature, which contains the public key of the signature.
-This will happen every time an e-mail with a DKIM Signature is viewed.
+Add-on này truy vấn một máy chủ DNS (mặc định là Google Public DNS (8.8.8.8) hoặc máy chủ được cấu hình trong hệ điều hành) cho một bản ghi TXT được chỉ định trong chữ ký, chứa khóa công khai của chữ ký mỗi khi xem một email chứa Chữ kí DKIM.
 
-If the use of DMARC is enabled additional DNS lookups may be done, even if not DKIM signed e-mail are viewed.
+Nếu bật sử dụng DMARC, các tra cứu DNS bổ sung có thể được thực hiện ngay cả khi đã xem các email không ký DKIM.

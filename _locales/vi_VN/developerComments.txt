@@ -1,3 +1,3 @@
-Support is given at https://github.com/lieser/dkim_verifier/issues or by e-mail to lieser+dkim@posteo.net (in English or German).
+Hỗ trợ được cung cấp tại https://github.com/lieser/dkim_verifier/issues hoặc qua email tới lieser+dkim@posteo.net (dùng tiếng Anh hoặc tiếng Đức).
 
-The preferred way to report bugs is by creating an issue at https://github.com/lieser/dkim_verifier/issues.
+Cách tốt nhất để báo lỗi là tạo issue tại https://github.com/lieser/dkim_verifier/issues.
