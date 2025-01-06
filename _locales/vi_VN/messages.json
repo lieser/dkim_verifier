@@ -456,10 +456,10 @@
 		"message": "Hiển thị"
 	},
 	"options_showDKIMHeader": {
-		"message": "Hiển thị header DKIM:"
+		"message": "Hiển thị tiêu đề DKIM:"
 	},
 	"options_showDKIMFromTooltip": {
-		"message": "Hiển thị chú giải công cụ DKIM cho header From:"
+		"message": "Hiển thị chú giải công cụ DKIM cho tiêu đề From:"
 	},
 	"options_showDKIM.value.0": {
 		"message": "không bao giờ"
@@ -477,7 +477,7 @@
 		"message": "khi một tin nhắn được xem"
 	},
 	"options_colorFrom": {
-		"message": "Bật tô sáng header From"
+		"message": "Bật tô sáng tiêu đề From"
 	},
 	"options_color": {
 		"message": "Màu sắc"
