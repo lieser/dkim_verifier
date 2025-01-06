@@ -1,0 +1,9 @@
+<a href="https://en.wikipedia.org/wiki/DomainKeys_Identified_Mail">DomainKeys Identified Mail (DKIM)</a> is a method which allows domains to sign e-mails. The add-on verifies these DKIM signatures and shows the result in the e-mail header. This way it is possible to see which domain is claiming responsibility for a specific e-mail. How the result is shown can be changed in the options.
+
+It is important to note that an e-mail can be signed by an arbitrary domains. A valid DKIM signature alone is therefore not an indicator for a trustworthy e-mail. Always check who the signer is to determine if an e-mail is trustworthy!
+
+In some cases, the absence of a DKIM signature can be useful to identify scam e-mails. If it is known that a certain domain is signing all its e-mails with DKIM, the absence of a DKIM signature is a strong indicator for a forged e-mail.
+
+To ease the checking of if and by who an e-mail is signed, the add-on supports the use of sign rules. With sign rules it is possible to specify that e-mails from a certain sender have to be always signed by a specific domain (also referred to as SDID). More about sign rules at https://github.com/lieser/dkim_verifier/wiki/Sign-rules.
+
+A description of all the available add-on options can be found at https://github.com/lieser/dkim_verifier/wiki/Options.
