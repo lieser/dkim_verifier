@@ -1,643 +1,637 @@
 {
 	// DKIM_STRINGS
 	"loading": {
-		"message": "Validating…"
+		"message": "Đang xác thực…"
 	},
 	"SUCCESS": {
-		"message": "Valid (Signed by $1)"
+		"message": "Hợp lệ (Được ký bởi $1)"
 	},
 	"PERMFAIL": {
-		"message": "Invalid ($1)"
+		"message": "Không hợp lệ ($1)"
 	},
 	"PERMFAIL_NO_REASON": {
-		"message": "Invalid"
+		"message": "Không hợp lệ"
 	},
 	"TEMPFAIL": {
-		"message": "Temporary validation error (For signature by $1)"
+		"message": "Lỗi xác thực tạm thời (Được ký bởi $1)"
 	},
 	"NOSIG": {
-		"message": "No Signature"
+		"message": "Không có chữ ký"
 	},
 	"NOT_EMAIL": {
-		"message": "Message is not an e-mail"
+		"message": "Tin nhắn không phải là email"
 	},
 	"SUCCESS_TAG": {
-		"message": "DKIM signed by $1",
+		"message": "DKIM được ký bởi $1",
 		"description": "Tag shown in Conversation add-on for valid mail. Should be kept short."
 	},
 	"TEMPFAIL_TAG": {
-		"message": "DKIM Error",
+		"message": "Lỗi DKIM",
 		"description": "Tag shown in Conversation add-on for temporary failure. Should be kept short."
 	},
 	"PERMFAIL_TAG": {
-		"message": "DKIM invalid",
+		"message": "DKIM không hợp lệ",
 		"description": "Tag shown in Conversation add-on for invalid mail. Should be kept short."
 	},
 	// DKIM_INTERNALERROR
 	"DKIM_INTERNALERROR": {
-		"message": "DKIM verifier internal error"
+		"message": "Lỗi nội bộ của trình xác minh DKIM"
 	},
 	"DKIM_INTERNALERROR_NAME": {
-		"message": "Internal error"
+		"message": "Lỗi nội bộ"
 	},
 	"DKIM_INTERNALERROR_DEFAULT": {
-		"message": "error"
+		"message": "lỗi"
 	},
 	"DKIM_INTERNALERROR_INCORRECT_EMAIL_FORMAT": {
-		"message": "E-mail is not correctly formatted"
+		"message": "Email không được định dạng đúng"
 	},
 	"DKIM_INTERNALERROR_INCORRECT_FROM": {
-		"message": "From address is ill-formed"
+		"message": "Địa chỉ From không đúng định dạng"
 	},
 	"ERROR_IMPORT_RULES": {
-		"message": "Importing of sign rules failed.",
+		"message": "Nhập quy tắc ký thất bại.",
 		"description": "Error title if importing of sign rules failed."
 	},
 	"ERROR_IMPORT_RULES_UNKNOWN_DATA": {
-		"message": "The format of the imported file is invalid.",
+		"message": "Định dạng của tệp nhập không hợp lệ.",
 		"description": "Error message if the user tries to import some unknown data as sign rules."
 	},
 	"ERROR_IMPORT_RULES_UNSUPPORTED_FORMAT": {
-		"message": "The format of the sign rules has an unsupported version.",
+		"message": "Định dạng của quy tắc ký có phiên bản không được hỗ trợ.",
 		"description": "Error message if the sign rules the user tried to import have an unsupported format."
 	},
 	// DKIM_INTERNALERROR - DNS
 	"DKIM_DNSERROR_UNKNOWN": {
-		"message": "Error in the DNS resolver"
+		"message": "Lỗi trong trình phân giải DNS"
 	},
 	"DKIM_DNSERROR_OFFLINE": {
-		"message": "Failed to make DNS query because Thunderbird is in offline mode.",
+		"message": "Không thể thực hiện truy vấn DNS vì Thunderbird đang ở chế độ ngoại tuyến.",
 		"description": "Error message if the addon needs to do a DNS query, but Thunderbird is in the offline mode."
 	},
 	"DKIM_DNSERROR_SERVER_ERROR": {
-		"message": "Error connecting to the DNS server"
+		"message": "Lỗi kết nối với máy chủ DNS"
 	},
 	"DKIM_DNSERROR_DNSSEC_BOGUS": {
-		"message": "DNS result is bogus"
+		"message": "Kết quả DNS không hợp lệ"
 	},
-	// DKIM_SIGERROR
 	"DKIM_SIGERROR": {
-		"message": "DKIM Signature Error"
+		"message": "Lỗi chữ ký DKIM"
 	},
 	"DKIM_SIGERROR_DEFAULT": {
-		"message": "error"
+		"message": "lỗi"
 	},
-	// DKIM_SIGERROR - DKIM-Signature Header
 	"DKIM_SIGERROR_ILLFORMED": {
-		"message": "Signature is ill-formed"
+		"message": "Chữ ký không đúng định dạng"
 	},
 	"DKIM_SIGERROR_UNSUPPORTED": {
-		"message": "Signature has an unsupported version"
+		"message": "Chữ ký có phiên bản không được hỗ trợ"
 	},
 	"DKIM_SIGERROR_ILLFORMED_TAGSPEC": {
-		"message": "Signature is ill-formed"
+		"message": "Chữ ký không đúng định dạng"
 	},
 	"DKIM_SIGERROR_DUPLICATE_TAG": {
-		"message": "Signature is ill-formed (duplicate tag)"
+		"message": "Chữ ký không đúng định dạng (thẻ trùng lặp)"
 	},
 	"DKIM_SIGERROR_VERSION": {
-		"message": "Unsupported version"
+		"message": "Phiên bản không được hỗ trợ"
 	},
 	"DKIM_SIGERROR_MISSING_V": {
-		"message": "DKIM version is missing"
+		"message": "Thiếu phiên bản DKIM"
 	},
 	"DKIM_SIGERROR_ILLFORMED_V": {
-		"message": "Version tag is ill-formed"
+		"message": "Thẻ phiên bản không đúng định dạng"
 	},
 	"DKIM_SIGERROR_MISSING_A": {
-		"message": "Missing signature algorithm"
+		"message": "Thiếu thuật toán chữ ký"
 	},
 	"DKIM_SIGERROR_UNKNOWN_A": {
-		"message": "Unsupported signature algorithm"
+		"message": "Thuật toán chữ ký không được hỗ trợ"
 	},
 	"DKIM_SIGERROR_INSECURE_A": {
-		"message": "Insecure signature algorithm"
+		"message": "Thuật toán chữ ký không an toàn"
 	},
 	"DKIM_SIGERROR_ILLFORMED_A": {
-		"message": "Algorithm tag ill-formed"
+		"message": "Thẻ thuật toán không đúng định dạng"
 	},
 	"DKIM_SIGERROR_MISSING_B": {
-		"message": "Missing signature"
+		"message": "Thiếu chữ ký"
 	},
 	"DKIM_SIGERROR_BADSIG": {
-		"message": "Signature is wrong"
+		"message": "Chữ ký sai"
 	},
 	"DKIM_SIGERROR_ILLFORMED_B": {
-		"message": "Signature data tag is ill-formed"
+		"message": "Thẻ dữ liệu chữ ký không đúng định dạng"
 	},
 	"DKIM_SIGERROR_MISSING_BH": {
-		"message": "Missing body hash"
+		"message": "Thiếu băm thân"
 	},
 	"DKIM_SIGERROR_CORRUPT_BH": {
-		"message": "E-Mail was modified"
+		"message": "Email đã bị sửa đổi"
 	},
 	"DKIM_SIGERROR_ILLFORMED_BH": {
-		"message": "Body hash tag is ill-formed"
+		"message": "Thẻ băm thân không đúng định dạng"
 	},
 	"DKIM_SIGERROR_UNKNOWN_C_H": {
-		"message": "Unsupported canonicalization algorithm for header"
+		"message": "Thuật toán chuẩn hóa không được hỗ trợ cho header"
 	},
 	"DKIM_SIGERROR_UNKNOWN_C_B": {
-		"message": "Unsupported canonicalization algorithm for body"
+		"message": "Thuật toán chuẩn hóa không được hỗ trợ cho thân"
 	},
 	"DKIM_SIGERROR_ILLFORMED_C": {
-		"message": "Canonicalization tag is ill-formed"
+		"message": "Thẻ chuẩn hóa không đúng định dạng"
 	},
 	"DKIM_SIGERROR_MISSING_D": {
-		"message": "Missing Signing Domain Identifier (SDID)"
+		"message": "Thiếu Định danh Miền Ký (SDID)"
 	},
 	"DKIM_SIGERROR_ILLFORMED_D": {
-		"message": "SDID tag is ill-formed"
+		"message": "Thẻ SDID không đúng định dạng"
 	},
 	"DKIM_SIGERROR_MISSING_H": {
-		"message": "Missing signed header fields"
+		"message": "Thiếu các trường header đã ký"
 	},
 	"DKIM_SIGERROR_MISSING_FROM": {
-		"message": "From header is not signed"
+		"message": "header From không được ký"
 	},
 	"DKIM_SIGERROR_ILLFORMED_H": {
-		"message": "Signed header fields tag is ill-formed"
+		"message": "Thẻ các trường header đã ký không đúng định dạng"
 	},
 	"DKIM_SIGERROR_SUBDOMAIN_I": {
-		"message": "AUID is not in a subdomain of SDID"
+		"message": "AUID không nằm trong miền con của SDID"
 	},
 	"DKIM_SIGERROR_DOMAIN_I": {
-		"message": "AUID must be in the same domain as SDID (s-flag set in key record)"
+		"message": "AUID phải nằm trong cùng miền với SDID (cờ s được đặt trong bản ghi khóa)"
 	},
 	"DKIM_SIGERROR_ILLFORMED_I": {
-		"message": "AUID tag is ill-formed"
+		"message": "Thẻ AUID không đúng định dạng"
 	},
 	"DKIM_SIGERROR_TOOLARGE_L": {
-		"message": "E-Mail is shorter than specified in the DKIM signature"
+		"message": "Email ngắn hơn so với quy định trong chữ ký DKIM"
 	},
 	"DKIM_SIGERROR_ILLFORMED_L": {
-		"message": "Body length tag is ill-formed"
+		"message": "Thẻ độ dài thân không đúng định dạng"
 	},
 	"DKIM_SIGERROR_UNKNOWN_Q": {
-		"message": "Unsupported query methods for public key retrieval"
+		"message": "Phương pháp truy vấn không được hỗ trợ để truy xuất khóa công khai"
 	},
 	"DKIM_SIGERROR_ILLFORMED_Q": {
-		"message": "Query method tag is ill-formed"
+		"message": "Thẻ phương pháp truy vấn không đúng định dạng"
 	},
 	"DKIM_SIGERROR_MISSING_S": {
-		"message": "Missing selector tag"
+		"message": "Thiếu thẻ chọn"
 	},
 	"DKIM_SIGERROR_ILLFORMED_S": {
-		"message": "Selector tag is ill-formed"
+		"message": "Thẻ chọn không đúng định dạng"
 	},
 	"DKIM_SIGERROR_ILLFORMED_T": {
-		"message": "Signature timestamp tag is ill-formed"
+		"message": "Thẻ dấu thời gian chữ ký không đúng định dạng"
 	},
 	"DKIM_SIGERROR_TIMESTAMPS": {
-		"message": "Signature expiration is before signature timestamp"
+		"message": "Hết hạn chữ ký trước dấu thời gian chữ ký"
 	},
 	"DKIM_SIGERROR_ILLFORMED_X": {
-		"message": "Signature expiration tag is ill-formed"
+		"message": "Thẻ hết hạn chữ ký không đúng định dạng"
 	},
 	"DKIM_SIGERROR_ILLFORMED_Z": {
-		"message": "Copied header fields tag is ill-formed"
+		"message": "Thẻ các trường header đã sao chép không đúng định dạng"
 	},
-	// DKIM_SIGERROR - key query
 	"DKIM_SIGERROR_NOKEY": {
-		"message": "No DKIM key found in DNS server"
+		"message": "Không tìm thấy khóa DKIM trong máy chủ DNS"
 	},
-	// DKIM_SIGERROR - Key record
 	"DKIM_SIGERROR_KEY_ILLFORMED": {
-		"message": "DKIM key is ill-formed"
+		"message": "Khóa DKIM không đúng định dạng"
 	},
 	"DKIM_SIGERROR_KEY_INVALID": {
-		"message": "DKIM key is invalid"
+		"message": "Khóa DKIM không hợp lệ"
 	},
 	"DKIM_SIGERROR_KEY_ILLFORMED_TAGSPEC": {
-		"message": "DKIM key is ill-formed"
+		"message": "Khóa DKIM không đúng định dạng"
 	},
 	"DKIM_SIGERROR_KEY_DUPLICATE_TAG": {
-		"message": "DKIM key is ill-formed (duplicate tag)"
+		"message": "Khóa DKIM không đúng định dạng (thẻ trùng lặp)"
 	},
 	"DKIM_SIGERROR_KEY_INVALID_V": {
-		"message": "Invalid version of the DKIM key record"
+		"message": "Phiên bản không hợp lệ của bản ghi khóa DKIM"
 	},
 	"DKIM_SIGERROR_KEY_ILLFORMED_V": {
-		"message": "DKIM key version tag is ill-formed"
+		"message": "Thẻ phiên bản khóa DKIM không đúng định dạng"
 	},
 	"DKIM_SIGERROR_KEY_HASHNOTINCLUDED": {
-		"message": "Wrong hash algorithm in DKIM key record"
+		"message": "Thuật toán băm sai trong bản ghi khóa DKIM"
 	},
 	"DKIM_SIGERROR_KEY_ILLFORMED_H": {
-		"message": "Hash algorithms tag in DKIM key is ill-formed"
+		"message": "Thẻ thuật toán băm trong khóa DKIM không đúng định dạng"
 	},
 	"DKIM_SIGERROR_KEY_UNKNOWN_K": {
-		"message": "Unsupported DKIM key type"
+		"message": "Loại khóa DKIM không được hỗ trợ"
 	},
 	"DKIM_SIGERROR_KEY_MISMATCHED_K": {
-		"message": "Signature algorithm does not match DKIM key type",
+		"message": "Thuật toán chữ ký không khớp với loại khóa DKIM",
 		"description": "Error message if the signature algorithm in the DKIM Signature header (a-tag) does not match the key type of the DKIM key (k-tag)."
 	},
 	"DKIM_SIGERROR_KEY_ILLFORMED_K": {
-		"message": "DKIM key type tag is ill-formed"
+		"message": "Thẻ loại khóa DKIM không đúng định dạng"
 	},
 	"DKIM_SIGERROR_KEY_ILLFORMED_N": {
-		"message": "Notes tag in DKIM key is ill-formed"
+		"message": "Thẻ ghi chú trong khóa DKIM không đúng định dạng"
 	},
 	"DKIM_SIGERROR_KEY_MISSING_P": {
-		"message": "DKIM key contains no public key"
+		"message": "Khóa DKIM không chứa khóa công khai"
 	},
 	"DKIM_SIGERROR_KEY_REVOKED": {
-		"message": "DKIM key is revoked"
+		"message": "Khóa DKIM đã bị thu hồi"
 	},
 	"DKIM_SIGERROR_KEY_ILLFORMED_P": {
-		"message": "Public key data tag in DKIM key is ill-formed"
+		"message": "Thẻ dữ liệu khóa công khai trong khóa DKIM không đúng định dạng"
 	},
 	"DKIM_SIGERROR_KEY_NOTEMAILKEY": {
-		"message": "DKIM key is not an e-mail key"
+		"message": "Khóa DKIM không phải là khóa email"
 	},
 	"DKIM_SIGERROR_KEY_ILLFORMED_S": {
-		"message": "Service Type tag in DKIM key is ill-formed"
+		"message": "Thẻ Loại Dịch vụ trong khóa DKIM không đúng định dạng"
 	},
 	"DKIM_SIGERROR_KEY_TESTMODE": {
-		"message": "The signing domain is only testing DKIM"
+		"message": "Miền ký chỉ đang thử nghiệm DKIM"
 	},
 	"DKIM_SIGERROR_KEY_ILLFORMED_T": {
-		"message": "Flags tag in DKIM key is ill-formed"
+		"message": "Thẻ cờ trong khóa DKIM không đúng định dạng"
 	},
-	// DKIM_SIGERROR - key decode
 	"DKIM_SIGERROR_KEYDECODE": {
-		"message": "Public key in DKIM key couldn't be decoded"
+		"message": "Khóa công khai trong khóa DKIM không thể giải mã"
 	},
-	// DKIM_SIGERROR - POLICY
 	"DKIM_POLICYERROR_MISSING_SIG": {
-		"message": "No Signature, should be signed by $1",
+		"message": "Không có chữ ký, nên được ký bởi $1",
 		"description": "Error if a message has no signature, but the sign rules state that it should be signed"
 	},
 	"DKIM_POLICYERROR_KEYMISMATCH": {
-		"message": "Stored DKIM key is different from the current one"
+		"message": "Khóa DKIM được lưu trữ khác với khóa hiện tại"
 	},
 	"DKIM_POLICYERROR_KEY_INSECURE": {
-		"message": "DKIM key is not signed by DNSSEC"
+		"message": "Khóa DKIM không được ký bởi DNSSEC"
 	},
 	"DKIM_POLICYERROR_WRONG_SDID": {
-		"message": "Wrong signer (should be $1)"
+		"message": "Người ký sai (nên là $1)"
 	},
 	"DKIM_POLICYERROR_UNSIGNED_HEADER_ADDED": {
-		"message": "Unsigned header '$1' was added",
+		"message": "header không được ký '$1' đã được thêm vào",
 		"description": "Error if an important header was probably maliciously added later"
 	},
 	// DKIM_SIGWARNING
 	"DKIM_SIGWARNING_SMALL_L": {
-		"message": "Not the entire e-mail is signed"
+		"message": "Không phải toàn bộ email được ký"
 	},
 	"DKIM_SIGWARNING_EXPIRED": {
-		"message": "Signature is expired"
+		"message": "Chữ ký đã hết hạn"
 	},
 	"DKIM_SIGWARNING_FUTURE": {
-		"message": "Signature is in the future"
+		"message": "Chữ ký ở tương lai"
 	},
 	"DKIM_SIGWARNING_KEYSMALL": {
-		"message": "Signature is insecure (key size too small)"
+		"message": "Chữ ký không an toàn (kích thước khóa quá nhỏ)"
 	},
 	"DKIM_SIGWARNING_KEY_IS_WEAK": {
-		"message": "Signed with a weak key"
+		"message": "Được ký bằng khóa yếu"
 	},
 	"DKIM_SIGWARNING_FROM_NOT_IN_SDID": {
-		"message": "From is not in the signing domain"
+		"message": "From không nằm trong miền ký"
 	},
 	"DKIM_SIGWARNING_FROM_NOT_IN_AUID": {
-		"message": "From does not match the user identifier"
+		"message": "From không khớp với định danh người dùng"
 	},
 	"DKIM_SIGWARNING_UNSIGNED_HEADER": {
-		"message": "Header '$1' is not signed",
+		"message": "header '$1' không được ký",
 		"description": "Warning if an important header is not signed"
 	},
 	// JSDNS
 	"TOO_MANY_HOPS": {
-		"message": "Too many hops."
+		"message": "Quá nhiều bước nhảy."
 	},
 	"CONNECTION_REFUSED": {
-		"message": "DNS server $1 refused a TCP connection."
+		"message": "Máy chủ DNS $1 từ chối kết nối TCP."
 	},
 	"TIMED_OUT": {
-		"message": "DNS server $1 timed out on a TCP connection."
+		"message": "Máy chủ DNS $1 đã hết thời gian chờ trên kết nối TCP."
 	},
 	"SERVER_ERROR": {
-		"message": "Error connecting to DNS server $1."
+		"message": "Lỗi kết nối với máy chủ DNS $1."
 	},
 	"INCOMPLETE_RESPONSE": {
-		"message": "Incomplete response from $1."
+		"message": "Phản hồi không đầy đủ từ $1."
 	},
 	// ==================== Options window ====================
 	"options_prefwindow.title": {
-		"message": "DKIM Verifier Options"
+		"message": "Tùy chọn Trình xác minh DKIM"
 	},
 	// -------------------- General options --------------------
 	"options_general": {
-		"message": "General"
+		"message": "Chung"
 	},
 	// ---------- General options tab ----------
 	"options_general.general": {
-		"message": "General"
+		"message": "Chung"
 	},
 	"options_dkim.enable": {
-		"message": "Verify DKIM signatures"
+		"message": "Xác minh chữ ký DKIM"
 	},
 	"options_key.storing.value.0": {
-		"message": "Don't store DKIM keys"
+		"message": "Không lưu trữ khóa DKIM"
 	},
 	"options_key.storing.value.1": {
-		"message": "Store DKIM keys"
+		"message": "Lưu trữ khóa DKIM"
 	},
 	"options_key.storing.value.2": {
-		"message": "Store and compare DKIM keys with the current key"
+		"message": "Lưu trữ và so sánh khóa DKIM với khóa hiện tại"
 	},
 	"options_key.viewKeys": {
-		"message": "DKIM keys…"
+		"message": "Khóa DKIM…"
 	},
 	"options_saveResult": {
-		"message": "Save result of the verification"
+		"message": "Lưu kết quả xác minh"
 	},
 	// ---------- DNS options tab ----------
 	"options_dns": {
 		"message": "DNS"
 	},
 	"options_dns.resolver": {
-		"message": "Resolver:"
+		"message": "Trình phân giải:"
 	},
 	"options_dns.resolver.value.1": {
-		"message": "JavaScript DNS library"
+		"message": "Thư viện DNS JavaScript"
 	},
 	"options_dns.resolver.value.2": {
 		"message": "libunbound"
 	},
 	"options_dns.getNameserversFromOS": {
-		"message": "Get DNS servers from OS configuration"
+		"message": "Lấy máy chủ DNS từ cấu hình hệ điều hành"
 	},
 	"options_dns.nameserver": {
-		"message": "DNS servers (Syntax (EBNF): host[\":\"port]{\";\"host[\":\"port]} ):"
+		"message": "Máy chủ DNS (Cú pháp (EBNF): host[\":\"port]{\";\"host[\":\"port]} ):"
 	},
 	"options_dns.timeout_connect": {
-		"message": "DNS connection timeout (in seconds):",
+		"message": "Thời gian chờ kết nối DNS (tính bằng giây):",
 		"description": "Timeout for the connection to the DNS servers (both establishing the connection and sending/receiving data)"
 	},
 	"options_dns.proxy.enable": {
-		"message": "Use a Proxy to connect to the DNS servers"
+		"message": "Sử dụng Proxy để kết nối với máy chủ DNS"
 	},
 	"options_dns.proxy.type": {
-		"message": "Proxy type:"
+		"message": "Loại Proxy:"
 	},
 	"options_dns.proxy.host": {
-		"message": "Proxy server:"
+		"message": "Máy chủ Proxy:"
 	},
 	"options_dns.proxy.port": {
-		"message": "Port:"
+		"message": "Cổng:"
 	},
 	"options_dns.libunbound.nameserver": {
-		"message": "DNS servers (Syntax (EBNF): IP{\";\"IP} ):"
+		"message": "Máy chủ DNS (Cú pháp (EBNF): IP{\";\"IP} ):"
 	},
 	"options_dns.libunbound.usageWarning": {
-		"message": "The libunbound resolver requires an externally installed library"
+		"message": "Trình phân giải libunbound yêu cầu thư viện cài đặt bên ngoài"
 	},
 	"options_dns.libunbound.path": {
-		"message": "Path"
+		"message": "Đường dẫn"
 	},
 	"options_dns.libunbound.path.relToProfileDir": {
-		"message": "Path relative to profile directory"
+		"message": "Đường dẫn tương đối với thư mục hồ sơ"
 	},
 	// ---------- Policy options tab ----------
 	"options_general.policy": {
-		"message": "Policy"
+		"message": "Chính sách"
 	},
 	"options_policy.signRules.enable": {
-		"message": "Check if e-mail should be signed"
+		"message": "Kiểm tra nếu email nên được ký"
 	},
 	"options_policy.signRules.checkDefaultRules": {
-		"message": "Use default rules"
+		"message": "Sử dụng quy tắc mặc định"
 	},
 	"options_policy.signRules.autoAddRule.enable": {
-		"message": "Automatically add rules based on viewed DKIM signed e-mails"
+		"message": "Tự động thêm quy tắc dựa trên email DKIM đã xem"
 	},
 	"options_policy.signRules.autoAddRule.onlyIfFromAddressInSDID": {
-		"message": "Only if the From address is in the SDID"
+		"message": "Chỉ khi địa chỉ From nằm trong SDID"
 	},
 	"options_policy.signRules.autoAddRule.for.value.0": {
-		"message": "for From address"
+		"message": "cho địa chỉ From"
 	},
 	"options_policy.signRules.autoAddRule.for.value.1": {
-		"message": "for subdomain"
+		"message": "cho miền con"
 	},
 	"options_policy.signRules.autoAddRule.for.value.2": {
-		"message": "for base domain"
+		"message": "cho miền cơ bản"
 	},
 	"options_policy.signRules.sdid.allowSubDomains": {
-		"message": "Allow also subdomains of the SDIDs"
+		"message": "Cũng cho phép các miền con của SDID"
 	},
 	"options_policy.signRules.error.wrong_sdid.asWarning": {
-		"message": "Treat wrong SDID as a warning instead of an error"
+		"message": "Xử lý SDID sai như một cảnh báo thay vì lỗi"
 	},
 	"options_viewSigners": {
-		"message": "Signers rules…"
+		"message": "Quy tắc người ký…"
 	},
 	"options_viewSignerDefaults": {
-		"message": "Default signers rules…"
+		"message": "Quy tắc người ký mặc định…"
 	},
 	"options_policy.DMARC.shouldBeSigned.enable": {
-		"message": "Use DMARC to heuristically determine if an e-mail should be signed"
+		"message": "Sử dụng DMARC để xác định nếu email nên được ký"
 	},
 	"options_policy.dkim.unsignedHeadersWarning.mode": {
-		"message": "Warn about unsigned headers that are recommended to be signed:",
+		"message": "Cảnh báo về các header không được ký mà được khuyến nghị ký:",
 		"description": "Description for the setting of the unsigned headers warning mode."
 	},
 	"options_policy.dkim.unsignedHeadersWarning.mode.relaxed": {
-		"message": "relaxed mode",
+		"message": "chế độ thư giãn",
 		"description": "A relaxed mode that will try to avoid showing warnings."
 	},
 	"options_policy.dkim.unsignedHeadersWarning.mode.recommended": {
-		"message": "recommended mode",
+		"message": "chế độ khuyến nghị",
 		"description": "A mode trying to enforce best practice without showing to many warnings."
 	},
 	"options_policy.dkim.unsignedHeadersWarning.mode.strict": {
-		"message": "strict mode",
+		"message": "chế độ nghiêm ngặt",
 		"description": "A strict mode that will potentially show a lot of warnings."
 	},
 	// -------------------- Display options --------------------
 	"options_display": {
-		"message": "Display"
+		"message": "Hiển thị"
 	},
 	"options_showDKIMHeader": {
-		"message": "Show DKIM header:"
+		"message": "Hiển thị header DKIM:"
 	},
 	"options_showDKIMFromTooltip": {
-		"message": "Show DKIM tooltip for From header:"
+		"message": "Hiển thị chú giải công cụ DKIM cho header From:"
 	},
 	"options_showDKIM.value.0": {
-		"message": "never"
+		"message": "không bao giờ"
 	},
 	"options_showDKIM.value.10": {
-		"message": "when an e-mail with a valid DKIM signature is viewed"
+		"message": "khi một email với chữ ký DKIM hợp lệ được xem"
 	},
 	"options_showDKIM.value.30": {
-		"message": "when an e-mail with a DKIM signature is viewed"
+		"message": "khi một email với chữ ký DKIM được xem"
 	},
 	"options_showDKIM.value.40": {
-		"message": "when an e-mail is viewed"
+		"message": "khi một email được xem"
 	},
 	"options_showDKIM.value.50": {
-		"message": "when a message is viewed"
+		"message": "khi một tin nhắn được xem"
 	},
 	"options_colorFrom": {
-		"message": "Enable highlighting of From header"
+		"message": "Bật tô sáng header From"
 	},
 	"options_color": {
-		"message": "Color"
+		"message": "Màu sắc"
 	},
 	"options_color.text": {
-		"message": "Text:"
+		"message": "Văn bản:"
 	},
 	"options_color.background": {
-		"message": "Background:"
+		"message": "Nền:"
 	},
 	"options_color.success": {
-		"message": "Valid signature"
+		"message": "Chữ ký hợp lệ"
 	},
 	"options_color.warning": {
-		"message": "Valid signature with warnings"
+		"message": "Chữ ký hợp lệ với cảnh báo"
 	},
 	"options_color.permfail": {
-		"message": "Invalid signature"
+		"message": "Chữ ký không hợp lệ"
 	},
 	"options_color.tempfail": {
-		"message": "Temporary error"
+		"message": "Lỗi tạm thời"
 	},
 	"options_color.nosig": {
-		"message": "Unsigned e-mail"
+		"message": "Email không được ký"
 	},
 	"options_display.favicon.show": {
-		"message": "Show the favicon of known signing domains before the From address"
+		"message": "Hiển thị favicon của các miền ký đã biết trước địa chỉ From"
 	},
 	// -------------------- Advanced options --------------------
 	"options_advanced": {
-		"message": "Advanced"
+		"message": "Nâng cao"
 	},
 	"options_debug": {
-		"message": "Enable debugging (Outputs errors and debug info in the Error Console)"
+		"message": "Bật gỡ lỗi (Xuất lỗi và thông tin gỡ lỗi trong Bảng điều khiển lỗi)"
 	},
 	"options_error.detailedReasons": {
-		"message": "Show detailed error reasons"
+		"message": "Hiển thị lý do lỗi chi tiết"
 	},
 	"options_error.key_testmode.ignore": {
-		"message": "Still verify the signature, if a domain is only testing DKIM"
+		"message": "Vẫn xác minh chữ ký, nếu một miền chỉ đang thử nghiệm DKIM"
 	},
 	"options_error.illformed_i.treatAs": {
-		"message": "Treat ill-formed AUID tag as:"
+		"message": "Xử lý thẻ AUID không đúng định dạng như:"
 	},
 	"options_error.illformed_s.treatAs": {
-		"message": "Treat ill-formed selector tag as:"
+		"message": "Xử lý thẻ chọn không đúng định dạng như:"
 	},
 	"options_error.policy.key_insecure.treatAs": {
-		"message": "Treat DKIM key not secured by DNSSEC as:"
+		"message": "Xử lý khóa DKIM không được bảo mật bởi DNSSEC như:"
 	},
 	"options_error.algorithm.sign.rsa-sha1.treatAs": {
-		"message": "Treat RSA-SHA1 sign algorithm as:"
+		"message": "Xử lý thuật toán ký RSA-SHA1 như:"
 	},
 	"options_error.algorithm.rsa.weakKeyLength.treatAs": {
-		"message": "Treat weak RSA keys (<2048 bits) as:"
+		"message": "Xử lý khóa RSA yếu (<2048 bit) như:"
 	},
 	"options_error.treatAs.value.0": {
-		"message": "error"
+		"message": "lỗi"
 	},
 	"options_error.treatAs.value.1": {
-		"message": "warning"
+		"message": "cảnh báo"
 	},
 	"options_error.treatAs.value.2": {
-		"message": "nothing"
+		"message": "không có gì"
 	},
 	"options_display.keySecure": {
-		"message": "Indicate successful DNSSEC validation with a lock after the SDID"
+		"message": "Chỉ ra xác thực DNSSEC thành công với một khóa sau SDID"
 	},
 	"options_arh.read": {
-		"message": "Read Authentication-Results header"
+		"message": "Đọc header Authentication-Results"
 	},
 	"options_arh.replaceAddonResult": {
-		"message": "Reading the Authentication-Results header replaces the add-ons verification"
+		"message": "Đọc header Authentication-Results thay thế xác minh của tiện ích bổ sung"
 	},
 	"options_arh.relaxedParsing": {
-		"message": "Try to read non RFC compliant Authentication-Results header"
+		"message": "Cố gắng đọc header Authentication-Results không tuân thủ RFC"
 	},
 	// -------------------- Account options --------------------
 	"options_account": {
-		"message": "Account",
+		"message": "Tài khoản",
 		"description": "Title for account specific options"
 	},
 	"options_acc.dkim.enable": {
-		"message": "Verify DKIM signatures:"
+		"message": "Xác minh chữ ký DKIM:"
 	},
 	"options_acc.arh.read": {
-		"message": "Read Authentication-Results header:"
+		"message": "Đọc header Authentication-Results:"
 	},
 	"options_acc.arh.allowedAuthserv": {
-		"message": "Trusted authentication servers:"
+		"message": "Máy chủ xác thực đáng tin cậy:"
 	},
 	"options_acc.boolean.value.0": {
-		"message": "Use default value"
+		"message": "Sử dụng giá trị mặc định"
 	},
 	"options_acc.boolean.value.1": {
-		"message": "Yes"
+		"message": "Có"
 	},
 	"options_acc.boolean.value.2": {
-		"message": "No"
+		"message": "Không"
 	},
 	// -------------------- About --------------------
 	"about": {
-		"message": "About"
+		"message": "Giới thiệu"
 	},
 	"about_name": {
 		"message": "DKIM Verifier",
 		"description": "Name of the add-on"
 	},
 	"about_summary": {
-		"message": "Verifies the DKIM-Signatures of e-mails.",
+		"message": "Xác minh chữ ký DKIM của email.",
 		"description": "Short description of the add-on"
 	},
 	"about_homepage": {
-		"message": "Homepage"
+		"message": "Trang chủ"
 	},
 	"about_documentation": {
-		"message": "Documentation",
+		"message": "Tài liệu",
 		"description": "Link text for GitHub documentation page"
 	},
 	"about_contributors": {
-		"message": "GitHub contributors",
+		"message": "Người đóng góp trên GitHub",
 		"description": "Link text for GitHub contributors page"
 	},
 	"about_translators": {
-		"message": "Translators:",
+		"message": "Người dịch:",
 		"description": "Heading for list of translators"
 	},
 	"about_dependencies": {
-		"message": "Included dependencies:",
+		"message": "Các phụ thuộc đi kèm:",
 		"description": "Heading for list of included dependencies"
 	},
 	"about_by": {
-		"message": "by",
+		"message": "bởi",
 		"description": "<dependency name> by <author>"
 	},
 	// ==================== Actions ====================
 	"dkim_verifier.reverifyDKIMSignature": {
-		"message": "Reverify DKIM Signature"
+		"message": "Xác minh lại chữ ký DKIM"
 	},
 	"dkim_verifier.policyAddUserException": {
-		"message": "Add must be signed exception"
+		"message": "Thêm ngoại lệ phải được ký"
 	},
 	"dkim_verifier.markKeyAsSecure": {
-		"message": "Mark DKIM key as secure"
+		"message": "Đánh dấu khóa DKIM là an toàn"
 	},
 	"dkim_verifier.updateKey": {
-		"message": "Update DKIM key"
+		"message": "Cập nhật khóa DKIM"
 	},
 	"details.result": {
-		"message": "Result",
+		"message": "Kết quả",
 		"description": "Detailed view row name for the overall DKIM result."
 	},
 	"details.warnings": {
-		"message": "Warnings",
+		"message": "Cảnh báo",
 		"description": "Detailed view row name for the warnings of the DKIM signature."
 	},
 	"details.SDID": {
@@ -649,167 +643,167 @@
 		"description": "Detailed view row name for the AUID."
 	},
 	"details.signDate": {
-		"message": "Sign date",
+		"message": "Ngày ký",
 		"description": "Detailed view row name for the date (including time) the signature was created."
 	},
 	"details.expirationDate": {
-		"message": "Expiration date",
+		"message": "Ngày hết hạn",
 		"description": "Detailed view row name for the date (including time) the signature expires."
 	},
 	"details.algorithm": {
-		"message": "Algorithm",
+		"message": "Thuật toán",
 		"description": "Detailed view row name for the algorithm used in the signature."
 	},
 	"details.signedHeaders": {
-		"message": "Signed headers",
+		"message": "Các header đã ký",
 		"description": "Detailed view row name for the message headers signed by DKIM."
 	},
 	"details.noDate": {
-		"message": "No time included in the signature",
+		"message": "Không có thời gian trong chữ ký",
 		"description": "Value shown for sign and expiration date if no date is given in the signature."
 	},
 	// ==================== Table Views ====================
 	"treeviewKeys.title": {
-		"message": "DKIM keys",
+		"message": "Khóa DKIM",
 		"description": "Title of the DKIM keys table view."
 	},
 	"treeviewKeys.treecol.SDID": {
 		"message": "SDID"
 	},
 	"treeviewKeys.treecol.selector": {
-		"message": "Selector"
+		"message": "Bộ chọn"
 	},
 	"treeviewKeys.treecol.key": {
-		"message": "DKIM key"
+		"message": "Khóa DKIM"
 	},
 	"treeviewKeys.treecol.insertedAt": {
-		"message": "Inserted"
+		"message": "Đã chèn"
 	},
 	"treeviewKeys.treecol.lastUsedAt": {
-		"message": "Last used"
+		"message": "Lần cuối sử dụng"
 	},
 	"treeviewKeys.treecol.secure": {
 		"message": "DNSSEC"
 	},
 	"treeviewKeys.deleteSelectedRows": {
-		"message": "Delete selected keys"
+		"message": "Xóa các khóa đã chọn"
 	},
 	"treeviewSigners.user.title": {
-		"message": "Signers rules"
+		"message": "Quy tắc người ký"
 	},
 	"treeviewSigners.default.title": {
-		"message": "Default signers rules"
+		"message": "Quy tắc người ký mặc định"
 	},
 	"treeviewSigners.treecol.domain": {
-		"message": "Domain"
+		"message": "Miền"
 	},
 	"treeviewSigners.treecol.listId": {
 		"message": "List-Id"
 	},
 	"treeviewSigners.treecol.addr": {
-		"message": "From"
+		"message": "Từ"
 	},
 	"treeviewSigners.treecol.sdid": {
 		"message": "SDID"
 	},
 	"treeviewSigners.treecol.ruletype": {
-		"message": "Rule type"
+		"message": "Loại quy tắc"
 	},
 	"treeviewSigners.treecol.priority": {
-		"message": "Priority"
+		"message": "Ưu tiên"
 	},
 	"treeviewSigners.treecol.enabled": {
-		"message": "Enabled"
+		"message": "Đã bật"
 	},
 	"treeviewSigners.addSignersRule": {
-		"message": "Add rule…"
+		"message": "Thêm quy tắc…"
 	},
 	"treeviewSigners.deleteSelectedRows": {
-		"message": "Delete selected rules"
+		"message": "Xóa các quy tắc đã chọn"
 	},
 	"treeviewSigners.exportRules": {
-		"message": "Export rules…",
+		"message": "Xuất quy tắc…",
 		"description": "Button for exporting sign rules"
 	},
 	"treeviewSigners.importRules": {
-		"message": "Import rules…",
+		"message": "Nhập quy tắc…",
 		"description": "Button for importing sign rules"
 	},
 	"importRules.title": {
-		"message": "Import rules",
+		"message": "Nhập quy tắc",
 		"description": "Title for import dialog"
 	},
 	"importRules.replaceQuestion": {
-		"message": "Should the imported rules be added to the existing rules, or replace the existing rules?",
+		"message": "Các quy tắc nhập vào nên được thêm vào các quy tắc hiện có, hay thay thế các quy tắc hiện có?",
 		"description": "Question asked in import dialog"
 	},
 	"importRules.addRules": {
-		"message": "Add rules",
+		"message": "Thêm quy tắc",
 		"description": "Button in import dialog for adding rules to existing rules"
 	},
 	"importRules.replaceRules": {
-		"message": "Replace rules",
+		"message": "Thay thế quy tắc",
 		"description": "Button in import dialog for replacing existing rules"
 	},
 	"addSignersRule.title": {
-		"message": "Add signers rule"
+		"message": "Thêm quy tắc người ký"
 	},
 	"addSignersRule.button.add": {
-		"message": "Add rule",
+		"message": "Thêm quy tắc",
 		"description": "Button for confirming adding of sign rule."
 	},
 	"signRules.ruletype.SIGNED": {
-		"message": "Must be signed (1)"
+		"message": "Phải được ký (1)"
 	},
 	"signRules.ruletype.NEUTRAL": {
-		"message": "Can be signed (2)"
+		"message": "Có thể được ký (2)"
 	},
 	"signRules.ruletype.HIDEFAIL": {
-		"message": "Ignore invalid signature (3)"
+		"message": "Bỏ qua chữ ký không hợp lệ (3)"
 	},
 	"signRules.priorityMode.auto": {
-		"message": "Automatically select priority"
+		"message": "Tự động chọn ưu tiên"
 	},
 	"signRules.priorityMode.manual": {
-		"message": "Set priority to:"
+		"message": "Đặt ưu tiên thành:"
 	},
 	"button.cancel": {
-		"message": "Cancel"
+		"message": "Hủy"
 	},
 	"button.help": {
-		"message": "Help…"
+		"message": "Trợ giúp…"
 	},
 	"signersRuleHelp.title": {
-		"message": "Signers rules help"
+		"message": "Trợ giúp quy tắc người ký"
 	},
 	"domain.description": {
-		"message": "Will be matched against the base domain of the From address. For example, the base domain for 'email.example.co.uk' is 'example.co.uk'."
+		"message": "Sẽ được so khớp với miền cơ bản của địa chỉ Từ. Ví dụ, miền cơ bản cho 'email.example.co.uk' là 'example.co.uk'."
 	},
 	"listId.description": {
-		"message": "Will be matched against the list-id, if the e-mail was received through an e-mail list. Note that only the part between '<' and '>' of the List-Id header is the actual list-id. Only either the domain or the list-id is matched at the same time."
+		"message": "Sẽ được so khớp với list-id, nếu email được nhận qua danh sách email. Lưu ý rằng chỉ phần giữa '<' và '>' của header List-Id là list-id thực sự. Chỉ miền hoặc list-id được so khớp cùng một lúc."
 	},
 	"addr.description": {
-		"message": "Will be matched against the From address. Use an '*' to match zero or more characters."
+		"message": "Sẽ được so khớp với địa chỉ Từ. Sử dụng '*' để so khớp với không hoặc nhiều ký tự."
 	},
 	"sdid.description": {
-		"message": "The domain by which the e-mails should be signed. If this is left empty, every SDID is allowed. More than one domain can be specified by separating them with a space."
+		"message": "Miền mà email nên được ký. Nếu để trống, mọi SDID đều được phép. Nhiều miền có thể được chỉ định bằng cách tách chúng bằng dấu cách."
 	},
 	"ruletype.description": {
-		"message": "The type of the rule."
+		"message": "Loại quy tắc."
 	},
 	"ruletype.1.description": {
-		"message": "E-mail must be signed by the specified SDID."
+		"message": "Email phải được ký bởi SDID được chỉ định."
 	},
 	"ruletype.2.description": {
-		"message": "E-mail doesn't have to be signed. If it is signed, it must be by the specified SDID."
+		"message": "Email không cần phải được ký. Nếu được ký, nó phải bởi SDID được chỉ định."
 	},
 	"ruletype.3.description": {
-		"message": "E-mail doesn't have to be signed. If it is signed, it must be by the specified SDID. If the e-mail has an invalid signature, it is treated as having no signature."
+		"message": "Email không cần phải được ký. Nếu được ký, nó phải bởi SDID được chỉ định. Nếu email có chữ ký không hợp lệ, nó được coi như không có chữ ký."
 	},
 	"priority.description": {
-		"message": "The priority of the rule. If more than one rule matches, the one with the highest priority is used."
+		"message": "Ưu tiên của quy tắc. Nếu nhiều quy tắc khớp, quy tắc có ưu tiên cao nhất sẽ được sử dụng."
 	},
 	"enabled.description": {
-		"message": "1 if the rule is enabled, 0 if it is disabled."
+		"message": "1 nếu quy tắc được bật, 0 nếu nó bị tắt."
 	}
 }
