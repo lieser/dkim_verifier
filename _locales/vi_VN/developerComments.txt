@@ -1,0 +1,3 @@
+Hỗ trợ được cung cấp tại https://github.com/lieser/dkim_verifier/issues hoặc qua email tới lieser+dkim@posteo.net (dùng tiếng Anh hoặc tiếng Đức).
+
+Cách tốt nhất để báo lỗi là tạo issue tại https://github.com/lieser/dkim_verifier/issues.

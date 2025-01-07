@@ -1,0 +1,9 @@
+<a href="https://en.wikipedia.org/wiki/DomainKeys_Identified_Mail">DomainKeys Identified Mail (DKIM)</a> là một phương pháp cho phép các miền ký email. Add-on này xác minh các chữ ký DKIM này và hiển thị kết quả trong tiêu đề email. Bằng cách này, có thể thấy miền nào đang chịu trách nhiệm cho một email cụ thể. Cách hiển thị kết quả có thể được thay đổi trong các tùy chọn.
+
+Điều quan trọng cần lưu ý là một email có thể được ký bởi các miền bất kì. Do đó, một chữ ký DKIM hợp lệ không đảm bảo rằng email đó đáng tin cậy. Hãy luôn kiểm tra người ký để xác định xem email có đáng tin cậy hay không!
+
+Trong một số trường hợp, việc thiếu chữ ký DKIM có thể hữu ích để xác định email lừa đảo. Nếu biết rằng một miền nào đó đang ký tất cả các email của mình bằng DKIM, việc thiếu chữ ký DKIM là một dấu hiệu đáng ngờ của email giả mạo.
+
+Để kiểm tra xem email có được ký hay không và bởi ai một cách dễ dàng, add-on này hỗ trợ sử dụng các quy tắc ký. Với các quy tắc ký, có thể chỉ định rằng email từ một người gửi nhất định phải luôn được ký bởi một miền cụ thể (còn được gọi là SDID). Tìm hiểu thêm về các quy tắc ký tại https://github.com/lieser/dkim_verifier/wiki/Sign-rules.
+
+Mô tả về tất cả các tùy chọn add-on này có sẵn có thể được tìm thấy tại https://github.com/lieser/dkim_verifier/wiki/Options.

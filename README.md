@@ -66,6 +66,7 @@ Other directories and files are used only for development. This includes:
 - `scripts`: Node.js scripts used during development.
 - `test`: Automated tests.
   More details in the included [readme](test/Readme.md).
+- `icon-black-64.png`: Icon of the extension used on ATN, generated from `icon-black.svg`.
 
 ## Included third-party Libraries
 

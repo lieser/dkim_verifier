@@ -10,10 +10,6 @@
     width="16"
     height="16"
     viewBox="0 0 16 16"
-    fill="context-fill"
-    fill-opacity="context-fill-opacity"
-    stroke="context-stroke"
-    stroke-opacity="context-stroke-opacity"
     >
   <metadata>
     <rdf:RDF>
@@ -25,7 +21,24 @@
       </cc:Work>
     </rdf:RDF>
   </metadata>
+  <style>
+    @media (prefers-color-scheme: light) {
+      :root {
+        color: rgb(24, 24, 27);
+      }
+    }
 
+    @media (prefers-color-scheme: dark) {
+      :root {
+        color: rgb(250, 250, 250);
+      }
+    }
+
+    path {
+      stroke: currentColor;
+      fill: color-mix(in srgb, currentColor 20%, transparent);
+    }
+  </style>
   <g transform="scale(0.0494040634842216, 0.0494040634842216) scale(-1,1) translate(-323.86,0)">
     <path vector-effect="non-scaling-stroke" d="M288.68,247.305c14.805-11.805,3.418-66.739-3.58-85.562l-3.873-9.081c-2.516-6.106-6.322-10.326-12.449-13.044
       c-14.271-6.334-26.33-11.763-37.99-17.013c-14.176-6.381-27.562-12.408-44.58-19.92c-5.376-2.374-10.965-3.577-16.613-3.577
