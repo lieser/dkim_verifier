@@ -1,7 +1,7 @@
 /**
  * General utility functions that do not have any dependencies.
  *
- * Copyright (c) 2013-2020;2022 Philippe Lieser
+ * Copyright (c) 2013-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -61,7 +61,7 @@ export function addrIsInDomain2(addr, domain) {
  *
  * @template T
  * @param {T} src
- * @returns {T}
+ * @returns {import("ts-essentials").DeepWritable<T>}
  */
 export function copy(src) {
 	return JSON.parse(JSON.stringify(src));
@@ -84,7 +84,7 @@ export function dateToString(date) {
  * @param {string} binaryString - binary string
  * @returns {string}
  */
- export function decodeBinaryString(binaryString) {
+export function decodeBinaryString(binaryString) {
 	// eslint-disable-next-line no-magic-numbers
 	const buffer = Uint8Array.from(binaryString, x => x.charCodeAt(0) & 0xFF);
 	const utf8decoder = new TextDecoder();
@@ -144,7 +144,7 @@ export async function promiseWithTimeout(ms, promise) {
  * @returns {Promise<void>}
  */
 export function sleep(ms) {
-	return new Promise(resolve => setTimeout(resolve, ms));
+	return new Promise(resolve => { setTimeout(resolve, ms); });
 }
 
 /**
@@ -170,20 +170,4 @@ export function stringEndsWith(str, x) {
  */
 export function stringEqual(str1, str2) {
 	return str1.toLowerCase() === str2.toLowerCase();
-}
-
-/**
- * Get the type an object as a string.
- *
- * From https://javascriptweblog.wordpress.com/2011/08/08/fixing-the-javascript-typeof-operator/.
- *
- * @param {any} obj
- * @returns {string}
- */
-export function toType(obj) {
-	const typeMatch = Object.prototype.toString.call(obj).match(/\s([a-zA-Z]+)/);
-	if (!typeMatch || !typeMatch[1]) {
-		throw new Error(`Failed to get type for ${obj}`);
-	}
-	return typeMatch[1];
 }

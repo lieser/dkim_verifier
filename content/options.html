@@ -17,6 +17,8 @@
 
   <nav class="nav-main">
     <div pane="general" data-i18n="options_general"></div>
+    <div pane="dns" data-i18n="options_dns"></div>
+    <div pane="policy" data-i18n="options_general.policy"></div>
     <div pane="display" data-i18n="options_display"></div>
     <div pane="account" data-i18n="options_account"></div>
     <div pane="advanced" data-i18n="options_advanced"></div>
@@ -25,127 +27,127 @@
 
   <!-- general options -->
   <main pane="general">
-    <nav class="nav-section">
-      <div pane="general" data-i18n="options_general.general"></div>
-      <div pane="dns" data-i18n="options_dns"></div>
-      <div pane="policy" data-i18n="options_general.policy"></div>
-    </nav>
+    <label class="checkbox" data-i18n="options_dkim.enable">
+      <input type="checkbox" data-pref="dkim.enable">
+    </label>
+    <div>
+      <select data-pref="key.storing">
+        <option data-i18n="options_key.storing.value.0" value="0"></option>
+        <option data-i18n="options_key.storing.value.1" value="1"></option>
+        <option data-i18n="options_key.storing.value.2" value="2"></option>
+      </select>
+      <button id="key.viewKeys" data-i18n="options_key.viewKeys"></button>
+    </div>
+    <label class="checkbox" data-i18n="options_saveResult">
+      <input type="checkbox" data-pref="saveResult">
+    </label>
+    <label class="checkbox" data-i18n="options_arh.read">
+      <input type="checkbox" data-pref="arh.read">
+    </label>
+  </main>
 
-    <!-- general tab -->
-    <section pane="general">
-      <label class="checkbox" data-i18n="options_dkim.enable">
-        <input type="checkbox" data-pref="dkim.enable">
-      </label>
+  <!-- dns options -->
+  <main pane="dns">
+    <div>
+      <label data-i18n="options_dns.resolver"></label>
+      <select data-pref="dns.resolver">
+        <option data-i18n="options_dns.resolver.value.1" value="1"></option>
+        <option data-i18n="options_dns.resolver.value.2" value="2"></option>
+      </select>
+    </div>
+    <label class="checkbox" data-i18n="options_dns.getNameserversFromOS">
+      <input type="checkbox" data-pref="dns.getNameserversFromOS">
+    </label>
+    <label for="dns.nameserver" data-dns-resolver="1" data-i18n="options_dns.nameserver"></label>
+    <label for="dns.nameserver" data-dns-resolver="2" data-i18n="options_dns.libunbound.nameserver"></label>
+    <div>
+      <input id="dns.nameserver" type="text" data-pref="dns.nameserver">
+    </div>
+    <!-- jsdns specific options -->
+    <fieldset data-dns-resolver="1">
+      <legend data-i18n="options_dns.resolver.value.1"></legend>
       <div>
-        <select data-pref="key.storing">
-          <option data-i18n="options_key.storing.value.0" value="0"></option>
-          <option data-i18n="options_key.storing.value.1" value="1"></option>
-          <option data-i18n="options_key.storing.value.2" value="2"></option>
-        </select>
-        <button id="key.viewKeys" data-i18n="options_key.viewKeys"></button>
+        <label for="dns.timeout_connect" data-i18n="options_dns.timeout_connect"></label>
+        <input id="dns.timeout_connect" type="number" data-pref="dns.timeout_connect" size="10" min="0">
       </div>
-      <label class="checkbox" data-i18n="options_saveResult">
-        <input type="checkbox" data-pref="saveResult">
+      <label class="checkbox" data-i18n="options_dns.proxy.enable">
+        <input type="checkbox" data-pref="dns.proxy.enable">
       </label>
-      <label class="checkbox" data-i18n="options_arh.read">
-        <input type="checkbox" data-pref="arh.read">
-      </label>
-    </section>
-
-    <!-- dns tab -->
-    <section pane="dns">
-      <div>
-        <label data-i18n="options_dns.resolver"></label>
-        <select data-pref="dns.resolver">
-          <option data-i18n="options_dns.resolver.value.1" value="1"></option>
-          <option data-i18n="options_dns.resolver.value.2" value="2"></option>
-        </select>
-      </div>
-      <label class="checkbox" data-i18n="options_dns.getNameserversFromOS">
-        <input type="checkbox" data-pref="dns.getNameserversFromOS">
-      </label>
-      <label for="dns.nameserver" data-dns-resolver="1" data-i18n="options_dns.nameserver"></label>
-      <label for="dns.nameserver" data-dns-resolver="2" data-i18n="options_dns.libunbound.nameserver"></label>
-      <div>
-        <input id="dns.nameserver" type="text" data-pref="dns.nameserver">
-      </div>
-      <!-- jsdns specific options -->
-      <fieldset data-dns-resolver="1">
-        <legend data-i18n="options_dns.resolver.value.1"></legend>
+      <fieldset id="dns.proxy">
         <div>
-          <label for="dns.timeout_connect" data-i18n="options_dns.timeout_connect"></label>
-          <input id="dns.timeout_connect" type="number" data-pref="dns.timeout_connect" size="10" min="0">
-        </div>
-        <label class="checkbox" data-i18n="options_dns.proxy.enable">
-          <input type="checkbox" data-pref="dns.proxy.enable">
-        </label>
-        <fieldset id="dns.proxy">
-          <div>
-            <label class="proxyConfig" data-i18n="options_dns.proxy.type"></label>
-            <select class="proxyConfig" data-pref="dns.proxy.type" data-pref-type="string">
-              <option value="socks">SOCKS v5</option>
-              <option value="socks4">SOCKS v4</option>
-            </select>
-          </div>
-          <div>
-            <label data-i18n="options_dns.proxy.host"></label>
-            <input type="text" data-pref="dns.proxy.host">
-            <label data-i18n="options_dns.proxy.port"></label>
-            <input type="number" data-pref="dns.proxy.port" size="10" min="0" max="65535">
-          </div>
-        </fieldset>
-      </fieldset>
-      <!-- libunbound specific options -->
-      <fieldset data-dns-resolver="2">
-        <legend data-i18n="options_dns.resolver.value.2"></legend>
-        <p id="libunbound.usageWarning" class="usage-warning">⚠ <span data-i18n="options_dns.libunbound.usageWarning"></span></p>
-        <div>
-          <label data-i18n="options_dns.libunbound.path"></label>
-          <input type="text" data-pref="dns.libunbound.path">
-        </div>
-        <label class="checkbox" data-i18n="options_dns.libunbound.path.relToProfileDir">
-          <input type="checkbox" data-pref="dns.libunbound.path.relToProfileDir">
-        </label>
-      </fieldset>
-    </section>
-
-    <!-- policy tab -->
-    <section pane="policy">
-      <label class="checkbox" data-i18n="options_policy.signRules.enable">
-        <input type="checkbox" data-pref="policy.signRules.enable">
-      </label>
-      <fieldset id="policy.signRules" class="indent">
-        <label class="checkbox" data-i18n="options_policy.signRules.checkDefaultRules">
-          <input type="checkbox" data-pref="policy.signRules.checkDefaultRules">
-        </label>
-        <label class="checkbox" data-i18n="options_policy.signRules.autoAddRule.enable">
-          <input type="checkbox" data-pref="policy.signRules.autoAddRule.enable">
-        </label>
-        <fieldset id="policy.signRules.autoAddRule" class="indent">
-          <label class="checkbox" data-i18n="options_policy.signRules.autoAddRule.onlyIfFromAddressInSDID">
-            <input type="checkbox" data-pref="policy.signRules.autoAddRule.onlyIfFromAddressInSDID">
-          </label>
-          <select data-pref="policy.signRules.autoAddRule.for">
-            <option data-i18n="options_policy.signRules.autoAddRule.for.value.0" value="0"></option>
-            <option data-i18n="options_policy.signRules.autoAddRule.for.value.1" value="1"></option>
-            <option data-i18n="options_policy.signRules.autoAddRule.for.value.2" value="2"></option>
+          <label class="proxyConfig" data-i18n="options_dns.proxy.type"></label>
+          <select class="proxyConfig" data-pref="dns.proxy.type" data-pref-type="string">
+            <option value="socks">SOCKS v5</option>
+            <option value="socks4">SOCKS v4</option>
           </select>
-        </fieldset>
-        <label class="checkbox" data-i18n="options_policy.signRules.sdid.allowSubDomains">
-          <input type="checkbox" data-pref="policy.signRules.sdid.allowSubDomains">
-        </label>
-        <label class="checkbox" data-i18n="options_policy.signRules.error.wrong_sdid.asWarning">
-          <input type="checkbox" data-pref="policy.signRules.error.wrong_sdid.asWarning">
-        </label>
-        <label class="checkbox" data-i18n="options_policy.DMARC.shouldBeSigned.enable">
-          <input type="checkbox" data-pref="policy.DMARC.shouldBeSigned.enable">
-        </label>
+        </div>
         <div>
-          <button id="signRulesUserView" data-i18n="options_viewSigners"></button>
-          <button id="signRulesDefaultsView" data-i18n="options_viewSignerDefaults"></button>
+          <label data-i18n="options_dns.proxy.host"></label>
+          <input type="text" data-pref="dns.proxy.host">
+          <label data-i18n="options_dns.proxy.port"></label>
+          <input type="number" data-pref="dns.proxy.port" size="10" min="0" max="65535">
         </div>
       </fieldset>
-    </section>
+    </fieldset>
+    <!-- libunbound specific options -->
+    <fieldset data-dns-resolver="2">
+      <legend data-i18n="options_dns.resolver.value.2"></legend>
+      <p id="libunbound.usageWarning" class="usage-warning">⚠ <span
+          data-i18n="options_dns.libunbound.usageWarning"></span></p>
+      <div>
+        <label data-i18n="options_dns.libunbound.path"></label>
+        <input type="text" data-pref="dns.libunbound.path">
+      </div>
+      <label class="checkbox" data-i18n="options_dns.libunbound.path.relToProfileDir">
+        <input type="checkbox" data-pref="dns.libunbound.path.relToProfileDir">
+      </label>
+    </fieldset>
+  </main>
+
+  <!-- policy options -->
+  <main pane="policy">
+    <label class="checkbox" data-i18n="options_policy.signRules.enable">
+      <input type="checkbox" data-pref="policy.signRules.enable">
+    </label>
+    <fieldset id="policy.signRules" class="indent">
+      <label class="checkbox" data-i18n="options_policy.signRules.checkDefaultRules">
+        <input type="checkbox" data-pref="policy.signRules.checkDefaultRules">
+      </label>
+      <label class="checkbox" data-i18n="options_policy.signRules.autoAddRule.enable">
+        <input type="checkbox" data-pref="policy.signRules.autoAddRule.enable">
+      </label>
+      <fieldset id="policy.signRules.autoAddRule" class="indent">
+        <label class="checkbox" data-i18n="options_policy.signRules.autoAddRule.onlyIfFromAddressInSDID">
+          <input type="checkbox" data-pref="policy.signRules.autoAddRule.onlyIfFromAddressInSDID">
+        </label>
+        <select data-pref="policy.signRules.autoAddRule.for">
+          <option data-i18n="options_policy.signRules.autoAddRule.for.value.0" value="0"></option>
+          <option data-i18n="options_policy.signRules.autoAddRule.for.value.1" value="1"></option>
+          <option data-i18n="options_policy.signRules.autoAddRule.for.value.2" value="2"></option>
+        </select>
+      </fieldset>
+      <label class="checkbox" data-i18n="options_policy.signRules.sdid.allowSubDomains">
+        <input type="checkbox" data-pref="policy.signRules.sdid.allowSubDomains">
+      </label>
+      <label class="checkbox" data-i18n="options_policy.signRules.error.wrong_sdid.asWarning">
+        <input type="checkbox" data-pref="policy.signRules.error.wrong_sdid.asWarning">
+      </label>
+      <label class="checkbox" data-i18n="options_policy.DMARC.shouldBeSigned.enable">
+        <input type="checkbox" data-pref="policy.DMARC.shouldBeSigned.enable">
+      </label>
+      <div>
+        <button id="signRulesUserView" data-i18n="options_viewSigners"></button>
+        <button id="signRulesDefaultsView" data-i18n="options_viewSignerDefaults"></button>
+      </div>
+    </fieldset>
+    <div>
+      <label data-i18n="options_policy.dkim.unsignedHeadersWarning.mode"></label>
+      <select data-pref="policy.dkim.unsignedHeadersWarning.mode">
+        <option data-i18n="options_policy.dkim.unsignedHeadersWarning.mode.relaxed" value="10"></option>
+        <option data-i18n="options_policy.dkim.unsignedHeadersWarning.mode.recommended" value="20"></option>
+        <option data-i18n="options_policy.dkim.unsignedHeadersWarning.mode.strict" value="30"></option>
+      </select>
+    </div>
   </main>
 
   <!-- display options -->
@@ -317,7 +319,10 @@
     <h1 data-i18n="about_name"></h1>
     <section>
       <p data-i18n="about_summary"></p>
-      <p><span data-i18n="about_homepage"></span>: <a href="https://github.com/lieser/dkim_verifier/wiki">https://github.com/lieser/dkim_verifier/wiki</a></p>
+      <p>
+        <span data-i18n="about_homepage"></span>:
+        <a href="https://github.com/lieser/dkim_verifier/wiki">https://github.com/lieser/dkim_verifier/wiki</a>
+      </p>
       <p><a href="https://github.com/lieser/dkim_verifier/wiki/Options" data-i18n="about_documentation"></a></p>
     </section>
     <section>
@@ -327,20 +332,26 @@
         <li>de: ionum</li>
         <li>de: Philippe Lieser</li>
         <li>es-ES: Peter O Brien</li>
-        <li>fr: Christophe CHAUVET</li>
+        <li>fr: Anaël MOBILIA</li>
         <li>hu: Óvári</li>
         <li>it: Michele Locati</li>
         <li>ja: SAKURAI Kenichi</li>
-        <li>pt-BR: David BrazSan</li>
+        <li>pl: dMbski</li>
+        <li>pt-BR: João Paulo</li>
         <li>sv-SE: Phoenix</li>
         <li>uk: lexxai</li>
         <li>zh-CN: YFdyh000</li>
+        <li>zh-TW: NightFeather</li>
       </ul>
     </section>
     <section>
       <p data-i18n="about_dependencies"></p>
       <ul>
-        <li><a href="https://github.com/JoshData/thunderbird-spf">DNS Library</a> <span data-i18n="about_by"></span> Joshua Tauberer</li>
+        <li>
+          <a href="https://github.com/JoshData/thunderbird-spf">DNS Library</a>
+          <span data-i18n="about_by"></span> Joshua Tauberer
+        </li>
+        <li><a href="https://tabulator.info/">Tabulator</a></li>
         <li><a href="https://github.com/hakanols/tweetnacl-es6">tweetnacl-es6</a></li>
       </ul>
     </section>

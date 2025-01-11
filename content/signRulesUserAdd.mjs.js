@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020 Philippe Lieser
+ * Copyright (c) 2020-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -15,17 +15,6 @@ import SignRulesProxy from "../modules/dkim/signRulesProxy.mjs.js";
 import { getElementById } from "./domUtils.mjs.js";
 
 const log = Logging.getLogger("signRulesUserAdd");
-
-/**
- * @returns {Promise<void>}
- */
-async function closeCurrentWindow() {
-	const windowId = (await browser.windows.getCurrent()).id;
-	if (windowId === undefined) {
-		throw new Error("Failed to get current window id");
-	}
-	await browser.windows.remove(windowId);
-}
 
 /**
  * @param {string} id
@@ -85,9 +74,9 @@ async function onAccept() {
 		const enabled = getCheckbox("enabled");
 
 		await SignRulesProxy.addRule(domain, listId, addr, sdid, ruleType, priority, enabled);
-		closeCurrentWindow();
+		window.close();
 	} catch (exception) {
-		log.error(exception);
+		log.error("Error adding the user sign rule", exception);
 	}
 }
 
@@ -95,7 +84,7 @@ async function onAccept() {
  * @returns {void}
  */
 function onCancel() {
-	closeCurrentWindow();
+	window.close();
 }
 
 /**
@@ -104,7 +93,7 @@ function onCancel() {
 function updatePriorityMode() {
 	const priorityElement = getElementById("priority");
 	if (!(priorityElement instanceof HTMLInputElement)) {
-		throw new Error(`Element with id 'priority' is not an HTMLInputElement`);
+		throw new Error("Element with id 'priority' is not an HTMLInputElement");
 	}
 	priorityElement.disabled = getRadioGroupValue("priorityMode") === "1";
 }

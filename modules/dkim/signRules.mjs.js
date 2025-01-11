@@ -1,7 +1,7 @@
 /**
  * Check DKIM signing rules.
  *
- * Copyright (c) 2013-2018;2020-2021 Philippe Lieser
+ * Copyright (c) 2013-2018;2020-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -10,52 +10,50 @@
  */
 
 // @ts-check
-///<reference path="../../WebExtensions.d.ts" />
 ///<reference path="../../RuntimeMessage.d.ts" />
 ///<reference path="../../experiments/mailUtils.d.ts" />
 /* eslint-env webextensions */
-/* eslint no-unused-vars: ["error", { "varsIgnorePattern": "VerifierModule" }] */
 
-import * as VerifierModule from "./verifier.mjs.js";
 import { Deferred, addrIsInDomain, copy, stringEndsWith, stringEqual } from "../utils.mjs.js";
-import { DKIM_InternalError } from "../error.mjs.js";
 import ExtensionUtils from "../extensionUtils.mjs.js";
 import Logging from "../logging.mjs.js";
 import prefs from "../preferences.mjs.js";
 
 const log = Logging.getLogger("SignRules");
 
+/** @typedef {import("./verifier.mjs.js").dkimSigResultV2} dkimSigResultV2 */
+
 /**
  * DKIM signing policy for a message.
  *
  * @typedef {object} DKIMSignPolicy
- * @property {boolean} shouldBeSigned
- *           true if message should be signed
- * @property {string[]} sdid
- *           Signing Domain Identifier
- * @property {boolean} foundRule
- *           true if enabled rule for message was found
- * @property {boolean} hideFail
- *           true if HIDEFAIL rule was found
+ * @property {boolean} shouldBeSigned True if message should be signed.
+ * @property {string[]} sdid Signing Domain Identifier.
+ * @property {boolean} foundRule True if enabled rule for message was found.
+ * @property {boolean} hideFail True if HIDEFAIL rule was found.
  */
 
 /**
  * rule types
  *
  * @public
+ * @enum {number}
  */
-const RULE_TYPE = {
+// eslint-disable-next-line no-extra-parens
+const RULE_TYPE = /** @type {const} */ ({
 	ALL: 1, // all e-mails must be signed
 	NEUTRAL: 2,
 	HIDEFAIL: 3, // treat invalid signatures as nosig
-};
+});
 
 /**
  * default rule priorities
  *
  * @public
+ * @enum {number}
  */
-const PRIORITY = {
+// eslint-disable-next-line no-extra-parens
+const PRIORITY = /** @type {const} */ ({
 	AUTOINSERT_RULE_ALL: 1100,
 	DEFAULT_RULE_ALL0: 2000, // used for e-mail providers
 	USERINSERT_RULE_HIDEFAIL: 2050,
@@ -64,13 +62,15 @@ const PRIORITY = {
 	DEFAULT_RULE_NEUTRAL: 2200,
 	USERINSERT_RULE_ALL: 3100,
 	USERINSERT_RULE_NEUTRAL: 3200,
-};
+});
 
-const AUTO_ADD_RULE_FOR = {
+/** @enum {number} */
+// eslint-disable-next-line no-extra-parens
+const AUTO_ADD_RULE_FOR = /** @type {const} */ ({
 	FROM_ADDRESS: 0,
 	SUB_DOMAIN: 1,
 	BASE_DOMAIN: 2,
-};
+});
 
 /**
  * Exported DKIM user signing rule.
@@ -151,15 +151,15 @@ async function loadDefaultRules() {
 		const signersDefaultStr = await ExtensionUtils.readFile("data/signersDefault.json");
 		/** @type {{rules: {domain: string, addr: string, sdid: string, ruletype: string, priority: string}[]}} */
 		const signersDefaultData = JSON.parse(signersDefaultStr);
-		defaultRules = signersDefaultData.rules.map(function (rule) {
-			/** @type {number=} */
+		defaultRules = signersDefaultData.rules.map((rule) => {
+			/** @type {number|undefined} */
 			// @ts-expect-error
 			const type = RULE_TYPE[rule.ruletype];
 			if (type === undefined) {
 				throw new Error(`unknown rule type ${rule.ruletype}`);
 			}
 
-			/** @type {number=} */
+			/** @type {number|undefined} */
 			// @ts-expect-error
 			const priority = PRIORITY[rule.priority];
 			if (priority === undefined) {
@@ -170,8 +170,8 @@ async function loadDefaultRules() {
 				domain: rule.domain,
 				addr: rule.addr,
 				sdid: rule.sdid,
-				type: type,
-				priority: priority,
+				type,
+				priority,
 			};
 		});
 		defaultRulesLoaded.resolve();
@@ -192,7 +192,7 @@ async function loadUserRules() {
 	}
 	userRulesLoaded = new Deferred();
 	try {
-		/** @type {DkimStoredUserSignRules=} */
+		/** @type {DkimStoredUserSignRules|undefined} */
 		const storedUserRules = (await browser.storage.local.get("signRulesUser")).signRulesUser;
 		if (storedUserRules !== undefined) {
 			userRulesMaxId = storedUserRules.maxId;
@@ -223,9 +223,9 @@ async function storeUserRules() {
  */
 function glob(str, pattern) {
 	// escape all special regex charters besides *
-	let regexpPattern = pattern.replace(/[.+?^${}()|[\]\\]/g, '\\$&');
+	let regexpPattern = pattern.replace(/[.+?^${}()|[\]\\]/g, "\\$&");
 	// replace * with correct regex
-	regexpPattern = regexpPattern.replace("*", ".*");
+	regexpPattern = regexpPattern.replace(/\*/g, ".*");
 
 	const regexp = new RegExp(`^${regexpPattern}$`, "i");
 	return regexp.test(str);
@@ -272,7 +272,7 @@ async function checkIfShouldBeSigned(fromAddress, listId, dmarc) {
 			return true;
 		}));
 	}
-	/** @type {DkimSignRuleDefault|DkimSignRuleUser=} */
+	/** @type {DkimSignRuleDefault|DkimSignRuleUser|undefined} */
 	const rule = matchedRules.sort((a, b) => b.priority - a.priority)[0];
 	if (!rule) {
 		if (dmarc) {
@@ -311,19 +311,19 @@ async function checkIfShouldBeSigned(fromAddress, listId, dmarc) {
 			throw new Error(`unknown rule type ${rule.type}`);
 	}
 	return {
-		shouldBeSigned: shouldBeSigned,
+		shouldBeSigned,
 		sdid: rule.sdid.split(" ").filter(x => x),
 		foundRule: true,
-		hideFail: hideFail,
+		hideFail,
 	};
 }
 
 /**
  * Checks the SDID and AUID of a DKIM signatures.
  *
- * @param {VerifierModule.dkimSigResultV2} dkimResult
+ * @param {dkimSigResultV2} dkimResult
  * @param {string[]} allowedSDIDs
- * @returns {VerifierModule.dkimSigResultV2}
+ * @returns {dkimSigResultV2}
  */
 function checkSDID(dkimResult, allowedSDIDs) {
 	const result = copy(dkimResult);
@@ -350,7 +350,7 @@ function checkSDID(dkimResult, allowedSDIDs) {
 
 	// error/warning if there is a SDID in the sign rule
 	// that is different from the SDID in the signature
-	if (!allowedSDIDs.some(function (element/*, index, array*/) {
+	if (!allowedSDIDs.some((element/*, index, array*/) => {
 		if (prefs["policy.signRules.sdid.allowSubDomains"]) {
 			return stringEndsWith(sdid, element);
 		}
@@ -448,12 +448,12 @@ export default class SignRules {
 	/**
 	 * Checks the DKIM result against the sign rules.
 	 *
-	 * @param {VerifierModule.dkimSigResultV2} dkimResult
+	 * @param {dkimSigResultV2} dkimResult
 	 * @param {string} from
 	 * @param {string?} [listId]
 	 * @param {function(void): Promise<boolean>} [isOutgoingCallback]
 	 * @param {DMARC} [dmarc]
-	 * @returns {Promise<VerifierModule.dkimSigResultV2>}
+	 * @returns {Promise<dkimSigResultV2>}
 	 */
 	static async check(dkimResult, from, listId, isOutgoingCallback, dmarc) {
 		await prefs.init();
@@ -478,7 +478,7 @@ export default class SignRules {
 			result.hideFail = true;
 		}
 		if (!policy.foundRule) {
-			await SignRules._autoAddRule(from, dkimResult);
+			await SignRules.#autoAddRule(from, dkimResult);
 		}
 		return result;
 	}
@@ -513,7 +513,8 @@ export default class SignRules {
 			ruleDomain = await browser.mailUtils.getBaseDomainFromAddr(addr);
 		}
 
-		if (!Object.values(RULE_TYPE).includes(type)) {
+		// eslint-disable-next-line no-extra-parens
+		if (!Object.values(/** @type {{[key: string]: number}} */(RULE_TYPE)).includes(type)) {
 			throw new Error(`unknown rule type ${type}`);
 		}
 
@@ -539,11 +540,11 @@ export default class SignRules {
 			id: ++userRulesMaxId,
 			domain: ruleDomain ?? "",
 			listId: listId ?? "",
-			addr: addr,
-			sdid: sdid,
-			type: type,
+			addr,
+			sdid,
+			type,
 			priority: rulePriority,
-			enabled: enabled,
+			enabled,
 		});
 		await storeUserRules();
 
@@ -627,30 +628,25 @@ export default class SignRules {
 	}
 
 	/**
-	 * Delete the user rule with the given id.
+	 * Delete the user rules with the given IDs.
 	 *
-	 * @param {number} id
+	 * @param {number[]} ids
 	 * @returns {Promise<void>}
 	 */
-	static async deleteRule(id) {
+	static async deleteRules(ids) {
 		await loadUserRules();
-		const ruleIndex = userRules.findIndex(rule => rule.id === id);
-		if (ruleIndex === -1) {
-			throw new Error(`Can not delete non existing rule with id '${id}'`);
-		}
-		userRules.splice(ruleIndex, 1);
+		userRules = userRules.filter(rule => !ids.includes(rule.id));
 		return storeUserRules();
 	}
 
 	/**
 	 * Adds should be signed rule if no enabled rule for fromAddress is found.
 	 *
-	 * @private
 	 * @param {string} fromAddress
-	 * @param {VerifierModule.dkimSigResultV2} dkimResult
+	 * @param {dkimSigResultV2} dkimResult
 	 * @returns {Promise<void>}
 	 */
-	static _autoAddRule(fromAddress, dkimResult) {
+	static #autoAddRule(fromAddress, dkimResult) {
 		const promise = (async () => {
 			if (dkimResult.result !== "SUCCESS") {
 				return;
@@ -671,7 +667,6 @@ export default class SignRules {
 			if (!addrIsInDomain(fromAddress, sdid) &&
 				prefs["policy.signRules.autoAddRule.onlyIfFromAddressInSDID"]
 			) {
-				log.trace("fromAddress is not in SDID");
 				return;
 			}
 
@@ -692,14 +687,14 @@ export default class SignRules {
 						fromAddressToAdd = "*";
 						break;
 					default:
-						throw new DKIM_InternalError("invalid signRules.autoAddRule.for");
+						throw new Error("invalid signRules.autoAddRule.for");
 				}
 				await SignRules.addRule(domain, null, fromAddressToAdd, sdid, RULE_TYPE.ALL, PRIORITY.AUTOINSERT_RULE_ALL);
 			}
 		})();
-		promise.then(null, function onReject(exception) {
+		promise.then(null, (exception) => {
 			// Failure!  We can inspect or report the exception.
-			log.fatal(exception);
+			log.fatal("Error adding an automatic rule:", exception);
 		});
 		return promise;
 	}
@@ -712,11 +707,11 @@ export default class SignRules {
  * @returns {void}
  */
 export function initSignRulesProxy() {
-	browser.runtime.onMessage.addListener((runtimeMessage, sender, /*sendResponse*/) => {
+	browser.runtime.onMessage.addListener((runtimeMessage, sender /*, sendResponse*/) => {
 		if (sender.id !== "dkim_verifier@pl") {
 			return;
 		}
-		if (typeof runtimeMessage !== 'object' || runtimeMessage === null) {
+		if (typeof runtimeMessage !== "object" || runtimeMessage === null) {
 			return;
 		}
 		/** @type {RuntimeMessage.Messages} */
@@ -756,9 +751,9 @@ export function initSignRulesProxy() {
 				request.parameters.enabled,
 			);
 		}
-		if (request.method === "deleteRule") {
+		if (request.method === "deleteRules") {
 			// eslint-disable-next-line consistent-return
-			return SignRules.deleteRule(request.parameters.id);
+			return SignRules.deleteRules(request.parameters.ids);
 		}
 		log.error("SignRules proxy receiver got unknown request.", request);
 		throw new Error("SignRules proxy receiver got unknown request.");

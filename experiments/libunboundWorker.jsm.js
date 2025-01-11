@@ -2,7 +2,7 @@
  * A ChromeWorker wrapper for the libunbound DNS library.
  * Currently only the TXT resource record is completely supported.
  *
- * Copyright (c) 2016-2018;2020 Philippe Lieser
+ * Copyright (c) 2016-2018;2020-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -26,7 +26,7 @@ const postLog = {
 	 * @param {string} msg
 	 * @returns {void}
 	 */
-	error: function (msg) {
+	error(msg) {
 		/** @type {Libunbound.Log} */
 		const toSend = { type: "log", subType: "error", message: log_prefix + msg };
 		postMessage(toSend);
@@ -35,7 +35,7 @@ const postLog = {
 	 * @param {string} msg
 	 * @returns {void}
 	 */
-	warn: function (msg) {
+	warn(msg) {
 		/** @type {Libunbound.Log} */
 		const toSend = { type: "log", subType: "warn", message: log_prefix + msg };
 		postMessage(toSend);
@@ -44,7 +44,7 @@ const postLog = {
 	 * @param {string} msg
 	 * @returns {void}
 	 */
-	info: function (msg) {
+	info(msg) {
 		/** @type {Libunbound.Log} */
 		const toSend = { type: "log", subType: "info", message: log_prefix + msg };
 		postMessage(toSend);
@@ -53,14 +53,18 @@ const postLog = {
 	 * @param {string} msg
 	 * @returns {void}
 	 */
-	debug: function (msg) {
+	debug(msg) {
 		/** @type {Libunbound.Log} */
 		const toSend = { type: "log", subType: "debug", message: log_prefix + msg };
 		postMessage(toSend);
 	},
 };
 
-const Constants = {
+/**
+ * @enum {number}
+ */
+// eslint-disable-next-line no-extra-parens
+const Constants = /** @type {const} */ ({
 	RR_TYPE_A: 1,
 	RR_TYPE_A6: 38,
 	RR_TYPE_AAAA: 28,
@@ -123,7 +127,7 @@ const Constants = {
 	RR_TYPE_UNSPEC: 103,
 	RR_TYPE_WKS: 11,
 	RR_TYPE_X25: 19,
-};
+});
 
 /** @type {ctypes.Library?} */
 let lib;
@@ -133,7 +137,7 @@ let libDeps = [];
 let ctx = ctypes.voidptr_t();
 // http://unbound.net/documentation/libunbound.html
 /** @typedef {ctypes.CDataPointerType<ub_ctx_struct>} p_ub_ctx */
-/** @type {ub_ctx_struct=} */
+/** @type {ub_ctx_struct|undefined} */
 let ub_ctx;
 /** @typedef {ctypes.CDataPointerType<ub_result_struct>} p_ub_result */
 /** @typedef {ctypes.CDataPointerType<ctypes.PointerTypeI<ub_result_struct>>} pp_ub_result */
@@ -147,7 +151,7 @@ let ub_ctx_delete;
 let ub_ctx_config;
 /** @type {(ctx: p_ub_ctx, addr: string)=>number} */
 let ub_ctx_set_fwd;
-/** @type {(ctx: p_ub_ctx, fname: string?)=>number} */
+/** @type {(ctx: p_ub_ctx, fname: string|null)=>number} */
 let ub_ctx_resolvconf;
 /** @type {(ctx: p_ub_ctx, ta: string)=>number} */
 let ub_ctx_add_ta;
@@ -157,7 +161,7 @@ let ub_ctx_debuglevel;
 let ub_resolve;
 /** @type {(result: p_ub_result)=>void} */
 let ub_resolve_free;
-/** @type {(err: number)=>ReturnType<ctypes["char"]["ptr"]>} */
+/** @type {(err: number)=>ReturnType<typeof ctypes.char.ptr>} */
 let ub_strerror;
 
 /**
@@ -443,14 +447,14 @@ function update_ctx(conf, debuglevel, getNameserversFromOS, nameservers, trustAn
 	}
 
 	// set additional DNS servers
-	nameservers.forEach(function (element /*, index, array*/) {
+	nameservers.forEach((element /*, index, array*/) => {
 		if ((retval = ub_ctx_set_fwd(ctx, element.trim())) !== 0) {
 			throw new Error(`error in ub_ctx_set_fwd: ${ub_strerror(retval).readString()}. errno: ${ctypes.errno}`);
 		}
 	});
 
 	// add root trust anchors
-	trustAnchors.forEach(function (element /*, index, array*/) {
+	trustAnchors.forEach((element /*, index, array*/) => {
 		if ((retval = ub_ctx_add_ta(ctx, element.trim())) !== 0) {
 			throw new Error(`error in ub_ctx_add_ta: ${ub_strerror(retval).readString()}. errno: ${ctypes.errno}`);
 		}

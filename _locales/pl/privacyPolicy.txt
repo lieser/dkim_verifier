@@ -1,0 +1,4 @@
+Rozszerzenie odpytuje serwer DNS (domyślnie Google Public DNS (8.8.8.8) lub z konfiguracji OS) o rekord TXT wymieniony w podpisie. Rekord ten powinien zawierać klucz publiczny przeznaczony do weryfikacji podpisu z wiadomości.
+Dzieje się to przy każdym wyświetleniu wiadomości z podpisem DKIM.
+
+Jeżeli jest włączone użycie DMARC, można wykonać dodatkowe sprawdzenia w DNS, nawet dla wiadomości nie zawierających DKIM.

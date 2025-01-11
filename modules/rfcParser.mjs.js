@@ -1,7 +1,7 @@
 /**
  * RegExp pattern for ABNF definitions in various RFCs.
  *
- * Copyright (c) 2020-2022 Philippe Lieser
+ * Copyright (c) 2020-2025 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -12,7 +12,7 @@
 // @ts-check
 /* eslint-disable camelcase */
 
-import { DKIM_InternalError, DKIM_SigError } from "./error.mjs.js";
+import { DKIM_Error, DKIM_SigError } from "./error.mjs.js";
 
 export default class RfcParser {
 	////// RFC 2045 - Multipurpose Internet Mail Extensions (MIME) Part One: Format of Internet Message Bodies
@@ -43,8 +43,13 @@ export default class RfcParser {
 	static get FWS_op() { return `${this.FWS}?`; }
 	// Note: this is incomplete (obs-ctext is missing)
 	static get ctext() { return "[!-'*-[\\]-~]"; }
-	// Note: this is incomplete (comment is missing)
-	static get ccontent() { return `(?:${this.ctext}|${this.quoted_pair})`; }
+	// Note: There is a recursion in ccontent/comment, which is not supported by the RegExp in JavaScript.
+	// We currently unroll it to support a depth of up to 3 comments.
+	static get ccontent_2() { return `(?:${this.ctext}|${this.quoted_pair})`; }
+	static get comment_2() { return `\\((?:${this.FWS_op}${this.ccontent_2})*${this.FWS_op}\\)`; }
+	static get ccontent_1() { return `(?:${this.ctext}|${this.quoted_pair}|${this.comment_2})`; }
+	static get comment_1() { return `\\((?:${this.FWS_op}${this.ccontent_1})*${this.FWS_op}\\)`; }
+	static get ccontent() { return `(?:${this.ctext}|${this.quoted_pair}|${this.comment_1})`; }
 	static get comment() { return `\\((?:${this.FWS_op}${this.ccontent})*${this.FWS_op}\\)`; }
 	static get CFWS() { return `(?:(?:(?:${this.FWS_op}${this.comment})+${this.FWS_op})|${this.FWS})`; }
 	// Note: helper only, not part of the RFC
@@ -97,9 +102,9 @@ export default class RfcParser {
 	 * Specified in Section 3.2 of RFC 6376.
 	 *
 	 * @param {string} str
-	 * @returns {Map<string, string>|number} Map
-	 *                       -1 if a tag-spec is ill-formed
-	 *                       -2 duplicate tag names
+	 * @returns {Map<string, string>|number} Map of the parsed list or:
+	 * - -1 if a tag-spec is ill-formed.
+	 * - -2 duplicate tag names.
 	 */
 	static parseTagValueList(str) {
 		const tval = "[!-:<-~]+";
@@ -120,7 +125,7 @@ export default class RfcParser {
 			const tmp = elem.match(new RegExp(
 				`^${this.FWS}?(${tagName})${this.FWS}?=${this.FWS}?(${tagValue})${this.FWS}?$`
 			));
-			if (tmp === null || !tmp[1] || !tmp[2]) {
+			if (tmp === null || !tmp[1] || tmp[2] === undefined) {
 				return RfcParser.TAG_PARSE_ERROR.ILL_FORMED;
 			}
 			const name = tmp[1];
@@ -141,12 +146,12 @@ export default class RfcParser {
 	/**
 	 * Parse a tag value stored in a Map.
 	 *
-	 * @param {Map<string, string>} map
+	 * @param {ReadonlyMap<string, string>} map
 	 * @param {string} tagName - name of the tag
 	 * @param {string} patternTagValue - Pattern for the tag-value
 	 * @param {number} [expType] - Type of exception to throw. 1 for DKIM header, 2 for DKIM key, 3 for general.
 	 * @returns {[string, ...string[]]|null} The match from the RegExp if tag_name exists, otherwise null
-	 * @throws {DKIM_SigError|DKIM_InternalError} Throws if tag_value does not match.
+	 * @throws {DKIM_SigError|DKIM_Error} Throws if tag_value does not match.
 	 */
 	static parseTagValue(map, tagName, patternTagValue, expType = 1) {
 		const tagValue = map.get(tagName);
@@ -164,7 +169,7 @@ export default class RfcParser {
 			} else if (expType === 2) {
 				throw new DKIM_SigError(`DKIM_SIGERROR_KEY_ILLFORMED_${tagName.toUpperCase()}`);
 			} else {
-				throw new DKIM_InternalError(`illformed tag ${tagName}`);
+				throw new DKIM_Error(`illformed tag ${tagName}`);
 			}
 		}
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020;2022 Philippe Lieser
+ * Copyright (c) 2020-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -14,7 +14,7 @@
  * @returns {boolean}
  */
 function isNodeJs() {
-	return typeof window === 'undefined';
+	return typeof window === "undefined";
 }
 
 let rootDirPath = "";
@@ -52,7 +52,7 @@ async function readFile(file, encoding) {
 		const filePath = path.join(await rootDir(), file);
 
 		return new Promise((resolve, reject) => {
-			fs.readFile(filePath, { encoding: encoding }, (err, data) => {
+			fs.readFile(filePath, { encoding }, (err, data) => {
 				if (err) {
 					reject(err);
 					return;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2022 Philippe Lieser
+ * Copyright (c) 2020-2024 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -8,11 +8,11 @@
  */
 
 // @ts-check
-///<reference path="../WebExtensions.d.ts" />
 ///<reference path="../RuntimeMessage.d.ts" />
 ///<reference path="../experiments/dkimHeader.d.ts" />
 /* eslint-env webextensions */
 
+import * as Conversations from "../modules/conversation.mjs.js";
 import KeyStore, { KeyDb } from "../modules/dkim/keyStore.mjs.js";
 import SignRules, { initSignRulesProxy } from "../modules/dkim/signRules.mjs.js";
 import { migrateKeyStore, migratePrefs, migrateSignRulesUser } from "../modules/migration.mjs.js";
@@ -20,7 +20,6 @@ import AuthVerifier from "../modules/authVerifier.mjs.js";
 import Logging from "../modules/logging.mjs.js";
 import MsgParser from "../modules/msgParser.mjs.js";
 import prefs from "../modules/preferences.mjs.js";
-import verifyMessageForConversation from "../modules/conversation.mjs.js";
 
 const log = Logging.getLogger("background");
 
@@ -48,7 +47,7 @@ isInitialized.catch(error => log.fatal("Initializing failed with:", error));
  * A cache of the current results displayed in the tabs.
  * Needed for the actions triggered by the user in the display header.
  */
-/** @type {Map.<number, import("../modules/authVerifier.mjs.js").AuthResult>} */
+/** @type {Map.<number, import("../modules/authVerifier.mjs.js").AuthResult|null>} */
 const displayedResultsCache = new Map();
 browser.tabs.onRemoved.addListener((tabId) => {
 	displayedResultsCache.delete(tabId);
@@ -69,7 +68,7 @@ const verifier = new AuthVerifier();
  * Verify a message in a specific tab and display the result.
  *
  * @param {number} tabId
- * @param {browser.messageDisplay.MessageHeader} message
+ * @param {browser.messages.MessageHeader} message
  * @returns {Promise<void>}
  */
 // eslint-disable-next-line complexity
@@ -85,7 +84,7 @@ async function verifyMessage(tabId, message) {
 			throw new Error("Result does not contain a DKIM result.");
 		}
 		displayedResultsCache.set(tabId, res);
-		const warnings = res.dkim[0].warnings_str || [];
+		const warnings = res.dkim[0].warnings_str ?? [];
 		/** @type {Parameters<typeof browser.dkimHeader.setDkimHeaderResult>[5]} */
 		const arh = {};
 		if (res.arh && res.arh.dkim && res.arh.dkim[0]) {
@@ -151,20 +150,25 @@ async function verifyMessage(tabId, message) {
  * Will start the verification if needed.
  */
 browser.messageDisplay.onMessageDisplayed.addListener(async (tab, message) => {
+	if (!tab.id) {
+		console.warn(`onMessageDisplayed called for message ${message.id} without a tab id`);
+		return;
+	}
 	try {
 		await isInitialized;
-		if (tab.url?.startsWith("chrome://conversations/")) {
+		if (await Conversations.isConversationView(tab)) {
 			// Conversation view is handled in onMessagesDisplayed
 			return;
 		}
 		displayedResultsCache.delete(tab.id);
 
 		// Nothing to verify if msg is RSS feed or news
-		const account = await browser.accounts.get(message.folder.accountId);
+		const account = message.folder ? await browser.accounts.get(message.folder.accountId) : null;
 		if (account && (account.type === "rss" || account.type === "nntp")) {
 			browser.dkimHeader.showDkimHeader(tab.id, message.id, prefs.showDKIMHeader >= SHOW.MSG);
 			browser.dkimHeader.setDkimHeaderResult(
 				tab.id, message.id, browser.i18n.getMessage("NOT_EMAIL"), [], "", {});
+			displayedResultsCache.set(tab.id, null);
 			return;
 		}
 
@@ -197,11 +201,10 @@ browser.messageDisplay.onMessageDisplayed.addListener(async (tab, message) => {
 browser.messageDisplay.onMessagesDisplayed.addListener(async (tab, messages) => {
 	try {
 		await isInitialized;
-		if (tab.url?.startsWith("chrome://conversations/")) {
+		if (await Conversations.isConversationView(tab)) {
 			for (const message of messages) {
-				await verifyMessageForConversation(message);
+				await Conversations.verifyMessage(message);
 			}
-			return;
 		}
 		// Normal Thunderbird view ("classic") is handled in onMessageDisplayed
 	} catch (e) {
@@ -217,15 +220,15 @@ class DisplayAction {
 	 * Determinate which user actions should be enabled.
 	 *
 	 * @param {number} tabId
-	 * @returns {RuntimeMessage.DisplayAction.queryButtonStateResult}
+	 * @returns {RuntimeMessage.DisplayAction.queryResultStateResult}
 	 */
-	static queryButtonState(tabId) {
+	static queryResultState(tabId) {
 		const res = displayedResultsCache.get(tabId);
 		const keyStored = prefs["key.storing"] !== KeyStore.KEY_STORING.DISABLED &&
 			res?.dkim[0]?.sdid !== undefined && res?.dkim[0].selector !== undefined;
-		/** @type {RuntimeMessage.DisplayAction.queryButtonStateResult} */
+		/** @type {RuntimeMessage.DisplayAction.queryResultStateResult} */
 		const state = {
-			reverifyDKIMSignature: res !== undefined,
+			reverifyDKIMSignature: res !== null,
 			policyAddUserException:
 				res?.dkim[0]?.errorType === "DKIM_POLICYERROR_MISSING_SIG" ||
 				res?.dkim[0]?.errorType === "DKIM_POLICYERROR_WRONG_SDID" || (
@@ -236,6 +239,7 @@ class DisplayAction {
 				),
 			markKeyAsSecure: keyStored && res?.dkim[0]?.keySecure === false,
 			updateKey: keyStored,
+			dkim: res?.dkim ?? [],
 		};
 		return state;
 	}
@@ -243,12 +247,11 @@ class DisplayAction {
 	/**
 	 * Reverify a message in a specific tab and display the result.
 	 *
-	 * @private
 	 * @param {number} tabId
-	 * @param {browser.messageDisplay.MessageHeader} message
+	 * @param {browser.messages.MessageHeader} message
 	 * @returns {Promise<void>}
 	 */
-	static async _reverifyMessage(tabId, message) {
+	static async #reverifyMessage(tabId, message) {
 		browser.dkimHeader.reset(tabId, message.id);
 		AuthVerifier.resetResult(message);
 		await verifyMessage(tabId, message);
@@ -262,7 +265,9 @@ class DisplayAction {
 	 */
 	static async reverifyDKIMSignature(tabId) {
 		const message = await browser.messageDisplay.getDisplayedMessage(tabId);
-		await DisplayAction._reverifyMessage(tabId, message);
+		if (message) {
+			await DisplayAction.#reverifyMessage(tabId, message);
+		}
 	}
 
 	/**
@@ -270,14 +275,18 @@ class DisplayAction {
 	 *
 	 * @param {number} tabId
 	 * @returns {Promise<void>}
+	 * @throws {DKIM_Error}
 	 */
 	static async policyAddUserException(tabId) {
 		const message = await browser.messageDisplay.getDisplayedMessage(tabId);
+		if (!message) {
+			return;
+		}
 
-		const from = MsgParser.parseFromHeader(`From: ${message.author}\r\n`, prefs["internationalized.enable"]);
+		const from = MsgParser.parseAuthor(message.author, prefs["internationalized.enable"]);
 		await SignRules.addException(from);
 
-		await DisplayAction._reverifyMessage(tabId, message);
+		await DisplayAction.#reverifyMessage(tabId, message);
 	}
 
 	/**
@@ -297,7 +306,9 @@ class DisplayAction {
 		await KeyDb.markAsSecure(sdid, selector);
 
 		const message = await browser.messageDisplay.getDisplayedMessage(tabId);
-		await DisplayAction._reverifyMessage(tabId, message);
+		if (message) {
+			await DisplayAction.#reverifyMessage(tabId, message);
+		}
 	}
 
 	/**
@@ -313,18 +324,20 @@ class DisplayAction {
 		}
 
 		const message = await browser.messageDisplay.getDisplayedMessage(tabId);
-		await DisplayAction._reverifyMessage(tabId, message);
+		if (message) {
+			await DisplayAction.#reverifyMessage(tabId, message);
+		}
 	}
 }
 
 /**
  * Handel the actions triggered by the user in the display header.
  */
-browser.runtime.onMessage.addListener((runtimeMessage, sender, /*sendResponse*/) => {
+browser.runtime.onMessage.addListener((runtimeMessage, sender /*, sendResponse*/) => {
 	if (sender.id !== "dkim_verifier@pl") {
 		return;
 	}
-	if (typeof runtimeMessage !== 'object' || runtimeMessage === null) {
+	if (typeof runtimeMessage !== "object" || runtimeMessage === null) {
 		return;
 	}
 	/** @type {RuntimeMessage.Messages} */
@@ -332,9 +345,9 @@ browser.runtime.onMessage.addListener((runtimeMessage, sender, /*sendResponse*/)
 	if (request.module !== "DisplayAction") {
 		return;
 	}
-	if (request.method === "queryButtonState") {
+	if (request.method === "queryResultState") {
 		// eslint-disable-next-line consistent-return
-		return Promise.resolve(DisplayAction.queryButtonState(request.parameters.tabId));
+		return Promise.resolve(DisplayAction.queryResultState(request.parameters.tabId));
 	}
 	if (request.method === "reverifyDKIMSignature") {
 		const promise = DisplayAction.reverifyDKIMSignature(request.parameters.tabId);

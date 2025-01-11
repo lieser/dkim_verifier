@@ -65,6 +65,10 @@
 	"DKIM_DNSERROR_UNKNOWN": {
 		"message": "DNS エラー"
 	},
+	"DKIM_DNSERROR_OFFLINE": {
+		"message": "オフラインモードのため、DNSへの問い合わせが出来ませんでした。",
+		"description": "Error message if the addon needs to do a DNS query, but Thunderbird is in the offline mode."
+	},
 	"DKIM_DNSERROR_SERVER_ERROR": {
 		"message": "DNS サーバ接続エラー"
 	},
@@ -225,6 +229,10 @@
 	"DKIM_SIGERROR_KEY_UNKNOWN_K": {
 		"message": "サポートされていない DKIM キータイプ"
 	},
+	"DKIM_SIGERROR_KEY_MISMATCHED_K": {
+		"message": "署名アルゴリズムが DKIM キータイプにマッチしません",
+		"description": "Error message if the signature algorithm in the DKIM Signature header (a-tag) does not match the key type of the DKIM key (k-tag)."
+	},
 	"DKIM_SIGERROR_KEY_ILLFORMED_K": {
 		"message": "DKIM キータイプタグの形式が不正"
 	},
@@ -236,9 +244,6 @@
 	},
 	"DKIM_SIGERROR_KEY_REVOKED": {
 		"message": "DKIM キーが無効化されています"
-	},
-	"DKIM_SIGERROR_KEY_HASHMISMATCH": {
-		"message": "DKIM キーの公開鍵のハッシュアルゴリズムが正しくありません"
 	},
 	"DKIM_SIGERROR_KEY_ILLFORMED_P": {
 		"message": "DKIM キーの公開鍵データタグの形式が不正"
@@ -261,7 +266,8 @@
 	},
 	// DKIM_SIGERROR - POLICY
 	"DKIM_POLICYERROR_MISSING_SIG": {
-		"message": "$1 により署名されているべき"
+		"message": "署名なし。$1 により署名されているべき",
+		"description": "Error if a message has no signature, but the sign rules state that it should be signed"
 	},
 	"DKIM_POLICYERROR_KEYMISMATCH": {
 		"message": "保存されている DKIM キーと現在のキーが異なる"
@@ -271,6 +277,10 @@
 	},
 	"DKIM_POLICYERROR_WRONG_SDID": {
 		"message": "署名者が正しくありません（$1 であるべき）"
+	},
+	"DKIM_POLICYERROR_UNSIGNED_HEADER_ADDED": {
+		"message": "未署名ヘッダ '$1' が追加されました",
+		"description": "Error if an important header was probably maliciously added later"
 	},
 	// DKIM_SIGWARNING
 	"DKIM_SIGWARNING_SMALL_L": {
@@ -293,6 +303,10 @@
 	},
 	"DKIM_SIGWARNING_FROM_NOT_IN_AUID": {
 		"message": "差出人がユーザ識別子とマッチしません"
+	},
+	"DKIM_SIGWARNING_UNSIGNED_HEADER": {
+		"message": "ヘッダ '$1' は署名されていません",
+		"description": "Warning if an important header is not signed"
 	},
 	// JSDNS
 	"TOO_MANY_HOPS": {
@@ -345,7 +359,7 @@
 		"message": "DNS"
 	},
 	"options_dns.resolver": {
-		"message": "リゾルバ"
+		"message": "リゾルバ:"
 	},
 	"options_dns.resolver.value.1": {
 		"message": "JavaScript DNS ライブラリ"
@@ -357,10 +371,11 @@
 		"message": "OS の設定から DNS サーバを取得"
 	},
 	"options_dns.nameserver": {
-		"message": "DNS サーバ （書式 （EBNF）: host[\":\"port]{\";\"host[\":\"port]} ）"
+		"message": "DNS サーバ （書式 （EBNF）: host[\":\"port]{\";\"host[\":\"port]} ）:"
 	},
 	"options_dns.timeout_connect": {
-		"message": "DNS 接続タイムアウト （秒）"
+		"message": "DNS 接続タイムアウト （秒）:",
+		"description": "Timeout for the connection to the DNS servers (both establishing the connection and sending/receiving data)"
 	},
 	"options_dns.proxy.enable": {
 		"message": "DNS サーバへの接続にプロキシを利用"
@@ -375,7 +390,7 @@
 		"message": "ポート:"
 	},
 	"options_dns.libunbound.nameserver": {
-		"message": "DNS サーバ (書式 (EBNF): IP{\";\"IP} )"
+		"message": "DNS サーバ (書式 (EBNF): IP{\";\"IP} ):"
 	},
 	"options_dns.libunbound.usageWarning": {
 		"message": "libunbound リゾルバの利用には外部ライブラリが必要です"
@@ -426,15 +441,31 @@
 	"options_policy.DMARC.shouldBeSigned.enable": {
 		"message": "メールが署名されているべきかをヒューリスティックに決定するために DMARC を利用"
 	},
+	"options_policy.dkim.unsignedHeadersWarning.mode": {
+		"message": "署名されていることが望ましいヘッダが未署名であることの警告:",
+		"description": "Description for the setting of the unsigned headers warning mode."
+	},
+	"options_policy.dkim.unsignedHeadersWarning.mode.relaxed": {
+		"message": "relaxed mode",
+		"description": "A relaxed mode that will try to avoid showing warnings."
+	},
+	"options_policy.dkim.unsignedHeadersWarning.mode.recommended": {
+		"message": "recommended mode",
+		"description": "A mode trying to enforce best practice without showing to many warnings."
+	},
+	"options_policy.dkim.unsignedHeadersWarning.mode.strict": {
+		"message": "strict mode",
+		"description": "A strict mode that will potentially show a lot of warnings."
+	},
 	// -------------------- Display options --------------------
 	"options_display": {
 		"message": "表示"
 	},
 	"options_showDKIMHeader": {
-		"message": "DKIM ヘッダを表示"
+		"message": "DKIM ヘッダを表示:"
 	},
 	"options_showDKIMFromTooltip": {
-		"message": "差出人ヘッダに DKIM ツールチップを表示"
+		"message": "差出人ヘッダに DKIM ツールチップを表示:"
 	},
 	"options_showDKIM.value.0": {
 		"message": "非表示"
@@ -495,19 +526,19 @@
 		"message": "DKIM を検証中のドメインの場合でも、署名を検証する"
 	},
 	"options_error.illformed_i.treatAs": {
-		"message": "不正な形式の AUID タグを"
+		"message": "不正な形式の AUID タグ:"
 	},
 	"options_error.illformed_s.treatAs": {
-		"message": "不正な形式のセレクタタグを"
+		"message": "不正な形式のセレクタタグ:"
 	},
 	"options_error.policy.key_insecure.treatAs": {
-		"message": "DNSSEC によりセキュアにされていない DKIM キーを"
+		"message": "DNSSEC によりセキュアにされていない DKIM キー:"
 	},
 	"options_error.algorithm.sign.rsa-sha1.treatAs": {
-		"message": "rsa-sha1 署名アルゴリズムを"
+		"message": "rsa-sha1 署名アルゴリズム:"
 	},
 	"options_error.algorithm.rsa.weakKeyLength.treatAs": {
-		"message": "弱い RSA キー （<2048 ビット） を"
+		"message": "弱い RSA キー （<2048 ビット）:"
 	},
 	"options_error.treatAs.value.0": {
 		"message": "エラーとする"
@@ -704,7 +735,7 @@
 		"message": "優先度を自動選択"
 	},
 	"signRules.priorityMode.manual": {
-		"message": "優先度を手動指定"
+		"message": "優先度を手動指定:"
 	},
 	"button.cancel": {
 		"message": "キャンセル"

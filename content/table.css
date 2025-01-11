@@ -1,40 +1,21 @@
-table {
-	border-collapse: collapse;
-	margin: 20px;
-	width: calc(100% - 40px);
+@import  "../thirdparty/tabulator-tables/dist/css/tabulator.css" (prefers-color-scheme: light);
+@import  "../thirdparty/tabulator-tables/dist/css/tabulator_midnight.css" (prefers-color-scheme: dark);
+
+.tabulator {
+	background-color: var(--in-content-box-background);
 }
 
-th {
-	text-align: left;
-}
-
-th, td {
-	border-inline: 1px solid var(--in-content-box-border-color);
-	padding: 3px 4px;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-
-tr:nth-child(even) {
-	background-color: var(--in-content-box-background-odd);
-}
-
-tr:hover {
-	background-color: var(--in-content-item-hover);
-}
-
-tr[selected] {
-	background-color: var(--in-content-item-selected)
+body {
+	display: flex;
+	flex-direction: column;
+	height: 100vh;
 }
 
 .body {
-	padding-bottom: 40px;
+	flex-grow: 1;
+	overflow: hidden;
 }
 
 .footer {
-	position: fixed;
-	bottom: 0;
-	left: 0;
-	right: 0;
 	background-color: var(--in-content-table-background);
 }

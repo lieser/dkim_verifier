@@ -3,7 +3,7 @@
  *  - JSDNS
  *  - libunbound
  *
- * Copyright (c) 2020-2021 Philippe Lieser
+ * Copyright (c) 2020-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -12,11 +12,11 @@
  */
 
 // @ts-check
-///<reference path="../WebExtensions.d.ts" />
 ///<reference path="../experiments/jsdns.d.ts" />
 ///<reference path="../experiments/libunbound.d.ts" />
-/* eslint-env webextensions */
+/* eslint-env webextensions, browser */
 
+import { DKIM_TempError } from "./error.mjs.js";
 import Logging from "../modules/logging.mjs.js";
 import prefs from "../modules/preferences.mjs.js";
 
@@ -40,29 +40,45 @@ let jsdnsIsConfigured = null;
 /** @type {Promise<void>?} */
 let libunboundIsConfigured = null;
 
-let listenerAdded = false;
 /**
- * Add Listener to monitor preference changes for the DNS resolvers.
+ * Reset configuration of the DNS resolvers.
  *
  * @returns {void}
  */
-function addPrefsListener() {
+function resetDNSConfiguration() {
+	jsdnsIsConfigured = null;
+	libunboundIsConfigured = null;
+}
+
+let listenerAdded = false;
+/**
+ * Add various listener for the configuration of the DNS resolvers.
+ *
+ * @returns {void}
+ */
+function addListeners() {
 	if (listenerAdded) {
 		return;
 	}
 	listenerAdded = true;
+
+	// Monitor preference changes for the DNS resolvers
 	browser.storage.onChanged.addListener((changes, areaName) => {
 		if (areaName !== "local") {
 			return;
 		}
 		if (Object.keys(changes).some(name => name.startsWith("dns."))) {
-			jsdnsIsConfigured = null;
-			libunboundIsConfigured = null;
+			resetDNSConfiguration();
 		}
 		if (Object.keys(changes).some(name => name === "debug")) {
-			jsdnsIsConfigured = null;
-			libunboundIsConfigured = null;
+			resetDNSConfiguration();
 		}
+	});
+
+	// Monitor online status
+	addEventListener("online", (_event) => {
+		log.debug("Online event fired, resetting DNS configuration");
+		resetDNSConfiguration();
 	});
 }
 
@@ -74,7 +90,7 @@ function addPrefsListener() {
 function configureJsdns() {
 	if (!jsdnsIsConfigured) {
 		log.debug("configure jsdns");
-		addPrefsListener();
+		addListeners();
 		jsdnsIsConfigured = browser.jsdns.configure(
 			prefs["dns.getNameserversFromOS"],
 			prefs["dns.nameserver"],
@@ -100,7 +116,7 @@ function configureJsdns() {
 function configureLibunbound() {
 	if (!libunboundIsConfigured) {
 		log.debug("configure libunbound");
-		addPrefsListener();
+		addListeners();
 		libunboundIsConfigured = browser.libunbound.configure(
 			prefs["dns.getNameserversFromOS"],
 			prefs["dns.nameserver"],
@@ -113,16 +129,28 @@ function configureLibunbound() {
 	return libunboundIsConfigured;
 }
 
+/**
+ * Check that Thunderbird is online.
+ *
+ * @throws {DKIM_TempError} if Thunderbird is offline.
+ */
+function checkOnlineStatus() {
+	if (!navigator.onLine) {
+		throw new DKIM_TempError("DKIM_DNSERROR_OFFLINE");
+	}
+}
+
 export default class DNS {
 	static get RCODE() {
-		return {
+		// eslint-disable-next-line no-extra-parens
+		return /** @type {const} */ ({
 			NoError: 0, // No Error [RFC1035]
 			FormErr: 1, // Format Error [RFC1035]
 			ServFail: 2, // Server Failure [RFC1035]
 			NXDomain: 3, // Non-Existent Domain [RFC1035]
 			NotImp: 4, // Non-Existent Domain [RFC1035]
 			Refused: 5, // Query Refused [RFC1035]
-		};
+		});
 	}
 
 	/**
@@ -130,14 +158,23 @@ export default class DNS {
 	 *
 	 * @param {string} name
 	 * @returns {Promise<DnsTxtResult>}
+	 * @throws {DKIM_TempError} if no DNS response could be retrieved.
 	 */
 	static async txt(name) {
 		switch (prefs["dns.resolver"]) {
-			case RESOLVER_JSDNS:
+			case RESOLVER_JSDNS: {
 				await configureJsdns();
-				return browser.jsdns.txt(name);
+				checkOnlineStatus();
+				const res = await browser.jsdns.txt(name);
+				if ("error" in res) {
+					log.debug(`JSDNS failed with: ${res.error}`);
+					throw new DKIM_TempError("DKIM_DNSERROR_SERVER_ERROR");
+				}
+				return res;
+			}
 			case RESOLVER_LIBUNBOUND: {
 				await configureLibunbound();
+				checkOnlineStatus();
 				return browser.libunbound.txt(name);
 			}
 			default:

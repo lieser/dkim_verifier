@@ -1,7 +1,7 @@
 /**
  * Utility functions related to WebExtensions/MailExtensions.
  *
- * Copyright (c) 2020 Philippe Lieser
+ * Copyright (c) 2020-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -10,7 +10,6 @@
  */
 
 // @ts-check
-///<reference path="../WebExtensions.d.ts" />
 /* eslint-env browser, webextensions */
 
 import { dateToString, promiseWithTimeout, sleep } from "./utils.mjs.js";
@@ -27,7 +26,7 @@ const log = Logging.getLogger("ExtensionUtils");
  * @returns {Promise<void>}
  */
 async function createOrRaisePopup(url, height = undefined, width = undefined) {
-	const [popupTab] = await browser.tabs.query({url: browser.runtime.getURL(url)});
+	const [popupTab] = await browser.tabs.query({ url: browser.runtime.getURL(url) });
 	const popupWindowId = popupTab?.windowId;
 	if (popupWindowId !== undefined) {
 		await browser.windows.update(popupWindowId, { focused: true });
@@ -35,9 +34,10 @@ async function createOrRaisePopup(url, height = undefined, width = undefined) {
 	}
 	/** @type {Parameters<browser.windows.create>[0]} */
 	const createData = {
-		url: url,
+		url,
 		type: "popup",
 		allowScriptsToClose: true,
+		titlePreface: `${browser.i18n.getMessage("about_name")} - `,
 	};
 	if (height) {
 		createData.height = height;
@@ -58,16 +58,16 @@ async function createOrRaisePopup(url, height = undefined, width = undefined) {
 function downloadDataAsJSON(data, dataName) {
 	const jsonBlob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
 	browser.downloads.download({
-		'url': URL.createObjectURL(jsonBlob),
-		'filename': `${dataName}_${dateToString(new Date())}.json`,
-		'saveAs': true,
+		"url": URL.createObjectURL(jsonBlob),
+		"filename": `${dataName}_${dateToString(new Date())}.json`,
+		"saveAs": true,
 	});
 }
 
 /**
  * Checks if a message is outgoing.
  *
- * @param {browser.messageDisplay.MessageHeader} message
+ * @param {browser.messages.MessageHeader} message
  * @param {string} fromAddr
  * @returns {Promise<boolean>}
  */
@@ -117,7 +117,7 @@ async function readFile(path) {
  * - TransactionInactiveError resulting in Promise never being resolved.
  * - Getting rejected with "An unexpected error occurred".
  *
- * @returns {Promise<Object<string, any>>}
+ * @returns {Promise<{[x: string]: any}>}
  */
 async function safeGetLocalStorage() {
 	const overallTimeout = 15000;
@@ -142,7 +142,7 @@ async function safeGetLocalStorage() {
 			retrySleepTime = Math.max(retrySleepTime + retrySleepTimeIncrease, retrySleepTimeMax);
 		}
 	}
-	throw Error("browser.storage.local.get() failed");
+	throw new Error("browser.storage.local.get() failed");
 }
 
 const ExtensionUtils = {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2013-2019 Philippe Lieser
+ * Copyright (c) 2013-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -10,49 +10,72 @@
 // @ts-check
 
 /**
- * DKIM signature error.
+ * DKIM signature error (PERMFAIL).
+ *
+ * User visible errors that occur during DKIM signature verification,
+ * that are considered permanent failures.
  */
 export class DKIM_SigError extends Error {
 	/**
-	 * DKIM signature error.
+	 * DKIM signature error (PERMFAIL).
 	 *
 	 * @param {string} errorType
 	 * @param {any[]} [errorStrParams]
 	 */
 	constructor(errorType, errorStrParams = []) {
-		// super(tryGetFormattedString(dkimStrings, errorType, errorStrParams) ||
-		// 	errorType ||
-		// 	dkimStrings.getString("DKIM_SIGERROR_DEFAULT"));
-		// this.name = dkimStrings.getString("DKIM_SIGERROR") + " (" + errorType + ")";
 		super(errorType);
-		this.name = "DKIM_SigError";
+		this.name = this.constructor.name;
 		this.errorType = errorType;
 		this.errorStrParams = errorStrParams;
 		// @ts-expect-error
-		this.stack = this.stack.substring(this.stack.indexOf('\n') + 1);
+		this.stack = this.stack.substring(this.stack.indexOf("\n") + 1);
 	}
 }
 
 /**
- * DKIM internal error
+ * Temporary DKIM signature error (TEMPFAIL).
+ *
+ * User visible errors that are considered temporary failures.
  */
-export class DKIM_InternalError extends Error {
+export class DKIM_TempError extends Error {
 	/**
-	 * DKIM internal error.
+	 * Temporary DKIM signature error (PERMFAIL).
 	 *
-	 * @param {string|null} [_message]
-	 * @param {string} [errorType]
+	 * @param {string} errorType
+	 * @param {any[]} [errorStrParams]
 	 */
-	constructor(_message, errorType) {
-		// super(message ||
-		// 	tryGetString(dkimStrings, errorType) ||
-		// 	errorType ||
-		// 	dkimStrings.getString("DKIM_INTERNALERROR_DEFAULT"));
-		// this.name = dkimStrings.getString("DKIM_INTERNALERROR") + " (" + errorType + ")";
+	constructor(errorType, errorStrParams = []) {
 		super(errorType);
-		this.name = "DKIM_InternalError";
+		this.name = this.constructor.name;
 		this.errorType = errorType;
+		this.errorStrParams = errorStrParams;
 		// @ts-expect-error
-		this.stack = this.stack.substring(this.stack.indexOf('\n') + 1);
+		this.stack = this.stack.substring(this.stack.indexOf("\n") + 1);
+	}
+}
+
+/**
+ * General error.
+ *
+ * Errors that are not directly shown to the user,
+ * but are still expected to potentially occur if bad input is given.
+ *
+ *
+ * Errors that should normally not occur, and indicate a programming error,
+ * are thrown as the builtin Error type.
+ *
+ * Note that for simplicity, in experiments only Error is used.
+ */
+export class DKIM_Error extends Error {
+	/**
+	 * General error.
+	 *
+	 * @param {string} [message]
+	 */
+	constructor(message) {
+		super(message);
+		this.name = this.constructor.name;
+		// @ts-expect-error
+		this.stack = this.stack.substring(this.stack.indexOf("\n") + 1);
 	}
 }

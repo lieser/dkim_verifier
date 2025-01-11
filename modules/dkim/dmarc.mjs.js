@@ -4,7 +4,7 @@
  *
  * This module is NOT conform to DMARC.
  *
- * Copyright (c) 2014-2019;2021 Philippe Lieser
+ * Copyright (c) 2014-2019;2021-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -19,7 +19,7 @@
 /* eslint-disable no-magic-numbers */
 /* eslint-disable no-use-before-define */
 
-import { DKIM_InternalError } from "../error.mjs.js";
+import { DKIM_Error, DKIM_TempError } from "../error.mjs.js";
 import DNS from "../dns.mjs.js";
 import Logging from "../logging.mjs.js";
 import RfcParser from "../rfcParser.mjs.js";
@@ -42,8 +42,8 @@ export default class DMARC {
 	 *
 	 * @param {string} fromAddress
 	 * @returns {Promise<{shouldBeSigned: boolean, sdid: string[]}>}
-	 *         .shouldBeSigned true if fromAddress should be signed
-	 *         .sdid Signing Domain Identifier
+	 * - `.shouldBeSigned` True if fromAddress should be signed.
+	 * - `.sdid` Signing Domain Identifier.
 	 */
 	async shouldBeSigned(fromAddress) {
 		// default result
@@ -84,20 +84,20 @@ export default class DMARC {
  *
  * @typedef {object} DMARCRecord
  * @property {string} adkim
- *   DKIM identifier alignment mode
- *   Possible values: "r" (relaxed), "s" (strict)
+ * DKIM identifier alignment mode.
+ * Possible values: "r" (relaxed), "s" (strict)
  * @property {string} p
- *   Requested Mail Receiver policy
- *   Possible values: "none", "quarantine", "reject"
+ * Requested Mail Receiver policy.
+ * Possible values: "none", "quarantine", "reject"
  * @property {number} pct
- *   Percentage of messages from the Domain Owner's mail stream to which the
- *   DMARC mechanism is to be applied
+ * Percentage of messages from the Domain Owner's mail stream to which the
+ * DMARC mechanism is to be applied.
  * @property {string?} sp
- *   Requested Mail Receiver policy for all subdomains
- *   Possible values: "none", "quarantine", "reject"
+ * Requested Mail Receiver policy for all subdomains.
+ * Possible values: "none", "quarantine", "reject"
  * @property {string} v
- *   Version
- *   Possible values: "DMARC1"
+ * Version.
+ * Possible values: "DMARC1"
  */
 
 /**
@@ -105,18 +105,18 @@ export default class DMARC {
  *
  * @typedef {object} DMARCPolicy
  * @property {string} adkim
- *   DKIM identifier alignment mode
- *   Possible values: "r" (relaxed), "s" (strict)
+ * DKIM identifier alignment mode.
+ * Possible values: "r" (relaxed), "s" (strict)
  * @property {string} p
- *   Requested Mail Receiver policy
- *   Possible values: "none", "quarantine", "reject"
+ * Requested Mail Receiver policy.
+ * Possible values: "none", "quarantine", "reject"
  * @property {number} pct
- *   Percentage of messages from the Domain Owner's mail stream to which the
- *   DMARC mechanism is to be applied
+ * Percentage of messages from the Domain Owner's mail stream to which the
+ * DMARC mechanism is to be applied.
  * @property {string} domain
- *   Full domain of the e-mail address.
+ * Full domain of the e-mail address.
  * @property {string} source
- *   Domain in which the DMARC Policy was found.
+ * Domain in which the DMARC Policy was found.
  */
 
 /**
@@ -125,7 +125,8 @@ export default class DMARC {
  * @param {string} fromAddress
  * @param {queryDnsTxtCallback} queryDnsTxt
  * @returns {Promise<DMARCPolicy|null>}
- * @throws {DKIM_InternalError}
+ * @throws {DKIM_Error}
+ * @throws {DKIM_TempError}
  */
 async function getDMARCPolicy(fromAddress, queryDnsTxt) {
 	let dmarcRecord;
@@ -159,7 +160,7 @@ async function getDMARCPolicy(fromAddress, queryDnsTxt) {
 
 			if (dmarcRecord) {
 				// overrides Receiver policy if one for subdomains was specified
-				dmarcRecord.p = dmarcRecord.sp || dmarcRecord.p;
+				dmarcRecord.p = dmarcRecord.sp ?? dmarcRecord.p;
 			}
 		}
 	}
@@ -193,8 +194,8 @@ async function getDMARCPolicy(fromAddress, queryDnsTxt) {
 		adkim: dmarcRecord.adkim,
 		pct: dmarcRecord.pct,
 		p: dmarcRecord.p,
-		domain: domain,
-		source: baseDomain || domain,
+		domain,
+		source: baseDomain ?? domain,
 	};
 	log.debug("DMARCPolicy:", dmarcPolicy);
 
@@ -207,7 +208,8 @@ async function getDMARCPolicy(fromAddress, queryDnsTxt) {
  * @param {string} domain
  * @param {queryDnsTxtCallback} queryDnsTxt
  * @returns {Promise<DMARCRecord|null>}
- * @throws {DKIM_InternalError}
+ * @throws {DKIM_Error}
+ * @throws {DKIM_TempError}
  */
 async function getDMARCRecord(domain, queryDnsTxt) {
 	let dmarcRecord = null;
@@ -217,10 +219,11 @@ async function getDMARCRecord(domain, queryDnsTxt) {
 
 	// throw error on bogus result or DNS error
 	if (result.bogus) {
-		throw new DKIM_InternalError(null, "DKIM_DNSERROR_DNSSEC_BOGUS");
+		throw new DKIM_TempError("DKIM_DNSERROR_DNSSEC_BOGUS");
 	}
 	if (result.rcode !== DNS.RCODE.NoError && result.rcode !== DNS.RCODE.NXDomain) {
-		throw new DKIM_InternalError(`rcode: ${result.rcode}`, "DKIM_DNSERROR_SERVER_ERROR");
+		log.info("DNS query failed with result:", result);
+		throw new DKIM_TempError("DKIM_DNSERROR_SERVER_ERROR");
 	}
 
 	// try to parse DMARC Record if record was found in DNS Server
@@ -240,7 +243,7 @@ async function getDMARCRecord(domain, queryDnsTxt) {
  *
  * @param {string} DMARCRecordStr
  * @returns {DMARCRecord}
- * @throws {DKIM_InternalError}
+ * @throws {DKIM_Error}
  */
 function parseDMARCRecord(DMARCRecordStr) {
 	/** @type {DMARCRecord} */
@@ -263,12 +266,12 @@ function parseDMARCRecord(DMARCRecordStr) {
 	// parse tag-value list
 	const tagMap = RfcParser.parseTagValueList(DMARCRecordStr);
 	if (tagMap === RfcParser.TAG_PARSE_ERROR.ILL_FORMED) {
-		throw new DKIM_InternalError("DKIM_DMARCERROR_ILLFORMED_TAGSPEC");
+		throw new DKIM_Error("DKIM_DMARCERROR_ILLFORMED_TAGSPEC");
 	} else if (tagMap === RfcParser.TAG_PARSE_ERROR.DUPLICATE) {
-		throw new DKIM_InternalError("DKIM_DMARCERROR_DUPLICATE_TAG");
+		throw new DKIM_Error("DKIM_DMARCERROR_DUPLICATE_TAG");
 	}
 	if (!(tagMap instanceof Map)) {
-		throw new DKIM_InternalError(`unexpected return value from RfcParser.parseTagValueList: ${tagMap}`);
+		throw new Error(`unexpected return value from RfcParser.parseTagValueList: ${tagMap}`);
 	}
 
 	// v: Version (plain-text; REQUIRED).  Identifies the record retrieved
@@ -278,7 +281,7 @@ function parseDMARCRecord(DMARCRecordStr) {
 	// tag in the list.
 	const versionTag = RfcParser.parseTagValue(tagMap, "v", "DMARC1", 3);
 	if (versionTag === null) {
-		throw new DKIM_InternalError("DKIM_DMARCERROR_MISSING_V");
+		throw new DKIM_Error("DKIM_DMARCERROR_MISSING_V");
 	} else {
 		dmarcRecord.v = "DMARC1";
 	}
@@ -313,7 +316,7 @@ function parseDMARCRecord(DMARCRecordStr) {
 	//    discussion of SMTP rejection methods and their implications.
 	const pTag = RfcParser.parseTagValue(tagMap, "p", "(?:none|quarantine|reject)", 3);
 	if (pTag === null) {
-		throw new DKIM_InternalError("DKIM_DMARCERROR_MISSING_P");
+		throw new DKIM_Error("DKIM_DMARCERROR_MISSING_P");
 	} else {
 		dmarcRecord.p = pTag[0];
 	}
@@ -340,7 +343,7 @@ function parseDMARCRecord(DMARCRecordStr) {
 	} else {
 		dmarcRecord.pct = parseInt(pctTag[0], 10);
 		if (dmarcRecord.pct < 0 || dmarcRecord.pct > 100) {
-			throw new DKIM_InternalError("DKIM_DMARCERROR_INVALID_PCT");
+			throw new DKIM_Error("DKIM_DMARCERROR_INVALID_PCT");
 		}
 	}
 

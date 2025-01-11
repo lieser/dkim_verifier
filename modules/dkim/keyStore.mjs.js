@@ -2,7 +2,7 @@
  * Abstract DKIM key store for key retrieval.
  * Will get the key either from DNS or an internal cache.
  *
- * Copyright (c) 2013-2018;2021 Philippe Lieser
+ * Copyright (c) 2013-2018;2021-2024 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -11,12 +11,11 @@
  */
 
 // @ts-check
-///<reference path="../../WebExtensions.d.ts" />
 ///<reference path="../../RuntimeMessage.d.ts" />
 ///<reference path="../dns.d.ts" />
 /* eslint-env webextensions */
 
-import { DKIM_InternalError, DKIM_SigError } from "../error.mjs.js";
+import { DKIM_SigError, DKIM_TempError } from "../error.mjs.js";
 import { Deferred, dateToString } from "../utils.mjs.js";
 import DNS from "../dns.mjs.js";
 import Logging from "../logging.mjs.js";
@@ -52,7 +51,7 @@ let storedKeys = [];
  */
 export class KeyDb {
 	static async getKeys() {
-		await KeyDb._loadKeys();
+		await KeyDb.#loadKeys();
 		return storedKeys;
 	}
 
@@ -65,7 +64,7 @@ export class KeyDb {
 	 * @returns {Promise<DkimKeyResult|null>} The key if it's in the storage; null otherwise
 	 */
 	static async fetch(sdid, selector) {
-		await KeyDb._loadKeys();
+		await KeyDb.#loadKeys();
 
 		const storedKey = storedKeys.find(key => key.sdid === sdid && key.selector === selector);
 		if (storedKey === undefined) {
@@ -73,7 +72,7 @@ export class KeyDb {
 		}
 
 		storedKey.lastUsedAt = dateToString(new Date());
-		KeyDb._storeKeys(true).catch(error => log.fatal("Storing keys failed", error));
+		KeyDb.#storeKeys(true).catch(error => log.fatal("Storing keys failed", error));
 
 		log.debug("got key from storage");
 		return { key: storedKey.key, secure: storedKey.secure };
@@ -89,18 +88,18 @@ export class KeyDb {
 	 * @returns {Promise<void>}
 	 */
 	static async store(sdid, selector, key, secure) {
-		await KeyDb._loadKeys();
+		await KeyDb.#loadKeys();
 		const currentDate = dateToString(new Date());
 		storedKeys.push({
 			id: ++storedKeysMaxId,
-			sdid: sdid,
-			selector: selector,
-			key: key,
-			secure: secure,
+			sdid,
+			selector,
+			key,
+			secure,
 			insertedAt: currentDate,
 			lastUsedAt: currentDate,
 		});
-		await KeyDb._storeKeys(true);
+		await KeyDb.#storeKeys(true);
 		log.debug("inserted key into storage");
 	}
 
@@ -112,13 +111,13 @@ export class KeyDb {
 	 * @returns {Promise<void>}
 	 */
 	static async markAsSecure(sdid, selector) {
-		await KeyDb._loadKeys();
+		await KeyDb.#loadKeys();
 		const storedKey = storedKeys.find(key => key.sdid === sdid && key.selector === selector);
 		if (storedKey === undefined) {
 			throw new Error(`Can not update non existing key (${sdid}, ${selector})`);
 		}
 		storedKey.secure = true;
-		await KeyDb._storeKeys(true);
+		await KeyDb.#storeKeys(true);
 		log.debug(`Marked key (${storedKey.sdid}, ${storedKey.selector}) to be secure`);
 	}
 
@@ -131,7 +130,7 @@ export class KeyDb {
 	 * @returns {Promise<void>}
 	 */
 	static async update(id, propertyName, newValue) {
-		await KeyDb._loadKeys();
+		await KeyDb.#loadKeys();
 		const key = storedKeys.find(keyEntry => keyEntry.id === id);
 		if (!key) {
 			throw new Error(`Can not update non existing key with id '${id}'`);
@@ -161,33 +160,32 @@ export class KeyDb {
 			default:
 				throw new Error(`Can not update unknown property '${propertyName}'`);
 		}
-		return KeyDb._storeKeys();
+		return KeyDb.#storeKeys();
 	}
 
 	/**
-	 * Delete stored DKIM key.
+	 * Delete stored DKIM keys.
 	 *
-	 * @param {number?} id
+	 * @param {number[]?} ids
 	 * @param {string} [sdid]
 	 * @param {string} [selector]
 	 * @returns {Promise<void>}
 	 */
-	static async delete(id, sdid, selector) {
-		await KeyDb._loadKeys();
-		let keyIndex;
+	static async delete(ids, sdid, selector) {
+		await KeyDb.#loadKeys();
 		let notify = false;
-		if (id === null) {
-			keyIndex = storedKeys.findIndex(key => key.sdid === sdid && key.selector === selector);
+		if (ids === null) {
+			const keyIndex = storedKeys.findIndex(key => key.sdid === sdid && key.selector === selector);
 			notify = true;
+			if (keyIndex === -1) {
+				throw new Error(`Can not delete non existing key (${sdid}, ${selector})'`);
+			}
+			const deletedKey = storedKeys.splice(keyIndex, 1);
+			log.debug(`deleting key (${deletedKey[0]?.sdid}, ${deletedKey[0]?.selector}) from storage`);
 		} else {
-			keyIndex = storedKeys.findIndex(key => key.id === id);
+			storedKeys = storedKeys.filter(key => !ids.includes(key.id));
 		}
-		if (keyIndex === -1) {
-			throw new Error(`Can not delete non existing key with id '${id}'`);
-		}
-		const deletedKey = storedKeys.splice(keyIndex, 1);
-		await KeyDb._storeKeys(notify);
-		log.debug(`deleted key (${deletedKey[0]?.sdid}, ${deletedKey[0]?.selector}) from storage`);
+		await KeyDb.#storeKeys(notify);
 	}
 
 	/**
@@ -205,16 +203,15 @@ export class KeyDb {
 	/**
 	 * Loads the stored DKIM keys if needed.
 	 *
-	 * @private
 	 * @returns {Promise<void>}
 	 */
-	static async _loadKeys() {
+	static async #loadKeys() {
 		if (storedKeysLoaded !== null) {
 			return storedKeysLoaded.promise;
 		}
 		storedKeysLoaded = new Deferred();
 		try {
-			/** @type {StoredDkimKeys=} */
+			/** @type {StoredDkimKeys|undefined} */
 			const keyStore = (await browser.storage.local.get("keyStore")).keyStore;
 			if (keyStore !== undefined) {
 				storedKeysMaxId = keyStore.maxId;
@@ -230,14 +227,13 @@ export class KeyDb {
 	/**
 	 * Store the DKIM keys.
 	 *
-	 * @private
 	 * @param {boolean} [notify]
 	 * @returns {Promise<void>}
 	 */
-	static async _storeKeys(notify = false) {
+	static async #storeKeys(notify = false) {
 		/** @type {StoredDkimKeys} */
 		const keyStore = { maxId: storedKeysMaxId, keys: storedKeys };
-		await browser.storage.local.set({ keyStore: keyStore });
+		await browser.storage.local.set({ keyStore });
 
 		if (notify) {
 			browser.runtime.sendMessage({ event: "keysUpdated" }).
@@ -253,11 +249,11 @@ export class KeyDb {
 	 * @returns {void}
 	 */
 	static initProxy() {
-		browser.runtime.onMessage.addListener((runtimeMessage, sender, /*sendResponse*/) => {
+		browser.runtime.onMessage.addListener((runtimeMessage, sender /*, sendResponse*/) => {
 			if (sender.id !== "dkim_verifier@pl") {
 				return;
 			}
-			if (typeof runtimeMessage !== 'object' || runtimeMessage === null) {
+			if (typeof runtimeMessage !== "object" || runtimeMessage === null) {
 				return;
 			}
 			/** @type {RuntimeMessage.Messages} */
@@ -273,9 +269,9 @@ export class KeyDb {
 				// eslint-disable-next-line consistent-return
 				return KeyDb.update(request.parameters.id, request.parameters.propertyName, request.parameters.newValue);
 			}
-			if (request.method === "deleteKey") {
+			if (request.method === "deleteKeys") {
 				// eslint-disable-next-line consistent-return
-				return KeyDb.delete(request.parameters.id);
+				return KeyDb.delete(request.parameters.ids);
 			}
 			log.error("KeyDb proxy receiver got unknown request.", request);
 			throw new Error("KeyDb proxy receiver got unknown request.");
@@ -323,19 +319,21 @@ export default class KeyStore {
 	 * @param {string} sdid
 	 * @param {string} selector
 	 * @returns {Promise<DkimKeyResult>}
+	 * @throws {DKIM_SigError}
+	 * @throws {DKIM_TempError}
 	 */
 	async fetchKey(sdid, selector) {
 		switch (prefs["key.storing"]) {
 			// don't store DKIM keys
 			case KeyStore.KEY_STORING.DISABLED:
-				return this._getKeyFromDNS(sdid, selector);
+				return this.#getKeyFromDNS(sdid, selector);
 			// store DKIM keys
 			case KeyStore.KEY_STORING.STORE: {
 				let key = await KeyDb.fetch(sdid, selector);
 				if (key) {
 					return key;
 				}
-				key = await this._getKeyFromDNS(sdid, selector);
+				key = await this.#getKeyFromDNS(sdid, selector);
 				KeyDb.store(sdid, selector, key.key, key.secure).
 					catch(error => log.fatal("Storing keys failed", error));
 				return key;
@@ -343,12 +341,12 @@ export default class KeyStore {
 			// store DKIM keys and compare with current key
 			case KeyStore.KEY_STORING.COMPARE: {
 				const keyStored = await KeyDb.fetch(sdid, selector);
-				const keyDns = await this._getKeyFromDNS(sdid, selector);
+				const keyDns = await this.#getKeyFromDNS(sdid, selector);
 				if (keyStored) {
 					if (keyStored.key !== keyDns.key) {
 						throw new DKIM_SigError("DKIM_POLICYERROR_KEYMISMATCH");
 					}
-					keyDns.secure = keyDns.secure || keyStored.secure;
+					keyDns.secure ||= keyStored.secure;
 				} else {
 					KeyDb.store(sdid, selector, keyDns.key, keyDns.secure).
 						catch(error => log.fatal("Storing keys failed", error));
@@ -363,22 +361,22 @@ export default class KeyStore {
 	/**
 	 * Get the DKIM key from DNS.
 	 *
-	 * @private
 	 * @param {string} sdid
 	 * @param {string} selector
 	 * @returns {Promise<DkimKeyResult>}
+	 * @throws {DKIM_SigError}
+	 * @throws {DKIM_TempError}
 	 */
-	async _getKeyFromDNS(sdid, selector) {
+	async #getKeyFromDNS(sdid, selector) {
 		const dnsRes = await this._queryDnsTxt(`${selector}._domainkey.${sdid}`);
 		log.debug("dns result", dnsRes);
 
 		if (dnsRes.bogus) {
-			throw new DKIM_InternalError(null, "DKIM_DNSERROR_DNSSEC_BOGUS");
+			throw new DKIM_TempError("DKIM_DNSERROR_DNSSEC_BOGUS");
 		}
 		if (dnsRes.rcode !== DNS.RCODE.NoError && dnsRes.rcode !== DNS.RCODE.NXDomain) {
 			log.info("DNS query failed with result:", dnsRes);
-			throw new DKIM_InternalError(`rcode: ${dnsRes.rcode}`,
-				"DKIM_DNSERROR_SERVER_ERROR");
+			throw new DKIM_TempError("DKIM_DNSERROR_SERVER_ERROR");
 		}
 		if (dnsRes.data === null || !dnsRes.data[0]) {
 			throw new DKIM_SigError("DKIM_SIGERROR_NOKEY");

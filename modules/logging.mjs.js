@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020 Philippe Lieser
+ * Copyright (c) 2020-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -20,7 +20,6 @@ class Logger {
 	 * Creates an instance of Logger.
 	 *
 	 * @param {string} loggerName
-	 * @memberof Logger
 	 */
 	constructor(loggerName) {
 		this.name = loggerName;
@@ -33,7 +32,6 @@ class Logger {
 	 * Set the log level of the logger.
 	 *
 	 * @param {number} logLevel
-	 * @memberof Logger
 	 */
 	set logLevel(logLevel) {
 		this._logLevel = logLevel;
@@ -80,7 +78,8 @@ class Logger {
 
 export default class Logging {
 	static get Level() {
-		return {
+		// eslint-disable-next-line no-extra-parens
+		return /** @type {const} */ ({
 			Fatal: 70,
 			Error: 60,
 			Warn: 50,
@@ -89,21 +88,19 @@ export default class Logging {
 			Debug: 20,
 			Trace: 10,
 			All: -1,
-		};
+		});
 	}
 
 	/**
 	 * Get a logger with the given optional name.
 	 *
-	 * @static
 	 * @param {string|void} loggerName
 	 * @returns {LoggerI} Logger
-	 * @memberof Logging
 	 */
 	static getLogger(loggerName) {
 		const name = loggerName ? `${LOG_NAME}.${loggerName}` : `${LOG_NAME}`;
 		const logger = new Logger(name);
-		Logging._loggers.push(logger);
+		Logging.#loggers.push(logger);
 		// @ts-expect-error
 		return logger;
 	}
@@ -112,28 +109,24 @@ export default class Logging {
 	 * Sets the default log level.
 	 * Also sets the log level for all loggers gotten via getLogger().
 	 *
-	 * @static
 	 * @param {number} logLevel
 	 * @returns {void}
-	 * @memberof Logging
 	 */
 	static setLogLevel(logLevel) {
-		Logging._logLevel = logLevel;
-		Logging._loggers.forEach(logger => {
+		Logging.#logLevel = logLevel;
+		Logging.#loggers.forEach(logger => {
 			logger.logLevel = logLevel;
 		});
 	}
 	static get logLevel() {
-		return Logging._logLevel;
+		return Logging.#logLevel;
 	}
 
 	/**
 	 * Initialize the log level from preferences.
 	 * Also adds a change listener to adapt log level if setting changes.
 	 *
-	 * @static
 	 * @returns {Promise<void>}
-	 * @memberof Logging
 	 */
 	static async initLogLevelFromPrefs() {
 		const setLogLevelFromPrefs = async () => {
@@ -165,11 +158,10 @@ export default class Logging {
 		});
 	}
 
-	/** @private */
-	static _logLevel = Logging.Level.Debug;
+	/** @type {number} */
+	static #logLevel = Logging.Level.Debug;
 	/**
-	 * @private
 	 * @type {Logger[]}
 	 */
-	static _loggers = [];
+	static #loggers = [];
 }

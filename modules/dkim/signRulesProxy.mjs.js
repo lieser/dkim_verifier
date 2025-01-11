@@ -2,7 +2,7 @@
  * Proxy to a singleton SignRules to avoid problems with race conditions
  * when accessing browser.storage.local.
  *
- * Copyright (c) 2020-2021 Philippe Lieser
+ * Copyright (c) 2020-2021;2024 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -11,34 +11,10 @@
  */
 
 // @ts-check
-///<reference path="../../WebExtensions.d.ts" />
 ///<reference path="../../RuntimeMessage.d.ts" />
 /* eslint-env webextensions */
 
 export default class SignRulesProxy {
-	/** @readonly */
-	static get TYPE() {
-		return {
-			ALL: 1, // all e-mails must be signed
-			NEUTRAL: 2,
-			HIDEFAIL: 3, // treat invalid signatures as nosig
-		};
-	}
-
-	/** @readonly */
-	static get PRIORITY() {
-		return {
-			AUTOINSERT_RULE_ALL: 1100,
-			DEFAULT_RULE_ALL0: 2000, // used for e-mail providers
-			USERINSERT_RULE_HIDEFAIL: 2050,
-			DEFAULT_RULE_ALL: 2100,
-			DEFAULT_RULE_ALL_2: 2110, // used for different SDID for subdomains
-			DEFAULT_RULE_NEUTRAL: 2200,
-			USERINSERT_RULE_ALL: 3100,
-			USERINSERT_RULE_NEUTRAL: 3200,
-		};
-	}
-
 	/**
 	 * @returns {Promise<import("./signRules.mjs.js").DkimSignRuleDefault[]>}
 	 */
@@ -115,13 +91,13 @@ export default class SignRulesProxy {
 			module: "SignRules",
 			method: "addRule",
 			parameters: {
-				domain: domain,
-				listId: listId,
-				addr: addr,
-				sdid: sdid,
-				type: type,
-				priority: priority,
-				enabled: enabled,
+				domain,
+				listId,
+				addr,
+				sdid,
+				type,
+				priority,
+				enabled,
 			},
 		};
 		return browser.runtime.sendMessage(message);
@@ -141,27 +117,27 @@ export default class SignRulesProxy {
 			module: "SignRules",
 			method: "updateRule",
 			parameters: {
-				id: id,
-				propertyName: propertyName,
-				newValue: newValue,
+				id,
+				propertyName,
+				newValue,
 			},
 		};
 		return browser.runtime.sendMessage(message);
 	}
 
 	/**
-	 * Delete the user rule with the given id.
+	 * Delete the user rules with the given IDs.
 	 *
-	 * @param {number} id
+	 * @param {number[]} ids
 	 * @returns {Promise<void>}
 	 */
-	static deleteRule(id) {
-		/** @type {RuntimeMessage.SignRules.deleteRule} */
+	static deleteRules(ids) {
+		/** @type {RuntimeMessage.SignRules.deleteRules} */
 		const message = {
 			module: "SignRules",
-			method: "deleteRule",
+			method: "deleteRules",
 			parameters: {
-				id: id,
+				ids,
 			},
 		};
 		return browser.runtime.sendMessage(message);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2021 Philippe Lieser
+ * Copyright (c) 2020-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -8,7 +8,6 @@
  */
 
 // @ts-check
-///<reference path="../WebExtensions.d.ts" />
 /* eslint-env webextensions */
 /* eslint-disable no-magic-numbers */
 
@@ -94,11 +93,11 @@ function updateKeyStoring() {
 	/** @type {HTMLSelectElement|null} */
 	const keyStoring = document.querySelector("[data-pref='key.storing']");
 	if (!keyStoring) {
-		throw Error("key.storing element not found");
+		throw new Error("key.storing element not found");
 	}
 	const viewKeys = getElementById("key.viewKeys");
 	if (!(viewKeys instanceof HTMLButtonElement)) {
-		throw Error("key.viewKeys element is not a button");
+		throw new Error("key.viewKeys element is not a button");
 	}
 
 	viewKeys.disabled = parseInt(keyStoring.value, 10) === 0;
@@ -113,7 +112,7 @@ function updateDnsResolver() {
 	/** @type {HTMLSelectElement|null} */
 	const dnsResolver = document.querySelector("[data-pref='dns.resolver']");
 	if (!dnsResolver) {
-		throw Error("dns.resolver element not found");
+		throw new Error("dns.resolver element not found");
 	}
 
 	/** @type {HTMLElement[]} */
@@ -132,11 +131,11 @@ function updateDnsProxy() {
 	/** @type {HTMLInputElement|null} */
 	const dnsProxyEnable = document.querySelector("[data-pref='dns.proxy.enable']");
 	if (!dnsProxyEnable) {
-		throw Error("dns.proxy.enable element not found");
+		throw new Error("dns.proxy.enable element not found");
 	}
 	const dnsProxy = getElementById("dns.proxy");
 	if (!(dnsProxy instanceof HTMLFieldSetElement)) {
-		throw Error("dns.proxy element is not a fieldset");
+		throw new Error("dns.proxy element is not a fieldset");
 	}
 
 	dnsProxy.disabled = !dnsProxyEnable.checked;
@@ -162,11 +161,11 @@ function updatePolicySignRulesEnable() {
 	/** @type {HTMLInputElement|null} */
 	const policySignRulesEnable = document.querySelector("[data-pref='policy.signRules.enable']");
 	if (!policySignRulesEnable) {
-		throw Error("policy.signRules.enable element not found");
+		throw new Error("policy.signRules.enable element not found");
 	}
 	const policySignRules = getElementById("policy.signRules");
 	if (!(policySignRules instanceof HTMLFieldSetElement)) {
-		throw Error("policy.signRules element is not a fieldset");
+		throw new Error("policy.signRules element is not a fieldset");
 	}
 
 	policySignRules.disabled = !policySignRulesEnable.checked;
@@ -182,11 +181,11 @@ function updatePolicyAutoAddRuleEnable() {
 	const policySignRulesAutoAddRuleEnable =
 		document.querySelector("[data-pref='policy.signRules.autoAddRule.enable']");
 	if (!policySignRulesAutoAddRuleEnable) {
-		throw Error("policy.signRules.autoAddRule enabled element not found");
+		throw new Error("policy.signRules.autoAddRule enabled element not found");
 	}
 	const policySignRulesAutoAddRule = getElementById("policy.signRules.autoAddRule");
 	if (!(policySignRulesAutoAddRule instanceof HTMLFieldSetElement)) {
-		throw Error("policy.signRules.autoAddRule element is not a fieldset");
+		throw new Error("policy.signRules.autoAddRule element is not a fieldset");
 	}
 
 	policySignRulesAutoAddRule.disabled = !policySignRulesAutoAddRuleEnable.checked;

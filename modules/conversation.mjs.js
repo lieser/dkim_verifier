@@ -1,7 +1,7 @@
 /**
- * Push the authentication result to the Conversation add-on.
+ * Push the authentication result to the Conversations add-on.
  *
- * Copyright (c) 2021 Philippe Lieser
+ * Copyright (c) 2021-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -10,7 +10,6 @@
  */
 
 // @ts-check
-///<reference path="../WebExtensions.d.ts" />
 /* eslint-env webextensions */
 
 import AuthVerifier from "../modules/authVerifier.mjs.js";
@@ -24,25 +23,19 @@ const log = Logging.getLogger("Conversation");
 
 /**
  * @typedef {object} AddPillMessage
- * @property {"addPill"} type
- *  The type of the received message.
- * @property {number} msgId
- *   The id of the associated Message from the WebExtension APIs.
- * @property {Severity} [severity]
- *   The severity of the pill. Defaults to normal.
- * @property {string} [icon]
- *   The optional icon of the pill. Musst be an "moz-extension://" url.
- * @property {string} message
- *   The text of the pill.
- * @property {string[]} [tooltip]
- *   The optional tooltip of the pill.
+ * @property {"addPill"} type The type of the received message.
+ * @property {number} msgId The id of the associated Message from the WebExtension APIs.
+ * @property {Severity|undefined} [severity] The severity of the pill. Defaults to normal.
+ * @property {string|undefined} [icon] The optional icon of the pill. Musst be an "moz-extension://" url.
+ * @property {string} message The text of the pill.
+ * @property {string[]|undefined} [tooltip] The optional tooltip of the pill.
  */
 
 /** @type {browser.runtime.Port?} */
 let port = null;
 
 /**
- * Add a pill in Conversation.
+ * Add a pill in Conversations.
  *
  * @param {number} msgId
  * @param {Severity|undefined} severity
@@ -64,7 +57,7 @@ function addPill(msgId, severity, icon, message, tooltip) {
 	if (!port) {
 		port = browser.runtime.connect("gconversation@xulforum.org");
 		port.onDisconnect.addListener((p) => {
-			log.debug("Port to Conversation was disconnected", p.error);
+			log.debug("Port to Conversations was disconnected", p.error);
 			port = null;
 		});
 	}
@@ -74,12 +67,38 @@ function addPill(msgId, severity, icon, message, tooltip) {
 const verifier = new AuthVerifier();
 
 /**
- * Verify a message and display the result in Conversation.
+ * Detect if a Tab shows message in Conversations message view style.
  *
- * @param {browser.messageDisplay.MessageHeader} MessageHeader
+ * @param {browser.tabs.Tab} tab
+ * @returns {Promise<boolean>}
+ */
+export async function isConversationView(tab) {
+	if (tab.url?.startsWith("chrome://conversations/")) {
+		// TB < 115
+		return true;
+	}
+	// Messages opened in Thunderbirds main 3pane tab have type "mail",
+	// and are shown in Conversations message view style (if Conversations add-on is installed).
+	// Single messages opened in a tab or windows have type "messageDisplay",
+	// and are always shown in Thunderbird's normal message view style.
+	if (tab.type === "mail") {
+		try {
+			const conversationsInfo = await browser.management.get("gconversation@xulforum.org");
+			return conversationsInfo.enabled;
+		} catch (error) {
+			// Conversations not installed
+		}
+	}
+	return false;
+}
+
+/**
+ * Verify a message and display the result in Conversations.
+ *
+ * @param {browser.messages.MessageHeader} MessageHeader
  * @returns {Promise<void>}
  */
-export default async function verifyMessage(MessageHeader) {
+export async function verifyMessage(MessageHeader) {
 	const res = await verifier.verify(MessageHeader);
 	if (!res.dkim[0]) {
 		throw new Error("Result does not contain a DKIM result.");

@@ -5,7 +5,10 @@
  * - IDNA A-labels and U-labels are not verified to be valid.
  * - A-labels are not converted into U-labels (e.g. to compare "authserv-id")
  *
- * Copyright (c) 2014-2022 Philippe Lieser
+ * Email Authentication Parameters:
+ * https://www.iana.org/assignments/email-auth/email-auth.xhtml
+ *
+ * Copyright (c) 2014-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -18,6 +21,7 @@
 /* eslint-disable no-use-before-define */
 
 import RfcParser, { RfcParserI } from "./rfcParser.mjs.js";
+import { DKIM_Error } from "./error.mjs.js";
 import Logging from "./logging.mjs.js";
 import { decodeBinaryString } from "./utils.mjs.js";
 
@@ -91,7 +95,7 @@ class Token {
  */
 
 /**
- * @typedef {Object<string, string|undefined>} ArhProperty
+ * @typedef {{[x: string]: string|undefined}} ArhProperty
  */
 /**
  * @typedef {{[x: string]: ArhProperty|undefined, smtp: ArhProperty, header: ArhProperty, body: ArhProperty, policy: ArhProperty }} ArhProperties
@@ -102,15 +106,9 @@ class Token {
  * @property {string} method
  * @property {number} method_version
  * @property {string} result
- *           none|pass|fail|softfail|policy|neutral|temperror|permerror
+ * none|pass|fail|softfail|policy|neutral|temperror|permerror
  * @property {string} [reason]
  * @property {ArhProperties} propertys
- * property {ArhProperty} propertys.smtp
- * property {ArhProperty} propertys.header
- * property {ArhProperty} propertys.body
- * property {ArhProperty} propertys.policy
- * property {ArhProperty} [propertys._Keyword_]
- *           ArhResInfo can also include other propertys besides the aboves.
  */
 
 export default class ArhParser {
@@ -121,6 +119,7 @@ export default class ArhParser {
 	 * @param {boolean} [relaxedParsing] - Enable relaxed parsing
 	 * @param {boolean} [internationalized] - Enable internationalized support
 	 * @returns {ArhHeader} Parsed Authentication-Results header
+	 * @throws {DKIM_Error}
 	 */
 	static parse(authResHeader, relaxedParsing = false, internationalized = false) {
 		const token = new Token(internationalized);
@@ -173,10 +172,9 @@ export default class ArhParser {
  * @param {boolean} relaxedParsing - Enable relaxed parsing
  * @param {Token} token - Token to use for parsing; depends on internationalized support
  * @returns {ArhResInfo|null} Parsed resinfo
+ * @throws {DKIM_Error}
  */
 function parseResInfo(str, relaxedParsing, token) {
-	log.trace("parse str: ", str);
-
 	let reg_match;
 	/** @type {ArhResInfo} */
 	const res = {};
@@ -184,10 +182,7 @@ function parseResInfo(str, relaxedParsing, token) {
 	// get methodspec
 	const method_version_p = `${token.CFWS_op}/${token.CFWS_op}([0-9]+)`;
 	const method_p = `(${Token.Keyword})(?:${method_version_p})?`;
-	let Keyword_result_p = "none|pass|fail|softfail|policy|neutral|temperror|permerror";
-	// older SPF specs (e.g. RFC 4408) use mixed case
-	Keyword_result_p += "|None|Pass|Fail|SoftFail|Neutral|TempError|PermError";
-	const result_p = `=${token.CFWS_op}(${Keyword_result_p})`;
+	const result_p = `=${token.CFWS_op}(${Token.Keyword})`;
 	const methodspec_p = `;${token.CFWS_op}${method_p}${token.CFWS_op}${result_p}`;
 	try {
 		reg_match = match(str, methodspec_p, token);
@@ -216,11 +211,13 @@ function parseResInfo(str, relaxedParsing, token) {
 	}
 	res.result = reg_match[3].toLowerCase();
 
+	checkResultKeyword(res.method, reg_match[3]);
+
 	// get reasonspec (optional)
 	const reasonspec_p = `reason${token.CFWS_op}=${token.CFWS_op}${token.value_cp}`;
 	reg_match = match_o(str, reasonspec_p, token);
 	if (reg_match !== null) {
-		const value = reg_match[1] || reg_match[2];
+		const value = reg_match[1] ?? reg_match[2];
 		if (!value) {
 			throw new Error(`Error matching the ARH reason value for "${res.method}".`);
 		}
@@ -230,8 +227,8 @@ function parseResInfo(str, relaxedParsing, token) {
 	// get propspec (optional)
 	let pvalue_p = `${token.value_cp}|((?:${token.local_part}?@)?${token.domain_name})`;
 	if (relaxedParsing) {
-		// allow "/" in the header.b (or other) property, even if it is not in a quoted-string
-		pvalue_p += "|([^ \\x00-\\x1F\\x7F()<>@,;:\\\\\"[\\]?=]+)";
+		// allow "/" and ":" in properties, even if it is not in a quoted-string
+		pvalue_p += "|([^ \\x00-\\x1F\\x7F()<>@,;\\\\\"[\\]?=]+)";
 	}
 	const special_smtp_verb_p = "mailfrom|rcptto";
 	const property_p = `${special_smtp_verb_p}|${Token.Keyword}`;
@@ -260,8 +257,54 @@ function parseResInfo(str, relaxedParsing, token) {
 		property[reg_match[2]] = decodeBinaryString(value);
 	}
 
-	log.trace("parseResInfo res:", res);
 	return res;
+}
+
+/**
+ * Check that a result keyword is valid for a known method.
+ *
+ * See also https://www.iana.org/assignments/email-auth/email-auth.xhtml.
+ *
+ * @param {string} method
+ * @param {string} resultKeyword
+ * @returns {void}
+ * @throws {DKIM_Error} if result keyword is invalid for the method.
+ */
+function checkResultKeyword(method, resultKeyword) {
+	let allowedKeywords;
+
+	// DKIM and DomainKeys (RFC 8601 section 2.7.1.)
+	if (method === "dkim" || method === "domainkeys") {
+		allowedKeywords = ["none", "pass", "fail", "policy", "neutral", "temperror", "permerror"];
+	}
+
+	// SPF and Sender ID (RFC 8601 section 2.7.2.)
+	if (method === "spf" || method === "sender-id") {
+		allowedKeywords = ["none", "pass", "fail", "softfail", "policy", "neutral", "temperror", "permerror"
+			// Deprecated from older ARH RFC 5451.
+			, "hardfail"
+			// Older SPF specs (e.g. RFC 4408) used mixed case.
+			, "None", "Pass", "Fail", "SoftFail", "Neutral", "TempError", "PermError"
+		];
+	}
+
+	// DMARC (RFC 7489 section 11.2.)
+	if (method === "dmarc") {
+		allowedKeywords = ["none", "pass", "fail", "temperror", "permerror"];
+	}
+
+	// BIMI (https://datatracker.ietf.org/doc/draft-brand-indicators-for-message-identification/04/ section 7.7.)
+	if (method === "bimi") {
+		allowedKeywords = ["pass", "none", "fail", "temperror", "declined", "skipped"];
+	}
+
+	// Note: Both the ARH RFC and the IANA registry contain keywords for more than the above methods.
+	// As we don't really care about them, for simplicity we treat them the same as unknown methods,
+	// And don't restrict the keyword.
+
+	if (allowedKeywords && !allowedKeywords.includes(resultKeyword)) {
+		throw new DKIM_Error(`Result keyword "${resultKeyword}" is not allowed for method "${method}"`);
+	}
 }
 
 /**
@@ -303,13 +346,12 @@ class RefString {
  * @param {string} pattern
  * @param {Token} token - Token to use for parsing; depends on internationalized support
  * @returns {string[]} An Array, containing the matches
- * @throws if match no match found
+ * @throws {DKIM_Error} if match no match found
  */
 function match(str, pattern, token) {
 	const reg_match = match_o(str, pattern, token);
 	if (reg_match === null) {
-		log.trace("str to match against:", JSON.stringify(str));
-		throw new Error("Parsing error");
+		throw new DKIM_Error("Parsing error");
 	}
 	return reg_match;
 }
@@ -324,7 +366,7 @@ function match(str, pattern, token) {
  * @param {string} pattern
  * @param {Token} token - Token to use for parsing; depends on internationalized support
  * @returns {string[]|null} Null if no match for the pattern is found, else
- *                        an Array, containing the matches
+ * an Array, containing the matches.
  */
 function match_o(str, pattern, token) {
 	const regexp = new RegExp(`^${token.CFWS_op}(?:${pattern})` +
@@ -333,7 +375,6 @@ function match_o(str, pattern, token) {
 	if (reg_match === null || !reg_match[0]) {
 		return null;
 	}
-	log.trace("matched: ", JSON.stringify(reg_match[0]));
 	str.value = str.substr(reg_match[0].length);
 	return reg_match;
 }

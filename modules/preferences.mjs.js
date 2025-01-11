@@ -1,7 +1,7 @@
 /**
  * Provides access to the add-ons preferences.
  *
- * Copyright (c) 2020-2021 Philippe Lieser
+ * Copyright (c) 2020-2023;2025 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -10,7 +10,6 @@
  */
 
 // @ts-check
-///<reference path="../WebExtensions.d.ts" />
 /* eslint-env webextensions */
 /* eslint no-magic-numbers: "off" */
 /* eslint-disable jsdoc/match-description */
@@ -43,12 +42,11 @@ export class BasePreferences {
 	 *
 	 * @param {ValueGetter} valueGetter
 	 * @param {ValueSetter} valueSetter
-	 * @memberof BasePreferences
 	 */
 	constructor(valueGetter, valueSetter) {
 		/**
 		 * @protected
-		 * @type {Object<string, boolean|number|string|undefined>}
+		 * @type {{[prefName: string]: boolean|number|string|undefined}}
 		 */
 		this._prefs = {};
 
@@ -79,13 +77,11 @@ export class BasePreferences {
 	}
 
 	/**
-	 * @private
 	 * @param {string} name
 	 * @param {boolean} defaultValue
 	 * @returns {boolean}
-	 * @memberof BasePreferences
 	 */
-	_tryGetBoolValue(name, defaultValue) {
+	#tryGetBoolValue(name, defaultValue) {
 		const value = this._valueGetter(name);
 		if (typeof value === "boolean") {
 			return value;
@@ -97,13 +93,11 @@ export class BasePreferences {
 	}
 
 	/**
-	 * @private
 	 * @param {string} name
 	 * @param {number} defaultValue
 	 * @returns {number}
-	 * @memberof BasePreferences
 	 */
-	_tryGetNumberValue(name, defaultValue) {
+	#tryGetNumberValue(name, defaultValue) {
 		const value = this._valueGetter(name);
 		if (typeof value === "number") {
 			return value;
@@ -115,13 +109,11 @@ export class BasePreferences {
 	}
 
 	/**
-	 * @private
 	 * @param {string} name
 	 * @param {string} defaultValue
 	 * @returns {string}
-	 * @memberof BasePreferences
 	 */
-	_tryGetStringValue(name, defaultValue) {
+	#tryGetStringValue(name, defaultValue) {
 		const value = this._valueGetter(name);
 		if (typeof value === "string") {
 			return value;
@@ -135,7 +127,6 @@ export class BasePreferences {
 	/**
 	 * @param {string} name
 	 * @returns {boolean|number|string}
-	 * @memberof BasePreferences
 	 */
 	getValue(name) {
 		if (!Object.prototype.hasOwnProperty.call(BasePreferences.prototype, name)) {
@@ -149,7 +140,6 @@ export class BasePreferences {
 	/**
 	 * @param {string} name
 	 * @returns {boolean}
-	 * @memberof BasePreferences
 	 */
 	getBool(name) {
 		const value = this.getValue(name);
@@ -162,7 +152,6 @@ export class BasePreferences {
 	/**
 	 * @param {string} name
 	 * @returns {number}
-	 * @memberof BasePreferences
 	 */
 	getNumber(name) {
 		const value = this.getValue(name);
@@ -175,7 +164,6 @@ export class BasePreferences {
 	/**
 	 * @param {string} name
 	 * @returns {string}
-	 * @memberof BasePreferences
 	 */
 	getString(name) {
 		const value = this.getValue(name);
@@ -189,7 +177,6 @@ export class BasePreferences {
 	 * @param {string} name
 	 * @param {boolean|number|string} value
 	 * @returns {Promise<void>}
-	 * @memberof BasePreferences
 	 */
 	async setValue(name, value) {
 		if (typeof value !== typeof this.getValue(name)) {
@@ -203,7 +190,7 @@ export class BasePreferences {
 	////////////////////////////////////////////////////////////////////////////
 
 	get "dkim.enable"() {
-		return this._tryGetBoolValue("dkim.enable", true);
+		return this.#tryGetBoolValue("dkim.enable", true);
 	}
 	/**
 	 * - 0: don't store DKIM keys
@@ -211,24 +198,24 @@ export class BasePreferences {
 	 * - 2: store DKIM keys and compare with current key
 	 */
 	get "key.storing"() {
-		return this._tryGetNumberValue("key.storing", 0);
+		return this.#tryGetNumberValue("key.storing", 0);
 	}
 	get "saveResult"() {
-		return this._tryGetBoolValue("saveResult", false);
+		return this.#tryGetBoolValue("saveResult", false);
 	}
 
 	get "arh.read"() {
-		return this._tryGetBoolValue("arh.read", false);
+		return this.#tryGetBoolValue("arh.read", false);
 	}
 	get "arh.replaceAddonResult"() {
-		return this._tryGetBoolValue("arh.replaceAddonResult", true);
+		return this.#tryGetBoolValue("arh.replaceAddonResult", true);
 	}
 	get "arh.relaxedParsing"() {
-		return this._tryGetBoolValue("arh.relaxedParsing", false);
+		return this.#tryGetBoolValue("arh.relaxedParsing", false);
 	}
 
 	get "internationalized.enable"() {
-		return this._tryGetBoolValue("internationalized.enable", false);
+		return this.#tryGetBoolValue("internationalized.enable", false);
 	}
 	//#endregion
 
@@ -242,7 +229,7 @@ export class BasePreferences {
 	 * - 2: ignore
 	 */
 	get "error.illformed_i.treatAs"() {
-		return this._tryGetNumberValue("error.illformed_i.treatAs", 1);
+		return this.#tryGetNumberValue("error.illformed_i.treatAs", 1);
 	}
 	/**
 	 * - 0: error
@@ -250,7 +237,7 @@ export class BasePreferences {
 	 * - 2: ignore
 	 */
 	get "error.illformed_s.treatAs"() {
-		return this._tryGetNumberValue("error.illformed_s.treatAs", 1);
+		return this.#tryGetNumberValue("error.illformed_s.treatAs", 1);
 	}
 	/**
 	 * - 0: error
@@ -258,10 +245,10 @@ export class BasePreferences {
 	 * - 2: ignore
 	 */
 	get "error.policy.key_insecure.treatAs"() {
-		return this._tryGetNumberValue("error.policy.key_insecure.treatAs", 2);
+		return this.#tryGetNumberValue("error.policy.key_insecure.treatAs", 2);
 	}
 	get "error.key_testmode.ignore"() {
-		return this._tryGetBoolValue("error.key_testmode.ignore", false);
+		return this.#tryGetBoolValue("error.key_testmode.ignore", false);
 	}
 	/**
 	 * - 0: error
@@ -269,7 +256,7 @@ export class BasePreferences {
 	 * - 2: ignore
 	 */
 	get "error.algorithm.sign.rsa-sha1.treatAs"() {
-		return this._tryGetNumberValue("error.algorithm.sign.rsa-sha1.treatAs", 1);
+		return this.#tryGetNumberValue("error.algorithm.sign.rsa-sha1.treatAs", 1);
 	}
 	/**
 	 * - 0: error
@@ -277,11 +264,11 @@ export class BasePreferences {
 	 * - 2: ignore
 	 */
 	get "error.algorithm.rsa.weakKeyLength.treatAs"() {
-		return this._tryGetNumberValue("error.algorithm.rsa.weakKeyLength.treatAs", 2);
+		return this.#tryGetNumberValue("error.algorithm.rsa.weakKeyLength.treatAs", 2);
 	}
 
 	get "error.detailedReasons"() {
-		return this._tryGetBoolValue("error.detailedReasons", false);
+		return this.#tryGetBoolValue("error.detailedReasons", false);
 	}
 	//#endregion
 
@@ -294,45 +281,45 @@ export class BasePreferences {
 	 * - 2 libunbound
 	 */
 	get "dns.resolver"() {
-		return this._tryGetNumberValue("dns.resolver", 1);
+		return this.#tryGetNumberValue("dns.resolver", 1);
 	}
 	get "dns.getNameserversFromOS"() {
-		return this._tryGetBoolValue("dns.getNameserversFromOS", true);
+		return this.#tryGetBoolValue("dns.getNameserversFromOS", true);
 	}
 	get "dns.nameserver"() {
-		return this._tryGetStringValue("dns.nameserver", "8.8.8.8");
+		return this.#tryGetStringValue("dns.nameserver", "8.8.8.8");
 	}
 	get "dns.timeout_connect"() {
-		return this._tryGetNumberValue("dns.timeout_connect", 5);
+		return this.#tryGetNumberValue("dns.timeout_connect", 5);
 	}
 	get "dns.dnssec.trustAnchor"() {
-		return this._tryGetStringValue("dns.dnssec.trustAnchor",
+		return this.#tryGetStringValue("dns.dnssec.trustAnchor",
 			". IN DS 20326 8 2 E06D44B80B8F1D39A95C0B0D7C65D08458E880409BBC683457104237C7F8EC8D");
 	}
 	get "dns.proxy.enable"() {
-		return this._tryGetBoolValue("dns.proxy.enable", false);
+		return this.#tryGetBoolValue("dns.proxy.enable", false);
 	}
 	/**
 	 * - socks
 	 * - socks4
 	 */
 	get "dns.proxy.type"() {
-		return this._tryGetStringValue("dns.proxy.type", "socks");
+		return this.#tryGetStringValue("dns.proxy.type", "socks");
 	}
 	get "dns.proxy.host"() {
-		return this._tryGetStringValue("dns.proxy.host", "");
+		return this.#tryGetStringValue("dns.proxy.host", "");
 	}
 	get "dns.proxy.port"() {
-		return this._tryGetNumberValue("dns.proxy.port", 1080);
+		return this.#tryGetNumberValue("dns.proxy.port", 1080);
 	}
 	get "dns.jsdns.autoResetServerAlive"() {
-		return this._tryGetBoolValue("dns.jsdns.autoResetServerAlive", false);
+		return this.#tryGetBoolValue("dns.jsdns.autoResetServerAlive", true);
 	}
 	get "dns.libunbound.path"() {
-		return this._tryGetStringValue("dns.libunbound.path", "");
+		return this.#tryGetStringValue("dns.libunbound.path", "");
 	}
 	get "dns.libunbound.path.relToProfileDir"() {
-		return this._tryGetBoolValue("dns.libunbound.path.relToProfileDir", true);
+		return this.#tryGetBoolValue("dns.libunbound.path.relToProfileDir", true);
 	}
 	//#endregion
 
@@ -341,16 +328,16 @@ export class BasePreferences {
 	////////////////////////////////////////////////////////////////////////////
 
 	get "policy.signRules.enable"() {
-		return this._tryGetBoolValue("policy.signRules.enable", false);
+		return this.#tryGetBoolValue("policy.signRules.enable", false);
 	}
 	get "policy.signRules.checkDefaultRules"() {
-		return this._tryGetBoolValue("policy.signRules.checkDefaultRules", true);
+		return this.#tryGetBoolValue("policy.signRules.checkDefaultRules", true);
 	}
 	get "policy.signRules.autoAddRule.enable"() {
-		return this._tryGetBoolValue("policy.signRules.autoAddRule.enable", false);
+		return this.#tryGetBoolValue("policy.signRules.autoAddRule.enable", false);
 	}
 	get "policy.signRules.autoAddRule.onlyIfFromAddressInSDID"() {
-		return this._tryGetBoolValue("policy.signRules.autoAddRule.onlyIfFromAddressInSDID", true);
+		return this.#tryGetBoolValue("policy.signRules.autoAddRule.onlyIfFromAddressInSDID", true);
 	}
 	/**
 	 * - 0: from address
@@ -358,17 +345,17 @@ export class BasePreferences {
 	 * - 2: base domain
 	 */
 	get "policy.signRules.autoAddRule.for"() {
-		return this._tryGetNumberValue("policy.signRules.autoAddRule.for", 0);
+		return this.#tryGetNumberValue("policy.signRules.autoAddRule.for", 0);
 	}
 	get "policy.signRules.sdid.allowSubDomains"() {
-		return this._tryGetBoolValue("policy.signRules.sdid.allowSubDomains", true);
+		return this.#tryGetBoolValue("policy.signRules.sdid.allowSubDomains", true);
 	}
 	get "policy.signRules.error.wrong_sdid.asWarning"() {
-		return this._tryGetBoolValue("policy.signRules.error.wrong_sdid.asWarning", false);
+		return this.#tryGetBoolValue("policy.signRules.error.wrong_sdid.asWarning", false);
 	}
 
 	get "policy.DMARC.shouldBeSigned.enable"() {
-		return this._tryGetBoolValue("policy.DMARC.shouldBeSigned.enable", false);
+		return this.#tryGetBoolValue("policy.DMARC.shouldBeSigned.enable", false);
 	}
 	/**
 	 * - none
@@ -376,7 +363,26 @@ export class BasePreferences {
 	 * - reject
 	 */
 	get "policy.DMARC.shouldBeSigned.neededPolicy"() {
-		return this._tryGetStringValue("policy.DMARC.shouldBeSigned.neededPolicy", "none");
+		return this.#tryGetStringValue("policy.DMARC.shouldBeSigned.neededPolicy", "none");
+	}
+
+	/**
+	 * @enum {number}
+	 * @readonly
+	 */
+	static POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE = {
+		/** @readonly */
+		RELAXED: 10,
+		/** @readonly */
+		RECOMMENDED: 20,
+		/** @readonly */
+		STRICT: 30,
+	};
+	/**
+	 * @returns {POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE}
+	 */
+	get "policy.dkim.unsignedHeadersWarning.mode"() {
+		return this.#tryGetNumberValue("policy.dkim.unsignedHeadersWarning.mode", 10);
 	}
 	//#endregion
 
@@ -393,7 +399,7 @@ export class BasePreferences {
 	 * - 50:  when a message is viewed
 	 */
 	get "showDKIMHeader"() {
-		return this._tryGetNumberValue("showDKIMHeader", 30);
+		return this.#tryGetNumberValue("showDKIMHeader", 30);
 	}
 	/**
 	 * -  0:  never
@@ -404,49 +410,49 @@ export class BasePreferences {
 	 * - 50:  when a message is viewed
 	 */
 	get "showDKIMFromTooltip"() {
-		return this._tryGetNumberValue("showDKIMFromTooltip", 0);
+		return this.#tryGetNumberValue("showDKIMFromTooltip", 0);
 	}
 
 	get "colorFrom"() {
-		return this._tryGetBoolValue("colorFrom", false);
+		return this.#tryGetBoolValue("colorFrom", false);
 	}
 	get "color.success.text"() {
-		return this._tryGetStringValue("color.success.text", "windowtext");
+		return this.#tryGetStringValue("color.success.text", "windowtext");
 	}
 	get "color.success.background"() {
-		return this._tryGetStringValue("color.success.background", "#00FF00");
+		return this.#tryGetStringValue("color.success.background", "rgba(0,255,0,0.5)");
 	}
 	get "color.warning.text"() {
-		return this._tryGetStringValue("color.warning.text", "windowtext");
+		return this.#tryGetStringValue("color.warning.text", "windowtext");
 	}
 	get "color.warning.background"() {
-		return this._tryGetStringValue("color.warning.background", "orange");
+		return this.#tryGetStringValue("color.warning.background", "rgba(255,150,0,0.5)");
 	}
 	get "color.permfail.text"() {
-		return this._tryGetStringValue("color.permfail.text", "windowtext");
+		return this.#tryGetStringValue("color.permfail.text", "windowtext");
 	}
 	get "color.permfail.background"() {
-		return this._tryGetStringValue("color.permfail.background", "red");
+		return this.#tryGetStringValue("color.permfail.background", "rgba(255,0,0,0.5)");
 	}
 	get "color.tempfail.text"() {
-		return this._tryGetStringValue("color.tempfail.text", "unset");
+		return this.#tryGetStringValue("color.tempfail.text", "unset");
 	}
 	get "color.tempfail.background"() {
-		return this._tryGetStringValue("color.tempfail.background", "unset");
+		return this.#tryGetStringValue("color.tempfail.background", "unset");
 	}
 	get "color.nosig.text"() {
-		return this._tryGetStringValue("color.nosig.text", "unset");
+		return this.#tryGetStringValue("color.nosig.text", "unset");
 	}
 	get "color.nosig.background"() {
-		return this._tryGetStringValue("color.nosig.background", "unset");
+		return this.#tryGetStringValue("color.nosig.background", "unset");
 	}
 
 	get "display.favicon.show"() {
-		return this._tryGetBoolValue("display.favicon.show", true);
+		return this.#tryGetBoolValue("display.favicon.show", true);
 	}
 
 	get "display.keySecure"() {
-		return this._tryGetBoolValue("display.keySecure", true);
+		return this.#tryGetBoolValue("display.keySecure", true);
 	}
 	//#endregion
 
@@ -455,7 +461,7 @@ export class BasePreferences {
 	////////////////////////////////////////////////////////////////////////////
 
 	get "debug"() {
-		return this._tryGetBoolValue("debug", false);
+		return this.#tryGetBoolValue("debug", false);
 	}
 	/**
 	 * - Fatal
@@ -468,7 +474,7 @@ export class BasePreferences {
 	 * - All
 	 */
 	get "logging.console"() {
-		return this._tryGetStringValue("logging.console", "Debug");
+		return this.#tryGetStringValue("logging.console", "Debug");
 	}
 	//#endregion
 
@@ -481,7 +487,6 @@ export class BasePreferences {
 	 * @param {string} account
 	 * @param {boolean|number|string} value
 	 * @returns {Promise<void>}
-	 * @memberof BasePreferences
 	 */
 	setAccountValue(name, account, value) {
 		if (!Object.prototype.hasOwnProperty.call(BasePreferences.prototype, `account.${name}`)) {
@@ -507,14 +512,13 @@ export class BasePreferences {
 	 * @param {string} name
 	 * @param {string} account
 	 * @returns {boolean|number|string}
-	 * @memberof BasePreferences
 	 */
 	getAccountValue(name, account) {
 		if (!Object.prototype.hasOwnProperty.call(BasePreferences.prototype, `account.${name}`)) {
 			throw new Error(`Can not get nonexisting account preference "${name}"`);
 		}
 		if (name === "dkim.enable" || name === "arh.read") {
-			return this._tryGetNumberValue(`account.${account}.${name}`, 0);
+			return this.#tryGetNumberValue(`account.${account}.${name}`, 0);
 		}
 		/** @type {any} */
 		const that = this;
@@ -524,15 +528,16 @@ export class BasePreferences {
 	/**
 	 * Get an boolean account preference that has a global default.
 	 *
-	 * @private
 	 * @param {string} name
-	 * @param {string} account
+	 * @param {string|undefined} account
 	 * @returns {boolean}
-	 * @memberof BasePreferences
 	 */
-	_getAccountBoolWithDefault(name, account) {
+	#getAccountBoolWithDefault(name, account) {
+		if (!account) {
+			return this.getBool(name);
+		}
 		// 0: default, 1: yes, 2: no
-		const accBool = this._tryGetNumberValue(`account.${account}.${name}`, 0);
+		const accBool = this.#tryGetNumberValue(`account.${account}.${name}`, 0);
 		switch (accBool) {
 			case 0:
 				return this.getBool(name);
@@ -546,30 +551,27 @@ export class BasePreferences {
 	}
 
 	/**
-	 * @param {string} account
+	 * @param {string|undefined} account
 	 * @returns {boolean}
-	 * @memberof BasePreferences
 	 */
 	"account.dkim.enable"(account) {
-		return this._getAccountBoolWithDefault("dkim.enable", account);
+		return this.#getAccountBoolWithDefault("dkim.enable", account);
 	}
 
 	/**
-	 * @param {string} account
+	 * @param {string|undefined} account
 	 * @returns {boolean}
-	 * @memberof BasePreferences
 	 */
 	"account.arh.read"(account) {
-		return this._getAccountBoolWithDefault("arh.read", account);
+		return this.#getAccountBoolWithDefault("arh.read", account);
 	}
 
 	/**
-	 * @param {string} account
+	 * @param {string|undefined} account
 	 * @returns {string}
-	 * @memberof BasePreferences
 	 */
 	"account.arh.allowedAuthserv"(account) {
-		return this._tryGetStringValue(`account.${account}.arh.allowedAuthserv`, "");
+		return this.#tryGetStringValue(`account.${account}.arh.allowedAuthserv`, "");
 	}
 	//#endregion
 }
@@ -662,7 +664,7 @@ export class StorageLocalPreferences extends BasePreferences {
 			if (data) {
 				dataStorages.push({
 					scope: dataStorageScope,
-					data: data,
+					data,
 				});
 			}
 		}

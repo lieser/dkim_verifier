@@ -1,7 +1,7 @@
 /**
  * Authentication Verifier.
  *
- * Copyright (c) 2014-2022 Philippe Lieser
+ * Copyright (c) 2014-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -11,38 +11,39 @@
 
 // @ts-check
 ///<reference path="./authVerifier.d.ts" />
-///<reference path="../WebExtensions.d.ts" />
 ///<reference path="../experiments/storageMessage.d.ts" />
 /* eslint-env webextensions */
 /* eslint-disable camelcase */
 /* eslint-disable no-use-before-define */
-/* eslint no-unused-vars: ["error", { "varsIgnorePattern": "ArhParserModule|VerifierModule" }]*/
 
 export const moduleVersion = "2.0.0";
 
-import ArhParser, * as ArhParserModule from "./arhParser.mjs.js";
-import Verifier, * as VerifierModule from "./dkim/verifier.mjs.js";
-import { addrIsInDomain2, domainIsInDomain, getDomainFromAddr } from "./utils.mjs.js";
-import { DKIM_InternalError } from "./error.mjs.js";
+import { addrIsInDomain, addrIsInDomain2, copy, domainIsInDomain, getDomainFromAddr } from "./utils.mjs.js";
+import ArhParser from "./arhParser.mjs.js";
 import DMARC from "./dkim/dmarc.mjs.js";
 import ExtensionUtils from "./extensionUtils.mjs.js";
 import Logging from "./logging.mjs.js";
 import MsgParser from "./msgParser.mjs.js";
 import SignRules from "./dkim/signRules.mjs.js";
+import Verifier from "./dkim/verifier.mjs.js";
+import { getBimiIndicator } from "./bimi.mjs.js";
 import { getFavicon } from "./dkim/favicon.mjs.js";
 import prefs from "./preferences.mjs.js";
 
 const log = Logging.getLogger("AuthVerifier");
 
+/** @typedef {import("./arhParser.mjs.js").ArhResInfo} ArhResInfo */
+/** @typedef {import("./dkim/verifier.mjs.js").dkimResultV1} dkimResultV1 */
+/** @typedef {import("./dkim/verifier.mjs.js").dkimSigResultV2} dkimSigResultV2 */
+
 /**
  * @typedef {object} AuthResultV2
- * @property {string} version
- *           result version ("2.1")
+ * @property {string} version Result version ("2.1").
  * @property {AuthResultDKIM[]} dkim
- * @property {ArhParserModule.ArhResInfo[]} [spf]
- * @property {ArhParserModule.ArhResInfo[]} [dmarc]
+ * @property {ArhResInfo[]} [spf]
+ * @property {ArhResInfo[]} [dmarc]
  * @property {{dkim?: AuthResultDKIM[]}} [arh]
- *           added in version 2.1
+ * added in version 2.1
  */
 /**
  * @typedef {AuthResultV2} AuthResult
@@ -50,12 +51,12 @@ const log = Logging.getLogger("AuthVerifier");
 
 /**
  * @typedef {object} SavedAuthResultV3
- * @property {string} version
- *           result version ("3.0")
- * @property {VerifierModule.dkimSigResultV2[]} dkim
- * @property {ArhParserModule.ArhResInfo[]} [spf]
- * @property {ArhParserModule.ArhResInfo[]} [dmarc]
- * @property {{dkim?: VerifierModule.dkimSigResultV2[]}} [arh]
+ * @property {string} version Result version ("3.1").
+ * @property {dkimSigResultV2[]} dkim
+ * @property {ArhResInfo[]|undefined} [spf]
+ * @property {ArhResInfo[]|undefined} [dmarc]
+ * @property {{dkim?: dkimSigResultV2[]}|undefined} [arh]
+ * @property {string|undefined} [bimiIndicator] Since version 3.1
  */
 /**
  * @typedef {SavedAuthResultV3} SavedAuthResult
@@ -65,19 +66,15 @@ const log = Logging.getLogger("AuthVerifier");
  * @typedef {IAuthVerifier.AuthResultDKIMV2} AuthResultDKIMV2
  * extends dkimSigResultV2
  * @property {number} res_num
- *           10: SUCCESS
- *           20: TEMPFAIL
- *           30: PERMFAIL
- *           35: PERMFAIL treat as no sig
- *           40: no sig
- * @property {string} result_str
- *           localized result string
- * @property {string} [error_str]
- *           localized error string
- * @property {string[]} [warnings_str]
- *           localized warnings
- * @property {string} [favicon]
- *           url to the favicon of the sdid
+ * - 10: SUCCESS
+ * - 20: TEMPFAIL
+ * - 30: PERMFAIL
+ * - 35: PERMFAIL treat as no sig
+ * - 40: no sig
+ * @property {string} result_str Localized result string.
+ * @property {string} [error_str] Localized error string.
+ * @property {string[]} [warnings_str] Localized warnings.
+ * @property {string} [favicon] URL to the favicon of the SDID.
  */
 /**
  * @typedef {AuthResultDKIMV2} AuthResultDKIM
@@ -96,19 +93,20 @@ export default class AuthVerifier {
 	}
 
 	static get DKIM_RES() {
-		return {
+		// eslint-disable-next-line no-extra-parens
+		return /** @type {const} */ ({
 			SUCCESS: 10,
 			TEMPFAIL: 20,
 			PERMFAIL: 30,
 			PERMFAIL_NOSIG: 35,
 			NOSIG: 40,
-		};
+		});
 	}
 
 	/**
 	 * Verifies the authentication of the msg.
 	 *
-	 * @param {browser.messageDisplay.MessageHeader} message
+	 * @param {browser.messages.MessageHeader} message
 	 * @returns {Promise<AuthResult>}
 	 */
 	async verify(message) {
@@ -116,12 +114,32 @@ export default class AuthVerifier {
 		// check for saved AuthResult
 		let savedAuthResult = await loadAuthResult(message);
 		if (savedAuthResult) {
-			return SavedAuthResult_to_AuthResult(savedAuthResult);
+			let from = null;
+			try {
+				from = MsgParser.parseAuthor(message.author, prefs["internationalized.enable"]);
+			} catch (error) {
+				log.warn("Parsing of from header failed", error);
+			}
+			return SavedAuthResult_to_AuthResult(savedAuthResult, from);
 		}
 
 		// create msg object
 		const rawMessage = await browser.messages.getRaw(message.id);
-		const msgParsed = MsgParser.parseMsg(rawMessage);
+		let msgParsed;
+		try {
+			msgParsed = MsgParser.parseMsg(rawMessage);
+		} catch (error) {
+			log.error("Parsing of message failed", error);
+			return Promise.resolve({
+				version: "2.1",
+				dkim: [{
+					version: "2.0",
+					result: "PERMFAIL",
+					res_num: 30,
+					result_str: browser.i18n.getMessage("DKIM_INTERNALERROR_INCORRECT_EMAIL_FORMAT"),
+				}],
+			});
+		}
 		const fromHeader = msgParsed.headers.get("from");
 		if (!fromHeader || !fromHeader[0]) {
 			throw new Error("message does not contain a from header");
@@ -144,7 +162,7 @@ export default class AuthVerifier {
 		const msg = {
 			headerFields: msgParsed.headers,
 			bodyPlain: msgParsed.body,
-			from: from,
+			from,
 		};
 		const listIdHeader = msgParsed.headers.get("list-id");
 		let listId = null;
@@ -157,20 +175,21 @@ export default class AuthVerifier {
 		}
 
 		// read Authentication-Results header
-		const arhResult = await getARHResult(message, msg.headerFields, msg.from, listId, message.folder.accountId, this._dmarc);
+		const arhResult = await getARHResult(message, msg.headerFields, msg.from, listId, message.folder?.accountId, this._dmarc);
 
 		if (arhResult) {
 			if (prefs["arh.replaceAddonResult"]) {
 				savedAuthResult = arhResult;
 			} else {
 				savedAuthResult = {
-					version: "3.0",
+					version: "3.1",
 					dkim: [],
 					spf: arhResult.spf,
 					dmarc: arhResult.dmarc,
 					arh: {
 						dkim: arhResult.dkim
 					},
+					bimiIndicator: arhResult.bimiIndicator,
 				};
 			}
 		} else {
@@ -181,7 +200,7 @@ export default class AuthVerifier {
 		}
 
 		if (!savedAuthResult.dkim || savedAuthResult.dkim.length === 0) {
-			if (prefs["account.dkim.enable"](message.folder.accountId)) {
+			if (prefs["account.dkim.enable"](message.folder?.accountId)) {
 				// verify DKIM signatures
 				const dkimResultV2 = await this._dkimVerifier.verify(msg);
 
@@ -198,7 +217,7 @@ export default class AuthVerifier {
 		saveAuthResult(message, savedAuthResult).
 			catch(error => log.fatal("Failed to store result", error));
 
-		const authResult = await SavedAuthResult_to_AuthResult(savedAuthResult);
+		const authResult = await SavedAuthResult_to_AuthResult(savedAuthResult, msg.from);
 		log.debug("authResult: ", authResult);
 		return authResult;
 	}
@@ -206,7 +225,7 @@ export default class AuthVerifier {
 	/**
 	 * Resets the stored authentication result of the msg.
 	 *
-	 * @param {browser.messageDisplay.MessageHeader} message
+	 * @param {browser.messages.MessageHeader} message
 	 * @returns {Promise<void>}
 	 */
 	static resetResult(message) {
@@ -217,11 +236,11 @@ export default class AuthVerifier {
 /**
  * Get the Authentication-Results header as an SavedAuthResult.
  *
- * @param {browser.messageDisplay.MessageHeader} message
+ * @param {browser.messages.MessageHeader} message
  * @param {Map<string, string[]>} headers
  * @param {string} from
  * @param {string?} listId
- * @param {string} account
+ * @param {string|undefined} account
  * @param {DMARC} dmarc
  * @returns {Promise<SavedAuthResult|null>}
  */
@@ -232,14 +251,16 @@ async function getARHResult(message, headers, from, listId, account, dmarc) {
 	}
 
 	// get DKIM, SPF and DMARC res
-	/** @type {ArhParserModule.ArhResInfo[]} */
+	/** @type {ArhResInfo[]} */
 	let arhDKIM = [];
-	/** @type {ArhParserModule.ArhResInfo[]} */
+	/** @type {ArhResInfo[]} */
 	let arhSPF = [];
-	/** @type {ArhParserModule.ArhResInfo[]} */
+	/** @type {ArhResInfo[]} */
 	let arhDMARC = [];
+	/** @type {ArhResInfo[]} */
+	let arhBIMI = [];
 	for (const header of arHeaders) {
-		/** @type {ArhParserModule.ArhHeader} */
+		/** @type {import("./arhParser.mjs.js").ArhHeader} */
 		let arh;
 		try {
 			arh = ArhParser.parse(header, prefs["arh.relaxedParsing"], prefs["internationalized.enable"]);
@@ -265,14 +286,17 @@ async function getARHResult(message, headers, from, listId, account, dmarc) {
 			continue;
 		}
 
-		arhDKIM = arhDKIM.concat(arh.resinfo.filter(function (element) {
+		arhDKIM = arhDKIM.concat(arh.resinfo.filter((element) => {
 			return element.method === "dkim";
 		}));
-		arhSPF = arhSPF.concat(arh.resinfo.filter(function (element) {
+		arhSPF = arhSPF.concat(arh.resinfo.filter((element) => {
 			return element.method === "spf";
 		}));
-		arhDMARC = arhDMARC.concat(arh.resinfo.filter(function (element) {
+		arhDMARC = arhDMARC.concat(arh.resinfo.filter((element) => {
 			return element.method === "dmarc";
+		}));
+		arhBIMI = arhBIMI.concat(arh.resinfo.filter((element) => {
+			return element.method === "bimi";
 		}));
 	}
 
@@ -306,7 +330,7 @@ async function getARHResult(message, headers, from, listId, account, dmarc) {
 					case 2: // ignore
 						break;
 					default:
-						throw new DKIM_InternalError("invalid error.algorithm.sign.rsa-sha1.treatAs");
+						throw new Error("invalid error.algorithm.sign.rsa-sha1.treatAs");
 				}
 			}
 		}
@@ -316,19 +340,20 @@ async function getARHResult(message, headers, from, listId, account, dmarc) {
 	sortSignatures(dkimSigResults, from, listId);
 
 	const savedAuthResult = {
-		version: "3.0",
+		version: "3.1",
 		dkim: dkimSigResults,
 		spf: arhSPF,
 		dmarc: arhDMARC,
+		bimiIndicator: getBimiIndicator(headers, arhBIMI) ?? undefined,
 	};
-	log.debug("ARH result:", savedAuthResult);
+	log.debug("ARH result:", copy(savedAuthResult));
 	return savedAuthResult;
 }
 
 /**
  * Save authentication result.
  *
- * @param {browser.messageDisplay.MessageHeader} message
+ * @param {browser.messages.MessageHeader} message
  * @param {SavedAuthResult|null} savedAuthResult
  * @returns {Promise<void>}
  */
@@ -342,8 +367,8 @@ async function saveAuthResult(message, savedAuthResult) {
 		// reset result
 		log.debug("reset AuthResult result");
 		await browser.storageMessage.set(message.id, "dkim_verifier@pl-result", "");
-	} else if (savedAuthResult.dkim[0]?.result === "TEMPFAIL") {
-		// don't save result if DKIM result is a TEMPFAIL
+	} else if (savedAuthResult.dkim.some(res => res.result === "TEMPFAIL")) {
+		// don't save result if DKIM result contains a TEMPFAIL
 		log.debug("result not saved because DKIM result is a TEMPFAIL");
 	} else {
 		log.debug("save AuthResult result");
@@ -355,7 +380,7 @@ async function saveAuthResult(message, savedAuthResult) {
 /**
  * Get saved authentication result.
  *
- * @param {browser.messageDisplay.MessageHeader} message
+ * @param {browser.messages.MessageHeader} message
  * @returns {Promise<SavedAuthResult|null>} savedAuthResult
  */
 async function loadAuthResult(message) {
@@ -372,7 +397,7 @@ async function loadAuthResult(message) {
 	}
 	log.debug("AuthResult result found: ", savedAuthResultJSON);
 
-	/** @type {VerifierModule.dkimResultV1|AuthResultV2|SavedAuthResultV3} */
+	/** @type {dkimResultV1|AuthResultV2|SavedAuthResultV3} */
 	const savedAuthResult = JSON.parse(savedAuthResultJSON);
 
 	const versionMatch = savedAuthResult.version.match(/^[0-9]+/);
@@ -382,7 +407,7 @@ async function loadAuthResult(message) {
 	const majorVersion = versionMatch[0];
 	if (majorVersion === "1") {
 		// old dkimResultV1 (AuthResult version 1)
-		/** @type {VerifierModule.dkimResultV1} */
+		/** @type {dkimResultV1} */
 		// @ts-expect-error
 		const resultV1 = savedAuthResult;
 		/** @type {SavedAuthResultV3} */
@@ -427,8 +452,8 @@ async function loadAuthResult(message) {
 /**
  * Checks the DKIM results against the sign rules.
  *
- * @param {browser.messageDisplay.MessageHeader} message
- * @param {VerifierModule.dkimSigResultV2[]} dkimResults
+ * @param {browser.messages.MessageHeader} message
+ * @param {dkimSigResultV2[]} dkimResults
  * @param {string} from
  * @param {string?} listId
  * @param {DMARC} dmarc
@@ -448,14 +473,14 @@ async function checkSignRules(message, dkimResults, from, listId, dmarc) {
 		// eslint-disable-next-line require-atomic-updates
 		dkimResults[i] = await SignRules.check(
 			// eslint-disable-next-line no-extra-parens
-			/** @type {VerifierModule.dkimSigResultV2} */(dkimResults[i]), from, listId, isOutgoingCallback, dmarcToUse);
+			/** @type {dkimSigResultV2} */(dkimResults[i]), from, listId, isOutgoingCallback, dmarcToUse);
 	}
 }
 
 /**
  * Sort the given DKIM signatures.
  *
- * @param {VerifierModule.dkimSigResultV2[]} signatures
+ * @param {dkimSigResultV2[]} signatures
  * @param {string} from
  * @param {string?} listId
  * @returns {void}
@@ -464,8 +489,8 @@ function sortSignatures(signatures, from, listId) {
 	/**
 	 * Compare the results of two signatures.
 	 *
-	 * @param {VerifierModule.dkimSigResultV2} sig1
-	 * @param {VerifierModule.dkimSigResultV2} sig2
+	 * @param {dkimSigResultV2} sig1
+	 * @param {dkimSigResultV2} sig2
 	 * @returns {number}
 	 */
 	function result_compare(sig1, sig2) {
@@ -491,14 +516,14 @@ function sortSignatures(signatures, from, listId) {
 			return 1;
 		}
 
-		throw new DKIM_InternalError(`result_compare: sig1.result: ${sig1.result}; sig2.result: ${sig2.result}`);
+		throw new Error(`result_compare: sig1.result: ${sig1.result}; sig2.result: ${sig2.result}`);
 	}
 
 	/**
 	 * Compare the warnings of two signatures.
 	 *
-	 * @param {VerifierModule.dkimSigResultV2} sig1
-	 * @param {VerifierModule.dkimSigResultV2} sig2
+	 * @param {dkimSigResultV2} sig1
+	 * @param {dkimSigResultV2} sig2
 	 * @returns {number}
 	 */
 	function warnings_compare(sig1, sig2) {
@@ -526,8 +551,8 @@ function sortSignatures(signatures, from, listId) {
 	/**
 	 * Compare the SDIDs of two signatures in regards to the from and list-id header.
 	 *
-	 * @param {VerifierModule.dkimSigResultV2} sig1
-	 * @param {VerifierModule.dkimSigResultV2} sig2
+	 * @param {dkimSigResultV2} sig1
+	 * @param {dkimSigResultV2} sig2
 	 * @returns {number}
 	 */
 	function sdid_compare(sig1, sig2) {
@@ -552,7 +577,36 @@ function sortSignatures(signatures, from, listId) {
 		return 0;
 	}
 
-	signatures.sort(function (sig1, sig2) {
+	/**
+	 * Compare the error reason of two signatures.
+	 *
+	 * @param {dkimSigResultV2} sig1
+	 * @param {dkimSigResultV2} sig2
+	 * @returns {number}
+	 */
+	function error_compare(sig1, sig2) {
+		if (sig1.result !== "PERMFAIL") {
+			return 0;
+		}
+		if (sig1.errorType) {
+			// sig1 has an error type
+			if (sig2.errorType) {
+				// both signatures have an error type
+				return 0;
+			}
+			// sig2 has no error type
+			return -1;
+		}
+		// sig1 has no error type
+		if (sig2.errorType) {
+			// sig2 has an error type
+			return 1;
+		}
+		// both signatures have no error type
+		return 0;
+	}
+
+	signatures.sort((sig1, sig2) => {
 		let cmp;
 		cmp = result_compare(sig1, sig2);
 		if (cmp !== 0) {
@@ -566,18 +620,22 @@ function sortSignatures(signatures, from, listId) {
 		if (cmp !== 0) {
 			return cmp;
 		}
+		cmp = error_compare(sig1, sig2);
+		if (cmp !== 0) {
+			return cmp;
+		}
 		return 0;
 	});
 }
 
 /**
- * Convert DKIM ARHresinfo to dkimResult.
+ * Convert DKIM ArhResInfo to dkimSigResultV2.
  *
- * @param {ArhParserModule.ArhResInfo} arhDKIM
- * @returns {VerifierModule.dkimSigResultV2}
+ * @param {ArhResInfo} arhDKIM
+ * @returns {dkimSigResultV2}
  */
 function arhDKIM_to_dkimSigResultV2(arhDKIM) {
-	/** @type {VerifierModule.dkimSigResultV2} */
+	/** @type {dkimSigResultV2} */
 	const dkimSigResult = {};
 	dkimSigResult.version = "2.0";
 	switch (arhDKIM.result) {
@@ -587,18 +645,6 @@ function arhDKIM_to_dkimSigResultV2(arhDKIM) {
 		case "pass": {
 			dkimSigResult.result = "SUCCESS";
 			dkimSigResult.warnings = [];
-			let sdid = arhDKIM.propertys.header.d;
-			let auid = arhDKIM.propertys.header.i;
-			if (sdid || auid) {
-				if (!sdid) {
-					// @ts-expect-error
-					sdid = getDomainFromAddr(auid);
-				} else if (!auid) {
-					auid = `@${sdid}`;
-				}
-				dkimSigResult.sdid = sdid;
-				dkimSigResult.auid = auid;
-			}
 			break;
 		}
 		case "fail":
@@ -621,7 +667,19 @@ function arhDKIM_to_dkimSigResultV2(arhDKIM) {
 			}
 			break;
 		default:
-			throw new DKIM_InternalError(`invalid dkim result in arh: ${arhDKIM.result}`);
+			throw new Error(`invalid dkim result in arh: ${arhDKIM.result}`);
+	}
+	let sdid = arhDKIM.propertys.header.d;
+	let auid = arhDKIM.propertys.header.i;
+	if (sdid || auid) {
+		if (!sdid) {
+			// @ts-expect-error
+			sdid = getDomainFromAddr(auid);
+		} else if (!auid) {
+			auid = `@${sdid}`;
+		}
+		dkimSigResult.sdid = sdid;
+		dkimSigResult.auid = auid;
 	}
 	return dkimSigResult;
 }
@@ -629,11 +687,11 @@ function arhDKIM_to_dkimSigResultV2(arhDKIM) {
 /**
  * Convert dkimResultV1 to dkimSigResultV2.
  *
- * @param {VerifierModule.dkimResultV1} dkimResultV1
- * @returns {VerifierModule.dkimSigResultV2}
+ * @param {dkimResultV1} dkimResultV1
+ * @returns {dkimSigResultV2}
  */
 function dkimResultV1_to_dkimSigResultV2(dkimResultV1) {
-	/** @type {VerifierModule.dkimSigResultV2} */
+	/** @type {dkimSigResultV2} */
 	const sigResultV2 = {
 		version: "2.0",
 		result: dkimResultV1.result,
@@ -644,7 +702,7 @@ function dkimResultV1_to_dkimSigResultV2(dkimResultV1) {
 	};
 	if (dkimResultV1.warnings) {
 		sigResultV2.warnings = dkimResultV1.warnings.map(
-			function (w) {
+			(w) => {
 				if (w === "DKIM_POLICYERROR_WRONG_SDID") {
 					return { name: w, params: [dkimResultV1.shouldBeSignedBy ?? ""] };
 				}
@@ -662,9 +720,8 @@ function dkimResultV1_to_dkimSigResultV2(dkimResultV1) {
 /**
  * Convert dkimSigResultV2 to AuthResultDKIM.
  *
- * @param {VerifierModule.dkimSigResultV2} dkimSigResult
+ * @param {dkimSigResultV2} dkimSigResult
  * @returns {AuthResultDKIM}
- * @throws DKIM_InternalError
  */
 function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-line complexity
 	/** @type {AuthResultDKIM} */
@@ -683,7 +740,7 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 			if (!dkimSigResult.warnings) {
 				throw new Error("expected warnings to be defined on SUCCESS result");
 			}
-			authResultDKIM.warnings_str = dkimSigResult.warnings.map(function (e) {
+			authResultDKIM.warnings_str = dkimSigResult.warnings.map((e) => {
 				return browser.i18n.getMessage(e.name, e.params) || e.name;
 			});
 			break;
@@ -758,7 +815,6 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 						case "DKIM_SIGERROR_KEY_HASHNOTINCLUDED":
 						case "DKIM_SIGERROR_KEY_UNKNOWN_K":
 						case "DKIM_SIGERROR_KEY_MISMATCHED_K":
-						case "DKIM_SIGERROR_KEY_HASHMISMATCH":
 						case "DKIM_SIGERROR_KEY_NOTEMAILKEY":
 						case "DKIM_SIGERROR_KEYDECODE":
 							errorType = "DKIM_SIGERROR_KEY_INVALID";
@@ -798,7 +854,7 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 			authResultDKIM.result_str = browser.i18n.getMessage("NOSIG");
 			break;
 		default:
-			throw new DKIM_InternalError(`unknown result: ${dkimSigResult.result}`);
+			throw new Error(`unknown result: ${dkimSigResult.result}`);
 	}
 
 	return authResultDKIM;
@@ -808,9 +864,10 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
  * Convert SavedAuthResult to AuthResult.
  *
  * @param {SavedAuthResult} savedAuthResult
+ * @param {string?} from
  * @returns {Promise<AuthResult>} authResult
  */
-function SavedAuthResult_to_AuthResult(savedAuthResult) {
+function SavedAuthResult_to_AuthResult(savedAuthResult, from) {
 	/** @type {AuthResult} */
 	const authResult = {
 		version: "2.1",
@@ -828,17 +885,17 @@ function SavedAuthResult_to_AuthResult(savedAuthResult) {
 				dkimSigResultV2_to_AuthResultDKIM)
 		};
 	}
-	return addFavicons(authResult);
+	return addFavicons(authResult, from, savedAuthResult.bimiIndicator);
 }
 
 /**
  * Convert AuthResultDKIMV2 to dkimSigResultV2.
  *
  * @param {AuthResultDKIMV2} authResultDKIM
- * @returns {VerifierModule.dkimSigResultV2} dkimSigResultV2
+ * @returns {dkimSigResultV2} dkimSigResultV2
  */
 function AuthResultDKIMV2_to_dkimSigResultV2(authResultDKIM) {
-	/** @type {VerifierModule.dkimSigResultV2} */
+	/** @type {dkimSigResultV2} */
 	const dkimSigResult = authResultDKIM;
 	// @ts-expect-error
 	dkimSigResult.res_num = undefined;
@@ -856,9 +913,11 @@ function AuthResultDKIMV2_to_dkimSigResultV2(authResultDKIM) {
  * Add favicons to the DKIM results.
  *
  * @param {AuthResult} authResult
+ * @param {string?} from
+ * @param {string|undefined} bimiIndicator
  * @returns {Promise<AuthResult>} authResult
  */
-async function addFavicons(authResult) {
+async function addFavicons(authResult, from, bimiIndicator) {
 	if (!prefs["display.favicon.show"]) {
 		return authResult;
 	}
@@ -867,7 +926,11 @@ async function addFavicons(authResult) {
 	}
 	for (const dkim of authResult.dkim) {
 		if (dkim.sdid) {
-			dkim.favicon = await getFavicon(dkim.sdid);
+			if (bimiIndicator && from && addrIsInDomain(from, dkim.sdid)) {
+				dkim.favicon = `data:image/svg+xml;base64,${bimiIndicator}`;
+			} else {
+				dkim.favicon = await getFavicon(dkim.sdid, dkim.auid, from);
+			}
 		}
 	}
 	return authResult;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020;2022 Philippe Lieser
+ * Copyright (c) 2020-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -11,27 +11,9 @@
 // @ts-check
 ///<reference path="./jsdns.d.ts" />
 ///<reference path="./mozilla.d.ts" />
-/* global ExtensionCommon */
+/* global ExtensionCommon, Services */
 
 "use strict";
-
-// @ts-expect-error
-// eslint-disable-next-line no-var
-var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
-
-/**
- * From https://javascriptweblog.wordpress.com/2011/08/08/fixing-the-javascript-typeof-operator/.
- *
- * @param {any} obj
- * @returns {string}
- */
-function toType(obj) {
-	const typeMatch = Object.prototype.toString.call(obj).match(/\s([a-zA-Z]+)/);
-	if (!typeMatch || !typeMatch[1]) {
-		throw new Error(`Failed to get type for ${obj}`);
-	}
-	return typeMatch[1];
-}
 
 this.jsdns = class extends ExtensionCommon.ExtensionAPI {
 	/**
@@ -61,14 +43,16 @@ this.jsdns = class extends ExtensionCommon.ExtensionAPI {
 	 * @returns {{jsdns: browser.jsdns}}
 	 */
 	getAPI(context) {
-		const RCODE = {
+		/** @enum {number} */
+		// eslint-disable-next-line no-extra-parens
+		const RCODE = /** @type {const} */ ({
 			NoError: 0, // No Error [RFC1035]
 			FormErr: 1, // Format Error [RFC1035]
 			ServFail: 2, // Server Failure [RFC1035]
 			NXDomain: 3, // Non-Existent Domain [RFC1035]
 			NotImp: 4, // Non-Existent Domain [RFC1035]
 			Refused: 5, // Query Refused [RFC1035]
-		};
+		});
 		/** @type {{JSDNS: {configureDNS: typeof configureDNS, queryDNS: typeof queryDNS}}} */
 		const { JSDNS } = ChromeUtils.import("chrome://dkim_verifier_jsdns/content/JSDNS.jsm.js");
 		this.extension.callOnClose(this);
@@ -78,47 +62,40 @@ this.jsdns = class extends ExtensionCommon.ExtensionAPI {
 					JSDNS.configureDNS(getNameserversFromOS, nameServer, timeoutConnect, proxy, autoResetServerAlive, debug);
 					return Promise.resolve();
 				},
-				txt(name) {
-					/** @type {QueryDnsCallback<{resolve: function(browser.jsdns.TxtResult): void, reject: function(unknown): void}>} */
-					function dnsCallback(dnsResult, defer, queryError, rcode) {
-						try {
-							let resRcode = RCODE.NoError;
-							if (rcode !== undefined) {
-								resRcode = rcode;
-							} else if (queryError !== undefined) {
-								/** @type {string|string[]} */
-								let error = "";
-								if (typeof queryError === "string") {
-									error = context.extension.localeData.localizeMessage(queryError);
-								} else if (toType(queryError) === "Array" && queryError[0]) {
-									error = context.extension.localeData.localizeMessage(queryError[0], queryError[1]);
-								}
-								if (!error) {
-									error = queryError;
-								}
-								console.warn(`JSDNS failed with: ${error}`);
-								resRcode = RCODE.ServFail;
-							}
+				async txt(name) {
+					const res = await JSDNS.queryDNS(name, "TXT");
 
-							const results = dnsResult && dnsResult.map(rdata => {
-								if (typeof rdata !== "string") {
-									throw Error(`DNS result has unexpected type ${typeof rdata}`);
-								}
-								return rdata;
-							});
-
-							defer.resolve({
-								data: results,
-								rcode: resRcode,
-								secure: false,
-								bogus: false,
-							});
-						} catch (e) {
-							defer.reject(e);
+					/** @type {number} */
+					let resRcode = RCODE.NoError;
+					if (res.rcode !== undefined) {
+						resRcode = res.rcode;
+					} else if (res.queryError !== undefined) {
+						let error = "";
+						if (typeof res.queryError === "string") {
+							error = res.queryError;
+						} else {
+							error = context.extension.localeData.localizeMessage(res.queryError[0] ?? "DKIM_DNSERROR_UNKNOWN", res.queryError[1]) ||
+								(res.queryError[0] ?? "Unknown DNS error");
 						}
+						console.warn(`JSDNS failed with: ${error}`);
+						return {
+							error,
+						};
 					}
-					return new Promise((resolve, reject) => JSDNS.queryDNS(
-						name, "TXT", dnsCallback, { resolve: resolve, reject: reject }));
+
+					const results = res.results?.map(rdata => {
+						if (typeof rdata !== "string") {
+							throw new Error(`DNS result has unexpected type ${typeof rdata}`);
+						}
+						return rdata;
+					});
+
+					return {
+						data: results ?? null,
+						rcode: resRcode,
+						secure: false,
+						bogus: false,
+					};
 				},
 			},
 		};

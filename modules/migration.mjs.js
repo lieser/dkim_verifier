@@ -1,7 +1,7 @@
 /**
  * Migrates user data from the Legacy Overlay Extension.
  *
- * Copyright (c) 2020-2021 Philippe Lieser
+ * Copyright (c) 2020-2021;2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -10,7 +10,6 @@
  */
 
 // @ts-check
-///<reference path="../WebExtensions.d.ts" />
 ///<reference path="../experiments/migration.d.ts" />
 /* eslint-env webextensions */
 
@@ -100,6 +99,6 @@ export async function migrateKeyStore() {
 
 	const keyStore = await browser.migration.getDkimKeys();
 	if (keyStore) {
-		await browser.storage.local.set({ keyStore: keyStore });
+		await browser.storage.local.set({ keyStore });
 	}
 }

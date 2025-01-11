@@ -3,9 +3,12 @@ interface Document {
 }
 
 interface Window {
-    readonly gFolderDisplay: { selectedMessage: nsIMsgDBHdr };
+    // Removed in TB 111
+    readonly gFolderDisplay?: { selectedMessage: nsIMsgDBHdr };
     readonly gMessageListeners: object[];
     // Removed in TB 99
     readonly OnResizeExpandedHeaderView?: () => void;
-    readonly syncGridColumnWidths: () => void;
+    // Removed in TB 102
+    readonly syncGridColumnWidths?: () => void;
+    readonly updateExpandedView: () => void;
 }

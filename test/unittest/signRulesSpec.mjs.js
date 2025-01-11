@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2021 Philippe Lieser
+ * Copyright (c) 2020-2021;2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -126,6 +126,14 @@ describe("Sign rules [unittest]", function () {
 
 			res = await SignRules.check(dkimNone, "bar@a.foo.comX");
 			expect(res.result).is.equal("none");
+
+			await SignRules.addRule("bar.com", null, "*@mail.*.bar.com", "bar.com", SignRules.TYPE.ALL);
+			res = await SignRules.check(dkimNone, "@mail.a.bar.com");
+			expect(res.result).is.equal("PERMFAIL");
+			res = await SignRules.check(dkimNone, "test@mail.foo.bar.com");
+			expect(res.result).is.equal("PERMFAIL");
+			res = await SignRules.check(dkimNone, "test@foo.bar.com");
+			expect(res.result).is.equal("none");
 		});
 		it("Add user exception", async function () {
 			let res = await SignRules.check(dkimNone, "bar@paypal.com");
@@ -162,14 +170,14 @@ describe("Sign rules [unittest]", function () {
 
 			let res = await SignRules.check(dkimRes, "bar@example.com");
 			expect(res.result).is.equal("SUCCESS");
-			expect(res.warnings).to.be.an('array').
+			expect(res.warnings).to.be.an("array").
 				that.deep.includes({ name: "DKIM_SIGWARNING_FROM_NOT_IN_SDID" });
 
 			await SignRules.addRule("example.com", null, "*", "test.com", SignRules.TYPE.NEUTRAL);
 
 			res = await SignRules.check(dkimRes, "bar@example.com");
 			expect(res.result).is.equal("SUCCESS");
-			expect(res.warnings).to.be.an('array').
+			expect(res.warnings).to.be.an("array").
 				that.not.deep.includes({ name: "DKIM_SIGWARNING_FROM_NOT_IN_SDID" });
 		});
 		it("rules should survive clearing of preferences", async function () {
@@ -233,23 +241,23 @@ describe("Sign rules [unittest]", function () {
 		});
 		it("import rules", async function () {
 			const exportedRules = {
-				dataId: 'DkimExportedUserSignRules',
+				dataId: "DkimExportedUserSignRules",
 				dataFormatVersion: 1,
 				rules: [
 					{
-						domain: 'foo.com',
-						listId: '',
-						addr: '*',
-						sdid: 'foo.com',
+						domain: "foo.com",
+						listId: "",
+						addr: "*",
+						sdid: "foo.com",
 						type: 1,
 						priority: 3100,
 						enabled: true
 					},
 					{
-						domain: 'bar.com',
-						listId: '',
-						addr: '*',
-						sdid: 'bar.com',
+						domain: "bar.com",
+						listId: "",
+						addr: "*",
+						sdid: "bar.com",
 						type: 1,
 						priority: 3100,
 						enabled: true
@@ -267,7 +275,7 @@ describe("Sign rules [unittest]", function () {
 		});
 		it("importing rules in replace mode", async function () {
 			const exportedRules = {
-				dataId: 'DkimExportedUserSignRules',
+				dataId: "DkimExportedUserSignRules",
 				dataFormatVersion: 1,
 				rules: [
 				]
@@ -284,14 +292,14 @@ describe("Sign rules [unittest]", function () {
 		});
 		it("importing rules in add mode", async function () {
 			const exportedRules = {
-				dataId: 'DkimExportedUserSignRules',
+				dataId: "DkimExportedUserSignRules",
 				dataFormatVersion: 1,
 				rules: [
 					{
-						domain: 'bar.com',
-						listId: '',
-						addr: '*',
-						sdid: 'bar.com',
+						domain: "bar.com",
+						listId: "",
+						addr: "*",
+						sdid: "bar.com",
 						type: 1,
 						priority: 3100,
 						enabled: true

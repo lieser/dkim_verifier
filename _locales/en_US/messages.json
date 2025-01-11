@@ -65,6 +65,10 @@
 	"DKIM_DNSERROR_UNKNOWN": {
 		"message": "Error in the DNS resolver"
 	},
+	"DKIM_DNSERROR_OFFLINE": {
+		"message": "Failed to make DNS query because Thunderbird is in offline mode.",
+		"description": "Error message if the addon needs to do a DNS query, but Thunderbird is in the offline mode."
+	},
 	"DKIM_DNSERROR_SERVER_ERROR": {
 		"message": "Error connecting to the DNS server"
 	},
@@ -241,9 +245,6 @@
 	"DKIM_SIGERROR_KEY_REVOKED": {
 		"message": "DKIM key is revoked"
 	},
-	"DKIM_SIGERROR_KEY_HASHMISMATCH": {
-		"message": "Public key in DKIM key has wrong hash algorithm"
-	},
 	"DKIM_SIGERROR_KEY_ILLFORMED_P": {
 		"message": "Public key data tag in DKIM key is ill-formed"
 	},
@@ -265,7 +266,8 @@
 	},
 	// DKIM_SIGERROR - POLICY
 	"DKIM_POLICYERROR_MISSING_SIG": {
-		"message": "Should be signed by $1"
+		"message": "No Signature, should be signed by $1",
+		"description": "Error if a message has no signature, but the sign rules state that it should be signed"
 	},
 	"DKIM_POLICYERROR_KEYMISMATCH": {
 		"message": "Stored DKIM key is different from the current one"
@@ -275,6 +277,10 @@
 	},
 	"DKIM_POLICYERROR_WRONG_SDID": {
 		"message": "Wrong signer (should be $1)"
+	},
+	"DKIM_POLICYERROR_UNSIGNED_HEADER_ADDED": {
+		"message": "Unsigned header '$1' was added",
+		"description": "Error if an important header was probably maliciously added later"
 	},
 	// DKIM_SIGWARNING
 	"DKIM_SIGWARNING_SMALL_L": {
@@ -298,6 +304,10 @@
 	"DKIM_SIGWARNING_FROM_NOT_IN_AUID": {
 		"message": "From does not match the user identifier"
 	},
+	"DKIM_SIGWARNING_UNSIGNED_HEADER": {
+		"message": "Header '$1' is not signed",
+		"description": "Warning if an important header is not signed"
+	},
 	// JSDNS
 	"TOO_MANY_HOPS": {
 		"message": "Too many hops."
@@ -309,7 +319,7 @@
 		"message": "DNS server $1 timed out on a TCP connection."
 	},
 	"SERVER_ERROR": {
-		"message": "Error connecting to DNS server &1."
+		"message": "Error connecting to DNS server $1."
 	},
 	"INCOMPLETE_RESPONSE": {
 		"message": "Incomplete response from $1."
@@ -349,7 +359,7 @@
 		"message": "DNS"
 	},
 	"options_dns.resolver": {
-		"message": "Resolver"
+		"message": "Resolver:"
 	},
 	"options_dns.resolver.value.1": {
 		"message": "JavaScript DNS library"
@@ -361,10 +371,11 @@
 		"message": "Get DNS servers from OS configuration"
 	},
 	"options_dns.nameserver": {
-		"message": "DNS servers (Syntax (EBNF): host[\":\"port]{\";\"host[\":\"port]} )"
+		"message": "DNS servers (Syntax (EBNF): host[\":\"port]{\";\"host[\":\"port]} ):"
 	},
 	"options_dns.timeout_connect": {
-		"message": "DNS connect timeout (in seconds)"
+		"message": "DNS connection timeout (in seconds):",
+		"description": "Timeout for the connection to the DNS servers (both establishing the connection and sending/receiving data)"
 	},
 	"options_dns.proxy.enable": {
 		"message": "Use a Proxy to connect to the DNS servers"
@@ -379,7 +390,7 @@
 		"message": "Port:"
 	},
 	"options_dns.libunbound.nameserver": {
-		"message": "DNS servers (Syntax (EBNF): IP{\";\"IP} )"
+		"message": "DNS servers (Syntax (EBNF): IP{\";\"IP} ):"
 	},
 	"options_dns.libunbound.usageWarning": {
 		"message": "The libunbound resolver requires an externally installed library"
@@ -430,15 +441,31 @@
 	"options_policy.DMARC.shouldBeSigned.enable": {
 		"message": "Use DMARC to heuristically determine if an e-mail should be signed"
 	},
+	"options_policy.dkim.unsignedHeadersWarning.mode": {
+		"message": "Warn about unsigned headers that are recommended to be signed:",
+		"description": "Description for the setting of the unsigned headers warning mode."
+	},
+	"options_policy.dkim.unsignedHeadersWarning.mode.relaxed": {
+		"message": "relaxed mode",
+		"description": "A relaxed mode that will try to avoid showing warnings."
+	},
+	"options_policy.dkim.unsignedHeadersWarning.mode.recommended": {
+		"message": "recommended mode",
+		"description": "A mode trying to enforce best practice without showing to many warnings."
+	},
+	"options_policy.dkim.unsignedHeadersWarning.mode.strict": {
+		"message": "strict mode",
+		"description": "A strict mode that will potentially show a lot of warnings."
+	},
 	// -------------------- Display options --------------------
 	"options_display": {
 		"message": "Display"
 	},
 	"options_showDKIMHeader": {
-		"message": "Show DKIM header"
+		"message": "Show DKIM header:"
 	},
 	"options_showDKIMFromTooltip": {
-		"message": "Show DKIM tooltip for From header"
+		"message": "Show DKIM tooltip for From header:"
 	},
 	"options_showDKIM.value.0": {
 		"message": "never"
@@ -499,19 +526,19 @@
 		"message": "Still verify the signature, if a domain is only testing DKIM"
 	},
 	"options_error.illformed_i.treatAs": {
-		"message": "Treat ill-formed AUID tag as"
+		"message": "Treat ill-formed AUID tag as:"
 	},
 	"options_error.illformed_s.treatAs": {
-		"message": "Treat ill-formed selector tag as"
+		"message": "Treat ill-formed selector tag as:"
 	},
 	"options_error.policy.key_insecure.treatAs": {
-		"message": "Treat DKIM key not secured by DNSSEC as"
+		"message": "Treat DKIM key not secured by DNSSEC as:"
 	},
 	"options_error.algorithm.sign.rsa-sha1.treatAs": {
-		"message": "Treat RSA-SHA1 sign algorithm as"
+		"message": "Treat RSA-SHA1 sign algorithm as:"
 	},
 	"options_error.algorithm.rsa.weakKeyLength.treatAs": {
-		"message": "Treat weak RSA keys (<2048 bits) as"
+		"message": "Treat weak RSA keys (<2048 bits) as:"
 	},
 	"options_error.treatAs.value.0": {
 		"message": "error"
@@ -604,6 +631,42 @@
 	},
 	"dkim_verifier.updateKey": {
 		"message": "Update DKIM key"
+	},
+	"details.result": {
+		"message": "Result",
+		"description": "Detailed view row name for the overall DKIM result."
+	},
+	"details.warnings": {
+		"message": "Warnings",
+		"description": "Detailed view row name for the warnings of the DKIM signature."
+	},
+	"details.SDID": {
+		"message": "SDID",
+		"description": "Detailed view row name for the SDID."
+	},
+	"details.AUID": {
+		"message": "AUID",
+		"description": "Detailed view row name for the AUID."
+	},
+	"details.signDate": {
+		"message": "Sign date",
+		"description": "Detailed view row name for the date (including time) the signature was created."
+	},
+	"details.expirationDate": {
+		"message": "Expiration date",
+		"description": "Detailed view row name for the date (including time) the signature expires."
+	},
+	"details.algorithm": {
+		"message": "Algorithm",
+		"description": "Detailed view row name for the algorithm used in the signature."
+	},
+	"details.signedHeaders": {
+		"message": "Signed headers",
+		"description": "Detailed view row name for the message headers signed by DKIM."
+	},
+	"details.noDate": {
+		"message": "No time included in the signature",
+		"description": "Value shown for sign and expiration date if no date is given in the signature."
 	},
 	// ==================== Table Views ====================
 	"treeviewKeys.title": {
@@ -708,7 +771,7 @@
 		"message": "Automatically select priority"
 	},
 	"signRules.priorityMode.manual": {
-		"message": "Set priority to"
+		"message": "Set priority to:"
 	},
 	"button.cancel": {
 		"message": "Cancel"

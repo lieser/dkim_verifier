@@ -2,7 +2,7 @@
  * Wrapper for the libunbound DNS library. The actual work is done in the
  * ChromeWorker libunboundWorker.jsm.js.
  *
- * Copyright (c) 2013-2018;2020 Philippe Lieser
+ * Copyright (c) 2013-2018;2020-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -13,16 +13,17 @@
 // @ts-check
 ///<reference path="./libunbound.d.ts" />
 ///<reference path="./mozilla.d.ts" />
-/* global ExtensionCommon */
+/* global ExtensionCommon, Services */
 
 "use strict";
 
 // @ts-expect-error
 // eslint-disable-next-line no-var
-var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
-// @ts-expect-error
-// eslint-disable-next-line no-var
-var { OS } = ChromeUtils.import("resource://gre/modules/osfile.jsm");
+var OS;
+if (typeof PathUtils === "undefined") {
+	// TB < 115
+	({ OS } = ChromeUtils.import("resource://gre/modules/osfile.jsm"));
+}
 
 /**
  * The result of the query.
@@ -30,32 +31,32 @@ var { OS } = ChromeUtils.import("resource://gre/modules/osfile.jsm");
  *
  * @typedef {object} ub_result
  * @property {string} qname
- *           text string, original question
+ * Text string, the original question.
  * @property {number} qtype
- *           type code asked for
+ * The type code asked for.
  * @property {number} qclass
- *           class code (CLASS IN (internet))
- * @property {object[]} data
- *           Array of converted rdata items. Empty for unsupported RR types.
- *           Currently supported types: TXT
+ * Class code (CLASS IN (internet)).
+ * @property {any[]} data
+ * Array of converted rdata items. Empty for unsupported RR types.
+ * Currently supported types: TXT
  * @property {number[][]} data_raw
- *           Array of rdata items as byte array
+ * Array of rdata items as byte array.
  * @property {string} canonname
- *           canonical name of result (empty string if missing in response)
+ * Canonical name of result (empty string if missing in response).
  * @property {number} rcode
- *           additional error code in case of no data
+ * Additional error code in case of no data.
  * @property {boolean} havedata
- *           true if there is data
+ * True if there is data.
  * @property {boolean} nxdomain
- *           true if nodata because name does not exist
+ * True if nodata because name does not exist.
  * @property {boolean} secure
- *           true if result is secure.
+ * True if result is secure.
  * @property {boolean} bogus
- *           true if a security failure happened.
+ * True if a security failure happened.
  * @property {string} why_bogus
- *           string with error if bogus
+ * String with error if the result is bogus.
  * @property {number} ttl
- *           number of seconds the result is valid
+ * Number of seconds the result is valid.
  */
 
 /**
@@ -89,7 +90,7 @@ class LibunboundWorker {
 		this.worker =
 			//@ts-expect-error
 			new ChromeWorker("chrome://dkim_verifier_libunbound/content/libunboundWorker.jsm.js");
-		this.worker.onmessage = (msg) => this._onmessage(msg);
+		this.worker.onmessage = (msg) => this.#onmessage(msg);
 
 		this.config = {
 			getNameserversFromOS: true,
@@ -119,7 +120,12 @@ class LibunboundWorker {
 		if (this.config.pathRelToProfileDir) {
 			path = this.config.path.
 				split(";").
-				map(e => { return OS.Path.join(OS.Constants.Path.profileDir, e); }).
+				map(e => {
+					if (OS) {
+						return OS.Path.join(OS.Constants.Path.profileDir, e);
+					}
+					return PathUtils.join(PathUtils.profileDir, ...e.split(/\/|\\/));
+				}).
 				join(";");
 		} else {
 			path = this.config.path;
@@ -128,7 +134,7 @@ class LibunboundWorker {
 		this.worker.postMessage({
 			callId: this._maxCallId,
 			method: "load",
-			path: path,
+			path,
 		});
 
 		this.isLoaded = defer.promise;
@@ -160,10 +166,10 @@ class LibunboundWorker {
 
 		// set additional DNS servers
 		let nameservers = this.config.nameServer.split(";");
-		nameservers = nameservers.map(function (element /*, index, array*/) {
+		nameservers = nameservers.map((element /*, index, array*/) => {
 			return element.trim();
 		});
-		nameservers = nameservers.filter(function (element /*, index, array*/) {
+		nameservers = nameservers.filter((element /*, index, array*/) => {
 			if (element !== "") {
 				return true;
 			}
@@ -176,11 +182,11 @@ class LibunboundWorker {
 		this.worker.postMessage({
 			callId: this._maxCallId,
 			method: "update_ctx",
-			conf: conf,
-			debuglevel: debuglevel,
+			conf,
+			debuglevel,
 			getNameserversFromOS: this.config.getNameserversFromOS,
-			nameservers: nameservers,
-			trustAnchors: trustAnchors,
+			nameservers,
+			trustAnchors,
 		});
 
 		return defer.promise;
@@ -202,8 +208,8 @@ class LibunboundWorker {
 		this.worker.postMessage({
 			callId: this._maxCallId,
 			method: "resolve",
-			name: name,
-			rrtype: rrtype,
+			name,
+			rrtype,
 		});
 
 		return defer.promise;
@@ -212,11 +218,10 @@ class LibunboundWorker {
 	/**
 	 * Handle the callbacks from the ChromeWorker.
 	 *
-	 * @private
 	 * @param {Libunbound.WorkerResponse} msg
 	 * @returns {void}
 	 */
-	_onmessage(msg) {
+	#onmessage(msg) {
 		try {
 			// handle log messages
 			if (msg.data.type && msg.data.type === "log") {
@@ -278,7 +283,11 @@ class LibunboundWorker {
 		}
 	}
 }
-LibunboundWorker.Constants = {
+/**
+ * @enum {number}
+ */
+// eslint-disable-next-line no-extra-parens
+LibunboundWorker.Constants = /** @type {const} */ ({
 	RR_TYPE_A: 1,
 	RR_TYPE_A6: 38,
 	RR_TYPE_AAAA: 28,
@@ -341,7 +350,7 @@ LibunboundWorker.Constants = {
 	RR_TYPE_UNSPEC: 103,
 	RR_TYPE_WKS: 11,
 	RR_TYPE_X25: 19,
-};
+});
 
 
 this.libunbound = class extends ExtensionCommon.ExtensionAPI {
@@ -375,14 +384,6 @@ this.libunbound = class extends ExtensionCommon.ExtensionAPI {
 	 * @returns {{libunbound: browser.libunbound}}
 	 */
 	getAPI(_context) {
-		const RCODE = {
-			NoError: 0, // No Error [RFC1035]
-			FormErr: 1, // Format Error [RFC1035]
-			ServFail: 2, // Server Failure [RFC1035]
-			NXDomain: 3, // Non-Existent Domain [RFC1035]
-			NotImp: 4, // Non-Existent Domain [RFC1035]
-			Refused: 5, // Query Refused [RFC1035]
-		};
 		const libunboundWorker = this.libunboundWorker;
 		return {
 			libunbound: {
@@ -402,23 +403,14 @@ this.libunbound = class extends ExtensionCommon.ExtensionAPI {
 				},
 				async txt(name) {
 					const res = await libunboundWorker.resolve(name, LibunboundWorker.Constants.RR_TYPE_TXT);
-					if (res === null) {
-						// error in libunbound
-						return {
-							data: null,
-							rcode: RCODE.ServFail,
-							secure: false,
-							bogus: false,
-						};
-					}
 					const data = res.havedata ? res.data.map(rdata => {
 						if (typeof rdata !== "string") {
-							throw Error(`DNS result has unexpected type ${typeof rdata}`);
+							throw new Error(`DNS result has unexpected type ${typeof rdata}`);
 						}
 						return rdata;
 					}) : null;
 					return {
-						data: data,
+						data,
 						rcode: res.rcode,
 						secure: res.secure,
 						bogus: res.bogus,

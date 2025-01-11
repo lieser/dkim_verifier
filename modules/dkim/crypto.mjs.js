@@ -1,7 +1,7 @@
 /**
  * Unified crypto interface for Thunderbird/Browser and Node
  *
- * Copyright (c) 2020;2022 Philippe Lieser
+ * Copyright (c) 2020-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -63,7 +63,7 @@ class DkimCryptoBase {
 	 * @param {string} signature - b64 encoded signature
 	 * @param {string} data - data whose signature is to be verified (binary string)
 	 * @returns {Promise<[boolean, number]>} - valid, key length
-	 * @throws DKIM_SigError
+	 * @throws {DKIM_SigError}
 	 */
 	verify(signAlgorithm, key, digestAlgorithm, signature, data) {
 		if (signAlgorithm === "rsa") {
@@ -82,7 +82,7 @@ class DkimCryptoBase {
 	 * @param {string} _signature - b64 encoded signature
 	 * @param {string} _data - data whose signature is to be verified (binary string)
 	 * @returns {Promise<[boolean, number]>} - valid, key length
-	 * @throws DKIM_SigError
+	 * @throws {DKIM_SigError}
 	 */
 	verifyRSA(_key, _digestAlgorithm, _signature, _data) {
 		throw new Error("Not implemented");
@@ -158,11 +158,10 @@ class DkimCryptoWeb extends DkimCryptoBase {
 	}
 
 	/**
-	 * @private
 	 * @param {Uint8Array} data
 	 * @returns {string}
 	 */
-	_encodeBase64(data) {
+	#encodeBase64(data) {
 		return btoa(String.fromCharCode(...data));
 	}
 
@@ -176,7 +175,7 @@ class DkimCryptoWeb extends DkimCryptoBase {
 	 */
 	async digest(algorithm, message) {
 		const digest = await this.digestRaw(algorithm, message);
-		return this._encodeBase64(digest);
+		return this.#encodeBase64(digest);
 	}
 
 	/**
@@ -204,7 +203,7 @@ class DkimCryptoWeb extends DkimCryptoBase {
 	 * @param {string} signature - b64 encoded signature
 	 * @param {string} data - data whose signature is to be verified (binary string)
 	 * @returns {Promise<[boolean, number]>} - valid, key length
-	 * @throws DKIM_SigError
+	 * @throws {DKIM_SigError}
 	 */
 	async verifyRSA(key, digestAlgorithm, signature, data) {
 		let cryptoKey;
@@ -230,7 +229,7 @@ class DkimCryptoWeb extends DkimCryptoBase {
 			"RSASSA-PKCS1-v1_5",
 			cryptoKey,
 			this._decodeBase64(signature),
-			new TextEncoder().encode(data)
+			strToArrayBuffer(data)
 		);
 		return [valid, rsaKeyParams.modulusLength];
 	}
@@ -241,10 +240,9 @@ class DkimCryptoWeb extends DkimCryptoBase {
  */
 class DkimCryptoNode extends DkimCryptoBase {
 	/**
-	 * @private
 	 * @returns {Promise<typeof import("crypto")>}
 	 */
-	async _crypto() {
+	async #crypto() {
 		if (!this.crypto) {
 			this.crypto = await import("crypto");
 		}
@@ -270,7 +268,7 @@ class DkimCryptoNode extends DkimCryptoBase {
 	 * @returns {Promise<string>} b64 encoded hash
 	 */
 	async digest(algorithm, message) {
-		const crypto = await this._crypto();
+		const crypto = await this.#crypto();
 		const hash = crypto.createHash(algorithm);
 		hash.update(message, "latin1");
 		return hash.digest("base64");
@@ -285,7 +283,7 @@ class DkimCryptoNode extends DkimCryptoBase {
 	 * @returns {Promise<Uint8Array>} b64 encoded hash
 	 */
 	async digestRaw(algorithm, message) {
-		const crypto = await this._crypto();
+		const crypto = await this.#crypto();
 		const hash = crypto.createHash(algorithm);
 		hash.update(message, "latin1");
 		return hash.digest();
@@ -300,11 +298,10 @@ class DkimCryptoNode extends DkimCryptoBase {
 	 * @param {string} signature - b64 encoded signature
 	 * @param {string} data - data whose signature is to be verified (binary string)
 	 * @returns {Promise<[boolean, number]>} - valid, key length
-	 * @throws DKIM_SigError
+	 * @throws {DKIM_SigError}
 	 */
 	async verifyRSA(key, digestAlgorithm, signature, data) {
-		const crypto = await this._crypto();
-		/** @type {import("crypto").VerifyKeyWithOptions} */
+		const crypto = await this.#crypto();
 		let cryptoKey;
 		try {
 			cryptoKey = crypto.createPublicKey({
@@ -316,11 +313,13 @@ class DkimCryptoNode extends DkimCryptoBase {
 			log.error("error in createPublicKey: ", e);
 			throw new DKIM_SigError("DKIM_SIGERROR_KEYDECODE");
 		}
-		cryptoKey.padding = crypto.constants.RSA_PKCS1_PADDING;
 		const valid = crypto.verify(
 			digestAlgorithm,
 			Buffer.from(data, "latin1"),
-			cryptoKey,
+			{
+				key: cryptoKey,
+				padding: crypto.constants.RSA_PKCS1_PADDING,
+			},
 			Buffer.from(signature, "base64")
 		);
 		// TODO: get key size, e.g. with asn.1 parser in https://www.npmjs.com/package/node-forge

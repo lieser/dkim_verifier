@@ -6,9 +6,11 @@
 		"dbaeumer.vscode-eslint",
 		"editorconfig.editorconfig",
 		"hbenl.vscode-mocha-test-adapter",
+		"redhat.vscode-xml",
 		"spoonscen.es6-mocha-snippets",
 		"leighlondon.eml",
 		"aeschli.vscode-css-formatter",
-		"nhoizey.gremlins"
+		"nhoizey.gremlins",
+		"github.vscode-github-actions"
 	]
 }

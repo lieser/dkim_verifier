@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020 Philippe Lieser
+ * Copyright (c) 2020-2021;2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -17,8 +17,8 @@ describe("ExtensionUtils [unittest]", function () {
 	describe("isOutgoing", function () {
 		/**
 		 * @param {string} accountId
-		 * @param {string} [folderType]
-		 * @returns {browser.messageDisplay.MessageHeader}
+		 * @param {browser.folders._MailFolderType} [folderType]
+		 * @returns {browser.messages.MessageHeader}
 		 */
 		function createFakeMessageHeader(accountId, folderType) {
 			return {
@@ -26,13 +26,18 @@ describe("ExtensionUtils [unittest]", function () {
 				bccList: [],
 				ccList: [],
 				date: new Date(),
+				external: false,
 				flagged: false,
-				folder: { accountId: accountId, type: folderType },
+				folder: { accountId, path: "", type: folderType },
+				headerMessageId: "",
+				headersOnly: false,
 				id: 42,
 				junk: false,
 				junkScore: 0,
 				read: true,
+				new: false,
 				recipients: ["to@example.com"],
+				size: 42,
 				subject: "A fake message",
 				tags: [],
 			};
@@ -69,7 +74,6 @@ describe("ExtensionUtils [unittest]", function () {
 		});
 		it("based on identity", async function () {
 			try {
-				// @ts-expect-error
 				globalThis.browser.accounts.get = sinon.stub().callsFake((accountId) => {
 					if (accountId !== "fakeAccount") {
 						return null;
@@ -95,7 +99,6 @@ describe("ExtensionUtils [unittest]", function () {
 					await ExtensionUtils.isOutgoing(createFakeMessageHeader("fakeAccount", undefined), "foo@example.com")
 				).to.be.equal(true);
 			} finally {
-				// @ts-expect-error
 				globalThis.browser.accounts.get = sinon.fake.resolves(null);
 			}
 		});

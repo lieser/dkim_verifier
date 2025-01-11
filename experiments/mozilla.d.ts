@@ -3,6 +3,7 @@
 
 interface ChromeUtils {
     import(url: string): any;
+    readonly generateQI: (interfaces: nsISupports[]) => nsISupports["QueryInterface"];
 }
 declare let ChromeUtils: ChromeUtils;
 
@@ -15,9 +16,11 @@ declare module Components {
     interface ComponentsInterfaces {
         [key: string]: object;
         readonly amIAddonManagerStartup: amIAddonManagerStartup;
+        readonly nsIAsyncInputStream: nsIAsyncInputStream;
         readonly nsIBinaryInputStream: nsIBinaryInputStream;
         readonly nsIFile: nsIFile;
         readonly nsIFileInputStream: nsIFileInputStream;
+        readonly nsIInputStreamCallback: nsIInputStreamCallback;
         readonly nsIInputStreamPump: nsIInputStreamPump;
         readonly nsILineInputStream: nsILineInputStream;
         readonly nsIProtocolProxyService: nsIProtocolProxyService;
@@ -63,10 +66,16 @@ declare module ExtensionCommon {
                 substitutions?: undefined | string | (string | string[])[]
             ) => string;
         };
+
+        ////////////////////////////////////////////////////////////////////////
+        //// https://searchfox.org/comm-central/source/mail/components/extensions/parent/ext-mail.js
         readonly messageManager: {
-            readonly convert: (msgDBHdr: nsIMsgDBHdr) => browser.messageDisplay.MessageHeader;
+            readonly convert: (msgDBHdr: nsIMsgDBHdr) => browser.messages.MessageHeader;
             readonly get: (messageId: number) => nsIMsgDBHdr;
         };
+        readonly tabManager: ExtensionParentM.TabManagerBase;
+        readonly windowManager: ExtensionParentM.WindowManagerBase;
+        ////////////////////////////////////////////////////////////////////////
 
         readonly id: string;
         readonly rootURI: nsIURI;
@@ -84,21 +93,67 @@ declare module ExtensionCommon {
 }
 
 declare module ExtensionParentM {
-    declare module apiManager {
-        declare module global {
-            declare module tabTracker {
-                interface Tab { Tab: never }
+    ////////////////////////////////////////////////////////////////////////////
+    //// https://searchfox.org/comm-central/source/mozilla/toolkit/components/extensions/parent/ext-tabs-base.js
 
-                const getTab: (id: number) => Tab;
-            }
+    interface NativeTabObj {
+        readonly chromeBrowser?: HTMLIFrameElement;
+    }
+    type NativeTab = NativeTabObj | Window;
+
+    interface TabBase {
+        readonly id: number;
+        readonly nativeTab: NativeTab;
+        // The following is specific to a tab in TB
+        // https://searchfox.org/comm-central/source/mail/components/extensions/parent/ext-mail.js
+        readonly type: null
+        | "messageCompose"
+        | "messageDisplay"
+        | "content"
+        // This list is incomplete, more are specified for TabmailTab
+        ;
+    }
+
+    interface WindowBase {
+        readonly getTabs: () => Generator<TabBase>;
+    }
+
+    interface TabTrackerBase {
+        readonly getTab: (id: number) => NativeTab;
+    }
+
+    interface TabManagerBase {
+        readonly get: (tabId: number) => TabBase;
+    }
+
+    interface WindowManagerBase {
+        readonly getWrapper: (window: Window) => WindowBase | undefined;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+
+    declare module apiManager {
+        // Internals that should be avoided.
+        declare module global {
+            const tabTracker: TabTrackerBase;
+
+            // Returns nsIMsgDBHdr in TB >= 115
+            const getDisplayedMessages: (tab: TabBase) => browser.messages.MessageHeader[] | nsIMsgDBHdr[];
         }
     }
 }
 
+/**
+ * @link https://searchfox.org/comm-central/source/mail/modules/ExtensionSupport.jsm
+ */
 declare module ExtensionSupportM {
     const registerWindowListener: (
         id: string,
-        listener: { chromeURLs: string[], onLoadWindow: (window: Window) => void }
+        listener: {
+            chromeURLs: string[],
+            onLoadWindow: (window: Window) => void,
+            onUnloadWindow: (window: Window) => void,
+        }
     ) => void;
     const unregisterWindowListener: (id: string) => void;
 
@@ -110,7 +165,7 @@ declare module FileUtils {
     function File(path: string): nsIFile;
 }
 
-/** JavaScript code module "resource://gre/modules/osfile.jsm" */
+/** JavaScript code module "resource://gre/modules/osfile.jsm" (removed in TB >= 115) */
 declare module OS {
     declare module Path {
         function join(path1: string, path2: string, ...paths: string[]): string;
@@ -123,6 +178,13 @@ declare module OS {
     }
 }
 
+/** https://searchfox.org/mozilla-central/source/dom/chrome-webidl/PathUtils.webidl */
+declare module PathUtils {
+    function join(path: string, ...components: string[]): string;
+
+    const profileDir: string;
+}
+
 /** JavaScript code module "resource://gre/modules/Services.jsm" */
 declare module Services {
     const appinfo: nsIXULAppInfo;
@@ -130,6 +192,7 @@ declare module Services {
     const io: nsIIOService;
     const obs: nsIObserverService;
     const prefs: nsIPrefService;
+    const tm: nsIThreadManager;
     const vc: nsIVersionComparator;
 }
 
@@ -140,12 +203,16 @@ interface amIAddonManagerStartup {
     readonly registerChrome: (manifestURI: nsIURI, entries: string[][]) => nsIJSRAIIHelper;
 }
 
+declare class MozXULElement extends XULElement { };
+
+interface nsIAsyncInputStream extends nsIInputStream {
+    readonly asyncWait: (aCallback: nsIInputStreamCallback, aFlags: number, aRequestedCount: number, aEventTarget: nsIEventTarget | null) => void;
+}
+
 interface nsIEffectiveTLDService {
     readonly getBaseDomain: (aURI: nsIURI, aAdditionalParts: number = 0) => string;
     readonly getBaseDomainFromHost: (aHost: string, aAdditionalParts: number = 0) => string;
 }
-
-declare class MozXULElement extends XULElement { };
 
 interface nsIBinaryInputStream extends nsIInputStream {
     readonly read8: () => number;
@@ -156,10 +223,14 @@ interface nsIDNSRecord { nsIDNSRecord: never };
 
 interface nsIEventTarget { nsIEventTarget: never }
 
-interface nsIInputStream {
+interface nsIInputStream extends nsISupports {
     available(): number;
     close(): void;
     isNonBlocking(): boolean;
+}
+
+interface nsIInputStreamCallback extends nsISupports {
+    readonly onInputStreamReady: (aStream: nsIAsyncInputStream) => void;
 }
 
 interface nsIInputStreamPump extends nsIRequest {
@@ -217,6 +288,10 @@ interface nsISupports {
 interface nsITransport {
     readonly openInputStream: (aFlags: number, aSegmentSize: number, aSegmentCount: number) => nsIInputStream;
     readonly openOutputStream: (aFlags: number, aSegmentSize: number, aSegmentCount: number) => nsIOutputStream;
+}
+
+interface nsIThreadManager extends nsISupports {
+    readonly mainThreadEventTarget: nsIEventTarget;
 }
 
 interface nsIFile {
@@ -310,6 +385,9 @@ declare class XULElement extends HTMLElement { };
 ////////////////////////////////////////////////////////////////////////////////
 //// Thunderbird specific interfaces
 
+/**
+ * expandedfromBox in TB <102
+ */
 declare class MozMailMultiEmailheaderfield extends MozXULElement {
     /**
      * The description inside `longEmailAddresses` with class "headerValue".
@@ -320,9 +398,20 @@ declare class MozMailMultiEmailheaderfield extends MozXULElement {
      * The outer hbox with class "headerValueBox"
      */
     longEmailAddresses: MozXULElement;
-    // added by add-on
-    _dkimFavicon: MozXULElement;
 };
+/**
+ * expandedfromBox in TB >=102
+ */
+declare class MultiRecipientRow extends HTMLDivElement {
+    recipientsList: HTMLElement;
+}
+/**
+ * fromRecipientX in TB >=102
+ */
+declare class HeaderRecipient extends HTMLLIElement {
+    multiLine: HTMLElement;
+}
+type expandedfromBox = MozMailMultiEmailheaderfield | MultiRecipientRow;
 
 interface nsIMsgDBHdr {
     getStringProperty(propertyName: string): string;

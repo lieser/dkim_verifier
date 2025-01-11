@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020;2022 Philippe Lieser
+ * Copyright (c) 2020;2022-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -81,16 +81,23 @@ describe("crypto [unittest]", function () {
 			await expectAsyncDkimSigError(res, "DKIM_SIGERROR_KEYDECODE");
 		});
 		it("invalid signature", async function () {
-			const [valid,] = await DkimCrypto.verifyRSA(pubKey, "sha256", strReplaceAt(signature, 5, "x"), msg);
+			const [valid] = await DkimCrypto.verifyRSA(pubKey, "sha256", strReplaceAt(signature, 5, "x"), msg);
 			expect(valid).to.be.false;
 		});
 		it("invalid msg", async function () {
-			const [valid,] = await DkimCrypto.verifyRSA(pubKey, "sha256", signature, strReplaceAt(msg, 5, "x"));
+			const [valid] = await DkimCrypto.verifyRSA(pubKey, "sha256", signature, strReplaceAt(msg, 5, "x"));
 			expect(valid).to.be.false;
 		});
-		it("wrong key");
+		it("wrong key", async function () {
+			const github = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDaCCQ+CiOqRkMAM/Oi04Xjhnxv" +
+			"3bXkTtA8KXt49RKQExLCmBxRpMp0PMMI73noKL/bZwEXljPO8HIfzG43ntPp1QRB" +
+			"Upn1UEvbp1/rlWPUop3i1j6aUpjxYGHEEzgmT+ncLUBDEPO4n4Zzt36DG3ZcJaLh" +
+			"vKtRkk2off5XD+BMvQIDAQAB";
+			const [valid] = await DkimCrypto.verifyRSA(github, "sha256", signature, msg);
+			expect(valid).to.be.false;
+		});
 		it("wrong hash algorithm", async function () {
-			const [valid,] = await DkimCrypto.verifyRSA(pubKey, "sha1", signature, msg);
+			const [valid] = await DkimCrypto.verifyRSA(pubKey, "sha1", signature, msg);
 			expect(valid).to.be.false;
 		});
 	});
@@ -123,19 +130,19 @@ describe("crypto [unittest]", function () {
 			await expectAsyncError(res, Error);
 		});
 		it("invalid signature", async function () {
-			const [valid,] = await DkimCrypto.verifyEd25519(pubKey, "sha256", strReplaceAt(signature, 5, "x"), msg);
+			const [valid] = await DkimCrypto.verifyEd25519(pubKey, "sha256", strReplaceAt(signature, 5, "x"), msg);
 			expect(valid).to.be.false;
 		});
 		it("invalid msg", async function () {
-			const [valid,] = await DkimCrypto.verifyEd25519(pubKey, "sha256", signature, strReplaceAt(msg, 5, "x"));
+			const [valid] = await DkimCrypto.verifyEd25519(pubKey, "sha256", signature, strReplaceAt(msg, 5, "x"));
 			expect(valid).to.be.false;
 		});
 		it("wrong key", async function () {
-			const [valid,] = await DkimCrypto.verifyEd25519(strReplaceAt(pubKey, 5, "x"), "sha256", signature, msg);
+			const [valid] = await DkimCrypto.verifyEd25519(strReplaceAt(pubKey, 5, "x"), "sha256", signature, msg);
 			expect(valid).to.be.false;
 		});
 		it("wrong hash algorithm", async function () {
-			const [valid,] = await DkimCrypto.verifyEd25519(pubKey, "sha1", signature, msg);
+			const [valid] = await DkimCrypto.verifyEd25519(pubKey, "sha1", signature, msg);
 			expect(valid).to.be.false;
 		});
 	});

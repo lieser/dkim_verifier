@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2021 Philippe Lieser
+ * Copyright (c) 2020-2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -10,18 +10,19 @@
 // @ts-check
 ///<reference path="./migration.d.ts" />
 ///<reference path="./mozilla.d.ts" />
-/* global ExtensionCommon */
+/* global ExtensionCommon, Services */
 
 "use strict";
 
-// @ts-expect-error
-// eslint-disable-next-line no-var
-var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 // eslint-disable-next-line no-var
 var { Sqlite } = ChromeUtils.import("resource://gre/modules/Sqlite.jsm");
 // @ts-expect-error
 // eslint-disable-next-line no-var
-var { OS } = ChromeUtils.import("resource://gre/modules/osfile.jsm");
+var OS;
+if (typeof PathUtils === "undefined") {
+	// TB < 115
+	({ OS } = ChromeUtils.import("resource://gre/modules/osfile.jsm"));
+}
 // @ts-expect-error
 // eslint-disable-next-line no-var
 var { FileUtils } = ChromeUtils.import("resource://gre/modules/FileUtils.jsm");
@@ -30,13 +31,12 @@ this.migration = class extends ExtensionCommon.ExtensionAPI {
 	/**
 	 * Returns the preferences set in a preference branch.
 	 *
-	 * @private
 	 * @param {nsIPrefBranch} prefBranch
-	 * @returns {Object<string, boolean|number|string>}
+	 * @returns {{[prefName: string]: boolean|number|string}}
 	 */
-	_getChildPrefs(prefBranch) {
+	#getChildPrefs(prefBranch) {
 		const setPrefNames = prefBranch.getChildList("");
-		/** @type {Object<string, boolean|number|string>} */
+		/** @type {{[prefName: string]: boolean|number|string}} */
 		const childPrefs = {};
 		for (const prefName of setPrefNames) {
 			prefBranch.getPrefType(prefName);
@@ -60,13 +60,17 @@ this.migration = class extends ExtensionCommon.ExtensionAPI {
 	/**
 	 * Open connection to an SQLite database if it exist.
 	 *
-	 * @private
 	 * @param {string} fileName
 	 * @returns {Promise<any>?}
 	 */
-	_openSqlite(fileName) {
+	#openSqlite(fileName) {
 		// Retains absolute paths and normalizes relative as relative to profile.
-		const path = OS.Path.join(OS.Constants.Path.profileDir, fileName);
+		let path;
+		if (OS) {
+			path = OS.Path.join(OS.Constants.Path.profileDir, fileName);
+		} else {
+			path = PathUtils.join(PathUtils.profileDir, fileName);
+		}
 		const file = FileUtils.File(path);
 
 		// test that db exists
@@ -87,17 +91,17 @@ this.migration = class extends ExtensionCommon.ExtensionAPI {
 			migration: {
 				getUserPrefs: () => {
 					const dkimPrefs = Services.prefs.getBranch("extensions.dkim_verifier.");
-					return Promise.resolve(this._getChildPrefs(dkimPrefs));
+					return Promise.resolve(this.#getChildPrefs(dkimPrefs));
 				},
 				getAccountPrefs: () => {
 					const mailPrefs = Services.prefs.getBranch("mail.");
 					const accounts = mailPrefs.getCharPref("accountmanager.accounts").split(",");
-					/** @type {Object<string, Object<string, boolean|number|string>>} */
+					/** @type {{[account: string]: {[prefName: string]: boolean|number|string}}} */
 					const accountPrefs = {};
 					for (const account of accounts) {
 						const server = mailPrefs.getCharPref(`account.${account}.server`);
 						const dkimAccountPrefs = Services.prefs.getBranch(`mail.server.${server}.dkim_verifier.`);
-						const prefs = this._getChildPrefs(dkimAccountPrefs);
+						const prefs = this.#getChildPrefs(dkimAccountPrefs);
 						if (Object.keys(prefs).length) {
 							accountPrefs[account] = prefs;
 						}
@@ -105,7 +109,7 @@ this.migration = class extends ExtensionCommon.ExtensionAPI {
 					return Promise.resolve(accountPrefs);
 				},
 				getDkimKeys: async () => {
-					const conn = await this._openSqlite("dkimKey.sqlite");
+					const conn = await this.#openSqlite("dkimKey.sqlite");
 					if (!conn) {
 						return null;
 					}
@@ -127,10 +131,10 @@ this.migration = class extends ExtensionCommon.ExtensionAPI {
 							secure: key.getResultByName("secure") === 1,
 						});
 					}
-					return { maxId: maxId, keys: keys };
+					return { maxId, keys };
 				},
 				getSignRulesUser: async () => {
-					const conn = await this._openSqlite("dkimPolicy.sqlite");
+					const conn = await this.#openSqlite("dkimPolicy.sqlite");
 					if (!conn) {
 						return null;
 					}
@@ -153,7 +157,7 @@ this.migration = class extends ExtensionCommon.ExtensionAPI {
 							enabled: rule.getResultByName("enabled") === 1,
 						});
 					}
-					return { maxId: maxId, rules: userRules };
+					return { maxId, rules: userRules };
 				}
 			},
 		};

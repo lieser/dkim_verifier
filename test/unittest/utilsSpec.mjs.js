@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020 Philippe Lieser
+ * Copyright (c) 2020-2021;2023 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -19,7 +19,6 @@ import {
 	promiseWithTimeout,
 	stringEndsWith,
 	stringEqual,
-	toType
 } from "../../modules/utils.mjs.js";
 import expect from "../helpers/chaiUtils.mjs.js";
 
@@ -145,12 +144,12 @@ describe("utils [unittest]", function () {
 			const res = await promiseWithTimeout(100, Promise.resolve(true));
 			expect(res).to.be.true;
 
-			await promiseWithTimeout(100, new Promise(resolve => setTimeout(resolve, 50)));
+			await promiseWithTimeout(100, new Promise(resolve => { setTimeout(resolve, 50); }));
 		});
 		it("timeout", async function () {
 			let timedOut = true;
 			try {
-				await promiseWithTimeout(50, new Promise(resolve => setTimeout(resolve, 100)));
+				await promiseWithTimeout(50, new Promise(resolve => { setTimeout(resolve, 100); }));
 				timedOut = false;
 			} catch (error) {
 				// expected
@@ -219,29 +218,6 @@ describe("utils [unittest]", function () {
 			expect(
 				stringEqual("foobar", "muh")
 			).to.be.false;
-		});
-	});
-
-	describe("toType", function () {
-		it("Number", function () {
-			expect(
-				toType(42)
-			).to.be.equal("Number");
-		});
-		it("Boolean", function () {
-			expect(
-				toType(true)
-			).to.be.equal("Boolean");
-		});
-		it("Object", function () {
-			expect(
-				toType({})
-			).to.be.equal("Object");
-		});
-		it("Map", function () {
-			expect(
-				toType(new Map())
-			).to.be.equal("Map");
 		});
 	});
 });
