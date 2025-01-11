@@ -267,6 +267,7 @@
 	// DKIM_SIGERROR - POLICY
 	"DKIM_POLICYERROR_MISSING_SIG": {
 		"message": "Без підпису, повинен бути підписаний $1"
+		"description": "Error if a message has no signature, but the sign rules state that it should be signed"
 	},
 	"DKIM_POLICYERROR_KEYMISMATCH": {
 		"message": "Збережений ключ DKIM відрізняється від поточного"
@@ -630,6 +631,42 @@
 	},
 	"dkim_verifier.updateKey": {
 		"message": "Оновити ключ DKIM"
+	},
+    "details.result": {
+		"message": "Результат",
+		"description": "Detailed view row name for the overall DKIM result."
+	},
+	"details.warnings": {
+		"message": "Попередження",
+		"description": "Detailed view row name for the warnings of the DKIM signature."
+	},
+	"details.SDID": {
+		"message": "SDID",
+		"description": "Detailed view row name for the SDID."
+	},
+	"details.AUID": {
+		"message": "AUID",
+		"description": "Detailed view row name for the AUID."
+	},
+	"details.signDate": {
+		"message": "Дата підписання",
+		"description": "Detailed view row name for the date (including time) the signature was created."
+	},
+	"details.expirationDate": {
+		"message": "Дата закінчення терміну дії",
+		"description": "Detailed view row name for the date (including time) the signature expires."
+	},
+	"details.algorithm": {
+		"message": "Алгоритм",
+		"description": "Detailed view row name for the algorithm used in the signature."
+	},
+	"details.signedHeaders": {
+		"message": "Підписані заголовки",
+		"description": "Detailed view row name for the message headers signed by DKIM."
+	},
+	"details.noDate": {
+		"message": "Час не включено до підпису",
+		"description": "Value shown for sign and expiration date if no date is given in the signature."
 	},
 	// ==================== Table Views ====================
 	"treeviewKeys.title": {
