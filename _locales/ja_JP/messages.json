@@ -632,6 +632,42 @@
 	"dkim_verifier.updateKey": {
 		"message": "DKIM キーを更新"
 	},
+	"details.result": {
+		"message": "結果",
+		"description": "Detailed view row name for the overall DKIM result."
+	},
+	"details.warnings": {
+		"message": "警告",
+		"description": "Detailed view row name for the warnings of the DKIM signature."
+	},
+	"details.SDID": {
+		"message": "SDID",
+		"description": "Detailed view row name for the SDID."
+	},
+	"details.AUID": {
+		"message": "AUID",
+		"description": "Detailed view row name for the AUID."
+	},
+	"details.signDate": {
+		"message": "署名日",
+		"description": "Detailed view row name for the date (including time) the signature was created."
+	},
+	"details.expirationDate": {
+		"message": "有効期限",
+		"description": "Detailed view row name for the date (including time) the signature expires."
+	},
+	"details.algorithm": {
+		"message": "アルゴリズム",
+		"description": "Detailed view row name for the algorithm used in the signature."
+	},
+	"details.signedHeaders": {
+		"message": "署名ヘッダ",
+		"description": "Detailed view row name for the message headers signed by DKIM."
+	},
+	"details.noDate": {
+		"message": "署名に時刻が含まれていません",
+		"description": "Value shown for sign and expiration date if no date is given in the signature."
+	},
 	// ==================== Table Views ====================
 	"treeviewKeys.title": {
 		"message": "DKIM キー",
