@@ -266,7 +266,7 @@
 	},
 	// DKIM_SIGERROR - POLICY
 	"DKIM_POLICYERROR_MISSING_SIG": {
-		"message": "Без підпису, повинен бути підписаний $1"
+		"message": "Без підпису, повинен бути підписаний $1",
 		"description": "Error if a message has no signature, but the sign rules state that it should be signed"
 	},
 	"DKIM_POLICYERROR_KEYMISMATCH": {

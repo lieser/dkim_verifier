@@ -4,7 +4,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased
+## 5.5.0 (2025-01-11)
 
 ### Enhancements
 
@@ -22,6 +22,7 @@ All notable changes to this project will be documented in this file.
 
 ### Other
 
+- Added Vietnamese translation (by vtvinh24) (#485).
 - Updated default rules and favicons (#440, #443, #444, #447, #457, #461).
 - Updated Brazilian Portuguese translations (#450).
 - Updated French translations (#459).
