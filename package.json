@@ -31,13 +31,13 @@
 		"tweetnacl-es6": "1.0.3"
 	},
 	"devDependencies": {
-		"@types/chai": "^4.3.10",
-		"@types/mocha": "^10.0.4",
+		"@types/chai": "^5.0.1",
+		"@types/mocha": "^10.0.10",
 		"@types/node": "^20.9.0",
-		"@types/sinon": "^17.0.1",
+		"@types/sinon": "^17.0.3",
 		"@types/tabulator-tables": "^5.5.4",
 		"@types/thunderbird-webext-browser": "^109.0.3",
-		"chai": "^4.3.10",
+		"chai": "^5.1.2",
 		"chalk": "^5.3.0",
 		"eslint": "^8.53.0",
 		"eslint-plugin-jsdoc": "^46.9.0",
@@ -46,10 +46,10 @@
 		"globby": "^14.0.0",
 		"http-server": "^14.1.1",
 		"jszip": "^3.10.1",
-		"mocha": "^10.2.0",
+		"mocha": "^11.0.1",
 		"mocha-multi": "^1.1.7",
 		"simple-git": "^3.20.0",
-		"sinon": "^17.0.1",
+		"sinon": "^19.0.2",
 		"ts-essentials": "^9.4.1",
 		"tsc-silent": "^1.2.2",
 		"typescript": "^5.2.2",
@@ -57,7 +57,7 @@
 	},
 	"overrides": {
 		"webextensions-api-fake": {
-			"sinon": "^17.0.1"
+			"sinon": "^19.0.2"
 		}
 	},
 	"engines": {
