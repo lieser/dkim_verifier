@@ -8,7 +8,6 @@
  */
 
 // @ts-check
-/* eslint-env browser, node */
 
 /**
  * @returns {boolean}

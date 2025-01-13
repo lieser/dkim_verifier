@@ -22,6 +22,7 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.authres_version).to.be.equal(1);
 			expect(res.resinfo.length).to.be.equal(0);
 		});
+
 		it("B.3.  Service Provided, Authentication Done", function () {
 			const res = ArhParser.parse(
 				"Authentication-Results: example.com;\r\n" +
@@ -34,6 +35,7 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo[0]?.result).to.be.equal("pass");
 			expect(res.resinfo[0]?.propertys.smtp.mailfrom).to.be.equal("example.net");
 		});
+
 		it("B.4.  Service Provided, Several Authentications Done, Single MTA", function () {
 			let res = ArhParser.parse(
 				"Authentication-Results: example.com;\r\n" +
@@ -66,6 +68,7 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo[0]?.result).to.be.equal("pass");
 			expect(res.resinfo[0]?.propertys.policy.iprev).to.be.equal("192.0.2.200");
 		});
+
 		it("B.5.  Service Provided, Several Authentications Done, Different MTAs", function () {
 			// From [RFC 7601]
 			let res = ArhParser.parse(
@@ -102,6 +105,7 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo[1]?.result).to.be.equal("fail");
 			expect(res.resinfo[1]?.propertys.smtp.mailfrom).to.be.equal("example.com");
 		});
+
 		it("B.6.  Service Provided, Multi-tiered Authentication Done", function () {
 			let res = ArhParser.parse(
 				"Authentication-Results: example.com;\r\n" +
@@ -128,6 +132,7 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo[0]?.result).to.be.equal("pass");
 			expect(res.resinfo[0]?.propertys.header.i).to.be.equal("@newyork.example.com");
 		});
+
 		it("B.7.  Comment-Heavy Example", function () {
 			const res = ArhParser.parse(
 				"Authentication-Results: foo.example.net (foobar) 1 (baz);\r\n" +
@@ -143,6 +148,7 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo[0]?.propertys.policy.expired).to.be.equal("1362471462");
 		});
 	});
+
 	describe("Valid examples", function () {
 		it("authserv-id in quotes", function () {
 			const res = ArhParser.parse(
@@ -151,6 +157,7 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.authres_version).to.be.equal(1);
 			expect(res.resinfo.length).to.be.equal(0);
 		});
+
 		it("Mixed case result value for SPF (e.g. RFC 4408)", function () {
 			const res = ArhParser.parse(
 				"Authentication-Results: example.com; spf=Pass\r\n");
@@ -159,6 +166,7 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo[0]?.method).to.be.equal("spf");
 			expect(res.resinfo[0]?.result).to.be.equal("pass");
 		});
+
 		it("Don't restrict result keyword for unknown methods", function () {
 			const res = ArhParser.parse(
 				"Authentication-Results: example.com; unknown=foo\r\n");
@@ -167,6 +175,7 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo[0]?.method).to.be.equal("unknown");
 			expect(res.resinfo[0]?.result).to.be.equal("foo");
 		});
+
 		it("Comments in comments", function () {
 			const res = ArhParser.parse(
 				"Authentication-Results: example.com;\r\n" +
@@ -177,6 +186,7 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo[0]?.result).to.be.equal("pass");
 		});
 	});
+
 	describe("Relaxed parsing", function () {
 		it("Trailing ;", function () {
 			const arh =
@@ -191,6 +201,7 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo[0]?.method).to.be.equal("spf");
 			expect(res.resinfo[0]?.result).to.be.equal("pass");
 		});
+
 		it("Property with '/' not in quotes", function () {
 			const arh =
 				"Authentication-Results: example.com;\r\n" +
@@ -205,6 +216,7 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo[0]?.result).to.be.equal("pass");
 			expect(res.resinfo[0]?.propertys.header.b).to.be.equal("gfT/i2HB");
 		});
+
 		it("Property with ':' not in quotes", function () {
 			const arh =
 				"Authentication-Results: example.com;\r\n" +
@@ -222,6 +234,7 @@ describe("ARH Parser [unittest]", function () {
 				to.be.equal("https://d3frv9g52qce38.cloudfront.net/amazondefault/amazon_web_services_inc.pem");
 		});
 	});
+
 	describe("Invalid examples", function () {
 		it("Unknown results for DKIM", function () {
 			expect(() => ArhParser.parse(
@@ -234,16 +247,19 @@ describe("ARH Parser [unittest]", function () {
 				"Authentication-Results: example.com; dkim=foo\r\n"
 			)).to.throw();
 		});
+
 		it("Unknown results for SPF", function () {
 			expect(() => ArhParser.parse(
 				"Authentication-Results: example.com; spf=foo\r\n"
 			)).to.throw();
 		});
+
 		it("Unknown results for DMARC", function () {
 			expect(() => ArhParser.parse(
 				"Authentication-Results: example.com; dmarc=foo\r\n"
 			)).to.throw();
 		});
+
 		it("Comments with mismatching number of brackets", function () {
 			expect(() => ArhParser.parse(
 				"Authentication-Results: example.com;\r\n" +
@@ -255,6 +271,7 @@ describe("ARH Parser [unittest]", function () {
 			)).to.throw();
 		});
 	});
+
 	describe("DKIM results", function () {
 		it("AUID with local part", function () {
 			const res = ArhParser.parse(
@@ -267,6 +284,7 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo[0]?.result).to.be.equal("pass");
 			expect(res.resinfo[0]?.propertys.header.i).to.be.equal("dkim+foo-bar@example.github.com");
 		});
+
 		it("quoted SDID and AUID", function () {
 			const res = ArhParser.parse(
 				"Authentication-Results: example.net;\r\n" +
@@ -279,6 +297,7 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo[0]?.propertys.header.d).to.be.equal("github.com");
 			expect(res.resinfo[0]?.propertys.header.i).to.be.equal("dkim+foo-bar@example.github.com");
 		});
+
 		it("a-tag", function () {
 			const res = ArhParser.parse(
 				"Authentication-Results: example.net;\r\n" +
@@ -290,6 +309,7 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo[0]?.result).to.be.equal("pass");
 			expect(res.resinfo[0]?.propertys.header.a).to.be.equal("rsa-sha256");
 		});
+
 		it("With reason", function () {
 			let res = ArhParser.parse(toBinaryString(
 				"Authentication-Results: example.com;\r\n" +
@@ -310,6 +330,7 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo[0]?.reason).to.be.equal("reason quoted string");
 		});
 	});
+
 	describe("BIMI", function () {
 		it("B.1.  Successful BIMI lookup", function () {
 			const res = ArhParser.parse(
@@ -319,6 +340,7 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo[0]?.method).to.be.equal("bimi");
 			expect(res.resinfo[0]?.result).to.be.equal("pass");
 		});
+
 		it("B.2.  No BIMI record", function () {
 			const res = ArhParser.parse(
 				"Authentication-Results: example.com; bimi=none\r\n");
@@ -327,6 +349,7 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo[0]?.method).to.be.equal("bimi");
 			expect(res.resinfo[0]?.result).to.be.equal("none");
 		});
+
 		it("B.3.  Declination to Publish", function () {
 			const res = ArhParser.parse(
 				"Authentication-Results: example.com; bimi=declined\r\n");
@@ -335,6 +358,7 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo[0]?.method).to.be.equal("bimi");
 			expect(res.resinfo[0]?.result).to.be.equal("declined");
 		});
+
 		it("C.4.  MTA appends to Authentication-Results", function () {
 			const res = ArhParser.parse(
 				"Authentication-Results: example.com; spf=fail smtp.mailfrom=example.com;\r\n" +
@@ -346,6 +370,7 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo[3]?.method).to.be.equal("bimi");
 			expect(res.resinfo[3]?.result).to.be.equal("pass");
 		});
+
 		it("Result skipped", function () {
 			const res = ArhParser.parse(
 				"Authentication-Results: example.com; bimi=skipped (DMARC Policy is not at enforcement)\r\n");
@@ -354,6 +379,7 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo[0]?.method).to.be.equal("bimi");
 			expect(res.resinfo[0]?.result).to.be.equal("skipped");
 		});
+
 		it("Example from Fastmail", function () {
 			const res = ArhParser.parse(
 				"Authentication-Results: mx1.messagingengine.com;\r\n" +
@@ -371,6 +397,7 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo[0]?.propertys.policy["authority-uri"]).to.be.equal("https://d3frv9g52qce38.cloudfront.net/amazondefault/amazon_web_services_inc.pem");
 		});
 	});
+
 	describe("Internationalized Email", function () {
 		it("Disabled by default", function () {
 			expect(() => ArhParser.parse(toBinaryString(
@@ -384,6 +411,7 @@ describe("ARH Parser [unittest]", function () {
 				"      dkim=pass header.i=Bloß.de\r\n"
 			))).to.throw();
 		});
+
 		it("Wrongly called with normal string", function () {
 			// i.e. test that token does not match non ASCII characters
 			expect(() => ArhParser.parse(
@@ -395,6 +423,7 @@ describe("ARH Parser [unittest]", function () {
 				false, true)
 			).to.throw();
 		});
+
 		it("U-label in authserv-id", function () {
 			let res = ArhParser.parse(toBinaryString(
 				'Authentication-Results: "éxamplé.org"; none\r\n'
@@ -416,6 +445,7 @@ describe("ARH Parser [unittest]", function () {
 			), false, true);
 			expect(res.authserv_id).to.be.equal("Bloß.de");
 		});
+
 		it("U-label in authserv-id must be in quotes", function () {
 			expect(() => ArhParser.parse(toBinaryString(
 				"Authentication-Results: éxamplé.org; none\r\n"
@@ -425,6 +455,7 @@ describe("ARH Parser [unittest]", function () {
 				"Authentication-Results: с-балалайкой.рф; none\r\n"
 			), false, true)).to.throw();
 		});
+
 		it("A-label in authserv-id", function () {
 			// öbb.at
 			let res = ArhParser.parse(
@@ -436,6 +467,7 @@ describe("ARH Parser [unittest]", function () {
 				"Authentication-Results: xn--wgv71a119e.jp; none\r\n");
 			expect(res.authserv_id).to.be.equal("xn--wgv71a119e.jp");
 		});
+
 		it("non-ASCII in pvalue", function () {
 			let res = ArhParser.parse(toBinaryString(
 				"Authentication-Results: example.net;\r\n" +
@@ -486,6 +518,7 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.authserv_id).to.be.equal("example.net");
 			expect(res.resinfo[0]?.propertys.header.i).to.be.equal("Bloß.de");
 		});
+
 		it("non-ASCII in reasonspec", function () {
 			const res = ArhParser.parse(toBinaryString(
 				"Authentication-Results: example.com;\r\n" +
@@ -497,6 +530,7 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo[0]?.reason).to.be.equal("Tést reason");
 
 		});
+
 		it("non-ASCII in CFWS", function () {
 			const res = ArhParser.parse(toBinaryString(
 				"Authentication-Results: example.net (éxamplé); none\r\n"

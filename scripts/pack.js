@@ -148,13 +148,13 @@ async function removeOldBuild(name) {
 
 	try {
 		await fs.rm(inUseName, { force: true });
-	} catch (error) {
+	} catch {
 		// ignore
 	}
 
 	try {
 		await fs.rm(name, { force: true });
-	} catch (error) {
+	} catch {
 		// Sometimes if removing does not work, renaming does
 		fs.rename(name, inUseName);
 		await fs.rm(name, { force: true });

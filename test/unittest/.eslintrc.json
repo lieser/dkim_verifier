@@ -1,9 +1,0 @@
-{
-    "env": {
-        "mocha": true
-    },
-    "rules": {
-        "no-magic-numbers": "off",
-        "no-unused-expressions": "off"
-    }
-}

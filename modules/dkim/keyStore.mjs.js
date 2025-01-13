@@ -13,7 +13,6 @@
 // @ts-check
 ///<reference path="../../RuntimeMessage.d.ts" />
 ///<reference path="../dns.d.ts" />
-/* eslint-env webextensions */
 
 import { DKIM_SigError, DKIM_TempError } from "../error.mjs.js";
 import { Deferred, dateToString } from "../utils.mjs.js";

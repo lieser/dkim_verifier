@@ -8,7 +8,6 @@
  */
 
 // @ts-check
-/* eslint-env webextensions */
 /* eslint-disable no-magic-numbers */
 
 import { getElementById, uploadJsonData } from "./domUtils.mjs.js";

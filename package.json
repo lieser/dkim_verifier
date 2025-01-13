@@ -19,7 +19,7 @@
 	"scripts": {
 		"update-thirdparty": "node ./scripts/update-thirdparty.js",
 		"lint": "eslint .",
-		"lint:ci": "eslint --config .eslintrc-ci.json --max-warnings=0 .",
+		"lint:ci": "eslint --max-warnings=0 .",
 		"checkJs": "tsc-silent --project jsconfig.json --suppress @/thirdparty/",
 		"test": "node node_modules/mocha/bin/mocha --recursive --reporter dot",
 		"test:ci": "node node_modules/mocha/bin/mocha --recursive --reporter mocha-multi --reporter-options spec=-,json=test-results.json",
@@ -31,6 +31,7 @@
 		"tweetnacl-es6": "1.0.3"
 	},
 	"devDependencies": {
+		"@eslint/js": "^9.18.0",
 		"@types/chai": "^5.0.1",
 		"@types/mocha": "^10.0.10",
 		"@types/node": "^20.9.0",
@@ -39,10 +40,11 @@
 		"@types/thunderbird-webext-browser": "^109.0.3",
 		"chai": "^5.1.2",
 		"chalk": "^5.3.0",
-		"eslint": "^8.53.0",
-		"eslint-plugin-jsdoc": "^46.9.0",
-		"eslint-plugin-mocha": "^10.2.0",
-		"eslint-plugin-mozilla": "^3.2.0",
+		"eslint": "^9.18.0",
+		"eslint-plugin-jsdoc": "^50.6.1",
+		"eslint-plugin-mocha": "^10.5.0",
+		"eslint-plugin-mozilla": "^4.0.0",
+		"globals": "^15.14.0",
 		"globby": "^14.0.0",
 		"http-server": "^14.1.1",
 		"jszip": "^3.10.1",

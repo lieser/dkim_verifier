@@ -725,7 +725,7 @@ class DkimHeaderRow {
 				// In TB 111 this is not the case.
 				try {
 					window.updateExpandedView();
-				} catch (error) {
+				} catch {
 					// ignore
 				}
 			} else {

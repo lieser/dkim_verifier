@@ -9,7 +9,6 @@
 
 // @ts-check
 ///<reference path="../RuntimeMessage.d.ts" />
-/* eslint-env webextensions */
 
 import { getElementById } from "./domUtils.mjs.js";
 

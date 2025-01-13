@@ -11,7 +11,6 @@
 
 // @ts-check
 ///<reference path="../experiments/migration.d.ts" />
-/* eslint-env webextensions */
 
 import prefs, { StorageLocalPreferences } from "../modules/preferences.mjs.js";
 import ExtensionUtils from "./extensionUtils.mjs.js";

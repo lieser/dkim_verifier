@@ -14,7 +14,7 @@
 // @ts-check
 ///<reference path="../experiments/jsdns.d.ts" />
 ///<reference path="../experiments/libunbound.d.ts" />
-/* eslint-env webextensions, browser */
+/* global addEventListener */
 
 import { DKIM_TempError } from "./error.mjs.js";
 import Logging from "../modules/logging.mjs.js";

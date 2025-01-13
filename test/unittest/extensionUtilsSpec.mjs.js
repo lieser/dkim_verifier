@@ -72,6 +72,7 @@ describe("ExtensionUtils [unittest]", function () {
 				await ExtensionUtils.isOutgoing(createFakeMessageHeader("fakeAccount", "outbox"), "foo@example.com")
 			).to.be.equal(true);
 		});
+
 		it("based on identity", async function () {
 			try {
 				globalThis.browser.accounts.get = sinon.stub().callsFake((accountId) => {

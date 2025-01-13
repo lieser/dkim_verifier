@@ -8,7 +8,6 @@
  */
 
 // @ts-check
-/* eslint-env shared-node-browser */
 
 import {
 	addrIsInDomain,
@@ -29,11 +28,13 @@ describe("utils [unittest]", function () {
 				addrIsInDomain("foo@bar.com", "bar.com")
 			).to.be.true;
 		});
+
 		it("addr is in domain (different casing)", function () {
 			expect(
 				addrIsInDomain("foo@bar.com", "bAr.Com")
 			).to.be.true;
 		});
+
 		it("addr is in a sub-domain", function () {
 			expect(
 				addrIsInDomain("foo@sub.bar.com", "bar.com")
@@ -45,11 +46,13 @@ describe("utils [unittest]", function () {
 				addrIsInDomain("foo@bar.com", "sub.bar.com")
 			).to.be.false;
 		});
+
 		it("addr is not in domain", function () {
 			expect(
 				addrIsInDomain("foo@bar.com", "foo.com")
 			).to.be.false;
 		});
+
 		it("addr is not an e-mail", function () {
 			expect(
 				addrIsInDomain("bar.com", "bar.com")
@@ -63,16 +66,19 @@ describe("utils [unittest]", function () {
 				addrIsInDomain2("foo@bar.com", "bar.com")
 			).to.be.true;
 		});
+
 		it("addr is in domain (different casing)", function () {
 			expect(
 				addrIsInDomain2("foo@bar.com", "bAr.Com")
 			).to.be.true;
 		});
+
 		it("addr is in a sub-domain", function () {
 			expect(
 				addrIsInDomain2("foo@sub.bar.com", "bar.com")
 			).to.be.true;
 		});
+
 		it("addr is in base-domain", function () {
 			expect(
 				addrIsInDomain2("foo@bar.com", "sub.bar.com")
@@ -84,6 +90,7 @@ describe("utils [unittest]", function () {
 				addrIsInDomain2("foo@bar.com", "foo.com")
 			).to.be.false;
 		});
+
 		it("addr is not an e-mail", function () {
 			expect(
 				addrIsInDomain2("bar.com", "bar.com")
@@ -96,6 +103,7 @@ describe("utils [unittest]", function () {
 			const date = new Date(2021, 11, 21);
 			expect(dateToString(date)).to.be.equal("2021-12-21");
 		});
+
 		it("Single digit month an day", function () {
 			const date = new Date(2021, 8, 6);
 			expect(dateToString(date)).to.be.equal("2021-09-06");
@@ -108,11 +116,13 @@ describe("utils [unittest]", function () {
 				domainIsInDomain("bar.com", "bar.com")
 			).to.be.true;
 		});
+
 		it("domain is same (different casing)", function () {
 			expect(
 				domainIsInDomain("bAr.com", "bar.cOm")
 			).to.be.true;
 		});
+
 		it("domain is in a sub-domain", function () {
 			expect(
 				domainIsInDomain("sub.bar.com", "bar.com")
@@ -132,6 +142,7 @@ describe("utils [unittest]", function () {
 				getDomainFromAddr("foo@bar.com")
 			).to.be.equal("bar.com");
 		});
+
 		it("sub-domain", function () {
 			expect(
 				getDomainFromAddr("foo@sub.bar.com")
@@ -146,12 +157,13 @@ describe("utils [unittest]", function () {
 
 			await promiseWithTimeout(100, new Promise(resolve => { setTimeout(resolve, 50); }));
 		});
+
 		it("timeout", async function () {
 			let timedOut = true;
 			try {
 				await promiseWithTimeout(50, new Promise(resolve => { setTimeout(resolve, 100); }));
 				timedOut = false;
-			} catch (error) {
+			} catch {
 				// expected
 			}
 			expect(timedOut).to.be.true;
@@ -164,6 +176,7 @@ describe("utils [unittest]", function () {
 				stringEndsWith("foobar", "bar")
 			).to.be.true;
 		});
+
 		it("string at end (different casing)", function () {
 			expect(
 				stringEndsWith("foobAr", "baR")
@@ -175,11 +188,13 @@ describe("utils [unittest]", function () {
 				stringEndsWith("foobar", "foo")
 			).to.be.false;
 		});
+
 		it("string in middle", function () {
 			expect(
 				stringEndsWith("foomuhbar", "muh")
 			).to.be.false;
 		});
+
 		it("string not included", function () {
 			expect(
 				stringEndsWith("foobar", "muh")
@@ -193,6 +208,7 @@ describe("utils [unittest]", function () {
 				stringEqual("bar", "bar")
 			).to.be.true;
 		});
+
 		it("string equal (different casing)", function () {
 			expect(
 				stringEqual("BAr", "BaR")
@@ -204,16 +220,19 @@ describe("utils [unittest]", function () {
 				stringEqual("foobar", "foo")
 			).to.be.false;
 		});
+
 		it("string in middle", function () {
 			expect(
 				stringEqual("foomuhbar", "muh")
 			).to.be.false;
 		});
+
 		it("string at end", function () {
 			expect(
 				stringEqual("foobar", "bar")
 			).to.be.false;
 		});
+
 		it("string not included", function () {
 			expect(
 				stringEqual("foobar", "muh")

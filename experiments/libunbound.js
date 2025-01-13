@@ -13,7 +13,7 @@
 // @ts-check
 ///<reference path="./libunbound.d.ts" />
 ///<reference path="./mozilla.d.ts" />
-/* global ExtensionCommon, Services */
+/* global ExtensionCommon */
 
 "use strict";
 

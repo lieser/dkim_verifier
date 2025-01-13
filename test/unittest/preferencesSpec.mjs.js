@@ -8,7 +8,6 @@
  */
 
 // @ts-check
-/* eslint-env shared-node-browser, webextensions */
 
 import expect, { expectAsyncError } from "../helpers/chaiUtils.mjs.js";
 import { fakeBrowser, hasWebExtensions } from "../helpers/initWebExtensions.mjs.js";
@@ -33,16 +32,19 @@ describe("preferences [unittest]", function () {
 				pref.getValue("dns.nameserver")
 			).to.be.equal("8.8.8.8");
 		});
+
 		it("get number", function () {
 			expect(
 				pref.getValue("error.algorithm.rsa.weakKeyLength.treatAs")
 			).to.be.equal(2);
 		});
+
 		it("get bool", function () {
 			expect(
 				pref.getValue("policy.signRules.enable")
 			).to.be.false;
 		});
+
 		it("throw if not exist", function () {
 			expect(
 				() => pref.getValue("policy.xxx")
@@ -61,22 +63,26 @@ describe("preferences [unittest]", function () {
 			).to.throw();
 		});
 	});
+
 	describe("getBool/getNumber/getString", function () {
 		it("get string", function () {
 			expect(
 				pref.getString("dns.nameserver")
 			).to.be.equal("8.8.8.8");
 		});
+
 		it("get number", function () {
 			expect(
 				pref.getNumber("error.algorithm.rsa.weakKeyLength.treatAs")
 			).to.be.equal(2);
 		});
+
 		it("get bool", function () {
 			expect(
 				pref.getBool("policy.signRules.enable")
 			).to.be.false;
 		});
+
 		it("throw if not exist", function () {
 			expect(
 				() => pref.getBool("policy.xxx")
@@ -88,6 +94,7 @@ describe("preferences [unittest]", function () {
 				() => pref.getString("policy.signRules")
 			).to.throw();
 		});
+
 		it("throw if unexpected type", function () {
 			expect(
 				() => pref.getBool("dns.proxy.type")
@@ -109,22 +116,26 @@ describe("preferences [unittest]", function () {
 			).to;
 		});
 	});
+
 	describe("getter access", function () {
 		it("get string", function () {
 			expect(
 				pref["dns.nameserver"]
 			).to.be.equal("8.8.8.8");
 		});
+
 		it("get number", function () {
 			expect(
 				pref["error.algorithm.rsa.weakKeyLength.treatAs"]
 			).to.be.equal(2);
 		});
+
 		it("get bool", function () {
 			expect(
 				pref["policy.signRules.enable"]
 			).to.be.false;
 		});
+
 		it("undefined if not exist", function () {
 			expect(
 				// @ts-expect-error
@@ -148,6 +159,7 @@ describe("preferences [unittest]", function () {
 			).to.be.undefined;
 		});
 	});
+
 	describe("set value", function () {
 		it("getter access after setting", function () {
 			expect(
@@ -162,6 +174,7 @@ describe("preferences [unittest]", function () {
 				pref["display.favicon.show"]
 			).to.be.true;
 		});
+
 		it("set string", function () {
 			pref.setValue("dns.nameserver", "foo");
 			expect(
@@ -172,6 +185,7 @@ describe("preferences [unittest]", function () {
 				pref["dns.nameserver"]
 			).to.be.equal("bar");
 		});
+
 		it("set number", function () {
 			expect(
 				pref["error.algorithm.rsa.weakKeyLength.treatAs"]
@@ -185,6 +199,7 @@ describe("preferences [unittest]", function () {
 				pref["error.algorithm.rsa.weakKeyLength.treatAs"]
 			).to.be.equal(1);
 		});
+
 		it("set bool", function () {
 			expect(
 				pref["display.favicon.show"]
@@ -198,6 +213,7 @@ describe("preferences [unittest]", function () {
 				pref["display.favicon.show"]
 			).to.be.true;
 		});
+
 		it("getValue after setting", function () {
 			expect(
 				pref.getValue("display.favicon.show")
@@ -211,6 +227,7 @@ describe("preferences [unittest]", function () {
 				pref.getValue("display.favicon.show")
 			).to.be.true;
 		});
+
 		it("throw if not exist", async function () {
 			let res = pref.setValue("policy.xxx", 1);
 			await expectAsyncError(res);
@@ -227,6 +244,7 @@ describe("preferences [unittest]", function () {
 			res = pref.setValue("policy.signRules", false);
 			await expectAsyncError(res);
 		});
+
 		it("throw if unexpected type", function () {
 			expect(
 				() => pref.setValue("dns.nameserver", 1)
@@ -248,6 +266,7 @@ describe("preferences [unittest]", function () {
 			).to;
 		});
 	});
+
 	describe("storage", function () {
 		before(function () {
 			if (!hasWebExtensions) {
@@ -277,6 +296,7 @@ describe("preferences [unittest]", function () {
 				loadedPref["dns.nameserver"]
 			).to.be.equal("fooBar");
 		});
+
 		it("clear storage", async function () {
 			pref.setValue("dns.nameserver", "fooBar");
 			expect(
@@ -302,6 +322,7 @@ describe("preferences [unittest]", function () {
 				loadedPref["dns.nameserver"]
 			).to.be.equal("8.8.8.8");
 		});
+
 		it("pref should change on storage update", async function () {
 			try {
 				fakeBrowser.storage.local.set.callsFake(async items => {
@@ -338,6 +359,7 @@ describe("preferences [unittest]", function () {
 				fakeBrowser.storage.local.set.callsFake(fakeBrowser.storage.local._set);
 			}
 		});
+
 		it("other storage changes are ignored", function () {
 			pref.setValue("dns.nameserver", "fooBar");
 			fakeBrowser.storage.onChanged.addListener.yield({
@@ -351,6 +373,7 @@ describe("preferences [unittest]", function () {
 				pref["dns.nameserver"]
 			).to.be.equal("fooBar");
 		});
+
 		it("test multiple pref changes at the same time", async function () {
 			/** @type {{[x: string]: any}[]} */
 			const storageCalls = [];
@@ -397,6 +420,7 @@ describe("preferences [unittest]", function () {
 				fakeBrowser.storage.local.set.callsFake(fakeBrowser.storage.local._set);
 			}
 		});
+
 		it("safeGetLocalStorage - retry on reject", async function () {
 			try {
 				pref.setValue("dns.nameserver", "fooBar");
@@ -457,7 +481,7 @@ describe("preferences [unittest]", function () {
 				try {
 					await loadedPref.init();
 					timedOut = false;
-				} catch (error) {
+				} catch {
 					// expected
 				}
 				expect(timedOut).to.be.true;
@@ -471,6 +495,7 @@ describe("preferences [unittest]", function () {
 			}
 		});
 	});
+
 	describe("account settings", function () {
 		it("default value", function () {
 			expect(pref["account.dkim.enable"]("fooAccount")).to.be.equal(true);
@@ -484,6 +509,7 @@ describe("preferences [unittest]", function () {
 			expect(pref["account.arh.read"]("barAccount")).to.be.equal(true);
 			expect(pref["account.arh.read"](undefined)).to.be.equal(true);
 		});
+
 		it("account specific setting", function () {
 			pref.setAccountValue("dkim.enable", "fooAccount", 2);
 			pref.setAccountValue("arh.allowedAuthserv", "fooAccount", "foo.com");

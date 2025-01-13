@@ -9,7 +9,6 @@
 
 // @ts-check
 ///<reference path="./logging.d.ts" />
-/* eslint-env shared-node-browser, webextensions */
 /* eslint no-use-before-define: ["error", { "classes": false }] */
 /* eslint-disable no-empty-function */
 

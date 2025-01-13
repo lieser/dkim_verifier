@@ -80,7 +80,7 @@ before(async function () {
 		// @ts-expect-error
 		globalThis.browser = fakeBrowser;
 		hasWebExtensions = true;
-	} catch (e) {
+	} catch {
 		// Ugly workaround for running tests for modules that use the global prefs in the browser
 		// @ts-expect-error
 		prefs._valueGetter = (name) => { return prefs._prefs[name]; };

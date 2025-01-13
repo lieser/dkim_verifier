@@ -10,7 +10,6 @@
  */
 
 // @ts-check
-/* eslint-env shared-node-browser */
 /* eslint-disable no-use-before-define */
 
 /**

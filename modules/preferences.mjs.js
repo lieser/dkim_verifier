@@ -10,7 +10,6 @@
  */
 
 // @ts-check
-/* eslint-env webextensions */
 /* eslint no-magic-numbers: "off" */
 /* eslint-disable jsdoc/match-description */
 

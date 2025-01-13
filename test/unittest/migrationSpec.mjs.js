@@ -8,7 +8,6 @@
  */
 
 // @ts-check
-/* eslint-env webextensions */
 
 import { migrateKeyStore, migratePrefs, migrateSignRulesUser } from "../../modules/migration.mjs.js";
 import { KeyDb } from "../../modules/dkim/keyStore.mjs.js";
@@ -75,6 +74,7 @@ describe("migration [unittest]", function () {
 			expect(prefs["account.arh.read"]("account3")).to.be.equal(true);
 			expect(prefs["account.arh.allowedAuthserv"]("account3")).to.be.equal("");
 		});
+
 		it("errors should be ignored", async function () {
 			browser.migration = {
 				getUserPrefs: sinon.fake.resolves({
@@ -109,6 +109,7 @@ describe("migration [unittest]", function () {
 			expect(prefs["account.arh.allowedAuthserv"]("account1")).to.be.equal("");
 			expect(prefs["account.dkim.enable"]("account3")).to.be.equal(false);
 		});
+
 		it("skip migration if preferences already exist", async function () {
 			browser.migration = {
 				getUserPrefs: sinon.fake.resolves({
@@ -127,6 +128,7 @@ describe("migration [unittest]", function () {
 			expect(prefs["arh.read"]).to.be.equal(false);
 			expect(prefs["account.arh.allowedAuthserv"]("account1")).to.be.equal("");
 		});
+
 		it("don't skip migration if only sign rules exist", async function () {
 			browser.migration = {
 				getUserPrefs: sinon.fake.resolves({
@@ -185,6 +187,7 @@ describe("migration [unittest]", function () {
 			const res = await KeyDb.fetch("foo.com", "selector");
 			expect(res?.key).is.equal("key");
 		});
+
 		it("skip migration if keys already exist", async function () {
 			await KeyDb.store("bar.com", "selector", "key2", false);
 			await migrateKeyStore();
@@ -192,6 +195,7 @@ describe("migration [unittest]", function () {
 			const res = await KeyDb.fetch("foo.com", "selector");
 			expect(res).is.null;
 		});
+
 		it("don't skip migration of keys if only preferences exist", async function () {
 			await prefs.setValue("dkim.enable", true);
 			await migrateKeyStore();
@@ -246,6 +250,7 @@ describe("migration [unittest]", function () {
 			const res = await SignRules.check(dkimNone, "bar@foo.com");
 			expect(res.result).is.equal("PERMFAIL");
 		});
+
 		it("skip migration if sign rules already exist", async function () {
 			await SignRules.addRule("bar.com", null, "*", "bar.com", SignRules.TYPE.ALL);
 			await migrateSignRulesUser();
@@ -253,6 +258,7 @@ describe("migration [unittest]", function () {
 			const res = await SignRules.check(dkimNone, "bar@foo.com");
 			expect(res.result).is.equal("none");
 		});
+
 		it("don't skip migration of sign rules if only preferences exist", async function () {
 			await prefs.setValue("dkim.enable", true);
 			await migrateSignRulesUser();

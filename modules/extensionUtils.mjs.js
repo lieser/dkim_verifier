@@ -10,7 +10,6 @@
  */
 
 // @ts-check
-/* eslint-env browser, webextensions */
 
 import { dateToString, promiseWithTimeout, sleep } from "./utils.mjs.js";
 import Logging from "./logging.mjs.js";

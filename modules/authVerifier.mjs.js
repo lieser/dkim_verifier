@@ -12,7 +12,6 @@
 // @ts-check
 ///<reference path="./authVerifier.d.ts" />
 ///<reference path="../experiments/storageMessage.d.ts" />
-/* eslint-env webextensions */
 /* eslint-disable camelcase */
 /* eslint-disable no-use-before-define */
 

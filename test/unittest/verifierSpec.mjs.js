@@ -73,6 +73,8 @@ describe("DKIM Verifier [unittest]", function () {
 				"message-id",
 			]);
 		});
+
+		// eslint-disable-next-line complexity
 		it("RFC 8463 Appendix A Example", async function () {
 			const res = await verifyEmlFile("rfc8463-A.3.eml");
 			expect(res.signatures.length).to.be.equal(2);
@@ -115,12 +117,14 @@ describe("DKIM Verifier [unittest]", function () {
 				"date",
 			]);
 		});
+
 		it("Signed header with non ASCII char", async function () {
 			const res = await verifyEmlFile("dkim/header_with_non_ascii_char.eml");
 			expect(res.signatures.length).to.be.equal(1);
 			expect(res.signatures[0]?.result).to.be.equal("SUCCESS");
 			expect(res.signatures[0]?.warnings).to.be.empty;
 		});
+
 		it("DKIM key with empty notes tag", async function () {
 			const res = await verifyEmlFile("rfc6376-A.2.eml", new Map([
 				["brisbane._domainkey.example.com",
@@ -134,6 +138,7 @@ describe("DKIM Verifier [unittest]", function () {
 			expect(res.signatures[0]?.result).to.be.equal("SUCCESS");
 			expect(res.signatures[0]?.warnings).to.be.empty;
 		});
+
 		it("DKIM key with list of allowed hash algorithms", async function () {
 			const res = await verifyEmlFile("rfc6376-A.2.eml", new Map([
 				["brisbane._domainkey.example.com",
@@ -147,6 +152,7 @@ describe("DKIM Verifier [unittest]", function () {
 			expect(res.signatures[0]?.result).to.be.equal("SUCCESS");
 			expect(res.signatures[0]?.warnings).to.be.empty;
 		});
+
 		it("DKIM key with wildcard service tag", async function () {
 			const res = await verifyEmlFile("rfc6376-A.2.eml", new Map([
 				["brisbane._domainkey.example.com",
@@ -160,6 +166,7 @@ describe("DKIM Verifier [unittest]", function () {
 			expect(res.signatures[0]?.result).to.be.equal("SUCCESS");
 			expect(res.signatures[0]?.warnings).to.be.empty;
 		});
+
 		it("DKIM key with email service tag", async function () {
 			const res = await verifyEmlFile("rfc6376-A.2.eml", new Map([
 				["brisbane._domainkey.example.com",
@@ -173,6 +180,7 @@ describe("DKIM Verifier [unittest]", function () {
 			expect(res.signatures[0]?.result).to.be.equal("SUCCESS");
 			expect(res.signatures[0]?.warnings).to.be.empty;
 		});
+
 		it("DKIM key with unknown tag", async function () {
 			const res = await verifyEmlFile("rfc6376-A.2.eml", new Map([
 				["brisbane._domainkey.example.com",
@@ -186,12 +194,14 @@ describe("DKIM Verifier [unittest]", function () {
 			expect(res.signatures[0]?.result).to.be.equal("SUCCESS");
 			expect(res.signatures[0]?.warnings).to.be.empty;
 		});
+
 		it("Received time is after Signature Timestamp", async function () {
 			const res = await verifyEmlFile("dkim/time-received_after_creation.eml");
 			expect(res.signatures.length).to.be.equal(1);
 			expect(res.signatures[0]?.result).to.be.equal("SUCCESS");
 			expect(res.signatures[0]?.warnings).to.be.empty;
 		});
+
 		it("Received time is briefly before Signature Timestamp", async function () {
 			// I.e. a small clock difference between sender and receiver should not result in an error
 			const res = await verifyEmlFile("dkim/time-received_briefly_before_creation.eml");
@@ -200,6 +210,7 @@ describe("DKIM Verifier [unittest]", function () {
 			expect(res.signatures[0]?.warnings).to.be.empty;
 		});
 	});
+
 	describe("Syntax errors", function () {
 		it("Missing v-tag in signature", async function () {
 			const res = await verifyEmlFile("rfc6376-A.2-ill_formed-missing_v.eml");
@@ -209,6 +220,7 @@ describe("DKIM Verifier [unittest]", function () {
 			expect(res.signatures[0]?.sdid).to.be.undefined;
 		});
 	});
+
 	describe("General errors", function () {
 		it("Revoked key", async function () {
 			const res = await verifyEmlFile("rfc6376-A.2.eml", new Map([
@@ -218,6 +230,7 @@ describe("DKIM Verifier [unittest]", function () {
 			expect(res.signatures[0]?.result).to.be.equal("PERMFAIL");
 			expect(res.signatures[0]?.errorType).to.be.equal("DKIM_SIGERROR_KEY_REVOKED");
 		});
+
 		it("Hash algorithm is not in the allowed list of the DKIM key", async function () {
 			const res = await verifyEmlFile("rfc6376-A.2.eml", new Map([
 				["brisbane._domainkey.example.com",
@@ -231,6 +244,7 @@ describe("DKIM Verifier [unittest]", function () {
 			expect(res.signatures[0]?.result).to.be.equal("PERMFAIL");
 			expect(res.signatures[0]?.errorType).to.be.equal("DKIM_SIGERROR_KEY_HASHNOTINCLUDED");
 		});
+
 		it("Wrong key signature algorithm", async function () {
 			const res = await verifyEmlFile("rfc8463-A.3-key_algo_mismatch.eml");
 			expect(res.signatures.length).to.be.equal(2);
@@ -239,6 +253,7 @@ describe("DKIM Verifier [unittest]", function () {
 			expect(res.signatures[1]?.result).to.be.equal("PERMFAIL");
 			expect(res.signatures[1]?.errorType).to.be.equal("DKIM_SIGERROR_KEY_MISMATCHED_K");
 		});
+
 		it("DKIM key with other service tag", async function () {
 			const res = await verifyEmlFile("rfc6376-A.2.eml", new Map([
 				["brisbane._domainkey.example.com",
@@ -252,6 +267,7 @@ describe("DKIM Verifier [unittest]", function () {
 			expect(res.signatures[0]?.result).to.be.equal("PERMFAIL");
 			expect(res.signatures[0]?.errorType).to.be.equal("DKIM_SIGERROR_KEY_NOTEMAILKEY");
 		});
+
 		it("DKIM key does not allow AUID to be a subdomain", async function () {
 			const res = await verifyEmlFile("rfc6376-A.2.eml", new Map([
 				["brisbane._domainkey.example.com",
@@ -266,6 +282,7 @@ describe("DKIM Verifier [unittest]", function () {
 			expect(res.signatures[0]?.errorType).to.be.equal("DKIM_SIGERROR_DOMAIN_I");
 		});
 	});
+
 	describe("Modifications", function () {
 		describe("Simple body canonicalization", function () {
 			describe("Disallowed modifications", function () {
@@ -278,6 +295,7 @@ describe("DKIM Verifier [unittest]", function () {
 				});
 			});
 		});
+
 		describe("Simple header canonicalization", function () {
 			describe("Disallowed modifications", function () {
 				it("Signed header subject modified", async function () {
@@ -291,6 +309,7 @@ describe("DKIM Verifier [unittest]", function () {
 
 		});
 	});
+
 	describe("Signature warnings", function () {
 		it("From address is not in the SDID ", async function () {
 			// TODO: instead of artificial test, add test mail there this is the case
@@ -308,6 +327,7 @@ describe("DKIM Verifier [unittest]", function () {
 			expect(res.signatures[0]?.warnings).to.be.an("array").
 				that.deep.includes({ name: "DKIM_SIGWARNING_FROM_NOT_IN_SDID" });
 		});
+
 		it("Received time is before Signature Timestamp", async function () {
 			const res = await verifyEmlFile("dkim/time-received_long_before_creation.eml");
 			expect(res.signatures.length).to.be.equal(1);
@@ -316,6 +336,7 @@ describe("DKIM Verifier [unittest]", function () {
 				that.deep.includes({ name: "DKIM_SIGWARNING_FUTURE" });
 		});
 	});
+
 	describe("Detect and prevent possible attacks", function () {
 		describe("Additional unsigned header was added", function () {
 			// Thunderbirds uses the top most, unsigned header.
@@ -327,6 +348,7 @@ describe("DKIM Verifier [unittest]", function () {
 				expect(res.signatures[0]?.errorType).to.be.equal("DKIM_POLICYERROR_UNSIGNED_HEADER_ADDED");
 				expect(res.signatures[0]?.errorStrParams).to.be.deep.equal(["From"]);
 			});
+
 			it("Added Subject header", async function () {
 				const res = await verifyEmlFile("dkim/added_header-subject.eml");
 				expect(res.signatures.length).to.be.equal(1);
@@ -334,6 +356,7 @@ describe("DKIM Verifier [unittest]", function () {
 				expect(res.signatures[0]?.errorType).to.be.equal("DKIM_POLICYERROR_UNSIGNED_HEADER_ADDED");
 				expect(res.signatures[0]?.errorStrParams).to.be.deep.equal(["Subject"]);
 			});
+
 			it("Added Date header", async function () {
 				const res = await verifyEmlFile("dkim/added_header-date.eml");
 				expect(res.signatures.length).to.be.equal(1);
@@ -341,6 +364,7 @@ describe("DKIM Verifier [unittest]", function () {
 				expect(res.signatures[0]?.errorType).to.be.equal("DKIM_POLICYERROR_UNSIGNED_HEADER_ADDED");
 				expect(res.signatures[0]?.errorStrParams).to.be.deep.equal(["Date"]);
 			});
+
 			it("Added To header", async function () {
 				// Thunderbirds shows both the unsigned and signed header.
 				const res = await verifyEmlFile("dkim/added_header-to.eml");
@@ -350,6 +374,7 @@ describe("DKIM Verifier [unittest]", function () {
 				expect(res.signatures[0]?.errorStrParams).to.be.deep.equal(["To"]);
 			});
 		});
+
 		describe("Recommended or advised header is not signed", function () {
 			// All headers that are directly shown, affect the displaying of the body
 			// or affect how Thunderbird behaves should be signed.
@@ -362,6 +387,7 @@ describe("DKIM Verifier [unittest]", function () {
 				expect(res.signatures[0]?.warnings).to.be.an("array").
 					that.deep.includes({ name: "DKIM_SIGWARNING_UNSIGNED_HEADER", params: ["Content-Type"] });
 			});
+
 			it("Unsigned Reply-To header that is in the signing domain", async function () {
 				prefs.setValue("policy.dkim.unsignedHeadersWarning.mode", BasePreferences.POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE.RECOMMENDED);
 				let res = await verifyEmlFile("dkim/unsigned_header-reply_to-in_domain.eml");
@@ -376,6 +402,7 @@ describe("DKIM Verifier [unittest]", function () {
 				expect(res.signatures[0]?.warnings).to.be.an("array").
 					that.deep.includes({ name: "DKIM_SIGWARNING_UNSIGNED_HEADER", params: ["Reply-To"] });
 			});
+
 			it("Unsigned Reply-To header that is not in the signing domain", async function () {
 				let res = await verifyEmlFile("dkim/unsigned_header-reply_to-invalid.eml");
 				expect(res.signatures.length).to.be.equal(1);
@@ -389,6 +416,7 @@ describe("DKIM Verifier [unittest]", function () {
 				expect(res.signatures[0]?.warnings).to.be.an("array").
 					that.deep.includes({ name: "DKIM_SIGWARNING_UNSIGNED_HEADER", params: ["Reply-To"] });
 			});
+
 			it("Unsigned Reply-To header that is invalid", async function () {
 				let res = await verifyEmlFile("dkim/unsigned_header-reply_to-invalid.eml");
 				expect(res.signatures.length).to.be.equal(1);

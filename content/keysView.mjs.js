@@ -8,7 +8,6 @@
  */
 
 // @ts-check
-/* eslint-env webextensions */
 
 import KeyDbProxy from "../modules/dkim/keyDbProxy.mjs.js";
 import { TabulatorFull as Tabulator } from "../thirdparty/tabulator-tables/dist/js/tabulator_esm.js";

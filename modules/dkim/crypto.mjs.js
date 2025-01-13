@@ -10,7 +10,7 @@
  */
 
 // @ts-check
-/* eslint-env browser, node */
+/* globals Buffer */
 /* eslint-disable jsdoc/require-returns-check */
 
 import { DKIM_SigError } from "../error.mjs.js";

@@ -32,6 +32,7 @@ describe("crypto [unittest]", function () {
 				await DkimCrypto.digest("sha1", "\r\n")
 			).to.be.equal("uoq1oCgLlTqpdDX/iUbLy7J1Wic=");
 		});
+
 		it("sha256", async function () {
 			expect(
 				await DkimCrypto.digest("sha256", "")
@@ -40,12 +41,14 @@ describe("crypto [unittest]", function () {
 				await DkimCrypto.digest("sha256", "\r\n")
 			).to.be.equal("frcCV1k9oG9oKj3dpUqdJg1PxRT2RSN/XKdLCPjaYaY=");
 		});
+
 		it("8-bit", async function () {
 			expect(
 				await DkimCrypto.digest("sha256", "a test ð\u009f\u008d\u0095\r\n")
 			).to.be.equal("bYcDq5OnCARcoHQv2Qhc9Jw8ZYXgw75R/Ku1CCT8qNA=");
 		});
 	});
+
 	describe("verify RSA signature", function () {
 		// RFC 6376 Appendix A Example
 		const pubKey = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDwIRP/UC3SBsEmGqZ9ZJW3/DkM" +
@@ -76,18 +79,22 @@ describe("crypto [unittest]", function () {
 			expect(valid).to.be.true;
 			expect(keyLength).to.be.equal(1024);
 		});
+
 		it("invalid key", async function () {
 			const res = DkimCrypto.verifyRSA(strReplaceAt(pubKey, 5, "x"), "sha256", signature, msg);
 			await expectAsyncDkimSigError(res, "DKIM_SIGERROR_KEYDECODE");
 		});
+
 		it("invalid signature", async function () {
 			const [valid] = await DkimCrypto.verifyRSA(pubKey, "sha256", strReplaceAt(signature, 5, "x"), msg);
 			expect(valid).to.be.false;
 		});
+
 		it("invalid msg", async function () {
 			const [valid] = await DkimCrypto.verifyRSA(pubKey, "sha256", signature, strReplaceAt(msg, 5, "x"));
 			expect(valid).to.be.false;
 		});
+
 		it("wrong key", async function () {
 			const github = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDaCCQ+CiOqRkMAM/Oi04Xjhnxv" +
 			"3bXkTtA8KXt49RKQExLCmBxRpMp0PMMI73noKL/bZwEXljPO8HIfzG43ntPp1QRB" +
@@ -96,11 +103,13 @@ describe("crypto [unittest]", function () {
 			const [valid] = await DkimCrypto.verifyRSA(github, "sha256", signature, msg);
 			expect(valid).to.be.false;
 		});
+
 		it("wrong hash algorithm", async function () {
 			const [valid] = await DkimCrypto.verifyRSA(pubKey, "sha1", signature, msg);
 			expect(valid).to.be.false;
 		});
 	});
+
 	describe("verify Ed25519 signature", function () {
 		// RFC 8463 Appendix A Example
 		const pubKey = "11qYAYKxCrfVS/7TyWQHOg7hcvPapiMlrwIaaPcHURo=";
@@ -125,22 +134,27 @@ describe("crypto [unittest]", function () {
 			expect(valid).to.be.true;
 			expect(keyLength).to.be.equal(256);
 		});
+
 		it("invalid key", async function () {
 			const res = DkimCrypto.verifyEd25519("11qYAYKxCrfVS/7TyWQ", "sha256", signature, msg);
 			await expectAsyncError(res, Error);
 		});
+
 		it("invalid signature", async function () {
 			const [valid] = await DkimCrypto.verifyEd25519(pubKey, "sha256", strReplaceAt(signature, 5, "x"), msg);
 			expect(valid).to.be.false;
 		});
+
 		it("invalid msg", async function () {
 			const [valid] = await DkimCrypto.verifyEd25519(pubKey, "sha256", signature, strReplaceAt(msg, 5, "x"));
 			expect(valid).to.be.false;
 		});
+
 		it("wrong key", async function () {
 			const [valid] = await DkimCrypto.verifyEd25519(strReplaceAt(pubKey, 5, "x"), "sha256", signature, msg);
 			expect(valid).to.be.false;
 		});
+
 		it("wrong hash algorithm", async function () {
 			const [valid] = await DkimCrypto.verifyEd25519(pubKey, "sha1", signature, msg);
 			expect(valid).to.be.false;

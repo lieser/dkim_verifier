@@ -12,7 +12,6 @@
 // @ts-check
 ///<reference path="../../RuntimeMessage.d.ts" />
 ///<reference path="../../experiments/mailUtils.d.ts" />
-/* eslint-env webextensions */
 
 import { Deferred, addrIsInDomain, copy, stringEndsWith, stringEqual } from "../utils.mjs.js";
 import ExtensionUtils from "../extensionUtils.mjs.js";

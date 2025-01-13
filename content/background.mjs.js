@@ -10,7 +10,6 @@
 // @ts-check
 ///<reference path="../RuntimeMessage.d.ts" />
 ///<reference path="../experiments/dkimHeader.d.ts" />
-/* eslint-env webextensions */
 
 import * as Conversations from "../modules/conversation.mjs.js";
 import KeyStore, { KeyDb } from "../modules/dkim/keyStore.mjs.js";
@@ -222,6 +221,7 @@ class DisplayAction {
 	 * @param {number} tabId
 	 * @returns {RuntimeMessage.DisplayAction.queryResultStateResult}
 	 */
+	// eslint-disable-next-line complexity
 	static queryResultState(tabId) {
 		const res = displayedResultsCache.get(tabId);
 		const keyStored = prefs["key.storing"] !== KeyStore.KEY_STORING.DISABLED &&

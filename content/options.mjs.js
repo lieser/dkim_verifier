@@ -8,7 +8,6 @@
  */
 
 // @ts-check
-/* eslint-env webextensions */
 /* eslint-disable no-magic-numbers */
 
 import ExtensionUtils from "../modules/extensionUtils.mjs.js";

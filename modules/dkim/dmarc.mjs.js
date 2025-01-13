@@ -15,7 +15,6 @@
 // @ts-check
 ///<reference path="../../experiments/mailUtils.d.ts" />
 ///<reference path="../dns.d.ts" />
-/* eslint-env webextensions */
 /* eslint-disable no-magic-numbers */
 /* eslint-disable no-use-before-define */
 

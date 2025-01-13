@@ -12,7 +12,6 @@
 
 // @ts-check
 ///<reference path="../../RuntimeMessage.d.ts" />
-/* eslint-env webextensions */
 
 export default class SignRulesProxy {
 	/**

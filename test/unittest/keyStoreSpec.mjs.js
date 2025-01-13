@@ -8,7 +8,6 @@
  */
 
 // @ts-check
-/* eslint-env webextensions */
 
 import KeyStore, { KeyDb } from "../../modules/dkim/keyStore.mjs.js";
 import expect, { expectAsyncDkimSigError } from "../helpers/chaiUtils.mjs.js";
@@ -45,12 +44,14 @@ describe("Key store [unittest]", function () {
 			const key4 = await KeyDb.fetch("domain", "selector");
 			expect(key4).is.null;
 		});
+
 		it("mark as secure", async function () {
 			await KeyDb.store("domainA", "selector1", "key1", false);
 			await KeyDb.markAsSecure("domainA", "selector1");
 			const key1 = await KeyDb.fetch("domainA", "selector1");
 			expect(key1).is.deep.equal({ key: "key1", secure: true });
 		});
+
 		it("update", async function () {
 			await KeyDb.store("domainA", "selector1", "key1", false);
 			await KeyDb.update(1, "sdid", "domainNew");
@@ -59,6 +60,7 @@ describe("Key store [unittest]", function () {
 			const keyNew = await KeyDb.fetch("domainNew", "selector1");
 			expect(keyNew).is.deep.equal({ key: "key1", secure: false });
 		});
+
 		it("delete", async function () {
 			await KeyDb.store("domainA", "selector1", "key1", false);
 			await KeyDb.store("domainB", "selector1", "key2", false);
@@ -76,6 +78,7 @@ describe("Key store [unittest]", function () {
 			key = await KeyDb.fetch("domainC", "selector1");
 			expect(key).is.null;
 		});
+
 		it("keys should survive clearing of preferences", async function () {
 			await KeyDb.store("domainA", "selector1", "key1", false);
 			await KeyDb.store("domainB", "selector1", "key2", false);
@@ -117,6 +120,7 @@ describe("Key store [unittest]", function () {
 
 		/** @type {sinon.SinonStub} */
 		let fakeQueryDnsTxt;
+
 		before(function () {
 			fakeQueryDnsTxt = sinon.stub();
 		});
@@ -137,6 +141,7 @@ describe("Key store [unittest]", function () {
 
 			expect(fakeQueryDnsTxt.calledTwice).is.true;
 		});
+
 		it("storing enabled", async function () {
 			prefs.setValue("key.storing", KeyStore.KEY_STORING.STORE);
 			const keyStore = new KeyStore(fakeQueryDnsTxt);
@@ -149,6 +154,7 @@ describe("Key store [unittest]", function () {
 
 			expect(fakeQueryDnsTxt.calledOnce).is.true;
 		});
+
 		it("storing enabled with compare", async function () {
 			prefs.setValue("key.storing", KeyStore.KEY_STORING.COMPARE);
 			const keyStore = new KeyStore(fakeQueryDnsTxt);
