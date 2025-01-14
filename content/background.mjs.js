@@ -162,7 +162,7 @@ browser.messageDisplay.onMessageDisplayed.addListener(async (tab, message) => {
 		displayedResultsCache.delete(tab.id);
 
 		// Nothing to verify if msg is RSS feed or news
-		const account = message.folder ? await browser.accounts.get(message.folder.accountId) : null;
+		const account = message.folder?.accountId ? await browser.accounts.get(message.folder.accountId) : null;
 		if (account && (account.type === "rss" || account.type === "nntp")) {
 			browser.dkimHeader.showDkimHeader(tab.id, message.id, prefs.showDKIMHeader >= SHOW.MSG);
 			browser.dkimHeader.setDkimHeaderResult(

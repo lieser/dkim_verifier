@@ -123,7 +123,8 @@ export default class AuthVerifier {
 		}
 
 		// create msg object
-		const rawMessage = await browser.messages.getRaw(message.id);
+		// eslint-disable-next-line no-extra-parens
+		const rawMessage =/** @type {string} */(await browser.messages.getRaw(message.id));
 		let msgParsed;
 		try {
 			msgParsed = MsgParser.parseMsg(rawMessage);

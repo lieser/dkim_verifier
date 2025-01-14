@@ -81,6 +81,9 @@ async function isOutgoing(message, fromAddr) {
 		return true;
 	}
 
+	if (!message.folder.accountId) {
+		return false;
+	}
 	// return true if one of the accounts identities contain the from address
 	const account = await browser.accounts.get(message.folder.accountId);
 	const identities = account?.identities;

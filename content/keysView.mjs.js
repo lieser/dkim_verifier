@@ -106,10 +106,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 	browser.runtime.onMessage.addListener((request, sender /*, sendResponse*/) => {
 		if (sender.id !== "dkim_verifier@pl") {
-			return;
+			return false;
 		}
 		if (typeof request !== "object" || request === null) {
-			return;
+			return false;
 		}
 		if (request.event === "keysUpdated") {
 			(async () => {
@@ -120,6 +120,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 				table.rowManager.element.scrollTo(scrollLeft, scrollTop);
 			})();
 		}
+		return false;
 	});
 
 	// Initialize buttons

@@ -17,7 +17,7 @@ describe("ExtensionUtils [unittest]", function () {
 	describe("isOutgoing", function () {
 		/**
 		 * @param {string} accountId
-		 * @param {browser.folders._MailFolderType} [folderType]
+		 * @param {browser.folders.MailFolderSpecialUse} [folderType]
 		 * @returns {browser.messages.MessageHeader}
 		 */
 		function createFakeMessageHeader(accountId, folderType) {
