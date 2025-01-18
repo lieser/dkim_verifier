@@ -79,6 +79,19 @@ async function readFile(file, encoding) {
 }
 
 /**
+ * @template T
+ * @param {T} val
+ * @returns {import("ts-essentials").DeepWritable<T>}
+ */
+export function deepCopy(val) {
+	if (val === undefined) {
+		// @ts-expect-error
+		return undefined;
+	}
+	return JSON.parse(JSON.stringify(val));
+}
+
+/**
  * Read a text file from the root directory.
  *
  * @param {string} file - path to file relative to root directory

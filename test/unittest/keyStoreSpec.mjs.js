@@ -9,19 +9,15 @@
 
 // @ts-check
 
+import "../helpers/initWebExtensions.mjs.js";
 import KeyStore, { KeyDb } from "../../modules/dkim/keyStore.mjs.js";
 import expect, { expectAsyncDkimSigError } from "../helpers/chaiUtils.mjs.js";
 import DNS from "../../modules/dns.mjs.js";
-import { hasWebExtensions } from "../helpers/initWebExtensions.mjs.js";
 import prefs from "../../modules/preferences.mjs.js";
 import sinon from "../helpers/sinonUtils.mjs.js";
 
 describe("Key store [unittest]", function () {
 	before(async function () {
-		if (!hasWebExtensions) {
-			// eslint-disable-next-line no-invalid-this
-			this.skip();
-		}
 		await prefs.init();
 	});
 

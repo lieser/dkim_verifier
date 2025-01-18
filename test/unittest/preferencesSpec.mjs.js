@@ -10,15 +10,12 @@
 // @ts-check
 
 import expect, { expectAsyncError } from "../helpers/chaiUtils.mjs.js";
-import { fakeBrowser, hasWebExtensions } from "../helpers/initWebExtensions.mjs.js";
-import prefs, { ObjPreferences, StorageLocalPreferences } from "../../modules/preferences.mjs.js";
+import pref, { StorageLocalPreferences } from "../../modules/preferences.mjs.js";
+import { fakeBrowser } from "../helpers/initWebExtensions.mjs.js";
+import sinon from "../helpers/sinonUtils.mjs.js";
 
 describe("preferences [unittest]", function () {
-	/** @type {import("../../modules/preferences.mjs.js").BasePreferences} */
-	let pref;
-
 	before(async function () {
-		pref = hasWebExtensions ? prefs : new ObjPreferences();
 		await pref.init();
 	});
 
@@ -268,29 +265,22 @@ describe("preferences [unittest]", function () {
 	});
 
 	describe("storage", function () {
-		before(function () {
-			if (!hasWebExtensions) {
-				// eslint-disable-next-line no-invalid-this
-				this.skip();
-			}
-		});
-
-		beforeEach(function () {
-			fakeBrowser.storage.local.clear.resetHistory();
-			fakeBrowser.storage.local.get.resetHistory();
-			fakeBrowser.storage.local.set.resetHistory();
+		afterEach(function () {
+			sinon.restore();
 		});
 
 		it("store and load prefs to/from storage", async function () {
+			const storageLocalGet = sinon.spy(fakeBrowser.storage.local, "get");
+			const storageLocalSet = sinon.spy(fakeBrowser.storage.local, "set");
+
 			pref.setValue("dns.nameserver", "fooBar");
 			expect(
-				fakeBrowser.storage.local.set.calledOnceWithExactly(
-					{ "dns.nameserver": "fooBar" })
+				storageLocalSet.calledOnceWithExactly({ "dns.nameserver": "fooBar" })
 			).to.be.true;
 			const loadedPref = new StorageLocalPreferences();
 			await loadedPref.init();
 			expect(
-				fakeBrowser.storage.local.get.callCount
+				storageLocalGet.callCount
 			).to.be.equal(1);
 			expect(
 				loadedPref["dns.nameserver"]
@@ -298,6 +288,8 @@ describe("preferences [unittest]", function () {
 		});
 
 		it("clear storage", async function () {
+			const storageLocalClear = sinon.spy(fakeBrowser.storage.local, "clear");
+
 			pref.setValue("dns.nameserver", "fooBar");
 			expect(
 				pref["dns.nameserver"]
@@ -305,7 +297,7 @@ describe("preferences [unittest]", function () {
 
 			// clearing prefs
 			await pref.clear();
-			expect(fakeBrowser.storage.local.clear.calledOnce).to.be.true;
+			expect(storageLocalClear.calledOnce).to.be.true;
 			const storage = await browser.storage.local.get();
 			for (const dataStorageScope of StorageLocalPreferences.dataStorageScopes) {
 				delete storage[dataStorageScope];
@@ -324,40 +316,21 @@ describe("preferences [unittest]", function () {
 		});
 
 		it("pref should change on storage update", async function () {
-			try {
-				fakeBrowser.storage.local.set.callsFake(async items => {
-					await fakeBrowser.storage.local._set(items, undefined);
+			const pref2 = new StorageLocalPreferences();
+			await pref2.init();
+			// setting option on global pref object
+			await pref.setValue("dns.nameserver", "fooBar");
+			// should sync it to local pref object
+			expect(
+				pref2["dns.nameserver"]
+			).to.be.equal("fooBar");
 
-					/** @type {{[prefName: string]: {oldValue: any, newValue: any}}} */
-					const changes = {};
-					for (const [name, value] of Object.entries(items)) {
-						changes[name] = {
-							oldValue: {},
-							newValue: JSON.parse(JSON.stringify(value)),
-						};
-					}
-					fakeBrowser.storage.onChanged.addListener.yield(changes, "local");
-				});
-
-				const pref2 = new StorageLocalPreferences();
-				await pref2.init();
-				// setting option on global pref object
-				await pref.setValue("dns.nameserver", "fooBar");
-				// should sync it to local pref object
-				expect(
-					pref2["dns.nameserver"]
-				).to.be.equal("fooBar");
-
-				// setting option on local pref object
-				await pref2.setValue("dns.nameserver", "muh");
-				// should sync it to global pref object
-				expect(
-					pref["dns.nameserver"]
-				).to.be.equal("muh");
-
-			} finally {
-				fakeBrowser.storage.local.set.callsFake(fakeBrowser.storage.local._set);
-			}
+			// setting option on local pref object
+			await pref2.setValue("dns.nameserver", "muh");
+			// should sync it to global pref object
+			expect(
+				pref["dns.nameserver"]
+			).to.be.equal("muh");
 		});
 
 		it("other storage changes are ignored", function () {
@@ -375,8 +348,15 @@ describe("preferences [unittest]", function () {
 		});
 
 		it("test multiple pref changes at the same time", async function () {
+			const pref2 = new StorageLocalPreferences();
+			await pref2.init();
+
+			const addListener = fakeBrowser.storage.onChanged.addListener;
+			sinon.replace(fakeBrowser.storage.onChanged, "addListener", sinon.stub());
+
 			/** @type {{[x: string]: any}[]} */
 			const storageCalls = [];
+			browser.storage.onChanged.addListener(x => storageCalls.push(JSON.parse(JSON.stringify(x))));
 			/**
 			 * @returns {void}
 			 */
@@ -385,114 +365,98 @@ describe("preferences [unittest]", function () {
 				if (!items) {
 					return;
 				}
-				/** @type {{[prefName: string]: {oldValue: any, newValue: any}}} */
-				const changes = {};
-				for (const [name, value] of Object.entries(items)) {
-					changes[name] = {
-						oldValue: {},
-						newValue: value,
-					};
-				}
-				fakeBrowser.storage.onChanged.addListener.yield(changes, "local");
+				addListener.yield(items, "local");
 			}
 
-			try {
-				fakeBrowser.storage.local.set.callsFake(items => {
-					storageCalls.push(JSON.parse(JSON.stringify(items)));
-					return fakeBrowser.storage.local._set(items, undefined);
-				});
+			await pref.setValue("dns.nameserver", "fooBar");
+			await pref.setValue("arh.read", true);
+			triggerListener();
+			await pref.setValue("color.nosig.background", "red");
+			await pref.setValue("dns.proxy.port", 1111);
 
-				await pref.setValue("dns.nameserver", "fooBar");
-				await pref.setValue("arh.read", true);
+			while (storageCalls.length) {
 				triggerListener();
-				await pref.setValue("color.nosig.background", "red");
-				await pref.setValue("dns.proxy.port", 1111);
-
-				while (storageCalls.length) {
-					triggerListener();
-				}
-
-				expect(pref["dns.nameserver"]).to.be.equal("fooBar");
-				expect(pref["arh.read"]).to.be.equal(true);
-				expect(pref["color.nosig.background"]).to.be.equal("red");
-				expect(pref["dns.proxy.port"]).to.be.equal(1111);
-			} finally {
-				fakeBrowser.storage.local.set.callsFake(fakeBrowser.storage.local._set);
 			}
+
+			expect(pref["dns.nameserver"]).to.be.equal("fooBar");
+			expect(pref2["dns.nameserver"]).to.be.equal("fooBar");
+			expect(pref["arh.read"]).to.be.equal(true);
+			expect(pref2["arh.read"]).to.be.equal(true);
+			expect(pref["color.nosig.background"]).to.be.equal("red");
+			expect(pref2["color.nosig.background"]).to.be.equal("red");
+			expect(pref["dns.proxy.port"]).to.be.equal(1111);
+			expect(pref2["dns.proxy.port"]).to.be.equal(1111);
 		});
 
 		it("safeGetLocalStorage - retry on reject", async function () {
-			try {
-				pref.setValue("dns.nameserver", "fooBar");
+			pref.setValue("dns.nameserver", "fooBar");
 
-				fakeBrowser.storage.local.get.onFirstCall().rejects("a failure");
-				fakeBrowser.storage.local.get.onSecondCall().rejects("a failure");
+			const storageLocalGet = sinon.stub(fakeBrowser.storage.local, "get");
+			storageLocalGet.callThrough();
+			storageLocalGet.onFirstCall().rejects("a failure");
+			storageLocalGet.onSecondCall().rejects("a failure");
 
-				const loadedPref = new StorageLocalPreferences();
-				await loadedPref.init();
-				expect(fakeBrowser.storage.local.get.calledThrice).to.be.true;
-				expect(
-					loadedPref["dns.nameserver"]
-				).to.be.equal("fooBar");
-			} finally {
-				fakeBrowser.storage.local.get.resetBehavior();
-				fakeBrowser.storage.local.get.callsFake(fakeBrowser.storage.local._get);
-			}
+			const loadedPref = new StorageLocalPreferences();
+			await loadedPref.init();
+			expect(storageLocalGet.calledThrice).to.be.true;
+			expect(
+				loadedPref["dns.nameserver"]
+			).to.be.equal("fooBar");
 		});
+
 		// eslint-disable-next-line mocha/no-skipped-tests
 		xit("safeGetLocalStorage - single timeout", async function () {
 			// eslint-disable-next-line no-invalid-this
 			this.timeout(5000);
-			try {
-				pref.setValue("dns.nameserver", "fooBar");
 
-				fakeBrowser.storage.local.get.onFirstCall().callsFake(async items => {
-					await new Promise(resolve => { setTimeout(resolve, 4000); });
-					return fakeBrowser.storage.local._get(items);
-				});
+			const storageLocalGet = sinon.stub(fakeBrowser.storage.local, "get");
+			storageLocalGet.callThrough();
 
-				const loadedPref = new StorageLocalPreferences();
-				await loadedPref.init();
-				expect(fakeBrowser.storage.local.get.calledTwice).to.be.true;
-				expect(
-					loadedPref["dns.nameserver"]
-				).to.be.equal("fooBar");
+			pref.setValue("dns.nameserver", "fooBar");
 
-			} finally {
-				fakeBrowser.storage.local.get.resetBehavior();
-				fakeBrowser.storage.local.get.callsFake(fakeBrowser.storage.local._get);
-			}
+			storageLocalGet.onFirstCall().callsFake(async items => {
+				await new Promise(resolve => { setTimeout(resolve, 4000); });
+				// eslint-disable-next-line no-invalid-this
+				return this.wrappedMethod(items);
+			});
+
+			const loadedPref = new StorageLocalPreferences();
+			await loadedPref.init();
+			expect(storageLocalGet.calledTwice).to.be.true;
+			expect(
+				loadedPref["dns.nameserver"]
+			).to.be.equal("fooBar");
 		});
+
 		// eslint-disable-next-line mocha/no-skipped-tests
 		xit("safeGetLocalStorage - complete timeout", async function () {
 			// eslint-disable-next-line no-invalid-this
 			this.timeout(20000);
+
+			const storageLocalGet = sinon.stub(fakeBrowser.storage.local, "get");
+
+			pref.setValue("dns.nameserver", "fooBar");
+
+			storageLocalGet.callsFake(async items => {
+				await new Promise(resolve => { setTimeout(resolve, 4000); });
+				// eslint-disable-next-line no-invalid-this
+				return this.wrappedMethod(items);
+			});
+			storageLocalGet.onSecondCall().rejects("a failure");
+
+			const loadedPref = new StorageLocalPreferences();
+			let timedOut = true;
 			try {
-				pref.setValue("dns.nameserver", "fooBar");
-
-				fakeBrowser.storage.local.get.callsFake(async items => {
-					await new Promise(resolve => { setTimeout(resolve, 4000); });
-					return fakeBrowser.storage.local._get(items);
-				});
-				fakeBrowser.storage.local.get.onSecondCall().rejects("a failure");
-
-				const loadedPref = new StorageLocalPreferences();
-				let timedOut = true;
-				try {
-					await loadedPref.init();
-					timedOut = false;
-				} catch {
-					// expected
-				}
-				expect(timedOut).to.be.true;
-				expect(fakeBrowser.storage.local.get.callCount).to.be.greaterThan(2);
-				expect(() =>
-					loadedPref["dns.nameserver"]
-				).to.throw();
-			} finally {
-				fakeBrowser.storage.local.get.resetBehavior();
-				fakeBrowser.storage.local.get.callsFake(fakeBrowser.storage.local._get);
+				await loadedPref.init();
+				timedOut = false;
+			} catch {
+				// expected
 			}
+			expect(timedOut).to.be.true;
+			expect(storageLocalGet.callCount).to.be.greaterThan(2);
+			expect(() =>
+				loadedPref["dns.nameserver"]
+			).to.throw();
 		});
 	});
 

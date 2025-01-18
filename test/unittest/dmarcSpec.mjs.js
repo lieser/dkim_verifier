@@ -9,18 +9,14 @@
 
 // @ts-check
 
+import "../helpers/initWebExtensions.mjs.js";
 import DMARC from "../../modules/dkim/dmarc.mjs.js";
 import { createTxtQueryCallback } from "../helpers/dnsStub.mjs.js";
 import expect from "../helpers/chaiUtils.mjs.js";
-import { hasWebExtensions } from "../helpers/initWebExtensions.mjs.js";
 import prefs from "../../modules/preferences.mjs.js";
 
 describe("DMARC [unittest]", function () {
 	before(async function () {
-		if (!hasWebExtensions) {
-			// eslint-disable-next-line no-invalid-this
-			this.skip();
-		}
 		await prefs.init();
 	});
 

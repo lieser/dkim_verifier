@@ -9,12 +9,17 @@
 
 // @ts-check
 
+import "../helpers/initWebExtensions.mjs.js";
 import ExtensionUtils from "../../modules/extensionUtils.mjs.js";
 import expect from "../helpers/chaiUtils.mjs.js";
 import sinon from "../helpers/sinonUtils.mjs.js";
 
 describe("ExtensionUtils [unittest]", function () {
 	describe("isOutgoing", function () {
+		afterEach(function () {
+			sinon.restore();
+		});
+
 		/**
 		 * @param {string} accountId
 		 * @param {browser.folders.MailFolderSpecialUse} [folderType]
@@ -74,34 +79,32 @@ describe("ExtensionUtils [unittest]", function () {
 		});
 
 		it("based on identity", async function () {
-			try {
-				globalThis.browser.accounts.get = sinon.stub().callsFake((accountId) => {
-					if (accountId !== "fakeAccount") {
-						return null;
-					}
-					return {
-						id: accountId,
-						identities: [
-							{ email: "bar@test.com" },
-							{ email: "foo@example.com" },
-						],
-						name: "A fake account",
-						type: "imap",
-					};
-				});
+			const browserAccountsGet = sinon.stub(browser.accounts, "get");
+			// eslint-disable-next-line require-await
+			browserAccountsGet.callsFake(async (accountId) => {
+				if (accountId !== "fakeAccount") {
+					return null;
+				}
+				return {
+					id: accountId,
+					identities: [
+						{ email: "bar@test.com" },
+						{ email: "foo@example.com" },
+					],
+					name: "A fake account",
+					type: "imap",
+				};
+			});
 
-				expect(
-					await ExtensionUtils.isOutgoing(createFakeMessageHeader("fakeAccount", undefined), "bar@example.com")
-				).to.be.equal(false);
-				expect(
-					await ExtensionUtils.isOutgoing(createFakeMessageHeader("fakeAccount", undefined), "bar@test.com")
-				).to.be.equal(true);
-				expect(
-					await ExtensionUtils.isOutgoing(createFakeMessageHeader("fakeAccount", undefined), "foo@example.com")
-				).to.be.equal(true);
-			} finally {
-				globalThis.browser.accounts.get = sinon.fake.resolves(null);
-			}
+			expect(
+				await ExtensionUtils.isOutgoing(createFakeMessageHeader("fakeAccount", undefined), "bar@example.com")
+			).to.be.equal(false);
+			expect(
+				await ExtensionUtils.isOutgoing(createFakeMessageHeader("fakeAccount", undefined), "bar@test.com")
+			).to.be.equal(true);
+			expect(
+				await ExtensionUtils.isOutgoing(createFakeMessageHeader("fakeAccount", undefined), "foo@example.com")
+			).to.be.equal(true);
 		});
 	});
 });

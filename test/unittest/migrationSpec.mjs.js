@@ -9,21 +9,18 @@
 
 // @ts-check
 
+import "../helpers/initWebExtensions.mjs.js";
 import { migrateKeyStore, migratePrefs, migrateSignRulesUser } from "../../modules/migration.mjs.js";
 import { KeyDb } from "../../modules/dkim/keyStore.mjs.js";
 import SignRules from "../../modules/dkim/signRules.mjs.js";
 import expect from "../helpers/chaiUtils.mjs.js";
-import { hasWebExtensions } from "../helpers/initWebExtensions.mjs.js";
 import prefs from "../../modules/preferences.mjs.js";
 import sinon from "../helpers/sinonUtils.mjs.js";
 
 describe("migration [unittest]", function () {
 	describe("migration of preferences", function () {
-		before(function () {
-			if (!hasWebExtensions) {
-				// eslint-disable-next-line no-invalid-this
-				this.skip();
-			}
+		before(async function () {
+			await prefs.init();
 		});
 
 		beforeEach(async function () {
@@ -150,13 +147,6 @@ describe("migration [unittest]", function () {
 	});
 
 	describe("migration of keys", function () {
-		before(function () {
-			if (!hasWebExtensions) {
-				// eslint-disable-next-line no-invalid-this
-				this.skip();
-			}
-		});
-
 		beforeEach(async function () {
 			await KeyDb.clear();
 
@@ -206,13 +196,6 @@ describe("migration [unittest]", function () {
 	});
 
 	describe("migration of sign rules", function () {
-		before(function () {
-			if (!hasWebExtensions) {
-				// eslint-disable-next-line no-invalid-this
-				this.skip();
-			}
-		});
-
 		beforeEach(async function () {
 			await SignRules.clearRules();
 

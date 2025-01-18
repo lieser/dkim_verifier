@@ -9,9 +9,9 @@
 
 // @ts-check
 
+import "../helpers/initWebExtensions.mjs.js";
 import expect from "../helpers/chaiUtils.mjs.js";
 import { getFavicon } from "../../modules/dkim/favicon.mjs.js";
-import { hasWebExtensions } from "../helpers/initWebExtensions.mjs.js";
 
 /**
  * Get the fake URL of an icon.
@@ -24,13 +24,6 @@ function iconUrl(fileName) {
 }
 
 describe("Favicons [unittest]", function () {
-	before(function () {
-		if (!hasWebExtensions) {
-			// eslint-disable-next-line no-invalid-this
-			this.skip();
-		}
-	});
-
 	it("Domain is in known favicons", async function () {
 		expect(await getFavicon("paypal.com", undefined, null)).to.be.equal(iconUrl("paypal.com.ico"));
 		expect(await getFavicon("news.paypal.com", undefined, null)).to.be.equal(iconUrl("paypal.com.ico"));

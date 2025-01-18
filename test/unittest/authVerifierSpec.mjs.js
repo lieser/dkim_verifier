@@ -9,8 +9,8 @@
 
 // @ts-check
 /* eslint-disable camelcase */
-/* eslint-disable no-extra-parens */
 
+import "../helpers/initWebExtensions.mjs.js";
 import AuthVerifier from "../../modules/authVerifier.mjs.js";
 import { DKIM_TempError } from "../../modules/error.mjs.js";
 import DMARC from "../../modules/dkim/dmarc.mjs.js";
@@ -19,7 +19,6 @@ import KeyStore from "../../modules/dkim/keyStore.mjs.js";
 import MsgParser from "../../modules/msgParser.mjs.js";
 import Verifier from "../../modules/dkim/verifier.mjs.js";
 import expect from "../helpers/chaiUtils.mjs.js";
-import { hasWebExtensions } from "../helpers/initWebExtensions.mjs.js";
 import prefs from "../../modules/preferences.mjs.js";
 import { queryDnsTxt } from "../helpers/dnsStub.mjs.js";
 import { readTestFile } from "../helpers/testUtils.mjs.js";
@@ -76,8 +75,6 @@ async function createMessageHeader(file) {
 	fakeMessageHeader.author = extractHeaderValue(msgParsed.headers, "from")[0] ?? "";
 	fakeMessageHeader.recipients = extractHeaderValue(msgParsed.headers, "to");
 	fakeMessageHeader.subject = extractHeaderValue(msgParsed.headers, "subject")[0] ?? "";
-	// @ts-expect-error
-	browser.messages = {};
 	browser.messages.getRaw = sinon.fake.resolves(msgPlain);
 	return fakeMessageHeader;
 }
@@ -87,10 +84,6 @@ describe("AuthVerifier [unittest]", function () {
 	const authVerifier = new AuthVerifier(dkimVerifier);
 
 	before(async function () {
-		if (!hasWebExtensions) {
-			// eslint-disable-next-line no-invalid-this
-			this.skip();
-		}
 		await prefs.init();
 	});
 
@@ -99,13 +92,24 @@ describe("AuthVerifier [unittest]", function () {
 	});
 
 	describe("saving of results", function () {
+		// eslint-disable-next-line mocha/no-setup-in-describe
+		const storageMessageGet = sinon.fake.resolves("");
+		// eslint-disable-next-line mocha/no-setup-in-describe
+		const storageMessageSet = sinon.fake.resolves(undefined);
+
+		before(async function () {
+			await prefs.init();
+			browser.storageMessage = {
+				get: storageMessageGet,
+				set: storageMessageSet,
+			};
+		});
+
 		beforeEach(async function () {
 			await prefs.setValue("saveResult", true);
 
-			browser.storageMessage = {
-				get: sinon.fake.resolves(""),
-				set: sinon.fake.resolves(undefined),
-			};
+			storageMessageGet.resetHistory();
+			storageMessageSet.resetHistory();
 		});
 
 		it("Store SUCCESS result", async function () {
@@ -115,9 +119,8 @@ describe("AuthVerifier [unittest]", function () {
 			expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
 			expect(res.dkim[1]?.result).to.be.equal("SUCCESS");
 
-			const setSpy = /** @type {import("sinon").SinonSpy} */(browser.storageMessage.set);
-			expect(setSpy.calledOnce).to.be.true;
-			const savedRes = JSON.parse(setSpy.firstCall.lastArg);
+			expect(storageMessageSet.calledOnce).to.be.true;
+			const savedRes = JSON.parse(storageMessageSet.firstCall.lastArg);
 			expect(savedRes).to.be.deep.equal({
 				"version": "3.0",
 				"dkim": [
@@ -188,8 +191,7 @@ describe("AuthVerifier [unittest]", function () {
 			expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
 			expect(res.dkim[1]?.result).to.be.equal("TEMPFAIL");
 
-			const setSpy = /** @type {import("sinon").SinonSpy} */(browser.storageMessage.set);
-			expect(setSpy.notCalled).to.be.true;
+			expect(storageMessageSet.notCalled).to.be.true;
 		});
 
 		it("Store BIMI result", async function () {
@@ -200,9 +202,8 @@ describe("AuthVerifier [unittest]", function () {
 			expect(res.dkim.length).to.be.equal(1);
 			expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
 
-			const setSpy = /** @type {import("sinon").SinonSpy} */(browser.storageMessage.set);
-			expect(setSpy.calledOnce).to.be.true;
-			const savedRes = JSON.parse(setSpy.firstCall.lastArg);
+			expect(storageMessageSet.calledOnce).to.be.true;
+			const savedRes = JSON.parse(storageMessageSet.firstCall.lastArg);
 			expect(savedRes).to.be.deep.equal({
 				"version": "3.1",
 				"dkim": [

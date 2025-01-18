@@ -9,19 +9,15 @@
 
 // @ts-check
 
+import "../helpers/initWebExtensions.mjs.js";
 import SignRules from "../../modules/dkim/signRules.mjs.js";
 import { copy } from "../../modules/utils.mjs.js";
 import expect from "../helpers/chaiUtils.mjs.js";
-import { hasWebExtensions } from "../helpers/initWebExtensions.mjs.js";
 import prefs from "../../modules/preferences.mjs.js";
 import sinon from "../helpers/sinonUtils.mjs.js";
 
 describe("Sign rules [unittest]", function () {
 	before(async function () {
-		if (!hasWebExtensions) {
-			// eslint-disable-next-line no-invalid-this
-			this.skip();
-		}
 		await prefs.init();
 	});
 
