@@ -23,11 +23,6 @@ npx http-server . -c-1
 
 ## Running unit test in Node
 
-> **Note**:
-> As the Web Crypto API is not available in Node,
-> the crypto implementation used differs from the one
-> actually used in the add-on.
-
 ```PowerShell
 # Run tests with
 npm run test
