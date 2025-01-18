@@ -20,7 +20,7 @@
 		"update-thirdparty": "node ./scripts/update-thirdparty.js",
 		"lint": "eslint .",
 		"lint:ci": "eslint --max-warnings=0 .",
-		"checkJs": "tsc-silent --project jsconfig.json --suppress @/thirdparty/",
+		"checkJs": "tsc-silent --project jsconfig.json --suppress @/thirdparty/ --suppress @/node_modules/",
 		"test": "node node_modules/mocha/bin/mocha --recursive --reporter dot",
 		"test:ci": "node node_modules/mocha/bin/mocha --recursive --reporter mocha-multi --reporter-options spec=-,json=test-results.json",
 		"pack": "node ./scripts/pack.js"
@@ -34,23 +34,23 @@
 		"@eslint/js": "^9.18.0",
 		"@types/chai": "^5.0.1",
 		"@types/mocha": "^10.0.10",
-		"@types/node": "^20.9.0",
+		"@types/node": "^22.10.7",
 		"@types/sinon": "^17.0.3",
 		"@types/tabulator-tables": "^5.5.4",
 		"@types/thunderbird-webext-browser": "^127.0.0",
 		"chai": "^5.1.2",
-		"chalk": "^5.3.0",
+		"chalk": "^5.4.1",
 		"eslint": "^9.18.0",
 		"eslint-plugin-jsdoc": "^50.6.1",
 		"eslint-plugin-mocha": "^10.5.0",
 		"eslint-plugin-mozilla": "^4.0.0",
 		"globals": "^15.14.0",
-		"globby": "^14.0.0",
+		"globby": "^14.0.2",
 		"http-server": "^14.1.1",
 		"jszip": "^3.10.1",
 		"mocha": "^11.0.1",
 		"mocha-multi": "^1.1.7",
-		"simple-git": "^3.20.0",
+		"simple-git": "^3.27.0",
 		"sinon": "^19.0.2",
 		"ts-essentials": "^10.0.4",
 		"tsc-silent": "^1.2.2",
@@ -58,6 +58,6 @@
 	},
 	"overrides": {},
 	"engines": {
-		"node": ">=20.0.0"
+		"node": ">=22.0.0"
 	}
 }
