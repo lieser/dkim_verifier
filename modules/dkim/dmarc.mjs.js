@@ -4,7 +4,7 @@
  *
  * This module is NOT conform to DMARC.
  *
- * Copyright (c) 2014-2019;2021-2023 Philippe Lieser
+ * Copyright (c) 2014-2019;2021-2023;2025 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -18,7 +18,7 @@
 /* eslint-disable no-magic-numbers */
 /* eslint-disable no-use-before-define */
 
-import { DKIM_Error, DKIM_TempError } from "../error.mjs.js";
+import { DKIM_Error } from "../error.mjs.js";
 import DNS from "../dns.mjs.js";
 import Logging from "../logging.mjs.js";
 import RfcParser from "../rfcParser.mjs.js";
@@ -125,7 +125,7 @@ export default class DMARC {
  * @param {queryDnsTxtCallback} queryDnsTxt
  * @returns {Promise<DMARCPolicy|null>}
  * @throws {DKIM_Error}
- * @throws {DKIM_TempError}
+ * @throws {import("../error.mjs.js").DKIM_TempError}
  */
 async function getDMARCPolicy(fromAddress, queryDnsTxt) {
 	let dmarcRecord;
@@ -208,22 +208,14 @@ async function getDMARCPolicy(fromAddress, queryDnsTxt) {
  * @param {queryDnsTxtCallback} queryDnsTxt
  * @returns {Promise<DMARCRecord|null>}
  * @throws {DKIM_Error}
- * @throws {DKIM_TempError}
+ * @throws {import("../error.mjs.js").DKIM_TempError}
  */
 async function getDMARCRecord(domain, queryDnsTxt) {
 	let dmarcRecord = null;
 
 	// get the DMARC Record
 	const result = await queryDnsTxt(`_dmarc.${domain}`);
-
-	// throw error on bogus result or DNS error
-	if (result.bogus) {
-		throw new DKIM_TempError("DKIM_DNSERROR_DNSSEC_BOGUS");
-	}
-	if (result.rcode !== DNS.RCODE.NoError && result.rcode !== DNS.RCODE.NXDomain) {
-		log.info("DNS query failed with result:", result);
-		throw new DKIM_TempError("DKIM_DNSERROR_SERVER_ERROR");
-	}
+	DNS.checkForErrors(result);
 
 	// try to parse DMARC Record if record was found in DNS Server
 	if (result.data !== null && result.data[0]) {

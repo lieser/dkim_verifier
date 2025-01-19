@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021;2023 Philippe Lieser
+ * Copyright (c) 2021;2023;2025 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -11,7 +11,7 @@
 
 import "../helpers/initWebExtensions.mjs.js";
 import KeyStore, { KeyDb } from "../../modules/dkim/keyStore.mjs.js";
-import expect, { expectAsyncDkimSigError } from "../helpers/chaiUtils.mjs.js";
+import expect, { expectAsyncDkimSigError, expectAsyncDkimTempError } from "../helpers/chaiUtils.mjs.js";
 import DNS from "../../modules/dns.mjs.js";
 import prefs from "../../modules/preferences.mjs.js";
 import sinon from "../helpers/sinonUtils.mjs.js";
@@ -166,6 +166,42 @@ describe("Key store [unittest]", function () {
 			await expectAsyncDkimSigError(keyPromise, "DKIM_POLICYERROR_KEYMISMATCH");
 
 			expect(fakeQueryDnsTxt.calledThrice).is.true;
+		});
+
+		it("Bogus DNS result", async function () {
+			const keyStore = new KeyStore(sinon.fake.resolves({
+				data: null,
+				rcode: DNS.RCODE.NoError,
+				secure: true,
+				bogus: true,
+			}));
+
+			const dnsResult = keyStore.fetchKey("example.com", "selector1");
+			await expectAsyncDkimTempError(dnsResult, "DKIM_DNSERROR_DNSSEC_BOGUS");
+		});
+
+		it("DNS result with error code", async function () {
+			const keyStore = new KeyStore(sinon.fake.resolves({
+				data: null,
+				rcode: DNS.RCODE.ServFail,
+				secure: false,
+				bogus: false,
+			}));
+
+			const dnsResult = keyStore.fetchKey("example.com", "selector1");
+			await expectAsyncDkimTempError(dnsResult, "DKIM_DNSERROR_SERVER_ERROR");
+		});
+
+		it("DNS result Non-Existent Domain", async function () {
+			const keyStore = new KeyStore(sinon.fake.resolves({
+				data: null,
+				rcode: DNS.RCODE.NXDomain,
+				secure: false,
+				bogus: false,
+			}));
+
+			const dnsResult = keyStore.fetchKey("example.com", "selector1");
+			await expectAsyncDkimSigError(dnsResult, "DKIM_SIGERROR_NOKEY");
 		});
 	});
 });
