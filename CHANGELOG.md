@@ -4,6 +4,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+### Fixes
+
+- Encoding errors in the RSA/Ed25519 key or signature now result in an invalid DKIM signature instead of an internal error.
+
 ## 5.5.0 (2025-01-11)
 
 ### Enhancements

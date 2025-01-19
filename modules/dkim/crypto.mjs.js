@@ -150,13 +150,18 @@ export default class DkimCrypto {
 		/** @type {RsaHashedKeyGenParams} */
 		// @ts-expect-error
 		const rsaKeyParams = cryptoKey.algorithm;
-		const valid = await crypto.subtle.verify(
-			"RSASSA-PKCS1-v1_5",
-			cryptoKey,
-			decodeBase64(signature),
-			strToArrayBuffer(data)
-		);
-		return [valid, rsaKeyParams.modulusLength];
+		try {
+			const valid = await crypto.subtle.verify(
+				"RSASSA-PKCS1-v1_5",
+				cryptoKey,
+				decodeBase64(signature),
+				strToArrayBuffer(data)
+			);
+			return [valid, rsaKeyParams.modulusLength];
+		} catch (e) {
+			log.error("error in signature verification: ", e);
+			return [false, rsaKeyParams.modulusLength];
+		}
 	}
 
 	/**
@@ -169,14 +174,29 @@ export default class DkimCrypto {
 	 * @returns {Promise<[boolean, 256]>} - valid, key length
 	 */
 	static async verifyEd25519(key, digestAlgorithm, signature, data) {
+		let cryptoKey;
+		try {
+			cryptoKey = decodeBase64(key);
+		} catch (e) {
+			log.debug("error in decoding key: ", e);
+			throw new DKIM_SigError("DKIM_SIGERROR_KEYDECODE");
+		}
+
 		const hashValue = await this.digestRaw(digestAlgorithm, data);
 
-		const valid = nacl.sign.detached.verify(
-			hashValue,
-			decodeBase64(signature),
-			decodeBase64(key));
-
 		const ed25519PublicKeyLenght = 256;
-		return Promise.resolve([valid, ed25519PublicKeyLenght]);
+		try {
+			const valid = nacl.sign.detached.verify(
+				hashValue,
+				decodeBase64(signature),
+				cryptoKey);
+			return [valid, ed25519PublicKeyLenght];
+		} catch (e) {
+			log.error("error in signature verification: ", e);
+			if (e instanceof Error && e.message === "bad public key size") {
+				throw new DKIM_SigError("DKIM_SIGERROR_KEYDECODE");
+			}
+			return [false, ed25519PublicKeyLenght];
+		}
 	}
 }
