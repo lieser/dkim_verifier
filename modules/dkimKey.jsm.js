@@ -15,7 +15,7 @@
 /* eslint strict: ["warn", "function"] */
 /* global Components, Services, Sqlite */
 /* global Logging, DNS */
-/* global Deferred, DKIM_SigError, DKIM_TempError, PREF */
+/* global Deferred, DKIM_SigError, PREF */
 /* exported EXPORTED_SYMBOLS, Key */
 
 // @ts-ignore
@@ -305,13 +305,8 @@ async function getKeyFromDNS(d_val, s_val) {
 	// get the DKIM key
 	var result = await DNS.resolve(s_val+"._domainkey."+d_val, "TXT");
 
-	if (result.bogus) {
-		throw new DKIM_TempError("DKIM_DNSERROR_DNSSEC_BOGUS");
-	}
-	if (result.rcode !== DNS.RCODE.NoError && result.rcode !== DNS.RCODE.NXDomain) {
-		log.info("DNS query failed with result: " + result.toSource());
-		throw new DKIM_TempError("DKIM_DNSERROR_SERVER_ERROR");
-	}
+	DNS.checkForErrors(result);
+
 	if (result.data === null || !result.data[0]) {
 		throw new DKIM_SigError("DKIM_SIGERROR_NOKEY");
 	}

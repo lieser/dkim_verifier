@@ -136,8 +136,25 @@ var DNS = {
 				throw new Error("invalid resolver preference");
 		}
 	},
-};
 
+	/**
+	 * Throws error on bogus result or if result contains a DNS error.
+	 *
+	 * @param {DNSResult} dnsResult
+	 * @throws {DKIM_SigError}
+	 * @throws {DKIM_TempError}
+	 * @returns {void}
+	 */
+	checkForErrors: function(dnsResult) {
+		if (dnsResult.bogus) {
+			throw new DKIM_TempError("DKIM_DNSERROR_DNSSEC_BOGUS");
+		}
+		if (dnsResult.rcode !== DNS.RCODE.NoError && dnsResult.rcode !== DNS.RCODE.NXDomain) {
+			log.info("DNS query failed with result:", dnsResult);
+			throw new DKIM_TempError("DKIM_DNSERROR_SERVER_ERROR");
+		}
+	}
+};
 
 /**
  * Promise wrapper for the dns result of JSDNS.jsm.js

@@ -20,7 +20,7 @@
 /* eslint strict: ["warn", "function"] */
 /* global Components, Services */
 /* global Logging, DNS, rfcParser */
-/* global getBaseDomainFromAddr, getDomainFromAddr, toType, DKIM_TempError, DKIM_Error */
+/* global getBaseDomainFromAddr, getDomainFromAddr, toType, DKIM_Error */
 /* exported EXPORTED_SYMBOLS, DMARC */
 
 // @ts-ignore
@@ -255,13 +255,7 @@ async function getDMARCRecord(domain) {
 	// get the DMARC Record
 	let result = await DNS.resolve("_dmarc."+domain, "TXT");
 
-	// throw error on bogus result or DNS error
-	if (result.bogus) {
-		throw new DKIM_TempError("DKIM_DNSERROR_DNSSEC_BOGUS");
-	}
-	if (result.rcode !== DNS.RCODE.NoError && result.rcode !== DNS.RCODE.NXDomain) {
-		throw new DKIM_TempError("DKIM_DNSERROR_SERVER_ERROR");
-	}
+	DNS.checkForErrors(result);
 
 	// try to parse DMARC Record if record was found in DNS Server
 	if (result.data !== null && result.data[0]) {
