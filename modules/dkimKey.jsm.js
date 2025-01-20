@@ -1,12 +1,12 @@
 /*
  * dkimKey.jsm.js
- * 
+ *
  * Version: 1.2.0 (28 January 2018)
- * 
+ *
  * Copyright (c) 2013-2018 Philippe Lieser
- * 
+ *
  * This software is licensed under the terms of the MIT License.
- * 
+ *
  * The above copyright and license notice shall be
  * included in all copies or substantial portions of the Software.
  */
@@ -15,7 +15,7 @@
 /* eslint strict: ["warn", "function"] */
 /* global Components, Services, Sqlite */
 /* global Logging, DNS */
-/* global Deferred, DKIM_SigError, DKIM_TempError, PREF */
+/* global Deferred, DKIM_SigError, PREF */
 /* exported EXPORTED_SYMBOLS, Key */
 
 // @ts-ignore
@@ -59,7 +59,7 @@ var Key = {
 	/**
 	 * init DB
 	 * May be called more then once
-	 * 
+	 *
 	 * @return {Promise<boolean>} initialized
 	 * @throws {Error}
 	 */
@@ -75,7 +75,7 @@ var Key = {
 			log.trace("initDB Task begin");
 
 			Logging.addAppenderTo("Sqlite.Connection."+KEY_DB_NAME, "sql.");
-			
+
 			var conn = await Sqlite.openConnection({path: KEY_DB_NAME});
 
 			try {
@@ -128,7 +128,7 @@ var Key = {
 			} finally {
 				await conn.close();
 			}
-			
+
 			dbInitializedDefer.resolve(true);
 			log.debug("DB initialized");
 			log.trace("initDB Task end");
@@ -144,7 +144,7 @@ var Key = {
 
 	/**
 	 * The result of the verification.
-	 * 
+	 *
 	 * @typedef {Object} dkimKeyResult
 	 * @property {String} key DKIM key in its textual Representation.
 	 * @property {String} gotFrom "DNS" / "Storage"
@@ -153,12 +153,12 @@ var Key = {
 
 	/**
 	 * Get the DKIM key.
-	 * 
+	 *
 	 * @param {String} d_val domain of the Signer
 	 * @param {String} s_val selector
-	 * 
+	 *
 	 * @return {Promise<dkimKeyResult>}
-	 * 
+	 *
 	 * @throws {DKIM_SigError|Error}
 	 */
 	getKey: async function Key_getKey(d_val, s_val) {
@@ -169,7 +169,7 @@ var Key = {
 		/** @type {dkimKeyResult} */
 		var res={};
 		var tmp;
-		
+
 		switch (prefs.getIntPref("storing")) {
 			case PREF.KEY.STORING.DISABLED: // don't store DKIM keys
 				tmp = await getKeyFromDNS(d_val, s_val);
@@ -207,13 +207,13 @@ var Key = {
 		log.trace("getKey Task begin");
 		return res;
 	},
-	
+
 	/**
 	 * Delete stored DKIM key.
-	 * 
+	 *
 	 * @param {String} d_val domain of the Signer
 	 * @param {String} s_val selector
-	 * 
+	 *
 	 * @return {Promise<void>}
 	 */
 	deleteKey: function Key_deleteKey(d_val, s_val) {
@@ -221,11 +221,11 @@ var Key = {
 
 		var promise = (async () => {
 			log.trace("deleteKey Task begin");
-			
+
 			// wait for DB init
 			await Key.initDB();
 			var conn = await Sqlite.openConnection({path: KEY_DB_NAME});
-			
+
 			try {
 				await conn.executeCached(
 					"DELETE FROM keys\n" +
@@ -236,23 +236,23 @@ var Key = {
 			} finally {
 				await conn.close();
 			}
-			
+
 			log.trace("deleteKey Task end");
 		})();
 		promise.then(null, function onReject(exception) {
 			// Failure!  We can inspect or report the exception.
 			log.fatal(exception);
 		});
-		
+
 		return promise;
 	},
-	
+
 	/**
 	 * Mark stored DKIM key as secure.
-	 * 
+	 *
 	 * @param {String} d_val domain of the Signer
 	 * @param {String} s_val selector
-	 * 
+	 *
 	 * @return {Promise<void>}
 	 */
 	markKeyAsSecure: function Key_markKeyAsSecure(d_val, s_val) {
@@ -260,11 +260,11 @@ var Key = {
 
 		var promise = (async () => {
 			log.trace("markKeyAsSecure Task begin");
-			
+
 			// wait for DB init
 			await Key.initDB();
 			var conn = await Sqlite.openConnection({path: KEY_DB_NAME});
-			
+
 			try {
 				await conn.executeCached(
 					"UPDATE keys SET secure = 1\n" +
@@ -275,43 +275,38 @@ var Key = {
 			} finally {
 				await conn.close();
 			}
-			
+
 			log.trace("markKeyAsSecure Task end");
 		})();
 		promise.then(null, function onReject(exception) {
 			// Failure!  We can inspect or report the exception.
 			log.fatal(exception);
 		});
-		
+
 		return promise;
 	},
 };
 
 /**
  * Get the DKIM key from DNS.
- * 
+ *
  * @param {String} d_val domain of the Signer
  * @param {String} s_val selector
- * 
+ *
  * @return {Promise<{key: string, secure: boolean}>}
- * 
+ *
  * @throws {DKIM_SigError|DKIM_TempError}
  */
 async function getKeyFromDNS(d_val, s_val) {
 	"use strict";
 
 	log.trace("getKeyFromDNS Task begin");
-	
+
 	// get the DKIM key
 	var result = await DNS.resolve(s_val+"._domainkey."+d_val, "TXT");
-	
-	if (result.bogus) {
-		throw new DKIM_TempError("DKIM_DNSERROR_DNSSEC_BOGUS");
-	}
-	if (result.rcode !== DNS.RCODE.NoError && result.rcode !== DNS.RCODE.NXDomain) {
-		log.info("DNS query failed with result: " + result.toSource());
-		throw new DKIM_TempError("DKIM_DNSERROR_SERVER_ERROR");
-	}
+
+	DNS.checkForErrors(result);
+
 	if (result.data === null || !result.data[0]) {
 		throw new DKIM_SigError("DKIM_SIGERROR_NOKEY");
 	}
@@ -322,21 +317,21 @@ async function getKeyFromDNS(d_val, s_val) {
 
 /**
  * Get the DKIM key from DB.
- * 
+ *
  * @param {String} d_val domain of the Signer
  * @param {String} s_val selector
- * 
+ *
  * @return {Promise<{key: string, secure:boolean}|Null>} The Key if it's in the DB; null otherwise
  */
 async function getKeyFromDB(d_val, s_val) {
 	"use strict";
 
 	log.trace("getKeyFromDB Task begin");
-	
+
 	// wait for DB init
 	await Key.initDB();
 	var conn = await Sqlite.openConnection({path: KEY_DB_NAME});
-	
+
 	var sqlRes;
 	var res = null;
 	try {
@@ -368,19 +363,19 @@ async function getKeyFromDB(d_val, s_val) {
 	} finally {
 		await conn.close();
 	}
-	
+
 	log.trace("getKeyFromDB Task end");
 	return res;
 }
 
 /**
  * Stores the DKIM key in the DB.
- * 
+ *
  * @param {String} d_val domain of the Signer
  * @param {String} s_val selector
  * @param {String} key DKIM key
  * @param {Boolean} secure
- * 
+ *
  * @return {Promise<void>}
  */
 function setKeyInDB(d_val, s_val, key, secure) {
@@ -388,11 +383,11 @@ function setKeyInDB(d_val, s_val, key, secure) {
 
 	var promise = (async () => {
 		log.trace("setKeyInDB Task begin");
-		
+
 		// wait for DB init
 		await Key.initDB();
 		var conn = await Sqlite.openConnection({path: KEY_DB_NAME});
-		
+
 		try {
 			await conn.executeCached(
 				"INSERT INTO keys (SDID, selector, key, insertedAt, lastUsedAt, secure)" +
@@ -403,14 +398,14 @@ function setKeyInDB(d_val, s_val, key, secure) {
 		} finally {
 			await conn.close();
 		}
-		
+
 		log.trace("setKeyInDB Task end");
 	})();
 	promise.then(null, function onReject(exception) {
 		// Failure!  We can inspect or report the exception.
 		log.fatal(exception);
 	});
-	
+
 	return promise;
 }
 
