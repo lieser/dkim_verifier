@@ -1,17 +1,17 @@
 /*
  * dkimDMARC.jsm.js
- * 
+ *
  * Implements a very small part of DMARC to determined if an e-mail should
  * have a DKIM signature.
  *
  * This module is NOT conform to DMARC.
  *
  * Version: 1.1.1 (13 January 2019)
- * 
+ *
  * Copyright (c) 2014-2019 Philippe Lieser
- * 
+ *
  * This software is licensed under the terms of the MIT License.
- * 
+ *
  * The above copyright and license notice shall be
  * included in all copies or substantial portions of the Software.
  */
@@ -57,18 +57,18 @@ var DMARC = {
 
 	/**
 	 * Tries to determinate with DMARC if an e-mail should be signed.
-	 * 
+	 *
 	 * @param {String} fromAddress
-	 * 
+	 *
 	 * @return {Promise<Object>}
 	 *         .shouldBeSigned true if fromAddress should be signed
 	 *         .sdid {String[]} Signing Domain Identifier
 	 */
 	shouldBeSigned: async function Policy_shouldBeSigned(fromAddress) {
 		"use strict";
-		
+
 		log.trace("shouldBeSigned Task begin");
-	
+
 		// default result
 		let res = {};
 		res.shouldBeSigned = false;
@@ -79,7 +79,7 @@ var DMARC = {
 			log.trace("shouldBeSigned Task end");
 			return res;
 		}
-		
+
 		let DMARCPolicy;
 		try {
 			DMARCPolicy = await getDMARCPolicy(fromAddress);
@@ -94,14 +94,14 @@ var DMARC = {
 				(neededPolicy === "quarantine" && DMARCPolicy.p !== "none") ||
 				(neededPolicy === "reject" && DMARCPolicy.p === "reject"))) {
 			res.shouldBeSigned = true;
-			
+
 			if (DMARCPolicy.source === DMARCPolicy.domain) {
 				res.sdid = [DMARCPolicy.domain];
 			} else {
 				res.sdid = [DMARCPolicy.domain, DMARCPolicy.source];
 			}
 		}
-		
+
 		log.trace("shouldBeSigned Task end");
 		return res;
 	}
@@ -109,7 +109,7 @@ var DMARC = {
 
 /**
  * A DMARC Record.
- * 
+ *
  * @typedef {Object} DMARCRecord
  * @property {String} adkim
  *   DKIM identifier alignment mode
@@ -130,7 +130,7 @@ var DMARC = {
 
 /**
  * A DMARC Policy.
- * 
+ *
  * @typedef {Object} DMARCPolicy
  * @property {String} adkim
  *   DKIM identifier alignment mode
@@ -149,47 +149,47 @@ var DMARC = {
 
 /**
  * Get the DMARC Policy.
- * 
+ *
  * @param {String} fromAddress
- * 
+ *
  * @return {Promise<DMARCPolicy|Null>}
- * 
+ *
  * @throws {DKIM_TempError}
  */
 async function getDMARCPolicy(fromAddress) {
 	"use strict";
 
 	log.trace("getDMARCPolicy Task begin");
-	
+
 	let dmarcRecord;
 	let domain = getDomainFromAddr(fromAddress);
 	let baseDomain;
-	
+
 	// 1.  Mail Receivers MUST query the DNS for a DMARC TXT record at the
 	//     DNS domain matching the one found in the RFC5322.From domain in
 	//     the message.  A possibly empty set of records is returned
-	
+
 	// get the DMARC Record
 	dmarcRecord = await getDMARCRecord(domain);
-	
+
 	// 2.  Records that do not start with a "v=" tag that identifies the
 	// current version of DMARC are discarded.
-	
+
 	// NOTE: record with "v=" tag not "DMARC1" are not parsed
-	
+
 	// 3.  If the set is now empty, the Mail Receiver MUST query the DNS for
 	//     a DMARC TXT record at the DNS domain matching the Organizational
 	//     Domain in place of the RFC5322.From domain in the message (if
 	//     different).  This record can contain policy to be asserted for
 	//     subdomains of the Organizational Domain.  A possibly empty set of
 	//     records is returned.
-	
+
 	if (!dmarcRecord) {
 		// get the DMARC Record of the base domain
 		baseDomain = getBaseDomainFromAddr(fromAddress);
 		if (domain !== baseDomain) {
 			dmarcRecord = await getDMARCRecord(baseDomain);
-			
+
 			if (dmarcRecord) {
 				// overrides Receiver policy if one for subdomains was specified
 				dmarcRecord.p = dmarcRecord.sp || dmarcRecord.p;
@@ -199,12 +199,12 @@ async function getDMARCPolicy(fromAddress) {
 
 	// 4.  Records that do not start with a "v=" tag that identifies the
 	// current version of DMARC are discarded.
-	
+
 	// NOTE: record with "v=" tag not "DMARC1" are not parsed
 
 	// 5.  If the remaining set contains multiple records or no records,
 	//     processing terminates and the Mail Receiver takes no action.
-	
+
 	// NOTE: no test for multiple records in DNS
 
 	// 6.  If a retrieved policy record does not contain a valid "p" tag, or
@@ -216,9 +216,9 @@ async function getDMARCPolicy(fromAddress) {
 	//         was retrieved, and continue processing;
 	//
 	//     2.  otherwise, the Mail Receiver SHOULD take no action.
-	
+
 	// NOTE: records with invalid "p" or "sp" tag are not parsed
-	
+
 	if (!dmarcRecord) {
 		log.trace("getDMARCPolicy Task end");
 		return null;
@@ -238,23 +238,23 @@ async function getDMARCPolicy(fromAddress) {
 
 /**
  * Get the DMARC Record.
- * 
+ *
  * @param {String} domain
- * 
+ *
  * @return {Promise<DMARCRecord|Null>}
- * 
+ *
  * @throws {DKIM_TempError}
  */
 async function getDMARCRecord(domain) {
 	"use strict";
 
 	log.trace("getDMARCRecord Task begin");
-	
+
 	let dmarcRecord = null;
-	
+
 	// get the DMARC Record
 	let result = await DNS.resolve("_dmarc."+domain, "TXT");
-	
+
 	// throw error on bogus result or DNS error
 	if (result.bogus) {
 		throw new DKIM_TempError("DKIM_DNSERROR_DNSSEC_BOGUS");
@@ -262,7 +262,7 @@ async function getDMARCRecord(domain) {
 	if (result.rcode !== DNS.RCODE.NoError && result.rcode !== DNS.RCODE.NXDomain) {
 		throw new DKIM_TempError("DKIM_DNSERROR_SERVER_ERROR");
 	}
-	
+
 	// try to parse DMARC Record if record was found in DNS Server
 	if (result.data !== null && result.data[0]) {
 		try {
@@ -271,18 +271,18 @@ async function getDMARCRecord(domain) {
 			log.error("Ignored error in parsing of DMARC record", e);
 		}
 	}
-	
+
 	log.trace("getDMARCRecord Task end");
 	return dmarcRecord;
 }
 
 /**
  * Parse the DMARC Policy Record.
- * 
+ *
  * @param {String} DMARCRecordStr
- * 
+ *
  * @return {DMARCRecord}
- * 
+ *
  * @throws {DKIM_Error}
  */
 function parseDMARCRecord(DMARCRecordStr) {
@@ -306,7 +306,7 @@ function parseDMARCRecord(DMARCRecordStr) {
 		sp : null, // Requested Mail Receiver policy for all subdomains
 		v : "" // Version
 	};
-	
+
 	// parse tag-value list
 	let parsedTagMap = rfcParser.parseTagValueList(DMARCRecordStr);
 	if (parsedTagMap === -1) {
@@ -332,7 +332,7 @@ function parseDMARCRecord(DMARCRecordStr) {
 	} else {
 		dmarcRecord.v = "DMARC1";
 	}
-	
+
 	// adkim:  (plain-text; OPTIONAL, default is "r".)  Indicates whether
 	// strict or relaxed DKIM identifier alignment mode is required by
 	// the Domain Owner.
@@ -342,7 +342,7 @@ function parseDMARCRecord(DMARCRecordStr) {
 	} else {
 		dmarcRecord.adkim = adkimTag[0];
 	}
-	
+
 	// p: Requested Mail Receiver policy (plain-text; REQUIRED for policy
 	// records).  Indicates the policy to be enacted by the Receiver at
 	// the request of the Domain Owner.  Policy applies to the domain
@@ -367,7 +367,7 @@ function parseDMARCRecord(DMARCRecordStr) {
 	} else {
 		dmarcRecord.p = pTag[0];
 	}
-	
+
 	// pct:  (plain-text integer between 0 and 100, inclusive; OPTIONAL;
 	// default is 100).  Percentage of messages from the Domain Owner's
 	// mail stream to which the DMARC mechanism is to be applied.
@@ -379,7 +379,7 @@ function parseDMARCRecord(DMARCRecordStr) {
 	// experimenting with strong authentication-based mechanisms.  See
 	// Section 6.1 for details.  Note that random selection based on this
 	// percentage, such as the following pseudocode, is adequate:
-	// 
+	//
 	//  if (random mod 100) < pct then
 	//    selected = true
 	//  else
@@ -393,7 +393,7 @@ function parseDMARCRecord(DMARCRecordStr) {
 			throw new DKIM_Error("DKIM_DMARCERROR_INVALID_PCT");
 		}
 	}
-	
+
 	// sp:  Requested Mail Receiver policy for all subdomains (plain-text;
 	// OPTIONAL).  Indicates the policy to be enacted by the Receiver at
 	// the request of the Domain Owner.  It applies only to subdomains of
@@ -407,7 +407,7 @@ function parseDMARCRecord(DMARCRecordStr) {
 	if (spTag !== null) {
 		dmarcRecord.sp = spTag[0];
 	}
-	
+
 	log.trace("parseDMARCRecord end");
 	return dmarcRecord;
 }
