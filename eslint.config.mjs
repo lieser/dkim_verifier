@@ -1,18 +1,22 @@
 import globals from "globals";
 import js from "@eslint/js";
 import jsdoc from "eslint-plugin-jsdoc";
+import json from "@eslint/json";
 import mocha from "eslint-plugin-mocha";
 import mozilla from "eslint-plugin-mozilla";
 
 
 export default [
-	js.configs.recommended,
-	jsdoc.configs["flat/recommended-typescript-flavor"],
-	mocha.configs.flat.recommended,
 	{
 		ignores: ["thirdparty/**/*"],
-
 	}, {
+		files: ["**/*.js", "**/*.mjs"],
+		...js.configs.recommended,
+	}, {
+		files: ["**/*.js", "**/*.mjs"],
+		...jsdoc.configs["flat/recommended-typescript-flavor"],
+	}, {
+		files: ["**/*.js", "**/*.mjs"],
 		plugins: {
 			jsdoc,
 			mocha,
@@ -250,9 +254,11 @@ export default [
 		},
 	}, {
 		files: ["test/unittest/**/*.js"],
+		...mocha.configs.flat.recommended,
+	}, {
+		files: ["test/unittest/**/*.js"],
 		languageOptions: {
 			globals: {
-				...globals.mocha,
 				...globals["shared-node-browser"],
 				...globals.webextensions,
 			},
@@ -267,6 +273,26 @@ export default [
 			globals: {
 				...globals.node,
 			},
+		},
+	}, {
+		files: ["**/*.json"],
+		ignores: ["package-lock.json"],
+		language: "json/json",
+		...json.configs.recommended,
+	}, {
+		files: [
+			".vscode/**/*.json",
+			"_locales/**/*.json",
+			"jsconfig.json",
+		],
+		language: "json/jsonc",
+	}, {
+		files: [
+			".vscode/**/*.json",
+			"jsconfig.json",
+		],
+		languageOptions: {
+			allowTrailingCommas: true,
 		},
 	}
 ];
