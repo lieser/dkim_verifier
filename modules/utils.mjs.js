@@ -1,7 +1,7 @@
 /**
  * General utility functions that do not have any dependencies.
  *
- * Copyright (c) 2013-2023 Philippe Lieser
+ * Copyright (c) 2013-2023;2025 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -128,11 +128,14 @@ export async function promiseWithTimeout(ms, promise) {
 		}, ms);
 	});
 
-	await Promise.race([
-		promise,
-		timeout
-	]);
-	clearTimeout(timeoutId);
+	try {
+		await Promise.race([
+			promise,
+			timeout
+		]);
+	} finally {
+		clearTimeout(timeoutId);
+	}
 	return promise;
 }
 

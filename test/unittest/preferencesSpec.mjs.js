@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2023 Philippe Lieser
+ * Copyright (c) 2020-2023;2025 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -457,6 +457,54 @@ describe("preferences [unittest]", function () {
 			expect(() =>
 				loadedPref["dns.nameserver"]
 			).to.throw();
+		});
+	});
+
+	describe("Managed storage", function () {
+		afterEach(async function () {
+			await fakeBrowser.storage.managed.clear();
+			// @ts-expect-error
+			pref._isInitializedDeferred = null;
+			await pref.init();
+			sinon.restore();
+		});
+
+		it("Managed default set that gets overwritten", async function () {
+			await fakeBrowser.storage.managed.set({ "dns.nameserver": "1.2.3.4" });
+			const pref2 = new StorageLocalPreferences();
+			await pref2.init();
+
+			expect(pref["dns.nameserver"]).to.be.equal("1.2.3.4");
+			expect(pref2["dns.nameserver"]).to.be.equal("1.2.3.4");
+
+			pref.setValue("dns.nameserver", "fooBar");
+			expect(pref["dns.nameserver"]).to.be.equal("fooBar");
+			expect(pref2["dns.nameserver"]).to.be.equal("fooBar");
+
+			await pref.clear();
+			await pref2.clear();
+			expect(pref["dns.nameserver"]).to.be.equal("1.2.3.4");
+			expect(pref2["dns.nameserver"]).to.be.equal("1.2.3.4");
+		});
+
+		it("Managed pref gets updated", async function () {
+			expect(pref["dns.nameserver"]).to.be.equal("8.8.8.8");
+
+			await fakeBrowser.storage.managed.set({ "dns.nameserver": "1.2.3.4" });
+			expect(pref["dns.nameserver"]).to.be.equal("1.2.3.4");
+
+			await fakeBrowser.storage.managed.set({ "dns.nameserver": "1.1.1.1" });
+			expect(pref["dns.nameserver"]).to.be.equal("1.1.1.1");
+		});
+
+		it("Managed storage not available", async function () {
+			const storageManagedGet = sinon.stub(fakeBrowser.storage.managed, "get");
+			storageManagedGet.rejects(new Error("Managed storage manifest not found"));
+
+			const loadedPref = new StorageLocalPreferences();
+			await loadedPref.init();
+			expect(storageManagedGet.calledOnce).to.be.true;
+			expect(loadedPref["dns.nameserver"]).to.be.equal("8.8.8.8");
 		});
 	});
 

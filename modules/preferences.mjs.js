@@ -593,6 +593,11 @@ export class ObjPreferences extends BasePreferences {
  * Keeps itself in sync with the storage.
  */
 export class StorageLocalPreferences extends BasePreferences {
+	/**
+	 * @type {{[prefName: string]: boolean|number|string|undefined}}
+	 */
+	#prefsManaged = {};
+
 	constructor() {
 		const checkInitialized = () => {
 			if (!this._isInitialized) {
@@ -602,7 +607,11 @@ export class StorageLocalPreferences extends BasePreferences {
 		super(
 			(name) => {
 				checkInitialized();
-				return this._prefs[name];
+				let value = this._prefs[name];
+				if (value === undefined) {
+					value = this.#prefsManaged[name];
+				}
+				return value;
 			},
 			(name, value) => {
 				checkInitialized();
@@ -636,12 +645,16 @@ export class StorageLocalPreferences extends BasePreferences {
 				}
 				this._prefs = preferences;
 			}
+			this.#prefsManaged = await ExtensionUtils.safeGetManagedStorage();
 			browser.storage.onChanged.addListener((changes, areaName) => {
-				if (areaName !== "local") {
-					return;
-				}
-				for (const [name, change] of Object.entries(changes)) {
-					this._prefs[name] = change.newValue;
+				if (areaName === "local") {
+					for (const [name, change] of Object.entries(changes)) {
+						this._prefs[name] = change.newValue;
+					}
+				} else if (areaName === "managed") {
+					for (const [name, change] of Object.entries(changes)) {
+						this.#prefsManaged[name] = change.newValue;
+					}
 				}
 			});
 			this._isInitialized = true;

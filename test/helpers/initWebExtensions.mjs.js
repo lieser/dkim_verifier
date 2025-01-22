@@ -2,7 +2,7 @@
  * Setup the global browser object and the extensionUtils module for the tests
  * environment.
  *
- * Copyright (c) 2020-2023 Philippe Lieser
+ * Copyright (c) 2020-2023;2025 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -224,6 +224,9 @@ class FakeStorage {
 		this.local.onChanged.addListener(
 			/** @type {(changes: any) => void} */
 			(changes) => { this.onChanged.addListener.yield(changes, "local"); });
+		this.managed.onChanged.addListener(
+			/** @type {(changes: any) => void} */
+			(changes) => { this.onChanged.addListener.yield(changes, "managed"); });
 	}
 }
 

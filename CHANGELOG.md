@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+### Enhancements
+
+- Support setting default values for preferences with Managed Storage (#268).
+
 ### Fixes
 
 - Encoding errors in the RSA/Ed25519 key or signature now result in an invalid DKIM signature instead of an internal error.
