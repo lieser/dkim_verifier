@@ -88,6 +88,7 @@
 
 <!ENTITY arh.read.label "Olvassa el a hitelesítési-eredmények fejlécet">
 <!ENTITY arh.replaceAddonResult.label "A hitelesítési-eredmények fejléc elolvasása helyettesíti a kiegészítők ellenőrzését">
+<!ENTITY arh.showDKIMResults.label "Show DKIM result from Authentication Results header">
 <!ENTITY arh.relaxedParsing.label "Próbálja meg elolvasni a nem RFC-kompatibilis hitelesítési-eredmények fejlécet">
 
 <!ENTITY acc.dkim.enable.label "Ellenőrizze a DKIM aláírásait:">

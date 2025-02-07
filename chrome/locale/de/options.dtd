@@ -88,6 +88,7 @@
 
 <!ENTITY arh.read.label "Lese Authentication-Results-Kopfzeile">
 <!ENTITY arh.replaceAddonResult.label "Das Lesen der Authentication-Results-Kopfzeile ersetzt die Prüfung durch das Add-on">
+<!ENTITY arh.showDKIMResults.label "DKIM-Ergebnis aus Authentication-Results-Kopfzeile anzeigen">
 <!ENTITY arh.relaxedParsing.label "Versuche Authentication-Results-Kopfzeilen zu lesen, die nicht RFC-konform sind">
 
 <!ENTITY acc.dkim.enable.label "Überprüfe DKIM-Signaturen:">

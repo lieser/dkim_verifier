@@ -87,7 +87,8 @@
 <!ENTITY display.keySecure.label "Indicate successful DNSSEC validation with a lock after the SDID">
 
 <!ENTITY arh.read.label "Read Authentication-Results header">
-<!ENTITY arh.replaceAddonResult.label "Reading the Authentication-Results header replaces the add-ons verification">
+<!ENTITY arh.replaceAddonResult.label "Reading the Authentication Results header replaces the add-ons verification">
+<!ENTITY arh.showDKIMResults.label "Show DKIM result from Authentication Results header">
 <!ENTITY arh.relaxedParsing.label "Try to read non RFC compliant Authentication-Results header">
 
 <!ENTITY acc.dkim.enable.label "Verify DKIM signatures:">
