@@ -299,9 +299,6 @@
 	"DKIM_SIGWARNING_FROM_NOT_IN_SDID": {
 		"message": "寄件者欄位域名並未包含在 SDID 內"
 	},
-	"DKIM_SIGWARNING_FROM_NOT_IN_AUID": {
-		"message": "寄件者欄位域名並未包含在 AUID 內"
-	},
 	"DKIM_SIGWARNING_UNSIGNED_HEADER": {
 		"message": "標頭欄位 '$1' 未受到簽章保護",
 		"description": "Warning if an important header is not signed"

@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 ### Enhancements
 
 - Support setting default values for preferences with Managed Storage (#268).
+- An explicit alignment between the AUID and the From address is no longer enforced.
 
 ### Fixes
 

@@ -301,9 +301,6 @@
 	"DKIM_SIGWARNING_FROM_NOT_IN_SDID": {
 		"message": "Поле 'Від' не з домену підпису"
 	},
-	"DKIM_SIGWARNING_FROM_NOT_IN_AUID": {
-		"message": "Поле 'Від' не відповідає ідентифікатору користувача"
-	},
 	"DKIM_SIGWARNING_UNSIGNED_HEADER": {
 		"message": "Заголовок '$1' не підписаний",
 		"description": "Warning if an important header is not signed"

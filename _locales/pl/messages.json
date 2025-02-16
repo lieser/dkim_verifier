@@ -301,9 +301,6 @@
 	"DKIM_SIGWARNING_FROM_NOT_IN_SDID": {
 		"message": "OD nie jest w domenie podpisującej"
 	},
-	"DKIM_SIGWARNING_FROM_NOT_IN_AUID": {
-		"message": "OD nie jest zgodne z identyfikatorem użytkownika"
-	},
 	"DKIM_SIGWARNING_UNSIGNED_HEADER": {
 		"message": "Nagłówek '$1' nie jest podpisany",
 		"description": "Warning if an important header is not signed"

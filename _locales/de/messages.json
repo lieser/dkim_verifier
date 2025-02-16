@@ -301,9 +301,6 @@
 	"DKIM_SIGWARNING_FROM_NOT_IN_SDID": {
 		"message": "Absender gehört nicht zur Domain"
 	},
-	"DKIM_SIGWARNING_FROM_NOT_IN_AUID": {
-		"message": "Absender passt nicht zur Benutzeridentität"
-	},
 	"DKIM_SIGWARNING_UNSIGNED_HEADER": {
 		"message": "Kopfzeile '$1' ist nicht signiert",
 		"description": "Warning if an important header is not signed"

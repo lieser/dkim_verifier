@@ -1126,9 +1126,6 @@ class DkimSignature {
 		if (!addrIsInDomain(this._msg.from, this._header.d)) {
 			warnings.push({ name: "DKIM_SIGWARNING_FROM_NOT_IN_SDID" });
 			log.debug("Warning: DKIM_SIGWARNING_FROM_NOT_IN_SDID");
-		} else if (!stringEndsWith(this._msg.from, this._header.i)) {
-			warnings.push({ name: "DKIM_SIGWARNING_FROM_NOT_IN_AUID" });
-			log.debug("Warning: DKIM_SIGWARNING_FROM_NOT_IN_AUID");
 		}
 	}
 

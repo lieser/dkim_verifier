@@ -468,6 +468,7 @@ describe("AuthVerifier [unittest]", function () {
 				const message = await createMessageHeader("rfc6376-A.2-arh-valid.eml");
 				const res = await authVerifier.verify(message);
 				expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
+				expect(res.dkim[0]?.warnings_str).to.be.empty;
 				expect(res.dkim[0]?.result_str).to.be.equal("Valid (Signed by example.com)");
 				expect(res.dkim[0]?.sdid).to.be.equal("example.com");
 				expect(res.dkim[0]?.auid).to.be.equal("@example.com");
@@ -477,6 +478,7 @@ describe("AuthVerifier [unittest]", function () {
 				const message = await createMessageHeader("rfc6376-A.2-arh-valid-auid.eml");
 				const res = await authVerifier.verify(message);
 				expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
+				expect(res.dkim[0]?.warnings_str).to.be.empty;
 				expect(res.dkim[0]?.result_str).to.be.equal("Valid (Signed by football.example.com)");
 				expect(res.dkim[0]?.sdid).to.be.equal("football.example.com");
 				expect(res.dkim[0]?.auid).to.be.equal("joe@football.example.com");
@@ -486,6 +488,7 @@ describe("AuthVerifier [unittest]", function () {
 				const message = await createMessageHeader("rfc6376-A.2-arh-valid-sdid_and_auid.eml");
 				const res = await authVerifier.verify(message);
 				expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
+				expect(res.dkim[0]?.warnings_str).to.be.empty;
 				expect(res.dkim[0]?.result_str).to.be.equal("Valid (Signed by example.com)");
 				expect(res.dkim[0]?.sdid).to.be.equal("example.com");
 				expect(res.dkim[0]?.auid).to.be.equal("joe@football.example.com");
@@ -528,7 +531,7 @@ describe("AuthVerifier [unittest]", function () {
 				const message = await createMessageHeader("rfc6376-A.2-arh-valid-a_tag.eml");
 				const res = await authVerifier.verify(message);
 				expect(res.dkim[0]?.result_str).to.be.equal("Valid (Signed by example.com)");
-				expect(res.dkim[0]?.warnings_str).to.be.deep.equal([]);
+				expect(res.dkim[0]?.warnings_str).to.be.empty;
 				expect(res.dkim[0]?.sdid).to.be.equal("example.com");
 				expect(res.dkim[0]?.auid).to.be.equal("@example.com");
 			});
@@ -552,7 +555,7 @@ describe("AuthVerifier [unittest]", function () {
 				prefs.setValue("error.algorithm.sign.rsa-sha1.treatAs", 2);
 				res = await authVerifier.verify(message);
 				expect(res.dkim[0]?.result_str).to.be.equal("Valid (Signed by example.com)");
-				expect(res.dkim[0]?.warnings_str).to.be.deep.equal([]);
+				expect(res.dkim[0]?.warnings_str).to.be.empty;
 				expect(res.dkim[0]?.sdid).to.be.equal("example.com");
 				expect(res.dkim[0]?.auid).to.be.equal("@example.com");
 			});

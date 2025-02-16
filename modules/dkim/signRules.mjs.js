@@ -1,7 +1,7 @@
 /**
  * Check DKIM signing rules.
  *
- * Copyright (c) 2013-2018;2020-2023 Philippe Lieser
+ * Copyright (c) 2013-2018;2020-2023;2025 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -343,8 +343,7 @@ function checkSDID(dkimResult, allowedSDIDs) {
 	// Remove potential warning that address is not in SDID or AUID,
 	// as the allowed SDIDs are explicitly stated via the sign rules
 	result.warnings = result.warnings.filter(warning => {
-		return warning.name !== "DKIM_SIGWARNING_FROM_NOT_IN_SDID" &&
-			warning.name !== "DKIM_SIGWARNING_FROM_NOT_IN_AUID";
+		return warning.name !== "DKIM_SIGWARNING_FROM_NOT_IN_SDID";
 	});
 
 	// error/warning if there is a SDID in the sign rule

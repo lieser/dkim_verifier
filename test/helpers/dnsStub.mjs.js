@@ -29,6 +29,14 @@ const txtRecords = new Map([
 		"DfzwQ/BC/e/8uBsCR+yz1Lxj+PL6lHvqMKrM3rG4hstT5QjvHO9PzoxZyVYLzBfO2EeC3" +
 		"Ip3G+2kryOTIKT+l/K4w3QIDAQAB"],
 
+	// The following DKIM key use the same RSA key as in RFC 6376
+	// AUID MUST NOT be a subdomain of SDID
+	["s.flags._domainkey.example.com", "v=DKIM1; t=s; p=" +
+		"MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDwIRP/UC3SBsEmGqZ9ZJW3/DkM" +
+		"oGeLnQg1fWn7/zYtIxN2SnFCjxOCKG9v3b4jYfcTNh5ijSsq631uBItLa7od+v/R" +
+		"tdC2UzJ1lWT947qR+Rcac2gbto/NMqJ0fzfVjH4OuKhitdY9tf6mcwGjaNBcWToI" +
+		"MmPSPDdQPNUYckcQ2QIDAQAB"],
+
 	["_dmarc.paypal.com", "v=DMARC1; p=reject; rua=mailto:d@rua.agari.com; ruf=mailto:d@ruf.agari.com"],
 
 	// Real world examples

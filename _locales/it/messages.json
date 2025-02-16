@@ -301,9 +301,6 @@
 	"DKIM_SIGWARNING_FROM_NOT_IN_SDID": {
 		"message": "Mittente non nel dominio della firma"
 	},
-	"DKIM_SIGWARNING_FROM_NOT_IN_AUID": {
-		"message": "Mittente non corrispondente all’identificativo utente"
-	},
 	"DKIM_SIGWARNING_UNSIGNED_HEADER": {
 		"message": "L’intestazione '$1' nonè firmata",
 		"description": "Warning if an important header is not signed"

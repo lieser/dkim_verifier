@@ -301,9 +301,6 @@
 	"DKIM_SIGWARNING_FROM_NOT_IN_SDID": {
 		"message": "'De' não está no domínio de assinatura"
 	},
-	"DKIM_SIGWARNING_FROM_NOT_IN_AUID": {
-		"message": "'De' não corresponde ao identificador do usuário"
-	},
 	"DKIM_SIGWARNING_UNSIGNED_HEADER": {
 		"message": "Cabeçalho '$1' não assinado",
 		"description": "Warning if an important header is not signed"
