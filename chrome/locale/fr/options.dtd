@@ -88,6 +88,7 @@
 
 <!ENTITY arh.read.label "Lecture du résultat de l'authentification de l'entête">
 <!ENTITY arh.replaceAddonResult.label "Lecture de l'en-tête Authentication-Results pour remplacer la vérification des add-ons">
+<!ENTITY arh.showDKIMResults.label "Show DKIM result from Authentication Results header">
 <!ENTITY arh.relaxedParsing.label "Essayer de lire une entête Authentication-Results non conforme à la RFC">
 
 <!ENTITY acc.dkim.enable.label "Vérifier les signatures DKIM:">

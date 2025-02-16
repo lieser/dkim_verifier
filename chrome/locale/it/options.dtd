@@ -88,6 +88,7 @@
 
 <!ENTITY arh.read.label "Leggi l’intestazione Authentication-Results">
 <!ENTITY arh.replaceAddonResult.label "La lettura dell’intestazione Authentication-Results sostituisce la verifica del componente aggiuntivo">
+<!ENTITY arh.showDKIMResults.label "Show DKIM result from Authentication Results header">
 <!ENTITY arh.relaxedParsing.label "Prova a caricare intestazioni Authentication-Results non conformi all’RFC">
 
 <!ENTITY acc.dkim.enable.label "Verifica le firme DKIM:">

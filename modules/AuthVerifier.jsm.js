@@ -166,14 +166,16 @@ var AuthVerifier = {
 				if (prefs.getBoolPref("arh.replaceAddonResult")) {
 					savedAuthResult = arhResult;
 				} else {
+					let arhProperty = {};
+					if (prefs.getBoolPref("arh.showDKIMResults")) {
+						arhProperty.dkim = arhResult.dkim;
+					}
 					savedAuthResult = {
 						version: "3.1",
 						dkim: [],
 						spf: arhResult.spf,
 						dmarc: arhResult.dmarc,
-						arh: {
-							dkim: arhResult.dkim
-						},
+						arh: arhProperty,
 						bimiIndicator: arhResult.bimiIndicator,
 					};
 				}
