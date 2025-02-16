@@ -2,7 +2,7 @@
  * A ChromeWorker wrapper for the libunbound DNS library.
  * Currently only the TXT resource record is completely supported.
  *
- * Copyright (c) 2016-2018;2020-2023 Philippe Lieser
+ * Copyright (c) 2016-2018;2020-2023;2025 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -13,12 +13,36 @@
 // @ts-check
 ///<reference path="./ctypes.d.ts" />
 ///<reference path="./libunbound.d.ts" />
-/* global ctypes, onmessage:writable, postMessage */
+/* global ctypes, onmessage:writable */
 /* exported onmessage */
 /* eslint-disable camelcase */
 
 "use strict";
 
+
+/**
+ * @param {Libunbound.Log} logMessage
+ */
+function postLogMessage(logMessage) {
+	// eslint-disable-next-line no-undef
+	postMessage(logMessage);
+}
+
+/**
+ * @param {Libunbound.Result} logMessage
+ */
+function postResultMessage(logMessage) {
+	// eslint-disable-next-line no-undef
+	postMessage(logMessage);
+}
+
+/**
+ * @param {Libunbound.Exception} logMessage
+ */
+function postExceptionMessage(logMessage) {
+	// eslint-disable-next-line no-undef
+	postMessage(logMessage);
+}
 
 const log_prefix = "libunboundWorker: ";
 const postLog = {
@@ -27,36 +51,28 @@ const postLog = {
 	 * @returns {void}
 	 */
 	error(msg) {
-		/** @type {Libunbound.Log} */
-		const toSend = { type: "log", subType: "error", message: log_prefix + msg };
-		postMessage(toSend);
+		postLogMessage({ type: "log", subType: "error", message: log_prefix + msg });
 	},
 	/**
 	 * @param {string} msg
 	 * @returns {void}
 	 */
 	warn(msg) {
-		/** @type {Libunbound.Log} */
-		const toSend = { type: "log", subType: "warn", message: log_prefix + msg };
-		postMessage(toSend);
+		postLogMessage({ type: "log", subType: "warn", message: log_prefix + msg });
 	},
 	/**
 	 * @param {string} msg
 	 * @returns {void}
 	 */
 	info(msg) {
-		/** @type {Libunbound.Log} */
-		const toSend = { type: "log", subType: "info", message: log_prefix + msg };
-		postMessage(toSend);
+		postLogMessage({ type: "log", subType: "info", message: log_prefix + msg });
 	},
 	/**
 	 * @param {string} msg
 	 * @returns {void}
 	 */
 	debug(msg) {
-		/** @type {Libunbound.Log} */
-		const toSend = { type: "log", subType: "debug", message: log_prefix + msg };
-		postMessage(toSend);
+		postLogMessage({ type: "log", subType: "debug", message: log_prefix + msg });
 	},
 };
 
@@ -478,40 +494,41 @@ onmessage = function (msg) {
 			switch (msg.data.method) {
 				case "resolve": {
 					/** @type {Libunbound.ResolveRequest} */
-					// @ts-expect-error
 					const req = msg.data;
 					res = resolve(req.name, req.rrtype);
 					break;
 				}
 				case "load": {
 					/** @type {Libunbound.LoadRequest} */
-					// @ts-expect-error
 					const req = msg.data;
 					load(req.path);
 					break;
 				}
 				case "update_ctx": {
 					/** @type {Libunbound.UpdateCtxRequest} */
-					// @ts-expect-error
 					const req = msg.data;
 					update_ctx(req.conf, req.debuglevel,
 						req.getNameserversFromOS, req.nameservers,
 						req.trustAnchors);
 					break;
 				}
-				default:
-					throw new Error(`unknown method ${msg.data.method}`);
+				default: {
+					// @ts-expect-error
+					const unknownMethod = msg.data.method;
+					throw new Error(`unknown method ${unknownMethod}`);
+				}
 			}
 
 			// return result
-			postMessage({
+			postResultMessage({
+				type: "result",
 				callId: msg.data.callId,
 				result: res,
 			});
 		} catch (exception) {
 			// @ts-expect-error
 			postLog.debug(`Posting exception back to main script: ${exception}; stack: ${exception.stack}`);
-			postMessage({
+			postExceptionMessage({
 				type: "error",
 				subType: "DKIM_DNSERROR_UNKNOWN",
 				callId: msg.data.callId,

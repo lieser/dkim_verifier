@@ -15,11 +15,6 @@ declare module browser {
 }
 
 namespace Libunbound {
-    interface LibunboundWorker extends Worker {
-        onmessage: (this: Worker, ev: WorkerResponse) => any;
-        postMessage(message: LoadRequest | ResolveRequest | UpdateCtxRequest, transfer?: any[]): void;
-    }
-
     interface Request {
         callId: number,
         method: string,
@@ -39,10 +34,11 @@ namespace Libunbound {
         nameservers: string[],
         trustAnchors: string[],
         conf?: string | undefined,
-        debuglevel?: number| undefined,
+        debuglevel?: number | undefined,
     }
+    type RequestMessages = LoadRequest | ResolveRequest | UpdateCtxRequest;
     interface WorkerRequest extends MessageEvent {
-        data: Request;
+        data: RequestMessages;
     }
 
     interface Log {
@@ -51,10 +47,11 @@ namespace Libunbound {
         message: string;
     }
     interface Response {
-        type?: string;
+        type: string;
         callId: number;
     }
     interface Result extends Response {
+        type: "result";
         result: ub_result | undefined;
     }
     interface Exception extends Response {
@@ -63,15 +60,19 @@ namespace Libunbound {
         message: string;
         stack: string;
     }
+    type ResponseMessages = Log | Result | Exception;;
     interface WorkerResponse extends MessageEvent {
-        data: Log | Response;
+        data: ResponseMessages;
+    }
+
+    interface LibunboundWorker extends Worker {
+        onmessage: (this: Worker, ev: WorkerResponse) => any;
+        postMessage(message: RequestMessages, transfer?: any[]): void;
     }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 //// For libunboundWorker.jsm.js
-
-declare function postMessage(WorkerResponse: Libunbound.Log | Libunbound.Result | Libunbound.Exception): void;
 
 interface ub_ctx_struct extends ctypes.StructTypeI {
     readonly ptr: ctypes.PointerTypeI<ub_ctx_struct>;

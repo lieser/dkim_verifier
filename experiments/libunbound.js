@@ -226,7 +226,6 @@ class LibunboundWorker {
 			// handle log messages
 			if (msg.data.type && msg.data.type === "log") {
 				/** @type {Libunbound.Log} */
-				// @ts-expect-error
 				const logMsg = msg.data;
 				switch (logMsg.subType) {
 					case "error":
@@ -248,35 +247,31 @@ class LibunboundWorker {
 				}
 				return;
 			}
-			/** @type {Libunbound.Response} */
-			// @ts-expect-error
-			const response = msg.data;
 
 			let exception;
-			if (response.type && response.type === "error") {
+			if (msg.data.type && msg.data.type === "error") {
 				/** @type {Libunbound.Exception} */
-				// @ts-expect-error
-				const ex = response;
+				const ex = msg.data;
 				exception = new Error(`Error in libunboundWorker: ${ex.message}; subType: ${ex.subType}; stack: ${ex.stack}`);
 			}
 
-			const defer = this._openCalls.get(response.callId);
+			const defer = this._openCalls.get(msg.data.callId);
 			if (defer === undefined) {
 				if (exception) {
 					console.error("Exception in libunboundWorker", exception);
 				} else {
-					console.error("Got unexpected callback:", response);
+					console.error("Got unexpected callback:", msg.data);
 				}
 				return;
 			}
-			this._openCalls.delete(response.callId);
+			this._openCalls.delete(msg.data.callId);
 			if (exception) {
 				defer.reject(exception);
 				return;
 			}
 			/** @type {Libunbound.Result} */
 			// @ts-expect-error
-			const res = response;
+			const res = msg.data;
 			defer.resolve(res.result);
 		} catch (e) {
 			console.error(e);
