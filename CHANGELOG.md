@@ -10,6 +10,8 @@ All notable changes to this project will be documented in this file.
 
 - Support setting default values for preferences with Managed Storage (#268).
 - An explicit alignment between the AUID and the From address is no longer enforced.
+- Authentication-Results header: If replacing the add-ons verification, the SDID alignment is checked against the From address (#452).
+- Authentication-Results header: If replacing the add-ons verification, the signature and hash algorithm are now shown in the details view.
 
 ### Fixes
 
