@@ -10,8 +10,8 @@ This file contains the information which versions of the third-party libraries a
 
 - Name: tabulator-tables
 - Source: npm
-- Version: 5.5.2
-- Download URL: <https://registry.npmjs.org/tabulator-tables/-/tabulator-tables-5.5.2.tgz>
+- Version: 6.3.1
+- Download URL: <https://registry.npmjs.org/tabulator-tables/-/tabulator-tables-6.3.1.tgz>
 
 ## tweetnacl-es6
 

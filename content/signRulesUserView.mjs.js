@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2024 Philippe Lieser
+ * Copyright (c) 2020-2025 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -143,16 +143,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 		],
 		selectable: true,
 		selectableRangeMode: "click",
-	});
-
-	// Workaround for https://github.com/olifolkerd/tabulator/issues/4277
-	// @ts-expect-error
-	table.eventBus?.subscribe("table-redraw", (/** @type {boolean} */ force) => {
-		if (!force) {
-			for (const row of table.getRows()) {
-				row.normalizeHeight();
-			}
-		}
 	});
 
 	table.on("cellEdited", async (cell) => {
