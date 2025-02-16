@@ -135,23 +135,11 @@ function arhDKIM_to_dkimSigResultV2(arhDKIM) {
 	}
 
 	// SDID and AUID
-	let sdid = arhDKIM.propertys.header.d;
-	let auid = arhDKIM.propertys.header.i;
-	if (sdid && auid) {
-		if (!stringEndsWith(getDomainFromAddr(auid), sdid)) {
-			dkimSigResult.result = "PERMFAIL";
-			dkimSigResult.errorType = "DKIM_SIGERROR_SUBDOMAIN_I";
-		}
-	} else if (sdid) {
-		auid = `@${sdid}`;
-	} else if (auid) {
-		sdid = getDomainFromAddr(auid);
+	if (arhDKIM.propertys.header.d) {
+		dkimSigResult.sdid = arhDKIM.propertys.header.d;
 	}
-	if (sdid) {
-		dkimSigResult.sdid = sdid;
-	}
-	if (auid) {
-		dkimSigResult.auid = auid;
+	if (arhDKIM.propertys.header.i) {
+		dkimSigResult.auid = arhDKIM.propertys.header.i;
 	}
 
 	// Used signature and hash algorithm
@@ -166,6 +154,26 @@ function arhDKIM_to_dkimSigResultV2(arhDKIM) {
 	}
 
 	return dkimSigResult;
+}
+
+/**
+ * Check and set SDID and AUID.
+ *
+ * @param {dkimSigResultV2} dkimSigResult
+ * @returns {void}
+ */
+function checkAndSetSdidAndAuid(dkimSigResult) {
+	if (dkimSigResult.sdid && dkimSigResult.auid) {
+		if (!stringEndsWith(getDomainFromAddr(dkimSigResult.auid), dkimSigResult.sdid)) {
+			dkimSigResult.result = "PERMFAIL";
+			dkimSigResult.errorType = "DKIM_SIGERROR_SUBDOMAIN_I";
+			dkimSigResult.warnings = [];
+		}
+	} else if (dkimSigResult.sdid) {
+		dkimSigResult.auid = `@${dkimSigResult.sdid}`;
+	} else if (dkimSigResult.auid) {
+		dkimSigResult.sdid = getDomainFromAddr(dkimSigResult.auid);
+	}
 }
 
 /**
@@ -244,6 +252,7 @@ export default function getArhResult(headers, from, account) {
 	// do some checks we also do for verification
 	if (prefs["arh.replaceAddonResult"]) {
 		for (const dkimSigResult of dkimSigResults) {
+			checkAndSetSdidAndAuid(dkimSigResult);
 			checkSignatureAlgorithm(dkimSigResult);
 			checkFromAlignment(from, dkimSigResult);
 		}

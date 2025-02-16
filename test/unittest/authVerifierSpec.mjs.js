@@ -430,17 +430,20 @@ describe("AuthVerifier [unittest]", function () {
 		it("spf and dkim result", async function () {
 			const message = await createMessageHeader("arh/rfc6376-A.2-arh-valid.eml");
 			let res = await authVerifier.verify(message);
+			expect(res.dkim.length).to.be.equal(1);
 			expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
 			expect(res.spf).to.be.equal(undefined);
 
 			await prefs.setValue("dkim.enable", false);
 
 			res = await authVerifier.verify(message);
+			expect(res.dkim.length).to.be.equal(1);
 			expect(res.dkim[0]?.result).to.be.equal("none");
 
 			await prefs.setValue("arh.read", true);
 
 			res = await authVerifier.verify(message);
+			expect(res.dkim.length).to.be.equal(1);
 			expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
 			expect((res.spf ?? [])[0]?.result).to.be.equal("pass");
 		});
@@ -466,27 +469,56 @@ describe("AuthVerifier [unittest]", function () {
 
 			it("DKIM pass with only SDID", async function () {
 				const message = await createMessageHeader("arh/rfc6376-A.2-arh-valid.eml");
-				const res = await authVerifier.verify(message);
+				let res = await authVerifier.verify(message);
+				expect(res.dkim.length).to.be.equal(1);
 				expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
 				expect(res.dkim[0]?.warnings_str).to.be.empty;
 				expect(res.dkim[0]?.result_str).to.be.equal("Valid (Signed by example.com)");
 				expect(res.dkim[0]?.sdid).to.be.equal("example.com");
 				expect(res.dkim[0]?.auid).to.be.equal("@example.com");
+
+				await prefs.setValue("arh.replaceAddonResult", false);
+
+				res = await authVerifier.verify(message);
+				expect(res.dkim.length).to.be.equal(1);
+				expect(res.dkim[0]?.result).to.be.equal("none");
+				const arhDkim = res.arh?.dkim ?? [];
+				expect(arhDkim.length).to.be.equal(1);
+				expect(arhDkim[0]?.sdid).to.be.equal("example.com");
+				expect(arhDkim[0]?.auid).to.be.undefined;
+				expect(arhDkim[0]?.result).to.be.equal("SUCCESS");
+				expect(arhDkim[0]?.result_str).to.be.equal("Valid (Signed by example.com)");
+				expect(arhDkim[0]?.warnings_str).to.be.empty;
 			});
 
 			it("DKIM pass with only AUID", async function () {
 				const message = await createMessageHeader("arh/rfc6376-A.2-arh-valid-auid.eml");
-				const res = await authVerifier.verify(message);
+				let res = await authVerifier.verify(message);
+				expect(res.dkim.length).to.be.equal(1);
 				expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
 				expect(res.dkim[0]?.warnings_str).to.be.empty;
 				expect(res.dkim[0]?.result_str).to.be.equal("Valid (Signed by football.example.com)");
 				expect(res.dkim[0]?.sdid).to.be.equal("football.example.com");
 				expect(res.dkim[0]?.auid).to.be.equal("joe@football.example.com");
+
+				await prefs.setValue("arh.replaceAddonResult", false);
+
+				res = await authVerifier.verify(message);
+				expect(res.dkim.length).to.be.equal(1);
+				expect(res.dkim[0]?.result).to.be.equal("none");
+				const arhDkim = res.arh?.dkim ?? [];
+				expect(arhDkim.length).to.be.equal(1);
+				expect(arhDkim[0]?.sdid).to.be.undefined;
+				expect(arhDkim[0]?.auid).to.be.equal("joe@football.example.com");
+				expect(arhDkim[0]?.result).to.be.equal("SUCCESS");
+				expect(arhDkim[0]?.result_str).to.be.equal("Valid (Signed by undefined)");
+				expect(arhDkim[0]?.warnings_str).to.be.empty;
 			});
 
 			it("DKIM pass with both SDID and AUID", async function () {
 				const message = await createMessageHeader("arh/rfc6376-A.2-arh-valid-sdid_and_auid.eml");
 				const res = await authVerifier.verify(message);
+				expect(res.dkim.length).to.be.equal(1);
 				expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
 				expect(res.dkim[0]?.warnings_str).to.be.empty;
 				expect(res.dkim[0]?.result_str).to.be.equal("Valid (Signed by example.com)");
@@ -497,6 +529,7 @@ describe("AuthVerifier [unittest]", function () {
 			it("DKIM pass with no SDID or AUID", async function () {
 				const message = await createMessageHeader("arh/rfc6376-A.2-arh-valid-no_sdid_or_auid.eml");
 				const res = await authVerifier.verify(message);
+				expect(res.dkim.length).to.be.equal(1);
 				expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
 				expect(res.dkim[0]?.result_str).to.be.equal("Valid (Signed by undefined)");
 				expect(res.dkim[0]?.warnings_str).to.be.deep.equal(["From is not in the signing domain"]);
@@ -507,17 +540,32 @@ describe("AuthVerifier [unittest]", function () {
 			it("From domain is not in the SDID", async function () {
 				// From: joe@football.example.com
 				const message = await createMessageHeader("arh/alignment-from_not_in_sdid.eml");
-				const res = await authVerifier.verify(message);
+				let res = await authVerifier.verify(message);
+				expect(res.dkim.length).to.be.equal(1);
 				expect(res.dkim[0]?.sdid).to.be.equal("unrelated.com");
 				expect(res.dkim[0]?.auid).to.be.equal("@unrelated.com");
 				expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
 				expect(res.dkim[0]?.result_str).to.be.equal("Valid (Signed by unrelated.com)");
 				expect(res.dkim[0]?.warnings_str).to.be.deep.equal(["From is not in the signing domain"]);
+
+				await prefs.setValue("arh.replaceAddonResult", false);
+
+				res = await authVerifier.verify(message);
+				expect(res.dkim.length).to.be.equal(1);
+				expect(res.dkim[0]?.result).to.be.equal("none");
+				const arhDkim = res.arh?.dkim ?? [];
+				expect(arhDkim.length).to.be.equal(1);
+				expect(arhDkim[0]?.sdid).to.be.equal("unrelated.com");
+				expect(arhDkim[0]?.auid).to.be.undefined;
+				expect(arhDkim[0]?.result).to.be.equal("SUCCESS");
+				expect(arhDkim[0]?.result_str).to.be.equal("Valid (Signed by unrelated.com)");
+				expect(arhDkim[0]?.warnings_str).to.be.empty;
 			});
 
 			it("AUID is not in the SDID", async function () {
 				const message = await createMessageHeader("arh/alignment-auid_not_in_sdid.eml");
 				let res = await authVerifier.verify(message);
+				expect(res.dkim.length).to.be.equal(1);
 				expect(res.dkim[0]?.sdid).to.be.equal("example.net");
 				expect(res.dkim[0]?.auid).to.be.equal("joe@football.example.com");
 				expect(res.dkim[0]?.result).to.be.equal("PERMFAIL");
@@ -526,15 +574,29 @@ describe("AuthVerifier [unittest]", function () {
 				await prefs.setValue("error.detailedReasons", true);
 
 				res = await authVerifier.verify(message);
+				expect(res.dkim.length).to.be.equal(1);
 				expect(res.dkim[0]?.sdid).to.be.equal("example.net");
 				expect(res.dkim[0]?.auid).to.be.equal("joe@football.example.com");
 				expect(res.dkim[0]?.result).to.be.equal("PERMFAIL");
 				expect(res.dkim[0]?.result_str).to.be.equal("Invalid (AUID is not in a subdomain of SDID)");
+
+				await prefs.setValue("arh.replaceAddonResult", false);
+
+				res = await authVerifier.verify(message);
+				expect(res.dkim.length).to.be.equal(1);
+				expect(res.dkim[0]?.result).to.be.equal("none");
+				const arhDkim = res.arh?.dkim ?? [];
+				expect(arhDkim.length).to.be.equal(1);
+				expect(arhDkim[0]?.sdid).to.be.equal("example.net");
+				expect(arhDkim[0]?.auid).to.be.equal("joe@football.example.com");
+				expect(arhDkim[0]?.result).to.be.equal("SUCCESS");
+				expect(arhDkim[0]?.warnings_str).to.be.empty;
 			});
 
 			it("DKIM fail with reason", async function () {
 				const message = await createMessageHeader("arh/rfc6376-A.2-arh-failed.eml");
 				const res = await authVerifier.verify(message);
+				expect(res.dkim.length).to.be.equal(1);
 				expect(res.dkim[0]?.result).to.be.equal("PERMFAIL");
 				expect(res.dkim[0]?.result_str).to.be.equal("Invalid (bad signature)");
 			});
@@ -542,6 +604,7 @@ describe("AuthVerifier [unittest]", function () {
 			it("DKIM fail without reason", async function () {
 				const message = await createMessageHeader("arh/rfc6376-A.2-arh-failed-no_reason.eml");
 				const res = await authVerifier.verify(message);
+				expect(res.dkim.length).to.be.equal(1);
 				expect(res.dkim[0]?.result).to.be.equal("PERMFAIL");
 				expect(res.dkim[0]?.result_str).to.be.equal("Invalid");
 			});
@@ -549,6 +612,7 @@ describe("AuthVerifier [unittest]", function () {
 			it("DKIM results should be sorted", async function () {
 				const message = await createMessageHeader("arh-multiple_dkim_results.eml");
 				const res = await authVerifier.verify(message);
+				expect(res.dkim.length).to.be.equal(7);
 				expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
 				expect(res.dkim[0]?.sdid).to.be.equal("example.com");
 				expect(res.dkim[1]?.result).to.be.equal("SUCCESS");
@@ -568,6 +632,7 @@ describe("AuthVerifier [unittest]", function () {
 			it("With secure signature algorithm", async function () {
 				const message = await createMessageHeader("arh/rfc6376-A.2-arh-valid-a_tag.eml");
 				const res = await authVerifier.verify(message);
+				expect(res.dkim.length).to.be.equal(1);
 				expect(res.dkim[0]?.result_str).to.be.equal("Valid (Signed by example.com)");
 				expect(res.dkim[0]?.warnings_str).to.be.empty;
 				expect(res.dkim[0]?.sdid).to.be.equal("example.com");
@@ -580,6 +645,7 @@ describe("AuthVerifier [unittest]", function () {
 				const message = await createMessageHeader("arh/rfc6376-A.2-arh-valid-a_tag_sha1.eml");
 
 				let res = await authVerifier.verify(message);
+				expect(res.dkim.length).to.be.equal(1);
 				expect(res.dkim[0]?.result_str).to.be.equal("Valid (Signed by example.com)");
 				expect(res.dkim[0]?.warnings_str).to.be.deep.equal(["Insecure signature algorithm"]);
 				expect(res.dkim[0]?.sdid).to.be.equal("example.com");
@@ -589,6 +655,7 @@ describe("AuthVerifier [unittest]", function () {
 
 				prefs.setValue("error.algorithm.sign.rsa-sha1.treatAs", 0);
 				res = await authVerifier.verify(message);
+				expect(res.dkim.length).to.be.equal(1);
 				expect(res.dkim[0]?.result).to.be.equal("PERMFAIL");
 				expect(res.dkim[0]?.result_str).to.be.equal("Invalid (Insecure signature algorithm)");
 				expect(res.dkim[0]?.sdid).to.be.equal("example.com");
@@ -598,6 +665,7 @@ describe("AuthVerifier [unittest]", function () {
 
 				prefs.setValue("error.algorithm.sign.rsa-sha1.treatAs", 2);
 				res = await authVerifier.verify(message);
+				expect(res.dkim.length).to.be.equal(1);
 				expect(res.dkim[0]?.result_str).to.be.equal("Valid (Signed by example.com)");
 				expect(res.dkim[0]?.warnings_str).to.be.empty;
 				expect(res.dkim[0]?.sdid).to.be.equal("example.com");
@@ -609,12 +677,14 @@ describe("AuthVerifier [unittest]", function () {
 			it("Sign rules should check SDID", async function () {
 				const fakePayPalMessage = await createMessageHeader("arh/fakePayPal.eml");
 				let res = await authVerifier.verify(fakePayPalMessage);
+				expect(res.dkim.length).to.be.equal(1);
 				expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
 				expect(res.dkim[0]?.warnings_str).to.be.deep.equal(["From is not in the signing domain"]);
 
 				await prefs.setValue("policy.signRules.enable", true);
 
 				res = await authVerifier.verify(fakePayPalMessage);
+				expect(res.dkim.length).to.be.equal(1);
 				expect(res.dkim[0]?.result).to.be.equal("PERMFAIL");
 				expect(res.dkim[0]?.result_str).to.be.equal("Invalid (Wrong signer (should be paypal.com))");
 			});
