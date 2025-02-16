@@ -1,6 +1,6 @@
 /**
  * Wrapper for the libunbound DNS library. The actual work is done in the
- * ChromeWorker libunboundWorker.jsm.js.
+ * ChromeWorker libunboundWorker.js.
  *
  * Copyright (c) 2013-2018;2020-2023 Philippe Lieser
  *
@@ -89,7 +89,7 @@ class LibunboundWorker {
 		/** @type {Libunbound.LibunboundWorker} */
 		this.worker =
 			//@ts-expect-error
-			new ChromeWorker("chrome://dkim_verifier_libunbound/content/libunboundWorker.jsm.js");
+			new ChromeWorker("chrome://dkim_verifier_libunbound/content/libunboundWorker.js");
 		this.worker.onmessage = (msg) => this.#onmessage(msg);
 
 		this.config = {

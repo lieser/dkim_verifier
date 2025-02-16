@@ -72,7 +72,7 @@ namespace Libunbound {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-//// For libunboundWorker.jsm.js
+//// For libunboundWorker.js
 
 interface ub_ctx_struct extends ctypes.StructTypeI {
     readonly ptr: ctypes.PointerTypeI<ub_ctx_struct>;
