@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2024 Philippe Lieser
+ * Copyright (c) 2020-2025 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
