@@ -17,14 +17,6 @@
 
 "use strict";
 
-// @ts-expect-error
-// eslint-disable-next-line no-var
-var OS;
-if (typeof PathUtils === "undefined") {
-	// TB < 115
-	({ OS } = ChromeUtils.import("resource://gre/modules/osfile.jsm"));
-}
-
 /**
  * The result of the query.
  * Does differ from the original ub_result a bit.
@@ -121,9 +113,6 @@ class LibunboundWorker {
 			path = this.config.path.
 				split(";").
 				map(e => {
-					if (OS) {
-						return OS.Path.join(OS.Constants.Path.profileDir, e);
-					}
 					return PathUtils.join(PathUtils.profileDir, ...e.split(/\/|\\/));
 				}).
 				join(";");

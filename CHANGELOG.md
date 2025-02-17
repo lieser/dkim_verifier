@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 
 ### Breaking Changes
 
+- Now requires at least Thunderbird 128.
 - Remove migration of options from versions before 4.0.0.
 
 ## 5.6.0 (2025-02-17)

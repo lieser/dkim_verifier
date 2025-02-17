@@ -16,9 +16,9 @@
 "use strict";
 
 /** @type {{ExtensionParent: ExtensionParentM}} */
-const { ExtensionParent } = ChromeUtils.import("resource://gre/modules/ExtensionParent.jsm");
+const { ExtensionParent } = ChromeUtils.importESModule("resource://gre/modules/ExtensionParent.sys.mjs");
 /** @type {{ExtensionSupport: ExtensionSupportM}} */
-const { ExtensionSupport } = ChromeUtils.import("resource:///modules/ExtensionSupport.jsm");
+const { ExtensionSupport } = ChromeUtils.importESModule("resource:///modules/ExtensionSupport.sys.mjs");
 
 /**
  * The localized DKIM "loading" string.
@@ -436,9 +436,6 @@ class DKIMHeaderField {
 
 		const headerValue = document.createElement("div");
 		headerValue.classList.add("headerValue");
-		// Needed for TB < 96
-		headerValue.style.display = "flex";
-		headerValue.style.alignItems = "center";
 		// TB >= 99 sets "wrap" for the "headerValue" class
 		headerValue.style.flexWrap = "nowrap";
 
@@ -624,15 +621,6 @@ class DkimHeaderRow {
 		} else {
 			this.element.style.display = "none";
 		}
-		// Trigger the OnResizeExpandedHeaderView() function from Thunderbird
-		// to recalculate the height on the expandedHeaderView element in TB<=98.
-		const defaultView = this.document.defaultView;
-		if (defaultView) {
-			const window = defaultView.window;
-			if (window.OnResizeExpandedHeaderView) {
-				window.OnResizeExpandedHeaderView();
-			}
-		}
 	}
 
 	/**
@@ -670,23 +658,14 @@ class DkimHeaderRow {
 	 * @returns {void}
 	 */
 	static add(document) {
-		let headerRowElement;
 		let headerRowContainer = document.getElementById("expandedHeaders2");
-		/** @type {InsertPosition|undefined} */
-		let position;
-		if (headerRowContainer) {
-			// TB < 96
-			headerRowElement = this.#createTableRowElement(document);
-			position = "beforeend";
-		} else {
-			// TB >= 96
-			headerRowContainer = document.getElementById("extraHeadersArea");
-			if (!headerRowContainer) {
-				throw new Error("Could not find the expandedHeaders2 element");
-			}
-			headerRowElement = this.#createDivRowElement(document);
-			position = "beforebegin";
+		headerRowContainer = document.getElementById("extraHeadersArea");
+		if (!headerRowContainer) {
+			throw new Error("Could not find the expandedHeaders2 element");
 		}
+		const headerRowElement = this.#createDivRowElement(document);
+		/** @type {InsertPosition} */
+		const position = "beforebegin";
 		const headerRow = new DkimHeaderRow(document, headerRowElement);
 		headerRow.show(false);
 		headerRowContainer.insertAdjacentElement(position, headerRow.element);
@@ -712,10 +691,7 @@ class DkimHeaderRow {
 	 */
 	static syncColumns(window) {
 		try {
-			if (window.syncGridColumnWidths) {
-				// TB <102
-				window.syncGridColumnWidths();
-			} else if (window.updateExpandedView) {
+			if (window.updateExpandedView) {
 				// TB >=102
 				// Calling `gMessageHeader.syncLabelsColumnWidths()` directly is not possible,
 				// as `gMessageHeader` is not part of the `window` object.
@@ -734,33 +710,6 @@ class DkimHeaderRow {
 		} catch (error) {
 			console.warn("DKIM: Function to sync header column failed:", error);
 		}
-	}
-
-	/**
-	 * Create a table based header row element.
-	 * Used in TB 78-95.
-	 * Should be added to the `expandedHeaders2` element.
-	 *
-	 * @param {Document} document
-	 * @returns {HTMLElement}
-	 */
-	static #createTableRowElement(document) {
-		const headerRow = document.createElement("tr");
-		headerRow.id = DkimHeaderRow._id;
-
-		const headerRowTitle = document.createElement("th");
-		const headerRowTitleLabel = document.createXULElement("label");
-		headerRowTitleLabel.classList.add("headerName");
-		headerRowTitleLabel.textContent = "DKIM";
-		headerRowTitle.appendChild(headerRowTitleLabel);
-
-		const headerRowValue = document.createElement("td");
-		const dkimHeaderField = new DKIMHeaderField(document);
-		headerRowValue.appendChild(dkimHeaderField.element);
-
-		headerRow.appendChild(headerRowTitle);
-		headerRow.appendChild(headerRowValue);
-		return headerRow;
 	}
 
 	/**
@@ -921,8 +870,7 @@ class DkimFavicon {
 			hboxWrapper.appendChild(favicon.element);
 			wrap(expandedFromBox.recipientsList, hboxWrapper);
 		} else {
-			// TB <102
-			expandedFromBox.prepend(favicon.element);
+			throw new Error("expandedFromBox.recipientsList not defined");
 		}
 	}
 
@@ -981,29 +929,8 @@ class DkimFromAddress {
 			return [fromRecipient0Display];
 		}
 
-		// TB <102
-		// eslint-disable-next-line no-extra-parens
-		const expandedFromBox = /** @type {expandedfromBox?} */ (document.getElementById("expandedfromBox"));
-		if (!expandedFromBox) {
-			console.debug("DKIM: from address not found (no expandedfromBox)");
-			return [];
-		}
-		if (!("emailAddresses" in expandedFromBox)) {
-			console.debug("DKIM: from address not found (no expandedFromBox.emailAddresses)");
-			return [];
-		}
-		const mailEmailadress = expandedFromBox.emailAddresses.firstElementChild;
-		if (!mailEmailadress) {
-			console.debug("DKIM: from address not found (no firstElementChild)");
-			return [];
-		}
-		const emailValue = mailEmailadress.getElementsByClassName("emaillabel")[0];
-		if (!emailValue) {
-			console.debug("DKIM: from address not found (no emaillabel)");
-			return [];
-		}
-		// eslint-disable-next-line no-extra-parens
-		return [/** @type {HTMLElement} */ (emailValue)];
+		console.warn("DKIM: from address not found (no fromRecipient0Display)");
+		return [];
 	}
 
 	/**
@@ -1192,8 +1119,7 @@ this.dkimHeader = class extends ExtensionCommon.ExtensionAPI {
 	 */
 	#getMessageBrowserWindow(window) {
 		if (window.gMessageListeners) {
-			// TB < 111
-			return window;
+			console.warn("DKIM: #getMessageBrowserWindow called for what seems to be already the inner window");
 		}
 
 		// TB >= 111
@@ -1225,7 +1151,7 @@ this.dkimHeader = class extends ExtensionCommon.ExtensionAPI {
 			chromeURLs: this.windowURLs,
 			onLoadWindow: window => {
 				const messageBrowserWindow = this.#getMessageBrowserWindow(window);
-				DkimResetMessageListener.register(this.#getMessageBrowserWindow(messageBrowserWindow));
+				DkimResetMessageListener.register(messageBrowserWindow);
 			},
 			onUnloadWindow: window => {
 				const messageBrowserWindow = this.#getMessageBrowserWindow(window);
@@ -1302,17 +1228,6 @@ this.dkimHeader = class extends ExtensionCommon.ExtensionAPI {
 	 */
 	#getWindowAndIdOfMsgShownInTab(tabId) {
 		const tab = this.extension.tabManager.get(tabId);
-
-		const tabGlobal = Cu.getGlobalForObject(tab.nativeTab);
-		if (tabGlobal.gFolderDisplay) {
-			// TB < 111
-			const msg = this.extension.messageManager.convert(
-				tabGlobal.gFolderDisplay.selectedMessage);
-			return {
-				window: tabGlobal,
-				id: msg.id,
-			};
-		}
 
 		// TB >= 111
 
