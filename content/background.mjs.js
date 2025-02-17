@@ -14,7 +14,6 @@
 import * as Conversations from "../modules/conversation.mjs.js";
 import KeyStore, { KeyDb } from "../modules/dkim/keyStore.mjs.js";
 import SignRules, { initSignRulesProxy } from "../modules/dkim/signRules.mjs.js";
-import { migrateKeyStore, migratePrefs, migrateSignRulesUser } from "../modules/migration.mjs.js";
 import AuthVerifier from "../modules/authVerifier.mjs.js";
 import Logging from "../modules/logging.mjs.js";
 import MsgParser from "../modules/msgParser.mjs.js";
@@ -30,13 +29,10 @@ const log = Logging.getLogger("background");
 async function init() {
 	await Logging.initLogLevelFromPrefs();
 
-	await migratePrefs();
 	await prefs.init();
 
-	await migrateSignRulesUser();
 	initSignRulesProxy();
 
-	await migrateKeyStore();
 	KeyDb.initProxy();
 }
 const isInitialized = init();

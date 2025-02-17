@@ -160,11 +160,6 @@ declare module ExtensionSupportM {
     const openWindows: Window[];
 }
 
-/** JavaScript code module "resource://gre/modules/FileUtils.jsm" */
-declare module FileUtils {
-    function File(path: string): nsIFile;
-}
-
 /** JavaScript code module "resource://gre/modules/osfile.jsm" (removed in TB >= 115) */
 declare module OS {
     declare module Path {
