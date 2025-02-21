@@ -15,7 +15,7 @@
  * The above copyright and license notice shall be
  * included in all copies or substantial portions of the Software.
  */
- 
+
 // options for ESLint
 /* global Components */
 /* global Logging, rfcParser */
@@ -34,8 +34,8 @@ Cu.import("resource://dkim_verifier/logging.jsm.js");
 Cu.import("resource://dkim_verifier/ARHParser.jsm.js");
 Cu.import("resource://dkim_verifier/rfcParser.jsm.js");
 
-let BIMI = (function() {	
-	
+let BIMI = (function() {
+
 	const log = Logging.getLogger("BIMI");
 
 	let that = {
@@ -59,12 +59,12 @@ let BIMI = (function() {
 			const hasAuthorityPassBIMI = arhBIMI.some(
 				arh => arh.method === "bimi" &&
 					arh.result === "pass" &&
-					arh.propertys.policy.authority === "pass"
+					arh.properties.policy.authority === "pass"
 			);
 			if (!hasAuthorityPassBIMI) {
 				return null;
 			}
-		
+
 			const bimiIndicators = headers.get("bimi-indicator") || [];
 			if (bimiIndicators.length > 1) {
 				log.warn("Message contains more than one BIMI-Indicator header");
@@ -75,14 +75,14 @@ let BIMI = (function() {
 				log.warn("Message contains an ARH with passing BIMI but does not have a BIMI-Indicator header");
 				return null;
 			}
-		
+
 			// TODO: If in the future we support ARC we might want to check the policy.indicator-hash
-		
+
 			// Remove header name and new line at end
 			bimiIndicator = bimiIndicator.slice("bimi-indicator:".length, -"\r\n".length);
 			// Remove all whitespace
 			bimiIndicator = bimiIndicator.replace(new RegExp(`${rfcParser.get("FWS")}`, "g"), "");
-		
+
 			return bimiIndicator;
 		}
 	};
