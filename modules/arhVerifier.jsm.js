@@ -15,7 +15,7 @@
 // options for ESLint
 /* global Components, Services */
 /* global Logging, arhParser, BIMI */
-/* global PREF, domainIsInDomain, getDomainFromAddr, addrIsInDomain, stringEndsWith, copy */
+/* global PREF, domainIsInDomain, getDomainFromAddr, stringEndsWith, copy, DKIM_SigError */
 /* exported EXPORTED_SYMBOLS, arhVerifier, getARHResult */
 
 "use strict";
@@ -33,6 +33,9 @@ Cu.import("resource://dkim_verifier/logging.jsm.js");
 Cu.import("resource://dkim_verifier/helper.jsm.js");
 Cu.import("resource://dkim_verifier/arhParser.jsm.js");
 Cu.import("resource://dkim_verifier/bimi.jsm.js");
+// @ts-ignore
+let DKIM = {};
+Cu.import("resource://dkim_verifier/dkimPolicy.jsm.js", DKIM);
 
 // @ts-ignore
 const PREF_BRANCH = "extensions.dkim_verifier.";
@@ -130,16 +133,16 @@ function getARHResult(msgHdr, msg) {
 		// Additional checks from DKIM Verifier
 		for (let i = 0; i < dkimSigResults.length; i++) {
 			let arhResult = dkimSigResults[i].result;
-
-			checkSignatureAlgorithm(dkimSigResults[i]);
 			checkAndSetSdidAndAuid(dkimSigResults[i]);
-			checkFromAlignment(msg.from, dkimSigResults[i]);
+			checkSignPolicy(msg, dkimSigResults[i]);
+			checkSignatureAlgorithm(dkimSigResults[i]);
 
 			if (arhResult !== dkimSigResults[i].result
 				// @ts-ignore
 				|| (dkimSigResults[i].warnings && dkimSigResults[i].warnings.length > 0)
 			   ) {
 				dkimSigResults[i].verifiedBy += " & DKIM Verifier";
+				if (dkimSigResults[i].result !== "SUCCESS") { dkimSigResults[i].warnings = []; }
 			}
 		}
 	}
@@ -249,27 +252,6 @@ function checkAndSetSdidAndAuid(dkimSigResult) {
 }
 
 /**
- * Check alignment of the from address.
- *
- * @param {string} from
- * @param {dkimSigResultV2} dkimSigResult
- * @returns {void}
- */
-function checkFromAlignment(from, dkimSigResult) {
-	if (dkimSigResult.result !== "SUCCESS") {
-		return;
-	}
-	if (!dkimSigResult.warnings) {
-		dkimSigResult.warnings = [];
-	}
-
-	// warning if from is not in SDID or AUID
-	if (!addrIsInDomain(from, dkimSigResult.sdid ? dkimSigResult.sdid : "")) {
-		dkimSigResult.warnings.push({ name: "DKIM_SIGWARNING_FROM_NOT_IN_SDID" });
-	}
-}
-
-/**
  * Check the signature algorithm.
  *
  * @param {dkimSigResultV2} dkimSigResult
@@ -296,8 +278,40 @@ function checkSignatureAlgorithm(dkimSigResult) {
 				break;
 			case 2: // ignore
 				break;
-			default:
+			default: // should not happen
 				throw new Error("invalid error.algorithm.sign.rsa-sha1.treatAs");
+		}
+	}
+}
+
+/**
+ * Check signing policies and alignment of the from address.
+ *
+ * @param {Object} msg
+ * @param {dkimSigResultV2} dkimSigResult
+ * @returns {void}
+ */
+function checkSignPolicy(msg, dkimSigResult) {
+	if (!dkimSigResult.warnings) {
+		dkimSigResult.warnings = [];
+	}
+
+	try {
+		DKIM.Policy.checkSDID(msg.DKIMSignPolicy.sdid,
+							  msg.from,
+							  // @ts-ignore
+							  dkimSigResult.sdid ? dkimSigResult.sdid : "",
+							  dkimSigResult.warnings);
+	} catch(e) {
+		if (e instanceof DKIM_SigError) {
+			dkimSigResult.result = "PERMFAIL";
+			dkimSigResult.errorType = e.errorType;
+			dkimSigResult.errorStrParams = e.errorStrParams;
+			dkimSigResult.warnings = [];
+			log.warn("Exception in sign policy check on ARH : " + dkimSigResult.verifiedBy);
+		} else {
+			dkimSigResult.result = "TEMPFAIL";
+			log.fatal("Error during ARH sign policy check:", e);
 		}
 	}
 }

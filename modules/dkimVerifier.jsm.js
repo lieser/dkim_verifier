@@ -1111,8 +1111,7 @@ var Verifier = (function() {
 	// eslint-disable-next-line complexity
 	async function verifySignature(msg, DKIMSignature) {
 		// check SDID and AUID
-		Policy.checkSDID(msg.DKIMSignPolicy.sdid, msg.from, DKIMSignature.d,
-			DKIMSignature.i, DKIMSignature.warnings);
+		Policy.checkSDID(msg.DKIMSignPolicy.sdid, msg.from, DKIMSignature.d, DKIMSignature.warnings);
 
 		// check signed headers
 		Policy.checkHeadersSigned(msg.headerFields, DKIMSignature);
