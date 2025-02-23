@@ -31,7 +31,7 @@ var EXPORTED_SYMBOLS = [
 const Cu = Components.utils;
 
 Cu.import("resource://dkim_verifier/logging.jsm.js");
-Cu.import("resource://dkim_verifier/ARHParser.jsm.js");
+Cu.import("resource://dkim_verifier/arhParser.jsm.js");
 Cu.import("resource://dkim_verifier/rfcParser.jsm.js");
 
 let BIMI = (function() {

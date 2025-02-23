@@ -27,7 +27,7 @@
 // options for ESLint
 /* eslint strict: ["warn", "function"] */
 /* global Components, Services */
-/* global Logging, Key, Policy, MsgReader, rfcParser */
+/* global Logging, Key, Policy, msgReader, rfcParser */
 /* global dkimStrings, addrIsInDomain2, domainIsInDomain, stringEndsWith, stringEqual, writeStringToTmpFile, toType, DKIM_SigError, DKIM_TempError, DKIM_Error, copy */
 /* exported EXPORTED_SYMBOLS, Verifier */
 
@@ -51,7 +51,7 @@ Cu.import("resource://dkim_verifier/logging.jsm.js");
 Cu.import("resource://dkim_verifier/helper.jsm.js");
 Cu.import("resource://dkim_verifier/dkimKey.jsm.js");
 Cu.import("resource://dkim_verifier/dkimPolicy.jsm.js");
-Cu.import("resource://dkim_verifier/MsgReader.jsm.js");
+Cu.import("resource://dkim_verifier/msgReader.jsm.js");
 Cu.import("resource://dkim_verifier/rfcParser.jsm.js");
 
 // namespaces
@@ -1418,7 +1418,7 @@ var that = {
 	/**
 	 * Verifies the message with the given msgURI.
 	 *
-	 * @deprecated Use verify2() or AuthVerifier.verify() instead.
+	 * @deprecated Use verify2() or authVerifier.verify() instead.
 	 * @param {String} msgURI
 	 * @param {dkimResultCallback} dkimResultCallback
 	 * @return {void}
@@ -1511,11 +1511,11 @@ var that = {
 			// read msg
 			/** @type {Msg} */
 			// @ts-expect-error
-			let msg = await MsgReader.read(msgURI);
+			let msg = await msgReader.read(msgURI);
 			msg.msgURI = msgURI;
 
 			// parse the header
-			msg.headerFields = MsgReader.parseHeader(msg.headerPlain);
+			msg.headerFields = msgReader.parseHeader(msg.headerPlain);
 
 			let msgHeaderParser = Cc["@mozilla.org/messenger/headerparser;1"].
 				createInstance(Ci.nsIMsgHeaderParser);

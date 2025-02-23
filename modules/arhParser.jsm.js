@@ -1,5 +1,5 @@
 /*
- * ARHParser.jsm.js
+ * arhParser.jsm.js
  *
  * Parser for the Authentication-Results header as specified in RFC 7601.
  *
@@ -16,7 +16,7 @@
 // options for ESLint
 /* global Components, Services */
 /* global Logging, rfcParser, DKIM_Error */
-/* exported EXPORTED_SYMBOLS, ARHParser */
+/* exported EXPORTED_SYMBOLS, arhParser */
 
 "use strict";
 
@@ -24,7 +24,7 @@
 const module_version = "1.2.1";
 
 var EXPORTED_SYMBOLS = [
-	"ARHParser"
+	"arhParser"
 ];
 
 // @ts-ignore
@@ -42,7 +42,7 @@ Cu.import("resource://dkim_verifier/rfcParser.jsm.js");
 // @ts-ignore
 var prefs = Services.prefs.getBranch(PREF_BRANCH);
 // @ts-ignore
-const log = Logging.getLogger("ARHParser");
+const log = Logging.getLogger("arhParser");
 
 /**
  * @typedef {Object} ARHHeader
@@ -67,7 +67,7 @@ const log = Logging.getLogger("ARHParser");
  *           ARHResinfo can also include other properties besides the aboves.
  */
 
-let ARHParser = {
+let arhParser = {
 	get version() { return module_version; },
 
 	/**
@@ -77,7 +77,7 @@ let ARHParser = {
 	 *  @return {ARHHeader} Parsed Authentication-Results header
 	 *  @throws {DKIM_Error}
 	 */
-	parse: function _ARHParser_parse(authresHeader) {
+	parse: function _arhParser_parse(authresHeader) {
 		// remove header name
 		authresHeader = authresHeader.replace(
 			new RegExp(`^Authentication-Results:${rfcParser.get("CFWS_op")}`, "i"), "");

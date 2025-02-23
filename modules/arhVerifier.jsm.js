@@ -14,9 +14,9 @@
 
 // options for ESLint
 /* global Components, Services */
-/* global Logging, ARHParser, BIMI */
+/* global Logging, arhParser, BIMI */
 /* global PREF, domainIsInDomain, getDomainFromAddr, addrIsInDomain, stringEndsWith, copy */
-/* exported EXPORTED_SYMBOLS, ARHVerifier, getARHResult */
+/* exported EXPORTED_SYMBOLS, arhVerifier, getARHResult */
 
 "use strict";
 
@@ -31,14 +31,14 @@ Cu.import("resource://gre/modules/Services.jsm");
 
 Cu.import("resource://dkim_verifier/logging.jsm.js");
 Cu.import("resource://dkim_verifier/helper.jsm.js");
-Cu.import("resource://dkim_verifier/ARHParser.jsm.js");
+Cu.import("resource://dkim_verifier/arhParser.jsm.js");
 Cu.import("resource://dkim_verifier/bimi.jsm.js");
 
 // @ts-ignore
 const PREF_BRANCH = "extensions.dkim_verifier.";
 
 // @ts-ignore
-let log = Logging.getLogger("ARHVerifier");
+let log = Logging.getLogger("arhVerifier");
 // @ts-ignore
 let prefs = Services.prefs.getBranch(PREF_BRANCH);
 
@@ -89,7 +89,7 @@ function getARHResult(msgHdr, msg) {
 	for (let i = 0; i < msg.headerFields.get("authentication-results").length; i++) {
 		let arh;
 		try {
-			arh = ARHParser.parse(msg.headerFields.get("authentication-results")[i]);
+			arh = arhParser.parse(msg.headerFields.get("authentication-results")[i]);
 		} catch (exception) {
 			log.error("Ignoring error in parsing of ARH", exception);
 			continue;

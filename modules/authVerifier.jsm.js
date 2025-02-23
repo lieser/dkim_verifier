@@ -1,5 +1,5 @@
 /*
- * AuthVerifier.jsm.js
+ * authVerifier.jsm.js
  *
  * Authentication Verifier.
  *
@@ -17,7 +17,7 @@
 /* global Components, Services, MailServices */
 /* global Logging */
 /* global PREF, dkimStrings, tryGetFormattedString, addrIsInDomain, saveAuthResult, loadAuthResult, getARHResult */
-/* exported EXPORTED_SYMBOLS, AuthVerifier */
+/* exported EXPORTED_SYMBOLS, authVerifier */
 
 "use strict";
 
@@ -25,7 +25,7 @@
 const module_version = "1.4.0";
 
 var EXPORTED_SYMBOLS = [
-	"AuthVerifier"
+	"authVerifier"
 ];
 
 // @ts-ignore
@@ -42,7 +42,7 @@ Cu.import("resource:///modules/iteratorUtils.jsm");
 Cu.import("resource://dkim_verifier/logging.jsm.js");
 Cu.import("resource://dkim_verifier/helper.jsm.js");
 Cu.import("resource://dkim_verifier/resultStorage.jsm.js");
-Cu.import("resource://dkim_verifier/ARHVerifier.jsm.js");
+Cu.import("resource://dkim_verifier/arhVerifier.jsm.js");
 // @ts-ignore
 let DKIM = {};
 Cu.import("resource://dkim_verifier/dkimPolicy.jsm.js", DKIM);
@@ -52,7 +52,7 @@ Cu.import("resource://dkim_verifier/dkimVerifier.jsm.js", DKIM);
 const PREF_BRANCH = "extensions.dkim_verifier.";
 
 // @ts-ignore
-let log = Logging.getLogger("AuthVerifier");
+let log = Logging.getLogger("authVerifier");
 // @ts-ignore
 let prefs = Services.prefs.getBranch(PREF_BRANCH);
 
@@ -100,7 +100,7 @@ let prefs = Services.prefs.getBranch(PREF_BRANCH);
  */
 // @ts-ignore
 
-var AuthVerifier = {
+var authVerifier = {
 	get version() { return module_version; },
 
 	DKIM_RES: {
@@ -255,7 +255,7 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 	let authResultDKIM = dkimSigResult;
 	switch(dkimSigResult.result) {
 		case "SUCCESS": {
-			authResultDKIM.res_num = AuthVerifier.DKIM_RES.SUCCESS;
+			authResultDKIM.res_num = authVerifier.DKIM_RES.SUCCESS;
 			let keySecureStr = "";
 			if (dkimSigResult.keySecure &&
 			    prefs.getBoolPref("display.keySecure")) {
@@ -277,7 +277,7 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 			break;
 		}
 		case "TEMPFAIL":
-			authResultDKIM.res_num = AuthVerifier.DKIM_RES.TEMPFAIL;
+			authResultDKIM.res_num = authVerifier.DKIM_RES.TEMPFAIL;
 			authResultDKIM.result_str =
 				(dkimSigResult.errorType &&
 					tryGetFormattedString(dkimStrings, dkimSigResult.errorType,
@@ -287,9 +287,9 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 			break;
 		case "PERMFAIL": {
 			if (dkimSigResult.hideFail) {
-				authResultDKIM.res_num = AuthVerifier.DKIM_RES.PERMFAIL_NOSIG;
+				authResultDKIM.res_num = authVerifier.DKIM_RES.PERMFAIL_NOSIG;
 			} else {
-				authResultDKIM.res_num = AuthVerifier.DKIM_RES.PERMFAIL;
+				authResultDKIM.res_num = authVerifier.DKIM_RES.PERMFAIL;
 			}
 			let errorType = dkimSigResult.errorType;
 			let errorMsg;
@@ -379,14 +379,14 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 			break;
 		}
 		case "none":
-			authResultDKIM.res_num = AuthVerifier.DKIM_RES.NOSIG;
+			authResultDKIM.res_num = authVerifier.DKIM_RES.NOSIG;
 			authResultDKIM.result_str = dkimStrings.getString("NOSIG");
 			break;
 		default:
 			throw new Error(`unknown result: ${dkimSigResult.result}`);
 	}
 
-	if (dkimSigResult.errorType !== "DKIM_POLICYERROR_MISSING_SIG" && authResultDKIM.res_num !== AuthVerifier.DKIM_RES.NOSIG) {
+	if (dkimSigResult.errorType !== "DKIM_POLICYERROR_MISSING_SIG" && authResultDKIM.res_num !== authVerifier.DKIM_RES.NOSIG) {
 		let sdid = dkimSigResult.sdid;
 		let auid = dkimSigResult.auid;
 		let verifiedBy = dkimSigResult.verifiedBy;
