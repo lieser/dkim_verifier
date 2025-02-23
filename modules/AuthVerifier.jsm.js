@@ -163,6 +163,8 @@ var AuthVerifier = {
 			let arhResult = getARHResult(msgHdr, msg);
 
 			if (arhResult) {
+				// sort signatures
+				DKIM.Verifier.sortSignatures(msg, arhResult.dkim);
 				if (prefs.getBoolPref("arh.replaceAddonResult")) {
 					savedAuthResult = arhResult;
 				} else {

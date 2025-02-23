@@ -15,7 +15,7 @@
 // options for ESLint
 /* global Components, Services */
 /* global Logging, ARHParser, BIMI */
-/* global PREF, domainIsInDomain, getDomainFromAddr, copy */
+/* global PREF, domainIsInDomain, getDomainFromAddr, addrIsInDomain, stringEndsWith, copy */
 /* exported EXPORTED_SYMBOLS, ARHVerifier, getARHResult */
 
 "use strict";
@@ -33,10 +33,6 @@ Cu.import("resource://dkim_verifier/logging.jsm.js");
 Cu.import("resource://dkim_verifier/helper.jsm.js");
 Cu.import("resource://dkim_verifier/ARHParser.jsm.js");
 Cu.import("resource://dkim_verifier/bimi.jsm.js");
-// @ts-ignore
-let DKIM = {};
-Cu.import("resource://dkim_verifier/dkimPolicy.jsm.js", DKIM);
-Cu.import("resource://dkim_verifier/dkimVerifier.jsm.js", DKIM);
 
 // @ts-ignore
 const PREF_BRANCH = "extensions.dkim_verifier.";
@@ -130,65 +126,23 @@ function getARHResult(msgHdr, msg) {
 		dkimSigResults[i].verifiedBy = arhDKIMAuthServ[i];
 	}
 
-	// if ARH result is replacing the add-ons,
 	if (prefs.getBoolPref("arh.replaceAddonResult")) {
-		// check SDID and AUID of DKIM results
+		// Additional checks from DKIM Verifier
 		for (let i = 0; i < dkimSigResults.length; i++) {
-			if (dkimSigResults[i].result === "SUCCESS") {
-				try {
-					DKIM.Policy.checkSDID(
-						msg.DKIMSignPolicy.sdid,
-						msg.from,
-						dkimSigResults[i].sdid || "",
-						dkimSigResults[i].auid || "",
-						dkimSigResults[i].warnings || []
-					);
-				} catch(exception) {
-					let authServ_id = dkimSigResults[i].verifiedBy + " & DKIM Verifier";
-					dkimSigResults[i] = DKIM.Verifier.handleException(
-						exception,
-						msg,
-						{d: dkimSigResults[i].sdid, i: dkimSigResults[i].auid}
-					);
-					dkimSigResults[i].verifiedBy = authServ_id;
-				}
-			}
-		}
-		// check for weak signature type rsa-sha1
-		for (let i = 0; i < dkimSigResults.length; i++) {
-			if (arhDKIM[i] && arhDKIM[i].properties.header.a === "rsa-sha1") {
-				switch (prefs.getIntPref("error.algorithm.sign.rsa-sha1.treatAs")) {
-					case 0: { // error
-						dkimSigResults[i] = {
-							version: "2.1",
-							result: "PERMFAIL",
-							sdid: dkimSigResults[i] ? dkimSigResults[i].sdid : "",
-							auid: dkimSigResults[i] ? dkimSigResults[i].auid : "",
-							algorithmSignature: dkimSigResults[i] ? dkimSigResults[i].algorithmSignature : undefined,
-							algorithmHash: dkimSigResults[i] ? dkimSigResults[i].algorithmHash : undefined,
-							selector: dkimSigResults[i] ? dkimSigResults[i].selector : undefined,
-							verifiedBy: dkimSigResults[i] ? dkimSigResults[i].verifiedBy + " & DKIM Verifier" : undefined,
-							errorType: "DKIM_SIGERROR_INSECURE_A",
-						};
-						break;
-					}
-					case 1: // warning
-						if (dkimSigResults[i] && dkimSigResults[i].warnings) {
-							// @ts-expect-error
-							dkimSigResults[i].warnings.push({ name: "DKIM_SIGERROR_INSECURE_A" });
-						}
-						break;
-					case 2: // ignore
-						break;
-					default:
-						throw new Error("invalid error.algorithm.sign.rsa-sha1.treatAs");
-				}
+			let arhResult = dkimSigResults[i].result;
+
+			checkSignatureAlgorithm(dkimSigResults[i]);
+			checkAndSetSdidAndAuid(dkimSigResults[i]);
+			checkFromAlignment(msg.from, dkimSigResults[i]);
+
+			if (arhResult !== dkimSigResults[i].result
+				// @ts-ignore
+				|| (dkimSigResults[i].warnings && dkimSigResults[i].warnings.length > 0)
+			   ) {
+				dkimSigResults[i].verifiedBy += " & DKIM Verifier";
 			}
 		}
 	}
-
-	// sort signatures
-	DKIM.Verifier.sortSignatures(msg, dkimSigResults);
 
 	let savedAuthResult = {
 		version: "3.1",
@@ -245,6 +199,7 @@ function arhDKIM_to_dkimSigResultV2(arhDKIM) {
 			throw new Error(`invalid dkim result in arh: ${arhDKIM.result}`);
 	}
 
+	// SDID and AUID
 	let sdid = arhDKIM.properties.header.d;
 	let auid = arhDKIM.properties.header.i;
 	if (sdid || auid) {
@@ -271,4 +226,78 @@ function arhDKIM_to_dkimSigResultV2(arhDKIM) {
 	}
 
 	return dkimSigResult;
+}
+
+/**
+ * Check and set SDID and AUID.
+ *
+ * @param {dkimSigResultV2} dkimSigResult
+ * @returns {void}
+ */
+function checkAndSetSdidAndAuid(dkimSigResult) {
+	if (dkimSigResult.sdid && dkimSigResult.auid) {
+		if (!stringEndsWith(getDomainFromAddr(dkimSigResult.auid), dkimSigResult.sdid)) {
+			dkimSigResult.result = "PERMFAIL";
+			dkimSigResult.errorType = "DKIM_SIGERROR_SUBDOMAIN_I";
+			dkimSigResult.warnings = [];
+		}
+	} else if (dkimSigResult.sdid) {
+		dkimSigResult.auid = `@${dkimSigResult.sdid}`;
+	} else if (dkimSigResult.auid) {
+		dkimSigResult.sdid = getDomainFromAddr(dkimSigResult.auid);
+	}
+}
+
+/**
+ * Check alignment of the from address.
+ *
+ * @param {string} from
+ * @param {dkimSigResultV2} dkimSigResult
+ * @returns {void}
+ */
+function checkFromAlignment(from, dkimSigResult) {
+	if (dkimSigResult.result !== "SUCCESS") {
+		return;
+	}
+	if (!dkimSigResult.warnings) {
+		dkimSigResult.warnings = [];
+	}
+
+	// warning if from is not in SDID or AUID
+	if (!addrIsInDomain(from, dkimSigResult.sdid ? dkimSigResult.sdid : "")) {
+		dkimSigResult.warnings.push({ name: "DKIM_SIGWARNING_FROM_NOT_IN_SDID" });
+	}
+}
+
+/**
+ * Check the signature algorithm.
+ *
+ * @param {dkimSigResultV2} dkimSigResult
+ * @returns {void}
+ */
+function checkSignatureAlgorithm(dkimSigResult) {
+	if (dkimSigResult.result !== "SUCCESS") {
+		return;
+	}
+	if (!dkimSigResult.warnings) {
+		dkimSigResult.warnings = [];
+	}
+
+	if (dkimSigResult.algorithmSignature === "rsa" && dkimSigResult.algorithmHash === "sha1") {
+		switch (prefs.getIntPref("error.algorithm.sign.rsa-sha1.treatAs")) {
+			case 0: { // error
+				dkimSigResult.result = "PERMFAIL";
+				dkimSigResult.errorType = "DKIM_SIGERROR_INSECURE_A";
+				dkimSigResult.warnings = [];
+				break;
+			}
+			case 1: // warning
+				dkimSigResult.warnings.push({ name: "DKIM_SIGERROR_INSECURE_A" });
+				break;
+			case 2: // ignore
+				break;
+			default:
+				throw new Error("invalid error.algorithm.sign.rsa-sha1.treatAs");
+		}
+	}
 }
