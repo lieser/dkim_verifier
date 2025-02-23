@@ -1374,7 +1374,7 @@ var Verifier = (function() {
 	 * @param {dkimSigResultV2[]} signatures
 	 * @return {void}
 	 */
-	function checkForSignatureExsistens(msg, signatures) {
+	function checkForSignatureExistence(msg, signatures) {
 		// check if a DKIM signature exists
 		if (signatures.length === 0) {
 			let dkimSigResultV2;
@@ -1433,7 +1433,7 @@ var that = {
 				let sigResults = await processSignatures(msg);
 
 				// check if DKIMSignatureHeader exist
-				checkForSignatureExsistens(msg, sigResults);
+				checkForSignatureExistence(msg, sigResults);
 				that.sortSignatures(msg, sigResults);
 
 				result = {
@@ -1489,7 +1489,7 @@ var that = {
 				version: "2.0",
 				signatures: await processSignatures(msg),
 			};
-			checkForSignatureExsistens(msg, res.signatures);
+			checkForSignatureExistence(msg, res.signatures);
 			that.sortSignatures(msg, res.signatures);
 			return res;
 		})();
@@ -1689,9 +1689,9 @@ var that = {
 	handleException : handleException,
 
 	/*
-	 * make checkForSignatureExsistens public
+	 * make checkForSignatureExistence public
 	 */
-	checkForSignatureExsistens : checkForSignatureExsistens,
+	checkForSignatureExistence : checkForSignatureExistence,
 
 	version: module_version,
 };
