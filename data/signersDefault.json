@@ -687,6 +687,12 @@
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_NEUTRAL"
 		}, {
+			"domain": "capfm-festgeld.de",
+			"addr": "*@service.capfm-festgeld.de",
+			"sdid": "service.capfm-festgeld.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
 			"domain": "casio.de",
 			"addr": "*",
 			"sdid": "casio.de",
