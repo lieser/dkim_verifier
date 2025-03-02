@@ -196,7 +196,7 @@
 	<groupbox>
 		<checkbox preference="pref_display.advancedInfo.show"
 				  label="&display.advancedInfo.show.label;"
-				  oncommand="toggleDetailsOptionsEnabled();"
+				  oncommand="gDKIMOptionsDisplayPane.toggleDetailsOptionsEnabled();"
 				  id="display.advancedInfo.show" />
 		<vbox class="indent">
 			<checkbox preference="pref_display.advancedInfo.allSignatures"

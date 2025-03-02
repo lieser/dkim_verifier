@@ -1,27 +1,34 @@
 // @ts-nocheck
 /* eslint-env browser */
 /* eslint strict: ["warn", "function"] */
-/* exported toggleDetailsOptionsEnabled */
+/* exported gDKIMOptionsDisplayPane.toggleDetailsOptionsEnabled */
 
-let checkBox = {
-	showAdvancedInfo : null,
-	allSignatures : null,
-	includeHeaders : null
+let gDKIMOptionsDisplayPane = {
+	initDone : false,
+
+	checkBox : {
+		showAdvancedInfo : null,
+		allSignatures : null,
+		includeHeaders : null
+	},
+
+	init: function() {
+		"use strict";
+		if (gDKIMOptionsDisplayPane.initDone) { return; }
+		gDKIMOptionsDisplayPane.checkBox.showAdvancedInfo = document.getElementById("display.advancedInfo.show");
+		gDKIMOptionsDisplayPane.checkBox.allSignatures = document.getElementById("display.advancedInfo.allSignatures");
+		gDKIMOptionsDisplayPane.checkBox.includeHeaders = document.getElementById("display.advancedInfo.includeHeaders");
+		gDKIMOptionsDisplayPane.toggleDetailsOptionsEnabled();
+		gDKIMOptionsDisplayPane.initDone = true;
+	},
+
+	toggleDetailsOptionsEnabled: function() {
+		"use strict";
+		let disabled = !gDKIMOptionsDisplayPane.checkBox.showAdvancedInfo.checked;
+		gDKIMOptionsDisplayPane.checkBox.allSignatures.disabled = disabled;
+		gDKIMOptionsDisplayPane.checkBox.includeHeaders.disabled = disabled;
+	}
+
 };
 
-function init() {
-	"use strict";
-	checkBox.showAdvancedInfo = document.getElementById("display.advancedInfo.show");
-	checkBox.allSignatures = document.getElementById("display.advancedInfo.allSignatures");
-	checkBox.includeHeaders = document.getElementById("display.advancedInfo.includeHeaders");
-	toggleDetailsOptionsEnabled();
-}
-
-function toggleDetailsOptionsEnabled() {
-	"use strict";
-	let disabled = !checkBox.showAdvancedInfo.checked;
-	checkBox.allSignatures.disabled = disabled;
-	checkBox.includeHeaders.disabled = disabled;
-}
-
-window.addEventListener("load", init, false);
+window.addEventListener("paneload", gDKIMOptionsDisplayPane.init, false);

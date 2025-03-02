@@ -4,13 +4,13 @@
  * Wrapper to resolve DNS lookups via the following libraries:
  *  - JSDNS.jsm.js
  *  - libunbound.jsm.js
- * 
+ *
  * Version: 2.3.0 (28 January 2018)
- * 
+ *
  * Copyright (c) 2013-2018 Philippe Lieser
- * 
+ *
  * This software is licensed under the terms of the MIT License.
- * 
+ *
  * The above copyright and license notice shall be
  * included in all copies or substantial portions of the Software.
  */
@@ -57,7 +57,7 @@ var doUpdateDNSConfig = false;
 
 /**
  * The result of the query.
- * 
+ *
  * @typedef {Object} DNSResult
  * @property {Object[]|Null} data Array of rdata items, or null if error or no entry in DNS
  * @property {Number} rcode DNS error code
@@ -81,10 +81,10 @@ var DNS = {
 
 	/**
 	 * Perform resolution of the target name.
-	 * 
+	 *
 	 * @param {String} name
 	 * @param {String} [rrtype="TXT"]
-	 * 
+	 *
 	 * @return {Promise<DNSResult>}
 	 * @throws {DKIM_TempError|Error}
 	 */
@@ -136,8 +136,25 @@ var DNS = {
 				throw new Error("invalid resolver preference");
 		}
 	},
-};
 
+	/**
+	 * Throws error on bogus result or if result contains a DNS error.
+	 *
+	 * @param {DNSResult} dnsResult
+	 * @throws {DKIM_SigError}
+	 * @throws {DKIM_TempError}
+	 * @returns {void}
+	 */
+	checkForErrors: function(dnsResult) {
+		if (dnsResult.bogus) {
+			throw new DKIM_TempError("DKIM_DNSERROR_DNSSEC_BOGUS");
+		}
+		if (dnsResult.rcode !== DNS.RCODE.NoError && dnsResult.rcode !== DNS.RCODE.NXDomain) {
+			log.info("DNS query failed with result:", dnsResult);
+			throw new DKIM_TempError("DKIM_DNSERROR_SERVER_ERROR");
+		}
+	}
+};
 
 /**
  * Promise wrapper for the dns result of JSDNS.jsm.js
@@ -150,7 +167,7 @@ function asyncJSDNS_QueryDNS(name, rrtype) {
 	function dnsCallback(dnsResult, defer, queryError, rcode) {
 		try {
 			log.trace("dnsCallback begin");
-			
+
 			let result = {};
 			result.data = dnsResult;
 			if (rcode !== undefined) {
@@ -165,10 +182,10 @@ function asyncJSDNS_QueryDNS(name, rrtype) {
 			}
 			result.secure = false;
 			result.bogus = false;
-			
+
 			log.debug("result: "+result.toSource());
 			defer.resolve(result);
-		
+
 			log.trace("dnsCallback end");
 		} catch (e) {
 			defer.reject(e);

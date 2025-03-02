@@ -3,7 +3,7 @@
 <!DOCTYPE overlay SYSTEM "chrome://dkim_verifier/locale/options.dtd">
 
 <overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-
+<script type="application/javascript" src="chrome://dkim_verifier/content/options_advanced.js"/>
 <prefpane id="paneAdvanced" onpaneload="onLoad('paneAdvanced');">
 	<preferences>
 		<preference id="pref_debug"
@@ -20,6 +20,9 @@
 		            type="bool"/>
 		<preference id="pref_arh.replaceAddonResult"
 		            name="extensions.dkim_verifier.arh.replaceAddonResult"
+		            type="bool"/>
+		<preference id="pref_arh.showDKIMResults"
+		            name="extensions.dkim_verifier.arh.showDKIMResults"
 		            type="bool"/>
 		<preference id="pref_arh.relaxedParsing"
 		            name="extensions.dkim_verifier.arh.relaxedParsing"
@@ -50,8 +53,10 @@
 	          label="&error.key_testmode.ignore.label;"/>
 	<checkbox preference="pref_display.keySecure"
 	          label="&display.keySecure.label;"/>
-	<checkbox preference="pref_arh.replaceAddonResult"
+	<checkbox preference="pref_arh.replaceAddonResult" id="advanced.arh.replaceAddonResult" oncommand="gDKIMOptionsAdvancedPane.toggleARHOptionsEnabled()"
 	          label="&arh.replaceAddonResult.label;"/>
+	<checkbox preference="pref_arh.showDKIMResults" id="advanced.arh.showDKIMResults"
+	          label="&arh.showDKIMResults.label;"/>
 	<checkbox preference="pref_arh.relaxedParsing"
 	          label="&arh.relaxedParsing.label;"/>
 	<checkbox preference="pref_error.sanitizeSubject"
