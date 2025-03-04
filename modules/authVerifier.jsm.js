@@ -256,17 +256,23 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 	switch(dkimSigResult.result) {
 		case "SUCCESS": {
 			authResultDKIM.res_num = authVerifier.DKIM_RES.SUCCESS;
+			authResultDKIM.result_str = dkimStrings.getString("SUCCESS");
 			let keySecureStr = "";
 			if (dkimSigResult.keySecure &&
 			    prefs.getBoolPref("display.keySecure")) {
 				keySecureStr = " \uD83D\uDD12";
 			}
+			let successInfos = [];
+			if (dkimSigResult.sdid) {
+				successInfos.push(dkimStrings.getFormattedString("SUCCESS_INFO_SIGNEDBY", [dkimSigResult.sdid + keySecureStr]));
+			}
 			if (dkimSigResult.verifiedBy) {
-				authResultDKIM.result_str = dkimStrings.getFormattedString("SUCCESS_FROM_ARH",
-				[dkimSigResult.sdid + keySecureStr, dkimSigResult.verifiedBy]);
-			} else {
-			authResultDKIM.result_str = dkimStrings.getFormattedString("SUCCESS",
-				[dkimSigResult.sdid + keySecureStr]);
+				successInfos.push(dkimStrings.getFormattedString("SUCCESS_INFO_VERIFIEDBY", [dkimSigResult.verifiedBy]));
+			}
+			if (successInfos.length > 0) {
+				authResultDKIM.result_str += " (";
+				authResultDKIM.result_str += successInfos.join(", ");
+				authResultDKIM.result_str += ")";
 			}
 			if (!dkimSigResult.warnings) {
 				throw new Error("expected warnings to be defined on SUCCESS result");
