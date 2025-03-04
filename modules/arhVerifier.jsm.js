@@ -203,16 +203,11 @@ function arhDKIM_to_dkimSigResultV2(arhDKIM) {
 	}
 
 	// SDID and AUID
-	let sdid = arhDKIM.properties.header.d;
-	let auid = arhDKIM.properties.header.i;
-	if (sdid || auid) {
-		if (!sdid) {
-			sdid = getDomainFromAddr(auid);
-		} else if (!auid) {
-			auid = "@" + sdid;
-		}
-		dkimSigResult.sdid = sdid;
-		dkimSigResult.auid = auid;
+	if (arhDKIM.properties.header.d) {
+		dkimSigResult.sdid = arhDKIM.properties.header.d;
+	}
+	if (arhDKIM.properties.header.i) {
+		dkimSigResult.auid = arhDKIM.properties.header.i;
 	}
 
 	if (arhDKIM.properties.header.a) {
