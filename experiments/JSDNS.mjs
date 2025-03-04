@@ -4,7 +4,7 @@
  * Based on Joshua Tauberer's DNS LIBRARY IN JAVASCRIPT
  * from "Sender Verification Extension" version 0.9.0.6
  *
- * Copyright (c) 2013-2023 Philippe Lieser
+ * Copyright (c) 2013-2023;2025 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -61,16 +61,8 @@
 /* eslint no-magic-numbers: "off" */
 /* eslint mozilla/mark-exported-symbols-as-used: "error" */
 
-
-var EXPORTED_SYMBOLS = [
-	"JSDNS"
-];
-
-
 const LOG_NAME = "DKIM_Verifier.JSDNS";
 
-
-var JSDNS = {};
 
 /** @type {ChromeConsole} */
 // @ts-expect-error
@@ -127,8 +119,6 @@ var DNS_ROOT_NAME_SERVERS = [];
  * @returns {void}
  */
 function configureDNS(getNameserversFromOS, nameServer, timeoutConnect, proxy, autoResetServerAlive, debug) {
-	"use strict";
-
 	/** @type {Parameters<typeof chromeConsole.createInstance>[0]["maxLogLevel"]} */
 	let maxLogLevel = "Warn";
 	if (debug) {
@@ -157,8 +147,6 @@ function configureDNS(getNameserversFromOS, nameServer, timeoutConnect, proxy, a
  * @returns {void}
  */
 function updateDnsServers(getNameserversFromOS, nameServer) {
-	"use strict";
-
 	/** @type {DnsServer[]} */
 	const prefDnsRootNameServers = [];
 	nameServer.split(";").forEach((element /*, index, array*/) => {
@@ -193,8 +181,6 @@ function updateDnsServers(getNameserversFromOS, nameServer) {
  * @returns {T[]}
  */
 function arrayUniqBy(ary, key) {
-	"use strict";
-
 	/** @type {{[x: string]: number}} */
 	var seen = {};
 	return ary.filter((elem) => {
@@ -213,8 +199,6 @@ function arrayUniqBy(ary, key) {
  * @returns {DnsServer[]}
  */
 function getOsDnsServers() {
-	"use strict";
-
 	/** @type {DnsServer[]} */
 	const OS_DNS_ROOT_NAME_SERVERS = [];
 
@@ -390,8 +374,6 @@ function getOsDnsServers() {
  * @returns {Promise<{results?: any[]|null, queryError?: string|string[], rcode?: number}>}
  */
 async function queryDNS(host, recordtype) {
-	"use strict";
-
 	DNS_ROOT_NAME_SERVERS = DNS_ROOT_NAME_SERVERS.filter(server => server.alive);
 	if (DNS_ROOT_NAME_SERVERS.length === 0) {
 		log.debug("No DNS Server alive.");
@@ -423,8 +405,6 @@ async function queryDNS(host, recordtype) {
  * @returns {Promise<{results?: any[]|null, queryError?: string|string[], rcode?: number}>}
  */
 async function querySingleDNSRecursive(server, host, recordtype, hops) {
-	"use strict";
-
 	if (hops === 10) {
 		log.debug("Maximum number of recursive steps taken in resolving " + host);
 		return {
@@ -579,8 +559,6 @@ async function querySingleDNSRecursive(server, host, recordtype, hops) {
  * @returns {string}
  */
 function DNS_readDomain(ctx) {
-	"use strict";
-
 	var domainname = "";
 	var ctr = 20;
 	while (ctr-- > 0) {
@@ -623,8 +601,6 @@ function DNS_readDomain(ctx) {
  * @returns {DnsRecord}
  */
 function DNS_readRec(ctx) {
-	"use strict";
-
 	/** @type {DnsRecord} */
 	var rec = {};
 	var ctr;
@@ -696,8 +672,6 @@ function DNS_readRec(ctx) {
  * @returns {Promise<{results?: any[]|null, rcode?: number}>}
  */
 async function DNS_getRDData(str, server, host, recordtype, hops) {
-	"use strict";
-
 	const debugstr = `${host}/${recordtype}: `;
 
 	var flags = DNS_strToWord(str.substr(2, 2));
@@ -825,8 +799,6 @@ async function DNS_getRDData(str, server, host, recordtype, hops) {
  * @returns {number}
  */
 function DNS_strToWord(str) {
-	"use strict";
-
 	var res = str.charCodeAt(1) + (str.charCodeAt(0) << 8);
 	return res;
 }
@@ -836,8 +808,6 @@ function DNS_strToWord(str) {
  * @returns {number}
  */
 function DNS_strToOctet(str) {
-	"use strict";
-
 	return str.charCodeAt(0);
 }
 
@@ -846,8 +816,6 @@ function DNS_strToOctet(str) {
  * @returns {string}
  */
 function DNS_wordToStr(word) {
-	"use strict";
-
 	var res = DNS_octetToStr((word >> 8) % 256) + DNS_octetToStr(word % 256);
 	return res;
 }
@@ -857,8 +825,6 @@ function DNS_wordToStr(word) {
  * @returns {string}
  */
 function DNS_octetToStr(octet) {
-	"use strict";
-
 	return String.fromCharCode(octet);
 }
 
@@ -1003,13 +969,13 @@ class Socket {
  * @returns {boolean}
  */
 function DNS_StartsWith(a, b) {
-	"use strict";
-
 	if (b.length > a.length) {
 		return false;
 	}
 	return a.substring(0, b.length) === b;
 }
 
-JSDNS.configureDNS = configureDNS;
-JSDNS.queryDNS = queryDNS;
+export var JSDNS = {
+	configureDNS,
+	queryDNS,
+};

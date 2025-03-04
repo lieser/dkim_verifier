@@ -2,7 +2,6 @@
 //// Mozilla specific modules
 
 interface ChromeUtils {
-    import(url: string): any;
     importESModule(url: string): any;
     readonly generateQI: (interfaces: nsISupports[]) => nsISupports["QueryInterface"];
 }

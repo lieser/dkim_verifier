@@ -10,7 +10,7 @@
 		"gecko": {
 			"id": "dkim_verifier@pl",
 			"strict_min_version": "128.0",
-			"strict_max_version": "136.*"
+			"strict_max_version": "138.*"
 		}
 	},
 	"permissions": [

@@ -11,6 +11,10 @@ All notable changes to this project will be documented in this file.
 - Now requires at least Thunderbird 128.
 - Remove migration of options from versions before 4.0.0.
 
+### Enhancements
+
+- Fixed incompatibility with Thunderbird 136 (#494).
+
 ## 5.6.0 (2025-02-17)
 
 ### Enhancements
