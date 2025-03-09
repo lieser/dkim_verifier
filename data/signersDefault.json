@@ -351,6 +351,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
  		}, {
+			"domain": "ayvensbank.de",
+			"addr": "*",
+			"sdid": "ayvensbank.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+ 		}, {
 			"domain": "babelzilla.org",
 			"addr": "*",
 			"sdid": "babelzilla.org",
@@ -381,6 +387,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "bank11.de",
+			"addr": "*",
+			"sdid": "bank11.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+ 		}, {
 			"domain": "battle.net",
 			"addr": "*",
 			"sdid": "battle.net",
@@ -674,6 +686,12 @@
 			"sdid": "campact.de",
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_NEUTRAL"
+		}, {
+			"domain": "capfm-festgeld.de",
+			"addr": "*@service.capfm-festgeld.de",
+			"sdid": "service.capfm-festgeld.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
 			"domain": "casio.de",
 			"addr": "*",
