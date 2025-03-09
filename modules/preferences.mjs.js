@@ -85,6 +85,15 @@ export class BasePreferences {
 		if (typeof value === "boolean") {
 			return value;
 		}
+		// On e.g. macOS managed boolean options will be represented as integer, so we accept 0 and 1 as special values.
+		if (typeof value === "number") {
+			if (value === 0) {
+				return false;
+			}
+			if (value === 1) {
+				return true;
+			}
+		}
 		if (typeof value === "undefined") {
 			return defaultValue;
 		}

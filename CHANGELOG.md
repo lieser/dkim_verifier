@@ -21,6 +21,7 @@ All notable changes to this project will be documented in this file.
 
 - If the DKIM result fails because of the check of the sign rules the detailed view now still shows the details of the DKIM signature (#495).
 - Authentication-Results header: If only an AUID is included again heuristically extract the SDID from it.
+- Fixed setting default values for boolean preferences with policies on macOS via a `.plist` (#499).
 
 ## 5.6.0 (2025-02-17)
 

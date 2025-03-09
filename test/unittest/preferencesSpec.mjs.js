@@ -95,22 +95,22 @@ describe("preferences [unittest]", function () {
 		it("throw if unexpected type", function () {
 			expect(
 				() => pref.getBool("dns.proxy.type")
-			).to;
+			).to.throw();
 			expect(
 				() => pref.getNumber("dns.proxy.type")
-			).to;
+			).to.throw();
 			expect(
 				() => pref.getBool("error.algorithm.rsa.weakKeyLength.treatAs")
-			).to;
+			).to.throw();
 			expect(
 				() => pref.getString("error.algorithm.rsa.weakKeyLength.treatAs")
-			).to;
+			).to.throw();
 			expect(
 				() => pref.getNumber("display.favicon.show")
-			).to;
+			).to.throw();
 			expect(
 				() => pref.getString("display.favicon.show")
-			).to;
+			).to.throw();
 		});
 	});
 
@@ -467,6 +467,24 @@ describe("preferences [unittest]", function () {
 			pref._isInitializedDeferred = null;
 			await pref.init();
 			sinon.restore();
+		});
+
+		it("Managed bool option", async function () {
+			expect(pref["arh.read"]).to.be.equal(false);
+
+			await fakeBrowser.storage.managed.set({ "arh.read": true });
+			expect(pref["arh.read"]).to.be.equal(true);
+			await fakeBrowser.storage.managed.set({ "arh.read": false });
+			expect(pref["arh.read"]).to.be.equal(false);
+
+			// On e.g. macOS boolean options will be represented as integer
+			await fakeBrowser.storage.managed.set({ "arh.read": 1 });
+			expect(pref["arh.read"]).to.be.equal(true);
+			await fakeBrowser.storage.managed.set({ "arh.read": 0 });
+			expect(pref["arh.read"]).to.be.equal(false);
+			// We will only accept 0 and 1
+			await fakeBrowser.storage.managed.set({ "arh.read": 2 });
+			expect(() => pref["arh.read"]).to.throw();
 		});
 
 		it("Managed default set that gets overwritten", async function () {
