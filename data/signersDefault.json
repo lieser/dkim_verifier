@@ -482,6 +482,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "biowaves.de",
+			"addr": "*",
+			"sdid": "biowaves.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "bitburger.de",
 			"addr": "*@my.bitburger.de",
 			"sdid": "bitburger.de my.bitburger.de",
@@ -1033,6 +1039,12 @@
 			"sdid": "digitalocean.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "discogs.com",
+			"addr": "*@cio.discogs.com",
+			"sdid": "discogs.com cioeu98727.cio.discogs.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
 			"domain": "discord.com",
 			"addr": "*",
@@ -2210,6 +2222,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "kabelheld.com",
+			"addr": "*",
+			"sdid": "kabelheld.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "kenwoodworld.com",
 			"addr": "*@news.kenwoodworld.com",
 			"sdid": "kenwoodworld.com news.kenwoodworld.com",
@@ -3119,6 +3137,12 @@
 			"domain": "profamilia.de",
 			"addr": "*",
 			"sdid": "profamilia.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "proshop.de",
+			"addr": "*",
+			"sdid": "proshop.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {

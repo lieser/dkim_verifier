@@ -23,6 +23,10 @@ All notable changes to this project will be documented in this file.
 - Authentication-Results header: If only an AUID is included again heuristically extract the SDID from it.
 - Fixed setting default values for boolean preferences with policies on macOS via a `.plist` (#499).
 
+### Other
+
+- Updated default rules and favicons (#497).
+
 ## 5.6.0 (2025-02-17)
 
 ### Enhancements
