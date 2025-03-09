@@ -194,7 +194,7 @@ export default [
 			"mozilla/use-returnValue": "warn",
 		},
 	}, {
-		files: ["content/**/*.js"],
+		files: ["content/**/*.js", "content/**/*.mjs"],
 		languageOptions: {
 			globals: {
 				...globals.browser,
@@ -202,12 +202,11 @@ export default [
 			},
 		}
 	}, {
-		files: ["experiments/**/*.js"],
+		files: ["experiments/**/*.js", "experiments/**/*.mjs"],
 		plugins: {
 			mozilla,
 		},
 		languageOptions: {
-			sourceType: "script",
 			globals: {
 				...mozilla.environments.privileged.globals,
 				...mozilla.environments.specific.globals,
@@ -230,7 +229,12 @@ export default [
 			"mozilla/use-services": "warn"
 		},
 	}, {
-		files: ["modules/**/*.js"],
+		files: ["experiments/**/*.js"],
+		languageOptions: {
+			sourceType: "script",
+		},
+	}, {
+		files: ["modules/**/*.js", "modules/**/*.mjs"],
 		languageOptions: {
 			globals: {
 				...globals["shared-node-browser"],
@@ -238,14 +242,14 @@ export default [
 			},
 		},
 	}, {
-		files: ["scripts/**/*.js"],
+		files: ["scripts/**/*.js", "scripts/**/*.mjs"],
 		languageOptions: {
 			globals: {
 				...globals.node,
 			},
 		},
 	}, {
-		files: ["test/helpers/**/*.js"],
+		files: ["test/helpers/**/*.js", "test/helpers/**/*.mjs"],
 		languageOptions: {
 			globals: {
 				...globals.mocha,
@@ -253,10 +257,10 @@ export default [
 			},
 		},
 	}, {
-		files: ["test/unittest/**/*.js"],
+		files: ["test/unittest/**/*.js", "test/unittest/**/*.mjs"],
 		...mocha.configs.flat.recommended,
 	}, {
-		files: ["test/unittest/**/*.js"],
+		files: ["test/unittest/**/*.js", "test/unittest/**/*.mjs"],
 		languageOptions: {
 			globals: {
 				...globals["shared-node-browser"],
