@@ -359,12 +359,10 @@ function checkSDID(dkimResult, allowedSDIDs) {
 				{ name: "DKIM_POLICYERROR_WRONG_SDID", params: [allowedSDIDs] });
 			log.debug("Warning: DKIM_POLICYERROR_WRONG_SDID");
 		} else {
-			return {
-				version: "2.0",
-				result: "PERMFAIL",
-				errorType: "DKIM_POLICYERROR_WRONG_SDID",
-				errorStrParams: allowedSDIDs,
-			};
+			result.result = "PERMFAIL";
+			result.errorType = "DKIM_POLICYERROR_WRONG_SDID";
+			result.errorStrParams = allowedSDIDs;
+			result.warnings = [];
 		}
 	}
 

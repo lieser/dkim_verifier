@@ -15,6 +15,10 @@ All notable changes to this project will be documented in this file.
 
 - Fixed incompatibility with Thunderbird 136 (#494).
 
+### Fixes
+
+- If the DKIM result fails because of the check of the sign rules the detailed view now still shows the details of the DKIM signature (#495).
+
 ## 5.6.0 (2025-02-17)
 
 ### Enhancements

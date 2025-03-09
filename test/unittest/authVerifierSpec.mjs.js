@@ -17,6 +17,7 @@ import DMARC from "../../modules/dkim/dmarc.mjs.js";
 import DNS from "../../modules/dns.mjs.js";
 import KeyStore from "../../modules/dkim/keyStore.mjs.js";
 import MsgParser from "../../modules/msgParser.mjs.js";
+import SignRules from "../../modules/dkim/signRules.mjs.js";
 import Verifier from "../../modules/dkim/verifier.mjs.js";
 import expect from "../helpers/chaiUtils.mjs.js";
 import prefs from "../../modules/preferences.mjs.js";
@@ -423,6 +424,60 @@ describe("AuthVerifier [unittest]", function () {
 			res = await verifier.verify(fakePayPalMessage);
 			expect(res.dkim[0]?.result).to.be.equal("PERMFAIL");
 			expect(res.dkim[0]?.result_str).to.be.equal("Invalid (No Signature, should be signed by paypal.com)");
+		});
+
+		// eslint-disable-next-line complexity
+		it("Failure because of wrong SDID keeps signature meta data", async function () {
+			const message = await createMessageHeader("rfc6376-A.2.eml");
+
+			let res = await authVerifier.verify(message);
+			expect(res.dkim.length).to.be.equal(1);
+			expect(res.dkim[0]?.res_num).to.be.equal(10);
+			expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
+			expect(res.dkim[0]?.result_str).to.be.equal("Valid (Signed by example.com)");
+			expect(res.dkim[0]?.warnings).to.be.empty;
+			expect(res.dkim[0]?.sdid).to.be.equal("example.com");
+			expect(res.dkim[0]?.auid).to.be.equal("joe@football.example.com");
+			expect(res.dkim[0]?.selector).to.be.equal("brisbane");
+			expect(res.dkim[0]?.timestamp).to.be.equal(null);
+			expect(res.dkim[0]?.expiration).to.be.equal(null);
+			expect(res.dkim[0]?.algorithmSignature).to.be.equal("rsa");
+			expect(res.dkim[0]?.algorithmHash).to.be.equal("sha256");
+			expect(res.dkim[0]?.keyLength).to.be.equal(1024);
+			expect(res.dkim[0]?.signedHeaders).to.be.deep.equal([
+				"received",
+				"from",
+				"to",
+				"subject",
+				"date",
+				"message-id",
+			]);
+
+			await prefs.setValue("policy.signRules.enable", true);
+			await SignRules.addRule("example.com", null, "*", "foo.com", SignRules.TYPE.ALL);
+
+			res = await authVerifier.verify(message);
+			expect(res.dkim.length).to.be.equal(1);
+			expect(res.dkim[0]?.res_num).to.be.equal(30);
+			expect(res.dkim[0]?.result).to.be.equal("PERMFAIL");
+			expect(res.dkim[0]?.result_str).to.be.equal("Invalid (Wrong signer (should be foo.com))");
+			expect(res.dkim[0]?.warnings).to.be.empty;
+			expect(res.dkim[0]?.sdid).to.be.equal("example.com");
+			expect(res.dkim[0]?.auid).to.be.equal("joe@football.example.com");
+			expect(res.dkim[0]?.selector).to.be.equal("brisbane");
+			expect(res.dkim[0]?.timestamp).to.be.equal(null);
+			expect(res.dkim[0]?.expiration).to.be.equal(null);
+			expect(res.dkim[0]?.algorithmSignature).to.be.equal("rsa");
+			expect(res.dkim[0]?.algorithmHash).to.be.equal("sha256");
+			expect(res.dkim[0]?.keyLength).to.be.equal(1024);
+			expect(res.dkim[0]?.signedHeaders).to.be.deep.equal([
+				"received",
+				"from",
+				"to",
+				"subject",
+				"date",
+				"message-id",
+			]);
 		});
 	});
 
