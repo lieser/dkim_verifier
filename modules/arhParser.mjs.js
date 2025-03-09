@@ -8,7 +8,7 @@
  * Email Authentication Parameters:
  * https://www.iana.org/assignments/email-auth/email-auth.xhtml
  *
- * Copyright (c) 2014-2023 Philippe Lieser
+ * Copyright (c) 2014-2023;2025 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -154,11 +154,19 @@ export default class ArhParser {
 		}
 
 		// get the resinfos
-		while (authResHeaderRef.value !== "") {
-			const arhResInfo = parseResInfo(authResHeaderRef, relaxedParsing, token);
-			if (arhResInfo) {
-				res.resinfo.push(arhResInfo);
+		try {
+			while (authResHeaderRef.value !== "") {
+				const arhResInfo = parseResInfo(authResHeaderRef, relaxedParsing, token);
+				if (arhResInfo) {
+					res.resinfo.push(arhResInfo);
+				}
 			}
+		} catch (error) {
+			if (error instanceof Error) {
+				// @ts-expect-error
+				error.authserv_id = res.authserv_id;
+			}
+			throw error;
 		}
 
 		return res;

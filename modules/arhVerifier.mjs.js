@@ -48,6 +48,11 @@ function readARHs(arHeaders, account) {
 		bimi: [],
 	};
 
+	/** @type {(string|null)[]} */
+	const allowedAuthserv = prefs["account.arh.allowedAuthserv"](account).
+		split(" ").
+		filter(server => server);
+
 	for (const header of arHeaders) {
 		/** @type {import("./arhParser.mjs.js").ArhHeader} */
 		let arh;
@@ -55,23 +60,31 @@ function readARHs(arHeaders, account) {
 			arh = ArhParser.parse(header, prefs["arh.relaxedParsing"], prefs["internationalized.enable"]);
 		} catch (exception) {
 			log.error("Ignoring error in parsing of ARH", exception);
+			if (!allowedAuthserv.length) {
+				if (exception instanceof Error && "authserv_id" in exception && typeof exception.authserv_id === "string") {
+					allowedAuthserv.push(exception?.authserv_id);
+				} else {
+					allowedAuthserv.push(null);
+				}
+			}
 			continue;
 		}
 
-		// only use header if the authserv_id is in the allowed servers
-		const allowedAuthserv = prefs["account.arh.allowedAuthserv"](account).
-			split(" ").
-			filter(server => server);
-		if (allowedAuthserv.length &&
-			!allowedAuthserv.some(server => {
-				if (arh.authserv_id === server) {
-					return true;
-				}
-				if (server.charAt(0) === "@") {
-					return domainIsInDomain(arh.authserv_id, server.substr(1));
-				}
-				return false;
-			})) {
+		// If no authserv_id is configured we implicitly only trust the newest one.
+		if (!allowedAuthserv.length) {
+			allowedAuthserv.push(arh.authserv_id);
+		}
+
+		// Only use the header if the authserv_id is in the allowed servers.
+		if (!allowedAuthserv.some(server => {
+			if (arh.authserv_id === server) {
+				return true;
+			}
+			if (server?.charAt(0) === "@") {
+				return domainIsInDomain(arh.authserv_id, server.substr(1));
+			}
+			return false;
+		})) {
 			continue;
 		}
 

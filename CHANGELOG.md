@@ -14,6 +14,8 @@ All notable changes to this project will be documented in this file.
 ### Enhancements
 
 - Fixed incompatibility with Thunderbird 136 (#494).
+- Authentication-Results header: Improve default behavior about which headers are trusted.
+  Instead of trusting all it now depends on the newest ARH (#465).
 
 ### Fixes
 

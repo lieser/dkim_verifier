@@ -667,7 +667,7 @@ describe("AuthVerifier [unittest]", function () {
 			});
 
 			it("DKIM results should be sorted", async function () {
-				const message = await createMessageHeader("arh-multiple_dkim_results.eml");
+				const message = await createMessageHeader("arh/multiple_dkim_results.eml");
 				const res = await authVerifier.verify(message);
 				expect(res.dkim.length).to.be.equal(7);
 				expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
@@ -744,6 +744,139 @@ describe("AuthVerifier [unittest]", function () {
 				expect(res.dkim.length).to.be.equal(1);
 				expect(res.dkim[0]?.result).to.be.equal("PERMFAIL");
 				expect(res.dkim[0]?.result_str).to.be.equal("Invalid (Wrong signer (should be paypal.com))");
+			});
+		});
+
+		describe("Trust only specific ARHs", function () {
+			beforeEach(async function () {
+				await prefs.setValue("arh.read", true);
+			});
+
+			it("From the same and different authserv_id", async function () {
+				const message = await createMessageHeader("arh/multiple_arh-same_and_different_authserv.eml");
+
+				let res = await authVerifier.verify(message);
+				expect(res.dkim.length).to.be.equal(3);
+				expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
+				expect(res.dkim[0]?.sdid).to.be.equal("football.example.com");
+				expect(res.dkim[1]?.result).to.be.equal("SUCCESS");
+				expect(res.dkim[1]?.sdid).to.be.equal("example.com");
+				expect(res.dkim[2]?.result).to.be.equal("SUCCESS");
+				expect(res.dkim[2]?.sdid).to.be.equal("last.example.com");
+				expect((res.spf ?? [])[0]?.result).to.be.equal("pass");
+
+				await prefs.setValue("arh.replaceAddonResult", false);
+
+				res = await authVerifier.verify(message);
+				expect(res.dkim.length).to.be.equal(1);
+				expect(res.dkim[0]?.result).to.be.equal("none");
+				const arhDkim = res.arh?.dkim ?? [];
+				expect(arhDkim.length).to.be.equal(3);
+				expect(arhDkim[0]?.result).to.be.equal("SUCCESS");
+				expect(arhDkim[0]?.sdid).to.be.equal("example.com");
+				expect(arhDkim[1]?.result).to.be.equal("SUCCESS");
+				expect(arhDkim[1]?.sdid).to.be.equal("football.example.com");
+				expect(arhDkim[2]?.result).to.be.equal("SUCCESS");
+				expect(arhDkim[2]?.sdid).to.be.equal("last.example.com");
+				expect((res.spf ?? [])[0]?.result).to.be.equal("pass");
+			});
+
+			it("Newest ARH has no result", async function () {
+				const message = await createMessageHeader("arh/multiple_arh-newest_no_result.eml");
+				const res = await authVerifier.verify(message);
+				expect(res.dkim.length).to.be.equal(1);
+				expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
+				expect(res.dkim[0]?.sdid).to.be.equal("example.com");
+			});
+
+			it("Newest ARH has an unknown method", async function () {
+				const message = await createMessageHeader("arh/multiple_arh-newest_unknown_method.eml");
+				const res = await authVerifier.verify(message);
+				expect(res.dkim.length).to.be.equal(1);
+				expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
+				expect(res.dkim[0]?.sdid).to.be.equal("example.com");
+			});
+
+			it("Newest ARH has a parsing error in the method", async function () {
+				const message = await createMessageHeader("arh/multiple_arh-newest_parsing_error_01.eml");
+				const res = await authVerifier.verify(message);
+				expect(res.dkim.length).to.be.equal(1);
+				expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
+				expect(res.dkim[0]?.sdid).to.be.equal("example.com");
+			});
+
+			it("Newest ARH has a parsing error in the authserv_id", async function () {
+				const message = await createMessageHeader("arh/multiple_arh-newest_parsing_error_02.eml");
+				const res = await authVerifier.verify(message);
+				expect(res.dkim.length).to.be.equal(1);
+				expect(res.dkim[0]?.result).to.be.equal("none");
+			});
+
+			it("Newest ARH has no authserv_id", async function () {
+				const message = await createMessageHeader("arh/multiple_arh-newest_no_authserv.eml");
+				const res = await authVerifier.verify(message);
+				expect(res.dkim.length).to.be.equal(1);
+				expect(res.dkim[0]?.result).to.be.equal("none");
+			});
+
+			it("Trust a specific authserv_id", async function () {
+				await prefs.setAccountValue("arh.allowedAuthserv", "fakeAccount", "example.net");
+				const message = await createMessageHeader("arh/multiple_arh-same_and_different_authserv.eml");
+
+				let res = await authVerifier.verify(message);
+				expect(res.dkim.length).to.be.equal(3);
+				expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
+				expect(res.dkim[0]?.sdid).to.be.equal("football.example.com");
+				expect(res.dkim[1]?.result).to.be.equal("SUCCESS");
+				expect(res.dkim[1]?.sdid).to.be.equal("example.com");
+				expect(res.dkim[2]?.result).to.be.equal("SUCCESS");
+				expect(res.dkim[2]?.sdid).to.be.equal("last.example.com");
+				expect((res.spf ?? [])[0]?.result).to.be.equal("pass");
+
+				await prefs.setValue("arh.replaceAddonResult", false);
+
+				res = await authVerifier.verify(message);
+				expect(res.dkim.length).to.be.equal(1);
+				expect(res.dkim[0]?.result).to.be.equal("none");
+				const arhDkim = res.arh?.dkim ?? [];
+				expect(arhDkim.length).to.be.equal(3);
+				expect(arhDkim[0]?.result).to.be.equal("SUCCESS");
+				expect(arhDkim[0]?.sdid).to.be.equal("example.com");
+				expect(arhDkim[1]?.result).to.be.equal("SUCCESS");
+				expect(arhDkim[1]?.sdid).to.be.equal("football.example.com");
+				expect(arhDkim[2]?.result).to.be.equal("SUCCESS");
+				expect(arhDkim[2]?.sdid).to.be.equal("last.example.com");
+				expect((res.spf ?? [])[0]?.result).to.be.equal("pass");
+			});
+
+			it("Trust an authserv_id domain", async function () {
+				await prefs.setAccountValue("arh.allowedAuthserv", "fakeAccount", "@example.net");
+				const message = await createMessageHeader("arh/multiple_arh-same_and_different_authserv.eml");
+
+				const res = await authVerifier.verify(message);
+				expect(res.dkim.length).to.be.equal(4);
+				expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
+				expect(res.dkim[0]?.sdid).to.be.equal("football.example.com");
+				expect(res.dkim[1]?.result).to.be.equal("SUCCESS");
+				expect(res.dkim[1]?.sdid).to.be.equal("example.com");
+				expect(res.dkim[2]?.result).to.be.equal("SUCCESS");
+				expect(res.dkim[2]?.sdid).to.be.equal("foo.example.com");
+				expect(res.dkim[3]?.result).to.be.equal("SUCCESS");
+				expect(res.dkim[3]?.sdid).to.be.equal("last.example.com");
+				expect((res.spf ?? [])[0]?.result).to.be.equal("pass");
+			});
+
+			it("Trust multiple authserv_id", async function () {
+				await prefs.setAccountValue("arh.allowedAuthserv", "fakeAccount", "foo.example.net unrelated.com");
+				const message = await createMessageHeader("arh/multiple_arh-same_and_different_authserv.eml");
+
+				const res = await authVerifier.verify(message);
+				expect(res.dkim.length).to.be.equal(2);
+				expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
+				expect(res.dkim[0]?.sdid).to.be.equal("foo.example.com");
+				expect(res.dkim[1]?.result).to.be.equal("SUCCESS");
+				expect(res.dkim[1]?.sdid).to.be.equal("unrelated.com");
+				expect(res.spf).to.be.empty;
 			});
 		});
 	});
