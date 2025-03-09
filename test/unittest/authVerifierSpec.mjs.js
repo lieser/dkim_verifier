@@ -547,6 +547,8 @@ describe("AuthVerifier [unittest]", function () {
 			});
 
 			it("DKIM pass with only AUID", async function () {
+				// E.g. Google only includes the AUID.
+				// Extracting the SDID from the AUID is only a heuristic, so the wrong SDID is expected.
 				const message = await createMessageHeader("arh/rfc6376-A.2-arh-valid-auid.eml");
 				let res = await authVerifier.verify(message);
 				expect(res.dkim.length).to.be.equal(1);
@@ -563,10 +565,10 @@ describe("AuthVerifier [unittest]", function () {
 				expect(res.dkim[0]?.result).to.be.equal("none");
 				const arhDkim = res.arh?.dkim ?? [];
 				expect(arhDkim.length).to.be.equal(1);
-				expect(arhDkim[0]?.sdid).to.be.undefined;
+				expect(arhDkim[0]?.sdid).to.be.equal("football.example.com");
 				expect(arhDkim[0]?.auid).to.be.equal("joe@football.example.com");
 				expect(arhDkim[0]?.result).to.be.equal("SUCCESS");
-				expect(arhDkim[0]?.result_str).to.be.equal("Valid (Signed by undefined)");
+				expect(arhDkim[0]?.result_str).to.be.equal("Valid (Signed by football.example.com)");
 				expect(arhDkim[0]?.warnings_str).to.be.empty;
 			});
 

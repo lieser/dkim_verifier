@@ -256,6 +256,13 @@ export default function getArhResult(headers, from, account) {
 			checkSignatureAlgorithm(dkimSigResult);
 			checkFromAlignment(from, dkimSigResult);
 		}
+	} else {
+		for (const dkimSigResult of dkimSigResults) {
+			// Avoid showing "Signed by undefined" if only an AUID is included.
+			if (!dkimSigResult.sdid && dkimSigResult.auid) {
+				dkimSigResult.sdid = getDomainFromAddr(dkimSigResult.auid);
+			}
+		}
 	}
 
 	const savedAuthResult = {
