@@ -36,7 +36,7 @@ async function collectFiles() {
 	files.push(...await globby("experiments", {
 		expandDirectories: {
 			files: ["*"],
-			extensions: ["js", "json"],
+			extensions: ["js", "mjs", "json"],
 		}
 	}));
 	files.push(...await globby("modules", {

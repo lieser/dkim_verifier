@@ -4,6 +4,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+### Fixes
+
+- Fixed the JavaScript DNS library resolver (#501).
+
 ## 6.0.0 (2025-03-09)
 
 ### Breaking Changes
