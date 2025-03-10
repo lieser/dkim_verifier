@@ -203,12 +203,13 @@ function arhDKIM_to_dkimSigResultV2(arhDKIM) {
 	}
 
 	// SDID and AUID
-	if (arhDKIM.properties.header.d) {
-		dkimSigResult.sdid = arhDKIM.properties.header.d;
+	let sdid = arhDKIM.properties.header.d;
+	let auid = arhDKIM.properties.header.i;
+	if (!sdid && auid) {
+		sdid = getDomainFromAddr(auid);
 	}
-	if (arhDKIM.properties.header.i) {
-		dkimSigResult.auid = arhDKIM.properties.header.i;
-	}
+	if (sdid) { dkimSigResult.sdid = sdid; }
+	if (auid) { dkimSigResult.auid = auid; }
 
 	if (arhDKIM.properties.header.a) {
 		// get signature algorithm (plain-text;REQUIRED)
