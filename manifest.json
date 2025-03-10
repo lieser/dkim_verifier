@@ -2,7 +2,7 @@
 	"manifest_version": 2,
 	"name": "__MSG_about_name__",
 	"description": "__MSG_about_summary__",
-	"version": "6.0.0",
+	"version": "6.0.1",
 	"author": "Philippe Lieser",
 	"homepage_url": "https://github.com/lieser/dkim_verifier/wiki",
 	"default_locale": "en_US",
