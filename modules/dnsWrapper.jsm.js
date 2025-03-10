@@ -1,5 +1,5 @@
 /*
- * DNSWrapper.jsm.js
+ * dnsWrapper.jsm.js
  *
  * Wrapper to resolve DNS lookups via the following libraries:
  *  - JSDNS.jsm.js
@@ -50,7 +50,7 @@ const PREF_BRANCH = "extensions.dkim_verifier.dns.";
 // @ts-ignore
 var prefs = Services.prefs.getBranch(PREF_BRANCH);
 // @ts-ignore
-var log = Logging.getLogger("DNSWrapper");
+var log = Logging.getLogger("dnsWrapper");
 
 // This variable is set to true in case of an switch-to-online-mode event, so DNS config will be updated before the next query
 var doUpdateDNSConfig = false;

@@ -1,14 +1,14 @@
 /*
- * MsgReader.jsm.js
- * 
+ * msgReader.jsm.js
+ *
  * Reads and parses a message.
  *
  * Version: 2.1.0 (02 January 2018)
- * 
+ *
  * Copyright (c) 2014-2018 Philippe Lieser
- * 
+ *
  * This software is licensed under the terms of the MIT License.
- * 
+ *
  * The above copyright and license notice shall be
  * included in all copies or substantial portions of the Software.
  */
@@ -17,7 +17,7 @@
 /* global Components */
 /* global Logging */
 /* global Deferred, DKIM_Error */
-/* exported EXPORTED_SYMBOLS, MsgReader */
+/* exported EXPORTED_SYMBOLS, msgReader */
 
 "use strict";
 
@@ -25,7 +25,7 @@
 const module_version = "2.1.0";
 
 var EXPORTED_SYMBOLS = [
-	"MsgReader"
+	"msgReader"
 ];
 
 // @ts-ignore
@@ -39,10 +39,10 @@ Cu.import("resource://dkim_verifier/logging.jsm.js");
 Cu.import("resource://dkim_verifier/helper.jsm.js");
 
 // @ts-ignore
-let log = Logging.getLogger("MsgReader");
+let log = Logging.getLogger("msgReader");
 
 
-var MsgReader = {
+var msgReader = {
 	get version() { return module_version; },
 
 	/**
@@ -52,7 +52,7 @@ var MsgReader = {
 	 * @return {Promise<{headerPlain: string, bodyPlain: string}>}
 	 * @throws {DKIM_Error}
 	 */
-	read: function _MsgReader_read(msgURI) {
+	read: function _msgReader_read(msgURI) {
 		/** @type {IDeferred<{headerPlain: string, bodyPlain: string}>} */
 		let res_defer = new Deferred();
 		let raw = "";
@@ -91,10 +91,10 @@ var MsgReader = {
 					// convert all EOLs to CRLF
 					const str = raw.replace(/(\r\n|\n|\r)/g, "\r\n");
 					const newlineLength = 2;
-					
+
 					const posEndHeader = str.indexOf("\r\n\r\n");
-					
-					// check if header end was detected and split header and body				
+
+					// check if header end was detected and split header and body
 					if (posEndHeader === -1) {
 						// in this case, the message has no body, but headers must end with a newline
 						if (!str.endsWith("\r\n")) {
@@ -139,7 +139,7 @@ var MsgReader = {
 	 *           value: {Array[String]}
 	 * @throws {DKIM_Error}
 	 */
-	parseHeader: function _MsgReader_parseHeader(headerPlain) {
+	parseHeader: function _msgReader_parseHeader(headerPlain) {
 		var headerFields = new Map();
 
 		// split header fields

@@ -37,7 +37,7 @@ Cu.import("resource://gre/modules/Services.jsm");
 
 Cu.import("resource://dkim_verifier/logging.jsm.js");
 Cu.import("resource://dkim_verifier/helper.jsm.js");
-Cu.import("resource://dkim_verifier/DNSWrapper.jsm.js");
+Cu.import("resource://dkim_verifier/dnsWrapper.jsm.js");
 Cu.import("resource://dkim_verifier/rfcParser.jsm.js");
 
 /**

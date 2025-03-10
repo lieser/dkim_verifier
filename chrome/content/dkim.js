@@ -22,7 +22,7 @@
 var DKIM_Verifier = {};
 Cu.import("resource://dkim_verifier/logging.jsm.js", DKIM_Verifier);
 Cu.import("resource://dkim_verifier/helper.jsm.js", DKIM_Verifier);
-Cu.import("resource://dkim_verifier/AuthVerifier.jsm.js", DKIM_Verifier);
+Cu.import("resource://dkim_verifier/authVerifier.jsm.js", DKIM_Verifier);
 Cu.import("resource://dkim_verifier/dkimPolicy.jsm.js", DKIM_Verifier);
 Cu.import("resource://dkim_verifier/dkimKey.jsm.js", DKIM_Verifier);
 
@@ -277,7 +277,7 @@ DKIM_Verifier.Display = (function() {
 		setValue(result.dkim[0].result_str, detailsHint);
 
 		switch(result.dkim[0].res_num) {
-			case DKIM_Verifier.AuthVerifier.DKIM_RES.SUCCESS: {
+			case DKIM_Verifier.authVerifier.DKIM_RES.SUCCESS: {
 				let dkim = result.dkim[0];
 				if (!dkim.warnings_str ||
 					dkim.warnings_str.length === 0)
@@ -296,14 +296,14 @@ DKIM_Verifier.Display = (function() {
 				}
 				break;
 			}
-			case DKIM_Verifier.AuthVerifier.DKIM_RES.TEMPFAIL:
+			case DKIM_Verifier.authVerifier.DKIM_RES.TEMPFAIL:
 				highlightHeader("tempfail");
 				break;
-			case DKIM_Verifier.AuthVerifier.DKIM_RES.PERMFAIL:
+			case DKIM_Verifier.authVerifier.DKIM_RES.PERMFAIL:
 				highlightHeader("permfail");
 				break;
-			case DKIM_Verifier.AuthVerifier.DKIM_RES.PERMFAIL_NOSIG:
-			case DKIM_Verifier.AuthVerifier.DKIM_RES.NOSIG:
+			case DKIM_Verifier.authVerifier.DKIM_RES.PERMFAIL_NOSIG:
+			case DKIM_Verifier.authVerifier.DKIM_RES.NOSIG:
 				highlightHeader("nosig");
 				break;
 			default:
@@ -666,7 +666,7 @@ var that = {
 			var msgHdr = gFolderDisplay.selectedMessage;
 
 			// get authentication result
-			let authResult = await DKIM_Verifier.AuthVerifier.verify(msgHdr, msgURI);
+			let authResult = await DKIM_Verifier.authVerifier.verify(msgHdr, msgURI);
 
 			// only show result if it's for the currently viewed message
 			var currentMsgURI = gFolderDisplay.selectedMessageUris[0];
@@ -699,7 +699,7 @@ var that = {
 		header.value = dkimStrings.getString("loading");
 		setValue("loading");
 		that.onStartHeaders();
-		DKIM_Verifier.AuthVerifier.resetResult(msgHdr).then(function () {
+		DKIM_Verifier.authVerifier.resetResult(msgHdr).then(function () {
 			that.onEndHeaders();
 		}, function (exception) {
 			log.fatal(exception);

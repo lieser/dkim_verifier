@@ -27,7 +27,7 @@
 // options for ESLint
 /* eslint strict: ["warn", "function"] */
 /* global Components, Services */
-/* global Logging, Key, Policy, MsgReader, rfcParser */
+/* global Logging, Key, Policy, msgReader, rfcParser */
 /* global dkimStrings, addrIsInDomain2, domainIsInDomain, stringEndsWith, stringEqual, writeStringToTmpFile, toType, DKIM_SigError, DKIM_TempError, DKIM_Error, copy */
 /* exported EXPORTED_SYMBOLS, Verifier */
 
@@ -51,7 +51,7 @@ Cu.import("resource://dkim_verifier/logging.jsm.js");
 Cu.import("resource://dkim_verifier/helper.jsm.js");
 Cu.import("resource://dkim_verifier/dkimKey.jsm.js");
 Cu.import("resource://dkim_verifier/dkimPolicy.jsm.js");
-Cu.import("resource://dkim_verifier/MsgReader.jsm.js");
+Cu.import("resource://dkim_verifier/msgReader.jsm.js");
 Cu.import("resource://dkim_verifier/rfcParser.jsm.js");
 
 // namespaces
@@ -1111,8 +1111,7 @@ var Verifier = (function() {
 	// eslint-disable-next-line complexity
 	async function verifySignature(msg, DKIMSignature) {
 		// check SDID and AUID
-		Policy.checkSDID(msg.DKIMSignPolicy.sdid, msg.from, DKIMSignature.d,
-			DKIMSignature.i, DKIMSignature.warnings);
+		Policy.checkSDID(msg.DKIMSignPolicy.sdid, msg.from, DKIMSignature.d, DKIMSignature.warnings);
 
 		// check signed headers
 		Policy.checkHeadersSigned(msg.headerFields, DKIMSignature);
@@ -1374,7 +1373,7 @@ var Verifier = (function() {
 	 * @param {dkimSigResultV2[]} signatures
 	 * @return {void}
 	 */
-	function checkForSignatureExsistens(msg, signatures) {
+	function checkForSignatureExistence(msg, signatures) {
 		// check if a DKIM signature exists
 		if (signatures.length === 0) {
 			let dkimSigResultV2;
@@ -1418,7 +1417,7 @@ var that = {
 	/**
 	 * Verifies the message with the given msgURI.
 	 *
-	 * @deprecated Use verify2() or AuthVerifier.verify() instead.
+	 * @deprecated Use verify2() or authVerifier.verify() instead.
 	 * @param {String} msgURI
 	 * @param {dkimResultCallback} dkimResultCallback
 	 * @return {void}
@@ -1433,7 +1432,7 @@ var that = {
 				let sigResults = await processSignatures(msg);
 
 				// check if DKIMSignatureHeader exist
-				checkForSignatureExsistens(msg, sigResults);
+				checkForSignatureExistence(msg, sigResults);
 				that.sortSignatures(msg, sigResults);
 
 				result = {
@@ -1489,7 +1488,7 @@ var that = {
 				version: "2.0",
 				signatures: await processSignatures(msg),
 			};
-			checkForSignatureExsistens(msg, res.signatures);
+			checkForSignatureExistence(msg, res.signatures);
 			that.sortSignatures(msg, res.signatures);
 			return res;
 		})();
@@ -1511,11 +1510,11 @@ var that = {
 			// read msg
 			/** @type {Msg} */
 			// @ts-expect-error
-			let msg = await MsgReader.read(msgURI);
+			let msg = await msgReader.read(msgURI);
 			msg.msgURI = msgURI;
 
 			// parse the header
-			msg.headerFields = MsgReader.parseHeader(msg.headerPlain);
+			msg.headerFields = msgReader.parseHeader(msg.headerPlain);
 
 			let msgHeaderParser = Cc["@mozilla.org/messenger/headerparser;1"].
 				createInstance(Ci.nsIMsgHeaderParser);
@@ -1689,9 +1688,9 @@ var that = {
 	handleException : handleException,
 
 	/*
-	 * make checkForSignatureExsistens public
+	 * make checkForSignatureExistence public
 	 */
-	checkForSignatureExsistens : checkForSignatureExsistens,
+	checkForSignatureExistence : checkForSignatureExistence,
 
 	version: module_version,
 };
