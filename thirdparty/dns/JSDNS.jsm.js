@@ -152,27 +152,27 @@ var EXPORTED_SYMBOLS = [
 	"JSDNS"
 ];
 
-// @ts-ignore
+// @ts-expect-error
 const Cc = Components.classes;
-// @ts-ignore
+// @ts-expect-error
 const Ci = Components.interfaces;
-// @ts-ignore
+// @ts-expect-error
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Log.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
 
 
-// @ts-ignore
+// @ts-expect-error
 const LOG_NAME = "DKIM_Verifier.JSDNS";
-// @ts-ignore
+// @ts-expect-error
 const PREF_BRANCH = "extensions.dkim_verifier.dns.";
 
 
 var JSDNS = {};
-// @ts-ignore
+// @ts-expect-error
 var prefs = Services.prefs.getBranch(PREF_BRANCH);
-// @ts-ignore
+// @ts-expect-error
 var log = Log.repository.getLogger(LOG_NAME);
 var DNS_STRINGS = Services.strings.createBundle(
 	"chrome://dkim_verifier/locale/JSDNS.properties"
@@ -455,7 +455,7 @@ function DNS_get_OS_DNSServers() {
 			// @ts-expect-error
 			log.error("Error reading Registry: " + e + "\n" + e.stack);
 		} finally {
-			// @ts-ignore
+			// @ts-expect-error
 			if (registry) {
 				registry.close();
 			}
@@ -503,7 +503,7 @@ function DNS_get_OS_DNSServers() {
 			// @ts-expect-error
 			log.error("Error reading resolv.conf: " + e + "\n" + e.stack);
 
-			// @ts-ignore
+			// @ts-expect-error
 			if (stream_filestream) {
 				stream_filestream.close();
 			}

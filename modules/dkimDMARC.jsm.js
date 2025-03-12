@@ -23,33 +23,33 @@
 /* global getBaseDomainFromAddr, getDomainFromAddr, toType, DKIM_Error */
 /* exported EXPORTED_SYMBOLS, DMARC */
 
-// @ts-ignore
+// @ts-expect-error
 const module_version = "1.1.1";
 
 var EXPORTED_SYMBOLS = [
 	"DMARC"
 ];
 
-// @ts-ignore
+// @ts-expect-error
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
 
 Cu.import("resource://dkim_verifier/logging.jsm.js");
 Cu.import("resource://dkim_verifier/helper.jsm.js");
-Cu.import("resource://dkim_verifier/DNSWrapper.jsm.js");
+Cu.import("resource://dkim_verifier/dnsWrapper.jsm.js");
 Cu.import("resource://dkim_verifier/rfcParser.jsm.js");
 
 /**
  * @public
  */
-// @ts-ignore
+// @ts-expect-error
 const PREF_BRANCH = "extensions.dkim_verifier.policy.DMARC.";
 
 
-// @ts-ignore
+// @ts-expect-error
 let prefs = Services.prefs.getBranch(PREF_BRANCH);
-// @ts-ignore
+// @ts-expect-error
 let log = Logging.getLogger("DMARC");
 
 var DMARC = {
@@ -312,7 +312,7 @@ function parseDMARCRecord(DMARCRecordStr) {
 		throw new DKIM_Error(`unexpected return value from rfcParser.parseTagValueList: ${parsedTagMap}`);
 	}
 	/** @type {Map} */
-	// @ts-ignore
+	// @ts-expect-error
 	let tagMap = parsedTagMap;
 
 	// v: Version (plain-text; REQUIRED).  Identifies the record retrieved

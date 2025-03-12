@@ -1,5 +1,5 @@
 /*
- * DNSWrapper.jsm.js
+ * dnsWrapper.jsm.js
  *
  * Wrapper to resolve DNS lookups via the following libraries:
  *  - JSDNS.jsm.js
@@ -22,14 +22,14 @@
 
 "use strict";
 
-// @ts-ignore
+// @ts-expect-error
 const module_version = "2.3.0";
 
 var EXPORTED_SYMBOLS = [
 	"DNS"
 ];
 
-// @ts-ignore
+// @ts-expect-error
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
@@ -43,14 +43,14 @@ XPCOMUtils.defineLazyModuleGetter(this, "libunbound", // eslint-disable-line no-
 	"resource://dkim_verifier/libunbound.jsm.js");
 
 
-// @ts-ignore
+// @ts-expect-error
 const PREF_BRANCH = "extensions.dkim_verifier.dns.";
 
 
-// @ts-ignore
+// @ts-expect-error
 var prefs = Services.prefs.getBranch(PREF_BRANCH);
-// @ts-ignore
-var log = Logging.getLogger("DNSWrapper");
+// @ts-expect-error
+var log = Logging.getLogger("dnsWrapper");
 
 // This variable is set to true in case of an switch-to-online-mode event, so DNS config will be updated before the next query
 var doUpdateDNSConfig = false;

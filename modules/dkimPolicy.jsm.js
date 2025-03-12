@@ -1,12 +1,12 @@
 /*
  * dkimPolicy.jsm.js
- * 
+ *
  * Version: 1.4.0 (01 April 2018)
- * 
+ *
  * Copyright (c) 2013-2018 Philippe Lieser
- * 
+ *
  * This software is licensed under the terms of the MIT License.
- * 
+ *
  * The above copyright and license notice shall be
  * included in all copies or substantial portions of the Software.
  */
@@ -18,18 +18,18 @@
 /* global addrIsInDomain, Deferred, getBaseDomainFromAddr, PREF, readStringFrom, stringEndsWith, stringEqual, DKIM_SigError */
 /* exported EXPORTED_SYMBOLS, Policy */
 
-// @ts-ignore
+// @ts-expect-error
 const module_version = "1.4.0";
 
 var EXPORTED_SYMBOLS = [
 	"Policy"
 ];
 
-// @ts-ignore
+// @ts-expect-error
 const Cc = Components.classes;
-// @ts-ignore
+// @ts-expect-error
 const Ci = Components.interfaces;
-// @ts-ignore
+// @ts-expect-error
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
@@ -41,13 +41,13 @@ Cu.import("resource://dkim_verifier/dkimDMARC.jsm.js");
 
 
 const DB_POLICY_NAME = "dkimPolicy.sqlite";
-// @ts-ignore
+// @ts-expect-error
 const PREF_BRANCH = "extensions.dkim_verifier.policy.";
 const ERROR_PREF_BRANCH = "extensions.dkim_verifier.error.";
 
 /**
  * DKIM signing policy for a message.
- * 
+ *
  * @typedef {Object} DKIMSignPolicy
  * @property {Boolean} shouldBeSigned
  *           true if message should be signed
@@ -61,7 +61,7 @@ const ERROR_PREF_BRANCH = "extensions.dkim_verifier.error.";
 
 /**
  * rule types
- * 
+ *
  * @public
  */
 const RULE_TYPE = {
@@ -71,7 +71,7 @@ const RULE_TYPE = {
 };
 /**
  * default rule priorities
- * 
+ *
  * @public
  */
 const PRIORITY = {
@@ -86,10 +86,10 @@ const PRIORITY = {
 };
 
 
-// @ts-ignore
+// @ts-expect-error
 var prefs = Services.prefs.getBranch(PREF_BRANCH);
 var error_prefs = Services.prefs.getBranch(ERROR_PREF_BRANCH);
-// @ts-ignore
+// @ts-expect-error
 var log = Logging.getLogger("Policy");
 var dbInitialized = false;
 /** @type {IDeferred<boolean>} */
@@ -105,7 +105,7 @@ var Policy = {
 	/**
 	 * init DB
 	 * May be called more then once
-	 * 
+	 *
 	 * @return {Promise<boolean>} initialized
 	 * @throws {Error}
 	 */
@@ -119,9 +119,9 @@ var Policy = {
 
 		var promise = (async () => {
 			log.trace("initDB Task begin");
-			
+
 			Logging.addAppenderTo("Sqlite.Connection."+DB_POLICY_NAME, "sql.");
-			
+
 			var conn = await Sqlite.openConnection({path: DB_POLICY_NAME});
 
 			try {
@@ -184,7 +184,7 @@ var Policy = {
 				} else if (versionTableSigners !== TABLE_SIGNERS_VERSION_CURRENT) {
 						throw new Error("unsupported versionTableSigners");
 				}
-				
+
 				// table signersDefault
 				if (versionTableSignersDefault < TABLE_SIGNERS_DEFAULT_VERSION_CURRENT) {
 					log.trace("create table signersDefault");
@@ -207,7 +207,7 @@ var Policy = {
 				} else if (versionTableSignersDefault !== TABLE_SIGNERS_DEFAULT_VERSION_CURRENT) {
 						throw new Error("unsupported versionTableSignersDefault");
 				}
-				
+
 				// data signersDefault
 				// read rules from file
 				var jsonStr = await readStringFrom("resource://dkim_verifier_data/signersDefault.json");
@@ -254,7 +254,7 @@ var Policy = {
 			} finally {
 				await conn.close();
 			}
-			
+
 			dbInitializedDefer.resolve(true);
 			log.debug("DB initialized");
 			log.trace("initDB Task end");
@@ -270,10 +270,10 @@ var Policy = {
 
 	 /**
 	 * Determinate if an e-mail by fromAddress should be signed
-	 * 
+	 *
 	 * @param {String} fromAddress
 	 * @param {String|Null} [listID]
-	 * 
+	 *
 	 * @return {Promise<DKIMSignPolicy>}
 	 * @throws {Error}
 	 */
@@ -282,7 +282,7 @@ var Policy = {
 
 		var promise = (async () => {
 			log.trace("shouldBeSigned Task begin");
-			
+
 			/** @type {DKIMSignPolicy} */
 			var result = {};
 
@@ -300,11 +300,11 @@ var Policy = {
 			if (listID === "") {
 				listID = null;
 			}
-			
+
 			// wait for DB init
 			await Policy.initDB();
 			var conn = await Sqlite.openConnection({path: DB_POLICY_NAME});
-			
+
 			var sqlRes;
 			try {
 				var sql =
@@ -335,12 +335,12 @@ var Policy = {
 			} finally {
 				await conn.close();
 			}
-			
+
 			if (sqlRes.length > 0) {
 				result.sdid = sqlRes[0].getResultByName("sdid").
 					split(" ").filter(x => x);
 				result.foundRule = true;
-				
+
 				switch (sqlRes[0].getResultByName("ruletype")) {
 					case RULE_TYPE["ALL"]:
 						result.shouldBeSigned = true;
@@ -364,7 +364,7 @@ var Policy = {
 				result.foundRule = false;
 				result.hideFail = false;
 			}
-			
+
 			log.debug("shouldBeSigned: "+result.shouldBeSigned+"; sdid: "+result.sdid+
 				"; hideFail: "+result.hideFail+"; foundRule: "+result.foundRule
 			);
@@ -380,16 +380,15 @@ var Policy = {
 
 	/**
 	 * Checks the SDID and AUID of a DKIM signatures.
-	 * 
+	 *
 	 * @param {String[]} allowedSDIDs
 	 * @param {String} from
 	 * @param {String} sdid
-	 * @param {String} auid
 	 * @param {dkimSigWarning[]} warnings - in/out paramter
 	 * @return {void}
 	 * @throws {DKIM_SigError}
 	 */
-	checkSDID: function Policy_checkSDID(allowedSDIDs, from, sdid, auid, warnings) {
+	checkSDID: function Policy_checkSDID(allowedSDIDs, from, sdid, warnings) {
 		"use strict";
 
 		// error/warning if there is a SDID in the sign rule
@@ -412,13 +411,10 @@ var Policy = {
 
 		// if there is no SDID in the sign rule
 		if (allowedSDIDs.length === 0) {
-			// warning if from is not in SDID or AUID
+			// warning if from is not in SDID
 			if (!addrIsInDomain(from, sdid)) {
 				warnings.push({name: "DKIM_SIGWARNING_FROM_NOT_IN_SDID"});
 				log.debug("Warning: DKIM_SIGWARNING_FROM_NOT_IN_SDID");
-			} else if (!stringEndsWith(from, auid)) {
-				warnings.push({name: "DKIM_SIGWARNING_FROM_NOT_IN_AUID"});
-				log.debug("Warning: DKIM_SIGWARNING_FROM_NOT_IN_AUID");
 			}
 		}
 	},
@@ -428,11 +424,11 @@ var Policy = {
 	 * - Warn if recommended headers are not signed.
 	 * - Try detecting maliciously added unsigned headers.
 	 *
-	 * The detection for maliciously added unsigned headers 
+	 * The detection for maliciously added unsigned headers
 	 * only considers all the recommended signed headers.
-	 * It simply ensures that a message does not contain both 
+	 * It simply ensures that a message does not contain both
 	 * signed and unsigned values of a header.
-	 * Using the same mechanism for all signed headers 
+	 * Using the same mechanism for all signed headers
 	 * will cause problems there added headers is normal
 	 * e.g. the Received header.
 	 *
@@ -441,16 +437,16 @@ var Policy = {
 	 * @param {Object} DKIMSignature
 	 *			DKIMSignature of the message
 	 * @returns {void}
-	 */	
+	 */
 	checkHeadersSigned: function Policy_checkHeadersSigned(msgHeaders, DKIMSignature) {
 		"use strict";
-		
+
 		const POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE = {
 			RELAXED : 10,
 			RECOMMENDED : 20,
 			STRICT : 30
 		};
-		
+
 		// The list of recommended headers to sign is mostly based on
 		// https://www.rfc-editor.org/rfc/rfc6376.html#section-5.4.
 		const SIGNEDHEADERS = {
@@ -458,25 +454,25 @@ var Policy = {
 			RECOMMENDED : ["Date", "To", "Cc", "Resent-Date", "Resent-From", "Resent-To", "Resent-Cc", "In-Reply-To", "References", "List-Id", "List-Help", "List-Unsubscribe", "List-Subscribe", "List-Post", "List-Owner", "List-Archive"],
 			DESIRED : ["Message-ID", "Sender", "MIME-Version", "Content-Transfer-Encoding", "Content-Disposition", "Content-ID", "Content-Description"]
 		};
-	
+
 		// We would like Reply-To to be in the recommended list.
 		// As some bigger domains violate this, we will only enforce it if the Reply-To is not in the signing domain, but a valid email address
 		const replyTo = msgHeaders.get("reply-to");
 		let replyToAddress = null;
 		if (replyTo && replyTo[0]) {
-			let msgHeaderParser = Cc["@mozilla.org/messenger/headerparser;1"].createInstance(Ci.nsIMsgHeaderParser); 
-			replyToAddress = msgHeaderParser.extractHeaderAddressMailboxes(replyTo[0]); 
+			let msgHeaderParser = Cc["@mozilla.org/messenger/headerparser;1"].createInstance(Ci.nsIMsgHeaderParser);
+			replyToAddress = msgHeaderParser.extractHeaderAddressMailboxes(replyTo[0]);
 			if (!replyToAddress) {
 				log.warn("Ignoring error in parsing of Reply-To header", replyTo[0]);
 			}
 		}
 		if (replyToAddress && addrIsInDomain(replyToAddress, DKIMSignature.d))
 		{
-			SIGNEDHEADERS.DESIRED.push("Reply-To");			
+			SIGNEDHEADERS.DESIRED.push("Reply-To");
 		} else {
 			SIGNEDHEADERS.RECOMMENDED.push("Reply-To");
 		}
-		
+
 		// If the body is not completely signed, a manipulated Content-Type header
 		// can cause completely different content to be shown.
 		if (DKIMSignature.warnings.some(warning => warning.name === "DKIM_SIGWARNING_SMALL_L")) {
@@ -486,7 +482,7 @@ var Policy = {
 		} else {
 			SIGNEDHEADERS.DESIRED.push("Content-Type");
 		}
-		
+
 		/**
 		 * @param {string} header
 		 * @param {boolean} warnIfUnsigned
@@ -523,7 +519,7 @@ var Policy = {
 
 	/**
 	 * Get the URL to the favicon, if available.
-	 * 
+	 *
 	 * @param {String} sdid
 	 * @param {String|undefined} auid
 	 * @param {String|undefined} from
@@ -567,10 +563,10 @@ var Policy = {
 
 	/**
 	 * Adds should be signed rule if no enabled rule for fromAddress is found
-	 * 
+	 *
 	 * @param {String} fromAddress
 	 * @param {String} sdid
-	 * 
+	 *
 	 * @return {Promise<void>}
 	 * @throws {Error}
 	 */
@@ -579,7 +575,7 @@ var Policy = {
 
 		var promise = (async () => {
 			log.trace("signedBy Task begin");
-			
+
 			// return if signRules or autoAddRule is disabled
 			if (!prefs.getBoolPref("signRules.enable") ||
 			    !prefs.getBoolPref("signRules.autoAddRule")) {
@@ -615,7 +611,7 @@ var Policy = {
 				}
 				await addRule(domain, fromAddressToAdd, sdid, "ALL", "AUTOINSERT_RULE_ALL");
 			}
-			
+
 			log.trace("signedBy Task end");
 		})();
 		promise.then(null, function onReject(exception) {
@@ -627,9 +623,9 @@ var Policy = {
 
 	/**
 	 * Adds neutral rule for fromAddress with priority USERINSERT_RULE_NEUTRAL
-	 * 
+	 *
 	 * @param {String} fromAddress
-	 * 
+	 *
 	 * @return {Promise<void>}
 	 */
 	addUserException: function Policy_addUserException(fromAddress) {
@@ -637,9 +633,9 @@ var Policy = {
 
 		var promise = (async () => {
 			log.trace("addUserException Task begin");
-			
+
 			var domain = getBaseDomainFromAddr(fromAddress);
-			
+
 			// wait for DB init
 			await Policy.initDB();
 			var conn = await Sqlite.openConnection({path: DB_POLICY_NAME});
@@ -680,7 +676,7 @@ var Policy = {
 	 * Adds a function, which is called if sign rules changed.
 	 * The handler function is called with the number of added rules
 	 * (negative if rules where removed) as an argument.
-	 * 
+	 *
 	 * @param {Function} handler
 	 * @return {void}
 	 */
@@ -703,7 +699,7 @@ var Policy = {
 
 	/**
 	 * Notify the sign rules changed observer.
-	 * 
+	 *
 	 * @param {Number} count Number of rules added
 	 * @return {void}
 	 */
@@ -722,20 +718,20 @@ var Policy = {
 
 /**
  * Adds rule.
- * 
+ *
  * @param {String|null|undefined} domain
  * @param {String} addr
  * @param {String} sdid
  * @param {String} ruletype
  * @param {String} priority
- * 
+ *
  * @return {Promise<void>}
  */
 async function addRule(domain, addr, sdid, ruletype, priority) {
 	"use strict";
 
 	log.trace("addRule begin");
-	
+
 	if (!domain) {
 		domain = getBaseDomainFromAddr(addr);
 	}
@@ -743,7 +739,7 @@ async function addRule(domain, addr, sdid, ruletype, priority) {
 	// wait for DB init
 	await Policy.initDB();
 	var conn = await Sqlite.openConnection({path: DB_POLICY_NAME});
-	
+
 	try {
 		log.debug("add rule (domain: "+domain+", addr: "+addr+", sdid: "+sdid+
 			", ruletype: "+ruletype+", priority: "+priority+", enabled: 1)"

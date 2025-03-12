@@ -1,14 +1,14 @@
 /*
- * SQLiteTreeView.jsm.js
- * 
+ * sqLiteTreeView.jsm.js
+ *
  * Implements a nsITreeView for a SQLite DB table.
  *
  * Version: 1.1.0 (31 March 2018)
- * 
+ *
  * Copyright (c) 2013-2018 Philippe Lieser
- * 
+ *
  * This software is licensed under the terms of the MIT License.
- * 
+ *
  * The above copyright and license notice shall be
  * included in all copies or substantial portions of the Software.
  */
@@ -22,7 +22,7 @@ var EXPORTED_SYMBOLS = [
 	"SQLiteTreeView"
 ];
 
-// @ts-ignore
+// @ts-expect-error
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/FileUtils.jsm");
@@ -32,7 +32,7 @@ Cu.import("resource://gre/modules/Services.jsm");
 
 /**
  * @typedef {Object} Observable
- * @property {Function} subscribe - subscribe a handler, that takes number of added rows as argument 
+ * @property {Function} subscribe - subscribe a handler, that takes number of added rows as argument
  * @property {Function} unsubscribe - unsubscribe a handler
  * @property {Function} notify - notify all observers of changes
  */
@@ -40,7 +40,7 @@ Cu.import("resource://gre/modules/Services.jsm");
 /**
  * SQLiteTreeView
  * Implements nsITreeView and some additional methods.
- * 
+ *
  * based on http://www.simon-cozens.org/content/xul-mozstorage-and-sqlite
  * @extends {nsITreeView}
  */
@@ -48,7 +48,7 @@ class SQLiteTreeView {
 	/**
 	 * Create a new SQLiteTreeView
 	 * @constructor
-	 * 
+	 *
 	 * @param {String} dbPath The database file to open. This can be an absolute or relative path. If a relative path is given, it is interpreted as relative to the current profile's directory.
 	 * @param {String} tableName Table to be displayed
 	 * @param {String[]} columns Columns to be displayed in the same order as in the tree
@@ -83,7 +83,7 @@ class SQLiteTreeView {
 	/*
 	 * internal methods
 	 */
-	
+
 	/**
 	 * Updates orderClause. Should be called if the sort order is changed
 	 * @return {void}
@@ -94,13 +94,13 @@ class SQLiteTreeView {
 		}, this).join(", ");
 		// dump(this.orderClause+"\n");
 	}
-		
+
 	/**
 	 * Executes sql an returns the result
-	 * 
+	 *
 	 * @param {String} sql
 	 * @param {Object} [params] named params
-	 * 
+	 *
 	 * @return {(String[])[]}
 	 */
 	_doSQL(sql, params) {
@@ -145,9 +145,9 @@ class SQLiteTreeView {
 
 	/**
 	 * Get the rowID of the rows
-	 * 
+	 *
 	 * @param {Number[]} rows
-	 * 
+	 *
 	 * @return {string[]} rowIDs
 	 */
 	_getRowIDs(rows) {
@@ -165,7 +165,7 @@ class SQLiteTreeView {
 	/**
 	 * If observable is set, notify it.
 	 * Otherwise, directly update the tree view
-	 * 
+	 *
 	 * @param {Number} [rowCountChanged] Number of rows changed
 	 * @return {void}
 	 */
@@ -183,7 +183,7 @@ class SQLiteTreeView {
 
 	/**
 	 * Update the tree view
-	 * 
+	 *
 	 * @param {Number} [rowCountChanged] Number of rows changed
 	 * @return {void}
 	 */
@@ -196,7 +196,7 @@ class SQLiteTreeView {
 
 	/**
 	 * Adds a new row to the database
-	 * 
+	 *
 	 * @param {Object} params Named params to insert
 	 * @return {void}
 	 */
@@ -207,11 +207,11 @@ class SQLiteTreeView {
 			"VALUES ("+this.insertParamsClause+");",
 			params
 		);
-		
+
 		// update tree
 		this._triggerUpdate(1);
 	}
-	
+
 	/**
 	 * Delete selected rows
 	 * @return {void}
@@ -245,24 +245,24 @@ class SQLiteTreeView {
 		// update tree
 		this._triggerUpdate(-rowIDs.length);
 	}
-	
+
 	/*
 	 * nsITreeView attributes/methods
 	 */
-	
+
 	get rowCount() {
 		return this._doSQL("SELECT count(*) FROM "+this.tableName)[0][0];
 	}
-	
+
 	// cycleCell
-	
+
 	cycleHeader(col) {
 		if (col.index === this.sortOrder[0].index) {
 			// change sort order direction
 			this.sortOrder[0].orderDesc = !this.sortOrder[0].orderDesc ;
 		} else {
 			// change sort order sequence
-			
+
 			// get the column from sortOrder
 			var i;
 			for (i=0; i<this.sortOrder.length; i++) {
@@ -271,20 +271,20 @@ class SQLiteTreeView {
 				}
 			}
 			var tmp = this.sortOrder[i];
-			
+
 			// delete the column from sortOrder
 			this.sortOrder.splice(i, 1);
-			
+
 			// add the column at the beginning of sortOrder
 			this.sortOrder.splice(0, 0, tmp);
 		}
-		
+
 		this._updateOrderClause();
 		this._triggerUpdate();
 	}
-	
+
 	getCellProperties(/*row,col,props*/) {} // eslint-disable-line strict, no-empty-function
-	
+
 	getCellText(row, column) {
 		var res = this._doSQL(
 			"SELECT "+this.columnClause+" FROM "+this.tableName+"\n" +
@@ -293,9 +293,9 @@ class SQLiteTreeView {
 		);
 		return res[0][column.index];
 	}
-	
+
 	// getCellValue
-	
+
 	getColumnProperties(/*colID,col,props*/) {} // eslint-disable-line strict, no-empty-function
 
 	getImageSrc(/*row,col*/){
@@ -311,11 +311,11 @@ class SQLiteTreeView {
 	isContainer(/*row*/){
 		return false;
 	}
-	
+
 	isEditable(row, col) {
 		return col.editable;
 	}
-	
+
 	isSeparator(/*row*/){
 		return false;
 	}
@@ -323,7 +323,7 @@ class SQLiteTreeView {
 	isSorted(){
 		return true;
 	}
-	
+
 	setCellText(row, col, value) {
 		var rowID = this._getRowIDs([row])[0];
 		this._doSQL(
@@ -334,21 +334,21 @@ class SQLiteTreeView {
 		);
 		this._triggerUpdate();
 	}
-	
+
 	// setCellValue
-	
+
 	setTree(treeBox) {
 		this.treeBox = treeBox;
-		
+
 		if (treeBox) {
 			// open connection
 			this.conn = Services.storage.openDatabase(this.file);
-			
+
 			// test that table exists
 			if (!this.conn.tableExists(this.tableName)) {
 				throw new Error(`Table ${this.tableName} must exist`);
 			}
-	
+
 			if ( treeBox.columns.count !== this.columns.length) {
 				throw new Error("Number of columns to be displayed must be the same as in the tree");
 			}

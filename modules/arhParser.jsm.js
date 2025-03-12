@@ -1,14 +1,14 @@
 /*
- * ARHParser.jsm.js
- * 
+ * arhParser.jsm.js
+ *
  * Parser for the Authentication-Results header as specified in RFC 7601.
  *
  * Version: 1.2.1 (13 January 2019)
- * 
+ *
  * Copyright (c) 2014-2019 Philippe Lieser
- * 
+ *
  * This software is licensed under the terms of the MIT License.
- * 
+ *
  * The above copyright and license notice shall be
  * included in all copies or substantial portions of the Software.
  */
@@ -16,21 +16,21 @@
 // options for ESLint
 /* global Components, Services */
 /* global Logging, rfcParser, DKIM_Error */
-/* exported EXPORTED_SYMBOLS, ARHParser */
+/* exported EXPORTED_SYMBOLS, arhParser */
 
 "use strict";
 
-// @ts-ignore
+// @ts-expect-error
 const module_version = "1.2.1";
 
 var EXPORTED_SYMBOLS = [
-	"ARHParser"
+	"arhParser"
 ];
 
-// @ts-ignore
+// @ts-expect-error
 const PREF_BRANCH = "extensions.dkim_verifier.arh.";
 
-// @ts-ignore
+// @ts-expect-error
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
@@ -39,10 +39,10 @@ Cu.import("resource://dkim_verifier/logging.jsm.js");
 Cu.import("resource://dkim_verifier/helper.jsm.js");
 Cu.import("resource://dkim_verifier/rfcParser.jsm.js");
 
-// @ts-ignore
+// @ts-expect-error
 var prefs = Services.prefs.getBranch(PREF_BRANCH);
-// @ts-ignore
-const log = Logging.getLogger("ARHParser");
+// @ts-expect-error
+const log = Logging.getLogger("arhParser");
 
 /**
  * @typedef {Object} ARHHeader
@@ -58,26 +58,26 @@ const log = Logging.getLogger("ARHParser");
  * @property {String} result
  *           none|pass|fail|softfail|policy|neutral|temperror|permerror
  * @property {String} [reason]
- * @property {Object} propertys
- * @property {Object} propertys.smtp
- * @property {Object} propertys.header
- * @property {Object} propertys.body
- * @property {Object} propertys.policy
- * @property {Object} [propertys._Keyword_]
- *           ARHResinfo can also include other propertys besides the aboves.
+ * @property {Object} properties
+ * @property {Object} properties.smtp
+ * @property {Object} properties.header
+ * @property {Object} properties.body
+ * @property {Object} properties.policy
+ * @property {Object} [properties._Keyword_]
+ *           ARHResinfo can also include other properties besides the aboves.
  */
 
-let ARHParser = {
+let arhParser = {
 	get version() { return module_version; },
 
 	/**
 	 *  Parses an Authentication-Results header.
-	 *  
+	 *
 	 *  @param {String} authresHeader Authentication-Results header
 	 *  @return {ARHHeader} Parsed Authentication-Results header
 	 *  @throws {DKIM_Error}
 	 */
-	parse: function _ARHParser_parse(authresHeader) {
+	parse: function _arhParser_parse(authresHeader) {
 		// remove header name
 		authresHeader = authresHeader.replace(
 			new RegExp(`^Authentication-Results:${rfcParser.get("CFWS_op")}`, "i"), "");
@@ -123,7 +123,7 @@ let ARHParser = {
 
 /**
  *  Parses the next resinfo in str. The parsed part of str is removed from str.
- *  
+ *
  *  @param {RefString} str
  *  @return {ARHResinfo|null} Parsed resinfo
  *  @throws {DKIM_Error|Error}
@@ -134,7 +134,7 @@ function parseResinfo(str) {
 	let reg_match;
 	/** @type {ARHResinfo} */
 	let res = {};
-	
+
 	// get methodspec
 	const method_version_p = `${rfcParser.get("CFWS_op")}/${rfcParser.get("CFWS_op")}([0-9]+)`;
 	const method_p = `(${rfcParser.get("Keyword")})(?:${method_version_p})?`;
@@ -185,22 +185,22 @@ function parseResinfo(str) {
 	const special_smtp_verb_p = "mailfrom|rcptto";
 	const property_p = `${special_smtp_verb_p}|${rfcParser.get("Keyword")}`;
 	const propspec_p = `(${rfcParser.get("Keyword")})${rfcParser.get("CFWS_op")}\\.${rfcParser.get("CFWS_op")}(${property_p})${rfcParser.get("CFWS_op")}=${rfcParser.get("CFWS_op")}(?:${pvalue_p})`;
-	res.propertys = {};
-	res.propertys.smtp = {};
-	res.propertys.header = {};
-	res.propertys.body = {};
-	res.propertys.policy = {};
+	res.properties = {};
+	res.properties.smtp = {};
+	res.properties.header = {};
+	res.properties.body = {};
+	res.properties.policy = {};
 	while ((reg_match = match_o(str, propspec_p)) !== null) {
 		if (!reg_match[1]) {
 			throw new DKIM_Error("Error matching the ARH property name.");
 		}
 		if (!reg_match[2]) {
 			throw new DKIM_Error("Error matching the ARH property sub-name.");
-		}		
-		let property = res.propertys[reg_match[1]];
+		}
+		let property = res.properties[reg_match[1]];
 		if (!property) {
 			property = {};
-			res.propertys[reg_match[1]] = property;
+			res.properties[reg_match[1]] = property;
 		}
 		property[reg_match[2]] = reg_match[3] ? reg_match[3] : reg_match[4] ? reg_match[4] : reg_match[5] ? reg_match[5] : reg_match[6];
 	}
@@ -284,7 +284,7 @@ class RefString {
  *  Adds CFWS_op to the beginning of pattern.
  *  pattern must be followed by string end, ";" or CFWS_p.
  *  Removes the found match from str.
- *  
+ *
  *  @param {RefString} str
  *  @param {String} pattern
  *  @return {String[]} An Array, containing the matches
@@ -304,7 +304,7 @@ function match(str, pattern) {
  *  Adds CFWS_op to the beginning of pattern.
  *  pattern must be followed by string end, ";" or CFWS_p.
  *  If match is found, removes it from str.
- *  
+ *
  *  @param {RefString} str
  *  @param {String} pattern
  *  @return {String[]|Null} Null if no match for the pattern is found, else
