@@ -20,18 +20,18 @@ var EXPORTED_SYMBOLS = [
 	"loadAuthResult"
 ];
 
-// @ts-ignore
+// @ts-expect-error
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
 
 Cu.import("resource://dkim_verifier/logging.jsm.js");
 
-// @ts-ignore
+// @ts-expect-error
 const PREF_BRANCH = "extensions.dkim_verifier.";
-// @ts-ignore
+// @ts-expect-error
 let log = Logging.getLogger("resultStorage");
-// @ts-ignore
+// @ts-expect-error
 let prefs = Services.prefs.getBranch(PREF_BRANCH);
 
 /**
@@ -143,7 +143,7 @@ function loadAuthResult(msgHdr) {
 			if (majorVersion === "1") {
 				// old dkimResultV1 (AuthResult version 1)
 				/** @type {dkimResultV1} */
-				// @ts-ignore
+				// @ts-expect-error
 				let resultV1 = savedAuthResult;
 				let res = {
 					version: "3.0",
@@ -154,7 +154,6 @@ function loadAuthResult(msgHdr) {
 			if (majorVersion === "2") {
 				// AuthResult version 2
 				/** @type {AuthResultV2} */
-				// @ts-ignore
 				let resultV2 = savedAuthResult;
 				savedAuthResult.version = "3.0";
 				savedAuthResult.dkim = resultV2.dkim.map(

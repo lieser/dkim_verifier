@@ -21,24 +21,24 @@
 
 "use strict";
 
-// @ts-ignore
+// @ts-expect-error
 const module_version = "2.1.0";
 
 var EXPORTED_SYMBOLS = [
 	"msgReader"
 ];
 
-// @ts-ignore
+// @ts-expect-error
 const Cc = Components.classes;
-// @ts-ignore
+// @ts-expect-error
 const Ci = Components.interfaces;
-// @ts-ignore
+// @ts-expect-error
 const Cu = Components.utils;
 
 Cu.import("resource://dkim_verifier/logging.jsm.js");
 Cu.import("resource://dkim_verifier/helper.jsm.js");
 
-// @ts-ignore
+// @ts-expect-error
 let log = Logging.getLogger("msgReader");
 
 

@@ -27,7 +27,7 @@ var EXPORTED_SYMBOLS = [
 	"BIMI"
 ];
 
-// @ts-ignore
+// @ts-expect-error
 const Cu = Components.utils;
 
 Cu.import("resource://dkim_verifier/logging.jsm.js");

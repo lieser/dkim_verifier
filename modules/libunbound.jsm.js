@@ -21,14 +21,14 @@
 
 "use strict";
 
-// @ts-ignore
+// @ts-expect-error
 const module_version = "2.2.0";
 
 var EXPORTED_SYMBOLS = [
 	"libunbound"
 ];
 
-// @ts-ignore
+// @ts-expect-error
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/osfile.jsm");
@@ -38,7 +38,7 @@ Cu.import("resource://dkim_verifier/logging.jsm.js");
 Cu.import("resource://dkim_verifier/helper.jsm.js");
 
 
-// @ts-ignore
+// @ts-expect-error
 const PREF_BRANCH = "extensions.dkim_verifier.dns.";
 
 
@@ -144,9 +144,9 @@ var Constants = {
  *           number of seconds the result is valid
  */
 
-// @ts-ignore
+// @ts-expect-error
 var prefs = Services.prefs.getBranch(PREF_BRANCH);
-// @ts-ignore
+// @ts-expect-error
 var log = Logging.getLogger("libunbound");
 
 /** @type {Libunbound.LibunboundWorker} */
@@ -279,7 +279,7 @@ libunboundWorker.onmessage = function(msg) {
 		// handle log messages
 		if (msg.data.type && msg.data.type === "log") {
 			/** @type {Libunbound.Log} */
-			// @ts-ignore
+			// @ts-expect-error
 			let logMsg = msg.data;
 			switch (logMsg.subType) {
 				case "fatal":
@@ -309,13 +309,13 @@ libunboundWorker.onmessage = function(msg) {
 			return;
 		}
 		/** @type {Libunbound.Response} */
-		// @ts-ignore
+		// @ts-expect-error
 		let response = msg.data;
 
 		let exception;
 		if (response.type && response.type === "error") {
 			/** @type {Libunbound.Exception} */
-			// @ts-ignore
+			// @ts-expect-error
 			let ex = response;
 			exception = new Error(`Error in libunboundWorker: ${ex.message}; subType: ${ex.subType}`);
 		}
@@ -335,7 +335,7 @@ libunboundWorker.onmessage = function(msg) {
 			return;
 		}
 		/** @type {Libunbound.Result} */
-		// @ts-ignore
+		// @ts-expect-error
 		let res = response;
 		defer.resolve(res.result);
 	} catch (e) {

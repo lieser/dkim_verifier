@@ -21,18 +21,18 @@
 
 "use strict";
 
-// @ts-ignore
+// @ts-expect-error
 const module_version = "1.4.0";
 
 var EXPORTED_SYMBOLS = [
 	"authVerifier"
 ];
 
-// @ts-ignore
+// @ts-expect-error
 const Cc = Components.classes;
-// @ts-ignore
+// @ts-expect-error
 const Ci = Components.interfaces;
-// @ts-ignore
+// @ts-expect-error
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
@@ -43,17 +43,17 @@ Cu.import("resource://dkim_verifier/logging.jsm.js");
 Cu.import("resource://dkim_verifier/helper.jsm.js");
 Cu.import("resource://dkim_verifier/resultStorage.jsm.js");
 Cu.import("resource://dkim_verifier/arhVerifier.jsm.js");
-// @ts-ignore
+// @ts-expect-error
 let DKIM = {};
 Cu.import("resource://dkim_verifier/dkimPolicy.jsm.js", DKIM);
 Cu.import("resource://dkim_verifier/dkimVerifier.jsm.js", DKIM);
 
-// @ts-ignore
+// @ts-expect-error
 const PREF_BRANCH = "extensions.dkim_verifier.";
 
-// @ts-ignore
+// @ts-expect-error
 let log = Logging.getLogger("authVerifier");
-// @ts-ignore
+// @ts-expect-error
 let prefs = Services.prefs.getBranch(PREF_BRANCH);
 
 /**
@@ -98,7 +98,7 @@ let prefs = Services.prefs.getBranch(PREF_BRANCH);
  * @property {String} [favicon]
  *           url to the favicon of the sdid
  */
-// @ts-ignore
+// @ts-expect-error
 
 var authVerifier = {
 	get version() { return module_version; },
@@ -214,7 +214,6 @@ var authVerifier = {
 			saveAuthResult(msgHdr, savedAuthResult);
 
 			let authResult = await SavedAuthResult_to_AuthResult(savedAuthResult, fromAddress);
-			// @ts-ignore
 			log.debug("authResult: " + authResult.toSource());
 			return authResult;
 		})();

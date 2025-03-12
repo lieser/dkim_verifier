@@ -20,7 +20,7 @@ var EXPORTED_SYMBOLS = [
 	"rfcParser"
 ];
 
-// @ts-ignore
+// @ts-expect-error
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");

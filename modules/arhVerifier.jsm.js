@@ -24,7 +24,7 @@ var EXPORTED_SYMBOLS = [
 	"getARHResult"
 ];
 
-// @ts-ignore
+// @ts-expect-error
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
@@ -33,16 +33,16 @@ Cu.import("resource://dkim_verifier/logging.jsm.js");
 Cu.import("resource://dkim_verifier/helper.jsm.js");
 Cu.import("resource://dkim_verifier/arhParser.jsm.js");
 Cu.import("resource://dkim_verifier/bimi.jsm.js");
-// @ts-ignore
+// @ts-expect-error
 let DKIM = {};
 Cu.import("resource://dkim_verifier/dkimPolicy.jsm.js", DKIM);
 
-// @ts-ignore
+// @ts-expect-error
 const PREF_BRANCH = "extensions.dkim_verifier.";
 
-// @ts-ignore
+// @ts-expect-error
 let log = Logging.getLogger("arhVerifier");
-// @ts-ignore
+// @ts-expect-error
 let prefs = Services.prefs.getBranch(PREF_BRANCH);
 
 /**
@@ -138,7 +138,7 @@ function getARHResult(msgHdr, msg) {
 			checkSignatureAlgorithm(dkimSigResults[i]);
 
 			if (arhResult !== dkimSigResults[i].result
-				// @ts-ignore
+				// @ts-expect-error
 				|| (dkimSigResults[i].warnings && dkimSigResults[i].warnings.length > 0)
 			   ) {
 				dkimSigResults[i].verifiedBy += " & DKIM Verifier";
@@ -242,8 +242,6 @@ function checkAndSetSdidAndAuid(dkimSigResult) {
 		}
 	} else if (dkimSigResult.sdid) {
 		dkimSigResult.auid = `@${dkimSigResult.sdid}`;
-	} else if (dkimSigResult.auid) {
-		dkimSigResult.sdid = getDomainFromAddr(dkimSigResult.auid);
 	}
 }
 
@@ -295,7 +293,6 @@ function checkSignPolicy(msg, dkimSigResult) {
 	try {
 		DKIM.Policy.checkSDID(msg.DKIMSignPolicy.sdid,
 							  msg.from,
-							  // @ts-ignore
 							  dkimSigResult.sdid ? dkimSigResult.sdid : "",
 							  dkimSigResult.warnings);
 	} catch(e) {

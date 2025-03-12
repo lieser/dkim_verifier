@@ -31,18 +31,18 @@
 /* global dkimStrings, addrIsInDomain2, domainIsInDomain, stringEndsWith, stringEqual, writeStringToTmpFile, toType, DKIM_SigError, DKIM_TempError, DKIM_Error, copy */
 /* exported EXPORTED_SYMBOLS, Verifier */
 
-// @ts-ignore
+// @ts-expect-error
 const module_version = "2.3.0";
 
 var EXPORTED_SYMBOLS = [
 	"Verifier"
 ];
 
-// @ts-ignore
+// @ts-expect-error
 const Cc = Components.classes;
-// @ts-ignore
+// @ts-expect-error
 const Ci = Components.interfaces;
-// @ts-ignore
+// @ts-expect-error
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
@@ -80,7 +80,7 @@ Services.scriptloader.loadSubScript("resource://dkim_verifier_3p/rsasign/rsasign
 Services.scriptloader.loadSubScript("resource://dkim_verifier_3p/tweetnacl/nacl-fast.js", ED25519, "UTF-8");
 Services.scriptloader.loadSubScript("resource://dkim_verifier_3p/tweetnacl-util/nacl-util.js", ED25519, "UTF-8");
 
-// @ts-ignore
+// @ts-expect-error
 const PREF_BRANCH = "extensions.dkim_verifier.";
 
 
@@ -436,7 +436,7 @@ var Verifier = (function() {
 			throw new Error(`unexpected return value from parseTagValueList: ${parsedTagMap}`);
 		}
 		/** @type {Map} */
-		// @ts-ignore
+		// @ts-expect-error
 		let tagMap = parsedTagMap;
 
 		// get Version (plain-text; REQUIRED)
@@ -794,7 +794,7 @@ var Verifier = (function() {
 			throw new Error(`unexpected return value from parseTagValueList: ${parsedTagMap}`);
 		}
 		/** @type {Map} */
-		// @ts-ignore
+		// @ts-expect-error
 		let tagMap = parsedTagMap;
 
 		// get version (plain-text; RECOMMENDED, default is "DKIM1")
@@ -1521,9 +1521,9 @@ var that = {
 
 			// get last from address
 			if (msg.headerFields.has("from")) {
-				// @ts-ignore
+				// @ts-expect-error
 				let numFrom = msg.headerFields.get("from").length;
-				// @ts-ignore
+				// @ts-expect-error
 				let author = msg.headerFields.get("from")[numFrom-1];
 				author = author.replace(/^From[ \t]*:/i,"");
 				let from;
@@ -1539,7 +1539,6 @@ var that = {
 
 			// get list-id
 			if (msg.headerFields.has("list-id")) {
-				// @ts-ignore
 				let listId = "";
 				try {
 					// @ts-expect-error

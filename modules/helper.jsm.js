@@ -41,7 +41,7 @@ var EXPORTED_SYMBOLS = [
 ];
 
 const Cr = Components.results;
-// @ts-ignore
+// @ts-expect-error
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/FileUtils.jsm");
@@ -52,7 +52,7 @@ Cu.import("resource://services-common/utils.js");
 Cu.import("resource://dkim_verifier/logging.jsm.js");
 
 
-// @ts-ignore
+// @ts-expect-error
 var log = Logging.getLogger("Helper");
 var eTLDService = Components.classes["@mozilla.org/network/effective-tld-service;1"].
 	getService(Components.interfaces.nsIEffectiveTLDService);

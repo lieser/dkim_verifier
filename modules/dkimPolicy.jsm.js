@@ -18,18 +18,18 @@
 /* global addrIsInDomain, Deferred, getBaseDomainFromAddr, PREF, readStringFrom, stringEndsWith, stringEqual, DKIM_SigError */
 /* exported EXPORTED_SYMBOLS, Policy */
 
-// @ts-ignore
+// @ts-expect-error
 const module_version = "1.4.0";
 
 var EXPORTED_SYMBOLS = [
 	"Policy"
 ];
 
-// @ts-ignore
+// @ts-expect-error
 const Cc = Components.classes;
-// @ts-ignore
+// @ts-expect-error
 const Ci = Components.interfaces;
-// @ts-ignore
+// @ts-expect-error
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
@@ -41,7 +41,7 @@ Cu.import("resource://dkim_verifier/dkimDMARC.jsm.js");
 
 
 const DB_POLICY_NAME = "dkimPolicy.sqlite";
-// @ts-ignore
+// @ts-expect-error
 const PREF_BRANCH = "extensions.dkim_verifier.policy.";
 const ERROR_PREF_BRANCH = "extensions.dkim_verifier.error.";
 
@@ -86,10 +86,10 @@ const PRIORITY = {
 };
 
 
-// @ts-ignore
+// @ts-expect-error
 var prefs = Services.prefs.getBranch(PREF_BRANCH);
 var error_prefs = Services.prefs.getBranch(ERROR_PREF_BRANCH);
-// @ts-ignore
+// @ts-expect-error
 var log = Logging.getLogger("Policy");
 var dbInitialized = false;
 /** @type {IDeferred<boolean>} */

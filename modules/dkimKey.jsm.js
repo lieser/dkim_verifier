@@ -18,14 +18,14 @@
 /* global Deferred, DKIM_SigError, PREF */
 /* exported EXPORTED_SYMBOLS, Key */
 
-// @ts-ignore
+// @ts-expect-error
 const module_version = "1.2.0";
 
 var EXPORTED_SYMBOLS = [
 	"Key"
 ];
 
-// @ts-ignore
+// @ts-expect-error
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
@@ -40,13 +40,13 @@ Cu.import("resource://dkim_verifier/dnsWrapper.jsm.js");
  * @public
  */
 const KEY_DB_NAME = "dkimKey.sqlite";
-// @ts-ignore
+// @ts-expect-error
 const PREF_BRANCH = "extensions.dkim_verifier.key.";
 
 
-// @ts-ignore
+// @ts-expect-error
 var prefs = Services.prefs.getBranch(PREF_BRANCH);
-// @ts-ignore
+// @ts-expect-error
 var log = Logging.getLogger("Key");
 var dbInitialized = false;
 // Deferred<boolean>

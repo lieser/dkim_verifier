@@ -23,7 +23,7 @@
 
 
 const log_prefix = "libunboundWorker: ";
-// @ts-ignore
+// @ts-expect-error
 var log = {
 	fatal : function (msg) {
 		let toSend = {type: "log", subType: "fatal", message: log_prefix + msg};
@@ -444,21 +444,21 @@ onmessage = function(msg) {
 			switch (msg.data.method) {
 				case "resolve": {
 					/** @type {Libunbound.ResolveRequest} */
-					// @ts-ignore
+					// @ts-expect-error
 					let req = msg.data;
 					res = resolve(req.name, req.rrtype);
 					break;
 				}
 				case "load": {
 					/** @type {Libunbound.LoadRequest} */
-					// @ts-ignore
+					// @ts-expect-error
 					let req = msg.data;
 					load(req.path);
 					break;
 				}
 				case "update_ctx": {
 					/** @type {Libunbound.UpdateCtxRequest} */
-					// @ts-ignore
+					// @ts-expect-error
 					let req = msg.data;
 					update_ctx(req.conf, req.debuglevel,
 						req.getNameserversFromOS, req.nameservers,

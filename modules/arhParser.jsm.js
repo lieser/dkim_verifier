@@ -20,17 +20,17 @@
 
 "use strict";
 
-// @ts-ignore
+// @ts-expect-error
 const module_version = "1.2.1";
 
 var EXPORTED_SYMBOLS = [
 	"arhParser"
 ];
 
-// @ts-ignore
+// @ts-expect-error
 const PREF_BRANCH = "extensions.dkim_verifier.arh.";
 
-// @ts-ignore
+// @ts-expect-error
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
@@ -39,9 +39,9 @@ Cu.import("resource://dkim_verifier/logging.jsm.js");
 Cu.import("resource://dkim_verifier/helper.jsm.js");
 Cu.import("resource://dkim_verifier/rfcParser.jsm.js");
 
-// @ts-ignore
+// @ts-expect-error
 var prefs = Services.prefs.getBranch(PREF_BRANCH);
-// @ts-ignore
+// @ts-expect-error
 const log = Logging.getLogger("arhParser");
 
 /**

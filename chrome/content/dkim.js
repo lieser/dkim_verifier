@@ -18,7 +18,6 @@
 /* global Components, Cu, Services, gMessageListeners, gFolderDisplay, gExpandedHeaderView, createHeaderEntry, syncGridColumnWidths, currentHeaderData, gMessageDisplay */
 
 // namespace
-// @ts-ignore
 var DKIM_Verifier = {};
 Cu.import("resource://dkim_verifier/logging.jsm.js", DKIM_Verifier);
 Cu.import("resource://dkim_verifier/helper.jsm.js", DKIM_Verifier);
@@ -27,7 +26,7 @@ Cu.import("resource://dkim_verifier/dkimPolicy.jsm.js", DKIM_Verifier);
 Cu.import("resource://dkim_verifier/dkimKey.jsm.js", DKIM_Verifier);
 
 
-// @ts-ignore
+// @ts-expect-error
 const PREF_BRANCH = "extensions.dkim_verifier.";
 
 /*
@@ -515,7 +514,7 @@ var that = {
 						}
 					}
 				};
-				// @ts-ignore
+				// @ts-expect-error
 				tabmail.registerTabMonitor(that.tabMonitor);
 			}
 			log.trace("startup end");
@@ -540,7 +539,7 @@ var that = {
 		// unregister monitors for tab switch
 		var tabmail = document.getElementById("tabmail");
 		if (tabmail) {
-			// @ts-ignore
+			// @ts-expect-error
 			tabmail.unregisterTabMonitor(that.tabMonitor);
 		}
 	},

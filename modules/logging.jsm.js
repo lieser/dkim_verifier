@@ -10,7 +10,7 @@
  * The above copyright and license notice shall be
  * included in all copies or substantial portions of the Software.
  */
- 
+
 // options for ESLint
 /* eslint strict: ["warn", "function"] */
 /* global Components, Services, Log */
@@ -18,7 +18,7 @@
 
 var EXPORTED_SYMBOLS = [ "Logging" ];
 
-// @ts-ignore
+// @ts-expect-error
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Log.jsm");
@@ -27,23 +27,23 @@ Cu.import("resource://gre/modules/Services.jsm");
 
 // "Fatal", "Error", "Warn", "Info", "Config", "Debug", "Trace", "All"
 const LOG_LEVEL = "Error";
-// @ts-ignore
+// @ts-expect-error
 const LOG_NAME = "DKIM_Verifier";
-// @ts-ignore
+// @ts-expect-error
 const PREF_BRANCH = "extensions.dkim_verifier.";
 
 
-// @ts-ignore
+// @ts-expect-error
 var prefs = Services.prefs.getBranch(PREF_BRANCH);
-// @ts-ignore
+// @ts-expect-error
 var log;
 
 var Logging = {
 	/**
 	 * getLogger
-	 * 
+	 *
 	 * @param {String} loggerName
-	 * 
+	 *
 	 * @return {Log.Logger} Logger
 	 */
 	getLogger: function Logging_getLogger(loggerName){
@@ -54,13 +54,13 @@ var Logging = {
 		}
 		return Log.repository.getLogger(LOG_NAME);
 	},
-	
+
 	/**
 	 * addAppenderTo
-	 * 
+	 *
 	 * @param {String} loggerName
 	 * @param {String} subPrefBranch
-	 * 
+	 *
 	 * @return {Array} [consoleAppender, dumpAppender]
 	 */
 	addAppenderTo: function Logging_addAppenderTo(loggerName, subPrefBranch){
@@ -82,22 +82,21 @@ var Logging = {
 			dappender.level = Log.Level[prefs.getCharPref(subPrefBranch+"logging.dump")];
 			logger.addAppender(dappender);
 		}
-		
+
 		return [cappender, dappender];
 	},
 };
 
 /**
  * init
- * 
+ *
  * @return {void}
  */
 function init() {
 	"use strict";
-	
+
 	setupLogging(LOG_NAME);
 
-	// @ts-ignore
 	log = Logging.getLogger("Logging");
 	log.debug("initialized");
 }
@@ -123,7 +122,7 @@ class SimpleFormatter extends Log.BasicFormatter {
 
 /**
  * SimpleConsoleAppender
- * 
+ *
  * An improved version of Mozilla's ConsoleAppender, using the nsIConsoleAPIStorage interface.
  */
 class SimpleConsoleAppender extends Log.ConsoleAppender {
@@ -162,7 +161,7 @@ class SimpleConsoleAppender extends Log.ConsoleAppender {
 			/** @type {any[]} */
 			let args = [this._formatter.format(message)];
 			if (!message.message && this.isError(message.params)) {
-				// @ts-ignore
+				// @ts-expect-error
 				let trace = this.parseStack(message.params.stack);
 				if (this.level <= Log.Level.Trace) {
 					let logTrace = this.getStack(Components.stack.caller).slice(2);
@@ -176,7 +175,7 @@ class SimpleConsoleAppender extends Log.ConsoleAppender {
 			}
 		}
 	}
-	
+
 	/**
 	 * A stack frame in the format used by the Browser Console,
 	 * via console-api-log-event notifications.
@@ -187,7 +186,7 @@ class SimpleConsoleAppender extends Log.ConsoleAppender {
 	 * @property {string} functionName
 	 * @property {number} [language]
 	 */
-	
+
 	/**
 	 * @typedef MessageOptions
 	 * @property {StackFrame[]} [stacktrace]
@@ -197,7 +196,7 @@ class SimpleConsoleAppender extends Log.ConsoleAppender {
 	/**
 	 * Send a Console API message. This function will send a console-api-log-event
 	 * notification through the nsIObserverService.
-	 * 
+	 *
 	 * Based on the one from Mozilla's https://dxr.mozilla.org/mozilla-central/source/toolkit/modules/Console.jsm
 	 * @param {string} aLevel Level of the message ("error", "exception", "warn", "info", "log", "debug", "trace", ...)
 	 * @param {StackFrame} aFrame The youngest stack frame coming from Components.stack, as formatted by getStack().
@@ -225,14 +224,14 @@ class SimpleConsoleAppender extends Log.ConsoleAppender {
 			arguments: aArgs,
 			prefix: aConsole.prefix,
 		};
-	  
+
 		consoleEvent.wrappedJSObject = consoleEvent;
-	  
+
 		consoleEvent.stacktrace = aOptions.stacktrace;
 
 		this.consoleAPIStorage.recordEvent("jsm", null, consoleEvent);
 	}
-	
+
 	/**
 	 * Format a frame coming from Components.stack.
 	 *
@@ -266,7 +265,7 @@ class SimpleConsoleAppender extends Log.ConsoleAppender {
 
 	/**
 	 * Parse Error.prototype.stack
-	 * 
+	 *
 	 * Based on the one from Mozilla's https://dxr.mozilla.org/mozilla-central/source/toolkit/modules/Console.jsm
 	 * @param {string} aStack
 	 * @return {StackFrame[]}
@@ -291,7 +290,7 @@ class SimpleConsoleAppender extends Log.ConsoleAppender {
 
 	/**
 	 * Test an object to see if it is a Mozilla JS Error.
-	 * 
+	 *
 	 * From Mozilla's https://dxr.mozilla.org/mozilla-central/source/toolkit/modules/Log.jsm
 	 * @param {Object} aObj
 	 * @return {boolean}
@@ -312,14 +311,14 @@ class SimpleConsoleAppender extends Log.ConsoleAppender {
 // https://wiki.mozilla.org/Labs/JS_Modules#Logging
 /**
  * setupLogging
- * 
+ *
  * @param {String} loggerName
- * 
+ *
  * @return {Log.Logger}
  */
 function setupLogging(loggerName) {
 		"use strict";
-	
+
 		// Loggers are hierarchical, lowering this log level will affect all output
 		var logger = Log.repository.getLogger(loggerName);
 		if (prefs.getBoolPref("debug")) {
@@ -333,13 +332,13 @@ function setupLogging(loggerName) {
 		[capp, dapp] = Logging.addAppenderTo(loggerName, "");
 
 		prefs.addObserver("", new PrefObserver(logger, capp, dapp), false);
-		
+
 		return logger;
 }
 
 /**
  * Preference observer for a Logger, ConsoleAppender and DumpAppender
- * 
+ *
  * @param {Log.Logger} logger
  * @param {Log.ConsoleAppender} capp
  * @param {Log.DumpAppender} dapp
@@ -347,7 +346,7 @@ function setupLogging(loggerName) {
  */
 function PrefObserver(logger, capp, dapp) {
 	"use strict";
-	
+
 	this.logger = logger;
 	this.capp = capp;
 	this.dapp = dapp;
@@ -360,14 +359,14 @@ PrefObserver.prototype = {
 	 */
 	observe: function PrefObserver_observe(subject, topic, data) {
 		"use strict";
-	
+
 		// subject is the nsIPrefBranch we're observing (after appropriate QI)
 		// data is the name of the pref that's been changed (relative to aSubject)
-		
+
 		if (topic !== "nsPref:changed") {
 			return;
 		}
-		
+
 		switch(data) {
 			case "debug":
 				if (this.logger) {
