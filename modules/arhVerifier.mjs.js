@@ -148,16 +148,16 @@ function arhDKIM_to_dkimSigResultV2(arhDKIM) {
 	}
 
 	// SDID and AUID
-	if (arhDKIM.propertys.header.d) {
-		dkimSigResult.sdid = arhDKIM.propertys.header.d;
+	if (arhDKIM.properties.header.d) {
+		dkimSigResult.sdid = arhDKIM.properties.header.d;
 	}
-	if (arhDKIM.propertys.header.i) {
-		dkimSigResult.auid = arhDKIM.propertys.header.i;
+	if (arhDKIM.properties.header.i) {
+		dkimSigResult.auid = arhDKIM.properties.header.i;
 	}
 
 	// Used signature and hash algorithm
-	if (arhDKIM.propertys.header.a) {
-		const [algorithmSignature, algorithmHash] = arhDKIM.propertys.header.a.split("-");
+	if (arhDKIM.properties.header.a) {
+		const [algorithmSignature, algorithmHash] = arhDKIM.properties.header.a.split("-");
 		if (algorithmSignature) {
 			dkimSigResult.algorithmSignature = algorithmSignature;
 		}

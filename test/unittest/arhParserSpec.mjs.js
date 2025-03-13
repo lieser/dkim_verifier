@@ -33,7 +33,7 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo[0]?.method).to.be.equal("spf");
 			expect(res.resinfo[0]?.method_version).to.be.equal(1);
 			expect(res.resinfo[0]?.result).to.be.equal("pass");
-			expect(res.resinfo[0]?.propertys.smtp.mailfrom).to.be.equal("example.net");
+			expect(res.resinfo[0]?.properties.smtp.mailfrom).to.be.equal("example.net");
 		});
 
 		it("B.4.  Service Provided, Several Authentications Done, Single MTA", function () {
@@ -45,10 +45,10 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo.length).to.be.equal(2);
 			expect(res.resinfo[0]?.method).to.be.equal("auth");
 			expect(res.resinfo[0]?.result).to.be.equal("pass");
-			expect(res.resinfo[0]?.propertys.smtp.auth).to.be.equal("sender@example.net");
+			expect(res.resinfo[0]?.properties.smtp.auth).to.be.equal("sender@example.net");
 			expect(res.resinfo[1]?.method).to.be.equal("spf");
 			expect(res.resinfo[1]?.result).to.be.equal("pass");
-			expect(res.resinfo[1]?.propertys.smtp.mailfrom).to.be.equal("example.net");
+			expect(res.resinfo[1]?.properties.smtp.mailfrom).to.be.equal("example.net");
 			// From [RFC 7601]
 			res = ArhParser.parse(
 				"Authentication-Results: example.com;\r\n" +
@@ -57,7 +57,7 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo.length).to.be.equal(1);
 			expect(res.resinfo[0]?.method).to.be.equal("sender-id");
 			expect(res.resinfo[0]?.result).to.be.equal("pass");
-			expect(res.resinfo[0]?.propertys.header.from).to.be.equal("example.net");
+			expect(res.resinfo[0]?.properties.header.from).to.be.equal("example.net");
 			// From [RFC 8601]
 			res = ArhParser.parse(
 				"Authentication-Results: example.com; iprev=pass\r\n" +
@@ -66,7 +66,7 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo.length).to.be.equal(1);
 			expect(res.resinfo[0]?.method).to.be.equal("iprev");
 			expect(res.resinfo[0]?.result).to.be.equal("pass");
-			expect(res.resinfo[0]?.propertys.policy.iprev).to.be.equal("192.0.2.200");
+			expect(res.resinfo[0]?.properties.policy.iprev).to.be.equal("192.0.2.200");
 		});
 
 		it("B.5.  Service Provided, Several Authentications Done, Different MTAs", function () {
@@ -79,10 +79,10 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo.length).to.be.equal(2);
 			expect(res.resinfo[0]?.method).to.be.equal("sender-id");
 			expect(res.resinfo[0]?.result).to.be.equal("fail");
-			expect(res.resinfo[0]?.propertys.header.from).to.be.equal("example.com");
+			expect(res.resinfo[0]?.properties.header.from).to.be.equal("example.com");
 			expect(res.resinfo[1]?.method).to.be.equal("dkim");
 			expect(res.resinfo[1]?.result).to.be.equal("pass");
-			expect(res.resinfo[1]?.propertys.header.d).to.be.equal("example.com");
+			expect(res.resinfo[1]?.properties.header.d).to.be.equal("example.com");
 			// From [RFC 8601]
 			res = ArhParser.parse(
 				"Authentication-Results: example.com;\r\n" +
@@ -91,7 +91,7 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo.length).to.be.equal(1);
 			expect(res.resinfo[0]?.method).to.be.equal("dkim");
 			expect(res.resinfo[0]?.result).to.be.equal("pass");
-			expect(res.resinfo[0]?.propertys.header.d).to.be.equal("example.com");
+			expect(res.resinfo[0]?.properties.header.d).to.be.equal("example.com");
 			res = ArhParser.parse(
 				"Authentication-Results: example.com;\r\n" +
 				"          auth=pass (cram-md5) smtp.auth=sender@example.com;\r\n" +
@@ -100,10 +100,10 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo.length).to.be.equal(2);
 			expect(res.resinfo[0]?.method).to.be.equal("auth");
 			expect(res.resinfo[0]?.result).to.be.equal("pass");
-			expect(res.resinfo[0]?.propertys.smtp.auth).to.be.equal("sender@example.com");
+			expect(res.resinfo[0]?.properties.smtp.auth).to.be.equal("sender@example.com");
 			expect(res.resinfo[1]?.method).to.be.equal("spf");
 			expect(res.resinfo[1]?.result).to.be.equal("fail");
-			expect(res.resinfo[1]?.propertys.smtp.mailfrom).to.be.equal("example.com");
+			expect(res.resinfo[1]?.properties.smtp.mailfrom).to.be.equal("example.com");
 		});
 
 		it("B.6.  Service Provided, Multi-tiered Authentication Done", function () {
@@ -118,11 +118,11 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo[0]?.method).to.be.equal("dkim");
 			expect(res.resinfo[0]?.result).to.be.equal("pass");
 			expect(res.resinfo[0]?.reason).to.be.equal("good signature");
-			expect(res.resinfo[0]?.propertys.header.i).to.be.equal("@mail-router.example.net");
+			expect(res.resinfo[0]?.properties.header.i).to.be.equal("@mail-router.example.net");
 			expect(res.resinfo[1]?.method).to.be.equal("dkim");
 			expect(res.resinfo[1]?.result).to.be.equal("fail");
 			expect(res.resinfo[1]?.reason).to.be.equal("bad signature");
-			expect(res.resinfo[1]?.propertys.header.i).to.be.equal("@newyork.example.com");
+			expect(res.resinfo[1]?.properties.header.i).to.be.equal("@newyork.example.com");
 			res = ArhParser.parse(
 				"Authentication-Results: example.net;\r\n" +
 				"      dkim=pass (good signature) header.i=@newyork.example.com\r\n");
@@ -130,7 +130,7 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo.length).to.be.equal(1);
 			expect(res.resinfo[0]?.method).to.be.equal("dkim");
 			expect(res.resinfo[0]?.result).to.be.equal("pass");
-			expect(res.resinfo[0]?.propertys.header.i).to.be.equal("@newyork.example.com");
+			expect(res.resinfo[0]?.properties.header.i).to.be.equal("@newyork.example.com");
 		});
 
 		it("B.7.  Comment-Heavy Example", function () {
@@ -145,7 +145,7 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo[0]?.method).to.be.equal("dkim");
 			expect(res.resinfo[0]?.method_version).to.be.equal(1);
 			expect(res.resinfo[0]?.result).to.be.equal("fail");
-			expect(res.resinfo[0]?.propertys.policy.expired).to.be.equal("1362471462");
+			expect(res.resinfo[0]?.properties.policy.expired).to.be.equal("1362471462");
 		});
 	});
 
@@ -214,7 +214,7 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo.length).to.be.equal(1);
 			expect(res.resinfo[0]?.method).to.be.equal("dkim");
 			expect(res.resinfo[0]?.result).to.be.equal("pass");
-			expect(res.resinfo[0]?.propertys.header.b).to.be.equal("gfT/i2HB");
+			expect(res.resinfo[0]?.properties.header.b).to.be.equal("gfT/i2HB");
 		});
 
 		it("Property with ':' not in quotes", function () {
@@ -230,7 +230,7 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo.length).to.be.equal(1);
 			expect(res.resinfo[0]?.method).to.be.equal("bimi");
 			expect(res.resinfo[0]?.result).to.be.equal("pass");
-			expect(res.resinfo[0]?.propertys.policy["authority-uri"]).
+			expect(res.resinfo[0]?.properties.policy["authority-uri"]).
 				to.be.equal("https://d3frv9g52qce38.cloudfront.net/amazondefault/amazon_web_services_inc.pem");
 		});
 	});
@@ -282,7 +282,7 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo.length).to.be.equal(1);
 			expect(res.resinfo[0]?.method).to.be.equal("dkim");
 			expect(res.resinfo[0]?.result).to.be.equal("pass");
-			expect(res.resinfo[0]?.propertys.header.i).to.be.equal("dkim+foo-bar@example.github.com");
+			expect(res.resinfo[0]?.properties.header.i).to.be.equal("dkim+foo-bar@example.github.com");
 		});
 
 		it("quoted SDID and AUID", function () {
@@ -294,8 +294,8 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo.length).to.be.equal(1);
 			expect(res.resinfo[0]?.method).to.be.equal("dkim");
 			expect(res.resinfo[0]?.result).to.be.equal("pass");
-			expect(res.resinfo[0]?.propertys.header.d).to.be.equal("github.com");
-			expect(res.resinfo[0]?.propertys.header.i).to.be.equal("dkim+foo-bar@example.github.com");
+			expect(res.resinfo[0]?.properties.header.d).to.be.equal("github.com");
+			expect(res.resinfo[0]?.properties.header.i).to.be.equal("dkim+foo-bar@example.github.com");
 		});
 
 		it("a-tag", function () {
@@ -307,7 +307,7 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo.length).to.be.equal(1);
 			expect(res.resinfo[0]?.method).to.be.equal("dkim");
 			expect(res.resinfo[0]?.result).to.be.equal("pass");
-			expect(res.resinfo[0]?.propertys.header.a).to.be.equal("rsa-sha256");
+			expect(res.resinfo[0]?.properties.header.a).to.be.equal("rsa-sha256");
 		});
 
 		it("With reason", function () {
@@ -392,9 +392,9 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo.length).to.be.equal(1);
 			expect(res.resinfo[0]?.method).to.be.equal("bimi");
 			expect(res.resinfo[0]?.result).to.be.equal("pass");
-			expect(res.resinfo[0]?.propertys.header.selector).to.be.equal("default");
-			expect(res.resinfo[0]?.propertys.policy.authority).to.be.equal("pass");
-			expect(res.resinfo[0]?.propertys.policy["authority-uri"]).to.be.equal("https://d3frv9g52qce38.cloudfront.net/amazondefault/amazon_web_services_inc.pem");
+			expect(res.resinfo[0]?.properties.header.selector).to.be.equal("default");
+			expect(res.resinfo[0]?.properties.policy.authority).to.be.equal("pass");
+			expect(res.resinfo[0]?.properties.policy["authority-uri"]).to.be.equal("https://d3frv9g52qce38.cloudfront.net/amazondefault/amazon_web_services_inc.pem");
 		});
 	});
 
@@ -474,49 +474,49 @@ describe("ARH Parser [unittest]", function () {
 				"      dkim=pass header.i=Pelé@example.com\r\n"
 			), false, true);
 			expect(res.authserv_id).to.be.equal("example.net");
-			expect(res.resinfo[0]?.propertys.header.i).to.be.equal("Pelé@example.com");
+			expect(res.resinfo[0]?.properties.header.i).to.be.equal("Pelé@example.com");
 
 			res = ArhParser.parse(toBinaryString(
 				"Authentication-Results: example.net;\r\n" +
 				'      dkim=pass header.i="Pelé@example.com"\r\n'
 			), false, true);
 			expect(res.authserv_id).to.be.equal("example.net");
-			expect(res.resinfo[0]?.propertys.header.i).to.be.equal("Pelé@example.com");
+			expect(res.resinfo[0]?.properties.header.i).to.be.equal("Pelé@example.com");
 
 			res = ArhParser.parse(toBinaryString(
 				"Authentication-Results: example.net;\r\n" +
 				"      dkim=pass header.i=二ノ宮@example.com\r\n"
 			), false, true);
 			expect(res.authserv_id).to.be.equal("example.net");
-			expect(res.resinfo[0]?.propertys.header.i).to.be.equal("二ノ宮@example.com");
+			expect(res.resinfo[0]?.properties.header.i).to.be.equal("二ノ宮@example.com");
 
 			res = ArhParser.parse(toBinaryString(
 				"Authentication-Results: example.net;\r\n" +
 				"      dkim=pass header.i=二ノ宮@xn--wgv71a119e.jp\r\n"
 			), false, true);
 			expect(res.authserv_id).to.be.equal("example.net");
-			expect(res.resinfo[0]?.propertys.header.i).to.be.equal("二ノ宮@xn--wgv71a119e.jp");
+			expect(res.resinfo[0]?.properties.header.i).to.be.equal("二ノ宮@xn--wgv71a119e.jp");
 
 			res = ArhParser.parse(toBinaryString(
 				"Authentication-Results: example.net;\r\n" +
 				"      dkim=pass header.i=二ノ宮@黒川.日本\r\n"
 			), false, true);
 			expect(res.authserv_id).to.be.equal("example.net");
-			expect(res.resinfo[0]?.propertys.header.i).to.be.equal("二ノ宮@黒川.日本");
+			expect(res.resinfo[0]?.properties.header.i).to.be.equal("二ノ宮@黒川.日本");
 
 			res = ArhParser.parse(toBinaryString(
 				"Authentication-Results: example.net;\r\n" +
 				'      dkim=pass header.i="二ノ宮@黒川.日本"\r\n'
 			), false, true);
 			expect(res.authserv_id).to.be.equal("example.net");
-			expect(res.resinfo[0]?.propertys.header.i).to.be.equal("二ノ宮@黒川.日本");
+			expect(res.resinfo[0]?.properties.header.i).to.be.equal("二ノ宮@黒川.日本");
 
 			res = ArhParser.parse(toBinaryString(
 				"Authentication-Results: example.net;\r\n" +
 				"      dkim=pass header.i=Bloß.de\r\n"
 			), false, true);
 			expect(res.authserv_id).to.be.equal("example.net");
-			expect(res.resinfo[0]?.propertys.header.i).to.be.equal("Bloß.de");
+			expect(res.resinfo[0]?.properties.header.i).to.be.equal("Bloß.de");
 		});
 
 		it("non-ASCII in reasonspec", function () {

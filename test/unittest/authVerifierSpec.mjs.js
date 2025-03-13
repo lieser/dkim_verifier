@@ -300,13 +300,13 @@ describe("AuthVerifier [unittest]", function () {
 					method: "spf",
 					method_version: 1,
 					result: "pass",
-					propertys: { smtp: {}, header: {}, body: {}, policy: {} },
+					properties: { smtp: {}, header: {}, body: {}, policy: {} },
 				}],
 				dmarc: [{
 					method: "dmarc",
 					method_version: 1,
 					result: "fail",
-					propertys: { smtp: {}, header: {}, body: {}, policy: {} },
+					properties: { smtp: {}, header: {}, body: {}, policy: {} },
 				}],
 			};
 			res = await authVerifier.verify(createFakeMessageHeader());
@@ -343,7 +343,7 @@ describe("AuthVerifier [unittest]", function () {
 					method: "dmarc",
 					method_version: 1,
 					result: "pass",
-					propertys: { smtp: {}, header: {}, body: {}, policy: {} },
+					properties: { smtp: {}, header: {}, body: {}, policy: {} },
 				}],
 			};
 			res = await authVerifier.verify(createFakeMessageHeader());

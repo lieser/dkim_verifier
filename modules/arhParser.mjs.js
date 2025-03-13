@@ -108,7 +108,7 @@ class Token {
  * @property {string} result
  * none|pass|fail|softfail|policy|neutral|temperror|permerror
  * @property {string} [reason]
- * @property {ArhProperties} propertys
+ * @property {ArhProperties} properties
  */
 
 export default class ArhParser {
@@ -241,11 +241,11 @@ function parseResInfo(str, relaxedParsing, token) {
 	const special_smtp_verb_p = "mailfrom|rcptto";
 	const property_p = `${special_smtp_verb_p}|${Token.Keyword}`;
 	const propspec_p = `(${Token.Keyword})${token.CFWS_op}\\.${token.CFWS_op}(${property_p})${token.CFWS_op}=${token.CFWS_op}(?:${pvalue_p})`;
-	res.propertys = {};
-	res.propertys.smtp = {};
-	res.propertys.header = {};
-	res.propertys.body = {};
-	res.propertys.policy = {};
+	res.properties = {};
+	res.properties.smtp = {};
+	res.properties.header = {};
+	res.properties.body = {};
+	res.properties.policy = {};
 	while ((reg_match = match_o(str, propspec_p, token)) !== null) {
 		if (!reg_match[1]) {
 			throw new Error("Error matching the ARH property name.");
@@ -253,10 +253,10 @@ function parseResInfo(str, relaxedParsing, token) {
 		if (!reg_match[2]) {
 			throw new Error("Error matching the ARH property sub-name.");
 		}
-		let property = res.propertys[reg_match[1]];
+		let property = res.properties[reg_match[1]];
 		if (!property) {
 			property = {};
-			res.propertys[reg_match[1]] = property;
+			res.properties[reg_match[1]] = property;
 		}
 		const value = reg_match[3] ?? reg_match[4] ?? reg_match[5] ?? reg_match[6];
 		if (!value) {
