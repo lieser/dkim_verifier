@@ -29,7 +29,7 @@ describe("Sign rules [unittest]", function () {
 	const dkimNone = {
 		version: "1.1",
 		result: "none",
-		warnings: []
+		warnings: [],
 	};
 	const dkimSuccessTest = {
 		version: "1.1",
@@ -38,7 +38,7 @@ describe("Sign rules [unittest]", function () {
 		auid: "@test.com",
 		selector: "selector",
 		/** @type {import("../../modules/dkim/verifier.mjs.js").dkimSigWarningV2[]} */
-		warnings: []
+		warnings: [],
 	};
 	const dkimSuccessPayPal = {
 		version: "1.1",
@@ -46,7 +46,7 @@ describe("Sign rules [unittest]", function () {
 		sdid: "paypal.com",
 		auid: "@paypal.com",
 		selector: "selector",
-		warnings: []
+		warnings: [],
 	};
 
 	describe("Default rules", function () {
@@ -262,7 +262,7 @@ describe("Sign rules [unittest]", function () {
 						sdid: "foo.com",
 						type: 1,
 						priority: 3100,
-						enabled: true
+						enabled: true,
 					},
 					{
 						domain: "bar.com",
@@ -271,9 +271,9 @@ describe("Sign rules [unittest]", function () {
 						sdid: "bar.com",
 						type: 1,
 						priority: 3100,
-						enabled: true
+						enabled: true,
 					},
-				]
+				],
 			};
 
 			let res = await SignRules.check(dkimNone, "bar@foo.com");
@@ -290,7 +290,7 @@ describe("Sign rules [unittest]", function () {
 				dataId: "DkimExportedUserSignRules",
 				dataFormatVersion: 1,
 				rules: [
-				]
+				],
 			};
 
 			await SignRules.addRule("foo.com", null, "*", "foo.com", SignRules.TYPE.ALL);
@@ -315,9 +315,9 @@ describe("Sign rules [unittest]", function () {
 						sdid: "bar.com",
 						type: 1,
 						priority: 3100,
-						enabled: true
+						enabled: true,
 					},
-				]
+				],
 			};
 
 			await SignRules.addRule("foo.com", null, "*", "foo.com", SignRules.TYPE.ALL);

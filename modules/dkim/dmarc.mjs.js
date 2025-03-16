@@ -251,7 +251,7 @@ function parseDMARCRecord(DMARCRecordStr) {
 		// ruf : null, // Addresses to which message-specific failure information is to
 		// be reported
 		sp: null, // Requested Mail Receiver policy for all subdomains
-		v: "" // Version
+		v: "", // Version
 	};
 
 	// parse tag-value list

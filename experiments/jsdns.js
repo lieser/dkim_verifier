@@ -44,7 +44,6 @@ this.jsdns = class extends ExtensionCommon.ExtensionAPI {
 	 */
 	getAPI(context) {
 		/** @enum {number} */
-		// eslint-disable-next-line no-extra-parens
 		const RCODE = /** @type {const} */ ({
 			NoError: 0, // No Error [RFC1035]
 			FormErr: 1, // Format Error [RFC1035]

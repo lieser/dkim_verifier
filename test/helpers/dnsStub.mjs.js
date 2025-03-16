@@ -15,7 +15,8 @@ import DNS from "../../modules/dns.mjs.js";
 /** @type {Map.<string, string>} */
 const txtRecords = new Map([
 	// RFC 6376 Appendix A Example
-	["brisbane._domainkey.example.com", "v=DKIM1; p=" +
+	["brisbane._domainkey.example.com",
+		"v=DKIM1; p=" +
 		"MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDwIRP/UC3SBsEmGqZ9ZJW3/DkM" +
 		"oGeLnQg1fWn7/zYtIxN2SnFCjxOCKG9v3b4jYfcTNh5ijSsq631uBItLa7od+v/R" +
 		"tdC2UzJ1lWT947qR+Rcac2gbto/NMqJ0fzfVjH4OuKhitdY9tf6mcwGjaNBcWToI" +
@@ -31,7 +32,8 @@ const txtRecords = new Map([
 
 	// The following DKIM key use the same RSA key as in RFC 6376
 	// AUID MUST NOT be a subdomain of SDID
-	["s.flags._domainkey.example.com", "v=DKIM1; t=s; p=" +
+	["s.flags._domainkey.example.com",
+		"v=DKIM1; t=s; p=" +
 		"MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDwIRP/UC3SBsEmGqZ9ZJW3/DkM" +
 		"oGeLnQg1fWn7/zYtIxN2SnFCjxOCKG9v3b4jYfcTNh5ijSsq631uBItLa7od+v/R" +
 		"tdC2UzJ1lWT947qR+Rcac2gbto/NMqJ0fzfVjH4OuKhitdY9tf6mcwGjaNBcWToI" +

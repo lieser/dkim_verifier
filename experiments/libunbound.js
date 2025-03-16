@@ -80,7 +80,7 @@ class LibunboundWorker {
 
 		/** @type {Libunbound.LibunboundWorker} */
 		this.worker =
-			//@ts-expect-error
+			// @ts-expect-error
 			new ChromeWorker("chrome://dkim_verifier_libunbound/content/libunboundWorker.js");
 		this.worker.onmessage = (msg) => this.#onmessage(msg);
 
@@ -270,7 +270,6 @@ class LibunboundWorker {
 /**
  * @enum {number}
  */
-// eslint-disable-next-line no-extra-parens
 LibunboundWorker.Constants = /** @type {const} */ ({
 	RR_TYPE_A: 1,
 	RR_TYPE_A6: 38,
@@ -376,8 +375,9 @@ this.libunbound = class extends ExtensionCommon.ExtensionAPI {
 					libunboundWorker.config.nameServer = nameServer;
 					libunboundWorker.config.dnssecTrustAnchor = dnssecTrustAnchor;
 					libunboundWorker.config.debug = debug;
-					if (libunboundWorker.config.path !== path
-						|| libunboundWorker.config.pathRelToProfileDir !== pathRelToProfileDir) {
+					if (libunboundWorker.config.path !== path ||
+						libunboundWorker.config.pathRelToProfileDir !== pathRelToProfileDir
+					) {
 						libunboundWorker.config.path = path;
 						libunboundWorker.config.pathRelToProfileDir = pathRelToProfileDir;
 						await libunboundWorker.load();
@@ -387,12 +387,14 @@ this.libunbound = class extends ExtensionCommon.ExtensionAPI {
 				},
 				async txt(name) {
 					const res = await libunboundWorker.resolve(name, LibunboundWorker.Constants.RR_TYPE_TXT);
-					const data = res.havedata ? res.data.map(rdata => {
-						if (typeof rdata !== "string") {
-							throw new Error(`DNS result has unexpected type ${typeof rdata}`);
-						}
-						return rdata;
-					}) : null;
+					const data = res.havedata
+						? res.data.map(rdata => {
+							if (typeof rdata !== "string") {
+								throw new Error(`DNS result has unexpected type ${typeof rdata}`);
+							}
+							return rdata;
+						})
+						: null;
 					return {
 						data,
 						rcode: res.rcode,

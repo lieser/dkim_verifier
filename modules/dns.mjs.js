@@ -142,7 +142,6 @@ function checkOnlineStatus() {
 
 export default class DNS {
 	static get RCODE() {
-		// eslint-disable-next-line no-extra-parens
 		return /** @type {const} */ ({
 			NoError: 0, // No Error [RFC1035]
 			FormErr: 1, // Format Error [RFC1035]

@@ -371,7 +371,6 @@ class DkimResultTooltip extends DKIMTooltip {
 	 * @returns {DkimResultTooltip[]}
 	 */
 	static getAll(document) {
-		// eslint-disable-next-line no-extra-parens
 		const elements = /** @type {HTMLElement[]} */ (
 			Array.from(document.getElementsByClassName(DkimResultTooltip.#class)));
 		const tooltips = [];
@@ -851,7 +850,6 @@ class DkimFavicon {
 	 */
 	static add(document) {
 		const favicon = new DkimFavicon(document);
-		// eslint-disable-next-line no-extra-parens
 		const expandedFromBox = /** @type {expandedfromBox?} */ (document.getElementById("expandedfromBox"));
 		if (!expandedFromBox) {
 			throw new Error("Could not find the expandedFromBox element");
@@ -917,7 +915,6 @@ class DkimFromAddress {
 		// TB >=102
 		const fromRecipient0Display = document.getElementById("fromRecipient0Display");
 		if (fromRecipient0Display) {
-			// eslint-disable-next-line no-extra-parens
 			const fromRecipient0 = /** @type {HeaderRecipient?} */ (document.getElementById("fromRecipient0"));
 			if (!fromRecipient0) {
 				console.warn("DKIM: multi line from address not found (no fromRecipient0)");
@@ -1079,6 +1076,7 @@ class DkimResetMessageListener {
 			console.error("DKIM: Error in onStartHeaders:", error);
 		}
 	}
+
 	// eslint-disable-next-line no-empty-function
 	onEndHeaders() { }
 	// eslint-disable-next-line no-empty-function
@@ -1124,7 +1122,6 @@ this.dkimHeader = class extends ExtensionCommon.ExtensionAPI {
 
 		// TB >= 111
 		let msgViewDocument;
-		// eslint-disable-next-line no-extra-parens
 		const browser1 = /** @type {HTMLIFrameElement} */ (window.document.getElementById("mail3PaneTabBrowser1"));
 		if (browser1) {
 			// Window contains a tab with the mail3PaneTab
@@ -1137,7 +1134,6 @@ this.dkimHeader = class extends ExtensionCommon.ExtensionAPI {
 			msgViewDocument = window.document;
 		}
 
-		// eslint-disable-next-line no-extra-parens
 		const messageBrowser = /** @type {HTMLIFrameElement} */ (msgViewDocument.getElementById("messageBrowser"));
 		const innerWindow = messageBrowser.contentWindow;
 		if (!innerWindow) {
@@ -1238,7 +1234,6 @@ this.dkimHeader = class extends ExtensionCommon.ExtensionAPI {
 			tabWindow = tab.nativeTab.chromeBrowser.contentWindow;
 		} else {
 			// Message is displayed in a new window
-			// eslint-disable-next-line no-extra-parens
 			tabWindow = /** @type {Window} */ (tab.nativeTab);
 		}
 		if (!tabWindow) {
@@ -1247,7 +1242,6 @@ this.dkimHeader = class extends ExtensionCommon.ExtensionAPI {
 
 		// Get the inner window that actually shows the message (about:message)
 		let msgWindow;
-		// eslint-disable-next-line no-extra-parens
 		const messageBrowser = /** @type {HTMLIFrameElement} */ (tabWindow.document.getElementById("messageBrowser"));
 		if (messageBrowser) {
 			// Message is displayed in the mail3PaneTab

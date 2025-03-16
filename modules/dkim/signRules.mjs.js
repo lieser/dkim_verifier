@@ -38,7 +38,6 @@ const log = Logging.getLogger("SignRules");
  * @public
  * @enum {number}
  */
-// eslint-disable-next-line no-extra-parens
 const RULE_TYPE = /** @type {const} */ ({
 	ALL: 1, // all e-mails must be signed
 	NEUTRAL: 2,
@@ -51,7 +50,6 @@ const RULE_TYPE = /** @type {const} */ ({
  * @public
  * @enum {number}
  */
-// eslint-disable-next-line no-extra-parens
 const PRIORITY = /** @type {const} */ ({
 	AUTOINSERT_RULE_ALL: 1100,
 	DEFAULT_RULE_ALL0: 2000, // used for e-mail providers
@@ -64,7 +62,6 @@ const PRIORITY = /** @type {const} */ ({
 });
 
 /** @enum {number} */
-// eslint-disable-next-line no-extra-parens
 const AUTO_ADD_RULE_FOR = /** @type {const} */ ({
 	FROM_ADDRESS: 0,
 	SUB_DOMAIN: 1,
@@ -398,7 +395,10 @@ export default class SignRules {
 	static async exportUserRules() {
 		/** @type {{id?: number, domain: string, listId: string, addr: string, sdid: string, type: number, priority: number, enabled: boolean }[]} */
 		const rules = copy(await this.getUserRules());
-		rules.map(rule => { delete rule.id; return rule; });
+		rules.map(rule => {
+			delete rule.id;
+			return rule;
+		});
 		return {
 			dataId: "DkimExportedUserSignRules",
 			dataFormatVersion: 1,
@@ -509,7 +509,6 @@ export default class SignRules {
 			ruleDomain = await browser.mailUtils.getBaseDomainFromAddr(addr);
 		}
 
-		// eslint-disable-next-line no-extra-parens
 		if (!Object.values(/** @type {{[key: string]: number}} */(RULE_TYPE)).includes(type)) {
 			throw new Error(`unknown rule type ${type}`);
 		}

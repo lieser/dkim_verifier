@@ -170,8 +170,7 @@ browser.messageDisplay.onMessageDisplayed.addListener(async (tab, message) => {
 		// If we already know that the header should be shown, show it now
 		if (prefs.showDKIMHeader >= SHOW.EMAIL) {
 			browser.dkimHeader.showDkimHeader(tab.id, message.id, true);
-		}
-		else {
+		} else {
 			const { headers } = await browser.messages.getFull(message.id);
 			if (headers && Object.keys(headers).includes("dkim-signature")) {
 				if (prefs.showDKIMHeader >= SHOW.DKIM_SIGNED) {

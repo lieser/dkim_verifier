@@ -70,6 +70,7 @@ class Logger {
 			this.trace = function () { };
 		}
 	}
+
 	get logLevel() {
 		return this._logLevel;
 	}
@@ -77,7 +78,6 @@ class Logger {
 
 export default class Logging {
 	static get Level() {
-		// eslint-disable-next-line no-extra-parens
 		return /** @type {const} */ ({
 			Fatal: 70,
 			Error: 60,
@@ -117,6 +117,7 @@ export default class Logging {
 			logger.logLevel = logLevel;
 		});
 	}
+
 	static get logLevel() {
 		return Logging.#logLevel;
 	}

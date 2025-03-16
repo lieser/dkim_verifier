@@ -528,7 +528,6 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo[0]?.method).to.be.equal("dkim");
 			expect(res.resinfo[0]?.result).to.be.equal("fail");
 			expect(res.resinfo[0]?.reason).to.be.equal("Tést reason");
-
 		});
 
 		it("non-ASCII in CFWS", function () {

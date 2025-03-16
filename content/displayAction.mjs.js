@@ -357,5 +357,4 @@ document.addEventListener("DOMContentLoaded", async () => {
 	if (resultState.updateKey) {
 		updateKey.disabled = false;
 	}
-
 }, { once: true });

@@ -131,7 +131,7 @@ export async function promiseWithTimeout(ms, promise) {
 	try {
 		await Promise.race([
 			promise,
-			timeout
+			timeout,
 		]);
 	} finally {
 		clearTimeout(timeoutId);

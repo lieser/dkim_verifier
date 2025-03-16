@@ -138,7 +138,7 @@ export default class DkimCrypto {
 				decodeBase64(key),
 				{
 					name: "RSASSA-PKCS1-v1_5",
-					hash: getWebDigestName(digestAlgorithm)
+					hash: getWebDigestName(digestAlgorithm),
 				},
 				true,
 				["verify"]

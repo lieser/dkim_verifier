@@ -4,6 +4,7 @@ import jsdoc from "eslint-plugin-jsdoc";
 import json from "@eslint/json";
 import mocha from "eslint-plugin-mocha";
 import mozilla from "eslint-plugin-mozilla";
+import stylistic from "@stylistic/eslint-plugin";
 
 
 export default [
@@ -17,7 +18,15 @@ export default [
 		...jsdoc.configs["flat/recommended-typescript-flavor"],
 	}, {
 		files: ["**/*.js", "**/*.mjs"],
+		...stylistic.configs.customize({
+			braceStyle: "1tbs",
+			indent: "tab",
+			semi: true,
+		}),
+	}, {
+		files: ["**/*.js", "**/*.mjs"],
 		plugins: {
+			"@stylistic": stylistic,
 			jsdoc,
 			mocha,
 			mozilla,
@@ -50,7 +59,7 @@ export default [
 			"no-unreachable-loop": "warn",
 			"no-unused-private-class-members": "warn",
 			"no-unused-vars": ["error", {
-				"argsIgnorePattern": "^_",
+				argsIgnorePattern: "^_",
 			}],
 			"no-use-before-define": "error",
 			"require-atomic-updates": "warn",
@@ -58,10 +67,10 @@ export default [
 			// Suggestions
 			"block-scoped-var": "warn",
 			"camelcase": ["warn", {
-				"allow": [
+				allow: [
 					"DKIM_Error",
 					"DKIM_SigError",
-					"DKIM_TempError"
+					"DKIM_TempError",
 				],
 			}],
 			"complexity": "warn",
@@ -97,8 +106,8 @@ export default [
 			"no-lone-blocks": "warn",
 			"no-loop-func": "warn",
 			"no-magic-numbers": ["warn", {
-				"ignoreArrayIndexes": true,
-				"ignore": [-1, 0, 1, 2, 3],
+				ignoreArrayIndexes: true,
+				ignore: [-1, 0, 1, 2, 3],
 			}],
 			"no-multi-assign": "warn",
 			"no-multi-str": "warn",
@@ -145,21 +154,50 @@ export default [
 			"strict": ["warn", "global"],
 			"yoda": "warn",
 
-			// Layout & Formatting
-			"comma-dangle": ["warn", "only-multiline"],
-			"dot-location": "warn",
-			"no-extra-parens": ["warn", "all", {
-				"nestedBinaryExpressions": false,
+			// Stylistic
+			"@stylistic/arrow-parens": "off",
+			"@stylistic/comma-dangle": ["warn", {
+				arrays: "always-multiline",
+				objects: "always-multiline",
+				imports: "always-multiline",
+				exports: "always-multiline",
+				functions: "only-multiline",
+				importAttributes: "always-multiline",
+				dynamicImports: "always-multiline",
 			}],
-			"no-extra-semi": "warn",
-			"no-mixed-spaces-and-tabs": ["warn", "smart-tabs"],
-			"no-multi-spaces": "warn",
-			"quotes": ["warn", "double", {
-				"avoidEscape": true,
+			"@stylistic/dot-location": ["warn", "object"],
+			"@stylistic/function-call-spacing": "warn",
+			"@stylistic/indent": ["error", "tab", {
+				SwitchCase: 1,
+				tabLength: 4,
 			}],
-			"semi": "warn",
-			"template-curly-spacing": "warn",
-			"wrap-iife": "warn",
+			"@stylistic/linebreak-style": "error",
+			"@stylistic/max-statements-per-line": ["warn", { max: 2 }],
+			"@stylistic/no-confusing-arrow": "warn",
+			"@stylistic/no-extra-parens": ["warn", "all", {
+				allowParensAfterCommentPattern: "@type",
+				nestedBinaryExpressions: false,
+			}],
+			"@stylistic/no-extra-semi": "warn",
+			"@stylistic/no-multiple-empty-lines": ["warn", { max: 2, maxBOF: 0, maxEOF: 0 }],
+			"@stylistic/object-property-newline": ["warn", { allowAllPropertiesOnSameLine: true }],
+			"@stylistic/one-var-declaration-per-line": ["warn", "always"],
+			"@stylistic/operator-linebreak": ["warn", "after", { overrides: { "?": "before", ":": "before" } }],
+			"@stylistic/quotes": ["warn", "double", {
+				avoidEscape: true,
+			}],
+			"@stylistic/semi-style": "warn",
+			"@stylistic/spaced-comment": ["warn", "always", {
+				block: {
+					balanced: false,
+					markers: [","],
+				},
+				line: {
+					exceptions: ["/"],
+					markers: ["//", "////", "/<reference", "#region", "#endregion"],
+				},
+			}],
+			"@stylistic/switch-colon-spacing": "warn",
 
 			// JSDoc
 			"jsdoc/check-line-alignment": "warn",
@@ -172,11 +210,11 @@ export default [
 			"jsdoc/require-param-description": "off",
 			"jsdoc/require-property-description": "off",
 			"jsdoc/require-returns": ["warn", {
-				"checkGetters": false,
+				checkGetters: false,
 			}],
 			"jsdoc/require-returns-description": "off",
 			"jsdoc/tag-lines": ["warn", "never", {
-				"startLines": 1,
+				startLines: 1,
 			}],
 
 			// Mocha
@@ -201,7 +239,7 @@ export default [
 				...globals.browser,
 				...globals.webextensions,
 			},
-		}
+		},
 	}, {
 		files: ["experiments/**/*.js", "experiments/**/*.mjs"],
 		plugins: {
@@ -220,14 +258,14 @@ export default [
 			"mozilla/reject-chromeutils-import-params": "warn",
 			"mozilla/reject-importGlobalProperties": [
 				"warn",
-				"allownonwebidl"
+				"allownonwebidl",
 			],
 			"mozilla/rejects-requires-await": "warn",
 			"mozilla/use-cc-etc": "warn",
 			"mozilla/use-chromeutils-generateqi": "warn",
 			"mozilla/use-chromeutils-import": "warn",
 			"mozilla/use-default-preference-values": "warn",
-			"mozilla/use-services": "warn"
+			"mozilla/use-services": "warn",
 		},
 	}, {
 		files: ["experiments/**/*.js"],
@@ -270,7 +308,7 @@ export default [
 		},
 		rules: {
 			"no-magic-numbers": "off",
-			"no-unused-expressions": "off"
+			"no-unused-expressions": "off",
 		},
 	}, {
 		files: ["eslint.config.mjs"],
@@ -299,5 +337,5 @@ export default [
 		languageOptions: {
 			allowTrailingCommas: true,
 		},
-	}
+	},
 ];

@@ -233,7 +233,7 @@ describe("DKIM Verifier [unittest]", function () {
 	describe("General errors", function () {
 		it("Revoked key", async function () {
 			const res = await verifyEmlFile("rfc6376-A.2.eml", new Map([
-				["brisbane._domainkey.example.com", "v=DKIM1; p="]
+				["brisbane._domainkey.example.com", "v=DKIM1; p="],
 			]));
 			expect(res.signatures.length).to.be.equal(1);
 			expect(res.signatures[0]?.result).to.be.equal("PERMFAIL");
@@ -310,7 +310,6 @@ describe("DKIM Verifier [unittest]", function () {
 					expect(res.signatures[0]?.sdid).to.be.equal("example.com");
 				});
 			});
-
 		});
 	});
 

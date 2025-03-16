@@ -49,7 +49,7 @@
  */
 /* ***** END ORIGINAL LICENSE/COPYRIGHT NOTICE ***** */
 
-//@ts-check
+// @ts-check
 ///<reference path="./mozilla.d.ts" />
 // options for ESLint
 /* eslint-disable prefer-template */
@@ -96,7 +96,7 @@ const prefs = {
 		enable: false,
 		type: "",
 		host: "",
-		port: 0
+		port: 0,
 	},
 };
 
@@ -153,7 +153,7 @@ function updateDnsServers(getNameserversFromOS, nameServer) {
 		if (element.trim() !== "") {
 			prefDnsRootNameServers.push({
 				server: element.trim(),
-				alive: true
+				alive: true,
 			});
 		}
 	});
@@ -283,7 +283,7 @@ function getOsDnsServers() {
 					if (element !== "") {
 						OS_DNS_ROOT_NAME_SERVERS.push({
 							server: element.trim(),
-							alive: true
+							alive: true,
 						});
 					}
 				});
@@ -334,7 +334,7 @@ function getOsDnsServers() {
 				if (DNS_StartsWith(out_line.value, "nameserver ")) {
 					OS_DNS_ROOT_NAME_SERVERS.push({
 						server: out_line.value.substring("nameserver ".length).trim(),
-						alive: true
+						alive: true,
 					});
 				}
 			} while (hasmore);
@@ -422,8 +422,7 @@ async function querySingleDNSRecursive(server, host, recordtype, hops) {
 		DNS_wordToStr(1) + // 1 query
 		DNS_wordToStr(0) + // ASCOUNT=0
 		DNS_wordToStr(0) + // NSCOUNT=0
-		DNS_wordToStr(0) // ARCOUNT=0
-		;
+		DNS_wordToStr(0); // ARCOUNT=0
 
 	var hostparts = host.split(".");
 	for (const hostpart of hostparts) {
@@ -520,7 +519,7 @@ async function querySingleDNSRecursive(server, host, recordtype, hops) {
 				this.msgsize = DNS_strToWord(this.responseHeader.substr(0, 2));
 				this.responseBody += remainingData;
 
-				//DNS_Debug("DNS: Received Reply: " + (this.readcount-2) + " of " + this.msgsize + " bytes");
+				// DNS_Debug("DNS: Received Reply: " + (this.readcount-2) + " of " + this.msgsize + " bytes");
 
 				if (this.readcount >= this.msgsize + 2) {
 					this.responseHeader = this.responseHeader.substr(2); // chop the length field
@@ -529,7 +528,7 @@ async function querySingleDNSRecursive(server, host, recordtype, hops) {
 				}
 			}
 			return Promise.resolve(null);
-		}
+		},
 	};
 
 	// allow server to be either a hostname or hostname:port
@@ -620,8 +619,13 @@ function DNS_readRec(ctx) {
 		rec.rddata = "";
 		ctr = 1000;
 		while (rec.rdlen > 0 && ctr-- > 0) {
-			txtlen = DNS_strToOctet(ctx.str.substr(ctx.idx, 1)); ctx.idx++; rec.rdlen--;
-			rec.rddata += ctx.str.substr(ctx.idx, txtlen); ctx.idx += txtlen; rec.rdlen -= txtlen;
+			txtlen = DNS_strToOctet(ctx.str.substr(ctx.idx, 1));
+			ctx.idx++;
+			rec.rdlen--;
+
+			rec.rddata += ctx.str.substr(ctx.idx, txtlen);
+			ctx.idx += txtlen;
+			rec.rdlen -= txtlen;
 		}
 		if (ctr < 0) {
 			log.error("TXT record exceeds configured max read length");
@@ -901,7 +905,7 @@ class Socket {
 	 * @yields
 	 * @returns {AsyncGenerator<string, void, void>}
 	 */
-	async * read() {
+	async* read() {
 		const binaryInputStream = Cc["@mozilla.org/binaryinputstream;1"]?.
 			createInstance(Ci.nsIBinaryInputStream);
 		if (!binaryInputStream) {
@@ -911,14 +915,13 @@ class Socket {
 
 		while (true) {
 			// Wait for the stream to be readable or closed.
-			// eslint-disable-next-line no-extra-parens
 			await /** @type {Promise<void>} */ (new Promise(resolve => {
 				this.#inStream.asyncWait({
 					QueryInterface: ChromeUtils.generateQI([
 						Ci.nsIInputStreamCallback]),
 					onInputStreamReady() {
 						resolve();
-					}
+					},
 				}, 0, 0, Services.tm.mainThreadEventTarget);
 			}));
 

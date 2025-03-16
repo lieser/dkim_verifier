@@ -276,7 +276,6 @@ export class KeyDb {
 			throw new Error("KeyDb proxy receiver got unknown request.");
 		});
 	}
-
 }
 
 /**

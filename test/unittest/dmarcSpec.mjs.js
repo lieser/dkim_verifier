@@ -23,7 +23,7 @@ describe("DMARC [unittest]", function () {
 	describe("RFC 7489 Appendix B Example", function () {
 		it("B.2.1.  Entire Domain, Monitoring Only", async function () {
 			const dmarc = new DMARC(createTxtQueryCallback(new Map([
-				["_dmarc.example.com", "v=DMARC1; p=none; rua=mailto:dmarc-feedback@example.com"]
+				["_dmarc.example.com", "v=DMARC1; p=none; rua=mailto:dmarc-feedback@example.com"],
 			])));
 
 			let res = await dmarc.shouldBeSigned("foo@example.com");
@@ -41,7 +41,7 @@ describe("DMARC [unittest]", function () {
 
 		it("B.2.2.  Entire Domain, Monitoring Only, Per-Message Reports", async function () {
 			const dmarc = new DMARC(createTxtQueryCallback(new Map([
-				["_dmarc.example.com", "v=DMARC1; p=none; rua=mailto:dmarc-feedback@example.com; ruf=mailto:auth-reports@example.com"]
+				["_dmarc.example.com", "v=DMARC1; p=none; rua=mailto:dmarc-feedback@example.com; ruf=mailto:auth-reports@example.com"],
 			])));
 
 			let res = await dmarc.shouldBeSigned("foo@example.com");
@@ -55,7 +55,7 @@ describe("DMARC [unittest]", function () {
 
 		it("B.2.3.  Per-Message Failure Reports Directed to Third Party", async function () {
 			const dmarc = new DMARC(createTxtQueryCallback(new Map([
-				["_dmarc.example.com", "v=DMARC1; p=none; rua=mailto:dmarc-feedback@example.com; ruf=mailto:auth-reports@thirdparty.example.net"]
+				["_dmarc.example.com", "v=DMARC1; p=none; rua=mailto:dmarc-feedback@example.com; ruf=mailto:auth-reports@thirdparty.example.net"],
 			])));
 
 			let res = await dmarc.shouldBeSigned("foo@example.com");
@@ -69,7 +69,7 @@ describe("DMARC [unittest]", function () {
 
 		it("B.2.4.  Subdomain, Sampling, and Multiple Aggregate Report URIs", async function () {
 			const dmarc = new DMARC(createTxtQueryCallback(new Map([
-				["_dmarc.example.com", "v=DMARC1; p=quarantine; rua=mailto:dmarc-feedback@example.com,mailto:tld-test@thirdparty.example.net!10m; pct=25"]
+				["_dmarc.example.com", "v=DMARC1; p=quarantine; rua=mailto:dmarc-feedback@example.com,mailto:tld-test@thirdparty.example.net!10m; pct=25"],
 			])));
 
 			let res = await dmarc.shouldBeSigned("foo@example.com");
@@ -83,7 +83,7 @@ describe("DMARC [unittest]", function () {
 
 		it("B.3.1.  Processing of SMTP Time", async function () {
 			const dmarc = new DMARC(createTxtQueryCallback(new Map([
-				["_dmarc.example.com", "v=DMARC1; p=reject; aspf=r; rua=mailto:dmarc-feedback@example.com"]
+				["_dmarc.example.com", "v=DMARC1; p=reject; aspf=r; rua=mailto:dmarc-feedback@example.com"],
 			])));
 
 			let res = await dmarc.shouldBeSigned("foo@example.com");

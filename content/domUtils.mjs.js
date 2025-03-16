@@ -54,7 +54,6 @@ export function uploadJsonData() {
 				}
 			});
 			fileReader.readAsText(inputElement.files[0]);
-
 		} catch (error) {
 			deferredData.reject(error);
 		}

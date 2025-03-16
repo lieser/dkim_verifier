@@ -123,22 +123,22 @@ describe("AuthVerifier [unittest]", function () {
 			expect(storageMessageSet.calledOnce).to.be.true;
 			const savedRes = JSON.parse(storageMessageSet.firstCall.lastArg);
 			expect(savedRes).to.be.deep.equal({
-				"version": "3.0",
-				"dkim": [
+				version: "3.0",
+				dkim: [
 					{
-						"version": "2.1",
-						"result": "SUCCESS",
-						"sdid": "football.example.com",
-						"auid": "@football.example.com",
-						"selector": "test",
-						"warnings": [],
-						"keySecure": false,
-						"timestamp": 1528637909,
-						"expiration": null,
-						"algorithmSignature": "rsa",
-						"keyLength": 1024,
-						"algorithmHash": "sha256",
-						"signedHeaders": [
+						version: "2.1",
+						result: "SUCCESS",
+						sdid: "football.example.com",
+						auid: "@football.example.com",
+						selector: "test",
+						warnings: [],
+						keySecure: false,
+						timestamp: 1528637909,
+						expiration: null,
+						algorithmSignature: "rsa",
+						keyLength: 1024,
+						algorithmHash: "sha256",
+						signedHeaders: [
 							"from",
 							"to",
 							"subject",
@@ -149,18 +149,18 @@ describe("AuthVerifier [unittest]", function () {
 							"date",
 						],
 					}, {
-						"version": "2.1",
-						"result": "SUCCESS",
-						"sdid": "football.example.com",
-						"auid": "@football.example.com",
-						"selector": "brisbane",
-						"warnings": [],
-						"keySecure": false,
-						"timestamp": 1528637909,
-						"expiration": null,
-						"algorithmSignature": "ed25519",
-						"algorithmHash": "sha256",
-						"signedHeaders": [
+						version: "2.1",
+						result: "SUCCESS",
+						sdid: "football.example.com",
+						auid: "@football.example.com",
+						selector: "brisbane",
+						warnings: [],
+						keySecure: false,
+						timestamp: 1528637909,
+						expiration: null,
+						algorithmSignature: "ed25519",
+						algorithmHash: "sha256",
+						signedHeaders: [
 							"from",
 							"to",
 							"subject",
@@ -170,7 +170,7 @@ describe("AuthVerifier [unittest]", function () {
 							"subject",
 							"date",
 						],
-					}]
+					}],
 			});
 		});
 
@@ -206,22 +206,22 @@ describe("AuthVerifier [unittest]", function () {
 			expect(storageMessageSet.calledOnce).to.be.true;
 			const savedRes = JSON.parse(storageMessageSet.firstCall.lastArg);
 			expect(savedRes).to.be.deep.equal({
-				"version": "3.1",
-				"dkim": [
+				version: "3.1",
+				dkim: [
 					{
-						"version": "2.1",
-						"result": "SUCCESS",
-						"sdid": "example.com",
-						"auid": "joe@football.example.com",
-						"selector": "brisbane",
-						"warnings": [],
-						"keySecure": false,
-						"timestamp": null,
-						"expiration": null,
-						"algorithmSignature": "rsa",
-						"keyLength": 1024,
-						"algorithmHash": "sha256",
-						"signedHeaders": [
+						version: "2.1",
+						result: "SUCCESS",
+						sdid: "example.com",
+						auid: "joe@football.example.com",
+						selector: "brisbane",
+						warnings: [],
+						keySecure: false,
+						timestamp: null,
+						expiration: null,
+						algorithmSignature: "rsa",
+						keyLength: 1024,
+						algorithmHash: "sha256",
+						signedHeaders: [
 							"received",
 							"from",
 							"to",
@@ -229,11 +229,11 @@ describe("AuthVerifier [unittest]", function () {
 							"date",
 							"message-id",
 						],
-					}
+					},
 				],
-				"spf": [],
-				"dmarc": [],
-				"bimiIndicator": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiICBzdGFuZGFsb25lPSJ5ZXMiPz4KPHN2ZyB2ZXJzaW9uPSIxLjIiIGJhc2VQcm9maWxlPSJ0aW55LXBzIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHRpdGxlPkV4YW1wbGU8L3RpdGxlPgo8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0MCIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIzIiBmaWxsPSJyZWQiIC8+Cjwvc3ZnPg=="
+				spf: [],
+				dmarc: [],
+				bimiIndicator: "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiICBzdGFuZGFsb25lPSJ5ZXMiPz4KPHN2ZyB2ZXJzaW9uPSIxLjIiIGJhc2VQcm9maWxlPSJ0aW55LXBzIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHRpdGxlPkV4YW1wbGU8L3RpdGxlPgo8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0MCIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIzIiBmaWxsPSJyZWQiIC8+Cjwvc3ZnPg==",
 			});
 		});
 	});
@@ -266,7 +266,7 @@ describe("AuthVerifier [unittest]", function () {
 				result: "SUCCESS",
 				SDID: "test.com",
 				selector: "selector",
-				warnings: ["DKIM_SIGWARNING_EXPIRED"]
+				warnings: ["DKIM_SIGWARNING_EXPIRED"],
 			};
 			res = await authVerifier.verify(createFakeMessageHeader());
 			expect(res.dkim[0]?.res_num).to.be.equal(10);
@@ -294,7 +294,7 @@ describe("AuthVerifier [unittest]", function () {
 					result: "SUCCESS",
 					sdid: "bad.com",
 					selector: "selector",
-					warnings: [{ name: "DKIM_POLICYERROR_WRONG_SDID", params: ["test.com"] }]
+					warnings: [{ name: "DKIM_POLICYERROR_WRONG_SDID", params: ["test.com"] }],
 				}],
 				spf: [{
 					method: "spf",
@@ -356,21 +356,21 @@ describe("AuthVerifier [unittest]", function () {
 
 		it("loading SavedAuthResult 3.1 with BIMI result", async function () {
 			storedData = {
-				"version": "3.1",
-				"dkim": [
+				version: "3.1",
+				dkim: [
 					{
-						"version": "2.0",
-						"result": "SUCCESS",
-						"sdid": "example.com",
-						"auid": "joe@football.example.com",
-						"selector": "brisbane",
-						"warnings": [],
-						"keySecure": false
-					}
+						version: "2.0",
+						result: "SUCCESS",
+						sdid: "example.com",
+						auid: "joe@football.example.com",
+						selector: "brisbane",
+						warnings: [],
+						keySecure: false,
+					},
 				],
-				"spf": [],
-				"dmarc": [],
-				"bimiIndicator": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiICBzdGFuZGFsb25lPSJ5ZXMiPz4KPHN2ZyB2ZXJzaW9uPSIxLjIiIGJhc2VQcm9maWxlPSJ0aW55LXBzIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHRpdGxlPkV4YW1wbGU8L3RpdGxlPgo8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0MCIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIzIiBmaWxsPSJyZWQiIC8+Cjwvc3ZnPg=="
+				spf: [],
+				dmarc: [],
+				bimiIndicator: "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiICBzdGFuZGFsb25lPSJ5ZXMiPz4KPHN2ZyB2ZXJzaW9uPSIxLjIiIGJhc2VQcm9maWxlPSJ0aW55LXBzIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHRpdGxlPkV4YW1wbGU8L3RpdGxlPgo8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0MCIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIzIiBmaWxsPSJyZWQiIC8+Cjwvc3ZnPg==",
 			};
 			const res = await authVerifier.verify(createFakeMessageHeader());
 			expect(res.dkim[0]?.res_num).to.be.equal(10);

@@ -24,26 +24,26 @@ async function collectFiles() {
 		expandDirectories: {
 			files: ["*"],
 			extensions: ["json"],
-		}
+		},
 	}));
 	files.push(...await globby("content", {
 		expandDirectories: {
 			files: ["*"],
 			extensions: ["html", "css", "js"],
-		}
+		},
 	}));
 	files.push(...await globby("data", { expandDirectories: true }));
 	files.push(...await globby("experiments", {
 		expandDirectories: {
 			files: ["*"],
 			extensions: ["js", "mjs", "json"],
-		}
+		},
 	}));
 	files.push(...await globby("modules", {
 		expandDirectories: {
 			files: ["*"],
 			extensions: ["js"],
-		}
+		},
 	}));
 	files.push(...await globby("thirdparty", { expandDirectories: true }));
 
@@ -132,7 +132,6 @@ async function createArchiveInfo(dirty) {
 		throw new Error("Version in changelog doe not match manifest");
 	}
 	return [`dkim_verifier-${version}.xpi`, new Date(date)];
-
 }
 
 /**

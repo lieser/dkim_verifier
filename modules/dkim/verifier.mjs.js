@@ -1259,16 +1259,19 @@ class DkimSignature {
 		};
 
 		for (const header of required) {
-			checkSignedHeader(header, prefs["policy.dkim.unsignedHeadersWarning.mode"] >=
-				BasePreferences.POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE.RELAXED);
+			const relaxedEnabled = prefs["policy.dkim.unsignedHeadersWarning.mode"] >=
+				BasePreferences.POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE.RELAXED;
+			checkSignedHeader(header, relaxedEnabled);
 		}
 		for (const header of recommended) {
-			checkSignedHeader(header, prefs["policy.dkim.unsignedHeadersWarning.mode"] >=
-				BasePreferences.POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE.RECOMMENDED);
+			const recommendedEnabled = prefs["policy.dkim.unsignedHeadersWarning.mode"] >=
+				BasePreferences.POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE.RECOMMENDED;
+			checkSignedHeader(header, recommendedEnabled);
 		}
 		for (const header of desired) {
-			checkSignedHeader(header, prefs["policy.dkim.unsignedHeadersWarning.mode"] >=
-				BasePreferences.POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE.STRICT);
+			const strictEnabled = prefs["policy.dkim.unsignedHeadersWarning.mode"] >=
+				BasePreferences.POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE.STRICT;
+			checkSignedHeader(header, strictEnabled);
 		}
 	}
 

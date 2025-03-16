@@ -79,7 +79,6 @@ const postLog = {
 /**
  * @enum {number}
  */
-// eslint-disable-next-line no-extra-parens
 const Constants = /** @type {const} */ ({
 	RR_TYPE_A: 1,
 	RR_TYPE_A6: 38,
@@ -351,21 +350,21 @@ function load(paths) {
 	//     int ttl;     /* number of seconds the result is valid */
 	// };
 	ub_result = new ctypes.StructType("ub_result", [
-		{ "qname": ctypes.char.ptr },
-		{ "qtype": ctypes.int },
-		{ "qclass": ctypes.int },
-		{ "data": ctypes.char.ptr.ptr },
-		{ "len": ctypes.int.ptr },
-		{ "canonname": ctypes.char.ptr },
-		{ "rcode": ctypes.int },
-		{ "answer_packet": ctypes.voidptr_t },
-		{ "answer_len": ctypes.int },
-		{ "havedata": ctypes.int },
-		{ "nxdomain": ctypes.int },
-		{ "secure": ctypes.int },
-		{ "bogus": ctypes.int },
-		{ "why_bogus": ctypes.char.ptr },
-		{ "ttl": ctypes.int }
+		{ qname: ctypes.char.ptr },
+		{ qtype: ctypes.int },
+		{ qclass: ctypes.int },
+		{ data: ctypes.char.ptr.ptr },
+		{ len: ctypes.int.ptr },
+		{ canonname: ctypes.char.ptr },
+		{ rcode: ctypes.int },
+		{ answer_packet: ctypes.voidptr_t },
+		{ answer_len: ctypes.int },
+		{ havedata: ctypes.int },
+		{ nxdomain: ctypes.int },
+		{ secure: ctypes.int },
+		{ bogus: ctypes.int },
+		{ why_bogus: ctypes.char.ptr },
+		{ ttl: ctypes.int },
 	]);
 
 	// struct ub_ctx * ub_ctx_create(void);
@@ -379,7 +378,7 @@ function load(paths) {
 	ub_ctx_config = lib.declare("ub_ctx_config", ctypes.default_abi, ctypes.int,
 		ub_ctx.ptr, ctypes.char.ptr);
 
-	//int ub_ctx_set_fwd(struct ub_ctx* ctx, char* addr);
+	// int ub_ctx_set_fwd(struct ub_ctx* ctx, char* addr);
 	ub_ctx_set_fwd = lib.declare("ub_ctx_set_fwd", ctypes.default_abi, ctypes.int,
 		ub_ctx.ptr, ctypes.char.ptr);
 

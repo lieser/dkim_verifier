@@ -340,7 +340,7 @@ describe("preferences [unittest]", function () {
 					// @ts-expect-error
 					oldValue: pref._prefs,
 					newValue: "sync",
-				}
+				},
 			}, "sync");
 			expect(
 				pref["dns.nameserver"]

@@ -51,8 +51,7 @@ function setNavigation(navSelector) {
 	for (const pane of panes) {
 		if (pane.getAttribute("pane") === navSelector.getAttribute("pane")) {
 			pane.hidden = false;
-		}
-		else {
+		} else {
 			pane.hidden = true;
 		}
 	}

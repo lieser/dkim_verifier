@@ -92,7 +92,6 @@ export default class AuthVerifier {
 	}
 
 	static get DKIM_RES() {
-		// eslint-disable-next-line no-extra-parens
 		return /** @type {const} */ ({
 			SUCCESS: 10,
 			TEMPFAIL: 20,
@@ -123,8 +122,7 @@ export default class AuthVerifier {
 		}
 
 		// create msg object
-		// eslint-disable-next-line no-extra-parens
-		const rawMessage =/** @type {string} */(await browser.messages.getRaw(message.id));
+		const rawMessage = /** @type {string} */(await browser.messages.getRaw(message.id));
 		let msgParsed;
 		try {
 			msgParsed = MsgParser.parseMsg(rawMessage);
@@ -189,7 +187,7 @@ export default class AuthVerifier {
 					spf: arhResult.spf,
 					dmarc: arhResult.dmarc,
 					arh: {
-						dkim: arhResult.dkim
+						dkim: arhResult.dkim,
 					},
 					bimiIndicator: arhResult.bimiIndicator,
 				};
@@ -258,7 +256,6 @@ async function checkSignRules(message, dkimResults, from, listId, dmarc) {
 	for (let i = 0; i < dkimResults.length; i++) {
 		// eslint-disable-next-line require-atomic-updates
 		dkimResults[i] = await SignRules.check(
-			// eslint-disable-next-line no-extra-parens
 			/** @type {dkimSigResultV2} */(dkimResults[i]), from, listId, isOutgoingCallback, dmarcToUse);
 	}
 }
@@ -445,8 +442,10 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 		case "TEMPFAIL":
 			authResultDKIM.res_num = AuthVerifier.DKIM_RES.TEMPFAIL;
 			authResultDKIM.result_str =
-				(dkimSigResult.errorType &&
-					browser.i18n.getMessage(dkimSigResult.errorType, dkimSigResult.errorStrParams)) ||
+				(
+					dkimSigResult.errorType &&
+					browser.i18n.getMessage(dkimSigResult.errorType, dkimSigResult.errorStrParams)
+				) ||
 				dkimSigResult.errorType ||
 				browser.i18n.getMessage("DKIM_INTERNALERROR_NAME");
 			break;
@@ -533,8 +532,7 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 					}
 				}
 				errorMsg =
-					browser.i18n.getMessage(errorType,
-						dkimSigResult.errorStrParams) ||
+					browser.i18n.getMessage(errorType, dkimSigResult.errorStrParams) ||
 					errorType;
 				authResultDKIM.error_str = errorMsg;
 			}
@@ -579,7 +577,7 @@ function SavedAuthResult_to_AuthResult(savedAuthResult, from) {
 	if (savedAuthResult.arh && savedAuthResult.arh.dkim) {
 		authResult.arh = {
 			dkim: savedAuthResult.arh.dkim.map(
-				dkimSigResultV2_to_AuthResultDKIM)
+				dkimSigResultV2_to_AuthResultDKIM),
 		};
 	}
 	return addFavicons(authResult, from, savedAuthResult.bimiIndicator);

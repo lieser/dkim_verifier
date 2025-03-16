@@ -288,11 +288,11 @@ function checkResultKeyword(method, resultKeyword) {
 
 	// SPF and Sender ID (RFC 8601 section 2.7.2.)
 	if (method === "spf" || method === "sender-id") {
-		allowedKeywords = ["none", "pass", "fail", "softfail", "policy", "neutral", "temperror", "permerror"
+		allowedKeywords = ["none", "pass", "fail", "softfail", "policy", "neutral", "temperror", "permerror",
 			// Deprecated from older ARH RFC 5451.
-			, "hardfail"
+			"hardfail",
 			// Older SPF specs (e.g. RFC 4408) used mixed case.
-			, "None", "Pass", "Fail", "SoftFail", "Neutral", "TempError", "PermError"
+			"None", "Pass", "Fail", "SoftFail", "Neutral", "TempError", "PermError",
 		];
 	}
 
@@ -327,6 +327,7 @@ class RefString {
 	constructor(s) {
 		this.value = s;
 	}
+
 	/**
 	 * @param {RegExp} regexp
 	 * @returns {RegExpMatchArray?}
@@ -334,6 +335,7 @@ class RefString {
 	match(regexp) {
 		return this.value.match(regexp);
 	}
+
 	/**
 	 * @param {number} from
 	 * @param {number} [length]

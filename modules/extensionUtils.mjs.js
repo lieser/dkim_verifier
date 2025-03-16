@@ -57,9 +57,9 @@ async function createOrRaisePopup(url, height = undefined, width = undefined) {
 function downloadDataAsJSON(data, dataName) {
 	const jsonBlob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
 	browser.downloads.download({
-		"url": URL.createObjectURL(jsonBlob),
-		"filename": `${dataName}_${dateToString(new Date())}.json`,
-		"saveAs": true,
+		url: URL.createObjectURL(jsonBlob),
+		filename: `${dataName}_${dateToString(new Date())}.json`,
+		saveAs: true,
 	});
 }
 

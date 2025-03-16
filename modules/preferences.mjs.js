@@ -200,6 +200,7 @@ export class BasePreferences {
 	get "dkim.enable"() {
 		return this.#tryGetBoolValue("dkim.enable", true);
 	}
+
 	/**
 	 * - 0: don't store DKIM keys
 	 * - 1: store DKIM keys
@@ -208,6 +209,7 @@ export class BasePreferences {
 	get "key.storing"() {
 		return this.#tryGetNumberValue("key.storing", 0);
 	}
+
 	get "saveResult"() {
 		return this.#tryGetBoolValue("saveResult", false);
 	}
@@ -215,9 +217,11 @@ export class BasePreferences {
 	get "arh.read"() {
 		return this.#tryGetBoolValue("arh.read", false);
 	}
+
 	get "arh.replaceAddonResult"() {
 		return this.#tryGetBoolValue("arh.replaceAddonResult", true);
 	}
+
 	get "arh.relaxedParsing"() {
 		return this.#tryGetBoolValue("arh.relaxedParsing", false);
 	}
@@ -239,6 +243,7 @@ export class BasePreferences {
 	get "error.illformed_i.treatAs"() {
 		return this.#tryGetNumberValue("error.illformed_i.treatAs", 1);
 	}
+
 	/**
 	 * - 0: error
 	 * - 1: warning
@@ -247,6 +252,7 @@ export class BasePreferences {
 	get "error.illformed_s.treatAs"() {
 		return this.#tryGetNumberValue("error.illformed_s.treatAs", 1);
 	}
+
 	/**
 	 * - 0: error
 	 * - 1: warning
@@ -255,9 +261,11 @@ export class BasePreferences {
 	get "error.policy.key_insecure.treatAs"() {
 		return this.#tryGetNumberValue("error.policy.key_insecure.treatAs", 2);
 	}
+
 	get "error.key_testmode.ignore"() {
 		return this.#tryGetBoolValue("error.key_testmode.ignore", false);
 	}
+
 	/**
 	 * - 0: error
 	 * - 1: warning
@@ -266,6 +274,7 @@ export class BasePreferences {
 	get "error.algorithm.sign.rsa-sha1.treatAs"() {
 		return this.#tryGetNumberValue("error.algorithm.sign.rsa-sha1.treatAs", 1);
 	}
+
 	/**
 	 * - 0: error
 	 * - 1: warning
@@ -291,22 +300,28 @@ export class BasePreferences {
 	get "dns.resolver"() {
 		return this.#tryGetNumberValue("dns.resolver", 1);
 	}
+
 	get "dns.getNameserversFromOS"() {
 		return this.#tryGetBoolValue("dns.getNameserversFromOS", true);
 	}
+
 	get "dns.nameserver"() {
 		return this.#tryGetStringValue("dns.nameserver", "8.8.8.8");
 	}
+
 	get "dns.timeout_connect"() {
 		return this.#tryGetNumberValue("dns.timeout_connect", 5);
 	}
+
 	get "dns.dnssec.trustAnchor"() {
 		return this.#tryGetStringValue("dns.dnssec.trustAnchor",
 			". IN DS 20326 8 2 E06D44B80B8F1D39A95C0B0D7C65D08458E880409BBC683457104237C7F8EC8D");
 	}
+
 	get "dns.proxy.enable"() {
 		return this.#tryGetBoolValue("dns.proxy.enable", false);
 	}
+
 	/**
 	 * - socks
 	 * - socks4
@@ -314,18 +329,23 @@ export class BasePreferences {
 	get "dns.proxy.type"() {
 		return this.#tryGetStringValue("dns.proxy.type", "socks");
 	}
+
 	get "dns.proxy.host"() {
 		return this.#tryGetStringValue("dns.proxy.host", "");
 	}
+
 	get "dns.proxy.port"() {
 		return this.#tryGetNumberValue("dns.proxy.port", 1080);
 	}
+
 	get "dns.jsdns.autoResetServerAlive"() {
 		return this.#tryGetBoolValue("dns.jsdns.autoResetServerAlive", true);
 	}
+
 	get "dns.libunbound.path"() {
 		return this.#tryGetStringValue("dns.libunbound.path", "");
 	}
+
 	get "dns.libunbound.path.relToProfileDir"() {
 		return this.#tryGetBoolValue("dns.libunbound.path.relToProfileDir", true);
 	}
@@ -338,15 +358,19 @@ export class BasePreferences {
 	get "policy.signRules.enable"() {
 		return this.#tryGetBoolValue("policy.signRules.enable", false);
 	}
+
 	get "policy.signRules.checkDefaultRules"() {
 		return this.#tryGetBoolValue("policy.signRules.checkDefaultRules", true);
 	}
+
 	get "policy.signRules.autoAddRule.enable"() {
 		return this.#tryGetBoolValue("policy.signRules.autoAddRule.enable", false);
 	}
+
 	get "policy.signRules.autoAddRule.onlyIfFromAddressInSDID"() {
 		return this.#tryGetBoolValue("policy.signRules.autoAddRule.onlyIfFromAddressInSDID", true);
 	}
+
 	/**
 	 * - 0: from address
 	 * - 1: subdomain
@@ -355,9 +379,11 @@ export class BasePreferences {
 	get "policy.signRules.autoAddRule.for"() {
 		return this.#tryGetNumberValue("policy.signRules.autoAddRule.for", 0);
 	}
+
 	get "policy.signRules.sdid.allowSubDomains"() {
 		return this.#tryGetBoolValue("policy.signRules.sdid.allowSubDomains", true);
 	}
+
 	get "policy.signRules.error.wrong_sdid.asWarning"() {
 		return this.#tryGetBoolValue("policy.signRules.error.wrong_sdid.asWarning", false);
 	}
@@ -365,6 +391,7 @@ export class BasePreferences {
 	get "policy.DMARC.shouldBeSigned.enable"() {
 		return this.#tryGetBoolValue("policy.DMARC.shouldBeSigned.enable", false);
 	}
+
 	/**
 	 * - none
 	 * - quarantine
@@ -386,6 +413,7 @@ export class BasePreferences {
 		/** @readonly */
 		STRICT: 30,
 	};
+
 	/**
 	 * @returns {POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE}
 	 */
@@ -409,6 +437,7 @@ export class BasePreferences {
 	get "showDKIMHeader"() {
 		return this.#tryGetNumberValue("showDKIMHeader", 30);
 	}
+
 	/**
 	 * -  0:  never
 	 * - 10:  when an e-mail with a valid DKIM signature is viewed  (SUCCESS)
@@ -424,33 +453,43 @@ export class BasePreferences {
 	get "colorFrom"() {
 		return this.#tryGetBoolValue("colorFrom", false);
 	}
+
 	get "color.success.text"() {
 		return this.#tryGetStringValue("color.success.text", "windowtext");
 	}
+
 	get "color.success.background"() {
 		return this.#tryGetStringValue("color.success.background", "rgba(0,255,0,0.5)");
 	}
+
 	get "color.warning.text"() {
 		return this.#tryGetStringValue("color.warning.text", "windowtext");
 	}
+
 	get "color.warning.background"() {
 		return this.#tryGetStringValue("color.warning.background", "rgba(255,150,0,0.5)");
 	}
+
 	get "color.permfail.text"() {
 		return this.#tryGetStringValue("color.permfail.text", "windowtext");
 	}
+
 	get "color.permfail.background"() {
 		return this.#tryGetStringValue("color.permfail.background", "rgba(255,0,0,0.5)");
 	}
+
 	get "color.tempfail.text"() {
 		return this.#tryGetStringValue("color.tempfail.text", "unset");
 	}
+
 	get "color.tempfail.background"() {
 		return this.#tryGetStringValue("color.tempfail.background", "unset");
 	}
+
 	get "color.nosig.text"() {
 		return this.#tryGetStringValue("color.nosig.text", "unset");
 	}
+
 	get "color.nosig.background"() {
 		return this.#tryGetStringValue("color.nosig.background", "unset");
 	}
@@ -471,6 +510,7 @@ export class BasePreferences {
 	get "debug"() {
 		return this.#tryGetBoolValue("debug", false);
 	}
+
 	/**
 	 * - Fatal
 	 * - Error
@@ -703,7 +743,7 @@ export class StorageLocalPreferences extends BasePreferences {
  */
 StorageLocalPreferences.dataStorageScopes = [
 	"signRulesUser",
-	"keyStore"
+	"keyStore",
 ];
 
 const prefs = new StorageLocalPreferences();
