@@ -137,7 +137,7 @@ export class BasePreferences {
 	 * @returns {boolean|number|string}
 	 */
 	getValue(name) {
-		if (!Object.prototype.hasOwnProperty.call(BasePreferences.prototype, name)) {
+		if (!Object.hasOwn(BasePreferences.prototype, name)) {
 			throw new Error(`Can not get nonexisting preference "${name}"`);
 		}
 		/** @type {any} */
@@ -497,7 +497,7 @@ export class BasePreferences {
 	 * @returns {Promise<void>}
 	 */
 	setAccountValue(name, account, value) {
-		if (!Object.prototype.hasOwnProperty.call(BasePreferences.prototype, `account.${name}`)) {
+		if (!Object.hasOwn(BasePreferences.prototype, `account.${name}`)) {
 			throw new Error(`Can not set nonexisting account preference "${name}"`);
 		}
 		if (name === "dkim.enable" || name === "arh.read") {
@@ -522,7 +522,7 @@ export class BasePreferences {
 	 * @returns {boolean|number|string}
 	 */
 	getAccountValue(name, account) {
-		if (!Object.prototype.hasOwnProperty.call(BasePreferences.prototype, `account.${name}`)) {
+		if (!Object.hasOwn(BasePreferences.prototype, `account.${name}`)) {
 			throw new Error(`Can not get nonexisting account preference "${name}"`);
 		}
 		if (name === "dkim.enable" || name === "arh.read") {

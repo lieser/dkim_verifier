@@ -24,7 +24,7 @@ export default [
 		},
 
 		languageOptions: {
-			ecmaVersion: 2022,
+			ecmaVersion: 2024,
 			sourceType: "module",
 
 			globals: {
@@ -133,6 +133,7 @@ export default [
 			"prefer-const": "warn",
 			"prefer-exponentiation-operator": "warn",
 			"prefer-numeric-literals": "warn",
+			"prefer-object-has-own": "warn",
 			"prefer-object-spread": "warn",
 			"prefer-promise-reject-errors": "warn",
 			"prefer-rest-params": "warn",
