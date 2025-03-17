@@ -109,11 +109,19 @@ let arhParser = {
 		}
 
 		// get the resinfos
-		while (authresHeaderRef.value !== "") {
-			const arhResInfo = parseResinfo(authresHeaderRef);
-			if (arhResInfo) {
-				res.resinfo.push(arhResInfo);
+		try {
+			while (authresHeaderRef.value !== "") {
+				const arhResInfo = parseResInfo(authresHeaderRef);
+				if (arhResInfo) {
+					res.resinfo.push(arhResInfo);
+				}
 			}
+		} catch (error) {
+			if (error instanceof Error) {
+				// @ts-expect-error
+				error.authserv_id = res.authserv_id;
+			}
+			throw error;
 		}
 
 		log.debug(res.toSource());
@@ -128,7 +136,7 @@ let arhParser = {
  *  @return {ARHResinfo|null} Parsed resinfo
  *  @throws {DKIM_Error|Error}
  */
-function parseResinfo(str) {
+function parseResInfo(str) {
 	log.trace("parse str: " + str.toSource());
 
 	let reg_match;
