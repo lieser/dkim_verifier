@@ -60,7 +60,7 @@ var Key = {
 	 * init DB
 	 * May be called more then once
 	 *
-	 * @return {Promise<boolean>} initialized
+	 * @returns {Promise<boolean>} initialized
 	 * @throws {Error}
 	 */
 	initDB: function Key_initDB() {
@@ -157,7 +157,7 @@ var Key = {
 	 * @param {String} d_val domain of the Signer
 	 * @param {String} s_val selector
 	 *
-	 * @return {Promise<dkimKeyResult>}
+	 * @returns {Promise<dkimKeyResult>}
 	 *
 	 * @throws {DKIM_SigError|Error}
 	 */
@@ -214,7 +214,7 @@ var Key = {
 	 * @param {String} d_val domain of the Signer
 	 * @param {String} s_val selector
 	 *
-	 * @return {Promise<void>}
+	 * @returns {Promise<void>}
 	 */
 	deleteKey: function Key_deleteKey(d_val, s_val) {
 		"use strict";
@@ -253,7 +253,7 @@ var Key = {
 	 * @param {String} d_val domain of the Signer
 	 * @param {String} s_val selector
 	 *
-	 * @return {Promise<void>}
+	 * @returns {Promise<void>}
 	 */
 	markKeyAsSecure: function Key_markKeyAsSecure(d_val, s_val) {
 		"use strict";
@@ -293,7 +293,7 @@ var Key = {
  * @param {String} d_val domain of the Signer
  * @param {String} s_val selector
  *
- * @return {Promise<{key: string, secure: boolean}>}
+ * @returns {Promise<{key: string, secure: boolean}>}
  *
  * @throws {DKIM_SigError|DKIM_TempError}
  */
@@ -321,7 +321,7 @@ async function getKeyFromDNS(d_val, s_val) {
  * @param {String} d_val domain of the Signer
  * @param {String} s_val selector
  *
- * @return {Promise<{key: string, secure:boolean}|Null>} The Key if it's in the DB; null otherwise
+ * @returns {Promise<{key: string, secure:boolean}|Null>} The Key if it's in the DB; null otherwise
  */
 async function getKeyFromDB(d_val, s_val) {
 	"use strict";
@@ -376,7 +376,7 @@ async function getKeyFromDB(d_val, s_val) {
  * @param {String} key DKIM key
  * @param {Boolean} secure
  *
- * @return {Promise<void>}
+ * @returns {Promise<void>}
  */
 function setKeyInDB(d_val, s_val, key, secure) {
 	"use strict";
@@ -411,7 +411,7 @@ function setKeyInDB(d_val, s_val, key, secure) {
 
 /**
  * init
- * @return {void}
+ * @returns {void}
  */
 function init() {
 	"use strict";

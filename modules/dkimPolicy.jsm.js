@@ -106,7 +106,7 @@ var Policy = {
 	 * init DB
 	 * May be called more then once
 	 *
-	 * @return {Promise<boolean>} initialized
+	 * @returns {Promise<boolean>} initialized
 	 * @throws {Error}
 	 */
 	initDB: function Policy_initDB() {
@@ -274,7 +274,7 @@ var Policy = {
 	 * @param {String} fromAddress
 	 * @param {String|Null} [listID]
 	 *
-	 * @return {Promise<DKIMSignPolicy>}
+	 * @returns {Promise<DKIMSignPolicy>}
 	 * @throws {Error}
 	 */
 	shouldBeSigned: function Policy_shouldBeSigned(fromAddress, listID) {
@@ -385,7 +385,7 @@ var Policy = {
 	 * @param {String} from
 	 * @param {String} sdid
 	 * @param {dkimSigWarning[]} warnings - in/out paramter
-	 * @return {void}
+	 * @returns {void}
 	 * @throws {DKIM_SigError}
 	 */
 	checkSDID: function Policy_checkSDID(allowedSDIDs, from, sdid, warnings) {
@@ -503,17 +503,18 @@ var Policy = {
 			}
 		};
 
+		const relaxedEnabled = prefs.getIntPref("dkim.unsignedHeadersWarning.mode") >= POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE.RELAXED;
+		const recommendedEnabled = prefs.getIntPref("dkim.unsignedHeadersWarning.mode") >= POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE.RECOMMENDED;
+		const strictEnabled = prefs.getIntPref("dkim.unsignedHeadersWarning.mode") >= POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE.STRICT;
+
 		for (const header of SIGNEDHEADERS.REQUIRED) {
-			checkSignedHeader(header, prefs.getIntPref("dkim.unsignedHeadersWarning.mode") >=
-				POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE.RELAXED);
+			checkSignedHeader(header, relaxedEnabled);
 		}
 		for (const header of SIGNEDHEADERS.RECOMMENDED) {
-			checkSignedHeader(header, prefs.getIntPref("dkim.unsignedHeadersWarning.mode") >=
-				POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE.RECOMMENDED);
+			checkSignedHeader(header, recommendedEnabled);
 		}
 		for (const header of SIGNEDHEADERS.DESIRED) {
-			checkSignedHeader(header, prefs.getIntPref("dkim.unsignedHeadersWarning.mode") >=
-				POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE.STRICT);
+			checkSignedHeader(header, strictEnabled);
 		}
 	},
 
@@ -523,7 +524,7 @@ var Policy = {
 	 * @param {String} sdid
 	 * @param {String|undefined} auid
 	 * @param {String|undefined} from
-	 * @return {Promise<String|undefined>} url to favicon
+	 * @returns {Promise<String|undefined>} url to favicon
 	 */
 	getFavicon: function Policy_getFavicon(sdid, auid, from) {
 		"use strict";
@@ -567,7 +568,7 @@ var Policy = {
 	 * @param {String} fromAddress
 	 * @param {String} sdid
 	 *
-	 * @return {Promise<void>}
+	 * @returns {Promise<void>}
 	 * @throws {Error}
 	 */
 	signedBy: function Policy_signedBy(fromAddress, sdid) {
@@ -626,7 +627,7 @@ var Policy = {
 	 *
 	 * @param {String} fromAddress
 	 *
-	 * @return {Promise<void>}
+	 * @returns {Promise<void>}
 	 */
 	addUserException: function Policy_addUserException(fromAddress) {
 		"use strict";
@@ -678,7 +679,7 @@ var Policy = {
 	 * (negative if rules where removed) as an argument.
 	 *
 	 * @param {Function} handler
-	 * @return {void}
+	 * @returns {void}
 	 */
 	addRulesUpdatedObserver: function Policy_addRulesUpdatedListener(handler) {
 		"use strict";
@@ -689,7 +690,7 @@ var Policy = {
 	/**
 	 * Removes the sign rules changed observer.
 	 * @param {Function} handler
-	 * @return {void}
+	 * @returns {void}
 	 */
 	removeRulesUpdatedObserver: function Policy_addRulesUpdatedListener(handler) {
 		"use strict";
@@ -701,7 +702,7 @@ var Policy = {
 	 * Notify the sign rules changed observer.
 	 *
 	 * @param {Number} count Number of rules added
-	 * @return {void}
+	 * @returns {void}
 	 */
 	rulesUpdated: function Policy_rulesUpdated(count) {
 		"use strict";
@@ -725,7 +726,7 @@ var Policy = {
  * @param {String} ruletype
  * @param {String} priority
  *
- * @return {Promise<void>}
+ * @returns {Promise<void>}
  */
 async function addRule(domain, addr, sdid, ruletype, priority) {
 	"use strict";
@@ -765,7 +766,7 @@ async function addRule(domain, addr, sdid, ruletype, priority) {
 
 /**
  * init module
- * @return {void}
+ * @returns {void}
  */
 function init() {
 	"use strict";

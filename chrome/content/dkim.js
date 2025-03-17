@@ -68,7 +68,7 @@ DKIM_Verifier.Display = (function() {
 	 *
 	 * @param {String} value
 	 * @param {String|undefined} [details]
-	 * @return {void}
+	 * @returns {void}
 	 */
 	function setValue(value, details) {
 		headerTooltips.value = value;
@@ -102,7 +102,7 @@ DKIM_Verifier.Display = (function() {
 	 * Sets the warnings for header, headerTooltips and statusbar panel.
 	 *
 	 * @param {String[]} warnings
-	 * @return {void}
+	 * @returns {void}
 	 */
 	function setWarnings(warnings) {
 		header.warnings = warnings;
@@ -151,7 +151,7 @@ DKIM_Verifier.Display = (function() {
 	 * Sets the url to the favicon. Empty string to reset it.
 	 *
 	 * @param {String} faviconUrl
-	 * @return {void}
+	 * @returns {void}
 	 */
 	function setFaviconUrl(faviconUrl) {
 
@@ -230,7 +230,7 @@ DKIM_Verifier.Display = (function() {
 	 * display result
 	 *
 	 * @param {IAuthVerifier.IAuthResult} result
-	 * @return {void}
+	 * @returns {void}
 	 * @throws {Error}
 	 */
 	// eslint-disable-next-line complexity

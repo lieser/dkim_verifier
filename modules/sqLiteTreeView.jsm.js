@@ -86,7 +86,7 @@ class SQLiteTreeView {
 
 	/**
 	 * Updates orderClause. Should be called if the sort order is changed
-	 * @return {void}
+	 * @returns {void}
 	 */
 	_updateOrderClause() {
 		this.orderClause = this.sortOrder.map(function (elem) {
@@ -101,7 +101,7 @@ class SQLiteTreeView {
 	 * @param {String} sql
 	 * @param {Object} [params] named params
 	 *
-	 * @return {(String[])[]}
+	 * @returns {(String[])[]}
 	 */
 	_doSQL(sql, params) {
 		var rv = [];
@@ -148,7 +148,7 @@ class SQLiteTreeView {
 	 *
 	 * @param {Number[]} rows
 	 *
-	 * @return {string[]} rowIDs
+	 * @returns {string[]} rowIDs
 	 */
 	_getRowIDs(rows) {
 		var rowIDs = [];
@@ -167,7 +167,7 @@ class SQLiteTreeView {
 	 * Otherwise, directly update the tree view
 	 *
 	 * @param {Number} [rowCountChanged] Number of rows changed
-	 * @return {void}
+	 * @returns {void}
 	 */
 	_triggerUpdate(rowCountChanged) {
 		if (this.observable) {
@@ -185,7 +185,7 @@ class SQLiteTreeView {
 	 * Update the tree view
 	 *
 	 * @param {Number} [rowCountChanged] Number of rows changed
-	 * @return {void}
+	 * @returns {void}
 	 */
 	update(rowCountChanged) {
 		if (rowCountChanged) {
@@ -198,7 +198,7 @@ class SQLiteTreeView {
 	 * Adds a new row to the database
 	 *
 	 * @param {Object} params Named params to insert
-	 * @return {void}
+	 * @returns {void}
 	 */
 	addRow(params) {
 		// add row
@@ -214,7 +214,7 @@ class SQLiteTreeView {
 
 	/**
 	 * Delete selected rows
-	 * @return {void}
+	 * @returns {void}
 	 */
 	deleteSelectedRows() {
 		// get selected rows
