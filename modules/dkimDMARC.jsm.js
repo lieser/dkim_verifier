@@ -315,7 +315,7 @@ function parseDMARCRecord(DMARCRecordStr) {
 	// @ts-expect-error
 	let tagMap = parsedTagMap;
 
-	// v: Version (plain-text; REQUIRED).  Identifies the record retrieved
+	// v: Version (plain-text; REQUIRED). Identifies the record retrieved
 	// as a DMARC record.  It MUST have the value of "DMARC1".  The value
 	// of this tag MUST match precisely; if it does not or it is absent,
 	// the entire retrieved record MUST be ignored.  It MUST be the first

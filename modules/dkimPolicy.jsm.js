@@ -503,17 +503,18 @@ var Policy = {
 			}
 		};
 
+		const relaxedEnabled = prefs.getIntPref("dkim.unsignedHeadersWarning.mode") >= POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE.RELAXED;
+		const recommendedEnabled = prefs.getIntPref("dkim.unsignedHeadersWarning.mode") >= POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE.RECOMMENDED;
+		const strictEnabled = prefs.getIntPref("dkim.unsignedHeadersWarning.mode") >= POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE.STRICT;
+
 		for (const header of SIGNEDHEADERS.REQUIRED) {
-			checkSignedHeader(header, prefs.getIntPref("dkim.unsignedHeadersWarning.mode") >=
-				POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE.RELAXED);
+			checkSignedHeader(header, relaxedEnabled);
 		}
 		for (const header of SIGNEDHEADERS.RECOMMENDED) {
-			checkSignedHeader(header, prefs.getIntPref("dkim.unsignedHeadersWarning.mode") >=
-				POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE.RECOMMENDED);
+			checkSignedHeader(header, recommendedEnabled);
 		}
 		for (const header of SIGNEDHEADERS.DESIRED) {
-			checkSignedHeader(header, prefs.getIntPref("dkim.unsignedHeadersWarning.mode") >=
-				POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE.STRICT);
+			checkSignedHeader(header, strictEnabled);
 		}
 	},
 
