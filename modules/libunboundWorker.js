@@ -1,15 +1,15 @@
 /*
- * libunboundWorker.jsm.js
- * 
+ * libunboundWorker.js
+ *
  * A ChromeWorker wrapper for the libunbound DNS library.
  * Currently only the TXT resource record is completely supported.
  *
  * Version: 2.0.1 (02 January 2018)
- * 
+ *
  * Copyright (c) 2016-2018 Philippe Lieser
- * 
+ *
  * This software is licensed under the terms of the MIT License.
- * 
+ *
  * The above copyright and license notice shall be
  * included in all copies or substantial portions of the Software.
  */
@@ -21,37 +21,56 @@
 
 "use strict";
 
+/**
+ * @param {Libunbound.Log} logMessage
+ * @returns {void}
+ */
+function postLogMessage(logMessage) {
+	// eslint-disable-next-line no-undef
+	postMessage(logMessage);
+}
+
+/**
+ * @param {Libunbound.Result} logMessage
+ * @returns {void}
+ */
+function postResultMessage(logMessage) {
+	// eslint-disable-next-line no-undef
+	postMessage(logMessage);
+}
+
+/**
+ * @param {Libunbound.Exception} logMessage
+ * @returns {void}
+ */
+function postExceptionMessage(logMessage) {
+	// eslint-disable-next-line no-undef
+	postMessage(logMessage);
+}
 
 const log_prefix = "libunboundWorker: ";
 // @ts-expect-error
 var log = {
 	fatal : function (msg) {
-		let toSend = {type: "log", subType: "fatal", message: log_prefix + msg};
-		postMessage(toSend);
+		postLogMessage({type: "log", subType: "fatal", message: log_prefix + msg});
 	},
 	error : function (msg) {
-		let toSend = {type : "log", subType: "error", message: log_prefix + msg};
-		postMessage(toSend);
+		postLogMessage({type : "log", subType: "error", message: log_prefix + msg});
 	},
 	warn : function (msg) {
-		let toSend = {type : "log", subType: "warn", message: log_prefix + msg};
-		postMessage(toSend);
+		postLogMessage({type : "log", subType: "warn", message: log_prefix + msg});
 	},
 	info : function (msg) {
-		let toSend = {type : "log", subType: "info", message: log_prefix + msg};
-		postMessage(toSend);
+		postLogMessage({type : "log", subType: "info", message: log_prefix + msg});
 	},
 	config : function (msg) {
-		let toSend = {type : "log", subType: "config", message: log_prefix + msg};
-		postMessage(toSend);
+		postLogMessage({type : "log", subType: "config", message: log_prefix + msg});
 	},
 	debug : function (msg) {
-		let toSend = {type : "log", subType: "debug", message: log_prefix + msg};
-		postMessage(toSend);
+		postLogMessage({type : "log", subType: "debug", message: log_prefix + msg});
 	},
 	trace : function (msg) {
-		let toSend = {type : "log", subType: "trace", message: log_prefix + msg};
-		postMessage(toSend);
+		postLogMessage({type : "log", subType: "trace", message: log_prefix + msg});
 	},
 };
 
@@ -142,11 +161,11 @@ var ub_strerror;
 
 /**
  * Perform resolution of the target name.
- * 
+ *
  * @param {String} name
  * @param {Number} [rrtype=libunbound.Constants.RR_TYPE_A]
- * 
- * @return {ub_result}
+ *
+ * @returns {ub_result}
  */
 function resolve(name, rrtype=Constants.RR_TYPE_A) {
 	if (!ub_resolve) {
@@ -253,7 +272,7 @@ function resolve(name, rrtype=Constants.RR_TYPE_A) {
  * Load library
  *
  * @param {String} paths paths to libraries to load, separated by ";". Last is libunbound.
- * @return {void}
+ * @returns {void}
 */
 function load(paths) {
 	// if library was already loaded, do a cleanup first before reloading it
@@ -370,7 +389,7 @@ function load(paths) {
  * @param {Boolean} getNameserversFromOS
  * @param {String[]} nameservers
  * @param {String[]} trustAnchors
- * @return {void}
+ * @returns {void}
  */
 function update_ctx(conf, debuglevel, getNameserversFromOS, nameservers, trustAnchors) {
 	if (!ub_ctx_create) {
@@ -432,7 +451,7 @@ function update_ctx(conf, debuglevel, getNameserversFromOS, nameservers, trustAn
 /**
  * Handle the requests from libunbound.jsm.js
  * @param {Libunbound.WorkerRequest} msg
- * @return {void}
+ * @returns {void}
  */
 onmessage = function(msg) {
 	log.trace("Message received from main script: " + msg.data.toSource());
@@ -444,36 +463,36 @@ onmessage = function(msg) {
 			switch (msg.data.method) {
 				case "resolve": {
 					/** @type {Libunbound.ResolveRequest} */
-					// @ts-expect-error
 					let req = msg.data;
 					res = resolve(req.name, req.rrtype);
 					break;
 				}
 				case "load": {
 					/** @type {Libunbound.LoadRequest} */
-					// @ts-expect-error
 					let req = msg.data;
 					load(req.path);
 					break;
 				}
 				case "update_ctx": {
 					/** @type {Libunbound.UpdateCtxRequest} */
-					// @ts-expect-error
 					let req = msg.data;
 					update_ctx(req.conf, req.debuglevel,
 						req.getNameserversFromOS, req.nameservers,
 						req.trustAnchors);
 					break;
 				}
-				default:
-					throw new Error(`unknown method ${msg.data.method}`);
+				default: {
+					const unknownMethod = msg.data.method;
+					throw new Error(`unknown method ${unknownMethod}`);
+				}
 			}
 
 			// return result if available
 			if (res !== undefined) {
 				log.trace("Posting result back to main script: " +
 					(res ? res.toSource() : res));
-				postMessage({
+				postResultMessage({
+					type: "result",
 					callId: msg.data.callId,
 					result: res,
 				});
@@ -481,7 +500,7 @@ onmessage = function(msg) {
 		} catch (exception) {
 			log.debug("Posting exception back to main script: " +
 				exception.toString());
-			postMessage({
+			postExceptionMessage({
 				type: "error",
 				subType: "DKIM_DNSERROR_UNKNOWN",
 				callId: msg.data.callId,
