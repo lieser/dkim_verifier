@@ -268,7 +268,7 @@ var Verifier = (function() {
 	 *        b64 encoded signature
 	 * @param {dkimSigWarning[]} warnings - out param
 	 * @param {Object} [keyInfo] - out param
-	 * @return {Boolean}
+	 * @returns {Boolean}
 	 * @throws {DKIM_SigError|Error}
 	 */
 	function verifyRSASig(key, str, hash_algo, signature, warnings, keyInfo = {}) {
@@ -359,7 +359,7 @@ var Verifier = (function() {
 	 *        b64 encoded signature
 	 * @param {dkimSigWarning[]} warnings - out param
 	 * @param {Object} [_keyInfo] - out param
-	 * @return {Boolean}
+	 * @returns {Boolean}
 	 */
 	function verifyED25519Sig(key, str, hash_algo, signature, warnings, _keyInfo = {}) {
 		let result = false;
@@ -1071,7 +1071,7 @@ var Verifier = (function() {
 	 * @param {Error} e
 	 * @param {Object} msg
 	 * @param {Object} [dkimSignature]
-	 * @return {dkimSigResultV2}
+	 * @returns {dkimSigResultV2}
 	 */
 	function handleException(e, msg, dkimSignature = {} ) {
 		let result = createBaseResult("", dkimSignature);
@@ -1105,7 +1105,7 @@ var Verifier = (function() {
 	 *
 	 * @param {Object} msg
 	 * @param {Object} DKIMSignature
-	 * @return {Promise<dkimSigResultV2>}
+	 * @returns {Promise<dkimSigResultV2>}
 	 * @throws {DKIM_SigError|Error}
 	 */
 	// eslint-disable-next-line complexity
@@ -1319,7 +1319,7 @@ var Verifier = (function() {
 	 * processes signatures
 	 *
 	 * @param {Object} msg
-	 * @return {Promise<dkimSigResultV2[]>}
+	 * @returns {Promise<dkimSigResultV2[]>}
 	 */
 	async function processSignatures(msg) {
 		let iDKIMSignatureIdx = 0;
@@ -1371,7 +1371,7 @@ var Verifier = (function() {
 	 *
 	 * @param {Object} msg
 	 * @param {dkimSigResultV2[]} signatures
-	 * @return {void}
+	 * @returns {void}
 	 */
 	function checkForSignatureExistence(msg, signatures) {
 		// check if a DKIM signature exists
@@ -1420,7 +1420,7 @@ var that = {
 	 * @deprecated Use verify2() or authVerifier.verify() instead.
 	 * @param {String} msgURI
 	 * @param {dkimResultCallback} dkimResultCallback
-	 * @return {void}
+	 * @returns {void}
 	 */
 	verify: function Verifier_verify(msgURI, dkimResultCallback) {
 		let promise = (async () => {
@@ -1480,7 +1480,7 @@ var that = {
 	 * Verifies the message given message.
 	 *
 	 * @param {Msg} msg
-	 * @return {Promise<dkimResultV2>}
+	 * @returns {Promise<dkimResultV2>}
 	 */
 	verify2: function Verifier_verify2(msg) {
 		var promise = (async () => {
@@ -1502,7 +1502,7 @@ var that = {
 	 * Creates a message object given the msgURI.
 	 *
 	 * @param {String} msgURI
-	 * @return {Promise<Msg>}
+	 * @returns {Promise<Msg>}
 	 * @throws {DKIM_Error}
 	 */
 	createMsg: function Verifier_createMsg(msgURI) {
@@ -1566,7 +1566,7 @@ var that = {
 	 *
 	 * @param {Object} msg
 	 * @param {dkimSigResultV2[]} signatures
-	 * @return {void}
+	 * @returns {void}
 	 * @throws {Error}
 	 */
 	sortSignatures: function Verifier_sortSignatures(msg, signatures) {

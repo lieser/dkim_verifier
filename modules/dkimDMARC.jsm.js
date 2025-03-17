@@ -60,7 +60,7 @@ var DMARC = {
 	 *
 	 * @param {String} fromAddress
 	 *
-	 * @return {Promise<Object>}
+	 * @returns {Promise<Object>}
 	 *         .shouldBeSigned true if fromAddress should be signed
 	 *         .sdid {String[]} Signing Domain Identifier
 	 */
@@ -152,7 +152,7 @@ var DMARC = {
  *
  * @param {String} fromAddress
  *
- * @return {Promise<DMARCPolicy|Null>}
+ * @returns {Promise<DMARCPolicy|Null>}
  *
  * @throws {DKIM_TempError}
  */
@@ -241,7 +241,7 @@ async function getDMARCPolicy(fromAddress) {
  *
  * @param {String} domain
  *
- * @return {Promise<DMARCRecord|Null>}
+ * @returns {Promise<DMARCRecord|Null>}
  *
  * @throws {DKIM_TempError}
  */
@@ -275,7 +275,7 @@ async function getDMARCRecord(domain) {
  *
  * @param {String} DMARCRecordStr
  *
- * @return {DMARCRecord}
+ * @returns {DMARCRecord}
  *
  * @throws {DKIM_Error}
  */

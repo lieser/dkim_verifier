@@ -74,7 +74,7 @@ let arhParser = {
 	 *  Parses an Authentication-Results header.
 	 *
 	 *  @param {String} authresHeader Authentication-Results header
-	 *  @return {ARHHeader} Parsed Authentication-Results header
+	 *  @returns {ARHHeader} Parsed Authentication-Results header
 	 *  @throws {DKIM_Error}
 	 */
 	parse: function _arhParser_parse(authresHeader) {
@@ -125,7 +125,7 @@ let arhParser = {
  *  Parses the next resinfo in str. The parsed part of str is removed from str.
  *
  *  @param {RefString} str
- *  @return {ARHResinfo|null} Parsed resinfo
+ *  @returns {ARHResinfo|null} Parsed resinfo
  *  @throws {DKIM_Error|Error}
  */
 function parseResinfo(str) {
@@ -287,7 +287,7 @@ class RefString {
  *
  *  @param {RefString} str
  *  @param {String} pattern
- *  @return {String[]} An Array, containing the matches
+ *  @returns {String[]} An Array, containing the matches
  *  @throws {DKIM_Error} if match no match found
  */
 function match(str, pattern) {
@@ -307,7 +307,7 @@ function match(str, pattern) {
  *
  *  @param {RefString} str
  *  @param {String} pattern
- *  @return {String[]|Null} Null if no match for the pattern is found, else
+ *  @returns {String[]|Null} Null if no match for the pattern is found, else
  *                        an Array, containing the matches
  */
 function match_o(str, pattern) {

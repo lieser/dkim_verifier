@@ -116,7 +116,7 @@ var authVerifier = {
 	 *
 	 * @param {nsIMsgDBHdr} msgHdr
 	 * @param {String} [msgURI=""] Required if msg is external.
-	 * @return {Promise<AuthResult>}
+	 * @returns {Promise<AuthResult>}
 	 */
 	verify: function _authVerifier_verify(msgHdr, msgURI) {
 		let promise = (async () => {
@@ -227,7 +227,7 @@ var authVerifier = {
 	 * Resets the stored authentication result of the msg.
 	 *
 	 * @param {nsIMsgDBHdr} msgHdr
-	 * @return {Promise<void>}
+	 * @returns {Promise<void>}
 	 */
 	resetResult: function _authVerifier_resetResult(msgHdr) {
 		// eslint-disable-next-line require-await
@@ -245,7 +245,7 @@ var authVerifier = {
  * Convert dkimSigResultV2 to AuthResultDKIM
  *
  * @param {dkimSigResultV2} dkimSigResult
- * @return {AuthResultDKIM}
+ * @returns {AuthResultDKIM}
  * @throws {Error}
  */
 function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-line complexity
@@ -440,7 +440,7 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
  *
  * @param {SavedAuthResult} savedAuthResult
  * @param {String|undefined} from
- * @return {Promise<AuthResult>} authResult
+ * @returns {Promise<AuthResult>} authResult
  */
 async function SavedAuthResult_to_AuthResult(savedAuthResult, from) { // eslint-disable-line require-await
 	/** @type {AuthResult} */
@@ -460,7 +460,7 @@ async function SavedAuthResult_to_AuthResult(savedAuthResult, from) { // eslint-
  * @param {AuthResult} authResult
  * @param {String|undefined} from
  * @param {String|undefined} bimiIndicator
- * @return {Promise<AuthResult>} authResult
+ * @returns {Promise<AuthResult>} authResult
  */
 async function addFavicons(authResult, from, bimiIndicator) {
 	if (!prefs.getBoolPref("display.favicon.show")) {
@@ -483,7 +483,7 @@ async function addFavicons(authResult, from, bimiIndicator) {
  * Checks if a message is outgoing
  *
  * @param {nsIMsgDBHdr} msgHdr
- * @return {boolean}
+ * @returns {boolean}
  */
 function isOutgoing(msgHdr) {
 	if (!msgHdr.folder) {
