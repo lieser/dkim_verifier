@@ -60,7 +60,7 @@ function getARHResult(msgHdr, msg) {
 		if (this.authserv_id === e) {
 			return true;
 		}
-		if (e.charAt(0) === "@") {
+		if (e && e.charAt(0) === "@") {
 			// eslint-disable-next-line no-invalid-this
 			return domainIsInDomain(this.authserv_id, e.substr(1));
 		}
@@ -83,6 +83,16 @@ function getARHResult(msgHdr, msg) {
 		return null;
 	}
 
+	// only use header if the authserv_id is in the allowed servers
+	let allowedAuthserv;
+	if (msgHdr.folder) {
+		allowedAuthserv = msgHdr.folder.server.
+			getCharValue("dkim_verifier.arh.allowedAuthserv").split(" ").filter(e => e);
+	} else {
+		// no option exist for external messages, allow all
+		allowedAuthserv = [];
+	}
+
 	// get DKIM, SPF and DMARC res
 	let arhDKIMAuthServ = [];
 	let arhDKIM = [];
@@ -94,23 +104,29 @@ function getARHResult(msgHdr, msg) {
 		try {
 			arh = arhParser.parse(msg.headerFields.get("authentication-results")[i]);
 		} catch (exception) {
+			if (!allowedAuthserv.length) {
+				if (exception instanceof Error && "authserv_id" in exception && typeof exception.authserv_id === "string") {
+					allowedAuthserv.push(exception.authserv_id);
+				} else {
+					allowedAuthserv.push(null);
+				}
+			}
 			log.error("Ignoring error in parsing of ARH", exception);
 			continue;
 		}
 
-		// only use header if the authserv_id is in the allowed servers
-		let allowedAuthserv;
-		if (msgHdr.folder) {
-			allowedAuthserv = msgHdr.folder.server.
-				getCharValue("dkim_verifier.arh.allowedAuthserv").split(" ").filter(e => e);
-		} else {
-			// no option exist for external messages, allow all
-			allowedAuthserv = [];
+		// If no authserv_id is configured we implicitly only trust the newest one.
+		if (!allowedAuthserv.length) {
+			allowedAuthserv.push(arh.authserv_id);
 		}
-		if (allowedAuthserv.length > 0 &&
-		    !allowedAuthserv.some(testAllowedAuthserv, arh)) {
+
+		// Only use the header if the authserv_id is in the allowed servers.
+		if (!allowedAuthserv.some(testAllowedAuthserv, arh)) {
+			log.debug("Ignoring ARH added by "+arh.authserv_id);
 			continue;
 		}
+
+		log.debug("Using ARH added by "+arh.authserv_id);
 
 		arhDKIM = arhDKIM.concat(arh.resinfo.filter(e => e.method === "dkim"));
 		arhSPF = arhSPF.concat(arh.resinfo.filter(e => e.method === "spf"));
@@ -206,6 +222,7 @@ function arhDKIM_to_dkimSigResultV2(arhDKIM) {
 	let sdid = arhDKIM.properties.header.d;
 	let auid = arhDKIM.properties.header.i;
 	if (!sdid && auid) {
+		// Avoid showing "Signed by undefined" if only an AUID is included.
 		sdid = getDomainFromAddr(auid);
 	}
 	if (sdid) { dkimSigResult.sdid = sdid; }
