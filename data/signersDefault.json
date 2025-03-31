@@ -3158,6 +3158,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
+			"domain": "psd-rhein-ruhr.de",
+			"addr": "*",
+			"sdid": "psd-rhein-ruhr.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "psu.edu",
 			"addr": "*",
 			"sdid": "psu.edu",
