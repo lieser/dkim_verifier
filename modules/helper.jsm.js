@@ -142,7 +142,7 @@ class Stringbundle {
 		/**
 		 * @param {string} key
 		 * @param {(string|string[])[]} strArray
-		 * @return {string}
+		 * @returns {string}
 		 */
 		this.getFormattedString = function (key, strArray) {
 			return this.stringbundle.formatStringFromName(key, strArray, strArray.length);
@@ -157,7 +157,7 @@ var dkimStrings = new Stringbundle("chrome://dkim_verifier/locale/dkim.propertie
  * @param {String} addr
  * @param {String} domain
  *
- * @return {Boolean}
+ * @returns {Boolean}
  */
 function addrIsInDomain(addr, domain) {
 	return stringEndsWith(addr, "@" + domain) ||
@@ -171,7 +171,7 @@ function addrIsInDomain(addr, domain) {
  * @param {String} addr
  * @param {String} domain
  *
- * @return {Boolean}
+ * @returns {Boolean}
  */
 function addrIsInDomain2(addr, domain) {
 	return stringEndsWith(addr, "@" + domain) ||
@@ -185,7 +185,7 @@ function addrIsInDomain2(addr, domain) {
  * @param {String} domain1
  * @param {String} domain2
  *
- * @return {Boolean}
+ * @returns {Boolean}
  */
 function domainIsInDomain(domain1, domain2) {
 	return stringEqual(domain1, domain2) ||
@@ -199,7 +199,7 @@ function domainIsInDomain(domain1, domain2) {
  * @param {String} addr
  * @param {Number} [aAdditionalParts=0]
  *
- * @return {String}
+ * @returns {String}
  */
 function getBaseDomainFromAddr(addr, aAdditionalParts=0) {
 	// var fullDomain = addr.substr(addr.lastIndexOf("@")+1);
@@ -228,7 +228,7 @@ function getBaseDomainFromAddr(addr, aAdditionalParts=0) {
  *
  * @param {String} addr
  *
- * @return {String}
+ * @returns {String}
  */
 function getDomainFromAddr(addr) {
 	return addr.substr(addr.lastIndexOf("@")+1);
@@ -241,7 +241,7 @@ function getDomainFromAddr(addr) {
  *
  * @param {String} aSource The source to read from.
  *
- * @return {Promise<String>}
+ * @returns {Promise<String>}
  * @throws {Error}
  */
 function readStringFrom(aSource) {
@@ -279,7 +279,7 @@ function readStringFrom(aSource) {
  * @param {String} str
  * @param {String} x
  *
- * @return {Boolean}
+ * @returns {Boolean}
  */
 function stringEndsWith(str, x) {
 	var index = str.toLowerCase().lastIndexOf(x.toLowerCase());
@@ -293,7 +293,7 @@ function stringEndsWith(str, x) {
  * @param {String} str1
  * @param {String} str2
  *
- * @return {Boolean}
+ * @returns {Boolean}
  */
 function stringEqual(str1, str2) {
 	return str1.toLowerCase() === str2.toLowerCase();
@@ -303,7 +303,7 @@ function stringEqual(str1, str2) {
  * Deep copy an object. Only works with basic types.
  *
  * @param {Object} src
- * @return {Object}
+ * @returns {Object}
  */
 function copy(src) {
 	return JSON.parse(JSON.stringify(src));
@@ -316,7 +316,7 @@ function copy(src) {
  *
  * @param {any} obj
  *
- * @return {String}
+ * @returns {String}
  * @throws {Error}
  */
 function toType(obj) {
@@ -333,7 +333,7 @@ function toType(obj) {
  * @param {Stringbundle} stringbundle
  * @param {string|undefined} name
  *
- * @return {String|null}
+ * @returns {String|null}
  */
 function tryGetString(stringbundle, name) {
 	if (!name) {
@@ -355,7 +355,7 @@ function tryGetString(stringbundle, name) {
  * @param {String} name
  * @param {(string|string[])[]} [params]
  *
- * @return {String|null}
+ * @returns {String|null}
  */
 function tryGetFormattedString(stringbundle, name, params = []) {
 	if (!name) {
@@ -377,7 +377,7 @@ function tryGetFormattedString(stringbundle, name, params = []) {
  *
  * @param {String} string
  * @param {String} fileName
- * @return {void}
+ * @returns {void}
  */
 function writeStringToTmpFile(string, fileName) {
 	var file = Components.classes["@mozilla.org/file/directory_service;1"].

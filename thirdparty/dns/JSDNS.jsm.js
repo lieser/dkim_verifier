@@ -307,7 +307,7 @@ function dnsChangeNameserver(nameserver) {
 			});
 		}
 	});
-	//DNS_Debug("DNS: Got servers from user preference: " + PREF_DNS_ROOT_NAME_SERVERS.toSource());
+	// DNS_Debug("DNS: Got servers from user preference: " + PREF_DNS_ROOT_NAME_SERVERS.toSource());
 
 	if (getNameserversFromOS) {
 		DNS_get_OS_DNSServers();
@@ -510,12 +510,12 @@ function DNS_get_OS_DNSServers() {
 		}
 	}
 
-	//DNS_Debug("DNS: Autoconfigured servers: " + OS_DNS_ROOT_NAME_SERVERS);
+	// DNS_Debug("DNS: Autoconfigured servers: " + OS_DNS_ROOT_NAME_SERVERS);
 }
 
 var dns_test_domains = Array("for.net", "www.for.net", "yy.for.net", "www.gmail.net");
 var dns_test_domidx = 0;
-//DNS_Test();
+// DNS_Test();
 function DNS_Test() {
 	"use strict";
 
@@ -545,8 +545,8 @@ function DNS_Test() {
 		} );
 }
 
-//queryDNS("www.example.com", "A", function(data) { alert(data); } );
-//reverseDNS("123.456.789.123", function(addrs) { for (var i = 0; i < addrs.length; i++) { alert(addrs[i]); } } );
+// queryDNS("www.example.com", "A", function(data) { alert(data); } );
+// reverseDNS("123.456.789.123", function(addrs) { for (var i = 0; i < addrs.length; i++) { alert(addrs[i]); } } );
 
 // queryDNS: This is the main entry point for external callers.
 function queryDNS(host, recordtype, callback, callbackdata) {
@@ -659,8 +659,7 @@ function queryDNSRecursive(servers, host, recordtype, callback, callbackdata, ho
 		DNS_wordToStr(1) + // 1 query
 		DNS_wordToStr(0) + // ASCOUNT=0
 		DNS_wordToStr(0) + // NSCOUNT=0
-		DNS_wordToStr(0) // ARCOUNT=0
-		;
+		DNS_wordToStr(0); // ARCOUNT=0
 
 	var hostparts = host.split(".");
 	for (const hostpart of hostparts) {
@@ -750,7 +749,7 @@ function queryDNSRecursive(servers, host, recordtype, callback, callbackdata, ho
 				this.msgsize = DNS_strToWord(this.responseHeader.substr(0, 2));
 				this.responseBody += remainingData;
 
-				//DNS_Debug("DNS: Received Reply: " + (this.readcount-2) + " of " + this.msgsize + " bytes");
+				// DNS_Debug("DNS: Received Reply: " + (this.readcount-2) + " of " + this.msgsize + " bytes");
 
 				if (this.readcount >= this.msgsize+2) {
 					this.responseHeader = this.responseHeader.substr(2); // chop the length field
@@ -815,10 +814,14 @@ function DNS_readRec(ctx) {
 	var txtlen;
 
 	rec.dom = DNS_readDomain(ctx);
-	rec.type = DNS_strToWord(ctx.str.substr(ctx.idx, 2)); ctx.idx += 2;
-	rec.cls = DNS_strToWord(ctx.str.substr(ctx.idx, 2)); ctx.idx += 2;
-	rec.ttl = DNS_strToWord(ctx.str.substr(ctx.idx, 2)); ctx.idx += 4; // 32bit
-	rec.rdlen = DNS_strToWord(ctx.str.substr(ctx.idx, 2)); ctx.idx += 2;
+	rec.type = DNS_strToWord(ctx.str.substr(ctx.idx, 2));
+	ctx.idx += 2;
+	rec.cls = DNS_strToWord(ctx.str.substr(ctx.idx, 2));
+	ctx.idx += 2;
+	rec.ttl = DNS_strToWord(ctx.str.substr(ctx.idx, 2));
+	ctx.idx += 4; // 32bit
+	rec.rdlen = DNS_strToWord(ctx.str.substr(ctx.idx, 2));
+	ctx.idx += 2;
 	rec.recognized = 1;
 
 	var ctxnextidx = ctx.idx + rec.rdlen;
@@ -828,8 +831,12 @@ function DNS_readRec(ctx) {
 		rec.rddata = "";
 		ctr = 1000;
 		while (rec.rdlen > 0 && ctr-- > 0) {
-			txtlen = DNS_strToOctet(ctx.str.substr(ctx.idx,1)); ctx.idx++; rec.rdlen--;
-			rec.rddata += ctx.str.substr(ctx.idx, txtlen); ctx.idx += txtlen; rec.rdlen -= txtlen;
+			txtlen = DNS_strToOctet(ctx.str.substr(ctx.idx,1));
+			ctx.idx++;
+			rec.rdlen--;
+			rec.rddata += ctx.str.substr(ctx.idx, txtlen);
+			ctx.idx += txtlen;
+			rec.rdlen -= txtlen;
 		}
 		if (ctr < 0) {
 			log.error("TXT record exceeds configured max read length");
@@ -842,7 +849,8 @@ function DNS_readRec(ctx) {
 	} else if (rec.type === 15) {
 		rec.type = "MX";
 		rec.rddata = {};
-		rec.rddata.preference = DNS_strToWord(ctx.str.substr(ctx.idx,2)); ctx.idx += 2;
+		rec.rddata.preference = DNS_strToWord(ctx.str.substr(ctx.idx,2));
+		ctx.idx += 2;
 		rec.rddata.host = DNS_readDomain(ctx);
 	} else if (rec.type === 2) {
 		rec.type = "NS";
@@ -906,8 +914,10 @@ function DNS_getRDData(str, server, host, recordtype, callback, callbackdata, ho
 
 	for (i = 0; i < qcount; i++) {
 		dom = DNS_readDomain(ctx);
-		type = DNS_strToWord(str.substr(ctx.idx, 2)); ctx.idx += 2;
-		cls = DNS_strToWord(str.substr(ctx.idx, 2)); ctx.idx += 2;
+		type = DNS_strToWord(str.substr(ctx.idx, 2));
+		ctx.idx += 2;
+		cls = DNS_strToWord(str.substr(ctx.idx, 2));
+		ctx.idx += 2;
 	}
 
 	var results = [];
@@ -1047,10 +1057,10 @@ function DNS_readAllFromSocket(host,port,outputData,listener)
 				}
 				outstream.close();
 				stream.close();
-				//DNS_Debug("DNS: Connection closed (" + host + ")");
+				// DNS_Debug("DNS: Connection closed (" + host + ")");
 			},
 			onDataAvailable: function(request, context, inputStream, offset, count){
-				//DNS_Debug("DNS: Got data (" + host + ")");
+				// DNS_Debug("DNS: Got data (" + host + ")");
 				for (var i = 0; i < count; i++) {
 					this.data += String.fromCharCode(instream.read8());
 				}

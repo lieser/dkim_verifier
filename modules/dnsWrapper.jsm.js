@@ -85,7 +85,7 @@ var DNS = {
 	 * @param {String} name
 	 * @param {String} [rrtype="TXT"]
 	 *
-	 * @return {Promise<DNSResult>}
+	 * @returns {Promise<DNSResult>}
 	 * @throws {DKIM_TempError|Error}
 	 */
 	resolve: async function DNS_resolve(name, rrtype="A") {
@@ -160,7 +160,7 @@ var DNS = {
  * Promise wrapper for the dns result of JSDNS.jsm.js
  * @param {string} name
  * @param {string} rrtype
- * @return {Promise<DNSResult>}
+ * @returns {Promise<DNSResult>}
  * @throws {DKIM_TempError}
  */
 function asyncJSDNS_QueryDNS(name, rrtype) {

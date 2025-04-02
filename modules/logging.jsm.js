@@ -44,7 +44,7 @@ var Logging = {
 	 *
 	 * @param {String} loggerName
 	 *
-	 * @return {Log.Logger} Logger
+	 * @returns {Log.Logger} Logger
 	 */
 	getLogger: function Logging_getLogger(loggerName){
 		"use strict";
@@ -61,7 +61,7 @@ var Logging = {
 	 * @param {String} loggerName
 	 * @param {String} subPrefBranch
 	 *
-	 * @return {Array} [consoleAppender, dumpAppender]
+	 * @returns {Array} [consoleAppender, dumpAppender]
 	 */
 	addAppenderTo: function Logging_addAppenderTo(loggerName, subPrefBranch){
 		"use strict";
@@ -90,7 +90,7 @@ var Logging = {
 /**
  * init
  *
- * @return {void}
+ * @returns {void}
  */
 function init() {
 	"use strict";
@@ -107,7 +107,7 @@ function init() {
 class SimpleFormatter extends Log.BasicFormatter {
 	/**
 	 * @param {Log.LogMessage} message
-	 * @return {string}
+	 * @returns {string}
 	 */
 	format(message) {
 		var date = new Date(message.time);
@@ -139,7 +139,7 @@ class SimpleConsoleAppender extends Log.ConsoleAppender {
 	/**
 	 * @override
 	 * @param {Log.LogMessage} message
-	 * @return {void}
+	 * @returns {void}
 	 */
 	append(message) {
 		if (message) {
@@ -202,7 +202,7 @@ class SimpleConsoleAppender extends Log.ConsoleAppender {
 	 * @param {StackFrame} aFrame The youngest stack frame coming from Components.stack, as formatted by getStack().
 	 * @param {any[]} aArgs The arguments given to the console method.
 	 * @param {MessageOptions} [aOptions]
-	 * @return {void}
+	 * @returns {void}
 	 */
 	sendConsoleAPIMessage(aLevel, aFrame, aArgs, aOptions = {}) {
 		let aConsole = {
@@ -240,7 +240,7 @@ class SimpleConsoleAppender extends Log.ConsoleAppender {
 	 *        The stack frame from which to begin the walk.
 	 * @param {number} [aMaxDepth]
 	 *        Maximum stack trace depth. Default is 0 - no depth limit.
-	 * @return {StackFrame[]}
+	 * @returns {StackFrame[]}
 	 */
 	getStack(aFrame, aMaxDepth = 0) {
 		if (!aFrame) {
@@ -268,7 +268,7 @@ class SimpleConsoleAppender extends Log.ConsoleAppender {
 	 *
 	 * Based on the one from Mozilla's https://dxr.mozilla.org/mozilla-central/source/toolkit/modules/Console.jsm
 	 * @param {string} aStack
-	 * @return {StackFrame[]}
+	 * @returns {StackFrame[]}
 	 */
 	parseStack(aStack) {
 		let trace = [];
@@ -293,7 +293,7 @@ class SimpleConsoleAppender extends Log.ConsoleAppender {
 	 *
 	 * From Mozilla's https://dxr.mozilla.org/mozilla-central/source/toolkit/modules/Log.jsm
 	 * @param {Object} aObj
-	 * @return {boolean}
+	 * @returns {boolean}
 	 */
 	isError(aObj) {
 		return (
@@ -314,7 +314,7 @@ class SimpleConsoleAppender extends Log.ConsoleAppender {
  *
  * @param {String} loggerName
  *
- * @return {Log.Logger}
+ * @returns {Log.Logger}
  */
 function setupLogging(loggerName) {
 		"use strict";
@@ -342,7 +342,7 @@ function setupLogging(loggerName) {
  * @param {Log.Logger} logger
  * @param {Log.ConsoleAppender} capp
  * @param {Log.DumpAppender} dapp
- * @return {PrefObserver}
+ * @returns {PrefObserver}
  */
 function PrefObserver(logger, capp, dapp) {
 	"use strict";

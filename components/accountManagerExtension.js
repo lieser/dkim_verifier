@@ -20,7 +20,7 @@
 
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 
-//class constructor
+// class constructor
 function DkimVerifierAccountManagerExtension() { "use strict"; }
 
 // class definition

@@ -1,15 +1,15 @@
 /*
  * libunbound.jsm.js
- * 
+ *
  * Wrapper for the libunbound DNS library. The actual work is done in the
- * ChromeWorker libunboundWorker.jsm.js.
+ * ChromeWorker libunboundWorker.js.
  *
  * Version: 2.2.0 (02 January 2018)
- * 
+ *
  * Copyright (c) 2013-2018 Philippe Lieser
- * 
+ *
  * This software is licensed under the terms of the MIT License.
- * 
+ *
  * The above copyright and license notice shall be
  * included in all copies or substantial portions of the Software.
  */
@@ -113,7 +113,7 @@ var Constants = {
 /**
  * The result of the query.
  * Does differ from the original ub_result a bit.
- * 
+ *
  * @typedef {Object} ub_result
  * @property {String} qname
  *           text string, original question
@@ -152,7 +152,7 @@ var log = Logging.getLogger("libunbound");
 /** @type {Libunbound.LibunboundWorker} */
 var libunboundWorker =
 	// @ts-expect-error
-	new ChromeWorker("resource://dkim_verifier/libunboundWorker.jsm.js");
+	new ChromeWorker("resource://dkim_verifier/libunboundWorker.js");
 var maxCallId = 0;
 /** @type {Map<number, IDeferred<ub_result>>} */
 var openCalls = new Map();
@@ -162,31 +162,31 @@ let libunbound = {
 
 	/**
 	 * Perform resolution of the target name.
-	 * 
+	 *
 	 * @param {String} name
 	 * @param {Number} [rrtype=libunbound.Constants.RR_TYPE_A]
-	 * 
-	 * @return {Promise<ub_result>}
+	 *
+	 * @returns {Promise<ub_result>}
 	 */
 	resolve: function libunbound_resolve(name, rrtype=Constants.RR_TYPE_A) {
 		/** @type {IDeferred<ub_result>} */
 		let defer = new Deferred();
 		openCalls.set(++maxCallId, defer);
-		
+
 		libunboundWorker.postMessage({
 			callId: maxCallId,
 			method: "resolve",
 			name: name,
 			rrtype: rrtype,
 		});
-		
+
 		return defer.promise;
 	},
 };
 
 /**
  * init
- * @return {void}
+ * @returns {void}
  */
 function init() {
 	load();
@@ -200,7 +200,7 @@ function init() {
 
 /**
  * load library
- * @return {void}
+ * @returns {void}
  */
 function load() {
 	let path;
@@ -212,7 +212,7 @@ function load() {
 	} else {
 		path = prefs.getCharPref("libunbound.path");
 	}
-	
+
 	libunboundWorker.postMessage({
 		callId: ++maxCallId,
 		method: "load",
@@ -222,7 +222,7 @@ function load() {
 
 /**
  * updates ctx by deleting old an creating new
- * @return {void}
+ * @returns {void}
  */
 function update_ctx() {
 	// read config file if specified
@@ -236,10 +236,10 @@ function update_ctx() {
 	if (prefs.getPrefType("libunbound.debuglevel") === prefs.PREF_INT) {
 		debuglevel = prefs.getIntPref("libunbound.debuglevel");
 	}
-	
+
 	// get DNS servers form OS
 	let getNameserversFromOS = prefs.getBoolPref("getNameserversFromOS");
-	
+
 	// set additional DNS servers
 	let nameservers = prefs.getCharPref("nameserver").split(";");
 	nameservers = nameservers.map(function(element /*, index, array*/) {
@@ -251,7 +251,7 @@ function update_ctx() {
 		}
 		return false;
 	});
-	
+
 	// add root trust anchor
 	let trustAnchors = prefs.getCharPref("dnssec.trustAnchor").split(";");
 
@@ -269,7 +269,7 @@ function update_ctx() {
 /**
  * Handle the callbacks from the ChromeWorker
  * @param {Libunbound.WorkerResponse} msg
- * @return {void}
+ * @returns {void}
  * @throws {Error}
  */
 libunboundWorker.onmessage = function(msg) {
@@ -279,7 +279,6 @@ libunboundWorker.onmessage = function(msg) {
 		// handle log messages
 		if (msg.data.type && msg.data.type === "log") {
 			/** @type {Libunbound.Log} */
-			// @ts-expect-error
 			let logMsg = msg.data;
 			switch (logMsg.subType) {
 				case "fatal":
@@ -308,35 +307,30 @@ libunboundWorker.onmessage = function(msg) {
 			}
 			return;
 		}
-		/** @type {Libunbound.Response} */
-		// @ts-expect-error
-		let response = msg.data;
 
 		let exception;
-		if (response.type && response.type === "error") {
+		if (msg.data.type && msg.data.type === "error") {
 			/** @type {Libunbound.Exception} */
-			// @ts-expect-error
-			let ex = response;
+			let ex = msg.data;
 			exception = new Error(`Error in libunboundWorker: ${ex.message}; subType: ${ex.subType}`);
 		}
 
-		let defer = openCalls.get(response.callId);
+		let defer = openCalls.get(msg.data.callId);
 		if (defer === undefined) {
 			if (exception) {
 				log.fatal("Exception in libunboundWorker", exception);
 			} else {
-				log.error("Got unexpected callback: " + response);
+				log.error("Got unexpected callback: " + msg.data);
 			}
 			return;
 		}
-		openCalls.delete(response.callId);
+		openCalls.delete(msg.data.callId);
 		if (exception) {
 			defer.reject(exception);
 			return;
 		}
 		/** @type {Libunbound.Result} */
-		// @ts-expect-error
-		let res = response;
+		let res = msg.data;
 		defer.resolve(res.result);
 	} catch (e) {
 		log.fatal(e);

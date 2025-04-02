@@ -38,7 +38,7 @@ let prefs = Services.prefs.getBranch(PREF_BRANCH);
  * Convert dkimResultV1 to dkimSigResultV2
  *
  * @param {dkimResultV1} dkimResultV1
- * @return {dkimSigResultV2}
+ * @returns {dkimSigResultV2}
  */
 function dkimResultV1_to_dkimSigResultV2(dkimResultV1) {
 	/** @type {dkimSigResultV2} */
@@ -71,7 +71,7 @@ function dkimResultV1_to_dkimSigResultV2(dkimResultV1) {
  * Convert AuthResultV2 to dkimSigResultV2
  *
  * @param {AuthResultDKIMV2} authResultDKIM
- * @return {dkimSigResultV2} dkimSigResultV2
+ * @returns {dkimSigResultV2} dkimSigResultV2
  */
 function AuthResultDKIMV2_to_dkimSigResultV2(authResultDKIM) {
 	let dkimSigResult = authResultDKIM;
@@ -88,7 +88,7 @@ function AuthResultDKIMV2_to_dkimSigResultV2(authResultDKIM) {
  *
  * @param {nsIMsgDBHdr} msgHdr
  * @param {SavedAuthResult|Null} savedAuthResult
- * @return {void}
+ * @returns {void}
  */
 function saveAuthResult(msgHdr, savedAuthResult) {
 	if (prefs.getBoolPref("saveResult")) {
@@ -117,7 +117,7 @@ function saveAuthResult(msgHdr, savedAuthResult) {
  * Get saved authentication result
  *
  * @param {nsIMsgDBHdr} msgHdr
- * @return {SavedAuthResult|Null} savedAuthResult
+ * @returns {SavedAuthResult|Null} savedAuthResult
  * @throws {Error}
  */
 function loadAuthResult(msgHdr) {
