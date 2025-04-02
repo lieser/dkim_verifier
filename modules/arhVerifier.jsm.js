@@ -89,7 +89,7 @@ function getARHResult(msgHdr, msg) {
 		allowedAuthserv = msgHdr.folder.server.
 			getCharValue("dkim_verifier.arh.allowedAuthserv").split(" ").filter(e => e);
 	} else {
-		// no option exist for external messages, allow all
+		// no option exist for external messages
 		allowedAuthserv = [];
 	}
 
