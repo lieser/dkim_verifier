@@ -10,11 +10,6 @@ let ctypes: any;
 //// (e.g. @extends for non class types).
 
 namespace Libunbound {
-    interface LibunboundWorker extends Worker {
-        onmessage: (this: Worker, ev: WorkerResponse) => any;
-        postMessage(message: LoadRequest|ResolveRequest|UpdateCtxRequest, transfer?: any[]): void;
-    }
-
     interface Request {
         callId: number,
         method: string,
@@ -34,10 +29,11 @@ namespace Libunbound {
         nameservers: string[],
         trustAnchors: string[],
         conf?: string,
-        debuglevel?: number,
+        debuglevel?: number | undefined,
     }
+    type RequestMessages = LoadRequest | ResolveRequest | UpdateCtxRequest;
     interface WorkerRequest extends MessageEvent {
-        data: Request;
+        data: RequestMessage;
     }
 
     interface Log {
@@ -46,23 +42,27 @@ namespace Libunbound {
         message: string;
     }
     interface Response {
-        type?: string;
+        type: string;
         callId: number;
     }
     interface Result extends Response {
+        type: "result";
         result: ub_result;
     }
     interface Exception extends Response {
         subType: string;
         message: string;
     }
-    interface
+    type ResponseMessages = Log | Result | Exception;
     interface WorkerResponse extends MessageEvent {
-        data: Log|Response;
+        data: ResponseMessage;
+    }
+    interface LibunboundWorker extends Worker {
+        onmessage: (this: Worker, ev: WorkerResponse) => any;
+        postMessage(message: RequestMessages, transfer?: any[]): void;
     }
 }
-// for libunboundWorker.jsm.js
-declare function postMessage(WorkerResponse: Libunbound.Log|Libunbound.Result|Libunbound.Exception): void;
+// for libunboundWorker.js
 
 // for chrome\content\dkim.js
 interface AuthResultElement extends HTMLElement {

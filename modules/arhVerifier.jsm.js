@@ -50,7 +50,7 @@ let prefs = Services.prefs.getBranch(PREF_BRANCH);
  *
  * @param {nsIMsgDBHdr} msgHdr
  * @param {Object} msg
- * @return {SavedAuthResult|Null}
+ * @returns {SavedAuthResult|Null}
  * @throws Error
  */
 // eslint-disable-next-line complexity
@@ -178,7 +178,7 @@ function getARHResult(msgHdr, msg) {
  * Convert DKIM ARHresinfo to dkimResult
  *
  * @param {ARHResinfo} arhDKIM
- * @return {dkimSigResultV2}
+ * @returns {dkimSigResultV2}
  * @throws {Error}
  */
 function arhDKIM_to_dkimSigResultV2(arhDKIM) {

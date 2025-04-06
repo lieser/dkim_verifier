@@ -49,7 +49,7 @@ var msgReader = {
 	 * Reads the message and parse it into header and body
 	 *
 	 * @param {String} msgURI
-	 * @return {Promise<{headerPlain: string, bodyPlain: string}>}
+	 * @returns {Promise<{headerPlain: string, bodyPlain: string}>}
 	 * @throws {DKIM_Error}
 	 */
 	read: function _msgReader_read(msgURI) {
@@ -134,7 +134,7 @@ var msgReader = {
 	 * Parses the header of a message.
 	 *
 	 * @param {String} headerPlain
-	 * @return {Map}
+	 * @returns {Map}
 	 *           key: {String} <header name>
 	 *           value: {Array[String]}
 	 * @throws {DKIM_Error}
