@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2021;2023 Philippe Lieser
+ * Copyright (c) 2020-2021;2023;2025 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -21,7 +21,7 @@ describe("Sign rules [unittest]", function () {
 		await prefs.init();
 	});
 
-	beforeEach(async function () {
+	afterEach(async function () {
 		await prefs.clear();
 		await SignRules.clearRules();
 	});

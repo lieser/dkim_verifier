@@ -10,75 +10,19 @@
 // @ts-check
 /* eslint-disable camelcase */
 
-import "../helpers/initWebExtensions.mjs.js";
+import { FakeMessageHeader, fakeBrowser } from "../helpers/initWebExtensions.mjs.js";
 import AuthVerifier from "../../modules/authVerifier.mjs.js";
 import { DKIM_TempError } from "../../modules/error.mjs.js";
 import DMARC from "../../modules/dkim/dmarc.mjs.js";
 import DNS from "../../modules/dns.mjs.js";
 import KeyStore from "../../modules/dkim/keyStore.mjs.js";
-import MsgParser from "../../modules/msgParser.mjs.js";
 import SignRules from "../../modules/dkim/signRules.mjs.js";
 import Verifier from "../../modules/dkim/verifier.mjs.js";
 import expect from "../helpers/chaiUtils.mjs.js";
 import prefs from "../../modules/preferences.mjs.js";
 import { queryDnsTxt } from "../helpers/dnsStub.mjs.js";
-import { readTestFile } from "../helpers/testUtils.mjs.js";
 import sinon from "../helpers/sinonUtils.mjs.js";
 
-/**
- * @returns {browser.messages.MessageHeader}
- */
-function createFakeMessageHeader() {
-	return {
-		author: "from@example.com",
-		bccList: [],
-		ccList: [],
-		date: new Date(),
-		external: false,
-		flagged: false,
-		folder: { accountId: "fakeAccount", path: "", type: "inbox" },
-		headerMessageId: "",
-		headersOnly: false,
-		id: 42,
-		junk: false,
-		junkScore: 0,
-		read: true,
-		new: false,
-		recipients: ["to@example.com"],
-		size: 42,
-		subject: "A fake message",
-		tags: [],
-	};
-}
-
-/**
- * @param {Map<string, string[]>} headers
- * @param {string} name
- * @returns {string[]}
- */
-function extractHeaderValue(headers, name) {
-	const completeHeaders = headers.get(name);
-	if (completeHeaders === undefined) {
-		return [];
-	}
-	return completeHeaders.map(header =>
-		header.substr(name.length + ": ".length).slice(0, -"\r\n".length));
-}
-
-/**
- * @param {string} file - path to file relative to test data directory
- * @returns {Promise<browser.messages.MessageHeader>}
- */
-async function createMessageHeader(file) {
-	const fakeMessageHeader = createFakeMessageHeader();
-	const msgPlain = await readTestFile(file);
-	const msgParsed = MsgParser.parseMsg(msgPlain);
-	fakeMessageHeader.author = extractHeaderValue(msgParsed.headers, "from")[0] ?? "";
-	fakeMessageHeader.recipients = extractHeaderValue(msgParsed.headers, "to");
-	fakeMessageHeader.subject = extractHeaderValue(msgParsed.headers, "subject")[0] ?? "";
-	browser.messages.getRaw = sinon.fake.resolves(msgPlain);
-	return fakeMessageHeader;
-}
 
 describe("AuthVerifier [unittest]", function () {
 	const dkimVerifier = new Verifier(new KeyStore(queryDnsTxt));
@@ -88,8 +32,9 @@ describe("AuthVerifier [unittest]", function () {
 		await prefs.init();
 	});
 
-	beforeEach(async function () {
+	afterEach(async function () {
 		await prefs.clear();
+		fakeBrowser.reset();
 	});
 
 	describe("saving of results", function () {
@@ -114,7 +59,7 @@ describe("AuthVerifier [unittest]", function () {
 		});
 
 		it("Store SUCCESS result", async function () {
-			const message = await createMessageHeader("rfc8463-A.3.eml");
+			const message = await fakeBrowser.messages.addMsg("rfc8463-A.3.eml");
 			const res = await authVerifier.verify(message);
 			expect(res.dkim.length).to.be.equal(2);
 			expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
@@ -187,7 +132,7 @@ describe("AuthVerifier [unittest]", function () {
 				throw new DKIM_TempError("DKIM_DNSERROR_SERVER_ERROR");
 			};
 			const verifier = new AuthVerifier(new Verifier(new KeyStore(queryFunktion)));
-			const message = await createMessageHeader("rfc8463-A.3.eml");
+			const message = await fakeBrowser.messages.addMsg("rfc8463-A.3.eml");
 			const res = await verifier.verify(message);
 			expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
 			expect(res.dkim[1]?.result).to.be.equal("TEMPFAIL");
@@ -198,7 +143,7 @@ describe("AuthVerifier [unittest]", function () {
 		it("Store BIMI result", async function () {
 			await prefs.setValue("arh.read", true);
 
-			const message = await createMessageHeader("bimi/rfc6376-A.2-with_bimi.eml");
+			const message = await fakeBrowser.messages.addMsg("bimi/rfc6376-A.2-with_bimi.eml");
 			const res = await authVerifier.verify(message);
 			expect(res.dkim.length).to.be.equal(1);
 			expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
@@ -256,7 +201,7 @@ describe("AuthVerifier [unittest]", function () {
 				version: "1.1",
 				result: "none",
 			};
-			let res = await authVerifier.verify(createFakeMessageHeader());
+			let res = await authVerifier.verify(new FakeMessageHeader());
 			expect(res.dkim[0]?.res_num).to.be.equal(40);
 			expect(res.dkim[0]?.result).to.be.equal("none");
 			expect(res.dkim[0]?.result_str).to.be.equal("No Signature");
@@ -268,7 +213,7 @@ describe("AuthVerifier [unittest]", function () {
 				selector: "selector",
 				warnings: ["DKIM_SIGWARNING_EXPIRED"],
 			};
-			res = await authVerifier.verify(createFakeMessageHeader());
+			res = await authVerifier.verify(new FakeMessageHeader());
 			expect(res.dkim[0]?.res_num).to.be.equal(10);
 			expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
 			expect(res.dkim[0]?.result_str).to.be.equal("Valid (Signed by test.com)");
@@ -283,7 +228,7 @@ describe("AuthVerifier [unittest]", function () {
 					result: "none",
 				}],
 			};
-			let res = await authVerifier.verify(createFakeMessageHeader());
+			let res = await authVerifier.verify(new FakeMessageHeader());
 			expect(res.dkim[0]?.res_num).to.be.equal(40);
 			expect(res.dkim[0]?.result).to.be.equal("none");
 
@@ -309,7 +254,7 @@ describe("AuthVerifier [unittest]", function () {
 					properties: { smtp: {}, header: {}, body: {}, policy: {} },
 				}],
 			};
-			res = await authVerifier.verify(createFakeMessageHeader());
+			res = await authVerifier.verify(new FakeMessageHeader());
 			expect(res.dkim[0]?.res_num).to.be.equal(10);
 			expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
 			expect(res.dkim[0]?.result_str).to.be.equal("Valid (Signed by bad.com)");
@@ -328,7 +273,7 @@ describe("AuthVerifier [unittest]", function () {
 					result: "none",
 				}],
 			};
-			let res = await authVerifier.verify(createFakeMessageHeader());
+			let res = await authVerifier.verify(new FakeMessageHeader());
 			expect(res.dkim[0]?.res_num).to.be.equal(40);
 			expect(res.dkim[0]?.result).to.be.equal("none");
 
@@ -346,7 +291,7 @@ describe("AuthVerifier [unittest]", function () {
 					properties: { smtp: {}, header: {}, body: {}, policy: {} },
 				}],
 			};
-			res = await authVerifier.verify(createFakeMessageHeader());
+			res = await authVerifier.verify(new FakeMessageHeader());
 			expect(res.dkim[0]?.res_num).to.be.equal(30);
 			expect(res.dkim[0]?.result).to.be.equal("PERMFAIL");
 			expect(res.dkim[0]?.result_str).to.be.equal("Invalid (Signature has an unsupported version)");
@@ -372,7 +317,7 @@ describe("AuthVerifier [unittest]", function () {
 				dmarc: [],
 				bimiIndicator: "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiICBzdGFuZGFsb25lPSJ5ZXMiPz4KPHN2ZyB2ZXJzaW9uPSIxLjIiIGJhc2VQcm9maWxlPSJ0aW55LXBzIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHRpdGxlPkV4YW1wbGU8L3RpdGxlPgo8Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0MCIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIzIiBmaWxsPSJyZWQiIC8+Cjwvc3ZnPg==",
 			};
-			const res = await authVerifier.verify(createFakeMessageHeader());
+			const res = await authVerifier.verify(new FakeMessageHeader());
 			expect(res.dkim[0]?.res_num).to.be.equal(10);
 			expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
 			expect(res.dkim[0]?.favicon).to.be.a("string").and.satisfy(
@@ -381,8 +326,12 @@ describe("AuthVerifier [unittest]", function () {
 	});
 
 	describe("sign rules", function () {
+		afterEach(async function () {
+			await SignRules.clearRules();
+		});
+
 		it("unsigned PayPal message", async function () {
-			const fakePayPalMessage = await createMessageHeader("fakePayPal.eml");
+			const fakePayPalMessage = await fakeBrowser.messages.addMsg("fakePayPal.eml");
 			let res = await authVerifier.verify(fakePayPalMessage);
 			expect(res.dkim[0]?.result).to.be.equal("none");
 
@@ -395,7 +344,7 @@ describe("AuthVerifier [unittest]", function () {
 
 		it("outgoing mail", async function () {
 			await prefs.setValue("policy.signRules.enable", true);
-			const fakePayPalMessage = await createMessageHeader("fakePayPal.eml");
+			const fakePayPalMessage = await fakeBrowser.messages.addMsg("fakePayPal.eml");
 
 			let res = await authVerifier.verify(fakePayPalMessage);
 			expect(res.dkim[0]?.result).to.be.equal("PERMFAIL");
@@ -411,7 +360,7 @@ describe("AuthVerifier [unittest]", function () {
 		});
 
 		it("DMARC", async function () {
-			const fakePayPalMessage = await createMessageHeader("fakePayPal.eml");
+			const fakePayPalMessage = await fakeBrowser.messages.addMsg("fakePayPal.eml");
 			const dmarc = new DMARC(queryDnsTxt);
 			const verifier = new AuthVerifier(dkimVerifier, dmarc);
 			await prefs.setValue("policy.signRules.enable", true);
@@ -428,7 +377,7 @@ describe("AuthVerifier [unittest]", function () {
 
 		// eslint-disable-next-line complexity
 		it("Failure because of wrong SDID keeps signature meta data", async function () {
-			const message = await createMessageHeader("rfc6376-A.2.eml");
+			const message = await fakeBrowser.messages.addMsg("rfc6376-A.2.eml");
 
 			let res = await authVerifier.verify(message);
 			expect(res.dkim.length).to.be.equal(1);
@@ -483,7 +432,7 @@ describe("AuthVerifier [unittest]", function () {
 
 	describe("ARH header", function () {
 		it("spf and dkim result", async function () {
-			const message = await createMessageHeader("arh/rfc6376-A.2-arh-valid.eml");
+			const message = await fakeBrowser.messages.addMsg("arh/rfc6376-A.2-arh-valid.eml");
 			let res = await authVerifier.verify(message);
 			expect(res.dkim.length).to.be.equal(1);
 			expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
@@ -504,7 +453,7 @@ describe("AuthVerifier [unittest]", function () {
 		});
 
 		it("relaxed parsing", async function () {
-			const message = await createMessageHeader("arh/rfc6376-A.2-arh-valid_relaxed.eml");
+			const message = await fakeBrowser.messages.addMsg("arh/rfc6376-A.2-arh-valid_relaxed.eml");
 			await prefs.setValue("arh.read", true);
 
 			let res = await authVerifier.verify(message);
@@ -523,7 +472,7 @@ describe("AuthVerifier [unittest]", function () {
 			});
 
 			it("DKIM pass with only SDID", async function () {
-				const message = await createMessageHeader("arh/rfc6376-A.2-arh-valid.eml");
+				const message = await fakeBrowser.messages.addMsg("arh/rfc6376-A.2-arh-valid.eml");
 				let res = await authVerifier.verify(message);
 				expect(res.dkim.length).to.be.equal(1);
 				expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
@@ -549,7 +498,7 @@ describe("AuthVerifier [unittest]", function () {
 			it("DKIM pass with only AUID", async function () {
 				// E.g. Google only includes the AUID.
 				// Extracting the SDID from the AUID is only a heuristic, so the wrong SDID is expected.
-				const message = await createMessageHeader("arh/rfc6376-A.2-arh-valid-auid.eml");
+				const message = await fakeBrowser.messages.addMsg("arh/rfc6376-A.2-arh-valid-auid.eml");
 				let res = await authVerifier.verify(message);
 				expect(res.dkim.length).to.be.equal(1);
 				expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
@@ -573,7 +522,7 @@ describe("AuthVerifier [unittest]", function () {
 			});
 
 			it("DKIM pass with both SDID and AUID", async function () {
-				const message = await createMessageHeader("arh/rfc6376-A.2-arh-valid-sdid_and_auid.eml");
+				const message = await fakeBrowser.messages.addMsg("arh/rfc6376-A.2-arh-valid-sdid_and_auid.eml");
 				const res = await authVerifier.verify(message);
 				expect(res.dkim.length).to.be.equal(1);
 				expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
@@ -584,7 +533,7 @@ describe("AuthVerifier [unittest]", function () {
 			});
 
 			it("DKIM pass with no SDID or AUID", async function () {
-				const message = await createMessageHeader("arh/rfc6376-A.2-arh-valid-no_sdid_or_auid.eml");
+				const message = await fakeBrowser.messages.addMsg("arh/rfc6376-A.2-arh-valid-no_sdid_or_auid.eml");
 				const res = await authVerifier.verify(message);
 				expect(res.dkim.length).to.be.equal(1);
 				expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
@@ -596,7 +545,7 @@ describe("AuthVerifier [unittest]", function () {
 
 			it("From domain is not in the SDID", async function () {
 				// From: joe@football.example.com
-				const message = await createMessageHeader("arh/alignment-from_not_in_sdid.eml");
+				const message = await fakeBrowser.messages.addMsg("arh/alignment-from_not_in_sdid.eml");
 				let res = await authVerifier.verify(message);
 				expect(res.dkim.length).to.be.equal(1);
 				expect(res.dkim[0]?.sdid).to.be.equal("unrelated.com");
@@ -620,7 +569,7 @@ describe("AuthVerifier [unittest]", function () {
 			});
 
 			it("AUID is not in the SDID", async function () {
-				const message = await createMessageHeader("arh/alignment-auid_not_in_sdid.eml");
+				const message = await fakeBrowser.messages.addMsg("arh/alignment-auid_not_in_sdid.eml");
 				let res = await authVerifier.verify(message);
 				expect(res.dkim.length).to.be.equal(1);
 				expect(res.dkim[0]?.sdid).to.be.equal("example.net");
@@ -651,7 +600,7 @@ describe("AuthVerifier [unittest]", function () {
 			});
 
 			it("DKIM fail with reason", async function () {
-				const message = await createMessageHeader("arh/rfc6376-A.2-arh-failed.eml");
+				const message = await fakeBrowser.messages.addMsg("arh/rfc6376-A.2-arh-failed.eml");
 				const res = await authVerifier.verify(message);
 				expect(res.dkim.length).to.be.equal(1);
 				expect(res.dkim[0]?.result).to.be.equal("PERMFAIL");
@@ -659,7 +608,7 @@ describe("AuthVerifier [unittest]", function () {
 			});
 
 			it("DKIM fail without reason", async function () {
-				const message = await createMessageHeader("arh/rfc6376-A.2-arh-failed-no_reason.eml");
+				const message = await fakeBrowser.messages.addMsg("arh/rfc6376-A.2-arh-failed-no_reason.eml");
 				const res = await authVerifier.verify(message);
 				expect(res.dkim.length).to.be.equal(1);
 				expect(res.dkim[0]?.result).to.be.equal("PERMFAIL");
@@ -667,7 +616,7 @@ describe("AuthVerifier [unittest]", function () {
 			});
 
 			it("DKIM results should be sorted", async function () {
-				const message = await createMessageHeader("arh/multiple_dkim_results.eml");
+				const message = await fakeBrowser.messages.addMsg("arh/multiple_dkim_results.eml");
 				const res = await authVerifier.verify(message);
 				expect(res.dkim.length).to.be.equal(7);
 				expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
@@ -687,7 +636,7 @@ describe("AuthVerifier [unittest]", function () {
 			});
 
 			it("With secure signature algorithm", async function () {
-				const message = await createMessageHeader("arh/rfc6376-A.2-arh-valid-a_tag.eml");
+				const message = await fakeBrowser.messages.addMsg("arh/rfc6376-A.2-arh-valid-a_tag.eml");
 				const res = await authVerifier.verify(message);
 				expect(res.dkim.length).to.be.equal(1);
 				expect(res.dkim[0]?.result_str).to.be.equal("Valid (Signed by example.com)");
@@ -699,7 +648,7 @@ describe("AuthVerifier [unittest]", function () {
 			});
 
 			it("With insecure signature algorithm", async function () {
-				const message = await createMessageHeader("arh/rfc6376-A.2-arh-valid-a_tag_sha1.eml");
+				const message = await fakeBrowser.messages.addMsg("arh/rfc6376-A.2-arh-valid-a_tag_sha1.eml");
 
 				let res = await authVerifier.verify(message);
 				expect(res.dkim.length).to.be.equal(1);
@@ -732,7 +681,7 @@ describe("AuthVerifier [unittest]", function () {
 			});
 
 			it("Sign rules should check SDID", async function () {
-				const fakePayPalMessage = await createMessageHeader("arh/fakePayPal.eml");
+				const fakePayPalMessage = await fakeBrowser.messages.addMsg("arh/fakePayPal.eml");
 				let res = await authVerifier.verify(fakePayPalMessage);
 				expect(res.dkim.length).to.be.equal(1);
 				expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
@@ -753,7 +702,7 @@ describe("AuthVerifier [unittest]", function () {
 			});
 
 			it("From the same and different authserv_id", async function () {
-				const message = await createMessageHeader("arh/multiple_arh-same_and_different_authserv.eml");
+				const message = await fakeBrowser.messages.addMsg("arh/multiple_arh-same_and_different_authserv.eml");
 
 				let res = await authVerifier.verify(message);
 				expect(res.dkim.length).to.be.equal(3);
@@ -782,7 +731,7 @@ describe("AuthVerifier [unittest]", function () {
 			});
 
 			it("Newest ARH has no result", async function () {
-				const message = await createMessageHeader("arh/multiple_arh-newest_no_result.eml");
+				const message = await fakeBrowser.messages.addMsg("arh/multiple_arh-newest_no_result.eml");
 				const res = await authVerifier.verify(message);
 				expect(res.dkim.length).to.be.equal(1);
 				expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
@@ -790,7 +739,7 @@ describe("AuthVerifier [unittest]", function () {
 			});
 
 			it("Newest ARH has an unknown method", async function () {
-				const message = await createMessageHeader("arh/multiple_arh-newest_unknown_method.eml");
+				const message = await fakeBrowser.messages.addMsg("arh/multiple_arh-newest_unknown_method.eml");
 				const res = await authVerifier.verify(message);
 				expect(res.dkim.length).to.be.equal(1);
 				expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
@@ -798,7 +747,7 @@ describe("AuthVerifier [unittest]", function () {
 			});
 
 			it("Newest ARH has a parsing error in the method", async function () {
-				const message = await createMessageHeader("arh/multiple_arh-newest_parsing_error_01.eml");
+				const message = await fakeBrowser.messages.addMsg("arh/multiple_arh-newest_parsing_error_01.eml");
 				const res = await authVerifier.verify(message);
 				expect(res.dkim.length).to.be.equal(1);
 				expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
@@ -806,14 +755,14 @@ describe("AuthVerifier [unittest]", function () {
 			});
 
 			it("Newest ARH has a parsing error in the authserv_id", async function () {
-				const message = await createMessageHeader("arh/multiple_arh-newest_parsing_error_02.eml");
+				const message = await fakeBrowser.messages.addMsg("arh/multiple_arh-newest_parsing_error_02.eml");
 				const res = await authVerifier.verify(message);
 				expect(res.dkim.length).to.be.equal(1);
 				expect(res.dkim[0]?.result).to.be.equal("none");
 			});
 
 			it("Newest ARH has no authserv_id", async function () {
-				const message = await createMessageHeader("arh/multiple_arh-newest_no_authserv.eml");
+				const message = await fakeBrowser.messages.addMsg("arh/multiple_arh-newest_no_authserv.eml");
 				const res = await authVerifier.verify(message);
 				expect(res.dkim.length).to.be.equal(1);
 				expect(res.dkim[0]?.result).to.be.equal("none");
@@ -821,7 +770,7 @@ describe("AuthVerifier [unittest]", function () {
 
 			it("Trust a specific authserv_id", async function () {
 				await prefs.setAccountValue("arh.allowedAuthserv", "fakeAccount", "example.net");
-				const message = await createMessageHeader("arh/multiple_arh-same_and_different_authserv.eml");
+				const message = await fakeBrowser.messages.addMsg("arh/multiple_arh-same_and_different_authserv.eml");
 
 				let res = await authVerifier.verify(message);
 				expect(res.dkim.length).to.be.equal(3);
@@ -851,7 +800,7 @@ describe("AuthVerifier [unittest]", function () {
 
 			it("Trust an authserv_id domain", async function () {
 				await prefs.setAccountValue("arh.allowedAuthserv", "fakeAccount", "@example.net");
-				const message = await createMessageHeader("arh/multiple_arh-same_and_different_authserv.eml");
+				const message = await fakeBrowser.messages.addMsg("arh/multiple_arh-same_and_different_authserv.eml");
 
 				const res = await authVerifier.verify(message);
 				expect(res.dkim.length).to.be.equal(4);
@@ -868,7 +817,7 @@ describe("AuthVerifier [unittest]", function () {
 
 			it("Trust multiple authserv_id", async function () {
 				await prefs.setAccountValue("arh.allowedAuthserv", "fakeAccount", "foo.example.net unrelated.com");
-				const message = await createMessageHeader("arh/multiple_arh-same_and_different_authserv.eml");
+				const message = await fakeBrowser.messages.addMsg("arh/multiple_arh-same_and_different_authserv.eml");
 
 				const res = await authVerifier.verify(message);
 				expect(res.dkim.length).to.be.equal(2);
@@ -883,7 +832,7 @@ describe("AuthVerifier [unittest]", function () {
 
 	describe("Valid messages", function () {
 		it("Amazon received by Fastmail", async function () {
-			const message = await createMessageHeader("original/Fastmail from Amazon - Verify your new Amazon account.eml");
+			const message = await fakeBrowser.messages.addMsg("original/Fastmail from Amazon - Verify your new Amazon account.eml");
 			const res = await authVerifier.verify(message);
 			expect(res.dkim.length).to.be.equal(2);
 			expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
@@ -891,13 +840,13 @@ describe("AuthVerifier [unittest]", function () {
 		});
 
 		it("CNN received by Fastmail", async function () {
-			let message = await createMessageHeader("original/Fastmail from CNN - Thanks for subscribing to 5 Things.eml");
+			let message = await fakeBrowser.messages.addMsg("original/Fastmail from CNN - Thanks for subscribing to 5 Things.eml");
 			let res = await authVerifier.verify(message);
 			expect(res.dkim.length).to.be.equal(1);
 			expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
 			expect(res.dkim[0]?.warnings).to.be.empty;
 
-			message = await createMessageHeader("original/Fastmail from CNN - Welcome to CNN Breaking News.eml");
+			message = await fakeBrowser.messages.addMsg("original/Fastmail from CNN - Welcome to CNN Breaking News.eml");
 			res = await authVerifier.verify(message);
 			expect(res.dkim.length).to.be.equal(1);
 			expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
@@ -905,13 +854,13 @@ describe("AuthVerifier [unittest]", function () {
 		});
 
 		it("Fastmail received by Fastmail", async function () {
-			let message = await createMessageHeader("original/Fastmail from Fastmail - How to keep your email private.eml");
+			let message = await fakeBrowser.messages.addMsg("original/Fastmail from Fastmail - How to keep your email private.eml");
 			let res = await authVerifier.verify(message);
 			expect(res.dkim.length).to.be.equal(2);
 			expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
 			expect(res.dkim[0]?.warnings).to.be.empty;
 
-			message = await createMessageHeader("original/Fastmail from Fastmail - Welcome! Get set up in 3 steps..eml");
+			message = await fakeBrowser.messages.addMsg("original/Fastmail from Fastmail - Welcome! Get set up in 3 steps..eml");
 			res = await authVerifier.verify(message);
 			expect(res.dkim.length).to.be.equal(2);
 			expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
@@ -921,14 +870,14 @@ describe("AuthVerifier [unittest]", function () {
 
 	describe("Invalid messages", function () {
 		it("ill-formed from shows proper error message", async function () {
-			const message = await createMessageHeader("ill_formed-from.eml");
+			const message = await fakeBrowser.messages.addMsg("ill_formed-from.eml");
 			const res = await authVerifier.verify(message);
 			expect(res.dkim[0]?.result).to.be.equal("PERMFAIL");
 			expect(res.dkim[0]?.result_str).to.be.equal("From address is ill-formed");
 		});
 
 		it("ill-formed list-id is ignored", async function () {
-			const message = await createMessageHeader("rfc6376-A.2-ill_formed-list_id.eml");
+			const message = await fakeBrowser.messages.addMsg("rfc6376-A.2-ill_formed-list_id.eml");
 			const res = await authVerifier.verify(message);
 			expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
 		});
@@ -940,7 +889,7 @@ describe("AuthVerifier [unittest]", function () {
 		});
 
 		it("RFC 6376 example with added BIMI", async function () {
-			const message = await createMessageHeader("bimi/rfc6376-A.2-with_bimi.eml");
+			const message = await fakeBrowser.messages.addMsg("bimi/rfc6376-A.2-with_bimi.eml");
 			const res = await authVerifier.verify(message);
 			expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
 			expect(res.dkim[0]?.favicon).to.be.a("string").and.satisfy(
@@ -950,7 +899,7 @@ describe("AuthVerifier [unittest]", function () {
 		it("Amazon received by Fastmail", async function () {
 			await prefs.setValue("arh.relaxedParsing", true);
 
-			const message = await createMessageHeader("original/Fastmail from Amazon - Verify your new Amazon account.eml");
+			const message = await fakeBrowser.messages.addMsg("original/Fastmail from Amazon - Verify your new Amazon account.eml");
 			const res = await authVerifier.verify(message);
 			expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
 			expect(res.dkim[0]?.favicon).to.be.a("string").and.satisfy(
@@ -960,7 +909,7 @@ describe("AuthVerifier [unittest]", function () {
 		it("CNN received by Fastmail", async function () {
 			await prefs.setValue("arh.relaxedParsing", true);
 
-			const message = await createMessageHeader("original/Fastmail from CNN - Welcome to CNN Breaking News.eml");
+			const message = await fakeBrowser.messages.addMsg("original/Fastmail from CNN - Welcome to CNN Breaking News.eml");
 			const res = await authVerifier.verify(message);
 			expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
 			expect(res.dkim[0]?.favicon).to.be.a("string").and.satisfy(

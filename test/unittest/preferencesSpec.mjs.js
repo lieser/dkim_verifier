@@ -19,7 +19,7 @@ describe("preferences [unittest]", function () {
 		await pref.init();
 	});
 
-	beforeEach(async function () {
+	afterEach(async function () {
 		await pref.clear();
 	});
 

@@ -21,7 +21,7 @@ describe("Key store [unittest]", function () {
 		await prefs.init();
 	});
 
-	beforeEach(async function () {
+	afterEach(async function () {
 		await prefs.clear();
 		await KeyDb.clear();
 	});

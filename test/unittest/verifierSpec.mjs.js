@@ -47,7 +47,7 @@ describe("DKIM Verifier [unittest]", function () {
 		await prefs.init();
 	});
 
-	beforeEach(async function () {
+	afterEach(async function () {
 		await prefs.clear();
 	});
 
