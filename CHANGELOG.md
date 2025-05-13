@@ -4,6 +4,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+### Enhancements
+
+- Added option to display the DKIM header if when an e-mail with a DKIM signature, SPF or DMARC result is viewed (#462).
+
 ## 6.0.1 (2025-03-10)
 
 ### Fixes

@@ -473,6 +473,9 @@
 	"options_showDKIM.value.30": {
 		"message": "Wenn eine E-Mail mit DKIM-Signatur angezeigt wird"
 	},
+	"options_showDKIM.value.33": {
+		"message": "Wenn eine E-Mail mit DKIM-Signatur, SPF oder DMARC Ergebnis angezeigt wird"
+	},
 	"options_showDKIM.value.40": {
 		"message": "Wenn eine E-Mail angezeigt wird"
 	},

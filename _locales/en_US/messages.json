@@ -473,6 +473,9 @@
 	"options_showDKIM.value.30": {
 		"message": "when an e-mail with a DKIM signature is viewed"
 	},
+	"options_showDKIM.value.33": {
+		"message": "when an e-mail with a DKIM signature, SPF or DMARC result is viewed"
+	},
 	"options_showDKIM.value.40": {
 		"message": "when an e-mail is viewed"
 	},

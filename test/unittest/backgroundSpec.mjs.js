@@ -116,12 +116,72 @@ describe("background [unittest]", function () {
 			expect(fakeBrowser.dkimHeader.reset.called).to.be.false;
 		});
 
+		it("An e-mail without DKIM but with SPF or DMARC result", async function () {
+			const msg = await fakeBrowser.messages.addMsg("fakePayPal.eml");
+			await prefs.setValue("arh.read", true);
+
+			await prefs.setValue("showDKIMHeader", 30);
+			await prefs.setValue("showDKIMFromTooltip", 30);
+			let tab = await fakeBrowser.displayMsg(msg);
+			expect(fakeBrowser.dkimHeader.setDkimHeaderResult.calledOnceWithExactly(tab.id, msg.id, "No Signature", [], "", { dmarc: "fail" })).to.be.true;
+			expect(fakeBrowser.dkimHeader.showDkimHeader.calledOnceWithExactly(tab.id, msg.id, false)).to.be.true;
+			expect(fakeBrowser.dkimHeader.showFromTooltip.callCount).to.be.eq(2);
+			expect(fakeBrowser.dkimHeader.showFromTooltip.firstCall.calledWithExactly(tab.id, msg.id, true)).to.be.true;
+			expect(fakeBrowser.dkimHeader.showFromTooltip.lastCall.calledWithExactly(tab.id, msg.id, false)).to.be.true;
+			expect(fakeBrowser.dkimHeader.highlightFromAddress.called).to.be.false;
+			expect(fakeBrowser.dkimHeader.reset.called).to.be.false;
+
+			fakeBrowser.dkimHeader.resetHistory();
+			await prefs.setValue("showDKIMHeader", 33);
+			await prefs.setValue("showDKIMFromTooltip", 40);
+			await prefs.setValue("colorFrom", true);
+			tab = await fakeBrowser.displayMsg(msg);
+			expect(fakeBrowser.dkimHeader.setDkimHeaderResult.calledOnceWithExactly(tab.id, msg.id, "No Signature", [], "", { dmarc: "fail" })).to.be.true;
+			expect(fakeBrowser.dkimHeader.showDkimHeader.calledOnceWithExactly(tab.id, msg.id, true)).to.be.true;
+			expect(fakeBrowser.dkimHeader.showFromTooltip.calledOnceWithExactly(tab.id, msg.id, true)).to.be.true;
+			expect(fakeBrowser.dkimHeader.highlightFromAddress.calledOnceWithExactly(tab.id, msg.id, "unset", "unset")).to.be.true;
+			expect(fakeBrowser.dkimHeader.reset.called).to.be.false;
+		});
+
+		it("An e-mail with DKIM (PERMFAIL hidden) and SPF or DMARC result", async function () {
+			const msg = await fakeBrowser.messages.addMsg("arh/rfc6376-A.2-arh-valid.eml");
+			await prefs.setValue("arh.read", true);
+			await prefs.setValue("policy.signRules.enable", true);
+			await SignRules.addRule("example.com", null, "*", "foo.com", SignRules.TYPE.HIDEFAIL);
+
+			await prefs.setValue("showDKIMHeader", 30);
+			await prefs.setValue("showDKIMFromTooltip", 30);
+			let tab = await fakeBrowser.displayMsg(msg);
+			expect(fakeBrowser.dkimHeader.setDkimHeaderResult.calledOnceWithExactly(tab.id, msg.id, "Invalid (Wrong signer (should be foo.com))", [], "", { spf: "pass" })).to.be.true;
+			expect(fakeBrowser.dkimHeader.showDkimHeader.callCount).to.be.eq(2);
+			expect(fakeBrowser.dkimHeader.showDkimHeader.firstCall.calledWithExactly(tab.id, msg.id, true)).to.be.true;
+			expect(fakeBrowser.dkimHeader.showDkimHeader.lastCall.calledWithExactly(tab.id, msg.id, false)).to.be.true;
+			expect(fakeBrowser.dkimHeader.showFromTooltip.callCount).to.be.eq(2);
+			expect(fakeBrowser.dkimHeader.showFromTooltip.firstCall.calledWithExactly(tab.id, msg.id, true)).to.be.true;
+			expect(fakeBrowser.dkimHeader.showFromTooltip.lastCall.calledWithExactly(tab.id, msg.id, false)).to.be.true;
+			expect(fakeBrowser.dkimHeader.highlightFromAddress.called).to.be.false;
+			expect(fakeBrowser.dkimHeader.reset.called).to.be.false;
+
+			fakeBrowser.dkimHeader.resetHistory();
+			await prefs.setValue("showDKIMHeader", 33);
+			await prefs.setValue("showDKIMFromTooltip", 40);
+			await prefs.setValue("colorFrom", true);
+			tab = await fakeBrowser.displayMsg(msg);
+			expect(fakeBrowser.dkimHeader.setDkimHeaderResult.calledOnceWithExactly(tab.id, msg.id, "Invalid (Wrong signer (should be foo.com))", [], "", { spf: "pass" })).to.be.true;
+			expect(fakeBrowser.dkimHeader.showDkimHeader.callCount).to.be.eq(2);
+			expect(fakeBrowser.dkimHeader.showDkimHeader.firstCall.calledWithExactly(tab.id, msg.id, true)).to.be.true;
+			expect(fakeBrowser.dkimHeader.showDkimHeader.lastCall.calledWithExactly(tab.id, msg.id, true)).to.be.true;
+			expect(fakeBrowser.dkimHeader.showFromTooltip.calledOnceWithExactly(tab.id, msg.id, true)).to.be.true;
+			expect(fakeBrowser.dkimHeader.highlightFromAddress.calledOnceWithExactly(tab.id, msg.id, "unset", "unset")).to.be.true;
+			expect(fakeBrowser.dkimHeader.reset.called).to.be.false;
+		});
+
 		it("An e-mail with DKIM (PERMFAIL hidden)", async function () {
 			const msg = await fakeBrowser.messages.addMsg("rfc6376-A.2.eml");
 			await prefs.setValue("policy.signRules.enable", true);
 			await SignRules.addRule("example.com", null, "*", "foo.com", SignRules.TYPE.HIDEFAIL);
 
-			await prefs.setValue("showDKIMHeader", 30);
+			await prefs.setValue("showDKIMHeader", 33);
 			await prefs.setValue("showDKIMFromTooltip", 30);
 			let tab = await fakeBrowser.displayMsg(msg);
 			expect(fakeBrowser.dkimHeader.setDkimHeaderResult.calledOnceWithExactly(tab.id, msg.id, "Invalid (Wrong signer (should be foo.com))", [], "", {})).to.be.true;
@@ -151,7 +211,7 @@ describe("background [unittest]", function () {
 		it("An e-mail without DKIM", async function () {
 			const msg = await fakeBrowser.messages.addMsg("fakePayPal.eml");
 
-			await prefs.setValue("showDKIMHeader", 30);
+			await prefs.setValue("showDKIMHeader", 33);
 			await prefs.setValue("showDKIMFromTooltip", 30);
 			let tab = await fakeBrowser.displayMsg(msg);
 			expect(fakeBrowser.dkimHeader.setDkimHeaderResult.calledOnceWithExactly(tab.id, msg.id, "No Signature", [], "", {})).to.be.true;

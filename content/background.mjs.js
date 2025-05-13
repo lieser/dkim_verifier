@@ -48,14 +48,16 @@ browser.tabs.onRemoved.addListener((tabId) => {
 	displayedResultsCache.delete(tabId);
 });
 
-const SHOW = {
+/** @enum {number} */
+const SHOW = /** @type {const} */ ({
 	NEVER: 0,
-	DKIM_VALID: 10,
-	DKIM_VALID_ALL: 20,
-	DKIM_SIGNED: 30,
-	EMAIL: 40,
+	DKIM_VALID: AuthVerifier.DKIM_RES.SUCCESS, // 10
+	DKIM_VALID_ALL: AuthVerifier.DKIM_RES.TEMPFAIL, // 20
+	DKIM_SIGNED: AuthVerifier.DKIM_RES.PERMFAIL, // 30
+	AUTH_RES: 33,
+	EMAIL: AuthVerifier.DKIM_RES.NOSIG, // 40
 	MSG: 50,
-};
+});
 
 const verifier = new AuthVerifier();
 
@@ -104,10 +106,17 @@ async function verifyMessage(tabId, message) {
 			log.debug("Showing of DKIM result skipped because message is no longer displayed");
 			return;
 		}
-		browser.dkimHeader.showDkimHeader(tabId, message.id, prefs.showDKIMHeader >= res.dkim[0].res_num);
+
+		let showDKIMHeader = prefs.showDKIMHeader >= res.dkim[0].res_num;
+		if (!showDKIMHeader && prefs.showDKIMHeader >= SHOW.AUTH_RES && (res.spf || res.dmarc)) {
+			showDKIMHeader = true;
+		}
+		browser.dkimHeader.showDkimHeader(tabId, message.id, showDKIMHeader);
+
 		if (prefs.showDKIMFromTooltip > SHOW.NEVER && prefs.showDKIMFromTooltip < res.dkim[0].res_num) {
 			browser.dkimHeader.showFromTooltip(tabId, message.id, false);
 		}
+
 		if (prefs.colorFrom) {
 			switch (res.dkim[0].res_num) {
 				case AuthVerifier.DKIM_RES.SUCCESS: {

@@ -431,6 +431,7 @@ export class BasePreferences {
 	 * - 10:  when an e-mail with a valid DKIM signature is viewed  (SUCCESS)
 	 * - 20:  when an e-mail with a valid DKIM signature is viewed (including TEMPFAIL) (SUCCESS, TEMPFAIL)
 	 * - 30:  when an e-mail with a DKIM signature is viewed (SUCCESS, TEMPFAIL, PERMFAIL, loading)
+	 * - 33:  when an e-mail with a DKIM signature, SPF or DMARC result is viewed.
 	 * - 40:  when an e-mail is viewed
 	 * - 50:  when a message is viewed
 	 */
