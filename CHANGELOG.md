@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 ### Enhancements
 
 - Added option to display the DKIM header if when an e-mail with a DKIM signature, SPF or DMARC result is viewed (#462).
+- Authentication-Results header: Invalid headers by Outlook are now accepted if reading of non RFC compliant ARHs is enabled (#423).
 
 ## 6.0.1 (2025-03-10)
 

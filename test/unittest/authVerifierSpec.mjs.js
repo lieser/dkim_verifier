@@ -715,6 +715,8 @@ describe("AuthVerifier [unittest]", function () {
 				expect((res.spf ?? [])[0]?.result).to.be.equal("pass");
 
 				await prefs.setValue("arh.replaceAddonResult", false);
+				// The ARH without an authserv-id should not show up even with relaxed parsing.
+				await prefs.setValue("arh.relaxedParsing", true);
 
 				res = await authVerifier.verify(message);
 				expect(res.dkim.length).to.be.equal(1);
@@ -763,9 +765,18 @@ describe("AuthVerifier [unittest]", function () {
 
 			it("Newest ARH has no authserv_id", async function () {
 				const message = await fakeBrowser.messages.addMsg("arh/multiple_arh-newest_no_authserv.eml");
-				const res = await authVerifier.verify(message);
+				let res = await authVerifier.verify(message);
 				expect(res.dkim.length).to.be.equal(1);
 				expect(res.dkim[0]?.result).to.be.equal("none");
+
+				await prefs.setValue("arh.relaxedParsing", true);
+
+				res = await authVerifier.verify(message);
+				expect(res.dkim.length).to.be.equal(2);
+				expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
+				expect(res.dkim[0]?.sdid).to.be.equal("01.example.com");
+				expect(res.dkim[1]?.result).to.be.equal("SUCCESS");
+				expect(res.dkim[1]?.sdid).to.be.equal("02.example.com");
 			});
 
 			it("Trust a specific authserv_id", async function () {
@@ -783,6 +794,8 @@ describe("AuthVerifier [unittest]", function () {
 				expect((res.spf ?? [])[0]?.result).to.be.equal("pass");
 
 				await prefs.setValue("arh.replaceAddonResult", false);
+				// The ARH without an authserv-id should not show up even with relaxed parsing.
+				await prefs.setValue("arh.relaxedParsing", true);
 
 				res = await authVerifier.verify(message);
 				expect(res.dkim.length).to.be.equal(1);
@@ -800,6 +813,8 @@ describe("AuthVerifier [unittest]", function () {
 
 			it("Trust an authserv_id domain", async function () {
 				await prefs.setAccountValue("arh.allowedAuthserv", "fakeAccount", "@example.net");
+				// The ARH without an authserv-id should not show up even with relaxed parsing.
+				await prefs.setValue("arh.relaxedParsing", true);
 				const message = await fakeBrowser.messages.addMsg("arh/multiple_arh-same_and_different_authserv.eml");
 
 				const res = await authVerifier.verify(message);
@@ -817,6 +832,8 @@ describe("AuthVerifier [unittest]", function () {
 
 			it("Trust multiple authserv_id", async function () {
 				await prefs.setAccountValue("arh.allowedAuthserv", "fakeAccount", "foo.example.net unrelated.com");
+				// The ARH without an authserv-id should not show up even with relaxed parsing.
+				await prefs.setValue("arh.relaxedParsing", true);
 				const message = await fakeBrowser.messages.addMsg("arh/multiple_arh-same_and_different_authserv.eml");
 
 				const res = await authVerifier.verify(message);

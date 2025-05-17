@@ -233,6 +233,70 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo[0]?.properties.policy["authority-uri"]).
 				to.be.equal("https://d3frv9g52qce38.cloudfront.net/amazondefault/amazon_web_services_inc.pem");
 		});
+
+		it("Missing authserv-id (Outlook)", function () {
+			const arh = "Authentication-Results: spf=pass\r\n";
+
+			expect(() => ArhParser.parse(arh)).to.throw();
+
+			const res = ArhParser.parse(arh, true);
+			expect(res.authserv_id).to.be.equal("");
+			expect(res.resinfo.length).to.be.equal(1);
+			expect(res.resinfo[0]?.method).to.be.equal("spf");
+			expect(res.resinfo[0]?.result).to.be.equal("pass");
+		});
+
+		it("DMARC action=none (Outlook)", function () {
+			let arh = "Authentication-Results: example.com; dmarc=pass action=none\r\n";
+
+			expect(() => ArhParser.parse(arh)).to.throw();
+
+			let res = ArhParser.parse(arh, true);
+			expect(res.authserv_id).to.be.equal("example.com");
+			expect(res.resinfo.length).to.be.equal(1);
+			expect(res.resinfo[0]?.method).to.be.equal("dmarc");
+			expect(res.resinfo[0]?.result).to.be.equal("pass");
+
+			// action=<permerror|temperror|oreject|pct.quarantine|pct.reject>
+			arh = "Authentication-Results: example.com; dmarc=pass action=permerror\r\n";
+			res = ArhParser.parse(arh, true);
+			expect(res.resinfo[0]?.method).to.be.equal("dmarc");
+			arh = "Authentication-Results: example.com; dmarc=pass action=temperror\r\n";
+			res = ArhParser.parse(arh, true);
+			expect(res.resinfo[0]?.method).to.be.equal("dmarc");
+			arh = "Authentication-Results: example.com; dmarc=pass action=oreject\r\n";
+			res = ArhParser.parse(arh, true);
+			expect(res.resinfo[0]?.method).to.be.equal("dmarc");
+			arh = "Authentication-Results: example.com; dmarc=pass action=pct.quarantine\r\n";
+			res = ArhParser.parse(arh, true);
+			expect(res.resinfo[0]?.method).to.be.equal("dmarc");
+			arh = "Authentication-Results: example.com; dmarc=pass action=pct.reject\r\n";
+			res = ArhParser.parse(arh, true);
+			expect(res.resinfo[0]?.method).to.be.equal("dmarc");
+		});
+
+		it("Missing authserv-id and DMARC action (Outlook)", function () {
+			const arh =
+				"Authentication-Results: spf=pass (sender IP is 185.67.36.66)\r\n" +
+				" smtp.mailfrom=posteo.net; dkim=pass (signature was verified)\r\n" +
+				" header.d=posteo.net;dmarc=pass action=none\r\n" +
+				" header.from=posteo.net;compauth=pass reason=100\r\n";
+
+			expect(() => ArhParser.parse(arh)).to.throw();
+
+			const res = ArhParser.parse(arh, true);
+			expect(res.authserv_id).to.be.equal("");
+			expect(res.resinfo.length).to.be.equal(4);
+			expect(res.resinfo[0]?.method).to.be.equal("spf");
+			expect(res.resinfo[0]?.result).to.be.equal("pass");
+			expect(res.resinfo[1]?.method).to.be.equal("dkim");
+			expect(res.resinfo[1]?.result).to.be.equal("pass");
+			expect(res.resinfo[1]?.properties.header.d).to.be.equal("posteo.net");
+			expect(res.resinfo[2]?.method).to.be.equal("dmarc");
+			expect(res.resinfo[2]?.result).to.be.equal("pass");
+			expect(res.resinfo[3]?.method).to.be.equal("compauth");
+			expect(res.resinfo[3]?.result).to.be.equal("pass");
+		});
 	});
 
 	describe("Invalid examples", function () {
