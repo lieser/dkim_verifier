@@ -467,6 +467,9 @@
 	"options_showDKIM.value.30": {
 		"message": "khi một email với chữ ký DKIM được xem"
 	},
+	"options_showDKIM.value.33": {
+		"message": "khi một email với chữ ký DKIM, kết quả SPF hoặc DMARC được xem"
+	},
 	"options_showDKIM.value.40": {
 		"message": "khi một email được xem"
 	},
@@ -622,6 +625,10 @@
 	},
 	"dkim_verifier.updateKey": {
 		"message": "Cập nhật khóa DKIM"
+	},
+	"button.options": {
+		"message": "Tùy chọn",
+		"description": "Button to open the options page of the Add-on."
 	},
 	"details.result": {
 		"message": "Kết quả",
