@@ -136,6 +136,7 @@ class DkimResult extends HTMLElement {
 		DkimResult.#addOptionalTimeValue(this.#content, browser.i18n.getMessage("details.expirationDate"), this.result?.expiration);
 		DkimResult.#addOptionalTextValue(this.#content, browser.i18n.getMessage("details.algorithm"), this.#algorithm());
 		DkimResult.#addOptionalTextValue(this.#content, browser.i18n.getMessage("details.signedHeaders"), this.result?.signedHeaders?.join(", "));
+		DkimResult.#addOptionalTextValue(this.#content, browser.i18n.getMessage("treeviewKeys.treecol.selector"), this.result?.selector);
 	}
 
 	/**
