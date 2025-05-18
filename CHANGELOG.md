@@ -13,6 +13,10 @@ All notable changes to this project will be documented in this file.
 - The DKIM selector is now displayed in the DKIM button pop-up (#510).
 - The options page of the add-on can now be open from the DKIM button pop-up.
 
+### Other
+
+- Updated default rules and favicons.
+
 ## 6.0.1 (2025-03-10)
 
 ### Fixes
