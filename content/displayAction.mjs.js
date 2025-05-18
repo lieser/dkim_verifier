@@ -358,4 +358,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 	if (resultState.updateKey) {
 		updateKey.disabled = false;
 	}
+
+	const options = getElementById("options");
+	if (!(options instanceof HTMLButtonElement)) {
+		throw new Error("options element is not a button");
+	}
+	options.addEventListener("click", async () => {
+		await browser.runtime.openOptionsPage();
+	});
 }, { once: true });

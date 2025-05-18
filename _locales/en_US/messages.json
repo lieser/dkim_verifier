@@ -632,6 +632,10 @@
 	"dkim_verifier.updateKey": {
 		"message": "Update DKIM key"
 	},
+	"button.options": {
+		"message": "Options",
+		"description": "Button to open the options page of the Add-on."
+	},
 	"details.result": {
 		"message": "Result",
 		"description": "Detailed view row name for the overall DKIM result."
