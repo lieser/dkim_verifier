@@ -356,7 +356,7 @@
 			"sdid": "ayvensbank.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
- 		}, {
+		}, {
 			"domain": "babelzilla.org",
 			"addr": "*",
 			"sdid": "babelzilla.org",
@@ -392,7 +392,7 @@
 			"sdid": "bank11.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
- 		}, {
+		}, {
 			"domain": "battle.net",
 			"addr": "*",
 			"sdid": "battle.net",
@@ -584,6 +584,12 @@
 			"sdid": "bosch.com de.bosch.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
+			"domain": "boulderwelt.de",
+			"addr": "*",
+			"sdid": "boulderwelt.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
 		}, {
 			"domain": "box.com",
 			"addr": "*",
@@ -926,6 +932,18 @@
 			"sdid": "datev.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "decathlon.com",
+			"addr": "*@service.decathlon.com",
+			"sdid": "decathlon.com service.decathlon.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
+			"domain": "decathlon.de",
+			"addr": "*@services.decathlon.de",
+			"sdid": "decathlon.de services.decathlon.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
 			"domain": "decathlon.it",
 			"addr": "*@email.decathlon.it",
@@ -2330,6 +2348,18 @@
 			"sdid": "kycsafe.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "lampenwelt.de",
+			"addr": "*",
+			"sdid": "lampenwelt.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "lampenwelt.com",
+			"addr": "*@reply.lampenwelt.com",
+			"sdid": "lampenwelt.com reply.lampenwelt.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
 			"domain": "laptopwithlinux.com",
 			"addr": "*",
