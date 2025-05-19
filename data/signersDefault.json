@@ -350,6 +350,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "ayvensbank.de",
+			"addr": "*",
+			"sdid": "ayvensbank.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "babelzilla.org",
 			"addr": "*",
 			"sdid": "babelzilla.org",
@@ -377,6 +383,12 @@
 			"domain": "bandcamp.com",
 			"addr": "*",
 			"sdid": "bandcamp.com email.bandcamp.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "bank11.de",
+			"addr": "*",
+			"sdid": "bank11.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -467,6 +479,12 @@
 			"domain": "bingads.com",
 			"addr": "*",
 			"sdid": "bingads.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "biowaves.de",
+			"addr": "*",
+			"sdid": "biowaves.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -565,6 +583,12 @@
 			"sdid": "bosch.com de.bosch.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
+			"domain": "boulderwelt.de",
+			"addr": "*",
+			"sdid": "boulderwelt.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
 		}, {
 			"domain": "box.com",
 			"addr": "*",
@@ -673,6 +697,12 @@
 			"sdid": "campact.de",
 			"ruletype": "NEUTRAL",
 			"priority": "DEFAULT_RULE_NEUTRAL"
+		}, {
+			"domain": "capfm-festgeld.de",
+			"addr": "*@service.capfm-festgeld.de",
+			"sdid": "service.capfm-festgeld.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
 			"domain": "casio.de",
 			"addr": "*",
@@ -902,6 +932,18 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "decathlon.com",
+			"addr": "*@service.decathlon.com",
+			"sdid": "decathlon.com service.decathlon.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
+			"domain": "decathlon.de",
+			"addr": "*@services.decathlon.de",
+			"sdid": "decathlon.de services.decathlon.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
 			"domain": "decathlon.it",
 			"addr": "*@email.decathlon.it",
 			"sdid": "decathlon.it email.decathlon.it",
@@ -1015,6 +1057,12 @@
 			"sdid": "digitalocean.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "discogs.com",
+			"addr": "*@cio.discogs.com",
+			"sdid": "discogs.com cioeu98727.cio.discogs.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
 			"domain": "discord.com",
 			"addr": "*",
@@ -2192,6 +2240,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "kabelheld.com",
+			"addr": "*",
+			"sdid": "kabelheld.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "kenwoodworld.com",
 			"addr": "*@news.kenwoodworld.com",
 			"sdid": "kenwoodworld.com news.kenwoodworld.com",
@@ -2293,6 +2347,18 @@
 			"sdid": "kycsafe.com",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "lampenwelt.de",
+			"addr": "*",
+			"sdid": "lampenwelt.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "lampenwelt.com",
+			"addr": "*@reply.lampenwelt.com",
+			"sdid": "lampenwelt.com reply.lampenwelt.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
 			"domain": "laptopwithlinux.com",
 			"addr": "*",
@@ -3104,6 +3170,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "proshop.de",
+			"addr": "*",
+			"sdid": "proshop.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "psd-muenchen.de",
 			"addr": "*",
 			"sdid": "psd-muenchen.de",
@@ -3115,6 +3187,12 @@
 			"sdid": "news.psd-muenchen.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
+			"domain": "psd-rhein-ruhr.de",
+			"addr": "*",
+			"sdid": "psd-rhein-ruhr.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
 		}, {
 			"domain": "psu.edu",
 			"addr": "*",

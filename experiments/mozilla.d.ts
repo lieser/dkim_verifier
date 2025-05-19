@@ -2,7 +2,7 @@
 //// Mozilla specific modules
 
 interface ChromeUtils {
-    import(url: string): any;
+    importESModule(url: string): any;
     readonly generateQI: (interfaces: nsISupports[]) => nsISupports["QueryInterface"];
 }
 declare let ChromeUtils: ChromeUtils;
@@ -160,24 +160,6 @@ declare module ExtensionSupportM {
     const openWindows: Window[];
 }
 
-/** JavaScript code module "resource://gre/modules/FileUtils.jsm" */
-declare module FileUtils {
-    function File(path: string): nsIFile;
-}
-
-/** JavaScript code module "resource://gre/modules/osfile.jsm" (removed in TB >= 115) */
-declare module OS {
-    declare module Path {
-        function join(path1: string, path2: string, ...paths: string[]): string;
-    }
-
-    const Constants: {
-        Path: {
-            profileDir: string;
-        }
-    }
-}
-
 /** https://searchfox.org/mozilla-central/source/dom/chrome-webidl/PathUtils.webidl */
 declare module PathUtils {
     function join(path: string, ...components: string[]): string;
@@ -271,9 +253,6 @@ interface nsISocketTransport extends nsITransport {
 }
 
 interface nsISocketTransportService {
-    /**
-     * In TB 78 the nsIDNSRecord did not yet exist. Providing null does not cause an error.
-     */
     readonly createTransport: (aSocketTypes: string[], aHost: string, aPort: number, aProxyInfo: nsIProxyInfo?, dnsRecord: nsIDNSRecord?) => nsISocketTransport
 }
 
@@ -386,20 +365,6 @@ declare class XULElement extends HTMLElement { };
 //// Thunderbird specific interfaces
 
 /**
- * expandedfromBox in TB <102
- */
-declare class MozMailMultiEmailheaderfield extends MozXULElement {
-    /**
-     * The description inside `longEmailAddresses` with class "headerValue".
-     * Contains a <mail-email address> element.
-     */
-    emailAddresses: MozXULElement;
-    /**
-     * The outer hbox with class "headerValueBox"
-     */
-    longEmailAddresses: MozXULElement;
-};
-/**
  * expandedfromBox in TB >=102
  */
 declare class MultiRecipientRow extends HTMLDivElement {
@@ -411,7 +376,7 @@ declare class MultiRecipientRow extends HTMLDivElement {
 declare class HeaderRecipient extends HTMLLIElement {
     multiLine: HTMLElement;
 }
-type expandedfromBox = MozMailMultiEmailheaderfield | MultiRecipientRow;
+type expandedfromBox = MultiRecipientRow;
 
 interface nsIMsgDBHdr {
     getStringProperty(propertyName: string): string;

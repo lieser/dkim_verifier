@@ -2,15 +2,15 @@
 	"manifest_version": 2,
 	"name": "__MSG_about_name__",
 	"description": "__MSG_about_summary__",
-	"version": "5.4.0",
+	"version": "6.0.1",
 	"author": "Philippe Lieser",
 	"homepage_url": "https://github.com/lieser/dkim_verifier/wiki",
 	"default_locale": "en_US",
 	"applications": {
 		"gecko": {
 			"id": "dkim_verifier@pl",
-			"strict_min_version": "91.0",
-			"strict_max_version": "135.*"
+			"strict_min_version": "128.0",
+			"strict_max_version": "138.*"
 		}
 	},
 	"permissions": [
@@ -105,20 +105,6 @@
 					]
 				],
 				"script": "experiments/mailUtils.js"
-			}
-		},
-		"migration": {
-			"schema": "experiments/migration-schema.json",
-			"parent": {
-				"scopes": [
-					"addon_parent"
-				],
-				"paths": [
-					[
-						"migration"
-					]
-				],
-				"script": "experiments/migration.js"
 			}
 		},
 		"storageMessage": {

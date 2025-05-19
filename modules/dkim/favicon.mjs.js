@@ -8,7 +8,6 @@
  */
 
 // @ts-check
-/* eslint-env webextensions */
 
 import { addrIsInDomain, domainIsInDomain } from "../utils.mjs.js";
 import ExtensionUtils from "../extensionUtils.mjs.js";

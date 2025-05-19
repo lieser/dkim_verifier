@@ -288,9 +288,6 @@
 	"DKIM_SIGWARNING_FROM_NOT_IN_SDID": {
 		"message": "A feladó nem található az aláírási tartományban"
 	},
-	"DKIM_SIGWARNING_FROM_NOT_IN_AUID": {
-		"message": "A feladó nem egyezik a felhasználói azonosítóval"
-	},
 	// JSDNS
 	"TOO_MANY_HOPS": {
 		"message": "Túl sok komló."

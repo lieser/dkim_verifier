@@ -10,7 +10,7 @@
 // @ts-check
 ///<reference path="./mailUtils.d.ts" />
 ///<reference path="./mozilla.d.ts" />
-/* global ExtensionCommon, Services */
+/* global ExtensionCommon */
 
 "use strict";
 

@@ -9,7 +9,6 @@
 
 // @ts-check
 ///<reference path="../RuntimeMessage.d.ts" />
-/* eslint-env webextensions */
 
 import { getElementById } from "./domUtils.mjs.js";
 
@@ -137,6 +136,7 @@ class DkimResult extends HTMLElement {
 		DkimResult.#addOptionalTimeValue(this.#content, browser.i18n.getMessage("details.expirationDate"), this.result?.expiration);
 		DkimResult.#addOptionalTextValue(this.#content, browser.i18n.getMessage("details.algorithm"), this.#algorithm());
 		DkimResult.#addOptionalTextValue(this.#content, browser.i18n.getMessage("details.signedHeaders"), this.result?.signedHeaders?.join(", "));
+		DkimResult.#addOptionalTextValue(this.#content, browser.i18n.getMessage("treeviewKeys.treecol.selector"), this.result?.selector);
 	}
 
 	/**
@@ -359,4 +359,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 		updateKey.disabled = false;
 	}
 
+	const options = getElementById("options");
+	if (!(options instanceof HTMLButtonElement)) {
+		throw new Error("options element is not a button");
+	}
+	options.addEventListener("click", async () => {
+		await browser.runtime.openOptionsPage();
+	});
 }, { once: true });

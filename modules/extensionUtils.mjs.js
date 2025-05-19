@@ -1,7 +1,7 @@
 /**
  * Utility functions related to WebExtensions/MailExtensions.
  *
- * Copyright (c) 2020-2023 Philippe Lieser
+ * Copyright (c) 2020-2023;2025 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -10,7 +10,6 @@
  */
 
 // @ts-check
-/* eslint-env browser, webextensions */
 
 import { dateToString, promiseWithTimeout, sleep } from "./utils.mjs.js";
 import Logging from "./logging.mjs.js";
@@ -58,9 +57,9 @@ async function createOrRaisePopup(url, height = undefined, width = undefined) {
 function downloadDataAsJSON(data, dataName) {
 	const jsonBlob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
 	browser.downloads.download({
-		"url": URL.createObjectURL(jsonBlob),
-		"filename": `${dataName}_${dateToString(new Date())}.json`,
-		"saveAs": true,
+		url: URL.createObjectURL(jsonBlob),
+		filename: `${dataName}_${dateToString(new Date())}.json`,
+		saveAs: true,
 	});
 }
 
@@ -82,6 +81,9 @@ async function isOutgoing(message, fromAddr) {
 		return true;
 	}
 
+	if (!message.folder.accountId) {
+		return false;
+	}
 	// return true if one of the accounts identities contain the from address
 	const account = await browser.accounts.get(message.folder.accountId);
 	const identities = account?.identities;
@@ -113,13 +115,14 @@ async function readFile(path) {
 }
 
 /**
- * Wrapper around browser.storage.local.get() to workaround the following issues:
+ * Wrapper around browser.storage.<storageArea>.get() to workaround the following issues:
  * - TransactionInactiveError resulting in Promise never being resolved.
  * - Getting rejected with "An unexpected error occurred".
  *
+ * @param {"local"|"managed"} storageArea
  * @returns {Promise<{[x: string]: any}>}
  */
-async function safeGetLocalStorage() {
+async function safeGetStorage(storageArea) {
 	const overallTimeout = 15000;
 	const storageTimeout = 3000;
 	let retrySleepTime = 100;
@@ -133,11 +136,15 @@ async function safeGetLocalStorage() {
 	// eslint-disable-next-line no-unmodified-loop-condition
 	while (!timeout) {
 		try {
-			const result = await promiseWithTimeout(storageTimeout, browser.storage.local.get());
+			const result = await promiseWithTimeout(storageTimeout, browser.storage[storageArea].get());
 			clearTimeout(timeoutId);
 			return result;
 		} catch (error) {
-			log.debug("browser.storage.local.get() failed (will retry) with", error);
+			if (error instanceof Error && error.message === "Managed storage manifest not found") {
+				clearTimeout(timeoutId);
+				return {};
+			}
+			log.debug(`browser.storage.${storageArea}.get() failed (will retry) with`, error);
 			await sleep(retrySleepTime);
 			retrySleepTime = Math.max(retrySleepTime + retrySleepTimeIncrease, retrySleepTimeMax);
 		}
@@ -145,11 +152,26 @@ async function safeGetLocalStorage() {
 	throw new Error("browser.storage.local.get() failed");
 }
 
+/**
+ * @returns {Promise<{[x: string]: any}>}
+ */
+function safeGetLocalStorage() {
+	return safeGetStorage("local");
+}
+
+/**
+ * @returns {Promise<{[x: string]: any}>}
+ */
+function safeGetManagedStorage() {
+	return safeGetStorage("managed");
+}
+
 const ExtensionUtils = {
 	createOrRaisePopup,
 	downloadDataAsJSON,
 	isOutgoing,
 	safeGetLocalStorage,
+	safeGetManagedStorage,
 	readFile,
 };
 export default ExtensionUtils;

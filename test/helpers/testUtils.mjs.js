@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2023 Philippe Lieser
+ * Copyright (c) 2020-2023;2025 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -8,7 +8,6 @@
  */
 
 // @ts-check
-/* eslint-env browser, node */
 
 /**
  * @returns {boolean}
@@ -77,6 +76,19 @@ async function readFile(file, encoding) {
 		default:
 			throw new Error(`unsupported encoding ${encoding}`);
 	}
+}
+
+/**
+ * @template T
+ * @param {T} val
+ * @returns {import("ts-essentials").DeepWritable<T>}
+ */
+export function deepCopy(val) {
+	if (val === undefined) {
+		// @ts-expect-error
+		return undefined;
+	}
+	return JSON.parse(JSON.stringify(val));
 }
 
 /**

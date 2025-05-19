@@ -266,7 +266,7 @@
 	},
 	// DKIM_SIGERROR - POLICY
 	"DKIM_POLICYERROR_MISSING_SIG": {
-		"message": "Без підпису, повинен бути підписаний $1"
+		"message": "Без підпису, повинен бути підписаний $1",
 		"description": "Error if a message has no signature, but the sign rules state that it should be signed"
 	},
 	"DKIM_POLICYERROR_KEYMISMATCH": {
@@ -300,9 +300,6 @@
 	},
 	"DKIM_SIGWARNING_FROM_NOT_IN_SDID": {
 		"message": "Поле 'Від' не з домену підпису"
-	},
-	"DKIM_SIGWARNING_FROM_NOT_IN_AUID": {
-		"message": "Поле 'Від' не відповідає ідентифікатору користувача"
 	},
 	"DKIM_SIGWARNING_UNSIGNED_HEADER": {
 		"message": "Заголовок '$1' не підписаний",

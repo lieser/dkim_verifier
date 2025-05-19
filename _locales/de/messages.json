@@ -301,9 +301,6 @@
 	"DKIM_SIGWARNING_FROM_NOT_IN_SDID": {
 		"message": "Absender gehört nicht zur Domain"
 	},
-	"DKIM_SIGWARNING_FROM_NOT_IN_AUID": {
-		"message": "Absender passt nicht zur Benutzeridentität"
-	},
 	"DKIM_SIGWARNING_UNSIGNED_HEADER": {
 		"message": "Kopfzeile '$1' ist nicht signiert",
 		"description": "Warning if an important header is not signed"
@@ -476,6 +473,9 @@
 	"options_showDKIM.value.30": {
 		"message": "Wenn eine E-Mail mit DKIM-Signatur angezeigt wird"
 	},
+	"options_showDKIM.value.33": {
+		"message": "Wenn eine E-Mail mit DKIM-Signatur, SPF oder DMARC Ergebnis angezeigt wird"
+	},
 	"options_showDKIM.value.40": {
 		"message": "Wenn eine E-Mail angezeigt wird"
 	},
@@ -631,6 +631,10 @@
 	},
 	"dkim_verifier.updateKey": {
 		"message": "DKIM-Schlüssel aktualisieren"
+	},
+	"button.options": {
+		"message": "Einstellungen",
+		"description": "Button to open the options page of the Add-on."
 	},
 	"details.result": {
 		"message": "Ergebnis",

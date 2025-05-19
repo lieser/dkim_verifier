@@ -8,7 +8,7 @@
  * Email Authentication Parameters:
  * https://www.iana.org/assignments/email-auth/email-auth.xhtml
  *
- * Copyright (c) 2014-2023 Philippe Lieser
+ * Copyright (c) 2014-2023;2025 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -108,7 +108,7 @@ class Token {
  * @property {string} result
  * none|pass|fail|softfail|policy|neutral|temperror|permerror
  * @property {string} [reason]
- * @property {ArhProperties} propertys
+ * @property {ArhProperties} properties
  */
 
 export default class ArhParser {
@@ -134,16 +134,25 @@ export default class ArhParser {
 		let reg_match;
 
 		// get authserv-id and authres-version
-		reg_match = match(authResHeaderRef, `${token.value_cp}(?:${token.CFWS}([0-9]+)${token.CFWS_op})?`, token);
-		const authserv_id = reg_match[1] ?? reg_match[2];
-		if (!authserv_id) {
-			throw new Error("Error matching the ARH authserv-id.");
-		}
-		res.authserv_id = decodeBinaryString(authserv_id);
-		if (reg_match[3]) {
-			res.authres_version = parseInt(reg_match[3], 10);
-		} else {
-			res.authres_version = 1;
+		try {
+			reg_match = match(authResHeaderRef, `${token.value_cp}(?:${token.CFWS}([0-9]+)${token.CFWS_op})?`, token);
+			const authserv_id = reg_match[1] ?? reg_match[2];
+			if (!authserv_id) {
+				throw new Error("Error matching the ARH authserv-id.");
+			}
+			res.authserv_id = decodeBinaryString(authserv_id);
+			if (reg_match[3]) {
+				res.authres_version = parseInt(reg_match[3], 10);
+			} else {
+				res.authres_version = 1;
+			}
+		} catch (error) {
+			log.debug("Parsing of authserv-id and authres-version failed", error);
+			if (!relaxedParsing) {
+				throw error;
+			}
+			res.authserv_id = "";
+			authResHeaderRef.value = `;${authResHeaderRef.value}`;
 		}
 
 		// check if message authentication was performed
@@ -154,11 +163,19 @@ export default class ArhParser {
 		}
 
 		// get the resinfos
-		while (authResHeaderRef.value !== "") {
-			const arhResInfo = parseResInfo(authResHeaderRef, relaxedParsing, token);
-			if (arhResInfo) {
-				res.resinfo.push(arhResInfo);
+		try {
+			while (authResHeaderRef.value !== "") {
+				const arhResInfo = parseResInfo(authResHeaderRef, relaxedParsing, token);
+				if (arhResInfo) {
+					res.resinfo.push(arhResInfo);
+				}
 			}
+		} catch (error) {
+			if (error instanceof Error) {
+				// @ts-expect-error
+				error.authserv_id = res.authserv_id;
+			}
+			throw error;
 		}
 
 		return res;
@@ -224,7 +241,29 @@ function parseResInfo(str, relaxedParsing, token) {
 		res.reason = decodeBinaryString(value);
 	}
 
+	// Outlook specific action (optional)
+	// https://learn.microsoft.com/en-us/defender-office-365/message-headers-eop-mdo
+	if (relaxedParsing) {
+		const actionspec_p = `action${token.CFWS_op}=${token.CFWS_op}${token.value_cp}`;
+		reg_match = match_o(str, actionspec_p, token);
+	}
+
 	// get propspec (optional)
+	res.properties = parseProperties(str, relaxedParsing, token);
+
+	return res;
+}
+
+/**
+ * Parses all properties (propspec) of a resinfo in str. The parsed part of str is removed from str.
+ *
+ * @param {RefString} str
+ * @param {boolean} relaxedParsing - Enable relaxed parsing
+ * @param {Token} token - Token to use for parsing; depends on internationalized support
+ * @returns {ArhProperties} Parsed properties
+ * @throws {DKIM_Error}
+ */
+function parseProperties(str, relaxedParsing, token) {
 	let pvalue_p = `${token.value_cp}|((?:${token.local_part}?@)?${token.domain_name})`;
 	if (relaxedParsing) {
 		// allow "/" and ":" in properties, even if it is not in a quoted-string
@@ -233,11 +272,15 @@ function parseResInfo(str, relaxedParsing, token) {
 	const special_smtp_verb_p = "mailfrom|rcptto";
 	const property_p = `${special_smtp_verb_p}|${Token.Keyword}`;
 	const propspec_p = `(${Token.Keyword})${token.CFWS_op}\\.${token.CFWS_op}(${property_p})${token.CFWS_op}=${token.CFWS_op}(?:${pvalue_p})`;
-	res.propertys = {};
-	res.propertys.smtp = {};
-	res.propertys.header = {};
-	res.propertys.body = {};
-	res.propertys.policy = {};
+
+	/** @type {ArhProperties} */
+	const properties = {
+		smtp: {},
+		header: {},
+		body: {},
+		policy: {},
+	};
+	let reg_match;
 	while ((reg_match = match_o(str, propspec_p, token)) !== null) {
 		if (!reg_match[1]) {
 			throw new Error("Error matching the ARH property name.");
@@ -245,10 +288,10 @@ function parseResInfo(str, relaxedParsing, token) {
 		if (!reg_match[2]) {
 			throw new Error("Error matching the ARH property sub-name.");
 		}
-		let property = res.propertys[reg_match[1]];
+		let property = properties[reg_match[1]];
 		if (!property) {
 			property = {};
-			res.propertys[reg_match[1]] = property;
+			properties[reg_match[1]] = property;
 		}
 		const value = reg_match[3] ?? reg_match[4] ?? reg_match[5] ?? reg_match[6];
 		if (!value) {
@@ -257,7 +300,7 @@ function parseResInfo(str, relaxedParsing, token) {
 		property[reg_match[2]] = decodeBinaryString(value);
 	}
 
-	return res;
+	return properties;
 }
 
 /**
@@ -280,11 +323,11 @@ function checkResultKeyword(method, resultKeyword) {
 
 	// SPF and Sender ID (RFC 8601 section 2.7.2.)
 	if (method === "spf" || method === "sender-id") {
-		allowedKeywords = ["none", "pass", "fail", "softfail", "policy", "neutral", "temperror", "permerror"
+		allowedKeywords = ["none", "pass", "fail", "softfail", "policy", "neutral", "temperror", "permerror",
 			// Deprecated from older ARH RFC 5451.
-			, "hardfail"
+			"hardfail",
 			// Older SPF specs (e.g. RFC 4408) used mixed case.
-			, "None", "Pass", "Fail", "SoftFail", "Neutral", "TempError", "PermError"
+			"None", "Pass", "Fail", "SoftFail", "Neutral", "TempError", "PermError",
 		];
 	}
 
@@ -319,6 +362,7 @@ class RefString {
 	constructor(s) {
 		this.value = s;
 	}
+
 	/**
 	 * @param {RegExp} regexp
 	 * @returns {RegExpMatchArray?}
@@ -326,6 +370,7 @@ class RefString {
 	match(regexp) {
 		return this.value.match(regexp);
 	}
+
 	/**
 	 * @param {number} from
 	 * @param {number} [length]

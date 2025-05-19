@@ -1,7 +1,7 @@
 /**
  * Authentication Verifier.
  *
- * Copyright (c) 2014-2023 Philippe Lieser
+ * Copyright (c) 2014-2025 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -12,29 +12,28 @@
 // @ts-check
 ///<reference path="./authVerifier.d.ts" />
 ///<reference path="../experiments/storageMessage.d.ts" />
-/* eslint-env webextensions */
 /* eslint-disable camelcase */
 /* eslint-disable no-use-before-define */
 
 export const moduleVersion = "2.0.0";
 
-import { addrIsInDomain, addrIsInDomain2, copy, domainIsInDomain, getDomainFromAddr } from "./utils.mjs.js";
-import ArhParser from "./arhParser.mjs.js";
+import { addrIsInDomain, addrIsInDomain2, domainIsInDomain } from "./utils.mjs.js";
+import { loadAuthResult, saveAuthResult } from "./resultStorage.mjs.js";
 import DMARC from "./dkim/dmarc.mjs.js";
 import ExtensionUtils from "./extensionUtils.mjs.js";
 import Logging from "./logging.mjs.js";
 import MsgParser from "./msgParser.mjs.js";
 import SignRules from "./dkim/signRules.mjs.js";
 import Verifier from "./dkim/verifier.mjs.js";
-import { getBimiIndicator } from "./bimi.mjs.js";
+import getArhResult from "./arhVerifier.mjs.js";
 import { getFavicon } from "./dkim/favicon.mjs.js";
 import prefs from "./preferences.mjs.js";
 
+/** @import {ArhResInfo} from "./arhParser.mjs.js" */
+/** @import {dkimSigResultV2} from "./dkim/verifier.mjs.js" */
+
 const log = Logging.getLogger("AuthVerifier");
 
-/** @typedef {import("./arhParser.mjs.js").ArhResInfo} ArhResInfo */
-/** @typedef {import("./dkim/verifier.mjs.js").dkimResultV1} dkimResultV1 */
-/** @typedef {import("./dkim/verifier.mjs.js").dkimSigResultV2} dkimSigResultV2 */
 
 /**
  * @typedef {object} AuthResultV2
@@ -93,7 +92,6 @@ export default class AuthVerifier {
 	}
 
 	static get DKIM_RES() {
-		// eslint-disable-next-line no-extra-parens
 		return /** @type {const} */ ({
 			SUCCESS: 10,
 			TEMPFAIL: 20,
@@ -124,7 +122,7 @@ export default class AuthVerifier {
 		}
 
 		// create msg object
-		const rawMessage = await browser.messages.getRaw(message.id);
+		const rawMessage = /** @type {string} */(await browser.messages.getRaw(message.id));
 		let msgParsed;
 		try {
 			msgParsed = MsgParser.parseMsg(rawMessage);
@@ -175,11 +173,13 @@ export default class AuthVerifier {
 		}
 
 		// read Authentication-Results header
-		const arhResult = await getARHResult(message, msg.headerFields, msg.from, listId, message.folder?.accountId, this._dmarc);
+		const arhResult = getArhResult(msg.headerFields, msg.from, message.folder?.accountId);
 
 		if (arhResult) {
 			if (prefs["arh.replaceAddonResult"]) {
 				savedAuthResult = arhResult;
+				await checkSignRules(message, savedAuthResult.dkim, msg.from, listId, this._dmarc);
+				sortSignatures(savedAuthResult.dkim, msg.from, listId);
 			} else {
 				savedAuthResult = {
 					version: "3.1",
@@ -187,7 +187,7 @@ export default class AuthVerifier {
 					spf: arhResult.spf,
 					dmarc: arhResult.dmarc,
 					arh: {
-						dkim: arhResult.dkim
+						dkim: arhResult.dkim,
 					},
 					bimiIndicator: arhResult.bimiIndicator,
 				};
@@ -234,222 +234,6 @@ export default class AuthVerifier {
 }
 
 /**
- * Get the Authentication-Results header as an SavedAuthResult.
- *
- * @param {browser.messages.MessageHeader} message
- * @param {Map<string, string[]>} headers
- * @param {string} from
- * @param {string?} listId
- * @param {string|undefined} account
- * @param {DMARC} dmarc
- * @returns {Promise<SavedAuthResult|null>}
- */
-async function getARHResult(message, headers, from, listId, account, dmarc) {
-	const arHeaders = headers.get("authentication-results");
-	if (!arHeaders || !prefs["account.arh.read"](account)) {
-		return null;
-	}
-
-	// get DKIM, SPF and DMARC res
-	/** @type {ArhResInfo[]} */
-	let arhDKIM = [];
-	/** @type {ArhResInfo[]} */
-	let arhSPF = [];
-	/** @type {ArhResInfo[]} */
-	let arhDMARC = [];
-	/** @type {ArhResInfo[]} */
-	let arhBIMI = [];
-	for (const header of arHeaders) {
-		/** @type {import("./arhParser.mjs.js").ArhHeader} */
-		let arh;
-		try {
-			arh = ArhParser.parse(header, prefs["arh.relaxedParsing"], prefs["internationalized.enable"]);
-		} catch (exception) {
-			log.error("Ignoring error in parsing of ARH", exception);
-			continue;
-		}
-
-		// only use header if the authserv_id is in the allowed servers
-		const allowedAuthserv = prefs["account.arh.allowedAuthserv"](account).
-			split(" ").
-			filter(server => server);
-		if (allowedAuthserv.length &&
-			!allowedAuthserv.some(server => {
-				if (arh.authserv_id === server) {
-					return true;
-				}
-				if (server.charAt(0) === "@") {
-					return domainIsInDomain(arh.authserv_id, server.substr(1));
-				}
-				return false;
-			})) {
-			continue;
-		}
-
-		arhDKIM = arhDKIM.concat(arh.resinfo.filter((element) => {
-			return element.method === "dkim";
-		}));
-		arhSPF = arhSPF.concat(arh.resinfo.filter((element) => {
-			return element.method === "spf";
-		}));
-		arhDMARC = arhDMARC.concat(arh.resinfo.filter((element) => {
-			return element.method === "dmarc";
-		}));
-		arhBIMI = arhBIMI.concat(arh.resinfo.filter((element) => {
-			return element.method === "bimi";
-		}));
-	}
-
-	// convert DKIM results
-	const dkimSigResults = arhDKIM.map(arhDKIM_to_dkimSigResultV2);
-
-	// if ARH result is replacing the add-ons,
-	// do some checks we also do for verification
-	if (prefs["arh.replaceAddonResult"]) {
-		// check SDID and AUID of DKIM results
-		await checkSignRules(message, dkimSigResults, from, listId, dmarc);
-
-		// check signature algorithm
-		for (let i = 0; i < dkimSigResults.length; i++) {
-			if (arhDKIM[i]?.propertys.header.a === "rsa-sha1") {
-				switch (prefs["error.algorithm.sign.rsa-sha1.treatAs"]) {
-					case 0: { // error
-						dkimSigResults[i] = {
-							version: "2.0",
-							result: "PERMFAIL",
-							sdid: dkimSigResults[i]?.sdid,
-							auid: dkimSigResults[i]?.auid,
-							selector: dkimSigResults[i]?.selector,
-							errorType: "DKIM_SIGERROR_INSECURE_A",
-						};
-						break;
-					}
-					case 1: // warning
-						dkimSigResults[i]?.warnings?.push({ name: "DKIM_SIGERROR_INSECURE_A" });
-						break;
-					case 2: // ignore
-						break;
-					default:
-						throw new Error("invalid error.algorithm.sign.rsa-sha1.treatAs");
-				}
-			}
-		}
-	}
-
-	// sort signatures
-	sortSignatures(dkimSigResults, from, listId);
-
-	const savedAuthResult = {
-		version: "3.1",
-		dkim: dkimSigResults,
-		spf: arhSPF,
-		dmarc: arhDMARC,
-		bimiIndicator: getBimiIndicator(headers, arhBIMI) ?? undefined,
-	};
-	log.debug("ARH result:", copy(savedAuthResult));
-	return savedAuthResult;
-}
-
-/**
- * Save authentication result.
- *
- * @param {browser.messages.MessageHeader} message
- * @param {SavedAuthResult|null} savedAuthResult
- * @returns {Promise<void>}
- */
-async function saveAuthResult(message, savedAuthResult) {
-	// don't save result if disabled or message is external
-	if (!prefs.saveResult || !message.folder) {
-		return;
-	}
-
-	if (savedAuthResult === null) {
-		// reset result
-		log.debug("reset AuthResult result");
-		await browser.storageMessage.set(message.id, "dkim_verifier@pl-result", "");
-	} else if (savedAuthResult.dkim.some(res => res.result === "TEMPFAIL")) {
-		// don't save result if DKIM result contains a TEMPFAIL
-		log.debug("result not saved because DKIM result is a TEMPFAIL");
-	} else {
-		log.debug("save AuthResult result");
-		await browser.storageMessage.set(message.id, "dkim_verifier@pl-result",
-			JSON.stringify(savedAuthResult));
-	}
-}
-
-/**
- * Get saved authentication result.
- *
- * @param {browser.messages.MessageHeader} message
- * @returns {Promise<SavedAuthResult|null>} savedAuthResult
- */
-async function loadAuthResult(message) {
-	// don't load result if disabled or message is external
-	if (!prefs.saveResult || !message.folder) {
-		return null;
-	}
-
-	const savedAuthResultJSON = await browser.storageMessage.
-		get(message.id, "dkim_verifier@pl-result");
-
-	if (savedAuthResultJSON === "") {
-		return null;
-	}
-	log.debug("AuthResult result found: ", savedAuthResultJSON);
-
-	/** @type {dkimResultV1|AuthResultV2|SavedAuthResultV3} */
-	const savedAuthResult = JSON.parse(savedAuthResultJSON);
-
-	const versionMatch = savedAuthResult.version.match(/^[0-9]+/);
-	if (!versionMatch) {
-		throw new Error("No version found in AuthResult");
-	}
-	const majorVersion = versionMatch[0];
-	if (majorVersion === "1") {
-		// old dkimResultV1 (AuthResult version 1)
-		/** @type {dkimResultV1} */
-		// @ts-expect-error
-		const resultV1 = savedAuthResult;
-		/** @type {SavedAuthResultV3} */
-		const res = {
-			version: "3.0",
-			dkim: [dkimResultV1_to_dkimSigResultV2(resultV1)],
-		};
-		return res;
-	}
-	if (majorVersion === "2") {
-		// AuthResult version 2
-		/** @type {AuthResultV2} */
-		// @ts-expect-error
-		const resultV2 = savedAuthResult;
-		/** @type {SavedAuthResultV3} */
-		const res = {
-			version: "3.0",
-			dkim: resultV2.dkim.map(AuthResultDKIMV2_to_dkimSigResultV2),
-		};
-		if (resultV2.spf) {
-			res.spf = resultV2.spf;
-		}
-		if (resultV2.dmarc) {
-			res.dmarc = resultV2.dmarc;
-		}
-		if (resultV2.arh && resultV2.arh.dkim) {
-			res.arh = {
-				dkim: resultV2.arh.dkim.map(AuthResultDKIMV2_to_dkimSigResultV2),
-			};
-		}
-		return res;
-	}
-	if (majorVersion === "3") {
-		// SavedAuthResult version 3
-		// @ts-expect-error
-		return savedAuthResult;
-	}
-
-	throw new Error(`AuthResult result has wrong Version (${savedAuthResult.version})`);
-}
-
-/**
  * Checks the DKIM results against the sign rules.
  *
  * @param {browser.messages.MessageHeader} message
@@ -472,7 +256,6 @@ async function checkSignRules(message, dkimResults, from, listId, dmarc) {
 	for (let i = 0; i < dkimResults.length; i++) {
 		// eslint-disable-next-line require-atomic-updates
 		dkimResults[i] = await SignRules.check(
-			// eslint-disable-next-line no-extra-parens
 			/** @type {dkimSigResultV2} */(dkimResults[i]), from, listId, isOutgoingCallback, dmarcToUse);
 	}
 }
@@ -629,95 +412,6 @@ function sortSignatures(signatures, from, listId) {
 }
 
 /**
- * Convert DKIM ArhResInfo to dkimSigResultV2.
- *
- * @param {ArhResInfo} arhDKIM
- * @returns {dkimSigResultV2}
- */
-function arhDKIM_to_dkimSigResultV2(arhDKIM) {
-	/** @type {dkimSigResultV2} */
-	const dkimSigResult = {};
-	dkimSigResult.version = "2.0";
-	switch (arhDKIM.result) {
-		case "none":
-			dkimSigResult.result = "none";
-			break;
-		case "pass": {
-			dkimSigResult.result = "SUCCESS";
-			dkimSigResult.warnings = [];
-			break;
-		}
-		case "fail":
-		case "policy":
-		case "neutral":
-		case "permerror":
-			dkimSigResult.result = "PERMFAIL";
-			if (arhDKIM.reason) {
-				dkimSigResult.errorType = arhDKIM.reason;
-			} else {
-				dkimSigResult.errorType = "";
-			}
-			break;
-		case "temperror":
-			dkimSigResult.result = "TEMPFAIL";
-			if (arhDKIM.reason) {
-				dkimSigResult.errorType = arhDKIM.reason;
-			} else {
-				dkimSigResult.errorType = "";
-			}
-			break;
-		default:
-			throw new Error(`invalid dkim result in arh: ${arhDKIM.result}`);
-	}
-	let sdid = arhDKIM.propertys.header.d;
-	let auid = arhDKIM.propertys.header.i;
-	if (sdid || auid) {
-		if (!sdid) {
-			// @ts-expect-error
-			sdid = getDomainFromAddr(auid);
-		} else if (!auid) {
-			auid = `@${sdid}`;
-		}
-		dkimSigResult.sdid = sdid;
-		dkimSigResult.auid = auid;
-	}
-	return dkimSigResult;
-}
-
-/**
- * Convert dkimResultV1 to dkimSigResultV2.
- *
- * @param {dkimResultV1} dkimResultV1
- * @returns {dkimSigResultV2}
- */
-function dkimResultV1_to_dkimSigResultV2(dkimResultV1) {
-	/** @type {dkimSigResultV2} */
-	const sigResultV2 = {
-		version: "2.0",
-		result: dkimResultV1.result,
-		sdid: dkimResultV1.SDID,
-		selector: dkimResultV1.selector,
-		errorType: dkimResultV1.errorType,
-		hideFail: dkimResultV1.hideFail,
-	};
-	if (dkimResultV1.warnings) {
-		sigResultV2.warnings = dkimResultV1.warnings.map(
-			(w) => {
-				if (w === "DKIM_POLICYERROR_WRONG_SDID") {
-					return { name: w, params: [dkimResultV1.shouldBeSignedBy ?? ""] };
-				}
-				return { name: w };
-			}
-		);
-	}
-	if (dkimResultV1.errorType === "DKIM_POLICYERROR_WRONG_SDID" ||
-		dkimResultV1.errorType === "DKIM_POLICYERROR_MISSING_SIG") {
-		sigResultV2.errorStrParams = [dkimResultV1.shouldBeSignedBy ?? ""];
-	}
-	return sigResultV2;
-}
-
-/**
  * Convert dkimSigResultV2 to AuthResultDKIM.
  *
  * @param {dkimSigResultV2} dkimSigResult
@@ -748,8 +442,10 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 		case "TEMPFAIL":
 			authResultDKIM.res_num = AuthVerifier.DKIM_RES.TEMPFAIL;
 			authResultDKIM.result_str =
-				(dkimSigResult.errorType &&
-					browser.i18n.getMessage(dkimSigResult.errorType, dkimSigResult.errorStrParams)) ||
+				(
+					dkimSigResult.errorType &&
+					browser.i18n.getMessage(dkimSigResult.errorType, dkimSigResult.errorStrParams)
+				) ||
 				dkimSigResult.errorType ||
 				browser.i18n.getMessage("DKIM_INTERNALERROR_NAME");
 			break;
@@ -836,8 +532,7 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 					}
 				}
 				errorMsg =
-					browser.i18n.getMessage(errorType,
-						dkimSigResult.errorStrParams) ||
+					browser.i18n.getMessage(errorType, dkimSigResult.errorStrParams) ||
 					errorType;
 				authResultDKIM.error_str = errorMsg;
 			}
@@ -882,32 +577,11 @@ function SavedAuthResult_to_AuthResult(savedAuthResult, from) {
 	if (savedAuthResult.arh && savedAuthResult.arh.dkim) {
 		authResult.arh = {
 			dkim: savedAuthResult.arh.dkim.map(
-				dkimSigResultV2_to_AuthResultDKIM)
+				dkimSigResultV2_to_AuthResultDKIM),
 		};
 	}
 	return addFavicons(authResult, from, savedAuthResult.bimiIndicator);
 }
-
-/**
- * Convert AuthResultDKIMV2 to dkimSigResultV2.
- *
- * @param {AuthResultDKIMV2} authResultDKIM
- * @returns {dkimSigResultV2} dkimSigResultV2
- */
-function AuthResultDKIMV2_to_dkimSigResultV2(authResultDKIM) {
-	/** @type {dkimSigResultV2} */
-	const dkimSigResult = authResultDKIM;
-	// @ts-expect-error
-	dkimSigResult.res_num = undefined;
-	// @ts-expect-error
-	dkimSigResult.result_str = undefined;
-	// @ts-expect-error
-	dkimSigResult.warnings_str = undefined;
-	// @ts-expect-error
-	dkimSigResult.favicon = undefined;
-	return dkimSigResult;
-}
-
 
 /**
  * Add favicons to the DKIM results.

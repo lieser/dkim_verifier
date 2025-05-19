@@ -8,6 +8,61 @@ All notable changes to this project will be documented in this file.
 
 ### Enhancements
 
+- Added option to display the DKIM header if when an e-mail with a DKIM signature, SPF or DMARC result is viewed (#462).
+- Authentication-Results header: Invalid headers by Outlook are now accepted if reading of non RFC compliant ARHs is enabled (#423).
+- The DKIM selector is now displayed in the DKIM button pop-up (#510).
+- The options page of the add-on can now be open from the DKIM button pop-up.
+
+### Other
+
+- Updated default rules and favicons.
+
+## 6.0.1 (2025-03-10)
+
+### Fixes
+
+- Fixed the JavaScript DNS library resolver (#501).
+
+## 6.0.0 (2025-03-09)
+
+### Breaking Changes
+
+- Now requires at least Thunderbird 128.
+- Remove migration of options from versions before 4.0.0.
+
+### Enhancements
+
+- Fixed incompatibility with Thunderbird 136 (#494).
+- Authentication-Results header: Improve default behavior about which headers are trusted.
+  Instead of trusting all it now depends on the newest ARH (#465).
+
+### Fixes
+
+- If the DKIM result fails because of the check of the sign rules the detailed view now still shows the details of the DKIM signature (#495).
+- Authentication-Results header: If only an AUID is included again heuristically extract the SDID from it.
+- Fixed setting default values for boolean preferences with policies on macOS via a `.plist` (#499).
+
+### Other
+
+- Updated default rules and favicons (#497).
+
+## 5.6.0 (2025-02-17)
+
+### Enhancements
+
+- Support setting default values for preferences with managed storage (#268).
+- An explicit alignment between the AUID and the From address is no longer enforced.
+- Authentication-Results header: If replacing the add-ons verification, the SDID alignment is checked against the From address (#452).
+- Authentication-Results header: If replacing the add-ons verification, the signature and hash algorithm are now shown in the details view.
+
+### Fixes
+
+- Encoding errors in the RSA/Ed25519 key or signature now result in an invalid DKIM signature instead of an internal error.
+
+## 5.5.0 (2025-01-11)
+
+### Enhancements
+
 - Show all DKIM signatures with additional details in the DKIM button pop-up (#160, #299).
 - Improved table views for sign rules and DKIM keys (#248, #305).
   E.g. it is now possible to delete multiple entries at once.
@@ -22,6 +77,7 @@ All notable changes to this project will be documented in this file.
 
 ### Other
 
+- Added Vietnamese translation (by vtvinh24) (#485).
 - Updated default rules and favicons (#440, #443, #444, #447, #457, #461).
 - Updated Brazilian Portuguese translations (#450).
 - Updated French translations (#459).

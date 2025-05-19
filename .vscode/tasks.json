@@ -28,6 +28,11 @@
 			"detail": "Run ESLint with config for CI",
 			"type": "npm",
 			"script": "lint:ci",
+			"options": {
+				"env": {
+					"CI": "true"
+				}
+			},
 			"problemMatcher": [
 				"$eslint-stylish"
 			],

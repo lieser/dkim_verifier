@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2024 Philippe Lieser
+ * Copyright (c) 2020-2025 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -10,12 +10,10 @@
 // @ts-check
 ///<reference path="../RuntimeMessage.d.ts" />
 ///<reference path="../experiments/dkimHeader.d.ts" />
-/* eslint-env webextensions */
 
 import * as Conversations from "../modules/conversation.mjs.js";
 import KeyStore, { KeyDb } from "../modules/dkim/keyStore.mjs.js";
 import SignRules, { initSignRulesProxy } from "../modules/dkim/signRules.mjs.js";
-import { migrateKeyStore, migratePrefs, migrateSignRulesUser } from "../modules/migration.mjs.js";
 import AuthVerifier from "../modules/authVerifier.mjs.js";
 import Logging from "../modules/logging.mjs.js";
 import MsgParser from "../modules/msgParser.mjs.js";
@@ -31,13 +29,10 @@ const log = Logging.getLogger("background");
 async function init() {
 	await Logging.initLogLevelFromPrefs();
 
-	await migratePrefs();
 	await prefs.init();
 
-	await migrateSignRulesUser();
 	initSignRulesProxy();
 
-	await migrateKeyStore();
 	KeyDb.initProxy();
 }
 const isInitialized = init();
@@ -53,14 +48,16 @@ browser.tabs.onRemoved.addListener((tabId) => {
 	displayedResultsCache.delete(tabId);
 });
 
-const SHOW = {
+/** @enum {number} */
+const SHOW = /** @type {const} */ ({
 	NEVER: 0,
-	DKIM_VALID: 10,
-	DKIM_VALID_ALL: 20,
-	DKIM_SIGNED: 30,
-	EMAIL: 40,
+	DKIM_VALID: AuthVerifier.DKIM_RES.SUCCESS, // 10
+	DKIM_VALID_ALL: AuthVerifier.DKIM_RES.TEMPFAIL, // 20
+	DKIM_SIGNED: AuthVerifier.DKIM_RES.PERMFAIL, // 30
+	AUTH_RES: 33,
+	EMAIL: AuthVerifier.DKIM_RES.NOSIG, // 40
 	MSG: 50,
-};
+});
 
 const verifier = new AuthVerifier();
 
@@ -109,10 +106,17 @@ async function verifyMessage(tabId, message) {
 			log.debug("Showing of DKIM result skipped because message is no longer displayed");
 			return;
 		}
-		browser.dkimHeader.showDkimHeader(tabId, message.id, prefs.showDKIMHeader >= res.dkim[0].res_num);
+
+		let showDKIMHeader = prefs.showDKIMHeader >= res.dkim[0].res_num;
+		if (!showDKIMHeader && prefs.showDKIMHeader >= SHOW.AUTH_RES && (res.spf || res.dmarc)) {
+			showDKIMHeader = true;
+		}
+		browser.dkimHeader.showDkimHeader(tabId, message.id, showDKIMHeader);
+
 		if (prefs.showDKIMFromTooltip > SHOW.NEVER && prefs.showDKIMFromTooltip < res.dkim[0].res_num) {
 			browser.dkimHeader.showFromTooltip(tabId, message.id, false);
 		}
+
 		if (prefs.colorFrom) {
 			switch (res.dkim[0].res_num) {
 				case AuthVerifier.DKIM_RES.SUCCESS: {
@@ -163,7 +167,7 @@ browser.messageDisplay.onMessageDisplayed.addListener(async (tab, message) => {
 		displayedResultsCache.delete(tab.id);
 
 		// Nothing to verify if msg is RSS feed or news
-		const account = message.folder ? await browser.accounts.get(message.folder.accountId) : null;
+		const account = message.folder?.accountId ? await browser.accounts.get(message.folder.accountId) : null;
 		if (account && (account.type === "rss" || account.type === "nntp")) {
 			browser.dkimHeader.showDkimHeader(tab.id, message.id, prefs.showDKIMHeader >= SHOW.MSG);
 			browser.dkimHeader.setDkimHeaderResult(
@@ -175,8 +179,7 @@ browser.messageDisplay.onMessageDisplayed.addListener(async (tab, message) => {
 		// If we already know that the header should be shown, show it now
 		if (prefs.showDKIMHeader >= SHOW.EMAIL) {
 			browser.dkimHeader.showDkimHeader(tab.id, message.id, true);
-		}
-		else {
+		} else {
 			const { headers } = await browser.messages.getFull(message.id);
 			if (headers && Object.keys(headers).includes("dkim-signature")) {
 				if (prefs.showDKIMHeader >= SHOW.DKIM_SIGNED) {
@@ -222,6 +225,7 @@ class DisplayAction {
 	 * @param {number} tabId
 	 * @returns {RuntimeMessage.DisplayAction.queryResultStateResult}
 	 */
+	// eslint-disable-next-line complexity
 	static queryResultState(tabId) {
 		const res = displayedResultsCache.get(tabId);
 		const keyStored = prefs["key.storing"] !== KeyStore.KEY_STORING.DISABLED &&

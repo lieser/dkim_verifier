@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021;2023 Philippe Lieser
+ * Copyright (c) 2021;2023;2025 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -8,25 +8,20 @@
  */
 
 // @ts-check
-/* eslint-env webextensions */
 
+import "../helpers/initWebExtensions.mjs.js";
 import KeyStore, { KeyDb } from "../../modules/dkim/keyStore.mjs.js";
-import expect, { expectAsyncDkimSigError } from "../helpers/chaiUtils.mjs.js";
+import expect, { expectAsyncDkimSigError, expectAsyncDkimTempError } from "../helpers/chaiUtils.mjs.js";
 import DNS from "../../modules/dns.mjs.js";
-import { hasWebExtensions } from "../helpers/initWebExtensions.mjs.js";
 import prefs from "../../modules/preferences.mjs.js";
 import sinon from "../helpers/sinonUtils.mjs.js";
 
 describe("Key store [unittest]", function () {
 	before(async function () {
-		if (!hasWebExtensions) {
-			// eslint-disable-next-line no-invalid-this
-			this.skip();
-		}
 		await prefs.init();
 	});
 
-	beforeEach(async function () {
+	afterEach(async function () {
 		await prefs.clear();
 		await KeyDb.clear();
 	});
@@ -45,12 +40,14 @@ describe("Key store [unittest]", function () {
 			const key4 = await KeyDb.fetch("domain", "selector");
 			expect(key4).is.null;
 		});
+
 		it("mark as secure", async function () {
 			await KeyDb.store("domainA", "selector1", "key1", false);
 			await KeyDb.markAsSecure("domainA", "selector1");
 			const key1 = await KeyDb.fetch("domainA", "selector1");
 			expect(key1).is.deep.equal({ key: "key1", secure: true });
 		});
+
 		it("update", async function () {
 			await KeyDb.store("domainA", "selector1", "key1", false);
 			await KeyDb.update(1, "sdid", "domainNew");
@@ -59,6 +56,7 @@ describe("Key store [unittest]", function () {
 			const keyNew = await KeyDb.fetch("domainNew", "selector1");
 			expect(keyNew).is.deep.equal({ key: "key1", secure: false });
 		});
+
 		it("delete", async function () {
 			await KeyDb.store("domainA", "selector1", "key1", false);
 			await KeyDb.store("domainB", "selector1", "key2", false);
@@ -76,6 +74,7 @@ describe("Key store [unittest]", function () {
 			key = await KeyDb.fetch("domainC", "selector1");
 			expect(key).is.null;
 		});
+
 		it("keys should survive clearing of preferences", async function () {
 			await KeyDb.store("domainA", "selector1", "key1", false);
 			await KeyDb.store("domainB", "selector1", "key2", false);
@@ -117,6 +116,7 @@ describe("Key store [unittest]", function () {
 
 		/** @type {sinon.SinonStub} */
 		let fakeQueryDnsTxt;
+
 		before(function () {
 			fakeQueryDnsTxt = sinon.stub();
 		});
@@ -137,6 +137,7 @@ describe("Key store [unittest]", function () {
 
 			expect(fakeQueryDnsTxt.calledTwice).is.true;
 		});
+
 		it("storing enabled", async function () {
 			prefs.setValue("key.storing", KeyStore.KEY_STORING.STORE);
 			const keyStore = new KeyStore(fakeQueryDnsTxt);
@@ -149,6 +150,7 @@ describe("Key store [unittest]", function () {
 
 			expect(fakeQueryDnsTxt.calledOnce).is.true;
 		});
+
 		it("storing enabled with compare", async function () {
 			prefs.setValue("key.storing", KeyStore.KEY_STORING.COMPARE);
 			const keyStore = new KeyStore(fakeQueryDnsTxt);
@@ -164,6 +166,42 @@ describe("Key store [unittest]", function () {
 			await expectAsyncDkimSigError(keyPromise, "DKIM_POLICYERROR_KEYMISMATCH");
 
 			expect(fakeQueryDnsTxt.calledThrice).is.true;
+		});
+
+		it("Bogus DNS result", async function () {
+			const keyStore = new KeyStore(sinon.fake.resolves({
+				data: null,
+				rcode: DNS.RCODE.NoError,
+				secure: true,
+				bogus: true,
+			}));
+
+			const dnsResult = keyStore.fetchKey("example.com", "selector1");
+			await expectAsyncDkimTempError(dnsResult, "DKIM_DNSERROR_DNSSEC_BOGUS");
+		});
+
+		it("DNS result with error code", async function () {
+			const keyStore = new KeyStore(sinon.fake.resolves({
+				data: null,
+				rcode: DNS.RCODE.ServFail,
+				secure: false,
+				bogus: false,
+			}));
+
+			const dnsResult = keyStore.fetchKey("example.com", "selector1");
+			await expectAsyncDkimTempError(dnsResult, "DKIM_DNSERROR_SERVER_ERROR");
+		});
+
+		it("DNS result Non-Existent Domain", async function () {
+			const keyStore = new KeyStore(sinon.fake.resolves({
+				data: null,
+				rcode: DNS.RCODE.NXDomain,
+				secure: false,
+				bogus: false,
+			}));
+
+			const dnsResult = keyStore.fetchKey("example.com", "selector1");
+			await expectAsyncDkimSigError(dnsResult, "DKIM_SIGERROR_NOKEY");
 		});
 	});
 });

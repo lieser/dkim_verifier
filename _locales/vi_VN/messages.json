@@ -295,9 +295,6 @@
 	"DKIM_SIGWARNING_FROM_NOT_IN_SDID": {
 		"message": "From không nằm trong miền ký"
 	},
-	"DKIM_SIGWARNING_FROM_NOT_IN_AUID": {
-		"message": "From không khớp với định danh người dùng"
-	},
 	"DKIM_SIGWARNING_UNSIGNED_HEADER": {
 		"message": "header '$1' không được ký",
 		"description": "Warning if an important header is not signed"
@@ -470,6 +467,9 @@
 	"options_showDKIM.value.30": {
 		"message": "khi một email với chữ ký DKIM được xem"
 	},
+	"options_showDKIM.value.33": {
+		"message": "khi một email với chữ ký DKIM, kết quả SPF hoặc DMARC được xem"
+	},
 	"options_showDKIM.value.40": {
 		"message": "khi một email được xem"
 	},
@@ -625,6 +625,10 @@
 	},
 	"dkim_verifier.updateKey": {
 		"message": "Cập nhật khóa DKIM"
+	},
+	"button.options": {
+		"message": "Tùy chọn",
+		"description": "Button to open the options page of the Add-on."
 	},
 	"details.result": {
 		"message": "Kết quả",

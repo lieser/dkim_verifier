@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2024 Philippe Lieser
+ * Copyright (c) 2020-2025 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -8,7 +8,6 @@
  */
 
 // @ts-check
-/* eslint-env webextensions */
 /* eslint-disable no-magic-numbers */
 
 import { getElementById, uploadJsonData } from "./domUtils.mjs.js";
@@ -146,26 +145,16 @@ document.addEventListener("DOMContentLoaded", async () => {
 		selectableRangeMode: "click",
 	});
 
-	// Workaround for https://github.com/olifolkerd/tabulator/issues/4277
-	// @ts-expect-error
-	table.eventBus?.subscribe("table-redraw", (/** @type {boolean} */ force) => {
-		if (!force) {
-			for (const row of table.getRows()) {
-				row.normalizeHeight();
-			}
-		}
-	});
-
 	table.on("cellEdited", async (cell) => {
 		await SignRulesProxy.updateRule(cell.getRow().getIndex(), cell.getColumn().getField(), cell.getValue());
 	});
 
 	browser.runtime.onMessage.addListener((request, sender /*, sendResponse*/) => {
 		if (sender.id !== "dkim_verifier@pl") {
-			return;
+			return false;
 		}
 		if (typeof request !== "object" || request === null) {
-			return;
+			return false;
 		}
 		if (request.event === "ruleAdded") {
 			(async () => {
@@ -176,6 +165,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 				table.rowManager.element.scrollTo(scrollLeft, scrollTop);
 			})();
 		}
+		return false;
 	});
 
 	// Initialize buttons

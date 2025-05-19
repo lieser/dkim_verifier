@@ -261,9 +261,6 @@
 	"DKIM_SIGWARNING_FROM_NOT_IN_SDID": {
 		"message": "From 不在签名域中"
 	},
-	"DKIM_SIGWARNING_FROM_NOT_IN_AUID": {
-		"message": "From 不匹配用户标识符"
-	},
 	// JSDNS
 	"TOO_MANY_HOPS": {
 		"message": "太多跳数。"
