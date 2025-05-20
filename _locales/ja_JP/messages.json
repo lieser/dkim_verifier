@@ -473,6 +473,9 @@
 	"options_showDKIM.value.30": {
 		"message": "DKIM 署名付きのメールを閲覧した場合"
 	},
+	"options_showDKIM.value.33": {
+		"message": "DKIM 署名、SPF または DMARC の結果付きのメールを閲覧した場合"
+	},
 	"options_showDKIM.value.40": {
 		"message": "メールを閲覧した場合"
 	},
@@ -628,6 +631,10 @@
 	},
 	"dkim_verifier.updateKey": {
 		"message": "DKIM キーを更新"
+	},
+	"button.options": {
+		"message": "オプション",
+		"description": "Button to open the options page of the Add-on."
 	},
 	"details.result": {
 		"message": "結果",
