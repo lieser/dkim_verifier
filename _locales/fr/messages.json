@@ -473,6 +473,9 @@
 	"options_showDKIM.value.30": {
 		"message": "lorsqu'un e-mail avec une signature DKIM est consulté"
 	},
+	"options_showDKIM.value.33": {
+		"message": "lorsqu'un e-mail avec une signature DKIM, un résultat SPF ou DMARC est consulté"
+	},
 	"options_showDKIM.value.40": {
 		"message": "lorsqu'un e-mail est consulté"
 	},
@@ -627,6 +630,10 @@
 	},
 	"dkim_verifier.updateKey": {
 		"message": "Mettre à jour la clef DKIM"
+	},
+	"button.options": {
+		"message": "Préférences",
+		"description": "Button to open the options page of the Add-on."
 	},
 	"details.result": {
 		"message": "Résultat",
