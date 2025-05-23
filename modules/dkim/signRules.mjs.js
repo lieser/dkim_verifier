@@ -1,7 +1,7 @@
 /**
  * Check DKIM signing rules.
  *
- * Copyright (c) 2013-2018;2020-2023 Philippe Lieser
+ * Copyright (c) 2013-2018;2020-2023;2025 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -12,7 +12,6 @@
 // @ts-check
 ///<reference path="../../RuntimeMessage.d.ts" />
 ///<reference path="../../experiments/mailUtils.d.ts" />
-/* eslint-env webextensions */
 
 import { Deferred, addrIsInDomain, copy, stringEndsWith, stringEqual } from "../utils.mjs.js";
 import ExtensionUtils from "../extensionUtils.mjs.js";
@@ -39,7 +38,6 @@ const log = Logging.getLogger("SignRules");
  * @public
  * @enum {number}
  */
-// eslint-disable-next-line no-extra-parens
 const RULE_TYPE = /** @type {const} */ ({
 	ALL: 1, // all e-mails must be signed
 	NEUTRAL: 2,
@@ -52,7 +50,6 @@ const RULE_TYPE = /** @type {const} */ ({
  * @public
  * @enum {number}
  */
-// eslint-disable-next-line no-extra-parens
 const PRIORITY = /** @type {const} */ ({
 	AUTOINSERT_RULE_ALL: 1100,
 	DEFAULT_RULE_ALL0: 2000, // used for e-mail providers
@@ -65,7 +62,6 @@ const PRIORITY = /** @type {const} */ ({
 });
 
 /** @enum {number} */
-// eslint-disable-next-line no-extra-parens
 const AUTO_ADD_RULE_FOR = /** @type {const} */ ({
 	FROM_ADDRESS: 0,
 	SUB_DOMAIN: 1,
@@ -344,8 +340,7 @@ function checkSDID(dkimResult, allowedSDIDs) {
 	// Remove potential warning that address is not in SDID or AUID,
 	// as the allowed SDIDs are explicitly stated via the sign rules
 	result.warnings = result.warnings.filter(warning => {
-		return warning.name !== "DKIM_SIGWARNING_FROM_NOT_IN_SDID" &&
-			warning.name !== "DKIM_SIGWARNING_FROM_NOT_IN_AUID";
+		return warning.name !== "DKIM_SIGWARNING_FROM_NOT_IN_SDID";
 	});
 
 	// error/warning if there is a SDID in the sign rule
@@ -361,12 +356,10 @@ function checkSDID(dkimResult, allowedSDIDs) {
 				{ name: "DKIM_POLICYERROR_WRONG_SDID", params: [allowedSDIDs] });
 			log.debug("Warning: DKIM_POLICYERROR_WRONG_SDID");
 		} else {
-			return {
-				version: "2.0",
-				result: "PERMFAIL",
-				errorType: "DKIM_POLICYERROR_WRONG_SDID",
-				errorStrParams: allowedSDIDs,
-			};
+			result.result = "PERMFAIL";
+			result.errorType = "DKIM_POLICYERROR_WRONG_SDID";
+			result.errorStrParams = allowedSDIDs;
+			result.warnings = [];
 		}
 	}
 
@@ -402,7 +395,10 @@ export default class SignRules {
 	static async exportUserRules() {
 		/** @type {{id?: number, domain: string, listId: string, addr: string, sdid: string, type: number, priority: number, enabled: boolean }[]} */
 		const rules = copy(await this.getUserRules());
-		rules.map(rule => { delete rule.id; return rule; });
+		rules.map(rule => {
+			delete rule.id;
+			return rule;
+		});
 		return {
 			dataId: "DkimExportedUserSignRules",
 			dataFormatVersion: 1,
@@ -513,7 +509,6 @@ export default class SignRules {
 			ruleDomain = await browser.mailUtils.getBaseDomainFromAddr(addr);
 		}
 
-		// eslint-disable-next-line no-extra-parens
 		if (!Object.values(/** @type {{[key: string]: number}} */(RULE_TYPE)).includes(type)) {
 			throw new Error(`unknown rule type ${type}`);
 		}

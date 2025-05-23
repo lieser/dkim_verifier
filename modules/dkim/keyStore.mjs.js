@@ -2,7 +2,7 @@
  * Abstract DKIM key store for key retrieval.
  * Will get the key either from DNS or an internal cache.
  *
- * Copyright (c) 2013-2018;2021-2024 Philippe Lieser
+ * Copyright (c) 2013-2018;2021-2025 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -13,10 +13,9 @@
 // @ts-check
 ///<reference path="../../RuntimeMessage.d.ts" />
 ///<reference path="../dns.d.ts" />
-/* eslint-env webextensions */
 
-import { DKIM_SigError, DKIM_TempError } from "../error.mjs.js";
 import { Deferred, dateToString } from "../utils.mjs.js";
+import { DKIM_SigError } from "../error.mjs.js";
 import DNS from "../dns.mjs.js";
 import Logging from "../logging.mjs.js";
 import prefs from "../preferences.mjs.js";
@@ -277,7 +276,6 @@ export class KeyDb {
 			throw new Error("KeyDb proxy receiver got unknown request.");
 		});
 	}
-
 }
 
 /**
@@ -320,7 +318,7 @@ export default class KeyStore {
 	 * @param {string} selector
 	 * @returns {Promise<DkimKeyResult>}
 	 * @throws {DKIM_SigError}
-	 * @throws {DKIM_TempError}
+	 * @throws {import("../error.mjs.js").DKIM_TempError}
 	 */
 	async fetchKey(sdid, selector) {
 		switch (prefs["key.storing"]) {
@@ -365,19 +363,13 @@ export default class KeyStore {
 	 * @param {string} selector
 	 * @returns {Promise<DkimKeyResult>}
 	 * @throws {DKIM_SigError}
-	 * @throws {DKIM_TempError}
+	 * @throws {import("../error.mjs.js").DKIM_TempError}
 	 */
 	async #getKeyFromDNS(sdid, selector) {
 		const dnsRes = await this._queryDnsTxt(`${selector}._domainkey.${sdid}`);
 		log.debug("dns result", dnsRes);
+		DNS.checkForErrors(dnsRes);
 
-		if (dnsRes.bogus) {
-			throw new DKIM_TempError("DKIM_DNSERROR_DNSSEC_BOGUS");
-		}
-		if (dnsRes.rcode !== DNS.RCODE.NoError && dnsRes.rcode !== DNS.RCODE.NXDomain) {
-			log.info("DNS query failed with result:", dnsRes);
-			throw new DKIM_TempError("DKIM_DNSERROR_SERVER_ERROR");
-		}
 		if (dnsRes.data === null || !dnsRes.data[0]) {
 			throw new DKIM_SigError("DKIM_SIGERROR_NOKEY");
 		}

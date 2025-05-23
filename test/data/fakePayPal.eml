@@ -1,3 +1,7 @@
+Authentication-Results: example.net;
+  dmarc=fail
+Authentication-Results: unrelated.net;
+  dkim=pass (good signature) header.d=paypal.com
 From: PayPal <info@paypal.com>
 To: Alice <alice@example.net>
 Subject: Your PayPal account [fake]

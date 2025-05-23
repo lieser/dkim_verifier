@@ -44,7 +44,7 @@ export function getBimiIndicator(headers, arhBIMI) {
 	const hasAuthorityPassBIMI = arhBIMI.some(
 		arh => arh.method === "bimi" &&
 			arh.result === "pass" &&
-			arh.propertys.policy.authority === "pass"
+			arh.properties.policy.authority === "pass"
 	);
 	if (!hasAuthorityPassBIMI) {
 		return null;

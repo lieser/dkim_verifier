@@ -2,7 +2,7 @@
  * A ChromeWorker wrapper for the libunbound DNS library.
  * Currently only the TXT resource record is completely supported.
  *
- * Copyright (c) 2016-2018;2020-2023 Philippe Lieser
+ * Copyright (c) 2016-2018;2020-2023;2025 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -13,12 +13,36 @@
 // @ts-check
 ///<reference path="./ctypes.d.ts" />
 ///<reference path="./libunbound.d.ts" />
-/* eslint-env mozilla/chrome-worker, mozilla/jsm */
+/* global ctypes, onmessage:writable */
+/* exported onmessage */
 /* eslint-disable camelcase */
-/* eslint no-global-assign: ["error", {"exceptions": ["onmessage"]}] */
 
 "use strict";
 
+
+/**
+ * @param {Libunbound.Log} logMessage
+ */
+function postLogMessage(logMessage) {
+	// eslint-disable-next-line no-undef
+	postMessage(logMessage);
+}
+
+/**
+ * @param {Libunbound.Result} logMessage
+ */
+function postResultMessage(logMessage) {
+	// eslint-disable-next-line no-undef
+	postMessage(logMessage);
+}
+
+/**
+ * @param {Libunbound.Exception} logMessage
+ */
+function postExceptionMessage(logMessage) {
+	// eslint-disable-next-line no-undef
+	postMessage(logMessage);
+}
 
 const log_prefix = "libunboundWorker: ";
 const postLog = {
@@ -27,43 +51,34 @@ const postLog = {
 	 * @returns {void}
 	 */
 	error(msg) {
-		/** @type {Libunbound.Log} */
-		const toSend = { type: "log", subType: "error", message: log_prefix + msg };
-		postMessage(toSend);
+		postLogMessage({ type: "log", subType: "error", message: log_prefix + msg });
 	},
 	/**
 	 * @param {string} msg
 	 * @returns {void}
 	 */
 	warn(msg) {
-		/** @type {Libunbound.Log} */
-		const toSend = { type: "log", subType: "warn", message: log_prefix + msg };
-		postMessage(toSend);
+		postLogMessage({ type: "log", subType: "warn", message: log_prefix + msg });
 	},
 	/**
 	 * @param {string} msg
 	 * @returns {void}
 	 */
 	info(msg) {
-		/** @type {Libunbound.Log} */
-		const toSend = { type: "log", subType: "info", message: log_prefix + msg };
-		postMessage(toSend);
+		postLogMessage({ type: "log", subType: "info", message: log_prefix + msg });
 	},
 	/**
 	 * @param {string} msg
 	 * @returns {void}
 	 */
 	debug(msg) {
-		/** @type {Libunbound.Log} */
-		const toSend = { type: "log", subType: "debug", message: log_prefix + msg };
-		postMessage(toSend);
+		postLogMessage({ type: "log", subType: "debug", message: log_prefix + msg });
 	},
 };
 
 /**
  * @enum {number}
  */
-// eslint-disable-next-line no-extra-parens
 const Constants = /** @type {const} */ ({
 	RR_TYPE_A: 1,
 	RR_TYPE_A6: 38,
@@ -335,21 +350,21 @@ function load(paths) {
 	//     int ttl;     /* number of seconds the result is valid */
 	// };
 	ub_result = new ctypes.StructType("ub_result", [
-		{ "qname": ctypes.char.ptr },
-		{ "qtype": ctypes.int },
-		{ "qclass": ctypes.int },
-		{ "data": ctypes.char.ptr.ptr },
-		{ "len": ctypes.int.ptr },
-		{ "canonname": ctypes.char.ptr },
-		{ "rcode": ctypes.int },
-		{ "answer_packet": ctypes.voidptr_t },
-		{ "answer_len": ctypes.int },
-		{ "havedata": ctypes.int },
-		{ "nxdomain": ctypes.int },
-		{ "secure": ctypes.int },
-		{ "bogus": ctypes.int },
-		{ "why_bogus": ctypes.char.ptr },
-		{ "ttl": ctypes.int }
+		{ qname: ctypes.char.ptr },
+		{ qtype: ctypes.int },
+		{ qclass: ctypes.int },
+		{ data: ctypes.char.ptr.ptr },
+		{ len: ctypes.int.ptr },
+		{ canonname: ctypes.char.ptr },
+		{ rcode: ctypes.int },
+		{ answer_packet: ctypes.voidptr_t },
+		{ answer_len: ctypes.int },
+		{ havedata: ctypes.int },
+		{ nxdomain: ctypes.int },
+		{ secure: ctypes.int },
+		{ bogus: ctypes.int },
+		{ why_bogus: ctypes.char.ptr },
+		{ ttl: ctypes.int },
 	]);
 
 	// struct ub_ctx * ub_ctx_create(void);
@@ -363,7 +378,7 @@ function load(paths) {
 	ub_ctx_config = lib.declare("ub_ctx_config", ctypes.default_abi, ctypes.int,
 		ub_ctx.ptr, ctypes.char.ptr);
 
-	//int ub_ctx_set_fwd(struct ub_ctx* ctx, char* addr);
+	// int ub_ctx_set_fwd(struct ub_ctx* ctx, char* addr);
 	ub_ctx_set_fwd = lib.declare("ub_ctx_set_fwd", ctypes.default_abi, ctypes.int,
 		ub_ctx.ptr, ctypes.char.ptr);
 
@@ -478,40 +493,41 @@ onmessage = function (msg) {
 			switch (msg.data.method) {
 				case "resolve": {
 					/** @type {Libunbound.ResolveRequest} */
-					// @ts-expect-error
 					const req = msg.data;
 					res = resolve(req.name, req.rrtype);
 					break;
 				}
 				case "load": {
 					/** @type {Libunbound.LoadRequest} */
-					// @ts-expect-error
 					const req = msg.data;
 					load(req.path);
 					break;
 				}
 				case "update_ctx": {
 					/** @type {Libunbound.UpdateCtxRequest} */
-					// @ts-expect-error
 					const req = msg.data;
 					update_ctx(req.conf, req.debuglevel,
 						req.getNameserversFromOS, req.nameservers,
 						req.trustAnchors);
 					break;
 				}
-				default:
-					throw new Error(`unknown method ${msg.data.method}`);
+				default: {
+					// @ts-expect-error
+					const unknownMethod = msg.data.method;
+					throw new Error(`unknown method ${unknownMethod}`);
+				}
 			}
 
 			// return result
-			postMessage({
+			postResultMessage({
+				type: "result",
 				callId: msg.data.callId,
 				result: res,
 			});
 		} catch (exception) {
 			// @ts-expect-error
 			postLog.debug(`Posting exception back to main script: ${exception}; stack: ${exception.stack}`);
-			postMessage({
+			postExceptionMessage({
 				type: "error",
 				subType: "DKIM_DNSERROR_UNKNOWN",
 				callId: msg.data.callId,

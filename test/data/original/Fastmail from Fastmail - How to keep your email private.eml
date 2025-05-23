@@ -1,0 +1,396 @@
+Return-Path: <bounce@messagingengine.com>
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+	 by sloti53n25 (Cyrus 3.9.0-alpha0-1048-g9229b632c5-fm-20231019.001-g9229b632) with LMTPA;
+	 Mon, 23 Oct 2023 17:05:28 -0400
+X-Cyrus-Session-Id: sloti53n25-1698095128-442932-2-6902784634762608924
+X-Sieve: CMU Sieve 3.0
+X-Spam-known-sender: yes ("The Fastmail Team"); trusted-sender
+X-Spam-sender-reputation: 500 (none)
+X-Spam-score: 0.0
+X-Spam-hits: ALL_TRUSTED -1, HEADER_FROM_DIFFERENT_DOMAINS 1, HTML_MESSAGE 0.001,
+  ME_SENDERREP_NEUTRAL 0.001, SPF_PASS -0.001, LANGUAGES en,
+  BAYES_USED none, SA_VERSION 3.4.6
+X-Spam-source: IP='Unknown', Host='unk', Country='unk', FromHeader='com', MailFrom='com'
+X-Spam-charsets: plain='utf-8', html='utf-8'
+X-Resolved-to: bimi_test@fastmail.com
+X-Delivered-to: bimi_test@fastmail.com
+X-Mail-from: bounce@messagingengine.com
+Received: from mx5 ([10.202.2.204])
+  by compute5.internal (LMTPProxy); Mon, 23 Oct 2023 17:05:28 -0400
+Received: from mx5.messagingengine.com (localhost [127.0.0.1])
+	by mailmx.nyi.internal (Postfix) with ESMTP id 5E18127200D4;
+	Mon, 23 Oct 2023 17:05:28 -0400 (EDT)
+Received: from mailmx.nyi.internal (localhost [127.0.0.1])
+    by mx5.messagingengine.com (Authentication Milter) with ESMTP
+    id B6B15C09D69.0FEB627200B2;
+    Mon, 23 Oct 2023 17:05:28 -0400
+ARC-Seal: i=1; a=rsa-sha256; cv=none; d=messagingengine.com; s=fm3; t=
+    1698095128; b=VjApdKAQApWPDNnI16NOW7DR6yUdSm+VdsqGSu1FYJDGTp8PoI
+    pe8Gg4xUtVfArq66D72Pkw+uowJykpRvSdJsRjkee15ONWIy/OWDM3mr/KgUF/vl
+    GRZauu7sKJsG111vcMO27Nhf4gr9B3V+AZ8rGIEO8WtBp92UVSkGkXsveW2mYTdN
+    IUjxNpfDUyPCBseoa6OHr6iG2uVeXaO+KXrno6niNNFvmTUW2/3ndXM2Irbunu2s
+    pzNcOh1boLrcokyW0+cZ31fP6Gc7VTuNxQFd6ouySgiBA/ScKu8m1MPF6bM8QAzL
+    sUIKV9dNxFJlCXR/jdIxkDmoS7SES0VPJtKQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=
+    messagingengine.com; h=subject:date:mime-version:content-type
+    :content-transfer-encoding:message-id:to:from:reply-to; s=fm3;
+    t=1698095128; bh=NEXks9VeZGh8MCbux9emzYUioaqUrMaTRkbWDXzwpDQ=; b=
+    UJMe4KYe7dfytotGSMfMJOwqxdXbhWdtBo6GwyWzUD69G1fAdFlVLN/ZuTgi4Ie0
+    TKKwLVlo1C0HTxF+RZRty/HiApiNvGQ9Z5bHLeC5CiB3HKn/p9A2gE/qAbBSrPdX
+    KVk/P4W/GomnZf2rbQn6te4egAayF29qXql8GBeI5PtLUYJMPO/4TFYPhZM1W/xH
+    KRV/TAQngemq+wmkbSMZdQwb6rkUP81fDYO5dzC8pjON9kwYrYimttVw4aCJSbFN
+    DxylOU0RYcjTGUO2Py6u5KGB5ag6MexX5TxN03FKBReOobQEmPumbdS1yirp+Yd3
+    TAaScgRxlggbumH9J0XCfg==
+ARC-Authentication-Results: i=1; mx5.messagingengine.com;
+    x-csa=none;
+    x-me-sender=pass
+    policy.xms=
+    GOA2Zc6oq7Y9GlFaopwS_xcxqA_g098EEGHYseH2k4TlLEHyGxpLzSx-AHPooTndZgwXQQf2NhjcL4NN17nZioW58CC8lkiw_-EABUiX3gbWl4efIXxorFYAs_Jkr-YRpYAdd1rgmer0JQ;
+    x-ptr=pass smtp.helo=out1-smtp.messagingengine.com
+    policy.ptr=out1-smtp.messagingengine.com;
+    bimi=skipped (DMARC Policy is not at enforcement);
+    arc=none (no signatures found);
+    dkim=pass (2048-bit rsa key sha256) header.d=fastmail.com
+    header.i=@fastmail.com header.b=DP7gdjFE header.a=rsa-sha256
+    header.s=fm3;
+    dkim=pass (2048-bit rsa key sha256) header.d=messagingengine.com
+    header.i=@messagingengine.com header.b=tpzZWGk1 header.a=rsa-sha256
+    header.s=fm3;
+    dmarc=pass policy.published-domain-policy=none
+    policy.published-subdomain-policy=none policy.applied-disposition=none
+    policy.evaluated-disposition=none (p=none,sp=none,d=none,d.eval=none)
+    policy.policy-from=p header.from=fastmail.com;
+    iprev=pass smtp.remote-ip=66.111.4.25 (out1-smtp.messagingengine.com);
+    spf=pass smtp.mailfrom=bounce@messagingengine.com
+    smtp.helo=out1-smtp.messagingengine.com
+X-ME-Authentication-Results: mx5.messagingengine.com;
+    x-aligned-from=fail;
+    x-return-mx=pass header.domain=fastmail.com policy.is_org=yes
+      (MX Records found: in2-smtp.messagingengine.com,in1-smtp.messagingengine.com);
+    x-return-mx=pass smtp.domain=messagingengine.com policy.is_org=yes
+      (MX Records found: in2-smtp.messagingengine.com,in1-smtp.messagingengine.com);
+    x-tls=pass smtp.version=TLSv1.3 smtp.cipher=TLS_AES_256_GCM_SHA384
+      smtp.bits=256/256;
+    x-vs=clean score=0 state=0
+Authentication-Results: mx5.messagingengine.com;
+    x-csa=none;
+    x-me-sender=pass
+      policy.xms=
+      GOA2Zc6oq7Y9GlFaopwS_xcxqA_g098EEGHYseH2k4TlLEHyGxpLzSx-AHPooTndZgwXQQf2NhjcL4NN17nZioW58CC8lkiw_-EABUiX3gbWl4efIXxorFYAs_Jkr-YRpYAdd1rgmer0JQ;
+    x-ptr=pass smtp.helo=out1-smtp.messagingengine.com
+      policy.ptr=out1-smtp.messagingengine.com
+Authentication-Results: mx5.messagingengine.com;
+    bimi=skipped (DMARC Policy is not at enforcement)
+Authentication-Results: mx5.messagingengine.com;
+    arc=none (no signatures found)
+Authentication-Results: mx5.messagingengine.com;
+    dkim=pass (2048-bit rsa key sha256) header.d=fastmail.com
+      header.i=@fastmail.com header.b=DP7gdjFE header.a=rsa-sha256
+      header.s=fm3;
+    dkim=pass (2048-bit rsa key sha256) header.d=messagingengine.com
+      header.i=@messagingengine.com header.b=tpzZWGk1 header.a=rsa-sha256
+      header.s=fm3;
+    dmarc=pass policy.published-domain-policy=none
+      policy.published-subdomain-policy=none policy.applied-disposition=none
+      policy.evaluated-disposition=none (p=none,sp=none,d=none,d.eval=none)
+      policy.policy-from=p header.from=fastmail.com;
+    iprev=pass smtp.remote-ip=66.111.4.25 (out1-smtp.messagingengine.com);
+    spf=pass smtp.mailfrom=bounce@messagingengine.com
+      smtp.helo=out1-smtp.messagingengine.com
+X-ME-VSCause: gggruggvucftvghtrhhoucdtuddrgedvkedrkeeigdduheehucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdggtfgfnhhsuhgsshgtrhhisggvpdfu
+    rfetoffkrfgpnffqhgenuceurghilhhouhhtmecufedttdenucenucfjughrpefuffggtg
+    fgkffvoffhvghrsegrjeerreertdejnecuhfhrohhmpedfvfhhvgcuhfgrshhtmhgrihhl
+    ucfvvggrmhdfuceoshhuphhpohhrthesfhgrshhtmhgrihhlrdgtohhmqeenucggtffrrg
+    htthgvrhhnpeelueehtddtleeivdejvdeliedvfeejleelieeftdejjeehtdetudetleef
+    ffevleenucffohhmrghinhepfhgrshhtmhgrihhlrdgtohhmpdhtfihithhtvghrrdgtoh
+    hmpdhmrghsthhoughonhdrshhotghirghlpdhfrghsthhmrghilhdrhhgvlhhpnecukfhp
+    peeiiedrudduuddrgedrvdehnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpe
+    hinhgvthepieeirdduuddurdegrddvhedphhgvlhhopehouhhtuddqshhmthhprdhmvghs
+    shgrghhinhhgvghnghhinhgvrdgtohhmpdhmrghilhhfrhhomhepoegsohhunhgtvgesmh
+    gvshhsrghgihhnghgvnhhgihhnvgdrtghomheqpdhnsggprhgtphhtthhopedvpdhrtghp
+    thhtohepoegsihhmihgpthgvshhtsehfrghsthhmrghilhdrtghomheqpdhrtghpthhtoh
+    epoegrrhgthhhivhgvsehfrghsthhmrghilhhshihsthgvmhdrtghomheq
+X-ME-VSScore: 0
+X-ME-VSCategory: clean
+X-ME-CSA: none
+Received-SPF: pass
+    (messagingengine.com: Sender is authorized to use 'bounce@messagingengine.com' in 'mfrom' identity (mechanism 'include:spf.messagingengine.com' matched))
+    receiver=mx5.messagingengine.com;
+    identity=mailfrom;
+    envelope-from="bounce@messagingengine.com";
+    helo=out1-smtp.messagingengine.com;
+    client-ip=66.111.4.25
+Received: from mailout.nyi.internal (outbound1.nyi.internal [10.202.2.181])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mailmx.nyi.internal (Postfix) with ESMTPS id 0FEB627200B2;
+	Mon, 23 Oct 2023 17:05:28 -0400 (EDT)
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
+	by mailout.nyi.internal (Postfix) with ESMTP id 02EEA5C03F6;
+	Mon, 23 Oct 2023 17:05:28 -0400 (EDT)
+Received: from web3 ([10.202.2.213])
+  by compute6.internal (MEProxy); Mon, 23 Oct 2023 17:05:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fastmail.com; h=
+	cc:content-transfer-encoding:content-type:content-type:date:date
+	:from:from:in-reply-to:message-id:mime-version:reply-to:reply-to
+	:sender:subject:subject:to:to; s=fm3; t=1698095127; x=
+	1698181527; bh=NEXks9VeZGh8MCbux9emzYUioaqUrMaTRkbWDXzwpDQ=; b=D
+	P7gdjFEagihCbl2ImXMOdZbd0f5RQFcAceJ93jl1ejX+BhrMNU5dJVtRzfpTZfa9
+	DHxwv9ZfNHdpjUKO/eV1ToCGWX8ApmbBTN06LwkVtic73AcYwrUpC3vDkInY+UrQ
+	l9kjE+jtfdfUnrA1spHdXS8S7TLnPVFuwx3imDYosRZqDFV0bT5qyghPip+Nxqtu
+	1OBBEQPJ8PJfqupI5kDVVighKP7gMkAFixfCr5Tcg0RNEYa/Hk8E/z7FncMz8Dqv
+	OZWU97xl6evXymCP1vHIWEK9azWzOzFX8VCilgSRum7LP3xX08UpB4BFjsbZKpS8
+	Cv1Lo62+4AKWVlRLF2QvA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:content-transfer-encoding:content-type
+	:content-type:date:date:feedback-id:feedback-id:from:from
+	:in-reply-to:message-id:mime-version:reply-to:reply-to:sender
+	:subject:subject:to:to:x-me-proxy:x-me-proxy:x-me-sender
+	:x-me-sender:x-sasl-enc; s=fm3; t=1698095127; x=1698181527; bh=N
+	EXks9VeZGh8MCbux9emzYUioaqUrMaTRkbWDXzwpDQ=; b=tpzZWGk15+tXXaGSU
+	kCt+GfnrGosXT7IFYnftW8p5qPysC3EWNWaX5IYm+W2eYuCJKbiea1lFo4XOj8tk
+	i7LF3ryQ1AR46kxQIhQZiih7BPYJ8KGuQHIpx9/4fRE4T5OBVlClXwfel5hC9cj3
+	EqtV7HhCVdTuNSbv028egbvH63HMBTPlEOxS4aHkJCy3PS4uDn2dOOAU7rbAUxsB
+	Tl1uIRSOD/tpippmAR//HCvB4h7fMdzTOxUwMKxbVS3yJhdMIG1kwtxpojm59aUY
+	QmV5cR4FeniJ+J7m6XGAWH8TiocL4DhprCT+G1opMYgqAt011uiqsckssK4r8LY7
+	W5yRg==
+X-ME-Sender: <xms:F-A2ZXyMDvaynbrBGTyoJCPLukz2lznHRz7yGFCooRrAdun907yL6g>
+    <xme:F-A2ZfRUrygbvUjAmQRRRmmhFeaX4dlglaHvy7SowkDYTnGuxDLRM9MdKWCjQKsxW
+    1deIDWffwU9lA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvkedrkeeigdduheegucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefuffggtgfgkffvoffhvghrsegrje
+    erreertdejnecuhfhrohhmpedfvfhhvgcuhfgrshhtmhgrihhlucfvvggrmhdfuceoshhu
+    phhpohhrthesfhgrshhtmhgrihhlrdgtohhmqeenucggtffrrghtthgvrhhnpeelueehtd
+    dtleeivdejvdeliedvfeejleelieeftdejjeehtdetudetleefffevleenucffohhmrghi
+    nhepfhgrshhtmhgrihhlrdgtohhmpdhtfihithhtvghrrdgtohhmpdhmrghsthhoughonh
+    drshhotghirghlpdhfrghsthhmrghilhdrhhgvlhhpnecuvehluhhsthgvrhfuihiivgep
+    tdenucfrrghrrghmpehmrghilhhfrhhomhepsghouhhntggvsehmvghsshgrghhinhhgvg
+    hnghhinhgvrdgtohhm
+X-ME-Proxy: <xmx:F-A2ZRW8SrkPKW2zvZ8ExAcqTe4L7yUD33fr3wSQT9qNQ5UiseE4Ew>
+    <xmx:F-A2ZRhfDOjfCMDxK4xJOlIyv3mXfrKteRNQvZA_Q8susldPfiEXXA>
+    <xmx:F-A2ZZDRF6HEbiQBp48r3q5glCioSP5sfWzFZ-EkTGQG9YypvxW_zw>
+    <xmx:F-A2ZU-yZWf6eoDpS2L7ewrbOdZAHATHZ5_RgIwWWukmzlAwgaC_Ww>
+Feedback-ID: i35d941ae:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 0)
+	id D1C502460882; Mon, 23 Oct 2023 17:05:27 -0400 (EDT)
+Subject: How to keep your email private
+Date: Mon, 23 Oct 2023 17:05:27 -0400
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary=16980951270.0fF582b.1339511
+Content-Transfer-Encoding: 7bit
+Message-ID: <16980951271.46dF7.1339511@web3.nyi.internal>
+To: bimi_test@fastmail.com
+X-Mailer: MessagingEngine.com Internal Interface
+From: "The Fastmail Team" <support@fastmail.com>
+X-FM-Archive-To: bimi_test@fastmail.com
+X-FM-MailKit: welcome/trial-welcome-2-admins-brand-domain
+Errors-To: bounce@messagingengine.com
+Reply-To: support@fastmail.com
+Auto-Submitted: auto-generated
+
+
+--16980951270.0fF582b.1339511
+Date: Mon, 23 Oct 2023 17:05:27 -0400
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+
+Protect yourself from tracking, data leaks, and spammers by using
+alternative addresses that keep your main address private.
+
+Additional email addresses can help you stay anonymous, present a
+polished professional identity, or promote your brand.
+
+Here=E2=80=99s how to do it:
+
+1. Add extra [email addresses](https://app.fastmail.com/settings/addresses)=
+. Fastmail lets you have=20
+   hundreds of email addresses. Use them for better privacy, professionalis=
+m,=20
+   and organization.
+2. Use [Masked Emails](https://app.fastmail.com/settings/masked) for
+   your logins. Generate a random email address so websites don=E2=80=99t k=
+now who
+   you are. Now you don=E2=80=99t have to share any address that identifies=
+ you
+   with online stores or brands.
+3. Make a personalized address with [your own domain](https://app.fastmail.=
+com/settings/domains) for your family,
+   business, brand or project.
+
+Hundreds of addresses are included at no additional charge. Use your own do=
+main
+on our Standard or Professional [plans](https://app.fastmail.com/settings/p=
+lan).
+
+Happy emailing,=20=20
+The Fastmail Team
+
+Questions? Our [support team](https://support.fastmail.com/) is
+always here to help.=20=20
+Stay up-to-date by following us on [our blog](https://fastmail.com/blog),
+[Twitter](https://twitter.com/Fastmail), [Mastodon](https://mastodon.social=
+/@fastmail) and
+[podcast](https://www.fastmail.com/digitalcitizen/).
+
+
+--16980951270.0fF582b.1339511
+Date: Mon, 23 Oct 2023 17:05:27 -0400
+MIME-Version: 1.0
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html>
+<html lang=3D"en" xmlns:v=3D"urn:schemas-microsoft-com:vml" xmlns:o=3D"urn:=
+schemas-microsoft-com:office:office" xmlns:w=3D"urn:schemas-microsoft-com:o=
+ffice:word">
+<head>
+<title></title>
+<meta charset=3D"utf-8">
+<meta name=3D"viewport" content=3D"width=3Ddevice-width">
+<meta name=3D"color-scheme" content=3D"light dark">
+<meta name=3D"supported-color-schemes" content=3D"light dark">
+<!--[if gte mso 9]><xml><o:OfficeDocumentSettings><o:AllowPNG/><o:PixelsPer=
+Inch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml><![endif]-->
+<style type=3D"text/css">
+:root {color-scheme: light dark;supported-color-schemes: light dark;}
+pre#wrapped-content {font: 16px/25px "Proxima Nova", system-ui, "-apple-sys=
+tem", "Segoe UI", Arial, sans-serif;}
+h1,h2,h3,p,pre,ul,ol,hr{margin:20px 0;}
+h1,h2,h3{line-height:1.2;color:#333E48;}
+h1{font-size:22px;}
+h2{font-size:20px;}
+h3{font-size:18px;}
+h1,h2,h3,strong{font-weight:600;}
+.main h2 a{text-decoration:none;font-weight:600;color:#0067B9;font-size:20p=
+x;}
+hr{border:0;border-top:1px solid #e0e2e3;height:0;background:transparent;pa=
+dding:0;margin:24px 0;}
+.main a{color:#0067b9;}
+.logo{line-height:16px;}
+.main>h1:first-child,.main>h2:first-child,.main>h3:first-child,.main>p:firs=
+t-child{margin-top:0px!important;}
+.main>p:last-child{margin-bottom:0px!important;}
+@media(max-width:500px){
+.main{padding:30px 20px!important;}
+.logo{padding:10px!important;}
+#type-header{margin-top:0;}
+}
+@media(max-width:400px){.main h2 a{display:block;}}
+@media screen{
+@import url("https://app.fastmail.com/static/styles/font.css");
+}
+.logo-dark,.logo-light{width:120px;height:30px;}
+.logo-dark{display: none!important;}
+@media (prefers-color-scheme: dark) {
+body{background:#2f3136!important;color:#ffffff!important;}
+footer{color:#c9d5e2!important;}
+h1,h2,h3{color:#c9d5e2!important;}
+.main-body{background:#38393a!important;}
+.logo-dark{display:inline-block!important;width:auto!important;max-height:i=
+nherit!important;overflow:visible!important;float:none!important;}
+.logo-light{display:none!important;}
+.main a,.main h2 a{color:#69b3e7;}
+}
+</style>
+<!--[if mso]>
+<style type=3D"text/css">
+body, table, td {font-family: Arial, Helvetica, sans-serif !important;}
+</style>
+<![endif]-->
+</head>
+<body bgcolor=3D"#ebeced" style=3D"padding:0;margin:0;background:#ebeced;co=
+lor:#333e48;font:16px/25px 'Proxima Nova', system-ui, '-apple-system', 'Seg=
+oe UI', Arial, sans-serif;text-align:center;-webkit-text-size-adjust:none">
+
+<header>
+<!--[if mso]>
+<a href=3D"https://www.fastmail.com/" class=3D"logo logo-light" style=3D"bo=
+rder:none;text-decoration:none;display:inline-block;padding:15px;color:inhe=
+rit"><img src=3D"https://app.fastmail.com/static/images/emailtemplates/FM-L=
+ogo-RGB-240-2x.png" width=3D"120" height=3D"30" alt=3D"Fastmail"></a>
+<![endif]-->
+<!--[if !mso]><! -->
+<a href=3D"https://www.fastmail.com/" class=3D"logo" style=3D"border:none;t=
+ext-decoration:none;display:inline-block;padding:15px;color:inherit"><img s=
+rc=3D"https://app.fastmail.com/static/images/emailtemplates/FM-Logo-RGB-240=
+-2x.png" alt=3D"Fastmail" class=3D"logo-light"><img src=3D"https://app.fast=
+mail.com/static/images/emailtemplates/FM-Logo-Dark-BG-RBG-240-2x.png" alt=
+=3D"Fastmail" class=3D"logo-dark" style=3D"display:none"></a>
+<!--<![endif]-->
+</header>
+
+<div style=3D"background:#fff;max-width:600px;width:100%;margin:auto;text-a=
+lign:left" class=3D"main-body">
+<!--[if gte mso 9]>
+<table align=3D"center" style=3D"width:600px;text-align:left; margin:20px 0=
+;"><tr><td style=3D"padding:20px 0;">
+<table style=3D"background:#fff;width:100%;"><tr><td style=3D"padding:20px;=
+">
+<![endif]-->
+<div class=3D"main" style=3D"padding:40px 30px">
+<p>Protect yourself from tracking, data leaks, and spammers by using
+alternative addresses that keep your main address private.</p>
+
+<p>Additional email addresses can help you stay anonymous, present a
+polished professional identity, or promote your brand.</p>
+
+<p>Here=E2=80=99s how to do it:</p>
+
+<ol>
+<li>Add extra <a href=3D"https://app.fastmail.com/settings/addresses">email=
+ addresses</a>. Fastmail lets you have=20
+ hundreds of email addresses. Use them for better privacy, professionalism,=
+=20
+ and organization.</li>
+<li>Use <a href=3D"https://app.fastmail.com/settings/masked">Masked Emails<=
+/a> for
+ your logins. Generate a random email address so websites don=E2=80=99t kno=
+w who
+ you are. Now you don=E2=80=99t have to share any address that identifies y=
+ou
+ with online stores or brands.</li>
+<li>Make a personalized address with <a href=3D"https://app.fastmail.com/se=
+ttings/domains">your own domain</a> for your family,
+ business, brand or project.</li>
+</ol>
+
+<p>Hundreds of addresses are included at no additional charge. Use your own=
+ domain
+on our Standard or Professional <a href=3D"https://app.fastmail.com/setting=
+s/plan">plans</a>.</p>
+
+<p>Happy emailing, <br />
+The Fastmail Team</p>
+
+<p>Questions? Our <a href=3D"https://support.fastmail.com/">support team</a=
+> is
+always here to help. <br />
+Stay up-to-date by following us on <a href=3D"https://fastmail.com/blog">ou=
+r blog</a>,
+<a href=3D"https://twitter.com/Fastmail">Twitter</a>, <a href=3D"https://ma=
+stodon.social/@fastmail">Mastodon</a> and
+<a href=3D"https://www.fastmail.com/digitalcitizen/">podcast</a>.</p>
+
+</div>
+<div style=3D"height:6px;background:linear-gradient(90deg,#64afe5,#0168b9)"=
+></div>
+</div>
+
+<footer>
+<p style=3D"padding:30px;line-height:20px;font-size:14px;color:#858b91;marg=
+in-top:0;">
+Powered by <a href=3D"https://www.fastmail.com" style=3D"color:#858b91;font=
+-weight:600;">Fastmail</a><br />
+<a style=3D"color:#858b91" href=3D"https://www.fastmail.help/hc/en-us">Get =
+support</a>
+</p>
+</footer>
+</body>
+</html>
+
+--16980951270.0fF582b.1339511--

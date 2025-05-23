@@ -261,9 +261,6 @@
 	"DKIM_SIGWARNING_FROM_NOT_IN_SDID": {
 		"message": "De no está en el dominio de firma"
 	},
-	"DKIM_SIGWARNING_FROM_NOT_IN_AUID": {
-		"message": "De no coincide con el identificador de usuario"
-	},
 	// JSDNS
 	"TOO_MANY_HOPS": {
 		"message": "Demasiados lúpulos"

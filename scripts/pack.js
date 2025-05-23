@@ -24,26 +24,26 @@ async function collectFiles() {
 		expandDirectories: {
 			files: ["*"],
 			extensions: ["json"],
-		}
+		},
 	}));
 	files.push(...await globby("content", {
 		expandDirectories: {
 			files: ["*"],
 			extensions: ["html", "css", "js"],
-		}
+		},
 	}));
 	files.push(...await globby("data", { expandDirectories: true }));
 	files.push(...await globby("experiments", {
 		expandDirectories: {
 			files: ["*"],
-			extensions: ["js", "json"],
-		}
+			extensions: ["js", "mjs", "json"],
+		},
 	}));
 	files.push(...await globby("modules", {
 		expandDirectories: {
 			files: ["*"],
 			extensions: ["js"],
-		}
+		},
 	}));
 	files.push(...await globby("thirdparty", { expandDirectories: true }));
 
@@ -132,7 +132,6 @@ async function createArchiveInfo(dirty) {
 		throw new Error("Version in changelog doe not match manifest");
 	}
 	return [`dkim_verifier-${version}.xpi`, new Date(date)];
-
 }
 
 /**
@@ -148,13 +147,13 @@ async function removeOldBuild(name) {
 
 	try {
 		await fs.rm(inUseName, { force: true });
-	} catch (error) {
+	} catch {
 		// ignore
 	}
 
 	try {
 		await fs.rm(name, { force: true });
-	} catch (error) {
+	} catch {
 		// Sometimes if removing does not work, renaming does
 		fs.rename(name, inUseName);
 		await fs.rm(name, { force: true });

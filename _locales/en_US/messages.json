@@ -301,9 +301,6 @@
 	"DKIM_SIGWARNING_FROM_NOT_IN_SDID": {
 		"message": "From is not in the signing domain"
 	},
-	"DKIM_SIGWARNING_FROM_NOT_IN_AUID": {
-		"message": "From does not match the user identifier"
-	},
 	"DKIM_SIGWARNING_UNSIGNED_HEADER": {
 		"message": "Header '$1' is not signed",
 		"description": "Warning if an important header is not signed"
@@ -476,6 +473,9 @@
 	"options_showDKIM.value.30": {
 		"message": "when an e-mail with a DKIM signature is viewed"
 	},
+	"options_showDKIM.value.33": {
+		"message": "when an e-mail with a DKIM signature, SPF or DMARC result is viewed"
+	},
 	"options_showDKIM.value.40": {
 		"message": "when an e-mail is viewed"
 	},
@@ -631,6 +631,10 @@
 	},
 	"dkim_verifier.updateKey": {
 		"message": "Update DKIM key"
+	},
+	"button.options": {
+		"message": "Options",
+		"description": "Button to open the options page of the Add-on."
 	},
 	"details.result": {
 		"message": "Result",

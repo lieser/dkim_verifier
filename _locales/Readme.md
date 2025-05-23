@@ -4,6 +4,8 @@ If you are a translator new to localize WebExtension,
 you may want to read <https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Internationalization>
 and the [locale-specific message reference](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/i18n/Locale-Specific_Message_reference).
 
+The English strings in `en_US` are the reference for the other translations.
+
 The `messages.json` files contains all localized strings used in the extension.
 Note that you don't need to translate the `description` part.
 That will never show up in the UI. It is only there to help the translating of the messages,

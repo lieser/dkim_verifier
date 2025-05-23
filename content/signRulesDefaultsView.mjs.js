@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2022;2024 Philippe Lieser
+ * Copyright (c) 2020-2022;2025 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -8,7 +8,6 @@
  */
 
 // @ts-check
-/* eslint-env webextensions */
 
 import ExtensionUtils from "../modules/extensionUtils.mjs.js";
 import SignRulesProxy from "../modules/dkim/signRulesProxy.mjs.js";
@@ -20,7 +19,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 	const data = await SignRulesProxy.getDefaultRules();
 
-	const table = new Tabulator("#rulesTable", {
+	// eslint-disable-next-line no-new
+	new Tabulator("#rulesTable", {
 		height: "100%",
 		data,
 		// Note: The virtual renderer would be nicer, but there are multiple scrolling issues.
@@ -56,15 +56,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 		initialSort: [
 			{ column: "domain", dir: "asc" },
 		],
-	});
-
-	// Workaround for https://github.com/olifolkerd/tabulator/issues/4277
-	table.eventBus?.subscribe("table-redraw", (/** @type {boolean} */ force) => {
-		if (!force) {
-			for (const row of table.getRows()) {
-				row.normalizeHeight();
-			}
-		}
 	});
 
 	// Initialize buttons

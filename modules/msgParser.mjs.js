@@ -165,6 +165,7 @@ export default class MsgParser {
 		}
 		return from;
 	}
+
 	/**
 	 * Extract the address from the From header (RFC 5322).
 	 *

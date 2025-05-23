@@ -301,9 +301,6 @@
 	"DKIM_SIGWARNING_FROM_NOT_IN_SDID": {
 		"message": "De n'est pas dans le domaine de signature"
 	},
-	"DKIM_SIGWARNING_FROM_NOT_IN_AUID": {
-		"message": "De ne correspond pas à l'identifiant de l'utilisateur"
-	},
 	"DKIM_SIGWARNING_UNSIGNED_HEADER": {
 		"message": "L'en-tête '$1' n'est pas signé",
 		"description": "Warning if an important header is not signed"
@@ -476,6 +473,9 @@
 	"options_showDKIM.value.30": {
 		"message": "lorsqu'un e-mail avec une signature DKIM est consulté"
 	},
+	"options_showDKIM.value.33": {
+		"message": "lorsqu'un e-mail avec une signature DKIM, un résultat SPF ou DMARC est consulté"
+	},
 	"options_showDKIM.value.40": {
 		"message": "lorsqu'un e-mail est consulté"
 	},
@@ -630,6 +630,10 @@
 	},
 	"dkim_verifier.updateKey": {
 		"message": "Mettre à jour la clef DKIM"
+	},
+	"button.options": {
+		"message": "Préférences",
+		"description": "Button to open the options page of the Add-on."
 	},
 	"details.result": {
 		"message": "Résultat",

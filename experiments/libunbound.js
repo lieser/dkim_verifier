@@ -1,6 +1,6 @@
 /**
  * Wrapper for the libunbound DNS library. The actual work is done in the
- * ChromeWorker libunboundWorker.jsm.js.
+ * ChromeWorker libunboundWorker.js.
  *
  * Copyright (c) 2013-2018;2020-2023 Philippe Lieser
  *
@@ -13,17 +13,9 @@
 // @ts-check
 ///<reference path="./libunbound.d.ts" />
 ///<reference path="./mozilla.d.ts" />
-/* global ExtensionCommon, Services */
+/* global ExtensionCommon */
 
 "use strict";
-
-// @ts-expect-error
-// eslint-disable-next-line no-var
-var OS;
-if (typeof PathUtils === "undefined") {
-	// TB < 115
-	({ OS } = ChromeUtils.import("resource://gre/modules/osfile.jsm"));
-}
 
 /**
  * The result of the query.
@@ -88,8 +80,8 @@ class LibunboundWorker {
 
 		/** @type {Libunbound.LibunboundWorker} */
 		this.worker =
-			//@ts-expect-error
-			new ChromeWorker("chrome://dkim_verifier_libunbound/content/libunboundWorker.jsm.js");
+			// @ts-expect-error
+			new ChromeWorker("chrome://dkim_verifier_libunbound/content/libunboundWorker.js");
 		this.worker.onmessage = (msg) => this.#onmessage(msg);
 
 		this.config = {
@@ -121,9 +113,6 @@ class LibunboundWorker {
 			path = this.config.path.
 				split(";").
 				map(e => {
-					if (OS) {
-						return OS.Path.join(OS.Constants.Path.profileDir, e);
-					}
 					return PathUtils.join(PathUtils.profileDir, ...e.split(/\/|\\/));
 				}).
 				join(";");
@@ -226,7 +215,6 @@ class LibunboundWorker {
 			// handle log messages
 			if (msg.data.type && msg.data.type === "log") {
 				/** @type {Libunbound.Log} */
-				// @ts-expect-error
 				const logMsg = msg.data;
 				switch (logMsg.subType) {
 					case "error":
@@ -248,35 +236,31 @@ class LibunboundWorker {
 				}
 				return;
 			}
-			/** @type {Libunbound.Response} */
-			// @ts-expect-error
-			const response = msg.data;
 
 			let exception;
-			if (response.type && response.type === "error") {
+			if (msg.data.type && msg.data.type === "error") {
 				/** @type {Libunbound.Exception} */
-				// @ts-expect-error
-				const ex = response;
+				const ex = msg.data;
 				exception = new Error(`Error in libunboundWorker: ${ex.message}; subType: ${ex.subType}; stack: ${ex.stack}`);
 			}
 
-			const defer = this._openCalls.get(response.callId);
+			const defer = this._openCalls.get(msg.data.callId);
 			if (defer === undefined) {
 				if (exception) {
 					console.error("Exception in libunboundWorker", exception);
 				} else {
-					console.error("Got unexpected callback:", response);
+					console.error("Got unexpected callback:", msg.data);
 				}
 				return;
 			}
-			this._openCalls.delete(response.callId);
+			this._openCalls.delete(msg.data.callId);
 			if (exception) {
 				defer.reject(exception);
 				return;
 			}
 			/** @type {Libunbound.Result} */
 			// @ts-expect-error
-			const res = response;
+			const res = msg.data;
 			defer.resolve(res.result);
 		} catch (e) {
 			console.error(e);
@@ -286,7 +270,6 @@ class LibunboundWorker {
 /**
  * @enum {number}
  */
-// eslint-disable-next-line no-extra-parens
 LibunboundWorker.Constants = /** @type {const} */ ({
 	RR_TYPE_A: 1,
 	RR_TYPE_A6: 38,
@@ -392,8 +375,9 @@ this.libunbound = class extends ExtensionCommon.ExtensionAPI {
 					libunboundWorker.config.nameServer = nameServer;
 					libunboundWorker.config.dnssecTrustAnchor = dnssecTrustAnchor;
 					libunboundWorker.config.debug = debug;
-					if (libunboundWorker.config.path !== path
-						|| libunboundWorker.config.pathRelToProfileDir !== pathRelToProfileDir) {
+					if (libunboundWorker.config.path !== path ||
+						libunboundWorker.config.pathRelToProfileDir !== pathRelToProfileDir
+					) {
 						libunboundWorker.config.path = path;
 						libunboundWorker.config.pathRelToProfileDir = pathRelToProfileDir;
 						await libunboundWorker.load();
@@ -403,12 +387,14 @@ this.libunbound = class extends ExtensionCommon.ExtensionAPI {
 				},
 				async txt(name) {
 					const res = await libunboundWorker.resolve(name, LibunboundWorker.Constants.RR_TYPE_TXT);
-					const data = res.havedata ? res.data.map(rdata => {
-						if (typeof rdata !== "string") {
-							throw new Error(`DNS result has unexpected type ${typeof rdata}`);
-						}
-						return rdata;
-					}) : null;
+					const data = res.havedata
+						? res.data.map(rdata => {
+							if (typeof rdata !== "string") {
+								throw new Error(`DNS result has unexpected type ${typeof rdata}`);
+							}
+							return rdata;
+						})
+						: null;
 					return {
 						data,
 						rcode: res.rcode,

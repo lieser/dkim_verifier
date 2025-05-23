@@ -8,7 +8,6 @@
  */
 
 // @ts-check
-/* eslint-env webextensions */
 /* eslint-disable no-magic-numbers */
 
 import ExtensionUtils from "../modules/extensionUtils.mjs.js";
@@ -52,8 +51,7 @@ function setNavigation(navSelector) {
 	for (const pane of panes) {
 		if (pane.getAttribute("pane") === navSelector.getAttribute("pane")) {
 			pane.hidden = false;
-		}
-		else {
+		} else {
 			pane.hidden = true;
 		}
 	}

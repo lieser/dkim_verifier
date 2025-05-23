@@ -10,7 +10,6 @@
  */
 
 // @ts-check
-/* eslint-env webextensions */
 
 import AuthVerifier from "../modules/authVerifier.mjs.js";
 import Logging from "./logging.mjs.js";
@@ -85,7 +84,7 @@ export async function isConversationView(tab) {
 		try {
 			const conversationsInfo = await browser.management.get("gconversation@xulforum.org");
 			return conversationsInfo.enabled;
-		} catch (error) {
+		} catch {
 			// Conversations not installed
 		}
 	}

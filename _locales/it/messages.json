@@ -301,9 +301,6 @@
 	"DKIM_SIGWARNING_FROM_NOT_IN_SDID": {
 		"message": "Mittente non nel dominio della firma"
 	},
-	"DKIM_SIGWARNING_FROM_NOT_IN_AUID": {
-		"message": "Mittente non corrispondente all’identificativo utente"
-	},
 	"DKIM_SIGWARNING_UNSIGNED_HEADER": {
 		"message": "L’intestazione '$1' nonè firmata",
 		"description": "Warning if an important header is not signed"
@@ -471,16 +468,19 @@
 		"message": "mai"
 	},
 	"options_showDKIM.value.10": {
-		"message": "quando un’email con una firma DKIM valida viene visualizzata"
+		"message": "quando viene visualizzata un’email con una firma DKIM valida"
 	},
 	"options_showDKIM.value.30": {
-		"message": "quando un’email con una firma DKIM viene visualizzata"
+		"message": "quando viene visualizzata un’email con una firma DKIM"
+	},
+	"options_showDKIM.value.33": {
+		"message": "quando viene visualizzata un’email con una firma DKIM o un risultato SPF o DMARC"
 	},
 	"options_showDKIM.value.40": {
-		"message": "quando un’email viene visualizzata"
+		"message": "quando viene visualizzata un’email"
 	},
 	"options_showDKIM.value.50": {
-		"message": "quando un messaggio viene visualizzato"
+		"message": "quando viene visualizzato un messaggio"
 	},
 	"options_colorFrom": {
 		"message": "Abilita evidenziazione del campo del mittente"
@@ -631,6 +631,10 @@
 	},
 	"dkim_verifier.updateKey": {
 		"message": "Aggiorna chiave DKIM"
+	},
+	"button.options": {
+		"message": "Opzioni",
+		"description": "Button to open the options page of the Add-on."
 	},
 	"details.result": {
 		"message": "Risultato",

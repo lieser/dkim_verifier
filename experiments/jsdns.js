@@ -11,7 +11,7 @@
 // @ts-check
 ///<reference path="./jsdns.d.ts" />
 ///<reference path="./mozilla.d.ts" />
-/* global ExtensionCommon, Services */
+/* global ExtensionCommon */
 
 "use strict";
 
@@ -44,7 +44,6 @@ this.jsdns = class extends ExtensionCommon.ExtensionAPI {
 	 */
 	getAPI(context) {
 		/** @enum {number} */
-		// eslint-disable-next-line no-extra-parens
 		const RCODE = /** @type {const} */ ({
 			NoError: 0, // No Error [RFC1035]
 			FormErr: 1, // Format Error [RFC1035]
@@ -53,8 +52,8 @@ this.jsdns = class extends ExtensionCommon.ExtensionAPI {
 			NotImp: 4, // Non-Existent Domain [RFC1035]
 			Refused: 5, // Query Refused [RFC1035]
 		});
-		/** @type {{JSDNS: {configureDNS: typeof configureDNS, queryDNS: typeof queryDNS}}} */
-		const { JSDNS } = ChromeUtils.import("chrome://dkim_verifier_jsdns/content/JSDNS.jsm.js");
+		/** @type {import("./JSDNS.mjs")} */
+		const { JSDNS } = ChromeUtils.importESModule(`chrome://dkim_verifier_jsdns/content/JSDNS.mjs?${Date.now()}`);
 		this.extension.callOnClose(this);
 		return {
 			jsdns: {
@@ -102,8 +101,6 @@ this.jsdns = class extends ExtensionCommon.ExtensionAPI {
 	}
 
 	close() {
-		Cu.unload("chrome://dkim_verifier_jsdns/content/JSDNS.jsm.js");
-
 		this.chromeHandle.destruct();
 		// @ts-expect-error
 		this.chromeHandle = null;
