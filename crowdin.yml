@@ -1,3 +1,0 @@
-files:
-  - source: /_locales/en_US/*.*
-    translation: /_locales/%two_letters_code%/
