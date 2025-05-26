@@ -51,6 +51,7 @@
 <!ENTITY showDKIM.value.0.label  "mai">
 <!ENTITY showDKIM.value.10.label "quando un’email con una firma DKIM valida viene visualizzata">
 <!ENTITY showDKIM.value.30.label "quando un’email con una firma DKIM viene visualizzata">
+<!ENTITY showDKIM.value.33.label "when an e-mail with a DKIM signature, SPF or DMARC result is viewed">
 <!ENTITY showDKIM.value.40.label "quando un’email viene visualizzata">
 <!ENTITY showDKIM.value.50.label "quando un messaggio viene visualizzato">
 <!ENTITY statusbarpanel.result.style.value.1.label "Mostra testo">

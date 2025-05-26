@@ -40,6 +40,7 @@
 <!ENTITY showDKIM.value.0.label "从不">
 <!ENTITY showDKIM.value.10.label "当一封具有有效的 DKIM 签名的邮件被查看">
 <!ENTITY showDKIM.value.30.label "当一封具有 DKIM 签名的邮件被查看">
+<!ENTITY showDKIM.value.33.label "when an e-mail with a DKIM signature, SPF or DMARC result is viewed">
 <!ENTITY showDKIM.value.40.label "当一封邮件被查看">
 <!ENTITY showDKIM.value.50.label "当一个消息被查看">
 <!ENTITY statusbarpanel.result.style.value.1.label "显示文本">

@@ -51,6 +51,7 @@
 <!ENTITY showDKIM.value.0.label  "Nie">
 <!ENTITY showDKIM.value.10.label "Wenn eine E-Mail mit gültiger DKIM-Signatur angezeigt wird">
 <!ENTITY showDKIM.value.30.label "Wenn eine E-Mail mit DKIM-Signatur angezeigt wird">
+<!ENTITY showDKIM.value.33.label "Wenn eine E-Mail mit DKIM-Signatur, SPF- oder DMARC-Ergebnis angezeigt wird">
 <!ENTITY showDKIM.value.40.label "Wenn eine E-Mail angezeigt wird">
 <!ENTITY showDKIM.value.50.label "Wenn eine Nachricht angezeigt wird">
 <!ENTITY statusbarpanel.result.style.value.1.label "Zeige Text">

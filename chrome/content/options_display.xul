@@ -154,6 +154,7 @@
 					<menuitem label="&showDKIM.value.0.label;" value="0"/>
 					<menuitem label="&showDKIM.value.10.label;" value="10"/>
 					<menuitem label="&showDKIM.value.30.label;" value="30"/>
+					<menuitem label="&showDKIM.value.33.label;" value="33"/>
 					<menuitem label="&showDKIM.value.40.label;" value="40"/>
 					<menuitem label="&showDKIM.value.50.label;" value="50"/>
 				</menupopup>
@@ -167,6 +168,7 @@
 					<menuitem label="&showDKIM.value.0.label;" value="0"/>
 					<menuitem label="&showDKIM.value.10.label;" value="10"/>
 					<menuitem label="&showDKIM.value.30.label;" value="30"/>
+					<menuitem label="&showDKIM.value.33.label;" value="33"/>
 					<menuitem label="&showDKIM.value.40.label;" value="40"/>
 					<menuitem label="&showDKIM.value.50.label;" value="50"/>
 				</menupopup>
@@ -186,6 +188,7 @@
 					<menuitem label="&showDKIM.value.0.label;" value="0"/>
 					<menuitem label="&showDKIM.value.10.label;" value="10"/>
 					<menuitem label="&showDKIM.value.30.label;" value="30"/>
+					<menuitem label="&showDKIM.value.33.label;" value="33"/>
 					<menuitem label="&showDKIM.value.40.label;" value="40"/>
 					<menuitem label="&showDKIM.value.50.label;" value="50"/>
 				</menupopup>

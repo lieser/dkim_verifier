@@ -93,6 +93,7 @@ const PREF = {
 		DKIM_VALID: 10,
 		DKIM_VALID_ALL: 20,
 		DKIM_SIGNED: 30,
+		AUTH_RES: 33,
 		EMAIL: 40,
 		MSG: 50,
 	},

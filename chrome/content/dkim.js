@@ -238,7 +238,13 @@ DKIM_Verifier.Display = (function() {
 		log.trace("displayResult begin");
 		header.dkimResults = result.dkim;
 		statusbarPanel.dkimStatus = result.dkim[0].result;
-		that.setCollapsed(result.dkim[0].res_num);
+		let displayState = result.dkim[0].res_num;
+		if ((displayState >= DKIM_Verifier.authVerifier.DKIM_RES.PERMFAIL_NOSIG) // the signature can't be verified, because of a permanent error or missing
+			 && (result.spf || result.dmarc) // there's a SPF or DMARC record
+			) {
+			displayState = DKIM_Verifier.PREF.SHOW.AUTH_RES;
+		}
+		that.setCollapsed(displayState);
 		header.value = result.dkim[0].result_str;
 
 		let resultCount = 0;

@@ -51,6 +51,7 @@
 <!ENTITY showDKIM.value.0.label  "jamais">
 <!ENTITY showDKIM.value.10.label "quand un courriel avec une signature DKIM valide est vu">
 <!ENTITY showDKIM.value.30.label "quand un courriel avec une signature DKIM est vu">
+<!ENTITY showDKIM.value.33.label "when an e-mail with a DKIM signature, SPF or DMARC result is viewed">
 <!ENTITY showDKIM.value.40.label "quand le courriel est vu">
 <!ENTITY showDKIM.value.50.label "quand le message est vu">
 <!ENTITY statusbarpanel.result.style.value.1.label "Montrer le texte">
