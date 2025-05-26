@@ -441,12 +441,6 @@ var Policy = {
 	checkHeadersSigned: function Policy_checkHeadersSigned(msgHeaders, DKIMSignature) {
 		"use strict";
 
-		const POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE = {
-			RELAXED : 10,
-			RECOMMENDED : 20,
-			STRICT : 30
-		};
-
 		// The list of recommended headers to sign is mostly based on
 		// https://www.rfc-editor.org/rfc/rfc6376.html#section-5.4.
 		const SIGNEDHEADERS = {
@@ -503,9 +497,9 @@ var Policy = {
 			}
 		};
 
-		const relaxedEnabled = prefs.getIntPref("dkim.unsignedHeadersWarning.mode") >= POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE.RELAXED;
-		const recommendedEnabled = prefs.getIntPref("dkim.unsignedHeadersWarning.mode") >= POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE.RECOMMENDED;
-		const strictEnabled = prefs.getIntPref("dkim.unsignedHeadersWarning.mode") >= POLICY_DKIM_UNSIGNED_HEADERS_WARNING_MODE.STRICT;
+		const relaxedEnabled = prefs.getIntPref("dkim.unsignedHeadersWarning.mode") >= PREF.POLICY.UNSIGNED_HEADERS_WARNING_MODE.RELAXED;
+		const recommendedEnabled = prefs.getIntPref("dkim.unsignedHeadersWarning.mode") >= PREF.POLICY.UNSIGNED_HEADERS_WARNING_MODE.RECOMMENDED;
+		const strictEnabled = prefs.getIntPref("dkim.unsignedHeadersWarning.mode") >= PREF.POLICY.UNSIGNED_HEADERS_WARNING_MODE.STRICT;
 
 		for (const header of SIGNEDHEADERS.REQUIRED) {
 			checkSignedHeader(header, relaxedEnabled);
