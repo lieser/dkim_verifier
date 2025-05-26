@@ -108,4 +108,5 @@
 
 <!ENTITY display.advancedInfo.show.label "Show extended signature information in tooltips">
 <!ENTITY display.advancedInfo.allSignatures.label "Show all signatures">
+<!ENTITY display.advancedInfo.includeSelector.label "Show key selector">
 <!ENTITY display.advancedInfo.includeHeaders.label "Show signed headers">
