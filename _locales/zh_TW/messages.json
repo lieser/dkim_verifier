@@ -470,6 +470,9 @@
 	"options_showDKIM.value.30": {
 		"message": "當檢視具有 DKIM 簽章的郵件時"
 	},
+	"options_showDKIM.value.33": {
+		"message": "當檢視具有 DKIM 簽章、SPF 或是 DMARC 結果的郵件時"
+	},
 	"options_showDKIM.value.40": {
 		"message": "檢視郵件時"
 	},
@@ -625,6 +628,9 @@
 	},
 	"dkim_verifier.updateKey": {
 		"message": "更新 DKIM 金鑰"
+	},
+	"button.options": {
+		"message": "選項"
 	},
 	"details.result": {
 		"message": "結果"
