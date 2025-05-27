@@ -51,6 +51,7 @@
 <!ENTITY showDKIM.value.0.label  "soha">
 <!ENTITY showDKIM.value.10.label "érvényes DKIM aláírással rendelkező e-mail megtekintésekor">
 <!ENTITY showDKIM.value.30.label "DKIM aláírással ellátott e-mailek megtekintésekor">
+<!ENTITY showDKIM.value.33.label "when an e-mail with a DKIM signature, SPF or DMARC result is viewed">
 <!ENTITY showDKIM.value.40.label "e-mail megtekintésekor">
 <!ENTITY showDKIM.value.50.label "üzenet megtekintésekor">
 <!ENTITY statusbarpanel.result.style.value.1.label "Szöveg megjelenítése">

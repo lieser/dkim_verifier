@@ -82,6 +82,7 @@ pref("extensions.dkim_verifier.policy.dkim.unsignedHeadersWarning.mode", 20);
  * 10  when an e-mail with a valid DKIM signature is viewed  (SUCCESS)
  * 20  when an e-mail with a valid DKIM signature is viewed (including TEMPFAIL) (SUCCESS, TEMPFAIL)
  * 30  when an e-mail with a DKIM signature is viewed (SUCCESS, TEMPFAIL, PERMFAIL, loading)
+ * 33  when an e-mail with any Authentication result (DKIM, SPF, DMARC) is viewed
  * 40  when an e-mail is viewed
  * 50  when a message is viewed
  */
@@ -91,6 +92,7 @@ pref("extensions.dkim_verifier.showDKIMHeader", 30);
  * 10  when an e-mail with a valid DKIM signature is viewed  (SUCCESS)
  * 20  when an e-mail with a valid DKIM signature is viewed (including TEMPFAIL) (SUCCESS, TEMPFAIL)
  * 30  when an e-mail with a DKIM signature is viewed (SUCCESS, TEMPFAIL, PERMFAIL, loading)
+ * 33  when an e-mail with any Authentication result (DKIM, SPF, DMARC) is viewed
  * 40  when an e-mail is viewed
  * 50  when a message is viewed
  */
@@ -105,6 +107,7 @@ pref("extensions.dkim_verifier.statusbarpanel.result.style", 1);
  * 10  when an e-mail with a valid DKIM signature is viewed  (SUCCESS)
  * 20  when an e-mail with a valid DKIM signature is viewed (including TEMPFAIL) (SUCCESS, TEMPFAIL)
  * 30  when an e-mail with a DKIM signature is viewed (SUCCESS, TEMPFAIL, PERMFAIL, loading)
+ * 33  when an e-mail with any Authentication result (DKIM, SPF, DMARC) is viewed
  * 40  when an e-mail is viewed
  * 50  when a message is viewed
  */
