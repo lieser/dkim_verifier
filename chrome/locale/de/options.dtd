@@ -109,4 +109,5 @@
 
 <!ENTITY display.advancedInfo.show.label "Erweiterte Signatur-Informationen in Tooltips anzeigen">
 <!ENTITY display.advancedInfo.allSignatures.label "Alle Signaturen anzeigen">
+<!ENTITY display.advancedInfo.includeSelector.label "Schlüssel-Selektor anzeigen">
 <!ENTITY display.advancedInfo.includeHeaders.label "Information über signierte Kopfzeilen anzeigen">

@@ -69,6 +69,9 @@
 		<preference id="pref_display.advancedInfo.allSignatures"
 		            name="extensions.dkim_verifier.advancedInfo.allSignatures"
 		            type="bool"/>
+		<preference id="pref_display.advancedInfo.includeSelector"
+		            name="extensions.dkim_verifier.advancedInfo.includeSelector"
+		            type="bool"/>
 		<preference id="pref_display.advancedInfo.includeHeaders"
 		            name="extensions.dkim_verifier.advancedInfo.includeHeaders"
 		            type="bool"/>
@@ -205,6 +208,9 @@
 			<checkbox preference="pref_display.advancedInfo.allSignatures"
 					  label="&display.advancedInfo.allSignatures.label;"
 					  id="display.advancedInfo.allSignatures" />
+			<checkbox preference="pref_display.advancedInfo.includeSelector"
+					  label="&display.advancedInfo.includeSelector.label;"
+					  id="display.advancedInfo.includeSelector" />
 			<checkbox preference="pref_display.advancedInfo.includeHeaders"
 					  label="&display.advancedInfo.includeHeaders.label;"
 					  id="display.advancedInfo.includeHeaders" />

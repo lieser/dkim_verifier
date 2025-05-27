@@ -278,16 +278,16 @@ function checkSignatureAlgorithm(dkimSigResult) {
 
 	if (dkimSigResult.algorithmSignature === "rsa" && dkimSigResult.algorithmHash === "sha1") {
 		switch (prefs.getIntPref("error.algorithm.sign.rsa-sha1.treatAs")) {
-			case 0: { // error
+			case PREF.TREATAS.ERROR: {
 				dkimSigResult.result = "PERMFAIL";
 				dkimSigResult.errorType = "DKIM_SIGERROR_INSECURE_A";
 				dkimSigResult.warnings = [];
 				break;
 			}
-			case 1: // warning
+			case PREF.TREATAS.WARNING:
 				dkimSigResult.warnings.push({ name: "DKIM_SIGERROR_INSECURE_A" });
 				break;
-			case 2: // ignore
+			case PREF.TREATAS.NOTHING:
 				break;
 			default: // should not happen
 				throw new Error("invalid error.algorithm.sign.rsa-sha1.treatAs");
