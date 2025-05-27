@@ -213,7 +213,7 @@ DKIM_Verifier.Display = (function() {
 				version : "2.0",
 				result : "TEMPFAIL",
 				errorType : e.errorType,
-				res_num : 20,
+				res_num : DKIM_Verifier.authVerifier.DKIM_RES.TEMPFAIL,
 				result_str : dkimStrings.getString("DKIM_INTERNALERROR_NAME"),
 			};
 			let authResult = {

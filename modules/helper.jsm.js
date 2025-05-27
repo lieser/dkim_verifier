@@ -70,6 +70,11 @@ const PREF = {
 		TRUE: 1,
 		FALSE: 2,
 	},
+	TREATAS: {
+		ERROR: 0,
+		WARNING: 1,
+		NOTHING: 2,
+	},
 	KEY: {
 		STORING: {
 			DISABLED: 0,
@@ -86,6 +91,11 @@ const PREF = {
 					BASE_DOMAIN: 2,
 				}
 			}
+		},
+		UNSIGNED_HEADERS_WARNING_MODE: {
+			RELAXED : 10,
+			RECOMMENDED : 20,
+			STRICT : 30
 		}
 	},
 	SHOW: {

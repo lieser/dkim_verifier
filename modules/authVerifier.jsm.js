@@ -392,6 +392,7 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 		let result = authResultDKIM.result_str;
 		let sigAlgo = dkimSigResult.algorithmSignature ? dkimSigResult.algorithmSignature.toUpperCase() : undefined;
 		let keyLength = dkimSigResult.keyLength ? dkimSigResult.keyLength.toString() : undefined;
+		let keySelector = dkimSigResult.selector;
 		let hashAlgo = dkimSigResult.algorithmHash ? dkimSigResult.algorithmHash.toUpperCase() : undefined;
 		let signingTime = dkimSigResult.timestamp ? new Date(dkimSigResult.timestamp*1000).toLocaleString() : undefined;
 		let expirationTime = dkimSigResult.expiration ? new Date(dkimSigResult.expiration*1000).toLocaleString() : undefined;
@@ -417,12 +418,15 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 			// Show this line only, if we're not using ARH (which contains a verifier)
 			authResultDKIM.details_str += "\n" + dkimStrings.getString("DKIM_RESULT_DETAILS_NO_TIME");
 		}
-		if ( sigAlgo && hashAlgo) {
+		if (sigAlgo && hashAlgo) {
 			if (keyLength) {
 				authResultDKIM.details_str += "\n" + dkimStrings.getFormattedString("DKIM_RESULT_DETAILS_ALGORITHM_WITH_LENGTH", [sigAlgo, keyLength, hashAlgo]);
 			} else {
 				authResultDKIM.details_str += "\n" + dkimStrings.getFormattedString("DKIM_RESULT_DETAILS_ALGORITHM", [sigAlgo, hashAlgo]);
 			}
+		}
+		if (prefs.getBoolPref("advancedInfo.includeSelector") && keySelector) {
+			authResultDKIM.details_str += "\n" + dkimStrings.getFormattedString("DKIM_RESULT_DETAILS_SELECTOR", [keySelector]);
 		}
 		if (prefs.getBoolPref("advancedInfo.includeHeaders") && signedHeaders) {
 			// exists only in Addon verified signatures

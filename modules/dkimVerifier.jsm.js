@@ -27,7 +27,7 @@
 // options for ESLint
 /* eslint strict: ["warn", "function"] */
 /* global Components, Services */
-/* global Logging, Key, Policy, msgReader, rfcParser */
+/* global Logging, Key, Policy, msgReader, rfcParser, PREF */
 /* global dkimStrings, addrIsInDomain2, domainIsInDomain, stringEndsWith, stringEqual, writeStringToTmpFile, toType, DKIM_SigError, DKIM_TempError, DKIM_Error, copy */
 /* exported EXPORTED_SYMBOLS, Verifier */
 
@@ -325,13 +325,13 @@ var Verifier = (function() {
 		} else if (keyInfo.keyLength < 2048) {
 			// weak key
 			switch (prefs.getIntPref("error.algorithm.rsa.weakKeyLength.treatAs")) {
-				case 0: // error
+				case PREF.TREATAS.ERROR:
 					throw new DKIM_SigError("DKIM_SIGWARNING_KEY_IS_WEAK");
-				case 1: // warning
+				case PREF.TREATAS.WARNING:
 					warnings.push({name: "DKIM_SIGWARNING_KEY_IS_WEAK"});
 					log.debug("Warning: DKIM_SIGWARNING_KEY_IS_WEAK");
 					break;
-				case 2: // ignore
+				case PREF.TREATAS.NOTHING:
 					break;
 				default:
 					throw new Error("invalid error.algorithm.rsa.weakKeyLength.treatAs");
@@ -470,12 +470,12 @@ var Verifier = (function() {
 			// all is fine, nothing to do at the moment
 		} else if (algorithmTag[0] === "rsa-sha1") {
 			switch (prefs.getIntPref("error.algorithm.sign.rsa-sha1.treatAs")) {
-				case 0: // error
+				case PREF.TREATAS.ERROR:
 					throw new DKIM_SigError("DKIM_SIGERROR_INSECURE_A");
-				case 1: // warning
+				case PREF.TREATAS.WARNING:
 					DKIMSignature.warnings.push({ name: "DKIM_SIGERROR_INSECURE_A" });
 					break;
-				case 2: // ignore
+				case PREF.TREATAS.NOTHING:
 					break;
 				default:
 					throw new Error("invalid error.algorithm.sign.rsa-sha1.treatAs");
@@ -615,12 +615,12 @@ var Verifier = (function() {
 				exception.errorType === "DKIM_SIGERROR_ILLFORMED_I")
 			{
 				switch (prefs.getIntPref("error.illformed_i.treatAs")) {
-					case 0: // error
+					case PREF.TREATAS.ERROR:
 						throw exception;
-					case 1: // warning
+					case PREF.TREATAS.WARNING:
 						DKIMSignature.warnings.push({ name: "DKIM_SIGERROR_ILLFORMED_I" });
 						break;
-					case 2: // ignore
+					case PREF.TREATAS.NOTHING:
 						break;
 					default:
 						throw new Error("invalid error.illformed_i.treatAs");
@@ -675,12 +675,12 @@ var Verifier = (function() {
 				var sub_domain_ = "(?:[A-Za-z0-9_](?:[A-Za-z0-9_-]*[A-Za-z0-9_])?)";
 				SelectorTag = rfcParser.parseTagValue(tagMap, "s", `${sub_domain_}(?:\\.${sub_domain_})*`);
 				switch (prefs.getIntPref("error.illformed_s.treatAs")) {
-					case 0: // error
+					case PREF.TREATAS.ERROR:
 						throw exception;
-					case 1: // warning
+					case PREF.TREATAS.WARNING:
 						DKIMSignature.warnings.push({name: "DKIM_SIGERROR_ILLFORMED_S"});
 						break;
-					case 2: // ignore
+					case PREF.TREATAS.NOTHING:
 						break;
 					default:
 						throw new Error("invalid error.illformed_s.treatAs");
@@ -1168,13 +1168,13 @@ var Verifier = (function() {
 		// if key is not signed by DNSSEC
 		if (!DKIMSignature.keyQueryResult.secure) {
 			switch (prefs.getIntPref("error.policy.key_insecure.treatAs")) {
-				case 0: // error
+				case PREF.TREATAS.ERROR:
 					throw new DKIM_SigError("DKIM_POLICYERROR_KEY_INSECURE");
-				case 1: // warning
+				case PREF.TREATAS.WARNING:
 					DKIMSignature.warnings.push({name: "DKIM_POLICYERROR_KEY_INSECURE"});
 					log.debug("Warning: DKIM_POLICYERROR_KEY_INSECURE");
 					break;
-				case 2: // ignore
+				case PREF.TREATAS.NOTHING:
 					break;
 				default:
 					throw new Error("invalid error.policy.key_insecure.treatAs");
@@ -1237,7 +1237,7 @@ var Verifier = (function() {
 		} finally {
 			DKIMSignature.a_keylength = keyInfo.keyLength;
 		}
-		if (!isValid && prefs.getIntPref("error.contentTypeCharsetAddedQuotes.treatAs") > 0) {
+		if (!isValid && prefs.getIntPref("error.contentTypeCharsetAddedQuotes.treatAs") > PREF.TREATAS.ERROR) {
 				log.debug("Try with removed quotes in Content-Type charset.");
 			const contentTypeField = msg.headerFields.get("content-type")[0];
 			const sanitizedContentTypeField = contentTypeField.replace(/charset="([^"]+)"/i, "charset=$1");
@@ -1251,7 +1251,7 @@ var Verifier = (function() {
 				keyInfo = {};
 				isValid = verifyFunction(DKIMSignature.DKIMKey.p, headerHashInput,
 						DKIMSignature.a_hash, DKIMSignature.b, DKIMSignature.warnings, keyInfo);
-				if (prefs.getIntPref("error.contentTypeCharsetAddedQuotes.treatAs") === 1) {
+				if (prefs.getIntPref("error.contentTypeCharsetAddedQuotes.treatAs") === PREF.TREATAS.WARNING) {
 					DKIMSignature.warnings.push({name: "DKIM_SIGERROR_CONTENT_TYPE_CHARSET_ADDED_QUOTES"});
 					log.debug("Warning: DKIM_SIGERROR_CONTENT_TYPE_CHARSET_ADDED_QUOTES");
 				}
