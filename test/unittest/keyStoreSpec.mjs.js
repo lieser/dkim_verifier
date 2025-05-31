@@ -102,15 +102,17 @@ describe("Key store [unittest]", function () {
 		/** @type {typeof DNS.txt} */
 		const queryDnsTxt = name => {
 			switch (name) {
-				case "selector1._domainkey.example.com":
+				case "selector1._domainkey.example.com": {
 					return toDnsRes("key1");
-				default:
+				}
+				default: {
 					return Promise.resolve({
 						data: null,
 						rcode: DNS.RCODE.NXDomain,
 						secure: false,
 						bogus: false,
 					});
+				}
 			}
 		};
 

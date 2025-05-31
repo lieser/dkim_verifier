@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2021 Philippe Lieser
+ * Copyright (c) 2020-2021;2025 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -13,8 +13,7 @@
  * Add translations to document
  */
 document.addEventListener("DOMContentLoaded", () => {
-	/** @type {HTMLElement[]} */
-	const elements = Array.from(document.querySelectorAll("[data-i18n]"));
+	const elements = /** @type {HTMLElement[]} */([...document.querySelectorAll("[data-i18n]")]);
 	for (const element of elements) {
 		const messageName = element.dataset.i18n;
 		if (messageName) {

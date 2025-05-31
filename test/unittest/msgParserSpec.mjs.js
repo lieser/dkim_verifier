@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2023 Philippe Lieser
+ * Copyright (c) 2020-2023;2025 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -64,7 +64,7 @@ describe("Message parser [unittest]", function () {
 		});
 
 		it("parse LF", function () {
-			const msg = MsgParser.parseMsg(msgPlain.replace(/\r\n/g, "\n"));
+			const msg = MsgParser.parseMsg(msgPlain.replaceAll("\r\n", "\n"));
 			expect(msg.body).to.be.equal(msgBody);
 			expect(msg.headers.size).to.be.equal(7);
 
@@ -76,7 +76,7 @@ describe("Message parser [unittest]", function () {
 		});
 
 		it("parse CR", function () {
-			const msg = MsgParser.parseMsg(msgPlain.replace(/\r\n/g, "\r"));
+			const msg = MsgParser.parseMsg(msgPlain.replaceAll("\r\n", "\r"));
 			expect(msg.body).to.be.equal(msgBody);
 			expect(msg.headers.size).to.be.equal(7);
 
@@ -103,30 +103,30 @@ describe("Message parser [unittest]", function () {
 
 		it("missing newline between header and body", function () {
 			expect(
-				() => MsgParser.parseMsg(msgPlain.replace(/\r\n\r\n/g, "\r\n"))
+				() => MsgParser.parseMsg(msgPlain.replaceAll("\r\n\r\n", "\r\n"))
 			).to.throw(DKIM_Error).with.property("message", "Could not split header into name and value");
 		});
 
 		it("Valid missing body", function () {
-			let msg = MsgParser.parseMsg(msgPlain.replace(/\r\n\r\n.+/gs, "\r\n"));
+			let msg = MsgParser.parseMsg(msgPlain.replaceAll(/\r\n\r\n.+/gs, "\r\n"));
 			expect(msg.body).to.be.equal("");
 			expect(msg.headers.size).to.be.equal(7);
-			msg = MsgParser.parseMsg(msgPlain.replace(/\r\n\r\n.+/gs, "\n"));
+			msg = MsgParser.parseMsg(msgPlain.replaceAll(/\r\n\r\n.+/gs, "\n"));
 			expect(msg.body).to.be.equal("");
 			expect(msg.headers.size).to.be.equal(7);
-			msg = MsgParser.parseMsg(msgPlain.replace(/\r\n\r\n.+/gs, "\r"));
+			msg = MsgParser.parseMsg(msgPlain.replaceAll(/\r\n\r\n.+/gs, "\r"));
 			expect(msg.body).to.be.equal("");
 			expect(msg.headers.size).to.be.equal(7);
 		});
 
 		it("With a missing body the headers still need to end with a newline", function () {
 			expect(
-				() => MsgParser.parseMsg(msgPlain.replace(/\r\n\r\n.+/gs, ""))
+				() => MsgParser.parseMsg(msgPlain.replaceAll(/\r\n\r\n.+/gs, ""))
 			).to.throw(DKIM_Error).with.property("message", "Last header is not ending with a newline");
 		});
 
 		it("Valid empty body", function () {
-			const msg = MsgParser.parseMsg(msgPlain.replace(/\r\n\r\n.+/gs, "\r\n\r\n"));
+			const msg = MsgParser.parseMsg(msgPlain.replaceAll(/\r\n\r\n.+/gs, "\r\n\r\n"));
 			expect(msg.body).to.be.equal("");
 			expect(msg.headers.size).to.be.equal(7);
 		});

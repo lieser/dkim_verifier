@@ -356,7 +356,7 @@ describe("preferences [unittest]", function () {
 
 			/** @type {{[x: string]: any}[]} */
 			const storageCalls = [];
-			browser.storage.onChanged.addListener(x => storageCalls.push(JSON.parse(JSON.stringify(x))));
+			browser.storage.onChanged.addListener(x => storageCalls.push(structuredClone(x)));
 			/**
 			 * @returns {void}
 			 */
@@ -374,7 +374,7 @@ describe("preferences [unittest]", function () {
 			await pref.setValue("color.nosig.background", "red");
 			await pref.setValue("dns.proxy.port", 1111);
 
-			while (storageCalls.length) {
+			while (storageCalls.length > 0) {
 				triggerListener();
 			}
 
@@ -431,7 +431,7 @@ describe("preferences [unittest]", function () {
 		// eslint-disable-next-line mocha/no-skipped-tests
 		xit("safeGetLocalStorage - complete timeout", async function () {
 			// eslint-disable-next-line no-invalid-this
-			this.timeout(20000);
+			this.timeout(20_000);
 
 			const storageLocalGet = sinon.stub(fakeBrowser.storage.local, "get");
 

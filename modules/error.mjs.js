@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2013-2023 Philippe Lieser
+ * Copyright (c) 2013-2023;2025 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -28,7 +28,7 @@ export class DKIM_SigError extends Error {
 		this.errorType = errorType;
 		this.errorStrParams = errorStrParams;
 		// @ts-expect-error
-		this.stack = this.stack.substring(this.stack.indexOf("\n") + 1);
+		this.stack = this.stack.slice(this.stack.indexOf("\n") + 1);
 	}
 }
 
@@ -50,7 +50,7 @@ export class DKIM_TempError extends Error {
 		this.errorType = errorType;
 		this.errorStrParams = errorStrParams;
 		// @ts-expect-error
-		this.stack = this.stack.substring(this.stack.indexOf("\n") + 1);
+		this.stack = this.stack.slice(this.stack.indexOf("\n") + 1);
 	}
 }
 
@@ -76,6 +76,6 @@ export class DKIM_Error extends Error {
 		super(message);
 		this.name = this.constructor.name;
 		// @ts-expect-error
-		this.stack = this.stack.substring(this.stack.indexOf("\n") + 1);
+		this.stack = this.stack.slice(this.stack.indexOf("\n") + 1);
 	}
 }

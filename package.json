@@ -46,6 +46,7 @@
 		"eslint-plugin-jsdoc": "^50.6.1",
 		"eslint-plugin-mocha": "^10.5.0",
 		"eslint-plugin-mozilla": "^4.0.0",
+		"eslint-plugin-unicorn": "^59.0.1",
 		"globals": "^15.14.0",
 		"globby": "^14.0.2",
 		"http-server": "^14.1.1",

@@ -123,7 +123,7 @@ async function readFile(path) {
  * @returns {Promise<{[x: string]: any}>}
  */
 async function safeGetStorage(storageArea) {
-	const overallTimeout = 15000;
+	const overallTimeout = 15_000;
 	const storageTimeout = 3000;
 	let retrySleepTime = 100;
 	const retrySleepTimeIncrease = 50;

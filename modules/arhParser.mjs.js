@@ -141,11 +141,7 @@ export default class ArhParser {
 				throw new Error("Error matching the ARH authserv-id.");
 			}
 			res.authserv_id = decodeBinaryString(authserv_id);
-			if (reg_match[3]) {
-				res.authres_version = parseInt(reg_match[3], 10);
-			} else {
-				res.authres_version = 1;
-			}
+			res.authres_version = reg_match[3] ? Number.parseInt(reg_match[3], 10) : 1;
 		} catch (error) {
 			log.debug("Parsing of authserv-id and authres-version failed", error);
 			if (!relaxedParsing) {
@@ -203,7 +199,7 @@ function parseResInfo(str, relaxedParsing, token) {
 	const methodspec_p = `;${token.CFWS_op}${method_p}${token.CFWS_op}${result_p}`;
 	try {
 		reg_match = match(str, methodspec_p, token);
-	} catch (exception) {
+	} catch (error) {
 		if (relaxedParsing) {
 			// allow trailing ";" at the end
 			match_o(str, ";", token);
@@ -212,7 +208,7 @@ function parseResInfo(str, relaxedParsing, token) {
 				return null;
 			}
 		}
-		throw exception;
+		throw error;
 	}
 	if (!reg_match[1]) {
 		throw new Error("Error matching the ARH method.");
@@ -221,11 +217,7 @@ function parseResInfo(str, relaxedParsing, token) {
 		throw new Error("Error matching the ARH result.");
 	}
 	res.method = reg_match[1];
-	if (reg_match[2]) {
-		res.method_version = parseInt(reg_match[2], 10);
-	} else {
-		res.method_version = 1;
-	}
+	res.method_version = reg_match[2] ? Number.parseInt(reg_match[2], 10) : 1;
 	res.result = reg_match[3].toLowerCase();
 
 	checkResultKeyword(res.method, reg_match[3]);
@@ -267,7 +259,7 @@ function parseProperties(str, relaxedParsing, token) {
 	let pvalue_p = `${token.value_cp}|((?:${token.local_part}?@)?${token.domain_name})`;
 	if (relaxedParsing) {
 		// allow "/" and ":" in properties, even if it is not in a quoted-string
-		pvalue_p += "|([^ \\x00-\\x1F\\x7F()<>@,;\\\\\"[\\]?=]+)";
+		pvalue_p += String.raw`|([^ \x00-\x1F\x7F()<>@,;\\"[\]?=]+)`;
 	}
 	const special_smtp_verb_p = "mailfrom|rcptto";
 	const property_p = `${special_smtp_verb_p}|${Token.Keyword}`;
@@ -373,11 +365,10 @@ class RefString {
 
 	/**
 	 * @param {number} from
-	 * @param {number} [length]
 	 * @returns {string}
 	 */
-	substr(from, length) {
-		return this.value.substr(from, length);
+	slice(from) {
+		return this.value.slice(from);
 	}
 }
 
@@ -420,6 +411,6 @@ function match_o(str, pattern, token) {
 	if (reg_match === null || !reg_match[0]) {
 		return null;
 	}
-	str.value = str.substr(reg_match[0].length);
+	str.value = str.slice(reg_match[0].length);
 	return reg_match;
 }

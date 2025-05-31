@@ -10,6 +10,7 @@
 // @ts-check
 ///<reference path="../RuntimeMessage.d.ts" />
 ///<reference path="../experiments/dkimHeader.d.ts" />
+/* eslint-disable unicorn/prefer-top-level-await */
 
 import * as Conversations from "../modules/conversation.mjs.js";
 import KeyStore, { KeyDb } from "../modules/dkim/keyStore.mjs.js";
@@ -127,22 +128,26 @@ async function verifyMessage(tabId, message) {
 					}
 					break;
 				}
-				case AuthVerifier.DKIM_RES.TEMPFAIL:
+				case AuthVerifier.DKIM_RES.TEMPFAIL: {
 					browser.dkimHeader.highlightFromAddress(tabId, message.id, prefs["color.tempfail.text"], prefs["color.tempfail.background"]);
 					break;
-				case AuthVerifier.DKIM_RES.PERMFAIL:
+				}
+				case AuthVerifier.DKIM_RES.PERMFAIL: {
 					browser.dkimHeader.highlightFromAddress(tabId, message.id, prefs["color.permfail.text"], prefs["color.permfail.background"]);
 					break;
+				}
 				case AuthVerifier.DKIM_RES.PERMFAIL_NOSIG:
-				case AuthVerifier.DKIM_RES.NOSIG:
+				case AuthVerifier.DKIM_RES.NOSIG: {
 					browser.dkimHeader.highlightFromAddress(tabId, message.id, prefs["color.nosig.text"], prefs["color.nosig.background"]);
 					break;
-				default:
+				}
+				default: {
 					throw new Error(`unknown res_num: ${res.dkim[0].res_num}`);
+				}
 			}
 		}
-	} catch (e) {
-		log.fatal("Unexpected error during verifyMessage", e);
+	} catch (error) {
+		log.fatal("Unexpected error during verifyMessage", error);
 		browser.dkimHeader.showDkimHeader(tabId, message.id, true);
 		browser.dkimHeader.setDkimHeaderResult(
 			tabId, message.id, browser.i18n.getMessage("DKIM_INTERNALERROR_NAME"), [], "", {});
@@ -181,16 +186,14 @@ browser.messageDisplay.onMessageDisplayed.addListener(async (tab, message) => {
 			browser.dkimHeader.showDkimHeader(tab.id, message.id, true);
 		} else {
 			const { headers } = await browser.messages.getFull(message.id);
-			if (headers && Object.keys(headers).includes("dkim-signature")) {
-				if (prefs.showDKIMHeader >= SHOW.DKIM_SIGNED) {
-					browser.dkimHeader.showDkimHeader(tab.id, message.id, true);
-				}
+			if (headers && Object.keys(headers).includes("dkim-signature") && prefs.showDKIMHeader >= SHOW.DKIM_SIGNED) {
+				browser.dkimHeader.showDkimHeader(tab.id, message.id, true);
 			}
 		}
 
 		await verifyMessage(tab.id, message);
-	} catch (e) {
-		log.fatal("Unexpected error during onMessageDisplayed", e);
+	} catch (error) {
+		log.fatal("Unexpected error during onMessageDisplayed", error);
 		browser.dkimHeader.showDkimHeader(tab.id, message.id, true);
 		browser.dkimHeader.setDkimHeaderResult(
 			tab.id, message.id, browser.i18n.getMessage("DKIM_INTERNALERROR_NAME"), [], "", {});
@@ -210,8 +213,8 @@ browser.messageDisplay.onMessagesDisplayed.addListener(async (tab, messages) => 
 			}
 		}
 		// Normal Thunderbird view ("classic") is handled in onMessageDisplayed
-	} catch (e) {
-		log.fatal("Unexpected error during onMessagesDisplayed", e);
+	} catch (error) {
+		log.fatal("Unexpected error during onMessagesDisplayed", error);
 	}
 });
 

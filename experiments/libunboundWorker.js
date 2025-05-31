@@ -91,7 +91,7 @@ const Constants = /** @type {const} */ ({
 	RR_TYPE_CERT: 37,
 	RR_TYPE_CNAME: 5,
 	RR_TYPE_DHCID: 49,
-	RR_TYPE_DLV: 32769,
+	RR_TYPE_DLV: 32_769,
 	RR_TYPE_DNAME: 39,
 	RR_TYPE_DNSKEY: 48,
 	RR_TYPE_DS: 43,
@@ -224,7 +224,8 @@ function resolve(name, rrtype) {
 				ctypes.uint8_t.array(lenPtr.contents).ptr
 			).contents;
 			/** @type {number[]} */
-			const rdata = new Array(tmp.length);
+			const rdata = Array.from({ length: tmp.length });
+			// eslint-disable-next-line unicorn/no-for-loop
 			for (let i = 0; i < tmp.length; i++) {
 				// @ts-expect-error
 				rdata[i] = tmp[i];
@@ -252,8 +253,9 @@ function resolve(name, rrtype) {
 					data.push(str);
 					break;
 				}
-				default:
+				default: {
 					postLog.warn(`skipped converting of unknown rdata type: ${rrtype}`);
+				}
 			}
 
 			dataPtr = dataPtr.increment();
@@ -265,21 +267,17 @@ function resolve(name, rrtype) {
 
 	/** @type {ub_result} */
 	const result = {};
-	if (!_result.contents.qname.isNull()) {
-		result.qname = _result.contents.qname.readString();
-	} else {
+	if (_result.contents.qname.isNull()) {
 		postLog.warn("qname missing");
 		result.qname = "";
+	} else {
+		result.qname = _result.contents.qname.readString();
 	}
 	result.qtype = _result.contents.qtype;
 	result.qclass = _result.contents.qclass;
 	result.data = data;
 	result.data_raw = data_raw;
-	if (!_result.contents.canonname.isNull()) {
-		result.canonname = _result.contents.canonname.readString();
-	} else {
-		result.canonname = "";
-	}
+	result.canonname = _result.contents.canonname.isNull() ? "" : _result.contents.canonname.readString();
 	result.rcode = _result.contents.rcode;
 	result.havedata = _result.contents.havedata === 1;
 	result.nxdomain = _result.contents.nxdomain === 1;
@@ -327,7 +325,7 @@ function load(paths) {
 		postLog.debug(`loading dependency: ${libDepPath}`);
 		libDeps.push(ctypes.open(libDepPath));
 	}
-	const path = libPaths.slice(-1)[0] ?? "";
+	const path = libPaths.at(-1) ?? "";
 	postLog.debug(`loading libunbound: ${path}`);
 	lib = ctypes.open(path);
 
@@ -441,39 +439,33 @@ function update_ctx(conf, debuglevel, getNameserversFromOS, nameservers, trustAn
 	}
 
 	// read config file if specified
-	if (conf) {
-		if ((retval = ub_ctx_config(ctx, conf)) !== 0) {
-			throw new Error(`error in ub_ctx_config: ${ub_strerror(retval).readString()}. errno: ${ctypes.errno}`);
-		}
+	if (conf && (retval = ub_ctx_config(ctx, conf)) !== 0) {
+		throw new Error(`error in ub_ctx_config: ${ub_strerror(retval).readString()}. errno: ${ctypes.errno}`);
 	}
 
 	// set debuglevel if specified
-	if (debuglevel) {
-		if ((retval = ub_ctx_debuglevel(ctx, debuglevel)) !== 0) {
-			throw new Error(`error in ub_ctx_debuglevel: ${ub_strerror(retval).readString()}. errno: ${ctypes.errno}`);
-		}
+	if (debuglevel && (retval = ub_ctx_debuglevel(ctx, debuglevel)) !== 0) {
+		throw new Error(`error in ub_ctx_debuglevel: ${ub_strerror(retval).readString()}. errno: ${ctypes.errno}`);
 	}
 
 	// get DNS servers form OS
-	if (getNameserversFromOS) {
-		if ((retval = ub_ctx_resolvconf(ctx, null)) !== 0) {
-			throw new Error(`error in ub_ctx_resolvconf: ${ub_strerror(retval).readString()}. errno: ${ctypes.errno}`);
-		}
+	if (getNameserversFromOS && (retval = ub_ctx_resolvconf(ctx, null)) !== 0) {
+		throw new Error(`error in ub_ctx_resolvconf: ${ub_strerror(retval).readString()}. errno: ${ctypes.errno}`);
 	}
 
 	// set additional DNS servers
-	nameservers.forEach((element /*, index, array*/) => {
+	for (const element of nameservers) {
 		if ((retval = ub_ctx_set_fwd(ctx, element.trim())) !== 0) {
 			throw new Error(`error in ub_ctx_set_fwd: ${ub_strerror(retval).readString()}. errno: ${ctypes.errno}`);
 		}
-	});
+	}
 
 	// add root trust anchors
-	trustAnchors.forEach((element /*, index, array*/) => {
+	for (const element of trustAnchors) {
 		if ((retval = ub_ctx_add_ta(ctx, element.trim())) !== 0) {
 			throw new Error(`error in ub_ctx_add_ta: ${ub_strerror(retval).readString()}. errno: ${ctypes.errno}`);
 		}
-	});
+	}
 
 	postLog.debug("context created");
 }
@@ -524,22 +516,22 @@ onmessage = function (msg) {
 				callId: msg.data.callId,
 				result: res,
 			});
-		} catch (exception) {
+		} catch (error) {
 			// @ts-expect-error
-			postLog.debug(`Posting exception back to main script: ${exception}; stack: ${exception.stack}`);
+			postLog.debug(`Posting exception back to main script: ${error}; stack: ${error.stack}`);
 			postExceptionMessage({
 				type: "error",
 				subType: "DKIM_DNSERROR_UNKNOWN",
 				callId: msg.data.callId,
-				message: `libunboundWorker: ${exception}`,
+				message: `libunboundWorker: ${error}`,
 				// @ts-expect-error
-				stack: exception.stack,
+				stack: error.stack,
 			});
 		}
-	} catch (e) {
+	} catch (error) {
 		// @ts-expect-error
-		dump(`${e}\n`);
+		dump(`${error}\n`);
 		// @ts-expect-error
-		postLog.error(`Exception: ${e}; stack: ${e.stack}`);
+		postLog.error(`Exception: ${error}; stack: ${error.stack}`);
 	}
 };

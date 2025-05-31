@@ -149,7 +149,7 @@ export async function loadAuthResult(message) {
 		/** @type {SavedAuthResultV3} */
 		const res = {
 			version: "3.0",
-			dkim: resultV2.dkim.map(AuthResultDKIMV2_to_dkimSigResultV2),
+			dkim: resultV2.dkim.map((element) => AuthResultDKIMV2_to_dkimSigResultV2(element)),
 		};
 		if (resultV2.spf) {
 			res.spf = resultV2.spf;
@@ -159,7 +159,7 @@ export async function loadAuthResult(message) {
 		}
 		if (resultV2.arh && resultV2.arh.dkim) {
 			res.arh = {
-				dkim: resultV2.arh.dkim.map(AuthResultDKIMV2_to_dkimSigResultV2),
+				dkim: resultV2.arh.dkim.map((element) => AuthResultDKIMV2_to_dkimSigResultV2(element)),
 			};
 		}
 		return res;

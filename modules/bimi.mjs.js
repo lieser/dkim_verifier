@@ -8,7 +8,7 @@
  *
  * This is not a complete implementation of BIMI.
  *
- * Copyright (c) 2023 Philippe Lieser
+ * Copyright (c) 2023;2025 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -66,7 +66,7 @@ export function getBimiIndicator(headers, arhBIMI) {
 	// Remove header name and new line at end
 	bimiIndicator = bimiIndicator.slice("bimi-indicator:".length, -"\r\n".length);
 	// Remove all whitespace
-	bimiIndicator = bimiIndicator.replace(new RegExp(`${RfcParser.FWS}`, "g"), "");
+	bimiIndicator = bimiIndicator.replaceAll(new RegExp(`${RfcParser.FWS}`, "g"), "");
 
 	return bimiIndicator;
 }

@@ -87,8 +87,8 @@ class FakeI18n {
 			substitutions = [substitutions];
 		}
 		if (Array.isArray(substitutions)) {
-			for (let i = 0; i < substitutions.length; ++i) {
-				message = message.replace(`$${i + 1}`, substitutions[i]);
+			for (const [i, substitution] of substitutions.entries()) {
+				message = message.replace(`$${i + 1}`, substitution);
 			}
 		}
 		return message;
@@ -145,20 +145,16 @@ class FakeStorageArea {
 		const result = {};
 
 		if (Array.isArray(keys)) {
-			keys.forEach((key) => {
+			for (const key of keys) {
 				if (key in this.#storage) {
 					result[key] = deepCopy(this.#storage[key]);
 				}
-			});
+			}
 			return result;
 		} else if (typeof keys === "object") {
-			Object.keys(keys).forEach((key) => {
-				if (key in this.#storage) {
-					result[key] = deepCopy(this.#storage[key]);
-				} else {
-					result[key] = deepCopy(keys[key]);
-				}
-			});
+			for (const key of Object.keys(keys)) {
+				result[key] = key in this.#storage ? deepCopy(this.#storage[key]) : deepCopy(keys[key]);
+			}
 			return result;
 		}
 
@@ -170,13 +166,13 @@ class FakeStorageArea {
 		if (typeof keys === "object") {
 			/** @type {{[prefName: string]: browser.storage.StorageChange}} */
 			const changes = {};
-			Object.keys(keys).forEach((key) => {
+			for (const key of Object.keys(keys)) {
 				changes[key] = {
 					oldValue: deepCopy(this.#storage[key]),
 					newValue: deepCopy(keys[key]),
 				};
 				this.#storage[key] = deepCopy(keys[key]);
-			});
+			}
 			this.onChanged.addListener.yield(changes);
 			return;
 		}
@@ -192,9 +188,9 @@ class FakeStorageArea {
 		}
 
 		if (Array.isArray(keys)) {
-			keys.forEach((key) => {
+			for (const key of keys) {
 				delete this.#storage[key];
-			});
+			}
 			return;
 		}
 
@@ -447,7 +443,7 @@ class FakeMessages {
 			return [];
 		}
 		return completeHeaders.map(header =>
-			header.substr(name.length + ": ".length).slice(0, -"\r\n".length));
+			header.slice(name.length + ": ".length).slice(0, -"\r\n".length));
 	}
 }
 
@@ -524,7 +520,7 @@ class FakeMailUtils {
 		if (publicSuffixList.some(suffix => stringEndsWith(addr, suffix))) {
 			numberDomainParts = 3;
 		}
-		const fullDomain = addr.substr(addr.lastIndexOf("@") + 1);
+		const fullDomain = addr.slice(addr.lastIndexOf("@") + 1);
 		const domainParts = fullDomain.split(".");
 		const baseDomain = domainParts.slice(-numberDomainParts).join(".");
 		return Promise.resolve(baseDomain);

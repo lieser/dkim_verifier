@@ -94,7 +94,7 @@ export class BasePreferences {
 				return true;
 			}
 		}
-		if (typeof value === "undefined") {
+		if (value === undefined) {
 			return defaultValue;
 		}
 		throw new Error(`Preference ${name} has unexpected type ${typeof value}`);
@@ -110,7 +110,7 @@ export class BasePreferences {
 		if (typeof value === "number") {
 			return value;
 		}
-		if (typeof value === "undefined") {
+		if (value === undefined) {
 			return defaultValue;
 		}
 		throw new Error(`Preference ${name} has unexpected type ${typeof value}`);
@@ -126,7 +126,7 @@ export class BasePreferences {
 		if (typeof value === "string") {
 			return value;
 		}
-		if (typeof value === "undefined") {
+		if (value === undefined) {
 			return defaultValue;
 		}
 		throw new Error(`Preference ${name} has unexpected type ${typeof value}`);
@@ -141,6 +141,7 @@ export class BasePreferences {
 			throw new Error(`Can not get nonexisting preference "${name}"`);
 		}
 		/** @type {any} */
+		// eslint-disable-next-line unicorn/no-this-assignment
 		const that = this;
 		return that[name];
 	}
@@ -152,7 +153,7 @@ export class BasePreferences {
 	getBool(name) {
 		const value = this.getValue(name);
 		if (typeof value !== "boolean") {
-			throw new Error(`Preference ${name} has unexpected type ${typeof value}`);
+			throw new TypeError(`Preference ${name} has unexpected type ${typeof value}`);
 		}
 		return value;
 	}
@@ -164,7 +165,7 @@ export class BasePreferences {
 	getNumber(name) {
 		const value = this.getValue(name);
 		if (typeof value !== "number") {
-			throw new Error(`Preference ${name} has unexpected type ${typeof value}`);
+			throw new TypeError(`Preference ${name} has unexpected type ${typeof value}`);
 		}
 		return value;
 	}
@@ -176,7 +177,7 @@ export class BasePreferences {
 	getString(name) {
 		const value = this.getValue(name);
 		if (typeof value !== "string") {
-			throw new Error(`Preference ${name} has unexpected type ${typeof value}`);
+			throw new TypeError(`Preference ${name} has unexpected type ${typeof value}`);
 		}
 		return value;
 	}
@@ -188,7 +189,7 @@ export class BasePreferences {
 	 */
 	async setValue(name, value) {
 		if (typeof value !== typeof this.getValue(name)) {
-			throw new Error(`Can not set preference with type ${typeof this.getValue(name)} to a ${typeof value}`);
+			throw new TypeError(`Can not set preference with type ${typeof this.getValue(name)} to a ${typeof value}`);
 		}
 		await this._valueSetter(name, value);
 	}
@@ -543,16 +544,14 @@ export class BasePreferences {
 		}
 		if (name === "dkim.enable" || name === "arh.read") {
 			if (typeof value !== "number") {
-				throw new Error(`Can not set account preference ${name} with type number to a ${typeof value}`);
+				throw new TypeError(`Can not set account preference ${name} with type number to a ${typeof value}`);
 			}
 			if (value < 0 || value > 2) {
 				throw new Error(`Can not set account preference ${name} to value ${value}`);
 			}
 		}
-		if (name === "arh.allowedAuthserv") {
-			if (typeof value !== "string") {
-				throw new Error(`Can not set account preference ${name} with type number to a ${typeof value}`);
-			}
+		if (name === "arh.allowedAuthserv" && typeof value !== "string") {
+			throw new TypeError(`Can not set account preference ${name} with type number to a ${typeof value}`);
 		}
 		return this._valueSetter(`account.${account}.${name}`, value);
 	}
@@ -570,6 +569,7 @@ export class BasePreferences {
 			return this.#tryGetNumberValue(`account.${account}.${name}`, 0);
 		}
 		/** @type {any} */
+		// eslint-disable-next-line unicorn/no-this-assignment
 		const that = this;
 		return that[`account.${name}`](account);
 	}
@@ -588,14 +588,18 @@ export class BasePreferences {
 		// 0: default, 1: yes, 2: no
 		const accBool = this.#tryGetNumberValue(`account.${account}.${name}`, 0);
 		switch (accBool) {
-			case 0:
+			case 0: {
 				return this.getBool(name);
-			case 1:
+			}
+			case 1: {
 				return true;
-			case 2:
+			}
+			case 2: {
 				return false;
-			default:
+			}
+			default: {
 				throw new Error(`Account preference ${name} has unexpected value ${accBool}`);
+			}
 		}
 	}
 

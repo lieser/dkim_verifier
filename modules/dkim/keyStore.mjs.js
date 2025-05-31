@@ -137,27 +137,31 @@ export class KeyDb {
 		switch (propertyName) {
 			case "sdid":
 			case "selector":
-			case "key":
+			case "key": {
 				if (typeof newValue !== "string") {
-					throw new Error(`Can not set ${propertyName} to value '${newValue}' with type ${typeof newValue}`);
+					throw new TypeError(`Can not set ${propertyName} to value '${newValue}' with type ${typeof newValue}`);
 				}
 				key[propertyName] = newValue;
 				break;
+			}
 			case "insertedAt":
-			case "lastUsedAt":
+			case "lastUsedAt": {
 				if (typeof newValue !== "string") {
-					throw new Error(`Can not set ${propertyName} to value '${newValue}' with type ${typeof newValue}`);
+					throw new TypeError(`Can not set ${propertyName} to value '${newValue}' with type ${typeof newValue}`);
 				}
 				key[propertyName] = newValue;
 				break;
-			case "secure":
+			}
+			case "secure": {
 				if (typeof newValue !== "boolean") {
-					throw new Error(`Can not set domain to value '${newValue}' with type ${typeof newValue}`);
+					throw new TypeError(`Can not set domain to value '${newValue}' with type ${typeof newValue}`);
 				}
 				key[propertyName] = newValue;
 				break;
-			default:
+			}
+			default: {
 				throw new Error(`Can not update unknown property '${propertyName}'`);
+			}
 		}
 		return KeyDb.#storeKeys();
 	}
@@ -323,8 +327,9 @@ export default class KeyStore {
 	async fetchKey(sdid, selector) {
 		switch (prefs["key.storing"]) {
 			// don't store DKIM keys
-			case KeyStore.KEY_STORING.DISABLED:
+			case KeyStore.KEY_STORING.DISABLED: {
 				return this.#getKeyFromDNS(sdid, selector);
+			}
 			// store DKIM keys
 			case KeyStore.KEY_STORING.STORE: {
 				let key = await KeyDb.fetch(sdid, selector);
@@ -351,8 +356,9 @@ export default class KeyStore {
 				}
 				return keyDns;
 			}
-			default:
+			default: {
 				throw new Error("invalid key.storing setting");
+			}
 		}
 	}
 

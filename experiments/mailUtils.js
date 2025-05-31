@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2022 Philippe Lieser
+ * Copyright (c) 2020-2022;2025 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -34,20 +34,20 @@ this.mailUtils = class extends ExtensionCommon.ExtensionAPI {
 					const nsiURI = Services.io.newURI(`http://${addr}`);
 					try {
 						return Services.eTLD.getBaseDomain(nsiURI);
-					} catch (e) {
+					} catch (error) {
 						// domains like "blogspot.co.uk", "blogspot.com", "googlecode.com"
 						// are on the public suffix list, but should be valid base domains
 						// because e-mails may be send from them
 						// @ts-expect-error
-						if (e.result === Cr.NS_ERROR_INSUFFICIENT_DOMAIN_LEVELS) {
+						if (error.result === Cr.NS_ERROR_INSUFFICIENT_DOMAIN_LEVELS) {
 							// add "invalid" subdomain to avoid error
 							const invalidSub = "invalid.";
 							const host = invalidSub + nsiURI.asciiHost;
 							const res = Services.eTLD.getBaseDomainFromHost(host, 0);
 							// remove "invalid" subdomain from result
-							return res.substr(invalidSub.length);
+							return res.slice(invalidSub.length);
 						}
-						throw e;
+						throw error;
 					}
 				},
 			},

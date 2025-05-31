@@ -219,9 +219,9 @@ async function storeUserRules() {
  */
 function glob(str, pattern) {
 	// escape all special regex charters besides *
-	let regexpPattern = pattern.replace(/[.+?^${}()|[\]\\]/g, "\\$&");
+	let regexpPattern = pattern.replaceAll(/[.+?^${}()|[\]\\]/g, String.raw`\$&`);
 	// replace * with correct regex
-	regexpPattern = regexpPattern.replace(/\*/g, ".*");
+	regexpPattern = regexpPattern.replaceAll("*", ".*");
 
 	const regexp = new RegExp(`^${regexpPattern}$`, "i");
 	return regexp.test(str);
@@ -258,7 +258,7 @@ async function checkIfShouldBeSigned(fromAddress, listId, dmarc) {
 	});
 	if (prefs["policy.signRules.checkDefaultRules"]) {
 		await loadDefaultRules();
-		matchedRules = matchedRules.concat(defaultRules.filter(rule => {
+		matchedRules = [...matchedRules, ...defaultRules.filter(rule => {
 			if (!addrIsInDomain(fromAddress, rule.domain)) {
 				return false;
 			}
@@ -266,7 +266,7 @@ async function checkIfShouldBeSigned(fromAddress, listId, dmarc) {
 				return false;
 			}
 			return true;
-		}));
+		})];
 	}
 	/** @type {DkimSignRuleDefault|DkimSignRuleUser|undefined} */
 	const rule = matchedRules.sort((a, b) => b.priority - a.priority)[0];
@@ -291,24 +291,28 @@ async function checkIfShouldBeSigned(fromAddress, listId, dmarc) {
 	let shouldBeSigned;
 	let hideFail;
 	switch (rule.type) {
-		case RULE_TYPE.ALL:
+		case RULE_TYPE.ALL: {
 			shouldBeSigned = true;
 			hideFail = false;
 			break;
-		case RULE_TYPE.NEUTRAL:
+		}
+		case RULE_TYPE.NEUTRAL: {
 			shouldBeSigned = false;
 			hideFail = false;
 			break;
-		case RULE_TYPE.HIDEFAIL:
+		}
+		case RULE_TYPE.HIDEFAIL: {
 			shouldBeSigned = false;
 			hideFail = true;
 			break;
-		default:
+		}
+		default: {
 			throw new Error(`unknown rule type ${rule.type}`);
+		}
 	}
 	return {
 		shouldBeSigned,
-		sdid: rule.sdid.split(" ").filter(x => x),
+		sdid: rule.sdid.split(" ").filter(Boolean),
 		foundRule: true,
 		hideFail,
 	};
@@ -432,7 +436,7 @@ export default class SignRules {
 			maxId = 0;
 			userRules = [];
 		}
-		userRules = userRules.concat(exportedRules.rules.map(rule => ({ id: ++maxId, ...rule })));
+		userRules = [...userRules, ...exportedRules.rules.map(rule => ({ id: ++maxId, ...rule }))];
 		userRulesMaxId = maxId;
 
 		await storeUserRules();
@@ -516,17 +520,21 @@ export default class SignRules {
 		let rulePriority = priority;
 		if (rulePriority === null) {
 			switch (type) {
-				case RULE_TYPE.ALL:
+				case RULE_TYPE.ALL: {
 					rulePriority = PRIORITY.USERINSERT_RULE_ALL;
 					break;
-				case RULE_TYPE.NEUTRAL:
+				}
+				case RULE_TYPE.NEUTRAL: {
 					rulePriority = PRIORITY.USERINSERT_RULE_NEUTRAL;
 					break;
-				case RULE_TYPE.HIDEFAIL:
+				}
+				case RULE_TYPE.HIDEFAIL: {
 					rulePriority = PRIORITY.USERINSERT_RULE_HIDEFAIL;
 					break;
-				default:
+				}
+				default: {
 					throw new Error(`unknown rule type ${type}`);
+				}
 			}
 		}
 
@@ -597,27 +605,31 @@ export default class SignRules {
 			case "domain":
 			case "listId":
 			case "addr":
-			case "sdid":
+			case "sdid": {
 				if (typeof newValue !== "string") {
-					throw new Error(`Can not set ${propertyName} to value '${newValue}' with type ${typeof newValue}`);
+					throw new TypeError(`Can not set ${propertyName} to value '${newValue}' with type ${typeof newValue}`);
 				}
 				userRule[propertyName] = newValue;
 				break;
+			}
 			case "type":
-			case "priority":
+			case "priority": {
 				if (typeof newValue !== "number") {
-					throw new Error(`Can not set ${propertyName} to value '${newValue}' with type ${typeof newValue}`);
+					throw new TypeError(`Can not set ${propertyName} to value '${newValue}' with type ${typeof newValue}`);
 				}
 				userRule[propertyName] = newValue;
 				break;
-			case "enabled":
+			}
+			case "enabled": {
 				if (typeof newValue !== "boolean") {
-					throw new Error(`Can not set domain to value '${newValue}' with type ${typeof newValue}`);
+					throw new TypeError(`Can not set domain to value '${newValue}' with type ${typeof newValue}`);
 				}
 				userRule[propertyName] = newValue;
 				break;
-			default:
+			}
+			default: {
 				throw new Error(`Can not update unknown property '${propertyName}'`);
+			}
 		}
 		return storeUserRules();
 	}
@@ -671,25 +683,29 @@ export default class SignRules {
 				let fromAddressToAdd;
 
 				switch (prefs["policy.signRules.autoAddRule.for"]) {
-					case AUTO_ADD_RULE_FOR.FROM_ADDRESS:
+					case AUTO_ADD_RULE_FOR.FROM_ADDRESS: {
 						fromAddressToAdd = fromAddress;
 						break;
-					case AUTO_ADD_RULE_FOR.SUB_DOMAIN:
-						fromAddressToAdd = `*${fromAddress.substr(fromAddress.lastIndexOf("@"))}`;
+					}
+					case AUTO_ADD_RULE_FOR.SUB_DOMAIN: {
+						fromAddressToAdd = `*${fromAddress.slice(fromAddress.lastIndexOf("@"))}`;
 						break;
-					case AUTO_ADD_RULE_FOR.BASE_DOMAIN:
+					}
+					case AUTO_ADD_RULE_FOR.BASE_DOMAIN: {
 						domain = await browser.mailUtils.getBaseDomainFromAddr(fromAddress);
 						fromAddressToAdd = "*";
 						break;
-					default:
+					}
+					default: {
 						throw new Error("invalid signRules.autoAddRule.for");
+					}
 				}
 				await SignRules.addRule(domain, null, fromAddressToAdd, sdid, RULE_TYPE.ALL, PRIORITY.AUTOINSERT_RULE_ALL);
 			}
 		})();
-		promise.then(null, (exception) => {
+		promise.then(null, (error) => {
 			// Failure!  We can inspect or report the exception.
-			log.fatal("Error adding an automatic rule:", exception);
+			log.fatal("Error adding an automatic rule:", error);
 		});
 		return promise;
 	}

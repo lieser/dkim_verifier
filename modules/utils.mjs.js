@@ -63,6 +63,7 @@ export function addrIsInDomain2(addr, domain) {
  * @returns {import("ts-essentials").DeepWritable<T>}
  */
 export function copy(src) {
+	// eslint-disable-next-line unicorn/prefer-structured-clone
 	return JSON.parse(JSON.stringify(src));
 }
 
@@ -84,7 +85,7 @@ export function dateToString(date) {
  * @returns {string}
  */
 export function decodeBinaryString(binaryString) {
-	// eslint-disable-next-line no-magic-numbers
+	// eslint-disable-next-line no-magic-numbers, unicorn/prefer-code-point
 	const buffer = Uint8Array.from(binaryString, x => x.charCodeAt(0) & 0xFF);
 	const utf8decoder = new TextDecoder();
 	return utf8decoder.decode(buffer);
@@ -109,7 +110,7 @@ export function domainIsInDomain(domain1, domain2) {
  * @returns {string}
  */
 export function getDomainFromAddr(addr) {
-	return addr.substr(addr.lastIndexOf("@") + 1);
+	return addr.slice(addr.lastIndexOf("@") + 1);
 }
 
 /**
@@ -159,7 +160,7 @@ export function sleep(ms) {
  */
 export function stringEndsWith(str, x) {
 	const index = str.toLowerCase().lastIndexOf(x.toLowerCase());
-	return index >= 0 && index === str.length - x.length;
+	return index !== -1 && index === str.length - x.length;
 }
 
 /**

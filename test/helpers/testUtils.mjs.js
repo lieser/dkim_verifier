@@ -13,7 +13,7 @@
  * @returns {boolean}
  */
 function isNodeJs() {
-	return typeof window === "undefined";
+	return globalThis.window === undefined;
 }
 
 let rootDirPath = "";
@@ -26,8 +26,8 @@ async function rootDir() {
 	if (rootDirPath) {
 		return rootDirPath;
 	}
-	const path = await import("path");
-	const { fileURLToPath } = await import("url");
+	const { default: path } = await import("node:path");
+	const { fileURLToPath } = await import("node:url");
 
 	const __filename = fileURLToPath(import.meta.url);
 	const __dirname = path.dirname(__filename);
@@ -40,13 +40,13 @@ async function rootDir() {
  * Read a file with the requested encoding from the root directory.
  *
  * @param {string} file - path to file relative to root directory
- * @param {"utf-8"|"binary"} encoding - encoding
+ * @param {"utf8"|"binary"} encoding - encoding
  * @returns {Promise<string>}
  */
 async function readFile(file, encoding) {
 	if (isNodeJs()) {
-		const fs = await import("fs");
-		const path = await import("path");
+		const fs = await import("node:fs");
+		const { default: path } = await import("node:path");
 
 		const filePath = path.join(await rootDir(), file);
 
@@ -64,31 +64,28 @@ async function readFile(file, encoding) {
 	const req = new Request(`../../${file}`);
 	const response = await fetch(req);
 	switch (encoding) {
-		case "utf-8": {
+		case "utf8": {
 			const text = await response.text();
 			return text;
 		}
 		case "binary": {
 			const data = await response.arrayBuffer();
 			const dataArray = new Uint8Array(data);
-			return String.fromCharCode(...dataArray);
+			return String.fromCodePoint(...dataArray);
 		}
-		default:
+		default: {
 			throw new Error(`unsupported encoding ${encoding}`);
+		}
 	}
 }
 
 /**
  * @template T
  * @param {T} val
- * @returns {import("ts-essentials").DeepWritable<T>}
+ * @returns {T}
  */
 export function deepCopy(val) {
-	if (val === undefined) {
-		// @ts-expect-error
-		return undefined;
-	}
-	return JSON.parse(JSON.stringify(val));
+	return structuredClone(val);
 }
 
 /**
@@ -98,7 +95,7 @@ export function deepCopy(val) {
  * @returns {Promise<string>}
  */
 export function readTextFile(file) {
-	return readFile(file, "utf-8");
+	return readFile(file, "utf8");
 }
 
 /**
@@ -121,5 +118,5 @@ export function readTestFile(file) {
 export function toBinaryString(str) {
 	const encoder = new TextEncoder();
 	const utf8Encoded = encoder.encode(str);
-	return String.fromCharCode(...utf8Encoded);
+	return String.fromCodePoint(...utf8Encoded);
 }
