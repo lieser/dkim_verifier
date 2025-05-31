@@ -107,16 +107,3 @@ export function readTextFile(file) {
 export function readTestFile(file) {
 	return readFile(`test/data/${file}`, "binary");
 }
-
-/**
- * Converts a string to an UTF-8 encoded binary string.
- * https://developer.mozilla.org/en-US/docs/Web/API/DOMString/Binary.
- *
- * @param {string} str
- * @returns {string} - (binary string)
- */
-export function toBinaryString(str) {
-	const encoder = new TextEncoder();
-	const utf8Encoded = encoder.encode(str);
-	return String.fromCodePoint(...utf8Encoded);
-}

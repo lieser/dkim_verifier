@@ -114,7 +114,7 @@ export default class AuthVerifier {
 		if (savedAuthResult) {
 			let from = null;
 			try {
-				from = MsgParser.parseAuthor(message.author, prefs["internationalized.enable"]);
+				from = MsgParser.parseAuthor(message.author);
 			} catch (error) {
 				log.warn("Parsing of from header failed", error);
 			}

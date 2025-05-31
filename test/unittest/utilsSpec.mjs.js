@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2021;2023 Philippe Lieser
+ * Copyright (c) 2020-2021;2023;2025 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -18,6 +18,7 @@ import {
 	promiseWithTimeout,
 	stringEndsWith,
 	stringEqual,
+	toBinaryString,
 } from "../../modules/utils.mjs.js";
 import expect from "../helpers/chaiUtils.mjs.js";
 
@@ -237,6 +238,28 @@ describe("utils [unittest]", function () {
 			expect(
 				stringEqual("foobar", "muh")
 			).to.be.false;
+		});
+	});
+
+	describe("toBinaryString", function () {
+		it("ASCII only", function () {
+			expect(
+				toBinaryString("bar\r\nfoo")
+			).to.be.equal("bar\r\nfoo");
+		});
+
+		it("Non ascii", function () {
+			expect(
+				toBinaryString("\u2014") // —
+			).to.be.equal("\u00E2\u0080\u0094");
+
+			expect(
+				toBinaryString("🌃") // U+1F303
+			).to.be.equal("\u00F0\u009F\u008C\u0083");
+
+			expect(
+				toBinaryString("a🌃 b— c👍")
+			).to.be.equal("a\u00F0\u009F\u008C\u0083 b\u00E2\u0080\u0094 c\u00F0\u009F\u0091\u008D");
 		});
 	});
 });

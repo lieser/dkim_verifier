@@ -12,9 +12,9 @@
 // @ts-check
 
 import RfcParser, { RfcParserI } from "./rfcParser.mjs.js";
+import { decodeBinaryString, toBinaryString } from "./utils.mjs.js";
 import { DKIM_Error } from "./error.mjs.js";
 import Logging from "./logging.mjs.js";
-import { decodeBinaryString } from "./utils.mjs.js";
 
 const log = Logging.getLogger("msgParser");
 
@@ -154,13 +154,13 @@ export default class MsgParser {
 	/**
 	 * Extract the address from author in Thunderbirds MessageHeader.
 	 *
-	 * @param {string} author - binary string
-	 * @param {boolean} [internationalized] - Enable internationalized support
+	 * @param {string} author
 	 * @returns {string}
 	 * @throws {DKIM_Error}
 	 */
-	static parseAuthor(author, internationalized) {
-		const from = MsgParser.#tryParseMailboxList(`${author}\r\n`, internationalized);
+	static parseAuthor(author) {
+		// We get an UTF-16 string from Thunderbird, but our parsing uses a binary string.
+		const from = MsgParser.#tryParseMailboxList(toBinaryString(`${author}\r\n`), true);
 		if (from === null) {
 			throw new DKIM_Error("From header (author) does not contain an address");
 		}

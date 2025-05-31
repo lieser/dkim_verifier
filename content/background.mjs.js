@@ -290,7 +290,7 @@ class DisplayAction {
 			return;
 		}
 
-		const from = MsgParser.parseAuthor(message.author, prefs["internationalized.enable"]);
+		const from = MsgParser.parseAuthor(message.author);
 		await SignRules.addException(from);
 
 		await DisplayAction.#reverifyMessage(tabId, message);

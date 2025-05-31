@@ -174,3 +174,16 @@ export function stringEndsWith(str, x) {
 export function stringEqual(str1, str2) {
 	return str1.toLowerCase() === str2.toLowerCase();
 }
+
+/**
+ * Converts a string to an UTF-8 encoded binary string.
+ * https://developer.mozilla.org/en-US/docs/Web/API/DOMString/Binary.
+ *
+ * @param {string} str
+ * @returns {string} - (binary string)
+ */
+export function toBinaryString(str) {
+	const encoder = new TextEncoder();
+	const utf8Encoded = encoder.encode(str);
+	return String.fromCodePoint(...utf8Encoded);
+}

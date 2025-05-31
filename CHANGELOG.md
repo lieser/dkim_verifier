@@ -13,6 +13,10 @@ All notable changes to this project will be documented in this file.
 - The DKIM selector is now displayed in the DKIM button pop-up (#510).
 - The options page of the add-on can now be open from the DKIM button pop-up.
 
+### Fixes
+
+- Fixed parsing of a From header that contains MIME encoded non-ASCII characters when reading a saved result.
+
 ### Other
 
 - Updated default rules and favicons.
