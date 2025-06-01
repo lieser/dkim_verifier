@@ -89,16 +89,25 @@ let arhParser = {
 		let reg_match;
 
 		// get authserv-id and authres-version
-		reg_match = match(authresHeaderRef, `${rfcParser.get("value_cp")}(?:${rfcParser.get("CFWS")}([0-9]+)${rfcParser.get("CFWS_op")})?`);
-		const authserv_id = reg_match[1] || reg_match[2];
-		if (!authserv_id) {
-			throw new DKIM_Error("Error matching the ARH authserv-id.");
-		}
-		res.authserv_id = authserv_id;
-		if (reg_match[3]) {
-			res.authres_version = parseInt(reg_match[3], 10);
-		} else {
-			res.authres_version = 1;
+		try {
+			reg_match = match(authresHeaderRef, `${rfcParser.get("value_cp")}(?:${rfcParser.get("CFWS")}([0-9]+)${rfcParser.get("CFWS_op")})?`);
+			const authserv_id = reg_match[1] || reg_match[2];
+			if (!authserv_id) {
+				throw new DKIM_Error("Error matching the ARH authserv-id.");
+			}
+			res.authserv_id = authserv_id;
+			if (reg_match[3]) {
+				res.authres_version = parseInt(reg_match[3], 10);
+			} else {
+				res.authres_version = 1;
+			}
+		} catch (error) {
+			log.debug("Parsing of authserv-id and authres-version failed", error);
+			if (!prefs.getBoolPref("relaxedParsing")) {
+				throw error;
+			}
+			res.authserv_id = "";
+			authresHeaderRef.value = `;${authresHeaderRef.value}`;
 		}
 
 		// check if message authentication was performed
@@ -184,6 +193,28 @@ function parseResInfo(str) {
 		res.reason = reg_match[1] || reg_match[2];
 	}
 
+	res.properties = parseProperties(str);
+	log.trace(res.toSource());
+	return res;
+}
+
+/**
+ * Parses all properties (propspec) of a resinfo in str. The parsed part of str is removed from str.
+ *
+ * @param {RefString} str
+ * @returns {Object} Parsed properties
+ * @throws {DKIM_Error}
+ */
+function parseProperties(str) {
+	let reg_match;
+
+	// Outlook specific action (optional)
+	// https://learn.microsoft.com/en-us/defender-office-365/message-headers-eop-mdo
+	if (prefs.getBoolPref("relaxedParsing")) {
+		const actionspec_p = `action${rfcParser.get("CFWS_op")}=${rfcParser.get("CFWS_op")}${rfcParser.get("value_cp")}`;
+		reg_match = match_o(str, actionspec_p);
+	}
+
 	// get propspec (optional)
 	let pvalue_p = `${rfcParser.get("value_cp")}|((?:${rfcParser.get("local_part")}?@)?${rfcParser.get("domain_name")})`;
 	if (prefs.getBoolPref("relaxedParsing")) {
@@ -193,11 +224,12 @@ function parseResInfo(str) {
 	const special_smtp_verb_p = "mailfrom|rcptto";
 	const property_p = `${special_smtp_verb_p}|${rfcParser.get("Keyword")}`;
 	const propspec_p = `(${rfcParser.get("Keyword")})${rfcParser.get("CFWS_op")}\\.${rfcParser.get("CFWS_op")}(${property_p})${rfcParser.get("CFWS_op")}=${rfcParser.get("CFWS_op")}(?:${pvalue_p})`;
-	res.properties = {};
-	res.properties.smtp = {};
-	res.properties.header = {};
-	res.properties.body = {};
-	res.properties.policy = {};
+	const properties = {
+		smtp: {},
+		header: {},
+		body: {},
+		policy: {}
+	};
 	while ((reg_match = match_o(str, propspec_p)) !== null) {
 		if (!reg_match[1]) {
 			throw new DKIM_Error("Error matching the ARH property name.");
@@ -205,16 +237,14 @@ function parseResInfo(str) {
 		if (!reg_match[2]) {
 			throw new DKIM_Error("Error matching the ARH property sub-name.");
 		}
-		let property = res.properties[reg_match[1]];
+		let property = properties[reg_match[1]];
 		if (!property) {
 			property = {};
-			res.properties[reg_match[1]] = property;
+			properties[reg_match[1]] = property;
 		}
 		property[reg_match[2]] = reg_match[3] ? reg_match[3] : reg_match[4] ? reg_match[4] : reg_match[5] ? reg_match[5] : reg_match[6];
 	}
-
-	log.trace(res.toSource());
-	return res;
+	return properties;
 }
 
 /**

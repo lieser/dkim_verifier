@@ -157,7 +157,12 @@ function getARHResult(msgHdr, msg) {
 				// @ts-expect-error
 				|| (dkimSigResults[i].warnings && dkimSigResults[i].warnings.length > 0)
 			   ) {
-				dkimSigResults[i].verifiedBy += " & DKIM Verifier";
+				if (dkimSigResults[i].verifiedBy !== "") {
+					// if authserv_id is empty (may only happen if relaxed parsing is enabled)
+					// dont't add the internal verifier, even if result was modified by internal verification
+					// so, no verifier will be shown in the GUI
+					dkimSigResults[i].verifiedBy += " & DKIM Verifier";
+				}
 				if (dkimSigResults[i].result !== "SUCCESS") { dkimSigResults[i].warnings = []; }
 			}
 		}
