@@ -323,6 +323,33 @@ describe("AuthVerifier [unittest]", function () {
 			expect(res.dkim[0]?.favicon).to.be.a("string").and.satisfy(
 				(/** @type {string} */ favicon) => favicon.startsWith("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiICBzdGFuZGFsb25l"));
 		});
+
+		it("loading SavedAuthResult 3.1 with non-ASCII From header", async function () {
+			storedData = {
+				version: "3.1",
+				dkim: [
+					{
+						version: "2.0",
+						result: "SUCCESS",
+						sdid: "fastmail.com",
+						auid: "@fastmail.com",
+						selector: "brisbane",
+						warnings: [],
+						keySecure: false,
+					},
+				],
+				spf: [],
+				dmarc: [],
+			};
+
+			const header = new FakeMessageHeader();
+			header.author = "⚡Fastmail⚡ <support@fastmail.com>";
+
+			const res = await authVerifier.verify(header);
+			expect(res.dkim[0]?.res_num).to.be.equal(10);
+			expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
+			expect(res.dkim[0]?.favicon).to.be.equal("moz-extension://fake/data/favicon/fastmail.com.webp");
+		});
 	});
 
 	describe("sign rules", function () {
