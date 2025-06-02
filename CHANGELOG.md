@@ -4,14 +4,14 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased
+## 6.1.0 (2025-06-01)
 
 ### Enhancements
 
-- Added option to display the DKIM header if when an e-mail with a DKIM signature, SPF or DMARC result is viewed (#462).
+- Added an option to display the DKIM header when an e-mail with a DKIM signature, SPF or DMARC result is viewed (#462).
 - Authentication-Results header: Invalid headers by Outlook are now accepted if reading of non RFC compliant ARHs is enabled (#423).
 - The DKIM selector is now displayed in the DKIM button pop-up (#510).
-- The options page of the add-on can now be open from the DKIM button pop-up.
+- The options page of the add-on can now be opened from the DKIM button pop-up.
 
 ### Fixes
 
