@@ -4,6 +4,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+### Fixes
+
+- Libunbound resolver: Make unloading of libraries more robust in case the wrong one got loaded.
+
 ## 6.1.0 (2025-06-01)
 
 ### Enhancements
@@ -15,7 +21,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixes
 
-- Fixed parsing of a From header that contains MIME encoded non-ASCII characters when reading a saved result.
+- Fixed parsing of a From header that contains MIME encoded non-ASCII characters when reading a saved result (#529).
 
 ### Other
 
