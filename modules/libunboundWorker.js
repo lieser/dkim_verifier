@@ -277,15 +277,27 @@ function resolve(name, rrtype=Constants.RR_TYPE_A) {
 function load(paths) {
 	// if library was already loaded, do a cleanup first before reloading it
 	if (lib) {
-		// delete old context
-		ub_ctx_delete(ctx);
-		ctx = ctypes.voidptr_t();
-		// close library
-		lib.close();
+		try {
+			// delete old context
+			ub_ctx_delete(ctx);
+			ctx = ctypes.voidptr_t();
+		} catch (error) {
+			log.error(`Failed to delete old context: ${error}; stack: ${error.stack}`);
+		}
+		try {
+			// close library
+			lib.close();
+		} catch (error) {
+			log.error(`Failed to close old library: ${error}; stack: ${error.stack}`);
+		}
 		lib = null;
 		// close dependency of library
 		for (let libDep of libDeps) {
-			libDep.close();
+			try {
+				libDep.close();
+			} catch (error) {
+				log.error(`Failed to close old dependency: ${error}; stack: ${error.stack}`);
+			}
 		}
 		libDeps = [];
 	}
