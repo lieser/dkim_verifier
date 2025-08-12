@@ -706,6 +706,7 @@ class DkimHeaderRow {
 		const headerRowLabel = document.createXULElement("label");
 		headerRowLabel.classList.add("message-header-label");
 		headerRowLabel.setAttribute("value", "DKIM");
+		headerRowLabel.style.alignSelf = "center";
 
 		// Show the DKIM label if "Hide labels column" is enabled
 		const rowHeading = document.createElement("span");
