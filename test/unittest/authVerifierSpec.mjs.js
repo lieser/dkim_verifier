@@ -9,6 +9,7 @@
 
 // @ts-check
 /* eslint-disable camelcase */
+/* eslint-disable complexity */
 
 import { FakeMessageHeader, fakeBrowser } from "../helpers/initWebExtensions.mjs.js";
 import AuthVerifier from "../../modules/authVerifier.mjs.js";
@@ -402,7 +403,6 @@ describe("AuthVerifier [unittest]", function () {
 			expect(res.dkim[0]?.result_str).to.be.equal("Invalid (No Signature, should be signed by paypal.com)");
 		});
 
-		// eslint-disable-next-line complexity
 		it("Failure because of wrong SDID keeps signature meta data", async function () {
 			const message = await fakeBrowser.messages.addMsg("rfc6376-A.2.eml");
 
@@ -490,6 +490,30 @@ describe("AuthVerifier [unittest]", function () {
 
 			res = await authVerifier.verify(message);
 			expect((res.spf ?? [])[0]?.result).to.be.equal("pass");
+		});
+
+		it("SPF and DMARC results should be sorted", async function () {
+			await prefs.setValue("arh.read", true);
+
+			const message = await fakeBrowser.messages.addMsg("arh/multiple_spf_and_dmarc_results.eml");
+			const res = await authVerifier.verify(message);
+			const spf = res.spf ?? [];
+			expect(spf.length).to.be.equal(8);
+			expect(spf[0]?.result).to.be.equal("pass");
+			expect(spf[1]?.result).to.be.equal("neutral");
+			expect(spf[2]?.result).to.be.equal("policy");
+			expect(spf[3]?.result).to.be.equal("fail");
+			expect(spf[4]?.result).to.be.equal("softfail");
+			expect(spf[5]?.result).to.be.equal("permerror");
+			expect(spf[6]?.result).to.be.equal("temperror");
+			expect(spf[7]?.result).to.be.equal("none");
+			const dmarc = res.dmarc ?? [];
+			expect(dmarc.length).to.be.equal(5);
+			expect(dmarc[0]?.result).to.be.equal("pass");
+			expect(dmarc[1]?.result).to.be.equal("fail");
+			expect(dmarc[2]?.result).to.be.equal("permerror");
+			expect(dmarc[3]?.result).to.be.equal("temperror");
+			expect(dmarc[4]?.result).to.be.equal("none");
 		});
 
 		describe("Converting of ARH result to DKIM result", function () {
@@ -644,7 +668,7 @@ describe("AuthVerifier [unittest]", function () {
 
 			it("DKIM results should be sorted", async function () {
 				const message = await fakeBrowser.messages.addMsg("arh/multiple_dkim_results.eml");
-				const res = await authVerifier.verify(message);
+				let res = await authVerifier.verify(message);
 				expect(res.dkim.length).to.be.equal(7);
 				expect(res.dkim[0]?.result).to.be.equal("SUCCESS");
 				expect(res.dkim[0]?.sdid).to.be.equal("example.com");
@@ -660,6 +684,28 @@ describe("AuthVerifier [unittest]", function () {
 				expect(res.dkim[5]?.result_str).to.be.equal("Invalid");
 				expect(res.dkim[6]?.result).to.be.equal("PERMFAIL");
 				expect(res.dkim[6]?.result_str).to.be.equal("Invalid (test failure signed by unrelated)");
+
+				await prefs.setValue("arh.replaceAddonResult", false);
+
+				res = await authVerifier.verify(message);
+				expect(res.dkim.length).to.be.equal(1);
+				expect(res.dkim[0]?.result).to.be.equal("none");
+				const arhDkim = res.arh?.dkim ?? [];
+				expect(arhDkim.length).to.be.equal(7);
+				expect(arhDkim[0]?.result).to.be.equal("SUCCESS");
+				expect(arhDkim[0]?.sdid).to.be.equal("example.com");
+				expect(arhDkim[1]?.result).to.be.equal("SUCCESS");
+				expect(arhDkim[1]?.sdid).to.be.equal("example.org");
+				expect(arhDkim[2]?.result).to.be.equal("SUCCESS");
+				expect(arhDkim[2]?.sdid).to.be.equal("unrelated.org");
+				expect(arhDkim[3]?.result).to.be.equal("PERMFAIL");
+				expect(arhDkim[3]?.result_str).to.be.equal("Invalid (test failure)");
+				expect(arhDkim[4]?.result).to.be.equal("PERMFAIL");
+				expect(arhDkim[4]?.result_str).to.be.equal("Invalid");
+				expect(arhDkim[5]?.result).to.be.equal("PERMFAIL");
+				expect(arhDkim[5]?.result_str).to.be.equal("Invalid");
+				expect(arhDkim[6]?.result).to.be.equal("PERMFAIL");
+				expect(arhDkim[6]?.result_str).to.be.equal("Invalid (test failure signed by unrelated)");
 			});
 
 			it("With secure signature algorithm", async function () {
@@ -751,9 +797,9 @@ describe("AuthVerifier [unittest]", function () {
 				const arhDkim = res.arh?.dkim ?? [];
 				expect(arhDkim.length).to.be.equal(3);
 				expect(arhDkim[0]?.result).to.be.equal("SUCCESS");
-				expect(arhDkim[0]?.sdid).to.be.equal("example.com");
+				expect(arhDkim[0]?.sdid).to.be.equal("football.example.com");
 				expect(arhDkim[1]?.result).to.be.equal("SUCCESS");
-				expect(arhDkim[1]?.sdid).to.be.equal("football.example.com");
+				expect(arhDkim[1]?.sdid).to.be.equal("example.com");
 				expect(arhDkim[2]?.result).to.be.equal("SUCCESS");
 				expect(arhDkim[2]?.sdid).to.be.equal("last.example.com");
 				expect((res.spf ?? [])[0]?.result).to.be.equal("pass");
@@ -830,9 +876,9 @@ describe("AuthVerifier [unittest]", function () {
 				const arhDkim = res.arh?.dkim ?? [];
 				expect(arhDkim.length).to.be.equal(3);
 				expect(arhDkim[0]?.result).to.be.equal("SUCCESS");
-				expect(arhDkim[0]?.sdid).to.be.equal("example.com");
+				expect(arhDkim[0]?.sdid).to.be.equal("football.example.com");
 				expect(arhDkim[1]?.result).to.be.equal("SUCCESS");
-				expect(arhDkim[1]?.sdid).to.be.equal("football.example.com");
+				expect(arhDkim[1]?.sdid).to.be.equal("example.com");
 				expect(arhDkim[2]?.result).to.be.equal("SUCCESS");
 				expect(arhDkim[2]?.sdid).to.be.equal("last.example.com");
 				expect((res.spf ?? [])[0]?.result).to.be.equal("pass");

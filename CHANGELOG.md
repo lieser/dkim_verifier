@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+### Enhancements
+
+- Authentication-Results header: Sort DKIM, SPF and DMARC results from ARH, even when not replacing the add-ons verification (#534).
+
 ### Fixes
 
 - Libunbound resolver: Make unloading of libraries more robust in case the wrong one got loaded.

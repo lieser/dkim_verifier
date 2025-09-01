@@ -181,6 +181,7 @@ export default class AuthVerifier {
 				await checkSignRules(message, savedAuthResult.dkim, msg.from, listId, this._dmarc);
 				sortSignatures(savedAuthResult.dkim, msg.from, listId);
 			} else {
+				sortSignatures(arhResult.dkim, msg.from, listId);
 				savedAuthResult = {
 					version: "3.1",
 					dkim: [],

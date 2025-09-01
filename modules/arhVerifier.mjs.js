@@ -14,8 +14,9 @@
 
 // @ts-check
 /* eslint-disable camelcase */
+/* eslint-disable no-magic-numbers */
 
-import { addrIsInDomain, copy, domainIsInDomain, getDomainFromAddr, stringEndsWith } from "./utils.mjs.js";
+import { addrIsInDomain, copy, domainIsInDomain, getDomainFromAddr, stringEndsWith, stringEqual } from "./utils.mjs.js";
 import ArhParser from "./arhParser.mjs.js";
 import Logging from "./logging.mjs.js";
 import { getBimiIndicator } from "./bimi.mjs.js";
@@ -241,6 +242,67 @@ function checkSignatureAlgorithm(dkimSigResult) {
 		}
 	}
 }
+
+/**
+ * Converts an ARH result Keyword to a sorted number.
+ *
+ * @param {string} result
+ * @returns {number}
+ */
+function resultToNumber(result) {
+	if (stringEqual(result, "pass")) {
+		return 0;
+	}
+
+	if (stringEqual(result, "neutral")) {
+		return 10;
+	}
+	if (stringEqual(result, "declined")) {
+		return 11;
+	}
+	if (stringEqual(result, "policy")) {
+		return 12;
+	}
+
+	if (stringEqual(result, "hardfail")) {
+		return 20;
+	}
+	if (stringEqual(result, "fail")) {
+		return 21;
+	}
+	if (stringEqual(result, "softfail")) {
+		return 22;
+	}
+
+	if (stringEqual(result, "permerror")) {
+		return 30;
+	}
+	if (stringEqual(result, "temperror")) {
+		return 31;
+	}
+
+	if (stringEqual(result, "skipped")) {
+		return 40;
+	}
+	if (stringEqual(result, "none")) {
+		return 41;
+	}
+
+	return 99;
+}
+
+/**
+ * Sort the given ArhResInfo.
+ *
+ * @param {ArhResInfo[]} arhResInfo
+ * @returns {void}
+ */
+function sortResultKeyword(arhResInfo) {
+	arhResInfo.sort((resInfo1, resInfo2) => {
+		return resultToNumber(resInfo1.result) - resultToNumber(resInfo2.result);
+	});
+}
+
 /**
  * Get the Authentication-Results header as an SavedAuthResult.
  *
@@ -284,6 +346,8 @@ export default function getArhResult(headers, from, account) {
 		dmarc: authenticationResults.dmarc,
 		bimiIndicator: getBimiIndicator(headers, authenticationResults.bimi) ?? undefined,
 	};
+	sortResultKeyword(savedAuthResult.spf);
+	sortResultKeyword(savedAuthResult.dmarc);
 	log.debug("ARH result:", copy(savedAuthResult));
 	return savedAuthResult;
 }
