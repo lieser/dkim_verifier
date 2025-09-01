@@ -1,0 +1,29 @@
+Authentication-Results: example.net;
+  spf=fail;
+  spf=pass;
+  spf=none;
+  spf=softfail;
+  spf=policy;
+  spf=neutral;
+  spf=temperror;
+  spf=permerror;
+  dmarc=fail;
+  dmarc=pass;
+  dmarc=permerror;
+  dmarc=none;
+  dmarc=temperror
+Received: from client1.football.example.com  [192.0.2.1]
+      by submitserver.example.com with SUBMISSION;
+      Fri, 11 Jul 2003 21:01:54 -0700 (PDT)
+From: Joe SixPack <joe@football.example.com>
+To: Suzie Q <suzie@shopping.example.net>
+Subject: [ARH test] Single ARH with multiple dkim results
+Date: Fri, 11 Jul 2003 21:00:37 -0700 (PDT)
+Message-ID: <arh-multiple_dkim_results@football.example.com>
+List-Id: <list.example.org>
+
+Hi.
+
+We lost the game. Are you hungry yet?
+
+Joe.
