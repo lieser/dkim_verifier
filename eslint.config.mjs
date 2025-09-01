@@ -1,5 +1,6 @@
 import eslintPluginUnicorn from "eslint-plugin-unicorn";
 import globals from "globals";
+import importPlugin from "eslint-plugin-import";
 import js from "@eslint/js";
 import jsdoc from "eslint-plugin-jsdoc";
 import json from "@eslint/json";
@@ -10,7 +11,7 @@ import stylistic from "@stylistic/eslint-plugin";
 
 export default [
 	{
-		ignores: ["thirdparty/**/*"],
+		ignores: ["thirdparty/"],
 	}, {
 		files: ["**/*.js", "**/*.mjs"],
 		...js.configs.recommended,
@@ -20,6 +21,10 @@ export default [
 	}, {
 		files: ["**/*.js", "**/*.mjs"],
 		...eslintPluginUnicorn.configs.recommended,
+	}, {
+		files: ["**/*.js", "**/*.mjs"],
+		ignores: ["eslint.config.mjs"],
+		...importPlugin.flatConfigs.recommended,
 	}, {
 		files: ["**/*.js", "**/*.mjs"],
 		...stylistic.configs.customize({
