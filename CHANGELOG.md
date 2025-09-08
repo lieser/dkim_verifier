@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 ### Enhancements
 
 - Authentication-Results header: Sort DKIM, SPF and DMARC results from ARH, even when not replacing the add-ons verification (#534).
+- Detect outgoing messages in Locals Folder (#114).
 
 ### Fixes
 
