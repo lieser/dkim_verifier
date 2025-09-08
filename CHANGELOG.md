@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 
 - Authentication-Results header: Sort DKIM, SPF and DMARC results from ARH, even when not replacing the add-ons verification (#534).
 - Detect outgoing messages in Locals Folder (#114).
+- Provide preview of the colors for the From header highlighting (#439).
 
 ### Fixes
 

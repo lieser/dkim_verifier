@@ -494,6 +494,10 @@
 	"options_color.background": {
 		"message": "Hintergrund:"
 	},
+	"options_color.preview": {
+		"message": "Vorschau",
+		"description": "Text used to preview the colors for the from highlighting"
+	},
 	"options_color.success": {
 		"message": "Gültige Signatur"
 	},

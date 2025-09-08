@@ -182,12 +182,53 @@ function updatePolicyAutoAddRuleEnable() {
 }
 
 /**
+ * Update disabled states based on if color highlighting is enabled.
+ *
+ * @returns {void}
+ */
+function updateColorFromEnable() {
+	/** @type {HTMLInputElement|null} */
+	const colorFromEnable = document.querySelector("[data-pref='colorFrom']");
+	if (!colorFromEnable) {
+		throw new Error("colorFrom enabled element not found");
+	}
+	const colorFromGrid = getElementById("colorFromGrid");
+	if (!(colorFromGrid instanceof HTMLFieldSetElement)) {
+		throw new TypeError("colorFromGrid element is not a fieldset");
+	}
+
+	colorFromGrid.disabled = !colorFromEnable.checked;
+}
+
+/**
+ * Update color previews.
+ *
+ * @returns {void}
+ */
+function updatePreviewColors() {
+	const values = [
+		"success",
+		"warning",
+		"permfail",
+		"tempfail",
+		"nosig",
+	];
+	for (const value of values) {
+		const colorPreview = getElementById(`color.preview.${value}`);
+		colorPreview.style.borderRadius = "3px";
+		colorPreview.style.color = prefs.getString(`color.${value}.text`);
+		colorPreview.style.backgroundColor = prefs.getString(`color.${value}.background`);
+	}
+}
+
+/**
  * Set a preference based on a change event an a target.
  *
  * @param {string} prefName
  * @param {HTMLElement} target
  * @returns {Promise<void>}
  */
+// eslint-disable-next-line complexity
 async function setPreference(prefName, target) {
 	if (target instanceof HTMLInputElement) {
 		if (target.getAttribute("type") === "checkbox") {
@@ -235,6 +276,23 @@ async function setPreference(prefName, target) {
 		}
 		case "policy.signRules.autoAddRule.enable": {
 			updatePolicyAutoAddRuleEnable();
+			break;
+		}
+		case "colorFrom": {
+			updateColorFromEnable();
+			break;
+		}
+		case "color.success.text":
+		case "color.success.background":
+		case "color.warning.text":
+		case "color.warning.background":
+		case "color.permfail.text":
+		case "color.permfail.background":
+		case "color.tempfail.text":
+		case "color.tempfail.background":
+		case "color.nosig.text":
+		case "color.nosig.background": {
+			updatePreviewColors();
 			break;
 		}
 		default:
@@ -336,6 +394,8 @@ async function initPreferences() {
 	updateDnsLibunboundWarning();
 	updatePolicySignRulesEnable();
 	updatePolicyAutoAddRuleEnable();
+	updateColorFromEnable();
+	updatePreviewColors();
 
 	// listening to changes
 	document.body.addEventListener("change", preferenceChanged);
