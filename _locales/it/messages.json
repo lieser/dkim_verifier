@@ -302,7 +302,7 @@
 		"message": "Mittente non nel dominio della firma"
 	},
 	"DKIM_SIGWARNING_UNSIGNED_HEADER": {
-		"message": "L’intestazione '$1' nonè firmata",
+		"message": "L’intestazione '$1' non è firmata",
 		"description": "Warning if an important header is not signed"
 	},
 	// JSDNS
@@ -493,6 +493,10 @@
 	},
 	"options_color.background": {
 		"message": "Sfondo:"
+	},
+	"options_color.preview": {
+		"message": "anteprima",
+		"description": "Text used to preview the colors for the from highlighting"
 	},
 	"options_color.success": {
 		"message": "Firma valida"
