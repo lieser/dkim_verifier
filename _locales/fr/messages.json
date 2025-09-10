@@ -494,6 +494,10 @@
 	"options_color.background": {
 		"message": "Arrière-plan :"
 	},
+	"options_color.preview": {
+		"message": "Aperçu",
+		"description": "Text used to preview the colors for the from highlighting"
+	},
 	"options_color.success": {
 		"message": "Signature valide"
 	},
