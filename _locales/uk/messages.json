@@ -494,6 +494,9 @@
 	"options_color.background": {
 		"message": "Фон:"
 	},
+	"options_color.preview": {
+		"message": "Попередній перегляд",
+	},
 	"options_color.success": {
 		"message": "Дійсний підпис"
 	},
