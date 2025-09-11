@@ -488,6 +488,10 @@
 	"options_color.background": {
 		"message": "Nền:"
 	},
+	"options_color.preview": {
+		"message": "Xem trước",
+		"description": "Văn bản được sử dụng để xem trước màu sắc cho việc tô sáng từ"
+	},
 	"options_color.success": {
 		"message": "Chữ ký hợp lệ"
 	},
