@@ -15,7 +15,7 @@
 // options for ESLint
 /* global Components, Services */
 /* global Logging, arhParser, BIMI */
-/* global PREF, domainIsInDomain, getDomainFromAddr, stringEndsWith, copy, DKIM_SigError */
+/* global PREF, domainIsInDomain, getDomainFromAddr, stringEndsWith, copy, DKIM_SigError, stringEqual */
 /* exported EXPORTED_SYMBOLS, arhVerifier, getARHResult */
 
 "use strict";
@@ -44,6 +44,66 @@ const PREF_BRANCH = "extensions.dkim_verifier.";
 let log = Logging.getLogger("arhVerifier");
 // @ts-expect-error
 let prefs = Services.prefs.getBranch(PREF_BRANCH);
+
+/**
+ * Converts an ARH result Keyword to a sorted number.
+ *
+ * @param {string} result
+ * @returns {number}
+ */
+function resultToNumber(result) {
+	if (stringEqual(result, "pass")) {
+		return 0;
+	}
+
+	if (stringEqual(result, "neutral")) {
+		return 10;
+	}
+	if (stringEqual(result, "declined")) {
+		return 11;
+	}
+	if (stringEqual(result, "policy")) {
+		return 12;
+	}
+
+	if (stringEqual(result, "hardfail")) {
+		return 20;
+	}
+	if (stringEqual(result, "fail")) {
+		return 21;
+	}
+	if (stringEqual(result, "softfail")) {
+		return 22;
+	}
+
+	if (stringEqual(result, "permerror")) {
+		return 30;
+	}
+	if (stringEqual(result, "temperror")) {
+		return 31;
+	}
+
+	if (stringEqual(result, "skipped")) {
+		return 40;
+	}
+	if (stringEqual(result, "none")) {
+		return 41;
+	}
+
+	return 99;
+}
+
+/**
+ * Sort the given ArhResInfo.
+ *
+ * @param {ARHResinfo[]} arhResInfo
+ * @returns {void}
+ */
+function sortResultKeyword(arhResInfo) {
+	arhResInfo.sort((resInfo1, resInfo2) => {
+		return resultToNumber(resInfo1.result) - resultToNumber(resInfo2.result);
+	});
+}
 
 /**
  * Get the Authentication-Results header as an SavedAuthResult.
@@ -175,6 +235,8 @@ function getARHResult(msgHdr, msg) {
 		dmarc: arhDMARC,
 		bimiIndicator: BIMI.getBimiIndicator(msg.headerFields, arhBIMI) || undefined,
 	};
+	sortResultKeyword(savedAuthResult.spf);
+	sortResultKeyword(savedAuthResult.dmarc);
 	log.debug("ARH result:", copy(savedAuthResult));
 	return savedAuthResult;
 }
