@@ -1,4 +1,6 @@
+import eslintPluginUnicorn from "eslint-plugin-unicorn";
 import globals from "globals";
+import importPlugin from "eslint-plugin-import";
 import js from "@eslint/js";
 import jsdoc from "eslint-plugin-jsdoc";
 import json from "@eslint/json";
@@ -9,13 +11,20 @@ import stylistic from "@stylistic/eslint-plugin";
 
 export default [
 	{
-		ignores: ["thirdparty/**/*"],
+		ignores: ["thirdparty/"],
 	}, {
 		files: ["**/*.js", "**/*.mjs"],
 		...js.configs.recommended,
 	}, {
 		files: ["**/*.js", "**/*.mjs"],
 		...jsdoc.configs["flat/recommended-typescript-flavor"],
+	}, {
+		files: ["**/*.js", "**/*.mjs"],
+		...eslintPluginUnicorn.configs.recommended,
+	}, {
+		files: ["**/*.js", "**/*.mjs"],
+		ignores: ["eslint.config.mjs"],
+		...importPlugin.flatConfigs.recommended,
 	}, {
 		files: ["**/*.js", "**/*.mjs"],
 		...stylistic.configs.customize({
@@ -221,12 +230,21 @@ export default [
 			"mocha/no-return-from-async": "warn",
 			"mocha/prefer-arrow-callback": "warn",
 
+			// Unicorn
+			"unicorn/empty-brace-spaces": "off",
+			"unicorn/filename-case": ["error", { case: "camelCase", ignore: ["JSDNS.mjs", "update-thirdparty.js"] }],
+			"unicorn/no-await-expression-member": "off",
+			"unicorn/no-null": "off",
+			"unicorn/no-static-only-class": "off",
+			"unicorn/no-useless-undefined": "off",
+			"unicorn/prefer-query-selector": "off",
+			"unicorn/prevent-abbreviations": "off",
+
 			// Mozilla
 			"mozilla/avoid-removeChild": "warn",
 			"mozilla/consistent-if-bracing": "warn",
 			"mozilla/no-compare-against-boolean-literals": "warn",
 			"mozilla/no-useless-removeEventListener": "warn",
-			"mozilla/prefer-boolean-length-check": "warn",
 			"mozilla/prefer-formatValues": "warn",
 			"mozilla/use-includes-instead-of-indexOf": "warn",
 			"mozilla/use-ownerGlobal": "warn",
@@ -252,6 +270,8 @@ export default [
 			},
 		},
 		rules: {
+			"unicorn/prefer-module": "off",
+
 			"mozilla/no-define-cc-etc": "warn",
 			"mozilla/no-throw-cr-literal": "warn",
 			"mozilla/no-useless-parameters": "warn",
@@ -309,6 +329,8 @@ export default [
 		rules: {
 			"no-magic-numbers": "off",
 			"no-unused-expressions": "off",
+
+			"unicorn/consistent-function-scoping": "off",
 		},
 	}, {
 		files: ["eslint.config.mjs"],

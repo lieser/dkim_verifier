@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2023 Philippe Lieser
+ * Copyright (c) 2020-2023;2025 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -34,41 +34,13 @@ class Logger {
 	 */
 	set logLevel(logLevel) {
 		this._logLevel = logLevel;
-		if (logLevel <= Logging.Level.Fatal) {
-			this.fatal = console.error.bind(console, `${this.name}\tFATAL\t`);
-		} else {
-			this.fatal = function () { };
-		}
-		if (logLevel <= Logging.Level.Error) {
-			this.error = console.error.bind(console, `${this.name}\tERROR\t`);
-		} else {
-			this.error = function () { };
-		}
-		if (logLevel <= Logging.Level.Warn) {
-			this.warn = console.warn.bind(console, `${this.name}\tWARN\t`);
-		} else {
-			this.warn = function () { };
-		}
-		if (logLevel <= Logging.Level.Info) {
-			this.info = console.info.bind(console, `${this.name}\tINFO\t`);
-		} else {
-			this.info = function () { };
-		}
-		if (logLevel <= Logging.Level.Config) {
-			this.config = console.info.bind(console, `${this.name}\tCONFIG\t`);
-		} else {
-			this.config = function () { };
-		}
-		if (logLevel <= Logging.Level.Debug) {
-			this.debug = console.debug.bind(console, `${this.name}\tDEBUG\t`);
-		} else {
-			this.debug = function () { };
-		}
-		if (logLevel <= Logging.Level.Trace) {
-			this.trace = console.debug.bind(console, `${this.name}\tTRACE\t`);
-		} else {
-			this.trace = function () { };
-		}
+		this.fatal = logLevel <= Logging.Level.Fatal ? console.error.bind(console, `${this.name}\tFATAL\t`) : function () { };
+		this.error = logLevel <= Logging.Level.Error ? console.error.bind(console, `${this.name}\tERROR\t`) : function () { };
+		this.warn = logLevel <= Logging.Level.Warn ? console.warn.bind(console, `${this.name}\tWARN\t`) : function () { };
+		this.info = logLevel <= Logging.Level.Info ? console.info.bind(console, `${this.name}\tINFO\t`) : function () { };
+		this.config = logLevel <= Logging.Level.Config ? console.info.bind(console, `${this.name}\tCONFIG\t`) : function () { };
+		this.debug = logLevel <= Logging.Level.Debug ? console.debug.bind(console, `${this.name}\tDEBUG\t`) : function () { };
+		this.trace = logLevel <= Logging.Level.Trace ? console.debug.bind(console, `${this.name}\tTRACE\t`) : function () { };
 	}
 
 	get logLevel() {
@@ -113,9 +85,9 @@ export default class Logging {
 	 */
 	static setLogLevel(logLevel) {
 		Logging.#logLevel = logLevel;
-		Logging.#loggers.forEach(logger => {
+		for (const logger of Logging.#loggers) {
 			logger.logLevel = logLevel;
-		});
+		}
 	}
 
 	static get logLevel() {
@@ -150,8 +122,8 @@ export default class Logging {
 			if (areaName !== "local") {
 				return;
 			}
-			if (Object.keys(changes).some(name => name === "debug") ||
-				Object.keys(changes).some(name => name === "logging.console")
+			if (Object.keys(changes).includes("debug") ||
+				Object.keys(changes).includes("logging.console")
 			) {
 				setLogLevelFromPrefs();
 			}

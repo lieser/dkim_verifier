@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2023 Philippe Lieser
+ * Copyright (c) 2020-2023;2025 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -22,7 +22,7 @@ const log = Logging.getLogger("signRulesUserAdd");
 function getInputValue(id) {
 	const inputElement = getElementById(id);
 	if (!(inputElement instanceof HTMLInputElement || inputElement instanceof HTMLSelectElement)) {
-		throw new Error(`Element with id '${id}' is not an HTMLInputElement or HTMLSelectElement`);
+		throw new TypeError(`Element with id '${id}' is not an HTMLInputElement or HTMLSelectElement`);
 	}
 	return inputElement.value;
 }
@@ -34,7 +34,7 @@ function getInputValue(id) {
 function getRadioGroupValue(name) {
 	const checkedRadio = document.querySelector(`input[name="${name}"]:checked`);
 	if (!(checkedRadio instanceof HTMLInputElement)) {
-		throw new Error(`Element with name '${name}' is not an HTMLInputElement`);
+		throw new TypeError(`Element with name '${name}' is not an HTMLInputElement`);
 	}
 	return checkedRadio.value;
 }
@@ -46,7 +46,7 @@ function getRadioGroupValue(name) {
 function getCheckbox(id) {
 	const inputElement = getElementById(id);
 	if (!(inputElement instanceof HTMLInputElement)) {
-		throw new Error(`Element with id '${id}' is not an HTMLInputElement`);
+		throw new TypeError(`Element with id '${id}' is not an HTMLInputElement`);
 	}
 	return inputElement.checked;
 }
@@ -60,13 +60,13 @@ async function onAccept() {
 		const listId = getInputValue("listId");
 		const addr = getInputValue("addr");
 		const sdid = getInputValue("sdid");
-		const ruleType = parseInt(getInputValue("ruletype"), 10);
+		const ruleType = Number.parseInt(getInputValue("ruletype"), 10);
 		const priorityMode = getRadioGroupValue("priorityMode");
 		let priority = null;
 		if (priorityMode === "2") {
 			const value = getInputValue("priority");
-			priority = parseInt(value, 10);
-			if (isNaN(priority) || priority.toString() !== value) {
+			priority = Number.parseInt(value, 10);
+			if (Number.isNaN(priority) || priority.toString() !== value) {
 				throw new Error(`value '${value}' is not a valid number`);
 			}
 		}
@@ -74,8 +74,8 @@ async function onAccept() {
 
 		await SignRulesProxy.addRule(domain, listId, addr, sdid, ruleType, priority, enabled);
 		window.close();
-	} catch (exception) {
-		log.error("Error adding the user sign rule", exception);
+	} catch (error) {
+		log.error("Error adding the user sign rule", error);
 	}
 }
 
@@ -92,7 +92,7 @@ function onCancel() {
 function updatePriorityMode() {
 	const priorityElement = getElementById("priority");
 	if (!(priorityElement instanceof HTMLInputElement)) {
-		throw new Error("Element with id 'priority' is not an HTMLInputElement");
+		throw new TypeError("Element with id 'priority' is not an HTMLInputElement");
 	}
 	priorityElement.disabled = getRadioGroupValue("priorityMode") === "1";
 }
@@ -100,9 +100,9 @@ function updatePriorityMode() {
 document.addEventListener("DOMContentLoaded", () => {
 	updatePriorityMode();
 	const priorityModeManual = getElementById("priorityModeManual");
-	priorityModeManual.onchange = updatePriorityMode;
+	priorityModeManual.addEventListener("change", updatePriorityMode);
 	const priorityModeAuto = getElementById("priorityModeAuto");
-	priorityModeAuto.onchange = updatePriorityMode;
+	priorityModeAuto.addEventListener("change", updatePriorityMode);
 
 	const accept = getElementById("accept");
 	accept.addEventListener("click", () => {

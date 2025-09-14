@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2024 Philippe Lieser
+ * Copyright (c) 2021-2025 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -27,15 +27,15 @@ class KeyValueElement extends HTMLElement {
 		const content = document.createElement("div");
 		content.style.display = "flex";
 		content.style.flexDirection = "row";
-		shadow.appendChild(content);
+		shadow.append(content);
 
 		this.#label = document.createElement("p");
 		this.#label.style.margin = "0 .45em 0 0";
 
 		const value = document.createElement("slot");
 
-		content.appendChild(this.#label);
-		content.appendChild(value);
+		content.append(this.#label);
+		content.append(value);
 	}
 
 	connectedCallback() {
@@ -58,7 +58,7 @@ class ValueTextElement extends HTMLElement {
 		this.#value = document.createElement("p");
 		this.#value.style.margin = "0px";
 
-		shadow.appendChild(this.#value);
+		shadow.append(this.#value);
 	}
 
 	connectedCallback() {
@@ -82,7 +82,7 @@ class ValueWarningsElement extends HTMLElement {
 		this.#content = document.createElement("div");
 		this.#content.style.display = "flex";
 		this.#content.style.flexDirection = "column";
-		shadow.appendChild(this.#content);
+		shadow.append(this.#content);
 	}
 
 	connectedCallback() {
@@ -93,7 +93,7 @@ class ValueWarningsElement extends HTMLElement {
 			const warningElement = document.createElement("p");
 			warningElement.style.margin = "0px";
 			warningElement.textContent = warning;
-			this.#content.appendChild(warningElement);
+			this.#content.append(warningElement);
 		}
 	}
 }
@@ -120,7 +120,7 @@ class DkimResult extends HTMLElement {
 		this.#content.style.flexDirection = "column";
 		this.#content.style.columnGap = "1em";
 		this.#content.style.rowGap = ".45em";
-		shadow.appendChild(this.#content);
+		shadow.append(this.#content);
 	}
 
 	connectedCallback() {
@@ -184,7 +184,7 @@ class DkimResult extends HTMLElement {
 	/**
 	 * Add a text value to an element under the specified key.
 	 *
-	 * @param {Node} parent
+	 * @param {Element} parent
 	 * @param {string} key
 	 * @param {string} value
 	 */
@@ -195,14 +195,14 @@ class DkimResult extends HTMLElement {
 		const element = new KeyValueElement();
 		element.setAttribute("key", key);
 
-		element.appendChild(valueElement);
-		parent.appendChild(element);
+		element.append(valueElement);
+		parent.append(element);
 	}
 
 	/**
 	 * Optionally add a text value to an element under the specified key.
 	 *
-	 * @param {Node} parent
+	 * @param {Element} parent
 	 * @param {string} key
 	 * @param {string|undefined} value
 	 */
@@ -215,7 +215,7 @@ class DkimResult extends HTMLElement {
 	/**
 	 * Optionally add a time value to an element under the specified key.
 	 *
-	 * @param {Node} parent
+	 * @param {Element} parent
 	 * @param {string} key
 	 * @param {number|null|undefined} value
 	 */
@@ -231,7 +231,7 @@ class DkimResult extends HTMLElement {
 	/**
 	 * Add a warning value to an element under the specified key.
 	 *
-	 * @param {Node} parent
+	 * @param {Element} parent
 	 * @param {string} key
 	 * @param {string[]|undefined} warnings
 	 */
@@ -246,8 +246,8 @@ class DkimResult extends HTMLElement {
 		const element = new KeyValueElement();
 		element.setAttribute("key", key);
 
-		element.appendChild(valueElement);
-		parent.appendChild(element);
+		element.append(valueElement);
+		parent.append(element);
 	}
 }
 customElements.define("dkim-result-extended", DkimResult);
@@ -312,12 +312,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 	for (const res of resultState.dkim) {
 		const resElement = new DkimResult();
 		resElement.result = res;
-		results.appendChild(resElement);
+		results.append(resElement);
 	}
 
 	const reverifyDKIMSignature = getElementById("reverifyDKIMSignature");
 	if (!(reverifyDKIMSignature instanceof HTMLButtonElement)) {
-		throw new Error("reverifyDKIMSignature element is not a button");
+		throw new TypeError("reverifyDKIMSignature element is not a button");
 	}
 	reverifyDKIMSignature.addEventListener("click", async () => {
 		await triggerDisplayAction("reverifyDKIMSignature");
@@ -328,7 +328,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 	const policyAddUserException = getElementById("policyAddUserException");
 	if (!(policyAddUserException instanceof HTMLButtonElement)) {
-		throw new Error("policyAddUserException element is not a button");
+		throw new TypeError("policyAddUserException element is not a button");
 	}
 	policyAddUserException.addEventListener("click", async () => {
 		await triggerDisplayAction("policyAddUserException");
@@ -339,7 +339,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 	const markKeyAsSecure = getElementById("markKeyAsSecure");
 	if (!(markKeyAsSecure instanceof HTMLButtonElement)) {
-		throw new Error("markKeyAsSecure element is not a button");
+		throw new TypeError("markKeyAsSecure element is not a button");
 	}
 	markKeyAsSecure.addEventListener("click", async () => {
 		await triggerDisplayAction("markKeyAsSecure");
@@ -350,7 +350,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 	const updateKey = getElementById("updateKey");
 	if (!(updateKey instanceof HTMLButtonElement)) {
-		throw new Error("updateKey element is not a button");
+		throw new TypeError("updateKey element is not a button");
 	}
 	updateKey.addEventListener("click", async () => {
 		await triggerDisplayAction("updateKey");
@@ -361,7 +361,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 	const options = getElementById("options");
 	if (!(options instanceof HTMLButtonElement)) {
-		throw new Error("options element is not a button");
+		throw new TypeError("options element is not a button");
 	}
 	options.addEventListener("click", async () => {
 		await browser.runtime.openOptionsPage();

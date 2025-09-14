@@ -11,7 +11,7 @@
 
 import ArhParser from "../../modules/arhParser.mjs.js";
 import expect from "../helpers/chaiUtils.mjs.js";
-import { toBinaryString } from "../helpers/testUtils.mjs.js";
+import { toBinaryString } from "../../modules/utils.mjs.js";
 
 describe("ARH Parser [unittest]", function () {
 	describe("RFC 7601 Appendix B Example", function () {

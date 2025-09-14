@@ -27,7 +27,7 @@ const log = Logging.getLogger("Crypto");
 function strToArrayBuffer(str) {
 	const buffer = new Uint8Array(str.length);
 	for (let i = 0; i < str.length; i++) {
-		// eslint-disable-next-line no-magic-numbers
+		// eslint-disable-next-line no-magic-numbers, unicorn/prefer-code-point
 		buffer[i] = str.charCodeAt(i) & 0xFF;
 	}
 	return buffer;
@@ -47,7 +47,7 @@ function decodeBase64(str) {
  * @returns {string}
  */
 function encodeBase64(data) {
-	return btoa(String.fromCharCode(...data));
+	return btoa(String.fromCodePoint(...data));
 }
 
 /**
@@ -58,12 +58,15 @@ function encodeBase64(data) {
  */
 function getWebDigestName(algorithm) {
 	switch (algorithm.toLowerCase()) {
-		case "sha1":
+		case "sha1": {
 			return "SHA-1";
-		case "sha256":
+		}
+		case "sha256": {
 			return "SHA-256";
-		default:
+		}
+		default: {
 			throw new Error(`unknown digest algorithm ${algorithm}`);
+		}
 	}
 }
 
@@ -143,8 +146,8 @@ export default class DkimCrypto {
 				true,
 				["verify"]
 			);
-		} catch (e) {
-			log.debug("error in importKey: ", e);
+		} catch (error) {
+			log.debug("error in importKey: ", error);
 			throw new DKIM_SigError("DKIM_SIGERROR_KEYDECODE");
 		}
 		/** @type {RsaHashedKeyGenParams} */
@@ -158,8 +161,8 @@ export default class DkimCrypto {
 				strToArrayBuffer(data)
 			);
 			return [valid, rsaKeyParams.modulusLength];
-		} catch (e) {
-			log.error("error in signature verification: ", e);
+		} catch (error) {
+			log.error("error in signature verification: ", error);
 			return [false, rsaKeyParams.modulusLength];
 		}
 	}
@@ -177,8 +180,8 @@ export default class DkimCrypto {
 		let cryptoKey;
 		try {
 			cryptoKey = decodeBase64(key);
-		} catch (e) {
-			log.debug("error in decoding key: ", e);
+		} catch (error) {
+			log.debug("error in decoding key: ", error);
 			throw new DKIM_SigError("DKIM_SIGERROR_KEYDECODE");
 		}
 
@@ -191,9 +194,9 @@ export default class DkimCrypto {
 				decodeBase64(signature),
 				cryptoKey);
 			return [valid, ed25519PublicKeyLenght];
-		} catch (e) {
-			log.error("error in signature verification: ", e);
-			if (e instanceof Error && e.message === "bad public key size") {
+		} catch (error) {
+			log.error("error in signature verification: ", error);
+			if (error instanceof Error && error.message === "bad public key size") {
 				throw new DKIM_SigError("DKIM_SIGERROR_KEYDECODE");
 			}
 			return [false, ed25519PublicKeyLenght];

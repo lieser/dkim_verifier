@@ -8,10 +8,27 @@ All notable changes to this project will be documented in this file.
 
 ### Enhancements
 
-- Added option to display the DKIM header if when an e-mail with a DKIM signature, SPF or DMARC result is viewed (#462).
+- Authentication-Results header: Sort DKIM, SPF and DMARC results from ARH, even when not replacing the add-ons verification (#534).
+- Detect outgoing messages in Locals Folder (#114).
+- Provide preview of the colors for the From header highlighting (#439).
+
+### Fixes
+
+- Libunbound resolver: Make unloading of libraries more robust in case the wrong one got loaded.
+- Fix alignment of warning symbol on MacOS (#531).
+
+## 6.1.0 (2025-06-01)
+
+### Enhancements
+
+- Added an option to display the DKIM header when an e-mail with a DKIM signature, SPF or DMARC result is viewed (#462).
 - Authentication-Results header: Invalid headers by Outlook are now accepted if reading of non RFC compliant ARHs is enabled (#423).
 - The DKIM selector is now displayed in the DKIM button pop-up (#510).
-- The options page of the add-on can now be open from the DKIM button pop-up.
+- The options page of the add-on can now be opened from the DKIM button pop-up.
+
+### Fixes
+
+- Fixed parsing of a From header that contains MIME encoded non-ASCII characters when reading a saved result (#529).
 
 ### Other
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2023 Philippe Lieser
+ * Copyright (c) 2020-2023;2025 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -20,7 +20,7 @@ const log = Logging.getLogger("Options");
 /**
  * Set the active pane to the given navigation selector.
  *
- * @param {HTMLElement} navSelector
+ * @param {Element} navSelector
  * @returns {void}
  */
 function setNavigation(navSelector) {
@@ -38,22 +38,16 @@ function setNavigation(navSelector) {
 	}
 
 	// set selected attribute on navigation selectors
-	/** @type {HTMLElement[]} */
-	const navSelectors = Array.from(navElement.querySelectorAll(":scope>[pane]"));
+	const navSelectors = [...navElement.querySelectorAll(":scope>[pane]")];
 	for (const selector of navSelectors) {
 		selector.removeAttribute("selected");
 	}
 	navSelector.setAttribute("selected", "true");
 
 	// show only selected pane
-	/** @type {HTMLElement[]} */
-	const panes = Array.from(navParent.querySelectorAll(":scope>[pane]"));
+	const panes = /** @type {HTMLElement[]} */([...navParent.querySelectorAll(":scope>[pane]")]);
 	for (const pane of panes) {
-		if (pane.getAttribute("pane") === navSelector.getAttribute("pane")) {
-			pane.hidden = false;
-		} else {
-			pane.hidden = true;
-		}
+		pane.hidden = pane.getAttribute("pane") !== navSelector.getAttribute("pane");
 	}
 	navSelector.setAttribute("selected", "true");
 }
@@ -64,10 +58,9 @@ function setNavigation(navSelector) {
  * @returns {void}
  */
 function initNavigation() {
-	const navElements = Array.from(document.querySelectorAll("nav"));
+	const navElements = [...document.querySelectorAll("nav")];
 	for (const navElement of navElements) {
-		/** @type {HTMLElement[]} */
-		const navSelectors = Array.from(navElement.querySelectorAll(":scope>[pane]"));
+		const navSelectors = [...navElement.querySelectorAll(":scope>[pane]")];
 		if (!navSelectors[0]) {
 			throw new Error("No nav selector found under nav element.");
 		}
@@ -75,9 +68,9 @@ function initNavigation() {
 		setNavigation(navSelectors[0]);
 		// add navigation callback to click event
 		for (const navSelector of navSelectors) {
-			navSelector.onclick = () => {
+			navSelector.addEventListener("click", () => {
 				setNavigation(navSelector);
-			};
+			});
 		}
 	}
 }
@@ -95,10 +88,10 @@ function updateKeyStoring() {
 	}
 	const viewKeys = getElementById("key.viewKeys");
 	if (!(viewKeys instanceof HTMLButtonElement)) {
-		throw new Error("key.viewKeys element is not a button");
+		throw new TypeError("key.viewKeys element is not a button");
 	}
 
-	viewKeys.disabled = parseInt(keyStoring.value, 10) === 0;
+	viewKeys.disabled = Number.parseInt(keyStoring.value, 10) === 0;
 }
 
 /**
@@ -113,8 +106,7 @@ function updateDnsResolver() {
 		throw new Error("dns.resolver element not found");
 	}
 
-	/** @type {HTMLElement[]} */
-	const dnsResolverElements = Array.from(document.querySelectorAll("[data-dns-resolver]"));
+	const dnsResolverElements = /** @type {HTMLElement[]} */([...document.querySelectorAll("[data-dns-resolver]")]);
 	for (const element of dnsResolverElements) {
 		element.hidden = element.dataset.dnsResolver !== dnsResolver.value;
 	}
@@ -133,7 +125,7 @@ function updateDnsProxy() {
 	}
 	const dnsProxy = getElementById("dns.proxy");
 	if (!(dnsProxy instanceof HTMLFieldSetElement)) {
-		throw new Error("dns.proxy element is not a fieldset");
+		throw new TypeError("dns.proxy element is not a fieldset");
 	}
 
 	dnsProxy.disabled = !dnsProxyEnable.checked;
@@ -163,7 +155,7 @@ function updatePolicySignRulesEnable() {
 	}
 	const policySignRules = getElementById("policy.signRules");
 	if (!(policySignRules instanceof HTMLFieldSetElement)) {
-		throw new Error("policy.signRules element is not a fieldset");
+		throw new TypeError("policy.signRules element is not a fieldset");
 	}
 
 	policySignRules.disabled = !policySignRulesEnable.checked;
@@ -183,10 +175,50 @@ function updatePolicyAutoAddRuleEnable() {
 	}
 	const policySignRulesAutoAddRule = getElementById("policy.signRules.autoAddRule");
 	if (!(policySignRulesAutoAddRule instanceof HTMLFieldSetElement)) {
-		throw new Error("policy.signRules.autoAddRule element is not a fieldset");
+		throw new TypeError("policy.signRules.autoAddRule element is not a fieldset");
 	}
 
 	policySignRulesAutoAddRule.disabled = !policySignRulesAutoAddRuleEnable.checked;
+}
+
+/**
+ * Update disabled states based on if color highlighting is enabled.
+ *
+ * @returns {void}
+ */
+function updateColorFromEnable() {
+	/** @type {HTMLInputElement|null} */
+	const colorFromEnable = document.querySelector("[data-pref='colorFrom']");
+	if (!colorFromEnable) {
+		throw new Error("colorFrom enabled element not found");
+	}
+	const colorFromGrid = getElementById("colorFromGrid");
+	if (!(colorFromGrid instanceof HTMLFieldSetElement)) {
+		throw new TypeError("colorFromGrid element is not a fieldset");
+	}
+
+	colorFromGrid.disabled = !colorFromEnable.checked;
+}
+
+/**
+ * Update color previews.
+ *
+ * @returns {void}
+ */
+function updatePreviewColors() {
+	const values = [
+		"success",
+		"warning",
+		"permfail",
+		"tempfail",
+		"nosig",
+	];
+	for (const value of values) {
+		const colorPreview = getElementById(`color.preview.${value}`);
+		colorPreview.style.borderRadius = "3px";
+		colorPreview.style.color = prefs.getString(`color.${value}.text`);
+		colorPreview.style.backgroundColor = prefs.getString(`color.${value}.background`);
+	}
 }
 
 /**
@@ -196,6 +228,7 @@ function updatePolicyAutoAddRuleEnable() {
  * @param {HTMLElement} target
  * @returns {Promise<void>}
  */
+// eslint-disable-next-line complexity
 async function setPreference(prefName, target) {
 	if (target instanceof HTMLInputElement) {
 		if (target.getAttribute("type") === "checkbox") {
@@ -205,39 +238,63 @@ async function setPreference(prefName, target) {
 		) {
 			await prefs.setValue(prefName, target.value);
 		} else if (target.getAttribute("type") === "number") {
-			await prefs.setValue(prefName, parseInt(target.value, 10));
+			await prefs.setValue(prefName, Number.parseInt(target.value, 10));
 		} else {
 			log.error("Received change event for input element with unexpected type", event);
 		}
 	} else if (target instanceof HTMLSelectElement) {
+		// eslint-disable-next-line unicorn/prefer-ternary
 		if (target.dataset.prefType === "string") {
 			await prefs.setValue(prefName, target.value);
 		} else {
-			await prefs.setValue(prefName, parseInt(target.value, 10));
+			await prefs.setValue(prefName, Number.parseInt(target.value, 10));
 		}
 	} else {
 		log.error("Received change event for unexpected element", event);
 	}
 
 	switch (prefName) {
-		case "key.storing":
+		case "key.storing": {
 			updateKeyStoring();
 			break;
-		case "dns.resolver":
+		}
+		case "dns.resolver": {
 			updateDnsResolver();
 			break;
-		case "dns.proxy.enable":
+		}
+		case "dns.proxy.enable": {
 			updateDnsProxy();
 			break;
-		case "dns.libunbound.path":
+		}
+		case "dns.libunbound.path": {
 			updateDnsLibunboundWarning();
 			break;
-		case "policy.signRules.enable":
+		}
+		case "policy.signRules.enable": {
 			updatePolicySignRulesEnable();
 			break;
-		case "policy.signRules.autoAddRule.enable":
+		}
+		case "policy.signRules.autoAddRule.enable": {
 			updatePolicyAutoAddRuleEnable();
 			break;
+		}
+		case "colorFrom": {
+			updateColorFromEnable();
+			break;
+		}
+		case "color.success.text":
+		case "color.success.background":
+		case "color.warning.text":
+		case "color.warning.background":
+		case "color.permfail.text":
+		case "color.permfail.background":
+		case "color.tempfail.text":
+		case "color.tempfail.background":
+		case "color.nosig.text":
+		case "color.nosig.background": {
+			updatePreviewColors();
+			break;
+		}
 		default:
 	}
 }
@@ -259,7 +316,7 @@ async function setAccountPreference(prefName, target) {
 	if (target instanceof HTMLInputElement) {
 		await prefs.setAccountValue(prefName, account, target.value);
 	} else if (target instanceof HTMLSelectElement) {
-		await prefs.setAccountValue(prefName, account, parseInt(target.value, 10));
+		await prefs.setAccountValue(prefName, account, Number.parseInt(target.value, 10));
 	} else {
 		log.error("Received change event for unexpected element", event);
 	}
@@ -289,8 +346,8 @@ async function preferenceChanged(event) {
 			return;
 		}
 		log.warn("Received unexpected change event for element without data-pref or data-account-pref attribute", event);
-	} catch (e) {
-		log.fatal("Unexpected error in preferenceChanged():", e);
+	} catch (error) {
+		log.fatal("Unexpected error in preferenceChanged():", error);
 	}
 }
 
@@ -303,8 +360,7 @@ async function initPreferences() {
 	await prefs.init();
 
 	// set prefs to initial value
-	/** @type {HTMLElement[]} */
-	const prefElements = Array.from(document.querySelectorAll("[data-pref]"));
+	const prefElements = /** @type {HTMLElement[]} */([...document.querySelectorAll("[data-pref]")]);
 	for (const element of prefElements) {
 		const prefName = element.dataset.pref;
 		if (!prefName) {
@@ -324,11 +380,9 @@ async function initPreferences() {
 				log.error("Input element has unexpected type", element);
 			}
 		} else if (element instanceof HTMLSelectElement) {
-			if (element.dataset.prefType === "string") {
-				element.value = prefs.getString(prefName);
-			} else {
-				element.value = prefs.getNumber(prefName).toString();
-			}
+			element.value = element.dataset.prefType === "string"
+				? prefs.getString(prefName)
+				: prefs.getNumber(prefName).toString();
 		} else {
 			log.error("Unexpected preference element", element);
 		}
@@ -340,6 +394,8 @@ async function initPreferences() {
 	updateDnsLibunboundWarning();
 	updatePolicySignRulesEnable();
 	updatePolicyAutoAddRuleEnable();
+	updateColorFromEnable();
+	updatePreviewColors();
 
 	// listening to changes
 	document.body.addEventListener("change", preferenceChanged);
@@ -352,8 +408,7 @@ async function initPreferences() {
  * @returns {void}
  */
 function updateAccountPreferences(account) {
-	/** @type {HTMLElement[]} */
-	const prefElements = Array.from(document.querySelectorAll("[data-account-pref]"));
+	const prefElements = /** @type {HTMLElement[]} */([...document.querySelectorAll("[data-account-pref]")]);
 	for (const element of prefElements) {
 		const prefName = element.dataset.accountPref;
 		if (!prefName) {
@@ -397,22 +452,22 @@ async function initAccount() {
 	for (const account of accounts) {
 		const item = document.createElement("div");
 		item.classList.add("account-selection-item");
-		item.innerText = account.name;
-		item.onclick = () => {
+		item.textContent = account.name;
+		item.addEventListener("click", () => {
 			for (const i of items) {
 				i.removeAttribute("selected");
 			}
 			item.setAttribute("selected", "true");
 			accountSelectionBox.dataset.current = account.id;
 			updateAccountPreferences(account.id);
-		};
+		});
 		items.push(item);
 
 		// Parent needed for ::after opacity trick
 		const parent = document.createElement("div");
 		parent.style.position = "relative";
-		parent.appendChild(item);
-		accountSelectionBox.appendChild(parent);
+		parent.append(item);
+		accountSelectionBox.append(parent);
 	}
 
 	// select first account at start
@@ -452,8 +507,8 @@ function initButtons() {
 document.addEventListener("DOMContentLoaded", () => {
 	initNavigation();
 	initPreferences().
-		catch(e => log.fatal("Unexpected error in initPreferences():", e));
+		catch(error => log.fatal("Unexpected error in initPreferences():", error));
 	initAccount().
-		catch(e => log.fatal("Unexpected error in initAccount():", e));
+		catch(error => log.fatal("Unexpected error in initAccount():", error));
 	initButtons();
 }, { once: true });

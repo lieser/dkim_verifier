@@ -6,7 +6,7 @@
  * - RFC 8301 https://www.rfc-editor.org/rfc/rfc8301.html
  * - RFC 8463 https://www.rfc-editor.org/rfc/rfc8463.html
  *
- * Copyright (c) 2013-2024 Philippe Lieser
+ * Copyright (c) 2013-2025 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -149,7 +149,7 @@ class DkimSignatureHeader {
 		// strip DKIM-Signature header name
 		let dkimHeader = dkimSignatureHeader.replace(/^DKIM-Signature[ \t]*:/i, "");
 		// strip the \r\n at the end
-		dkimHeader = dkimHeader.substr(0, dkimHeader.length - 2);
+		dkimHeader = dkimHeader.slice(0, -2);
 		// parse tag-value list
 		const tagMap = RfcParser.parseTagValueList(dkimHeader);
 		if (tagMap === RfcParser.TAG_PARSE_ERROR.ILL_FORMED) {
@@ -158,7 +158,7 @@ class DkimSignatureHeader {
 			throw new DKIM_SigError("DKIM_SIGERROR_DUPLICATE_TAG");
 		}
 		if (!(tagMap instanceof Map)) {
-			throw new Error(`unexpected return value from RfcParser.parseTagValueList: ${tagMap}`);
+			throw new TypeError(`unexpected return value from RfcParser.parseTagValueList: ${tagMap}`);
 		}
 
 		/** @type {dkimSigWarningV2[]} */
@@ -338,15 +338,19 @@ class DkimSignatureHeader {
 			};
 		} else if (algorithmTag[0] === "rsa-sha1") {
 			switch (prefs["error.algorithm.sign.rsa-sha1.treatAs"]) {
-				case 0: // error
+				case 0: { // error
 					throw new DKIM_SigError("DKIM_SIGERROR_INSECURE_A");
-				case 1: // warning
+				}
+				case 1: { // warning
 					warnings.push({ name: "DKIM_SIGERROR_INSECURE_A" });
 					break;
-				case 2: // ignore
+				}
+				case 2: { // ignore
 					break;
-				default:
+				}
+				default: {
 					throw new Error("invalid error.algorithm.sign.rsa-sha1.treatAs");
+				}
 			}
 			return {
 				signature: algorithmTag[1],
@@ -368,7 +372,7 @@ class DkimSignatureHeader {
 			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_B");
 		}
 		return {
-			b: signatureDataTag[0].replace(new RegExp(RfcParser.FWS, "g"), ""),
+			b: signatureDataTag[0].replaceAll(new RegExp(RfcParser.FWS, "g"), ""),
 			bFolded: signatureDataTag[0],
 		};
 	}
@@ -384,7 +388,7 @@ class DkimSignatureHeader {
 		if (bodyHashTag === null) {
 			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_BH");
 		}
-		return bodyHashTag[0].replace(new RegExp(RfcParser.FWS, "g"), "");
+		return bodyHashTag[0].replaceAll(new RegExp(RfcParser.FWS, "g"), "");
 	}
 
 	/**
@@ -455,11 +459,11 @@ class DkimSignatureHeader {
 		if (signedHeadersTag === null) {
 			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_H");
 		}
-		const signedHeaderFields = signedHeadersTag[0].replace(new RegExp(RfcParser.FWS, "g"), "");
+		const signedHeaderFields = signedHeadersTag[0].replaceAll(new RegExp(RfcParser.FWS, "g"), "");
 		// get the header field names and store them in lower case in an array
 		const signedHeaderFieldsArray = signedHeaderFields.split(":").
 			map((x) => x.trim().toLowerCase()).
-			filter((x) => x);
+			filter(Boolean);
 		// check that the from header is included
 		if (!signedHeaderFieldsArray.includes("from")) {
 			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_FROM");
@@ -537,21 +541,25 @@ class DkimSignatureHeader {
 		let AUIDTag = null;
 		try {
 			AUIDTag = RfcParser.parseTagValue(tagMap, "i", sig_i_tag);
-		} catch (exception) {
-			if (exception instanceof DKIM_SigError && exception.errorType === "DKIM_SIGERROR_ILLFORMED_I") {
+		} catch (error) {
+			if (error instanceof DKIM_SigError && error.errorType === "DKIM_SIGERROR_ILLFORMED_I") {
 				switch (prefs["error.illformed_i.treatAs"]) {
-					case 0: // error
-						throw exception;
-					case 1: // warning
+					case 0: { // error
+						throw error;
+					}
+					case 1: { // warning
 						warnings.push({ name: "DKIM_SIGERROR_ILLFORMED_I" });
 						break;
-					case 2: // ignore
+					}
+					case 2: { // ignore
 						break;
-					default:
+					}
+					default: {
 						throw new Error("invalid error.illformed_i.treatAs");
+					}
 				}
 			} else {
-				throw exception;
+				throw error;
 			}
 		}
 		if (AUIDTag === null) {
@@ -583,7 +591,7 @@ class DkimSignatureHeader {
 		// get Body length count (plain-text unsigned decimal integer; OPTIONAL, default is entire body)
 		const BodyLengthTag = RfcParser.parseTagValue(tagMap, "l", "[0-9]{1,76}");
 		if (BodyLengthTag !== null) {
-			return parseInt(BodyLengthTag[0], 10);
+			return Number.parseInt(BodyLengthTag[0], 10);
 		}
 		return null;
 	}
@@ -618,24 +626,28 @@ class DkimSignatureHeader {
 		let SelectorTag;
 		try {
 			SelectorTag = RfcParser.parseTagValue(tagMap, "s", `${RfcParser.sub_domain}(?:\\.${RfcParser.sub_domain})*`);
-		} catch (exception) {
-			if (exception instanceof DKIM_SigError && exception.errorType === "DKIM_SIGERROR_ILLFORMED_S") {
+		} catch (error) {
+			if (error instanceof DKIM_SigError && error.errorType === "DKIM_SIGERROR_ILLFORMED_S") {
 				// try to parse selector in a more relaxed way
 				const sub_domain_ = "(?:[A-Za-z0-9_](?:[A-Za-z0-9_-]*[A-Za-z0-9_])?)";
 				SelectorTag = RfcParser.parseTagValue(tagMap, "s", `${sub_domain_}(?:\\.${sub_domain_})*`);
 				switch (prefs["error.illformed_s.treatAs"]) {
-					case 0: // error
-						throw exception;
-					case 1: // warning
+					case 0: { // error
+						throw error;
+					}
+					case 1: { // warning
 						warnings.push({ name: "DKIM_SIGERROR_ILLFORMED_S" });
 						break;
-					case 2: // ignore
+					}
+					case 2: { // ignore
 						break;
-					default:
+					}
+					default: {
 						throw new Error("invalid error.illformed_s.treatAs");
+					}
 				}
 			} else {
-				throw exception;
+				throw error;
 			}
 		}
 		if (SelectorTag === null) {
@@ -656,7 +668,7 @@ class DkimSignatureHeader {
 		if (SigTimeTag === null) {
 			return null;
 		}
-		return parseInt(SigTimeTag[0], 10);
+		return Number.parseInt(SigTimeTag[0], 10);
 	}
 
 	/**
@@ -673,7 +685,7 @@ class DkimSignatureHeader {
 		if (ExpTimeTag === null) {
 			return null;
 		}
-		const signatureExpiration = parseInt(ExpTimeTag[0], 10);
+		const signatureExpiration = Number.parseInt(ExpTimeTag[0], 10);
 		if (signatureTimestamp !== null && signatureExpiration < signatureTimestamp) {
 			throw new DKIM_SigError("DKIM_SIGERROR_TIMESTAMPS");
 		}
@@ -694,7 +706,7 @@ class DkimSignatureHeader {
 		if (CopyHeaderFieldsTag === null) {
 			return null;
 		}
-		return CopyHeaderFieldsTag[0].replace(new RegExp(RfcParser.FWS, "g"), "");
+		return CopyHeaderFieldsTag[0].replaceAll(new RegExp(RfcParser.FWS, "g"), "");
 	}
 
 	/**
@@ -739,7 +751,7 @@ class DkimKey {
 			throw new DKIM_SigError("DKIM_SIGERROR_KEY_DUPLICATE_TAG");
 		}
 		if (!(tagMap instanceof Map)) {
-			throw new Error(`unexpected return value from RfcParser.parseTagValueList: ${tagMap}`);
+			throw new TypeError(`unexpected return value from RfcParser.parseTagValueList: ${tagMap}`);
 		}
 
 		/**
@@ -818,7 +830,7 @@ class DkimKey {
 		if (algorithmTag === null) {
 			return null;
 		}
-		return algorithmTag[0].split(":").map(s => s.trim()).filter((x) => x);
+		return algorithmTag[0].split(":").map(s => s.trim()).filter(Boolean);
 	}
 
 	/**
@@ -906,7 +918,7 @@ class DkimKey {
 			return [];
 		}
 		// get the flags and store them in an array
-		return flagsTag[0].split(":").map(s => s.trim()).filter((x) => x);
+		return flagsTag[0].split(":").map(s => s.trim()).filter(Boolean);
 	}
 }
 
@@ -951,11 +963,11 @@ class DkimSignature {
 		);
 
 		// Unfold header field continuation lines
-		headerCanonicalized = headerCanonicalized.replace(/\r\n[ \t]/g, " ");
+		headerCanonicalized = headerCanonicalized.replaceAll(/\r\n[ \t]/g, " ");
 
 		// Convert all sequences of one or more WSP characters to a single SP character.
 		// WSP characters here include those before and after a line folding boundary.
-		headerCanonicalized = headerCanonicalized.replace(/[ \t]+/g, " ");
+		headerCanonicalized = headerCanonicalized.replaceAll(/[ \t]+/g, " ");
 
 		// Delete all WSP characters at the end of each unfolded header field value.
 		headerCanonicalized = headerCanonicalized.replace(/[ \t]+\r\n/, "\r\n");
@@ -994,9 +1006,9 @@ class DkimSignature {
 	 */
 	static #canonicalizationBodyRelaxed(body) {
 		// Ignore all whitespace at the end of lines
-		let bodyCanonicalized = body.replace(/[ \t]+\r\n/g, "\r\n");
+		let bodyCanonicalized = body.replaceAll(/[ \t]+\r\n/g, "\r\n");
 		// Reduce all sequences of WSP within a line to a single SP character
-		bodyCanonicalized = bodyCanonicalized.replace(/[ \t]+/g, " ");
+		bodyCanonicalized = bodyCanonicalized.replaceAll(/[ \t]+/g, " ");
 
 		// Ignore all empty lines at the end of the message body
 		// If the body is non-empty but does not end with a CRLF, a CRLF is added
@@ -1023,14 +1035,17 @@ class DkimSignature {
 		// canonicalize body
 		let bodyCanon;
 		switch (this._header.c_body) {
-			case "simple":
+			case "simple": {
 				bodyCanon = DkimSignature.#canonicalizationBodySimple(this._msg.bodyPlain);
 				break;
-			case "relaxed":
+			}
+			case "relaxed": {
 				bodyCanon = DkimSignature.#canonicalizationBodyRelaxed(this._msg.bodyPlain);
 				break;
-			default:
+			}
+			default: {
 				throw new Error("unsupported canonicalization algorithm got parsed");
+			}
 		}
 
 		// if a body length count is given
@@ -1047,7 +1062,7 @@ class DkimSignature {
 			}
 
 			// truncated body to the length specified in the "l=" tag
-			bodyCanon = bodyCanon.substr(0, this._header.l);
+			bodyCanon = bodyCanon.slice(0, this._header.l);
 		}
 
 		// compute body hash
@@ -1067,21 +1082,24 @@ class DkimSignature {
 		// set header canonicalization algorithm
 		let headerCanonAlgo;
 		switch (this._header.c_header) {
-			case "simple":
+			case "simple": {
 				headerCanonAlgo = function (/** @type {string} */ headerField) { return headerField; };
 				break;
-			case "relaxed":
+			}
+			case "relaxed": {
 				headerCanonAlgo = DkimSignature.#canonicalizationHeaderFieldRelaxed;
 				break;
-			default:
+			}
+			default: {
 				throw new Error("unsupported canonicalization algorithm (header) got parsed");
+			}
 		}
 
 		// copy header fields
 		/** @type {Map<string, string[]>} */
 		const headerFields = new Map();
 		for (const [key, val] of this._msg.headerFields) {
-			headerFields.set(key, val.slice());
+			headerFields.set(key, [...val]);
 		}
 
 		// get header fields specified by the "h=" tag
@@ -1102,15 +1120,15 @@ class DkimSignature {
 		// add DKIM-Signature header to the hash input
 		// with the value of the "b=" tag (including all surrounding whitespace) deleted
 		const pos_bTag = this._header.original_header.indexOf(this._header.b_folded);
-		let tempBegin = this._header.original_header.substr(0, pos_bTag);
+		let tempBegin = this._header.original_header.slice(0, pos_bTag);
 		tempBegin = tempBegin.replace(new RegExp(`${RfcParser.FWS}?$`), "");
-		let tempEnd = this._header.original_header.substr(pos_bTag + this._header.b_folded.length);
+		let tempEnd = this._header.original_header.slice(pos_bTag + this._header.b_folded.length);
 		tempEnd = tempEnd.replace(new RegExp(`^${RfcParser.FWS}?`), "");
 		let temp = tempBegin + tempEnd;
 		// canonicalized using the header canonicalization algorithm specified in the "c=" tag
 		temp = headerCanonAlgo(temp);
 		// without a trailing CRLF
-		hashInput += temp.substr(0, temp.length - 2);
+		hashInput += temp.slice(0, -2);
 
 		return hashInput;
 	}
@@ -1234,10 +1252,10 @@ class DkimSignature {
 		// can cause completely different content to be shown.
 		if (warnings.some(warning => warning.name === "DKIM_SIGWARNING_SMALL_L")) {
 			required.push("Content-Type");
-		} else if (this._header.l !== null) {
-			recommended.push("Content-Type");
-		} else {
+		} else if (this._header.l === null) {
 			desired.push("Content-Type");
+		} else {
+			recommended.push("Content-Type");
 		}
 
 		/**
@@ -1308,16 +1326,20 @@ class DkimSignature {
 		// if key is not signed by DNSSEC
 		if (!keyQueryResult.secure) {
 			switch (prefs["error.policy.key_insecure.treatAs"]) {
-				case 0: // error
+				case 0: { // error
 					throw new DKIM_SigError("DKIM_POLICYERROR_KEY_INSECURE");
-				case 1: // warning
+				}
+				case 1: { // warning
 					warnings.push({ name: "DKIM_POLICYERROR_KEY_INSECURE" });
 					log.debug("Warning: DKIM_POLICYERROR_KEY_INSECURE");
 					break;
-				case 2: // ignore
+				}
+				case 2: { // ignore
 					break;
-				default:
+				}
+				default: {
 					throw new Error("invalid error.policy.key_insecure.treatAs");
+				}
 			}
 		}
 
@@ -1398,16 +1420,20 @@ class DkimSignature {
 				// weak key
 				log.debug(`rsa key size: ${keyLength}`);
 				switch (prefs["error.algorithm.rsa.weakKeyLength.treatAs"]) {
-					case 0: // error
+					case 0: { // error
 						throw new DKIM_SigError("DKIM_SIGWARNING_KEY_IS_WEAK");
-					case 1: // warning
+					}
+					case 1: { // warning
 						warnings.push({ name: "DKIM_SIGWARNING_KEY_IS_WEAK" });
 						log.debug("Warning: DKIM_SIGWARNING_KEY_IS_WEAK");
 						break;
-					case 2: // ignore
+					}
+					case 2: { // ignore
 						break;
-					default:
+					}
+					default: {
 						throw new Error("invalid error.algorithm.rsa.weakKeyLength.treatAs");
+					}
 				}
 			}
 		}
@@ -1469,14 +1495,11 @@ export default class Verifier {
 	 * @returns {dkimSigResultV2}
 	 */
 	static #handleException(e, dkimSignature) {
-		let result;
-		if (dkimSignature) {
-			result = dkimSignature.toBaseResult("");
-		} else {
-			result = {
+		let result = dkimSignature
+			? dkimSignature.toBaseResult("")
+			: {
 				version: "2.0",
 			};
-		}
 
 		if (e instanceof DKIM_SigError) {
 			result = {
@@ -1540,8 +1563,8 @@ export default class Verifier {
 				const dkimSignature = new DkimSignature(msg, dkimHeader);
 				sigRes = await dkimSignature.verify(this._keyStore);
 				log.debug(`Verified DKIM-Signature ${iDKIMSignatureIdx + 1}`);
-			} catch (e) {
-				sigRes = Verifier.#handleException(e, dkimHeader);
+			} catch (error) {
+				sigRes = Verifier.#handleException(error, dkimHeader);
 				log.debug(`Exception on DKIM-Signature ${iDKIMSignatureIdx + 1}`);
 			}
 
@@ -1592,8 +1615,8 @@ export default class Verifier {
 			Verifier.#checkForSignatureExistence(res.signatures);
 			return res;
 		})();
-		promise.then(null, (exception) => {
-			log.warn("verify failed", exception);
+		promise.then(null, (error) => {
+			log.warn("verify failed", error);
 		});
 		return promise;
 	}

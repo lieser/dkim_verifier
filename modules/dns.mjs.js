@@ -70,7 +70,7 @@ function addListeners() {
 		if (Object.keys(changes).some(name => name.startsWith("dns."))) {
 			resetDNSConfiguration();
 		}
-		if (Object.keys(changes).some(name => name === "debug")) {
+		if (Object.keys(changes).includes("debug")) {
 			resetDNSConfiguration();
 		}
 	});
@@ -176,8 +176,9 @@ export default class DNS {
 				checkOnlineStatus();
 				return browser.libunbound.txt(name);
 			}
-			default:
+			default: {
 				throw new Error("invalid resolver preference");
+			}
 		}
 	}
 

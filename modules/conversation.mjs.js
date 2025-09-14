@@ -1,7 +1,7 @@
 /**
  * Push the authentication result to the Conversations add-on.
  *
- * Copyright (c) 2021-2023 Philippe Lieser
+ * Copyright (c) 2021-2023;2025 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -110,32 +110,32 @@ export async function verifyMessage(MessageHeader) {
 	switch (res.dkim[0].res_num) {
 		case AuthVerifier.DKIM_RES.SUCCESS: {
 			const dkim = res.dkim[0];
-			if (!dkim.warnings_str || dkim.warnings_str.length === 0) {
-				severity = "success";
-			} else {
-				severity = "warning";
-			}
+			severity = !dkim.warnings_str || dkim.warnings_str.length === 0 ? "success" : "warning";
 			message = browser.i18n.getMessage("SUCCESS_TAG", dkim.sdid);
 			tooltip = res.dkim[0].warnings_str;
 			break;
 		}
-		case AuthVerifier.DKIM_RES.TEMPFAIL:
+		case AuthVerifier.DKIM_RES.TEMPFAIL: {
 			severity = "normal";
 			message = browser.i18n.getMessage("TEMPFAIL_TAG");
 			tooltip = [res.dkim[0].result_str];
 			break;
-		case AuthVerifier.DKIM_RES.PERMFAIL:
+		}
+		case AuthVerifier.DKIM_RES.PERMFAIL: {
 			severity = "error";
 			message = browser.i18n.getMessage("PERMFAIL_TAG");
 			if (res.dkim[0].error_str) {
 				tooltip = [res.dkim[0].error_str];
 			}
 			break;
+		}
 		case AuthVerifier.DKIM_RES.PERMFAIL_NOSIG:
-		case AuthVerifier.DKIM_RES.NOSIG:
+		case AuthVerifier.DKIM_RES.NOSIG: {
 			return;
-		default:
+		}
+		default: {
 			throw new Error(`unknown res_num: ${res.dkim[0].res_num}`);
+		}
 	}
 
 	addPill(MessageHeader.id, severity, res.dkim[0].favicon, message, tooltip);

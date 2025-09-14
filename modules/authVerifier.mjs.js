@@ -114,7 +114,7 @@ export default class AuthVerifier {
 		if (savedAuthResult) {
 			let from = null;
 			try {
-				from = MsgParser.parseAuthor(message.author, prefs["internationalized.enable"]);
+				from = MsgParser.parseAuthor(message.author);
 			} catch (error) {
 				log.warn("Parsing of from header failed", error);
 			}
@@ -128,7 +128,7 @@ export default class AuthVerifier {
 			msgParsed = MsgParser.parseMsg(rawMessage);
 		} catch (error) {
 			log.error("Parsing of message failed", error);
-			return Promise.resolve({
+			return {
 				version: "2.1",
 				dkim: [{
 					version: "2.0",
@@ -136,7 +136,7 @@ export default class AuthVerifier {
 					res_num: 30,
 					result_str: browser.i18n.getMessage("DKIM_INTERNALERROR_INCORRECT_EMAIL_FORMAT"),
 				}],
-			});
+			};
 		}
 		const fromHeader = msgParsed.headers.get("from");
 		if (!fromHeader || !fromHeader[0]) {
@@ -147,7 +147,7 @@ export default class AuthVerifier {
 			from = MsgParser.parseFromHeader(fromHeader[0], prefs["internationalized.enable"]);
 		} catch (error) {
 			log.error("Parsing of from header failed", error);
-			return Promise.resolve({
+			return {
 				version: "2.1",
 				dkim: [{
 					version: "2.0",
@@ -155,7 +155,7 @@ export default class AuthVerifier {
 					res_num: 30,
 					result_str: browser.i18n.getMessage("DKIM_INTERNALERROR_INCORRECT_FROM"),
 				}],
-			});
+			};
 		}
 		const msg = {
 			headerFields: msgParsed.headers,
@@ -181,6 +181,7 @@ export default class AuthVerifier {
 				await checkSignRules(message, savedAuthResult.dkim, msg.from, listId, this._dmarc);
 				sortSignatures(savedAuthResult.dkim, msg.from, listId);
 			} else {
+				sortSignatures(arhResult.dkim, msg.from, listId);
 				savedAuthResult = {
 					version: "3.1",
 					dkim: [],
@@ -276,6 +277,7 @@ function sortSignatures(signatures, from, listId) {
 	 * @param {dkimSigResultV2} sig2
 	 * @returns {number}
 	 */
+	// eslint-disable-next-line unicorn/consistent-function-scoping
 	function result_compare(sig1, sig2) {
 		if (sig1.result === sig2.result) {
 			return 0;
@@ -309,6 +311,7 @@ function sortSignatures(signatures, from, listId) {
 	 * @param {dkimSigResultV2} sig2
 	 * @returns {number}
 	 */
+	// eslint-disable-next-line unicorn/consistent-function-scoping
 	function warnings_compare(sig1, sig2) {
 		if (sig1.result !== "SUCCESS") {
 			return 0;
@@ -367,6 +370,7 @@ function sortSignatures(signatures, from, listId) {
 	 * @param {dkimSigResultV2} sig2
 	 * @returns {number}
 	 */
+	// eslint-disable-next-line unicorn/consistent-function-scoping
 	function error_compare(sig1, sig2) {
 		if (sig1.result !== "PERMFAIL") {
 			return 0;
@@ -439,7 +443,7 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 			});
 			break;
 		}
-		case "TEMPFAIL":
+		case "TEMPFAIL": {
 			authResultDKIM.res_num = AuthVerifier.DKIM_RES.TEMPFAIL;
 			authResultDKIM.result_str =
 				(
@@ -449,12 +453,9 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 				dkimSigResult.errorType ||
 				browser.i18n.getMessage("DKIM_INTERNALERROR_NAME");
 			break;
+		}
 		case "PERMFAIL": {
-			if (dkimSigResult.hideFail) {
-				authResultDKIM.res_num = AuthVerifier.DKIM_RES.PERMFAIL_NOSIG;
-			} else {
-				authResultDKIM.res_num = AuthVerifier.DKIM_RES.PERMFAIL;
-			}
+			authResultDKIM.res_num = dkimSigResult.hideFail ? AuthVerifier.DKIM_RES.PERMFAIL_NOSIG : AuthVerifier.DKIM_RES.PERMFAIL;
 			let errorType = dkimSigResult.errorType;
 			let errorMsg;
 			if (errorType) {
@@ -485,16 +486,18 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 						case "DKIM_SIGERROR_ILLFORMED_T":
 						case "DKIM_SIGERROR_TIMESTAMPS":
 						case "DKIM_SIGERROR_ILLFORMED_X":
-						case "DKIM_SIGERROR_ILLFORMED_Z":
+						case "DKIM_SIGERROR_ILLFORMED_Z": {
 							errorType = "DKIM_SIGERROR_ILLFORMED";
 							break;
+						}
 						case "DKIM_SIGERROR_VERSION":
 						case "DKIM_SIGERROR_UNKNOWN_A":
 						case "DKIM_SIGERROR_UNKNOWN_C_H":
 						case "DKIM_SIGERROR_UNKNOWN_C_B":
-						case "DKIM_SIGERROR_UNKNOWN_Q":
+						case "DKIM_SIGERROR_UNKNOWN_Q": {
 							errorType = "DKIM_SIGERROR_UNSUPPORTED";
 							break;
+						}
 						case "DKIM_SIGERROR_KEY_ILLFORMED_TAGSPEC":
 						case "DKIM_SIGERROR_KEY_DUPLICATE_TAG":
 						case "DKIM_SIGERROR_KEY_ILLFORMED_V":
@@ -504,17 +507,19 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 						case "DKIM_SIGERROR_KEY_MISSING_P":
 						case "DKIM_SIGERROR_KEY_ILLFORMED_P":
 						case "DKIM_SIGERROR_KEY_ILLFORMED_S":
-						case "DKIM_SIGERROR_KEY_ILLFORMED_T":
+						case "DKIM_SIGERROR_KEY_ILLFORMED_T": {
 							errorType = "DKIM_SIGERROR_KEY_ILLFORMED";
 							break;
+						}
 						case "DKIM_SIGERROR_KEY_INVALID_V":
 						case "DKIM_SIGERROR_KEY_HASHNOTINCLUDED":
 						case "DKIM_SIGERROR_KEY_UNKNOWN_K":
 						case "DKIM_SIGERROR_KEY_MISMATCHED_K":
 						case "DKIM_SIGERROR_KEY_NOTEMAILKEY":
-						case "DKIM_SIGERROR_KEYDECODE":
+						case "DKIM_SIGERROR_KEYDECODE": {
 							errorType = "DKIM_SIGERROR_KEY_INVALID";
 							break;
+						}
 						case "DKIM_SIGERROR_BADSIG":
 						case "DKIM_SIGERROR_CORRUPT_BH":
 						case "DKIM_SIGERROR_MISSING_FROM":
@@ -525,10 +530,12 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 						case "DKIM_POLICYERROR_MISSING_SIG":
 						case "DKIM_POLICYERROR_KEYMISMATCH":
 						case "DKIM_POLICYERROR_KEY_INSECURE":
-						case "DKIM_POLICYERROR_WRONG_SDID":
+						case "DKIM_POLICYERROR_WRONG_SDID": {
 							break;
-						default:
+						}
+						default: {
 							log.warn(`unknown errorType: ${errorType}`);
+						}
 					}
 				}
 				errorMsg =
@@ -536,20 +543,19 @@ function dkimSigResultV2_to_AuthResultDKIM(dkimSigResult) { // eslint-disable-li
 					errorType;
 				authResultDKIM.error_str = errorMsg;
 			}
-			if (errorMsg) {
-				authResultDKIM.result_str = browser.i18n.getMessage("PERMFAIL",
-					[errorMsg]);
-			} else {
-				authResultDKIM.result_str = browser.i18n.getMessage("PERMFAIL_NO_REASON");
-			}
+			authResultDKIM.result_str = errorMsg
+				? browser.i18n.getMessage("PERMFAIL", [errorMsg])
+				: browser.i18n.getMessage("PERMFAIL_NO_REASON");
 			break;
 		}
-		case "none":
+		case "none": {
 			authResultDKIM.res_num = AuthVerifier.DKIM_RES.NOSIG;
 			authResultDKIM.result_str = browser.i18n.getMessage("NOSIG");
 			break;
-		default:
+		}
+		default: {
 			throw new Error(`unknown result: ${dkimSigResult.result}`);
+		}
 	}
 
 	return authResultDKIM;
@@ -566,7 +572,7 @@ function SavedAuthResult_to_AuthResult(savedAuthResult, from) {
 	/** @type {AuthResult} */
 	const authResult = {
 		version: "2.1",
-		dkim: savedAuthResult.dkim.map(dkimSigResultV2_to_AuthResultDKIM),
+		dkim: savedAuthResult.dkim.map((element) => dkimSigResultV2_to_AuthResultDKIM(element)),
 	};
 	if (savedAuthResult.spf) {
 		authResult.spf = savedAuthResult.spf;
@@ -577,7 +583,7 @@ function SavedAuthResult_to_AuthResult(savedAuthResult, from) {
 	if (savedAuthResult.arh && savedAuthResult.arh.dkim) {
 		authResult.arh = {
 			dkim: savedAuthResult.arh.dkim.map(
-				dkimSigResultV2_to_AuthResultDKIM),
+				(element) => dkimSigResultV2_to_AuthResultDKIM(element)),
 		};
 	}
 	return addFavicons(authResult, from, savedAuthResult.bimiIndicator);
@@ -600,11 +606,9 @@ async function addFavicons(authResult, from, bimiIndicator) {
 	}
 	for (const dkim of authResult.dkim) {
 		if (dkim.sdid) {
-			if (bimiIndicator && from && addrIsInDomain(from, dkim.sdid)) {
-				dkim.favicon = `data:image/svg+xml;base64,${bimiIndicator}`;
-			} else {
-				dkim.favicon = await getFavicon(dkim.sdid, dkim.auid, from);
-			}
+			dkim.favicon = bimiIndicator && from && addrIsInDomain(from, dkim.sdid)
+				? `data:image/svg+xml;base64,${bimiIndicator}`
+				: await getFavicon(dkim.sdid, dkim.auid, from);
 		}
 	}
 	return authResult;

@@ -2,7 +2,7 @@
  * Wrapper for the libunbound DNS library. The actual work is done in the
  * ChromeWorker libunboundWorker.js.
  *
- * Copyright (c) 2013-2018;2020-2023 Philippe Lieser
+ * Copyright (c) 2013-2018;2020-2023;2025 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -82,7 +82,7 @@ class LibunboundWorker {
 		this.worker =
 			// @ts-expect-error
 			new ChromeWorker("chrome://dkim_verifier_libunbound/content/libunboundWorker.js");
-		this.worker.onmessage = (msg) => this.#onmessage(msg);
+		this.worker.addEventListener("message", (msg) => this.#onmessage(msg));
 
 		this.config = {
 			getNameserversFromOS: true,
@@ -107,18 +107,14 @@ class LibunboundWorker {
 		// @ts-expect-error
 		this._openCalls.set(++this._maxCallId, defer);
 
-		/** @type {string} */
-		let path;
-		if (this.config.pathRelToProfileDir) {
-			path = this.config.path.
+		const path = this.config.pathRelToProfileDir
+			? this.config.path.
 				split(";").
 				map(e => {
 					return PathUtils.join(PathUtils.profileDir, ...e.split(/\/|\\/));
 				}).
-				join(";");
-		} else {
-			path = this.config.path;
-		}
+				join(";")
+			: this.config.path;
 
 		this.worker.postMessage({
 			callId: this._maxCallId,
@@ -217,22 +213,27 @@ class LibunboundWorker {
 				/** @type {Libunbound.Log} */
 				const logMsg = msg.data;
 				switch (logMsg.subType) {
-					case "error":
+					case "error": {
 						console.error(logMsg.message);
 						break;
-					case "warn":
+					}
+					case "warn": {
 						console.warn(logMsg.message);
 						break;
-					case "info":
+					}
+					case "info": {
 						console.info(logMsg.message);
 						break;
-					case "debug":
+					}
+					case "debug": {
 						if (this.config.debug) {
 							console.debug(logMsg.message);
 						}
 						break;
-					default:
+					}
+					default: {
 						throw new Error(`Unknown log type: ${logMsg.subType}`);
+					}
 				}
 				return;
 			}
@@ -262,8 +263,8 @@ class LibunboundWorker {
 			// @ts-expect-error
 			const res = msg.data;
 			defer.resolve(res.result);
-		} catch (e) {
-			console.error(e);
+		} catch (error) {
+			console.error(error);
 		}
 	}
 }
@@ -282,7 +283,7 @@ LibunboundWorker.Constants = /** @type {const} */ ({
 	RR_TYPE_CERT: 37,
 	RR_TYPE_CNAME: 5,
 	RR_TYPE_DHCID: 49,
-	RR_TYPE_DLV: 32769,
+	RR_TYPE_DLV: 32_769,
 	RR_TYPE_DNAME: 39,
 	RR_TYPE_DNSKEY: 48,
 	RR_TYPE_DS: 43,
@@ -390,7 +391,7 @@ this.libunbound = class extends ExtensionCommon.ExtensionAPI {
 					const data = res.havedata
 						? res.data.map(rdata => {
 							if (typeof rdata !== "string") {
-								throw new Error(`DNS result has unexpected type ${typeof rdata}`);
+								throw new TypeError(`DNS result has unexpected type ${typeof rdata}`);
 							}
 							return rdata;
 						})

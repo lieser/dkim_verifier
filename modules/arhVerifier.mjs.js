@@ -14,8 +14,9 @@
 
 // @ts-check
 /* eslint-disable camelcase */
+/* eslint-disable no-magic-numbers */
 
-import { addrIsInDomain, copy, domainIsInDomain, getDomainFromAddr, stringEndsWith } from "./utils.mjs.js";
+import { addrIsInDomain, copy, domainIsInDomain, getDomainFromAddr, stringEndsWith, stringEqual } from "./utils.mjs.js";
 import ArhParser from "./arhParser.mjs.js";
 import Logging from "./logging.mjs.js";
 import { getBimiIndicator } from "./bimi.mjs.js";
@@ -51,18 +52,18 @@ function readARHs(arHeaders, account) {
 	/** @type {(string|null)[]} */
 	const allowedAuthserv = prefs["account.arh.allowedAuthserv"](account).
 		split(" ").
-		filter(server => server);
+		filter(Boolean);
 
 	for (const header of arHeaders) {
 		/** @type {import("./arhParser.mjs.js").ArhHeader} */
 		let arh;
 		try {
 			arh = ArhParser.parse(header, prefs["arh.relaxedParsing"], prefs["internationalized.enable"]);
-		} catch (exception) {
-			log.error("Ignoring error in parsing of ARH", exception);
-			if (!allowedAuthserv.length) {
-				if (exception instanceof Error && "authserv_id" in exception && typeof exception.authserv_id === "string") {
-					allowedAuthserv.push(exception?.authserv_id);
+		} catch (error) {
+			log.error("Ignoring error in parsing of ARH", error);
+			if (allowedAuthserv.length === 0) {
+				if (error instanceof Error && "authserv_id" in error && typeof error.authserv_id === "string") {
+					allowedAuthserv.push(error?.authserv_id);
 				} else {
 					allowedAuthserv.push(null);
 				}
@@ -71,7 +72,7 @@ function readARHs(arHeaders, account) {
 		}
 
 		// If no authserv_id is configured we implicitly only trust the newest one.
-		if (!allowedAuthserv.length) {
+		if (allowedAuthserv.length === 0) {
 			allowedAuthserv.push(arh.authserv_id);
 		}
 
@@ -81,25 +82,25 @@ function readARHs(arHeaders, account) {
 				return true;
 			}
 			if (server?.charAt(0) === "@") {
-				return domainIsInDomain(arh.authserv_id, server.substr(1));
+				return domainIsInDomain(arh.authserv_id, server.slice(1));
 			}
 			return false;
 		})) {
 			continue;
 		}
 
-		result.dkim = result.dkim.concat(arh.resinfo.filter((element) => {
+		result.dkim = [...result.dkim, ...arh.resinfo.filter((element) => {
 			return element.method === "dkim";
-		}));
-		result.spf = result.spf.concat(arh.resinfo.filter((element) => {
+		})];
+		result.spf = [...result.spf, ...arh.resinfo.filter((element) => {
 			return element.method === "spf";
-		}));
-		result.dmarc = result.dmarc.concat(arh.resinfo.filter((element) => {
+		})];
+		result.dmarc = [...result.dmarc, ...arh.resinfo.filter((element) => {
 			return element.method === "dmarc";
-		}));
-		result.bimi = result.bimi.concat(arh.resinfo.filter((element) => {
+		})];
+		result.bimi = [...result.bimi, ...arh.resinfo.filter((element) => {
 			return element.method === "bimi";
-		}));
+		})];
 	}
 
 	return result;
@@ -116,9 +117,10 @@ function arhDKIM_to_dkimSigResultV2(arhDKIM) {
 	const dkimSigResult = {};
 	dkimSigResult.version = "2.0";
 	switch (arhDKIM.result) {
-		case "none":
+		case "none": {
 			dkimSigResult.result = "none";
 			break;
+		}
 		case "pass": {
 			dkimSigResult.result = "SUCCESS";
 			dkimSigResult.warnings = [];
@@ -127,24 +129,19 @@ function arhDKIM_to_dkimSigResultV2(arhDKIM) {
 		case "fail":
 		case "policy":
 		case "neutral":
-		case "permerror":
+		case "permerror": {
 			dkimSigResult.result = "PERMFAIL";
-			if (arhDKIM.reason) {
-				dkimSigResult.errorType = arhDKIM.reason;
-			} else {
-				dkimSigResult.errorType = "";
-			}
+			dkimSigResult.errorType = arhDKIM.reason ?? "";
 			break;
-		case "temperror":
+		}
+		case "temperror": {
 			dkimSigResult.result = "TEMPFAIL";
-			if (arhDKIM.reason) {
-				dkimSigResult.errorType = arhDKIM.reason;
-			} else {
-				dkimSigResult.errorType = "";
-			}
+			dkimSigResult.errorType = arhDKIM.reason ?? "";
 			break;
-		default:
+		}
+		default: {
 			throw new Error(`invalid dkim result in arh: ${arhDKIM.result}`);
+		}
 	}
 
 	// SDID and AUID
@@ -232,16 +229,80 @@ function checkSignatureAlgorithm(dkimSigResult) {
 				dkimSigResult.warnings = [];
 				break;
 			}
-			case 1: // warning
+			case 1: { // warning
 				dkimSigResult.warnings.push({ name: "DKIM_SIGERROR_INSECURE_A" });
 				break;
-			case 2: // ignore
+			}
+			case 2: { // ignore
 				break;
-			default:
+			}
+			default: {
 				throw new Error("invalid error.algorithm.sign.rsa-sha1.treatAs");
+			}
 		}
 	}
 }
+
+/**
+ * Converts an ARH result Keyword to a sorted number.
+ *
+ * @param {string} result
+ * @returns {number}
+ */
+function resultToNumber(result) {
+	if (stringEqual(result, "pass")) {
+		return 0;
+	}
+
+	if (stringEqual(result, "neutral")) {
+		return 10;
+	}
+	if (stringEqual(result, "declined")) {
+		return 11;
+	}
+	if (stringEqual(result, "policy")) {
+		return 12;
+	}
+
+	if (stringEqual(result, "hardfail")) {
+		return 20;
+	}
+	if (stringEqual(result, "fail")) {
+		return 21;
+	}
+	if (stringEqual(result, "softfail")) {
+		return 22;
+	}
+
+	if (stringEqual(result, "permerror")) {
+		return 30;
+	}
+	if (stringEqual(result, "temperror")) {
+		return 31;
+	}
+
+	if (stringEqual(result, "skipped")) {
+		return 40;
+	}
+	if (stringEqual(result, "none")) {
+		return 41;
+	}
+
+	return 99;
+}
+
+/**
+ * Sort the given ArhResInfo.
+ *
+ * @param {ArhResInfo[]} arhResInfo
+ * @returns {void}
+ */
+function sortResultKeyword(arhResInfo) {
+	arhResInfo.sort((resInfo1, resInfo2) => {
+		return resultToNumber(resInfo1.result) - resultToNumber(resInfo2.result);
+	});
+}
+
 /**
  * Get the Authentication-Results header as an SavedAuthResult.
  *
@@ -259,7 +320,7 @@ export default function getArhResult(headers, from, account) {
 	const authenticationResults = readARHs(arHeaders, account);
 
 	// convert DKIM results
-	const dkimSigResults = authenticationResults.dkim.map(arhDKIM_to_dkimSigResultV2);
+	const dkimSigResults = authenticationResults.dkim.map((element) => arhDKIM_to_dkimSigResultV2(element));
 
 	// if ARH result is replacing the add-ons,
 	// do some checks we also do for verification
@@ -285,6 +346,8 @@ export default function getArhResult(headers, from, account) {
 		dmarc: authenticationResults.dmarc,
 		bimiIndicator: getBimiIndicator(headers, authenticationResults.bimi) ?? undefined,
 	};
+	sortResultKeyword(savedAuthResult.spf);
+	sortResultKeyword(savedAuthResult.dmarc);
 	log.debug("ARH result:", copy(savedAuthResult));
 	return savedAuthResult;
 }

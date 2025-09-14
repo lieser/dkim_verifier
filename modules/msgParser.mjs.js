@@ -1,7 +1,7 @@
 /**
  * Reads and parses a message.
  *
- * Copyright (c) 2014-2024 Philippe Lieser
+ * Copyright (c) 2014-2025 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -12,9 +12,9 @@
 // @ts-check
 
 import RfcParser, { RfcParserI } from "./rfcParser.mjs.js";
+import { decodeBinaryString, toBinaryString } from "./utils.mjs.js";
 import { DKIM_Error } from "./error.mjs.js";
 import Logging from "./logging.mjs.js";
-import { decodeBinaryString } from "./utils.mjs.js";
 
 const log = Logging.getLogger("msgParser");
 
@@ -31,7 +31,7 @@ export default class MsgParser {
 		const newlineLength = 2;
 
 		// convert all EOLs to CRLF
-		const msg = rawMsg.replace(/(\r\n|\n|\r)/g, "\r\n");
+		const msg = rawMsg.replaceAll(/(\r\n|\n|\r)/g, "\r\n");
 
 		// get header end
 		const posEndHeader = msg.indexOf("\r\n\r\n");
@@ -46,8 +46,8 @@ export default class MsgParser {
 			headerPlain = msg;
 			body = "";
 		} else {
-			headerPlain = msg.substr(0, posEndHeader + newlineLength);
-			body = msg.substr(posEndHeader + 2 * newlineLength);
+			headerPlain = msg.slice(0, posEndHeader + newlineLength);
+			body = msg.slice(posEndHeader + 2 * newlineLength);
 		}
 
 		return {
@@ -119,6 +119,7 @@ export default class MsgParser {
 		 * @param {RegExpMatchArray} regExpMatchArray - binary strings
 		 * @returns {string}
 		 */
+		// eslint-disable-next-line unicorn/consistent-function-scoping
 		const joinAddress = (regExpMatchArray) => {
 			const localDotAtom = regExpMatchArray[1];
 			const localQuotedString = regExpMatchArray[2];
@@ -153,13 +154,13 @@ export default class MsgParser {
 	/**
 	 * Extract the address from author in Thunderbirds MessageHeader.
 	 *
-	 * @param {string} author - binary string
-	 * @param {boolean} [internationalized] - Enable internationalized support
+	 * @param {string} author
 	 * @returns {string}
 	 * @throws {DKIM_Error}
 	 */
-	static parseAuthor(author, internationalized) {
-		const from = MsgParser.#tryParseMailboxList(`${author}\r\n`, internationalized);
+	static parseAuthor(author) {
+		// We get an UTF-16 string from Thunderbird, but our parsing uses a binary string.
+		const from = MsgParser.#tryParseMailboxList(toBinaryString(`${author}\r\n`), true);
 		if (from === null) {
 			throw new DKIM_Error("From header (author) does not contain an address");
 		}
@@ -179,7 +180,7 @@ export default class MsgParser {
 		if (!header.toLowerCase().startsWith(headerStart)) {
 			throw new Error("Unexpected start of from header");
 		}
-		const headerValue = header.substr(headerStart.length);
+		const headerValue = header.slice(headerStart.length);
 
 		const from = MsgParser.#tryParseMailboxList(headerValue, internationalized);
 		if (from === null) {
@@ -203,7 +204,7 @@ export default class MsgParser {
 		if (!header.toLowerCase().startsWith(headerStart)) {
 			throw new Error("Unexpected start of from header");
 		}
-		const headerValue = header.substr(headerStart.length);
+		const headerValue = header.slice(headerStart.length);
 
 		const replyTo = MsgParser.#tryParseMailboxList(headerValue, internationalized);
 		if (replyTo === null) {
@@ -226,7 +227,7 @@ export default class MsgParser {
 		if (!header.toLowerCase().startsWith(headerStart)) {
 			throw new Error("Unexpected start of List-Id header");
 		}
-		const headerValue = header.substr(headerStart.length);
+		const headerValue = header.slice(headerStart.length);
 
 		const listId = `${RfcParser.dot_atom_text}\\.${RfcParser.dot_atom_text}`;
 		// Note: adapted according to Errata ID: 3951
@@ -251,7 +252,7 @@ export default class MsgParser {
 		}
 		// In Thunderbird (but not Node.js) Date parsing will fail if newlines are before the actual date string.
 		// We trim all surrounding whitespace to avoid this problem.
-		const dateTimeStr = header.substring(dateTimeStart + 1).trim();
+		const dateTimeStr = header.slice(dateTimeStart + 1).trim();
 		const dateTime = new Date(dateTimeStr);
 		if (dateTime.toString() === "Invalid Date") {
 			log.warn("Could not parse the date time in the Received header");

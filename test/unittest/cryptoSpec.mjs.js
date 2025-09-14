@@ -20,7 +20,7 @@ describe("crypto [unittest]", function () {
 	 * @returns {string}
 	 */
 	function strReplaceAt(str, index, replacement) {
-		return str.substr(0, index) + replacement + str.substr(index + replacement.length);
+		return str.slice(0, index) + replacement + str.slice(index + replacement.length);
 	}
 
 	describe("digest", function () {
@@ -44,7 +44,7 @@ describe("crypto [unittest]", function () {
 
 		it("8-bit", async function () {
 			expect(
-				await DkimCrypto.digest("sha256", "a test ð\u009f\u008d\u0095\r\n")
+				await DkimCrypto.digest("sha256", "a test ð\u009F\u008D\u0095\r\n")
 			).to.be.equal("bYcDq5OnCARcoHQv2Qhc9Jw8ZYXgw75R/Ku1CCT8qNA=");
 		});
 	});
@@ -84,16 +84,16 @@ describe("crypto [unittest]", function () {
 			let res = DkimCrypto.verifyRSA(strReplaceAt(pubKey, 5, "x"), "sha256", signature, msg);
 			await expectAsyncDkimSigError(res, "DKIM_SIGERROR_KEYDECODE");
 
-			res = DkimCrypto.verifyRSA(pubKey.substring(1), "sha256", signature, msg);
+			res = DkimCrypto.verifyRSA(pubKey.slice(1), "sha256", signature, msg);
 			await expectAsyncDkimSigError(res, "DKIM_SIGERROR_KEYDECODE");
 
-			res = DkimCrypto.verifyRSA(pubKey.substring(2), "sha256", signature, msg);
+			res = DkimCrypto.verifyRSA(pubKey.slice(2), "sha256", signature, msg);
 			await expectAsyncDkimSigError(res, "DKIM_SIGERROR_KEYDECODE");
 
-			res = DkimCrypto.verifyRSA(pubKey.substring(3), "sha256", signature, msg);
+			res = DkimCrypto.verifyRSA(pubKey.slice(3), "sha256", signature, msg);
 			await expectAsyncDkimSigError(res, "DKIM_SIGERROR_KEYDECODE");
 
-			res = DkimCrypto.verifyRSA(pubKey.substring(4), "sha256", signature, msg);
+			res = DkimCrypto.verifyRSA(pubKey.slice(4), "sha256", signature, msg);
 			await expectAsyncDkimSigError(res, "DKIM_SIGERROR_KEYDECODE");
 		});
 
@@ -101,16 +101,16 @@ describe("crypto [unittest]", function () {
 			let [valid] = await DkimCrypto.verifyRSA(pubKey, "sha256", strReplaceAt(signature, 5, "x"), msg);
 			expect(valid).to.be.false;
 
-			[valid] = await DkimCrypto.verifyRSA(pubKey, "sha256", signature.substring(1), msg);
+			[valid] = await DkimCrypto.verifyRSA(pubKey, "sha256", signature.slice(1), msg);
 			expect(valid).to.be.false;
 
-			[valid] = await DkimCrypto.verifyRSA(pubKey, "sha256", signature.substring(2), msg);
+			[valid] = await DkimCrypto.verifyRSA(pubKey, "sha256", signature.slice(2), msg);
 			expect(valid).to.be.false;
 
-			[valid] = await DkimCrypto.verifyRSA(pubKey, "sha256", signature.substring(3), msg);
+			[valid] = await DkimCrypto.verifyRSA(pubKey, "sha256", signature.slice(3), msg);
 			expect(valid).to.be.false;
 
-			[valid] = await DkimCrypto.verifyRSA(pubKey, "sha256", signature.substring(4), msg);
+			[valid] = await DkimCrypto.verifyRSA(pubKey, "sha256", signature.slice(4), msg);
 			expect(valid).to.be.false;
 		});
 
@@ -166,16 +166,16 @@ describe("crypto [unittest]", function () {
 			res = DkimCrypto.verifyEd25519(strReplaceAt(pubKey, 5, "-"), "sha256", signature, msg);
 			await expectAsyncDkimSigError(res, "DKIM_SIGERROR_KEYDECODE");
 
-			res = DkimCrypto.verifyEd25519(pubKey.substring(1), "sha256", signature, msg);
+			res = DkimCrypto.verifyEd25519(pubKey.slice(1), "sha256", signature, msg);
 			await expectAsyncDkimSigError(res, "DKIM_SIGERROR_KEYDECODE");
 
-			res = DkimCrypto.verifyEd25519(pubKey.substring(2), "sha256", signature, msg);
+			res = DkimCrypto.verifyEd25519(pubKey.slice(2), "sha256", signature, msg);
 			await expectAsyncDkimSigError(res, "DKIM_SIGERROR_KEYDECODE");
 
-			res = DkimCrypto.verifyEd25519(pubKey.substring(3), "sha256", signature, msg);
+			res = DkimCrypto.verifyEd25519(pubKey.slice(3), "sha256", signature, msg);
 			await expectAsyncDkimSigError(res, "DKIM_SIGERROR_KEYDECODE");
 
-			res = DkimCrypto.verifyEd25519(pubKey.substring(4), "sha256", signature, msg);
+			res = DkimCrypto.verifyEd25519(pubKey.slice(4), "sha256", signature, msg);
 			await expectAsyncDkimSigError(res, "DKIM_SIGERROR_KEYDECODE");
 		});
 
@@ -183,16 +183,16 @@ describe("crypto [unittest]", function () {
 			let [valid] = await DkimCrypto.verifyEd25519(pubKey, "sha256", strReplaceAt(signature, 5, "x"), msg);
 			expect(valid).to.be.false;
 
-			[valid] = await DkimCrypto.verifyEd25519(pubKey, "sha256", signature.substring(1), msg);
+			[valid] = await DkimCrypto.verifyEd25519(pubKey, "sha256", signature.slice(1), msg);
 			expect(valid).to.be.false;
 
-			[valid] = await DkimCrypto.verifyEd25519(pubKey, "sha256", signature.substring(2), msg);
+			[valid] = await DkimCrypto.verifyEd25519(pubKey, "sha256", signature.slice(2), msg);
 			expect(valid).to.be.false;
 
-			[valid] = await DkimCrypto.verifyEd25519(pubKey, "sha256", signature.substring(3), msg);
+			[valid] = await DkimCrypto.verifyEd25519(pubKey, "sha256", signature.slice(3), msg);
 			expect(valid).to.be.false;
 
-			[valid] = await DkimCrypto.verifyEd25519(pubKey, "sha256", signature.substring(4), msg);
+			[valid] = await DkimCrypto.verifyEd25519(pubKey, "sha256", signature.slice(4), msg);
 			expect(valid).to.be.false;
 		});
 

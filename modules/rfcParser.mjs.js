@@ -11,13 +11,14 @@
 
 // @ts-check
 /* eslint-disable camelcase */
+/* eslint-disable unicorn/no-hex-escape */
 
 import { DKIM_Error, DKIM_SigError } from "./error.mjs.js";
 
 export default class RfcParser {
 	////// RFC 2045 - Multipurpose Internet Mail Extensions (MIME) Part One: Format of Internet Message Bodies
 	//// 5.1.  Syntax of the Content-Type Header Field
-	static get token() { return "[^ \\x00-\\x1F\\x7F()<>@,;:\\\\\"/[\\]?=\\u0080-\\uFFFF]+"; }
+	static get token() { return String.raw`[^ \x00-\x1F\x7F()<>@,;:\\"/[\]?=\u0080-\uFFFF]+`; }
 
 	////// RFC 5234 - Augmented BNF for Syntax Specifications: ABNF
 	//// Appendix B.1.  Core Rules
@@ -42,7 +43,7 @@ export default class RfcParser {
 	// Note: helper only, not part of the RFC
 	static get FWS_op() { return `${this.FWS}?`; }
 	// Note: this is incomplete (obs-ctext is missing)
-	static get ctext() { return "[!-'*-[\\]-~]"; }
+	static get ctext() { return String.raw`[!-'*-[\]-~]`; }
 	// Note: There is a recursion in ccontent/comment, which is not supported by the RegExp in JavaScript.
 	// We currently unroll it to support a depth of up to 3 comments.
 	static get ccontent_2() { return `(?:${this.ctext}|${this.quoted_pair})`; }
@@ -63,7 +64,7 @@ export default class RfcParser {
 	static get dot_atom() { return `(?:${this.CFWS_op}${this.dot_atom_text}${this.CFWS_op})`; }
 	//// 3.2.4.  Quoted Strings
 	// Note: this is incomplete (obs-qtext is missing)
-	static get qtext() { return "[!#-[\\]-~]"; }
+	static get qtext() { return String.raw`[!#-[\]-~]`; }
 	static get qcontent() { return `(?:${this.qtext}|${this.quoted_pair})`; }
 	static get quoted_string() { return `(?:${this.CFWS_op}"(?:${this.FWS_op}${this.qcontent})*${this.FWS_op}"${this.CFWS_op})`; }
 	//// 3.2.5.  Miscellaneous Tokens
@@ -113,8 +114,8 @@ export default class RfcParser {
 
 		// delete optional semicolon at end
 		let listStr = str;
-		if (listStr.charAt(listStr.length - 1) === ";") {
-			listStr = listStr.substr(0, listStr.length - 1);
+		if (listStr.at(-1) === ";") {
+			listStr = listStr.slice(0, -1);
 		}
 
 		const array = listStr.split(";");

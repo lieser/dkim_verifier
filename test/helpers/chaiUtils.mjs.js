@@ -34,25 +34,25 @@ export function expectAsyncDkimSigError(promise, errorType) {
 			value => {
 				try {
 					expect.fail(`${value}`, errorType, "expected a DKIM_SigError to be thrown, got a value instead");
-				} catch (e) {
+				} catch (error) {
 					// @ts-expect-error
-					e.showDiff = true;
-					reject(e);
+					error.showDiff = true;
+					reject(error);
 				}
 			},
-			reason => {
+			thrownError => {
 				try {
-					if (reason instanceof DKIM_SigError) {
-						if (reason.errorType !== errorType) {
-							expect.fail(`${reason}`, errorType, "expected a different error type of DKIM_SigError");
+					if (thrownError instanceof DKIM_SigError) {
+						if (thrownError.errorType !== errorType) {
+							expect.fail(`${thrownError}`, errorType, "expected a different error type of DKIM_SigError");
 						}
 						resolve();
 					}
-					expect.fail(`${reason}`, errorType, "expected a DKIM_SigError to be thrown, got a different Error instead");
-				} catch (e) {
+					expect.fail(`${thrownError}`, errorType, "expected a DKIM_SigError to be thrown, got a different Error instead");
+				} catch (error) {
 					// @ts-expect-error
-					e.showDiff = true;
-					reject(e);
+					error.showDiff = true;
+					reject(error);
 				}
 			}
 		);
@@ -73,25 +73,25 @@ export function expectAsyncDkimTempError(promise, errorType) {
 			value => {
 				try {
 					expect.fail(`${value}`, errorType, "expected a DKIM_TempError to be thrown, got a value instead");
-				} catch (e) {
+				} catch (error) {
 					// @ts-expect-error
-					e.showDiff = true;
-					reject(e);
+					error.showDiff = true;
+					reject(error);
 				}
 			},
-			reason => {
+			thrownError => {
 				try {
-					if (reason instanceof DKIM_TempError) {
-						if (reason.errorType !== errorType) {
-							expect.fail(`${reason}`, errorType, "expected a different error type of DKIM_TempError");
+					if (thrownError instanceof DKIM_TempError) {
+						if (thrownError.errorType !== errorType) {
+							expect.fail(`${thrownError}`, errorType, "expected a different error type of DKIM_TempError");
 						}
 						resolve();
 					}
-					expect.fail(`${reason}`, errorType, "expected a DKIM_TempError to be thrown, got a different Error instead");
-				} catch (e) {
+					expect.fail(`${thrownError}`, errorType, "expected a DKIM_TempError to be thrown, got a different Error instead");
+				} catch (error) {
 					// @ts-expect-error
-					e.showDiff = true;
-					reject(e);
+					error.showDiff = true;
+					reject(error);
 				}
 			}
 		);
@@ -112,22 +112,22 @@ export function expectAsyncError(promise, errorType = Error) {
 			value => {
 				try {
 					expect.fail(`${value}`, errorType, "expected an Error to be thrown, got a value instead");
-				} catch (e) {
+				} catch (error) {
 					// @ts-expect-error
-					e.showDiff = true;
-					reject(e);
+					error.showDiff = true;
+					reject(error);
 				}
 			},
-			reason => {
+			thrownError => {
 				try {
-					if (reason instanceof errorType) {
+					if (thrownError instanceof errorType) {
 						resolve();
 					}
-					expect.fail(`${reason}`, errorType, "expected an Error to be thrown, got a different Type instead");
-				} catch (e) {
+					expect.fail(`${thrownError}`, errorType, "expected an Error to be thrown, got a different Type instead");
+				} catch (error) {
 					// @ts-expect-error
-					e.showDiff = true;
-					reject(e);
+					error.showDiff = true;
+					reject(error);
 				}
 			}
 		);

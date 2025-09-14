@@ -473,6 +473,9 @@
 	"options_showDKIM.value.30": {
 		"message": "podczas przeglądania wiadomości e-mail z podpisem DKIM"
 	},
+	"options_showDKIM.value.33": {
+		"message": "podczas przeglądania wiadomości e-mail z podpisem DKIM, SPF lub zapisem DMARC"
+	},
 	"options_showDKIM.value.40": {
 		"message": "podczas przeglądania wiadomości e-mail"
 	},
@@ -490,6 +493,10 @@
 	},
 	"options_color.background": {
 		"message": "Tło:"
+	},
+	"options_color.preview": {
+		"message": "podgląd",
+		"description": "Text used to preview the colors for the from highlighting"
 	},
 	"options_color.success": {
 		"message": "Ważny podpis"
@@ -629,6 +636,10 @@
 	"dkim_verifier.updateKey": {
 		"message": "Zaktualizuj klucz DKIM"
 	},
+	"button.options": {
+		"message": "Opcje",
+		"description": "Button to open the options page of the Add-on."
+	},	
 	"details.result": {
 		"message": "Wynik",
 		"description": "Detailed view row name for the overall DKIM result."

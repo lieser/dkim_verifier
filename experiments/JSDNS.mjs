@@ -56,6 +56,8 @@
 /* eslint-disable no-use-before-define */
 /* eslint-disable camelcase */
 /* eslint-disable no-var */
+/* eslint-disable unicorn/prefer-code-point */
+/* eslint-disable unicorn/prefer-string-slice */
 /* eslint strict: ["warn", "function"] */
 /* eslint complexity: "off" */
 /* eslint no-magic-numbers: "off" */
@@ -88,7 +90,7 @@ const prefs = {
 
 	autoResetServerToAlive: true,
 
-	timeoutConnect: 0xFFFF,
+	timeoutConnect: 0xFF_FF,
 	/** @type {number|null} */
 	timeoutReadWrite: null,
 
@@ -149,18 +151,18 @@ function configureDNS(getNameserversFromOS, nameServer, timeoutConnect, proxy, a
 function updateDnsServers(getNameserversFromOS, nameServer) {
 	/** @type {DnsServer[]} */
 	const prefDnsRootNameServers = [];
-	nameServer.split(";").forEach((element /*, index, array*/) => {
+	for (const element of nameServer.split(";")) {
 		if (element.trim() !== "") {
 			prefDnsRootNameServers.push({
 				server: element.trim(),
 				alive: true,
 			});
 		}
-	});
+	}
 	if (getNameserversFromOS) {
 		const osDnsRootNameServers = getOsDnsServers();
 		DNS_ROOT_NAME_SERVERS = arrayUniqBy(
-			osDnsRootNameServers.concat(prefDnsRootNameServers),
+			[...osDnsRootNameServers, ...prefDnsRootNameServers],
 			(e) => e.server
 		);
 	} else {
@@ -219,11 +221,11 @@ function getOsDnsServers() {
 			registry = registry_object.QueryInterface(Ci.nsIWindowsRegKey);
 
 			registry.open(registry.ROOT_KEY_LOCAL_MACHINE,
-				"SYSTEM\\CurrentControlSet",
+				String.raw`SYSTEM\CurrentControlSet`,
 				registry.ACCESS_QUERY_VALUE);
 
 			// get interfaces in routing order
-			registryLinkage = registry.openChild("Services\\Tcpip\\Linkage",
+			registryLinkage = registry.openChild(String.raw`Services\Tcpip\Linkage`,
 				registry.ACCESS_READ);
 			// nsIWindowsRegKey doesn't support REG_MULTI_SZ type out of the box
 			// from http://mxr.mozilla.org/comm-central/source/mozilla/browser/components/migration/src/IEProfileMigrator.js#129
@@ -231,14 +233,14 @@ function getOsDnsServers() {
 			const linkageRoute = registryLinkage.readStringValue("Route");
 			const interfaceGUIDs = linkageRoute.split("\0").
 				map((e) => e.slice(1, -1)).
-				filter((e) => e);
+				filter(Boolean);
 
 			// Get Name and PnpInstanceID of interfaces
 			const registryNetworkAdapters = registry.openChild(
-				"Control\\Network\\{4D36E972-E325-11CE-BFC1-08002BE10318}",
+				String.raw`Control\Network\{4D36E972-E325-11CE-BFC1-08002BE10318}`,
 				registry.ACCESS_QUERY_VALUE);
 			let interfaces = interfaceGUIDs.map(interfaceGUID => {
-				reg = registryNetworkAdapters.openChild(interfaceGUID + "\\Connection",
+				reg = registryNetworkAdapters.openChild(interfaceGUID + String.raw`\Connection`,
 					registry.ACCESS_READ);
 				let Name = null;
 				if (reg.hasValue("Name")) {
@@ -263,7 +265,7 @@ function getOsDnsServers() {
 
 			// get NameServer and DhcpNameServer of all interfaces
 			registryInterfaces = registry.openChild(
-				"Services\\Tcpip\\Parameters\\Interfaces",
+				String.raw`Services\Tcpip\Parameters\Interfaces`,
 				registry.ACCESS_READ);
 			var ns = "";
 			for (const intf of interfaces) {
@@ -279,19 +281,19 @@ function getOsDnsServers() {
 
 			if (ns !== "") {
 				var servers = ns.split(/ |,/);
-				servers.forEach((element /*, index, array*/) => {
+				for (const element of servers) {
 					if (element !== "") {
 						OS_DNS_ROOT_NAME_SERVERS.push({
 							server: element.trim(),
 							alive: true,
 						});
 					}
-				});
+				}
 				log.info("Got servers from Windows registry: ", OS_DNS_ROOT_NAME_SERVERS);
 			}
-		} catch (e) {
+		} catch (error) {
 			// @ts-expect-error
-			log.error("Error reading Registry: " + e + "\n" + e.stack);
+			log.error("Error reading Registry: " + error + "\n" + error.stack);
 		} finally {
 			// @ts-expect-error
 			if (registry) {
@@ -342,9 +344,9 @@ function getOsDnsServers() {
 			stream_filestream.close();
 
 			log.info("Got servers from resolv.conf: ", OS_DNS_ROOT_NAME_SERVERS);
-		} catch (e) {
+		} catch (error) {
 			// @ts-expect-error
-			log.error("Error reading resolv.conf: " + e + "\n" + e.stack);
+			log.error("Error reading resolv.conf: " + error + "\n" + error.stack);
 
 			// @ts-expect-error
 			if (stream_filestream) {
@@ -429,6 +431,7 @@ async function querySingleDNSRecursive(server, host, recordtype, hops) {
 		query += DNS_octetToStr(hostpart.length) + hostpart;
 	}
 	query += DNS_octetToStr(0);
+	// eslint-disable-next-line unicorn/prefer-switch
 	if (recordtype === "A") {
 		query += DNS_wordToStr(1);
 	} else if (recordtype === "NS") {
@@ -464,12 +467,13 @@ async function querySingleDNSRecursive(server, host, recordtype, hops) {
 		 */
 		checkErrorState(status) {
 			if (status !== 0) {
-				if (status === 2152398861) { // NS_ERROR_CONNECTION_REFUSED
+				// eslint-disable-next-line unicorn/prefer-switch
+				if (status === 2_152_398_861) { // NS_ERROR_CONNECTION_REFUSED
 					log.debug("Resolving " + host + "/" + recordtype + ": DNS server " + server + " refused a TCP connection.");
 					return {
 						queryError: ["CONNECTION_REFUSED", server],
 					};
-				} else if (status === 2152398868) { // NS_ERROR_NET_RESET
+				} else if (status === 2_152_398_868) { // NS_ERROR_NET_RESET
 					log.debug("Resolving " + host + "/" + recordtype + ": DNS server " + server + " timed out on a TCP connection.");
 					return {
 						queryError: ["TIMED_OUT", server],
@@ -511,7 +515,7 @@ async function querySingleDNSRecursive(server, host, recordtype, hops) {
 			this.readcount += data.length;
 
 			let remainingData = data;
-			while (this.responseHeader.length < 14 && remainingData.length) {
+			while (this.responseHeader.length < 14 && remainingData.length > 0) {
 				this.responseHeader += remainingData.charAt(0);
 				remainingData = remainingData.substr(1);
 			}
@@ -537,7 +541,7 @@ async function querySingleDNSRecursive(server, host, recordtype, hops) {
 	var port = 53;
 	if ((server.match(/:/g) ?? []).length === 1) {
 		server_hostname = server.substring(0, server.indexOf(":"));
-		port = parseInt(server.substring(server.indexOf(":") + 1), 10);
+		port = Number.parseInt(server.substring(server.indexOf(":") + 1), 10);
 	}
 
 	const socket = new Socket(server_hostname, port);
@@ -614,6 +618,7 @@ function DNS_readRec(ctx) {
 
 	var ctxnextidx = ctx.idx + rec.rdlen;
 
+	// eslint-disable-next-line unicorn/prefer-switch
 	if (rec.type === 16) {
 		rec.type = "TXT";
 		rec.rddata = "";
@@ -729,16 +734,16 @@ async function DNS_getRDData(str, server, host, recordtype, hops) {
 			throw new Error("Record type is not one that this library can understand.");
 		}
 		// ignore CNAME records
-		if (rec.type !== "CNAME") {
-			results.push(rec.rddata);
-		} else {
+		if (rec.type === "CNAME") {
 			log.debug(debugstr + "CNAME ignored :" + rec.rddata);
+		} else {
+			results.push(rec.rddata);
 		}
 		log.debug(debugstr + "Answer: " + rec.rddata);
 	}
 
 	/** @type {DnsRecord[]} */
-	var authorities = Array(aucount);
+	var authorities = Array.from({ length: aucount });
 	for (i = 0; i < aucount; i++) {
 		const rec = DNS_readRec(ctx);
 		authorities[i] = rec;
@@ -757,7 +762,7 @@ async function DNS_getRDData(str, server, host, recordtype, hops) {
 			for (const result of results) {
 				if (typeof result === "object" && result.host && result.host === rec.dom) {
 					if (result.address === undefined) {
-						result.address = Array(0);
+						result.address = [];
 					}
 					result.address[result.address.length] = rec.rddata;
 				}
@@ -765,7 +770,7 @@ async function DNS_getRDData(str, server, host, recordtype, hops) {
 		}
 	}
 
-	if (results.length) {
+	if (results.length > 0) {
 		// We have an answer.
 		return {
 			results,
@@ -865,7 +870,7 @@ class Socket {
 				prefs.proxy.type,
 				prefs.proxy.host,
 				prefs.proxy.port,
-				"", "", 0, 0xffffffff, null
+				"", "", 0, 0xFF_FF_FF_FF, null
 			);
 		}
 

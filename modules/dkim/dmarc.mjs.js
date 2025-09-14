@@ -55,9 +55,9 @@ export default class DMARC {
 		let DMARCPolicy;
 		try {
 			DMARCPolicy = await getDMARCPolicy(fromAddress, this._queryDnsTxt);
-		} catch (e) {
+		} catch (error) {
 			// ignore errors on getting the DMARC policy
-			log.error("Ignored error on getting the DMARC policy", e);
+			log.error("Ignored error on getting the DMARC policy", error);
 			return res;
 		}
 		const neededPolicy = prefs["policy.DMARC.shouldBeSigned.neededPolicy"];
@@ -67,11 +67,7 @@ export default class DMARC {
 				(neededPolicy === "reject" && DMARCPolicy.p === "reject"))) {
 			res.shouldBeSigned = true;
 
-			if (DMARCPolicy.source === DMARCPolicy.domain) {
-				res.sdid = [DMARCPolicy.domain];
-			} else {
-				res.sdid = [DMARCPolicy.domain, DMARCPolicy.source];
-			}
+			res.sdid = DMARCPolicy.source === DMARCPolicy.domain ? [DMARCPolicy.domain] : [DMARCPolicy.domain, DMARCPolicy.source];
 		}
 
 		return res;
@@ -221,8 +217,8 @@ async function getDMARCRecord(domain, queryDnsTxt) {
 	if (result.data !== null && result.data[0]) {
 		try {
 			dmarcRecord = parseDMARCRecord(result.data[0]);
-		} catch (e) {
-			log.error("Ignored error in parsing of DMARC record", e);
+		} catch (error) {
+			log.error("Ignored error in parsing of DMARC record", error);
 		}
 	}
 
@@ -243,7 +239,7 @@ function parseDMARCRecord(DMARCRecordStr) {
 		// aspf : null, // SPF identifier alignment mode
 		// fo : null, // Failure reporting options
 		p: "", // Requested Mail Receiver policy
-		pct: NaN, // Percentage of messages from the Domain Owner's
+		pct: Number.NaN, // Percentage of messages from the Domain Owner's
 		// mail stream to which the DMARC mechanism is to be applied
 		// rf : null, // Format to be used for message-specific failure reports
 		// ri : null, // Interval requested between aggregate reports
@@ -262,7 +258,7 @@ function parseDMARCRecord(DMARCRecordStr) {
 		throw new DKIM_Error("DKIM_DMARCERROR_DUPLICATE_TAG");
 	}
 	if (!(tagMap instanceof Map)) {
-		throw new Error(`unexpected return value from RfcParser.parseTagValueList: ${tagMap}`);
+		throw new TypeError(`unexpected return value from RfcParser.parseTagValueList: ${tagMap}`);
 	}
 
 	// v: Version (plain-text; REQUIRED).  Identifies the record retrieved
@@ -281,11 +277,7 @@ function parseDMARCRecord(DMARCRecordStr) {
 	// strict or relaxed DKIM identifier alignment mode is required by
 	// the Domain Owner.
 	const adkimTag = RfcParser.parseTagValue(tagMap, "adkim", "[rs]", 3);
-	if (adkimTag === null || versionTag[0] === "DMARC1") {
-		dmarcRecord.adkim = "r";
-	} else {
-		dmarcRecord.adkim = adkimTag[0];
-	}
+	dmarcRecord.adkim = adkimTag === null || versionTag[0] === "DMARC1" ? "r" : adkimTag[0];
 
 	// p: Requested Mail Receiver policy (plain-text; REQUIRED for policy
 	// records).  Indicates the policy to be enacted by the Receiver at
@@ -332,7 +324,7 @@ function parseDMARCRecord(DMARCRecordStr) {
 	if (pctTag === null) {
 		dmarcRecord.pct = 100;
 	} else {
-		dmarcRecord.pct = parseInt(pctTag[0], 10);
+		dmarcRecord.pct = Number.parseInt(pctTag[0], 10);
 		if (dmarcRecord.pct < 0 || dmarcRecord.pct > 100) {
 			throw new DKIM_Error("DKIM_DMARCERROR_INVALID_PCT");
 		}

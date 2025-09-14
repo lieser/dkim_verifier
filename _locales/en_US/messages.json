@@ -494,6 +494,10 @@
 	"options_color.background": {
 		"message": "Background:"
 	},
+	"options_color.preview": {
+		"message": "preview",
+		"description": "Text used to preview the colors for the from highlighting"
+	},
 	"options_color.success": {
 		"message": "Valid signature"
 	},

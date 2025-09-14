@@ -473,6 +473,9 @@
 	"options_showDKIM.value.30": {
 		"message": "quando um e-mail com uma assinatura DKIM é visualizado"
 	},
+	"options_showDKIM.value.33": {
+		"message": "quando um e-mail com uma assinatura DKIM, resultado SPF ou DMARC é visualizado"
+	},
 	"options_showDKIM.value.40": {
 		"message": "quando um e-mail é visualizado"
 	},
@@ -628,6 +631,10 @@
 	},
 	"dkim_verifier.updateKey": {
 		"message": "Atualizar chave DKIM"
+	},
+	"button.options": {
+		"message": "Opções",
+		"description": "Button to open the options page of the Add-on."
 	},
 	"details.result": {
 		"message": "Resultado",

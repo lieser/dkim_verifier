@@ -85,13 +85,16 @@ async function isOutgoing(message, fromAddr) {
 		return false;
 	}
 	// return true if one of the accounts identities contain the from address
-	const account = await browser.accounts.get(message.folder.accountId);
-	const identities = account?.identities;
-	if (identities) {
-		for (const identity of identities) {
-			if (fromAddr === identity.email) {
-				log.debug("email is from own identity, no need fo it to be signed");
-				return true;
+	const containingAccount = await browser.accounts.get(message.folder.accountId);
+	const accounts = containingAccount?.type === "none" ? await browser.accounts.list() : [containingAccount];
+	for (const account of accounts) {
+		const identities = account?.identities;
+		if (identities) {
+			for (const identity of identities) {
+				if (fromAddr === identity.email) {
+					log.debug("email is from own identity, no need fo it to be signed");
+					return true;
+				}
 			}
 		}
 	}
@@ -123,7 +126,7 @@ async function readFile(path) {
  * @returns {Promise<{[x: string]: any}>}
  */
 async function safeGetStorage(storageArea) {
-	const overallTimeout = 15000;
+	const overallTimeout = 15_000;
 	const storageTimeout = 3000;
 	let retrySleepTime = 100;
 	const retrySleepTimeIncrease = 50;

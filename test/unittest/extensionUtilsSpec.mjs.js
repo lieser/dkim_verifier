@@ -106,5 +106,55 @@ describe("ExtensionUtils [unittest]", function () {
 				await ExtensionUtils.isOutgoing(createFakeMessageHeader("fakeAccount", undefined), "foo@example.com")
 			).to.be.equal(true);
 		});
+
+		it("For local folder all identities are used", async function () {
+			const browserAccountsGet = sinon.stub(browser.accounts, "get");
+			// eslint-disable-next-line require-await
+			browserAccountsGet.callsFake(async (accountId) => {
+				if (accountId !== "fakeLocal") {
+					return null;
+				}
+				return {
+					id: accountId,
+					identities: [],
+					name: "A fake local account",
+					type: "none",
+				};
+			});
+			const browserAccountsList = sinon.stub(browser.accounts, "list");
+			// eslint-disable-next-line require-await
+			browserAccountsList.callsFake(async () => {
+				return [{
+					id: "fakeLocal",
+					identities: [],
+					name: "A fake local account",
+					type: "none",
+				}, {
+					id: "fakeImap",
+					identities: [
+						{ email: "bar@test.com" },
+					],
+					name: "A fake IMAP account",
+					type: "imap",
+				}, {
+					id: "fakePop3",
+					identities: [
+						{ email: "foo@example.com" },
+					],
+					name: "A fake POP3 account",
+					type: "pop3",
+				}];
+			});
+
+			expect(
+				await ExtensionUtils.isOutgoing(createFakeMessageHeader("fakeLocal", undefined), "bar@example.com")
+			).to.be.equal(false);
+			expect(
+				await ExtensionUtils.isOutgoing(createFakeMessageHeader("fakeLocal", undefined), "bar@test.com")
+			).to.be.equal(true);
+			expect(
+				await ExtensionUtils.isOutgoing(createFakeMessageHeader("fakeLocal", undefined), "foo@example.com")
+			).to.be.equal(true);
+		});
 	});
 });

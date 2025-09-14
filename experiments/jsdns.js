@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2023 Philippe Lieser
+ * Copyright (c) 2020-2023;2025 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -70,12 +70,9 @@ this.jsdns = class extends ExtensionCommon.ExtensionAPI {
 						resRcode = res.rcode;
 					} else if (res.queryError !== undefined) {
 						let error = "";
-						if (typeof res.queryError === "string") {
-							error = res.queryError;
-						} else {
-							error = context.extension.localeData.localizeMessage(res.queryError[0] ?? "DKIM_DNSERROR_UNKNOWN", res.queryError[1]) ||
-								(res.queryError[0] ?? "Unknown DNS error");
-						}
+						error = typeof res.queryError === "string"
+							? res.queryError
+							: context.extension.localeData.localizeMessage(res.queryError[0] ?? "DKIM_DNSERROR_UNKNOWN", res.queryError[1]) || (res.queryError[0] ?? "Unknown DNS error");
 						console.warn(`JSDNS failed with: ${error}`);
 						return {
 							error,
@@ -84,7 +81,7 @@ this.jsdns = class extends ExtensionCommon.ExtensionAPI {
 
 					const results = res.results?.map(rdata => {
 						if (typeof rdata !== "string") {
-							throw new Error(`DNS result has unexpected type ${typeof rdata}`);
+							throw new TypeError(`DNS result has unexpected type ${typeof rdata}`);
 						}
 						return rdata;
 					});

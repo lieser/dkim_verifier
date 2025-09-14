@@ -18,41 +18,41 @@ import { simpleGit } from "simple-git";
  */
 async function collectFiles() {
 	/** @type {string[]} */
-	const files = [];
+	const files = [
+		...await globby("_locales", {
+			expandDirectories: {
+				files: ["*"],
+				extensions: ["json"],
+			},
+		}),
+		...await globby("content", {
+			expandDirectories: {
+				files: ["*"],
+				extensions: ["html", "css", "js"],
+			},
+		}),
+		...await globby("data", { expandDirectories: true }),
+		...await globby("experiments", {
+			expandDirectories: {
+				files: ["*"],
+				extensions: ["js", "mjs", "json"],
+			},
+		}),
+		...await globby("modules", {
+			expandDirectories: {
+				files: ["*"],
+				extensions: ["js"],
+			},
+		}),
+		...await globby("thirdparty", { expandDirectories: true }),
 
-	files.push(...await globby("_locales", {
-		expandDirectories: {
-			files: ["*"],
-			extensions: ["json"],
-		},
-	}));
-	files.push(...await globby("content", {
-		expandDirectories: {
-			files: ["*"],
-			extensions: ["html", "css", "js"],
-		},
-	}));
-	files.push(...await globby("data", { expandDirectories: true }));
-	files.push(...await globby("experiments", {
-		expandDirectories: {
-			files: ["*"],
-			extensions: ["js", "mjs", "json"],
-		},
-	}));
-	files.push(...await globby("modules", {
-		expandDirectories: {
-			files: ["*"],
-			extensions: ["js"],
-		},
-	}));
-	files.push(...await globby("thirdparty", { expandDirectories: true }));
-
-	files.push("CHANGELOG.md");
-	files.push("icon.svg");
-	files.push("LICENSE.txt");
-	files.push("manifest.json");
-	files.push("README.md");
-	files.push("THIRDPARTY_LICENSE.txt");
+		"CHANGELOG.md",
+		"icon.svg",
+		"LICENSE.txt",
+		"manifest.json",
+		"README.md",
+		"THIRDPARTY_LICENSE.txt",
+	];
 
 	return files;
 }
@@ -68,28 +68,28 @@ async function isDirty(files) {
 	let dirty = false;
 
 	const modifiedFiles = status.modified.filter(value => files.includes(value));
-	if (modifiedFiles.length !== 0) {
+	if (modifiedFiles.length > 0) {
 		dirty = true;
 		console.warn(chalk.red("Dirty build: some files are modified!"));
 		console.log("Included modified files:", modifiedFiles);
 	}
 
 	const addedFiles = status.not_added.filter(value => files.includes(value));
-	if (addedFiles.length !== 0) {
+	if (addedFiles.length > 0) {
 		dirty = true;
 		console.warn(chalk.red("Dirty build: some untracked files are included!"));
 		console.log("Included untracked files:", addedFiles);
 	}
 
 	const stagedFiles = status.staged.filter(value => files.includes(value));
-	if (stagedFiles.length !== 0) {
+	if (stagedFiles.length > 0) {
 		dirty = true;
 		console.warn(chalk.red("Dirty build: some files are staged!"));
 		console.log("Included staged files:", stagedFiles);
 	}
 
 	const ignoredFiles = status.ignored?.filter(value => files.includes(value));
-	if (ignoredFiles && ignoredFiles.length !== 0) {
+	if (ignoredFiles && ignoredFiles.length > 0) {
 		dirty = true;
 		console.warn(chalk.red("Dirty build: some ignored files are included!"));
 		console.log("Included ignored files:", ignoredFiles);
@@ -115,7 +115,7 @@ async function createArchiveInfo(dirty) {
 		const commit = await simpleGit().log({ maxCount: 1 });
 		const date = new Date(commit.latest?.date ?? new Date());
 		const ShortHashLength = 7;
-		const shortHash = commit.latest?.hash.substring(0, ShortHashLength);
+		const shortHash = commit.latest?.hash.slice(0, ShortHashLength);
 		return [`dkim_verifier@pl-${dateToString(date)}-${shortHash}.xpi`, date];
 	}
 
@@ -187,7 +187,9 @@ async function packFiles(files, archiveName, archiveDate) {
 	files.sort();
 
 	const zip = new JSZip();
-	files.forEach(file => addFile(zip, file));
+	for (const file of files) {
+		addFile(zip, file);
+	}
 
 	fs.writeFile(archiveName, await zip.generateAsync({
 		type: "nodebuffer",

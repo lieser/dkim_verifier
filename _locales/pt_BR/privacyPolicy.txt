@@ -1,4 +1,4 @@
 A extensão consulta um servidor DNS (por padrão, o Google Public DNS (8.8.8.8) ou o configurado no sistema operacional) para um registro TXT especificado na assinatura, que contém a chave pública da assinatura.
 Isso acontecerá toda vez que um e-mail com uma assinatura DKIM for visualizado.
 
-Se o uso do DMARC estiver habilitado, consultas DNS adicionais podem ser feitas, mesmo se e-mails não assinados com DKIM forem visualizados.
+Se o uso do DMARC estiver habilitado, consultas DNS adicionais podem ser realizadas, mesmo se e-mails não assinados com DKIM forem visualizados.

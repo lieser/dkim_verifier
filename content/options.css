@@ -56,7 +56,15 @@ label.checkbox {
 	font-weight: bold;
 }
 
+.color-preview {
+	padding-inline: 0.2em;
+}
+
 fieldset:disabled label {
+	opacity: 0.5;
+}
+
+fieldset:disabled span {
 	opacity: 0.5;
 }
 

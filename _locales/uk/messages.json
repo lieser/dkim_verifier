@@ -473,6 +473,9 @@
 	"options_showDKIM.value.30": {
 		"message": "коли переглядається електронний лист із підписом DKIM"
 	},
+	"options_showDKIM.value.33": {
+		"message": "при перегляді листа з DKIM-підписом, результати SPF або DMARC будуть показані"
+	},
 	"options_showDKIM.value.40": {
 		"message": "під час перегляду електронного листа"
 	},
@@ -490,6 +493,9 @@
 	},
 	"options_color.background": {
 		"message": "Фон:"
+	},
+	"options_color.preview": {
+		"message": "Попередній перегляд"
 	},
 	"options_color.success": {
 		"message": "Дійсний підпис"
@@ -628,6 +634,10 @@
 	},
 	"dkim_verifier.updateKey": {
 		"message": "Оновити ключ DKIM"
+	},
+	"button.options": {
+		"message": "Налаштування",
+		"description": "Button to open the options page of the Add-on."
 	},
     "details.result": {
 		"message": "Результат",
