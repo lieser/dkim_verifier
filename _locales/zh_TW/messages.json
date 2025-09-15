@@ -491,6 +491,9 @@
 	"options_color.background": {
 		"message": "背景:"
 	},
+	"options_color.preview": {
+		"message": "預覽:"
+	},
 	"options_color.success": {
 		"message": "有效簽章"
 	},
