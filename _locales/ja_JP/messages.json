@@ -494,6 +494,10 @@
 	"options_color.background": {
 		"message": "背景色:"
 	},
+	"options_color.preview": {
+		"message": "プレビュー",
+		"description": "Text used to preview the colors for the from highlighting"
+	},
 	"options_color.success": {
 		"message": "有効な署名"
 	},
