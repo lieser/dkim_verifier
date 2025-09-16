@@ -494,6 +494,10 @@
 	"options_color.background": {
 		"message": "Fundo:"
 	},
+	"options_color.preview": {
+		"message": "prévia",
+		"description": "Text used to preview the colors for the from highlighting"
+	},
 	"options_color.success": {
 		"message": "Assinatura válida"
 	},
