@@ -140,7 +140,8 @@ function arhDKIM_to_dkimSigResultV2(arhDKIM) {
 			break;
 		}
 		default: {
-			throw new Error(`invalid dkim result in arh: ${arhDKIM.result}`);
+			dkimSigResult.result = "PERMFAIL";
+			dkimSigResult.errorType = arhDKIM.reason ?? arhDKIM.result;
 		}
 	}
 

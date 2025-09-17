@@ -666,6 +666,16 @@ describe("AuthVerifier [unittest]", function () {
 				expect(res.dkim[0]?.result_str).to.be.equal("Invalid");
 			});
 
+			it("DKIM fail with unknown result", async function () {
+				await prefs.setValue("arh.relaxedParsing", true);
+
+				const message = await fakeBrowser.messages.addMsg("arh/dkim-unknown_result.eml");
+				const res = await authVerifier.verify(message);
+				expect(res.dkim.length).to.be.equal(1);
+				expect(res.dkim[0]?.result).to.be.equal("PERMFAIL");
+				expect(res.dkim[0]?.result_str).to.be.equal("Invalid (timeout)");
+			});
+
 			it("DKIM results should be sorted", async function () {
 				const message = await fakeBrowser.messages.addMsg("arh/multiple_dkim_results.eml");
 				let res = await authVerifier.verify(message);

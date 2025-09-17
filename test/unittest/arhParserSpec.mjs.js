@@ -297,6 +297,51 @@ describe("ARH Parser [unittest]", function () {
 			expect(res.resinfo[3]?.method).to.be.equal("compauth");
 			expect(res.resinfo[3]?.result).to.be.equal("pass");
 		});
+
+		it("dkim=timeout (Outlook)", function () {
+			const arh =
+				"Authentication-Results: spf=pass (sender IP is 167.89.56.216)\r\n" +
+				" smtp.mailfrom=crm.dashlane.com; dkim=timeout (key query timeout)\r\n" +
+				" header.d=dashlane.com;dmarc=pass action=none\r\n" +
+				" header.from=dashlane.com;compauth=pass reason=100\r\n";
+
+			expect(() => ArhParser.parse(arh)).to.throw();
+
+			const res = ArhParser.parse(arh, true);
+			expect(res.authserv_id).to.be.equal("");
+			expect(res.resinfo.length).to.be.equal(4);
+			expect(res.resinfo[0]?.method).to.be.equal("spf");
+			expect(res.resinfo[0]?.result).to.be.equal("pass");
+			expect(res.resinfo[1]?.method).to.be.equal("dkim");
+			expect(res.resinfo[1]?.result).to.be.equal("timeout");
+			expect(res.resinfo[1]?.properties.header.d).to.be.equal("dashlane.com");
+			expect(res.resinfo[2]?.method).to.be.equal("dmarc");
+			expect(res.resinfo[2]?.result).to.be.equal("pass");
+			expect(res.resinfo[3]?.method).to.be.equal("compauth");
+			expect(res.resinfo[3]?.result).to.be.equal("pass");
+		});
+
+		it("dmarc=bestguesspass (Outlook)", function () {
+			const arh =
+				"Authentication-Results: spf=pass (sender IP is 143.244.187.129)\r\n" +
+				" ssmtp.mailfrom=sendtestemail.com; dkim=none (message not signed)\r\n" +
+				" sheader.d=none;dmarc=bestguesspass action=none\r\n" +
+				" sheader.from=sendtestemail.com;compauth=pass reason=109\r\n";
+
+			expect(() => ArhParser.parse(arh)).to.throw();
+
+			const res = ArhParser.parse(arh, true);
+			expect(res.authserv_id).to.be.equal("");
+			expect(res.resinfo.length).to.be.equal(4);
+			expect(res.resinfo[0]?.method).to.be.equal("spf");
+			expect(res.resinfo[0]?.result).to.be.equal("pass");
+			expect(res.resinfo[1]?.method).to.be.equal("dkim");
+			expect(res.resinfo[1]?.result).to.be.equal("none");
+			expect(res.resinfo[2]?.method).to.be.equal("dmarc");
+			expect(res.resinfo[2]?.result).to.be.equal("bestguesspass");
+			expect(res.resinfo[3]?.method).to.be.equal("compauth");
+			expect(res.resinfo[3]?.result).to.be.equal("pass");
+		});
 	});
 
 	describe("Invalid examples", function () {
@@ -306,6 +351,9 @@ describe("ARH Parser [unittest]", function () {
 			)).to.throw();
 			expect(() => ArhParser.parse(
 				"Authentication-Results: example.com; dkim=hardfail\r\n"
+			)).to.throw();
+			expect(() => ArhParser.parse(
+				"Authentication-Results: example.com; dkim=timeout\r\n"
 			)).to.throw();
 			expect(() => ArhParser.parse(
 				"Authentication-Results: example.com; dkim=foo\r\n"
@@ -319,6 +367,9 @@ describe("ARH Parser [unittest]", function () {
 		});
 
 		it("Unknown results for DMARC", function () {
+			expect(() => ArhParser.parse(
+				"Authentication-Results: example.com; dmarc=bestguesspass\r\n"
+			)).to.throw();
 			expect(() => ArhParser.parse(
 				"Authentication-Results: example.com; dmarc=foo\r\n"
 			)).to.throw();

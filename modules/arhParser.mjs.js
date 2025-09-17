@@ -220,7 +220,9 @@ function parseResInfo(str, relaxedParsing, token) {
 	res.method_version = reg_match[2] ? Number.parseInt(reg_match[2], 10) : 1;
 	res.result = reg_match[3].toLowerCase();
 
-	checkResultKeyword(res.method, reg_match[3]);
+	if (!relaxedParsing) {
+		checkResultKeyword(res.method, reg_match[3]);
+	}
 
 	// get reasonspec (optional)
 	const reasonspec_p = `reason${token.CFWS_op}=${token.CFWS_op}${token.value_cp}`;

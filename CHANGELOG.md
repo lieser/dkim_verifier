@@ -9,6 +9,8 @@ All notable changes to this project will be documented in this file.
 ### Enhancements
 
 - Authentication-Results header: Sort DKIM, SPF and DMARC results from ARH, even when not replacing the add-ons verification (#534).
+- Authentication-Results header: All results are now accepted if reading of non RFC compliant ARHs is enabled (#547).
+  This improves support for invalid headers by Outlook.
 - Detect outgoing messages in Locals Folder (#114).
 - Provide preview of the colors for the From header highlighting (#439).
 
