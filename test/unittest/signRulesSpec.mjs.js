@@ -56,7 +56,13 @@ describe("Sign rules [unittest]", function () {
 		});
 
 		it("Not signed, but should be signed", async function () {
-			const res = await SignRules.check(dkimNone, "bar@paypal.com");
+			let res = await SignRules.check(dkimNone, "bar@paypal.com");
+			expect(res.result).is.equal("PERMFAIL");
+
+			res = await SignRules.check(dkimNone, "bar@PayPal.com");
+			expect(res.result).is.equal("PERMFAIL");
+
+			res = await SignRules.check(dkimNone, "bar@PAYPAL.COM");
 			expect(res.result).is.equal("PERMFAIL");
 		});
 

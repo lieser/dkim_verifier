@@ -1544,6 +1544,7 @@ export default class Verifier {
 		if (dkimSignatureHeaders) {
 			log.debug(`${dkimSignatureHeaders.length} DKIM-Signatures found.`);
 		} else {
+			log.debug("No DKIM-Signatures found.");
 			return sigResults;
 		}
 
