@@ -17,6 +17,10 @@ All notable changes to this project will be documented in this file.
 - Libunbound resolver: Make unloading of libraries more robust in case the wrong one got loaded.
 - Fix alignment of warning symbol on MacOS (#531).
 
+### Other
+
+- Updated default rules and favicons.
+
 ## 6.1.0 (2025-06-01)
 
 ### Enhancements
