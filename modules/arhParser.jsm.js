@@ -184,7 +184,9 @@ function parseResInfo(str) {
 		res.method_version = 1;
 	}
 	res.result = reg_match[3].toLowerCase();
-	checkResultKeyword(res.method, reg_match[3]);
+	if (!prefs.getBoolPref("relaxedParsing")) {
+		checkResultKeyword(res.method, reg_match[3]);
+	}
 
 	// get reasonspec (optional)
 	const reasonspec_p = `reason${rfcParser.get("CFWS_op")}=${rfcParser.get("CFWS_op")}${rfcParser.get("value_cp")}`;
