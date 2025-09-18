@@ -23,7 +23,8 @@
 		"checkJs": "tsc-silent --project jsconfig.json --suppress @/thirdparty/ --suppress @/node_modules/",
 		"test": "node node_modules/mocha/bin/mocha --recursive --reporter dot",
 		"test:ci": "node node_modules/mocha/bin/mocha --recursive --reporter mocha-multi --reporter-options spec=-,json=test-results.json",
-		"pack": "node ./scripts/pack.js"
+		"pack": "node ./scripts/pack.js",
+		"atnChangelog": "node ./scripts/atnChangelog.js"
 	},
 	"type": "module",
 	"dependencies": {
@@ -52,6 +53,7 @@
 		"globby": "^14.0.2",
 		"http-server": "^14.1.1",
 		"jszip": "^3.10.1",
+		"marked": "^16.3.0",
 		"mocha": "^11.0.1",
 		"mocha-multi": "^1.1.7",
 		"simple-git": "^3.27.0",
