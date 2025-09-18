@@ -1331,6 +1331,7 @@ var Verifier = (function() {
 			log.debug(msg.headerFields.get("dkim-signature").length +
 				" DKIM-Signatures found.");
 		} else {
+			log.debug("No DKIM-Signatures found.");
 			return sigResults;
 		}
 
