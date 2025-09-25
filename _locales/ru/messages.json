@@ -1,0 +1,823 @@
+{
+	// DKIM_STRINGS
+	"loading": {
+		"message": "Проверка…"
+	},
+	"SUCCESS": {
+		"message": "Проверено (подписано $1)"
+	},
+	"PERMFAIL": {
+		"message": "Недействительно ($1)"
+	},
+	"PERMFAIL_NO_REASON": {
+		"message": "Недействительно"
+	},
+	"TEMPFAIL": {
+		"message": "Временная ошибка проверки (для подписи $1)"
+	},
+	"NOSIG": {
+		"message": "Нет подписи"
+	},
+	"NOT_EMAIL": {
+		"message": "Сообщение не является электронным письмом"
+	},
+	"SUCCESS_TAG": {
+		"message": "DKIM подписано $1",
+		"description": "Метка, показываемая в расширении «Conversation» для действительного письма. Должна быть короткой."
+	},
+	"TEMPFAIL_TAG": {
+		"message": "Ошибка DKIM",
+		"description": "Метка, показываемая в расширении «Conversation» для временного сбоя. Должна быть короткой."
+	},
+	"PERMFAIL_TAG": {
+		"message": "Недействительный DKIM",
+		"description": "Метка, показываемая в расширении «Conversation» для недействительного письма. Должна быть короткой."
+	},
+	// DKIM_INTERNALERROR
+	"DKIM_INTERNALERROR": {
+		"message": "Внутренняя ошибка DKIM-верификатора"
+	},
+	"DKIM_INTERNALERROR_NAME": {
+		"message": "Внутренняя ошибка"
+	},
+	"DKIM_INTERNALERROR_DEFAULT": {
+		"message": "ошибка"
+	},
+	"DKIM_INTERNALERROR_INCORRECT_EMAIL_FORMAT": {
+		"message": "Неверный формат электронного письма"
+	},
+	"DKIM_INTERNALERROR_INCORRECT_FROM": {
+		"message": "Неверный адрес отправителя"
+	},
+	"ERROR_IMPORT_RULES": {
+		"message": "Не удалось импортировать правила подписи.",
+		"description": "Заголовок ошибки, если импорт правил подписи не удался."
+	},
+	"ERROR_IMPORT_RULES_UNKNOWN_DATA": {
+		"message": "Неверный формат импортируемого файла.",
+		"description": "Сообщение об ошибке, если пользователь пытается импортировать неизвестные данные в качестве правил подписи."
+	},
+	"ERROR_IMPORT_RULES_UNSUPPORTED_FORMAT": {
+		"message": "Неподдерживаемая версия формата правил подписи.",
+		"description": "Сообщение об ошибке, если правила подписи, которые пользователь пытался импортировать, имеют неподдерживаемый формат."
+	},
+	// DKIM_INTERNALERROR - DNS
+	"DKIM_DNSERROR_UNKNOWN": {
+		"message": "Ошибка в DNS-резолвере"
+	},
+	"DKIM_DNSERROR_OFFLINE": {
+		"message": "Не удалось выполнить DNS-запрос, так как Thunderbird находится в автономном режиме.",
+		"description": "Сообщение об ошибке, если расширению требуется выполнить DNS-запрос, но Thunderbird находится в автономном режиме."
+	},
+	"DKIM_DNSERROR_SERVER_ERROR": {
+		"message": "Ошибка подключения к DNS-серверу"
+	},
+	"DKIM_DNSERROR_DNSSEC_BOGUS": {
+		"message": "Результат DNS является ложным"
+	},
+	// DKIM_SIGERROR
+	"DKIM_SIGERROR": {
+		"message": "Ошибка подписи DKIM"
+	},
+	"DKIM_SIGERROR_DEFAULT": {
+		"message": "ошибка"
+	},
+	// DKIM_SIGERROR - DKIM-Signature Header
+	"DKIM_SIGERROR_ILLFORMED": {
+		"message": "Подпись имеет неверный формат"
+	},
+	"DKIM_SIGERROR_UNSUPPORTED": {
+		"message": "Неподдерживаемая версия подписи"
+	},
+	"DKIM_SIGERROR_ILLFORMED_TAGSPEC": {
+		"message": "Подпись имеет неверный формат"
+	},
+	"DKIM_SIGERROR_DUPLICATE_TAG": {
+		"message": "Подпись имеет неверный формат (дублирование тега)"
+	},
+	"DKIM_SIGERROR_VERSION": {
+		"message": "Неподдерживаемая версия"
+	},
+	"DKIM_SIGERROR_MISSING_V": {
+		"message": "Отсутствует версия DKIM"
+	},
+	"DKIM_SIGERROR_ILLFORMED_V": {
+		"message": "Тег версии имеет неверный формат"
+	},
+	"DKIM_SIGERROR_MISSING_A": {
+		"message": "Отсутствует алгоритм подписи"
+	},
+	"DKIM_SIGERROR_UNKNOWN_A": {
+		"message": "Неподдерживаемый алгоритм подписи"
+	},
+	"DKIM_SIGERROR_INSECURE_A": {
+		"message": "Небезопасный алгоритм подписи"
+	},
+	"DKIM_SIGERROR_ILLFORMED_A": {
+		"message": "Тег алгоритма имеет неверный формат"
+	},
+	"DKIM_SIGERROR_MISSING_B": {
+		"message": "Отсутствует подпись"
+	},
+	"DKIM_SIGERROR_BADSIG": {
+		"message": "Неверная подпись"
+	},
+	"DKIM_SIGERROR_ILLFORMED_B": {
+		"message": "Тег данных подписи имеет неверный формат"
+	},
+	"DKIM_SIGERROR_MISSING_BH": {
+		"message": "Отсутствует хэш тела"
+	},
+	"DKIM_SIGERROR_CORRUPT_BH": {
+		"message": "Электронное письмо было изменено"
+	},
+	"DKIM_SIGERROR_ILLFORMED_BH": {
+		"message": "Тег хэша тела имеет неверный формат"
+	},
+	"DKIM_SIGERROR_UNKNOWN_C_H": {
+		"message": "Неподдерживаемый алгоритм канонизации для заголовка"
+	},
+	"DKIM_SIGERROR_UNKNOWN_C_B": {
+		"message": "Неподдерживаемый алгоритм канонизации для тела"
+	},
+	"DKIM_SIGERROR_ILLFORMED_C": {
+		"message": "Тег канонизации имеет неверный формат"
+	},
+	"DKIM_SIGERROR_MISSING_D": {
+		"message": "Отсутствует идентификатор домена подписи (SDID)"
+	},
+	"DKIM_SIGERROR_ILLFORMED_D": {
+		"message": "Тег SDID имеет неверный формат"
+	},
+	"DKIM_SIGERROR_MISSING_H": {
+		"message": "Отсутствуют подписанные поля заголовка"
+	},
+	"DKIM_SIGERROR_MISSING_FROM": {
+		"message": "Заголовок From не подписан"
+	},
+	"DKIM_SIGERROR_ILLFORMED_H": {
+		"message": "Тег подписанных полей заголовка имеет неверный формат"
+	},
+	"DKIM_SIGERROR_SUBDOMAIN_I": {
+		"message": "AUID не является поддоменом SDID"
+	},
+	"DKIM_SIGERROR_DOMAIN_I": {
+		"message": "AUID должен быть в том же домене, что и SDID (установлен s-флаг в записи ключа)"
+	},
+	"DKIM_SIGERROR_ILLFORMED_I": {
+		"message": "Тег AUID имеет неверный формат"
+	},
+	"DKIM_SIGERROR_TOOLARGE_L": {
+		"message": "Электронное письмо короче, чем указано в подписи DKIM"
+	},
+	"DKIM_SIGERROR_ILLFORMED_L": {
+		"message": "Тег длины тела имеет неверный формат"
+	},
+	"DKIM_SIGERROR_UNKNOWN_Q": {
+		"message": "Неподдерживаемые методы запроса для получения открытого ключа"
+	},
+	"DKIM_SIGERROR_ILLFORMED_Q": {
+		"message": "Тег метода запроса имеет неверный формат"
+	},
+	"DKIM_SIGERROR_MISSING_S": {
+		"message": "Отсутствует тег селектора"
+	},
+	"DKIM_SIGERROR_ILLFORMED_S": {
+		"message": "Тег селектора имеет неверный формат"
+	},
+	"DKIM_SIGERROR_ILLFORMED_T": {
+		"message": "Тег временной метки подписи имеет неверный формат"
+	},
+	"DKIM_SIGERROR_TIMESTAMPS": {
+		"message": "Срок действия подписи истекает раньше, чем временная метка подписи"
+	},
+	"DKIM_SIGERROR_ILLFORMED_X": {
+		"message": "Тег срока действия подписи имеет неверный формат"
+	},
+	"DKIM_SIGERROR_ILLFORMED_Z": {
+		"message": "Тег скопированных полей заголовка имеет неверный формат"
+	},
+	// DKIM_SIGERROR - key query
+	"DKIM_SIGERROR_NOKEY": {
+		"message": "Ключ DKIM не найден на DNS-сервере"
+	},
+	// DKIM_SIGERROR - Key record
+	"DKIM_SIGERROR_KEY_ILLFORMED": {
+		"message": "Ключ DKIM имеет неверный формат"
+	},
+	"DKIM_SIGERROR_KEY_INVALID": {
+		"message": "Ключ DKIM недействителен"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_TAGSPEC": {
+		"message": "Ключ DKIM имеет неверный формат"
+	},
+	"DKIM_SIGERROR_KEY_DUPLICATE_TAG": {
+		"message": "Ключ DKIM имеет неверный формат (дублирование тега)"
+	},
+	"DKIM_SIGERROR_KEY_INVALID_V": {
+		"message": "Неверная версия записи ключа DKIM"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_V": {
+		"message": "Тег версии ключа DKIM имеет неверный формат"
+	},
+	"DKIM_SIGERROR_KEY_HASHNOTINCLUDED": {
+		"message": "Неверный алгоритм хэширования в записи ключа DKIM"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_H": {
+		"message": "Тег алгоритмов хэширования в ключе DKIM имеет неверный формат"
+	},
+	"DKIM_SIGERROR_KEY_UNKNOWN_K": {
+		"message": "Неподдерживаемый тип ключа DKIM"
+	},
+	"DKIM_SIGERROR_KEY_MISMATCHED_K": {
+		"message": "Алгоритм подписи не соответствует типу ключа DKIM",
+		"description": "Сообщение об ошибке, если алгоритм подписи в заголовке DKIM Signature (тег a) не соответствует типу ключа DKIM (тег k)."
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_K": {
+		"message": "Тег типа ключа DKIM имеет неверный формат"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_N": {
+		"message": "Тег заметок в ключе DKIM имеет неверный формат"
+	},
+	"DKIM_SIGERROR_KEY_MISSING_P": {
+		"message": "Ключ DKIM не содержит открытого ключа"
+	},
+	"DKIM_SIGERROR_KEY_REVOKED": {
+		"message": "Ключ DKIM отозван"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_P": {
+		"message": "Тег данных открытого ключа в ключе DKIM имеет неверный формат"
+	},
+	"DKIM_SIGERROR_KEY_NOTEMAILKEY": {
+		"message": "Ключ DKIM не является ключом для электронной почты"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_S": {
+		"message": "Тег типа службы в ключе DKIM имеет неверный формат"
+	},
+	"DKIM_SIGERROR_KEY_TESTMODE": {
+		"message": "Домен подписи находится в режиме тестирования DKIM"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_T": {
+		"message": "Тег флагов в ключе DKIM имеет неверный формат"
+	},
+	// DKIM_SIGERROR - key decode
+	"DKIM_SIGERROR_KEYDECODE": {
+		"message": "Не удалось декодировать открытый ключ в ключе DKIM"
+	},
+	// DKIM_SIGERROR - POLICY
+	"DKIM_POLICYERROR_MISSING_SIG": {
+		"message": "Нет подписи, должно быть подписано $1",
+		"description": "Ошибка, если у сообщения нет подписи, но правила подписи требуют ее наличие"
+	},
+	"DKIM_POLICYERROR_KEYMISMATCH": {
+		"message": "Сохраненный ключ DKIM отличается от текущего"
+	},
+	"DKIM_POLICYERROR_KEY_INSECURE": {
+		"message": "Ключ DKIM не подписан DNSSEC"
+	},
+	"DKIM_POLICYERROR_WRONG_SDID": {
+		"message": "Неверный подписант (должен быть $1)"
+	},
+	"DKIM_POLICYERROR_UNSIGNED_HEADER_ADDED": {
+		"message": "Добавлен неподписанный заголовок '$1'",
+		"description": "Ошибка, если важный заголовок, вероятно, был вредоносно добавлен позже"
+	},
+	// DKIM_SIGWARNING
+	"DKIM_SIGWARNING_SMALL_L": {
+		"message": "Подписано не все электронное письмо"
+	},
+	"DKIM_SIGWARNING_EXPIRED": {
+		"message": "Срок действия подписи истек"
+	},
+	"DKIM_SIGWARNING_FUTURE": {
+		"message": "Подпись создана в будущем"
+	},
+	"DKIM_SIGWARNING_KEYSMALL": {
+		"message": "Подпись небезопасна (слишком маленький размер ключа)"
+	},
+	"DKIM_SIGWARNING_KEY_IS_WEAK": {
+		"message": "Подписано слабым ключом"
+	},
+	"DKIM_SIGWARNING_FROM_NOT_IN_SDID": {
+		"message": "Адрес отправителя не в домене подписи"
+	},
+	"DKIM_SIGWARNING_UNSIGNED_HEADER": {
+		"message": "Заголовок '$1' не подписан",
+		"description": "Предупреждение, если важный заголовок не подписан"
+	},
+	// JSDNS
+	"TOO_MANY_HOPS": {
+		"message": "Слишком много переходов."
+	},
+	"CONNECTION_REFUSED": {
+		"message": "DNS-сервер $1 отказал в TCP-соединении."
+	},
+	"TIMED_OUT": {
+		"message": "DNS-сервер $1 превысил время ожидания TCP-соединения."
+	},
+	"SERVER_ERROR": {
+		"message": "Ошибка подключения к DNS-серверу $1."
+	},
+	"INCOMPLETE_RESPONSE": {
+		"message": "Неполный ответ от $1."
+	},
+	// ==================== Options window ====================
+	"options_prefwindow.title": {
+		"message": "Настройки DKIM Verifier"
+	},
+	// -------------------- General options --------------------
+	"options_general": {
+		"message": "Общие"
+	},
+	// ---------- General options tab ----------
+	"options_general.general": {
+		"message": "Общие"
+	},
+	"options_dkim.enable": {
+		"message": "Проверять DKIM-подписи"
+	},
+	"options_key.storing.value.0": {
+		"message": "Не хранить ключи DKIM"
+	},
+	"options_key.storing.value.1": {
+		"message": "Хранить ключи DKIM"
+	},
+	"options_key.storing.value.2": {
+		"message": "Хранить и сравнивать ключи DKIM с текущим ключом"
+	},
+	"options_key.viewKeys": {
+		"message": "Ключи DKIM…"
+	},
+	"options_saveResult": {
+		"message": "Сохранять результат проверки"
+	},
+	// ---------- DNS options tab ----------
+	"options_dns": {
+		"message": "DNS"
+	},
+	"options_dns.resolver": {
+		"message": "Резолвер:"
+	},
+	"options_dns.resolver.value.1": {
+		"message": "Библиотека JavaScript DNS"
+	},
+	"options_dns.resolver.value.2": {
+		"message": "libunbound"
+	},
+	"options_dns.getNameserversFromOS": {
+		"message": "Получать DNS-серверы из конфигурации ОС"
+	},
+	"options_dns.nameserver": {
+		"message": "DNS-серверы (Синтаксис (EBNF): хост[\":\"порт]{\";\"хост[\":\"порт]} ):"
+	},
+	"options_dns.timeout_connect": {
+		"message": "Таймаут подключения к DNS (в секундах):",
+		"description": "Таймаут для подключения к DNS-серверам (как для установления соединения, так и для отправки/получения данных)"
+	},
+	"options_dns.proxy.enable": {
+		"message": "Использовать прокси для подключения к DNS-серверам"
+	},
+	"options_dns.proxy.type": {
+		"message": "Тип прокси:"
+	},
+	"options_dns.proxy.host": {
+		"message": "Прокси-сервер:"
+	},
+	"options_dns.proxy.port": {
+		"message": "Порт:"
+	},
+	"options_dns.libunbound.nameserver": {
+		"message": "DNS-серверы (Синтаксис (EBNF): IP{\";\"IP} ):"
+	},
+	"options_dns.libunbound.usageWarning": {
+		"message": "Резолвер libunbound требует внешнюю установленную библиотеку"
+	},
+	"options_dns.libunbound.path": {
+		"message": "Путь"
+	},
+	"options_dns.libunbound.path.relToProfileDir": {
+		"message": "Путь относительно каталога профиля"
+	},
+	// ---------- Policy options tab ----------
+	"options_general.policy": {
+		"message": "Политика"
+	},
+	"options_policy.signRules.enable": {
+		"message": "Проверять, должно ли электронное письмо быть подписано"
+	},
+	"options_policy.signRules.checkDefaultRules": {
+		"message": "Использовать правила по умолчанию"
+	},
+	"options_policy.signRules.autoAddRule.enable": {
+		"message": "Автоматически добавлять правила на основе просмотренных DKIM-подписанных писем"
+	},
+	"options_policy.signRules.autoAddRule.onlyIfFromAddressInSDID": {
+		"message": "Только если адрес отправителя находится в SDID"
+	},
+	"options_policy.signRules.autoAddRule.for.value.0": {
+		"message": "для адреса отправителя"
+	},
+	"options_policy.signRules.autoAddRule.for.value.1": {
+		"message": "для поддомена"
+	},
+	"options_policy.signRules.autoAddRule.for.value.2": {
+		"message": "для базового домена"
+	},
+	"options_policy.signRules.sdid.allowSubDomains": {
+		"message": "Разрешать также поддомены SDID"
+	},
+	"options_policy.signRules.error.wrong_sdid.asWarning": {
+		"message": "Считать неверный SDID предупреждением, а не ошибкой"
+	},
+	"options_viewSigners": {
+		"message": "Правила подписантов…"
+	},
+	"options_viewSignerDefaults": {
+		"message": "Правила подписантов по умолчанию…"
+	},
+	"options_policy.DMARC.shouldBeSigned.enable": {
+		"message": "Использовать DMARC для эвристического определения, должно ли письмо быть подписано"
+	},
+	"options_policy.dkim.unsignedHeadersWarning.mode": {
+		"message": "Предупреждать о неподписанных заголовках, которые рекомендуется подписывать:",
+		"description": "Описание настройки режима предупреждений о неподписанных заголовках."
+	},
+	"options_policy.dkim.unsignedHeadersWarning.mode.relaxed": {
+		"message": "упрощенный режим",
+		"description": "Упрощенный режим, который будет стараться избегать показа предупреждений."
+	},
+	"options_policy.dkim.unsignedHeadersWarning.mode.recommended": {
+		"message": "рекомендованный режим",
+		"description": "Режим, который пытается применить лучшие практики без показа слишком большого количества предупреждений."
+	},
+	"options_policy.dkim.unsignedHeadersWarning.mode.strict": {
+		"message": "строгий режим",
+		"description": "Строгий режим, который потенциально будет показывать много предупреждений."
+	},
+	// -------------------- Display options --------------------
+	"options_display": {
+		"message": "Отображение"
+	},
+	"options_showDKIMHeader": {
+		"message": "Показывать заголовок DKIM:"
+	},
+	"options_showDKIMFromTooltip": {
+		"message": "Показывать всплывающую подсказку DKIM для заголовка From:"
+	},
+	"options_showDKIM.value.0": {
+		"message": "никогда"
+	},
+	"options_showDKIM.value.10": {
+		"message": "при просмотре письма с действительной DKIM-подписью"
+	},
+	"options_showDKIM.value.30": {
+		"message": "при просмотре письма с DKIM-подписью"
+	},
+	"options_showDKIM.value.33": {
+		"message": "при просмотре письма с DKIM-подписью, результатом SPF или DMARC"
+	},
+	"options_showDKIM.value.40": {
+		"message": "при просмотре электронного письма"
+	},
+	"options_showDKIM.value.50": {
+		"message": "при просмотре сообщения"
+	},
+	"options_colorFrom": {
+		"message": "Включить выделение заголовка From"
+	},
+	"options_color": {
+		"message": "Цвет"
+	},
+	"options_color.text": {
+		"message": "Текст:"
+	},
+	"options_color.background": {
+		"message": "Фон:"
+	},
+	"options_color.preview": {
+		"message": "предпросмотр",
+		"description": "Текст, используемый для предварительного просмотра цветов для выделения заголовка From"
+	},
+	"options_color.success": {
+		"message": "Действительная подпись"
+	},
+	"options_color.warning": {
+		"message": "Действительная подпись с предупреждениями"
+	},
+	"options_color.permfail": {
+		"message": "Недействительная подпись"
+	},
+	"options_color.tempfail": {
+		"message": "Временная ошибка"
+	},
+	"options_color.nosig": {
+		"message": "Неподписанное письмо"
+	},
+	"options_display.favicon.show": {
+		"message": "Показывать значок (favicon) известных доменов подписи перед адресом From"
+	},
+	// -------------------- Advanced options --------------------
+	"options_advanced": {
+		"message": "Дополнительно"
+	},
+	"options_debug": {
+		"message": "Включить отладку (вывод ошибок и отладочной информации в консоль ошибок)"
+	},
+	"options_error.detailedReasons": {
+		"message": "Показывать подробные причины ошибок"
+	},
+	"options_error.key_testmode.ignore": {
+		"message": "Все равно проверять подпись, если домен только тестирует DKIM"
+	},
+	"options_error.illformed_i.treatAs": {
+		"message": "Считать тег AUID с неверным форматом:"
+	},
+	"options_error.illformed_s.treatAs": {
+		"message": "Считать тег селектора с неверным форматом:"
+	},
+	"options_error.policy.key_insecure.treatAs": {
+		"message": "Считать ключ DKIM, не защищенный DNSSEC:"
+	},
+	"options_error.algorithm.sign.rsa-sha1.treatAs": {
+		"message": "Считать алгоритм подписи RSA-SHA1:"
+	},
+	"options_error.algorithm.rsa.weakKeyLength.treatAs": {
+		"message": "Считать слабые ключи RSA (<2048 бит):"
+	},
+	"options_error.treatAs.value.0": {
+		"message": "ошибкой"
+	},
+	"options_error.treatAs.value.1": {
+		"message": "предупреждением"
+	},
+	"options_error.treatAs.value.2": {
+		"message": "ничем"
+	},
+	"options_display.keySecure": {
+		"message": "Отображать успешную проверку DNSSEC замком после SDID"
+	},
+	"options_arh.read": {
+		"message": "Считывать заголовок Authentication-Results"
+	},
+	"options_arh.replaceAddonResult": {
+		"message": "Считывание заголовка Authentication-Results заменяет проверку расширения"
+	},
+	"options_arh.relaxedParsing": {
+		"message": "Пытаться считывать заголовки Authentication-Results, не соответствующие RFC"
+	},
+	// -------------------- Account options --------------------
+	"options_account": {
+		"message": "Аккаунт",
+		"description": "Заголовок для настроек, специфичных для аккаунта"
+	},
+	"options_acc.dkim.enable": {
+		"message": "Проверять DKIM-подписи:"
+	},
+	"options_acc.arh.read": {
+		"message": "Считывать заголовок Authentication-Results:"
+	},
+	"options_acc.arh.allowedAuthserv": {
+		"message": "Доверенные серверы аутентификации:"
+	},
+	"options_acc.boolean.value.0": {
+		"message": "Использовать значение по умолчанию"
+	},
+	"options_acc.boolean.value.1": {
+		"message": "Да"
+	},
+	"options_acc.boolean.value.2": {
+		"message": "Нет"
+	},
+	// -------------------- About --------------------
+	"about": {
+		"message": "О программе"
+	},
+	"about_name": {
+		"message": "DKIM Verifier",
+		"description": "Название расширения"
+	},
+	"about_summary": {
+		"message": "Проверяет DKIM-подписи электронных писем.",
+		"description": "Краткое описание расширения"
+	},
+	"about_homepage": {
+		"message": "Домашняя страница"
+	},
+	"about_documentation": {
+		"message": "Документация",
+		"description": "Текст ссылки на страницу документации GitHub"
+	},
+	"about_contributors": {
+		"message": "Участники GitHub",
+		"description": "Текст ссылки на страницу участников GitHub"
+	},
+	"about_translators": {
+		"message": "Переводчики:",
+		"description": "Заголовок для списка переводчиков"
+	},
+	"about_dependencies": {
+		"message": "Включенные зависимости:",
+		"description": "Заголовок для списка включенных зависимостей"
+	},
+	"about_by": {
+		"message": "от",
+		"description": "<название зависимости> от <автор>"
+	},
+	// ==================== Actions ====================
+	"dkim_verifier.reverifyDKIMSignature": {
+		"message": "Повторно проверить DKIM-подпись"
+	},
+	"dkim_verifier.policyAddUserException": {
+		"message": "Добавить исключение 'должно быть подписано'"
+	},
+	"dkim_verifier.markKeyAsSecure": {
+		"message": "Пометить ключ DKIM как безопасный"
+	},
+	"dkim_verifier.updateKey": {
+		"message": "Обновить ключ DKIM"
+	},
+	"button.options": {
+		"message": "Настройки",
+		"description": "Кнопка для открытия страницы настроек расширения."
+	},
+	"details.result": {
+		"message": "Результат",
+		"description": "Название строки в подробном представлении для общего результата DKIM."
+	},
+	"details.warnings": {
+		"message": "Предупреждения",
+		"description": "Название строки в подробном представлении для предупреждений DKIM-подписи."
+	},
+	"details.SDID": {
+		"message": "SDID",
+		"description": "Название строки в подробном представлении для SDID."
+	},
+	"details.AUID": {
+		"message": "AUID",
+		"description": "Название строки в подробном представлении для AUID."
+	},
+	"details.signDate": {
+		"message": "Дата подписи",
+		"description": "Название строки в подробном представлении для даты (включая время) создания подписи."
+	},
+	"details.expirationDate": {
+		"message": "Дата истечения срока",
+		"description": "Название строки в подробном представлении для даты (включая время) истечения срока действия подписи."
+	},
+	"details.algorithm": {
+		"message": "Алгоритм",
+		"description": "Название строки в подробном представлении для алгоритма, используемого в подписи."
+	},
+	"details.signedHeaders": {
+		"message": "Подписанные заголовки",
+		"description": "Название строки в подробном представлении для заголовков сообщения, подписанных DKIM."
+	},
+	"details.noDate": {
+		"message": "Время не включено в подпись",
+		"description": "Значение, показываемое для даты подписи и даты истечения срока, если в подписи нет даты."
+	},
+	// ==================== Table Views ====================
+	"treeviewKeys.title": {
+		"message": "Ключи DKIM",
+		"description": "Заголовок табличного представления ключей DKIM."
+	},
+	"treeviewKeys.treecol.SDID": {
+		"message": "SDID"
+	},
+	"treeviewKeys.treecol.selector": {
+		"message": "Селектор"
+	},
+	"treeviewKeys.treecol.key": {
+		"message": "Ключ DKIM"
+	},
+	"treeviewKeys.treecol.insertedAt": {
+		"message": "Добавлено"
+	},
+	"treeviewKeys.treecol.lastUsedAt": {
+		"message": "Последнее использование"
+	},
+	"treeviewKeys.treecol.secure": {
+		"message": "DNSSEC"
+	},
+	"treeviewKeys.deleteSelectedRows": {
+		"message": "Удалить выбранные ключи"
+	},
+	"treeviewSigners.user.title": {
+		"message": "Правила подписантов"
+	},
+	"treeviewSigners.default.title": {
+		"message": "Правила подписантов по умолчанию"
+	},
+	"treeviewSigners.treecol.domain": {
+		"message": "Домен"
+	},
+	"treeviewSigners.treecol.listId": {
+		"message": "List-Id"
+	},
+	"treeviewSigners.treecol.addr": {
+		"message": "От"
+	},
+	"treeviewSigners.treecol.sdid": {
+		"message": "SDID"
+	},
+	"treeviewSigners.treecol.ruletype": {
+		"message": "Тип правила"
+	},
+	"treeviewSigners.treecol.priority": {
+		"message": "Приоритет"
+	},
+	"treeviewSigners.treecol.enabled": {
+		"message": "Включено"
+	},
+	"treeviewSigners.addSignersRule": {
+		"message": "Добавить правило…"
+	},
+	"treeviewSigners.deleteSelectedRows": {
+		"message": "Удалить выбранные правила"
+	},
+	"treeviewSigners.exportRules": {
+		"message": "Экспортировать правила…",
+		"description": "Кнопка для экспорта правил подписи"
+	},
+	"treeviewSigners.importRules": {
+		"message": "Импортировать правила…",
+		"description": "Кнопка для импорта правил подписи"
+	},
+	"importRules.title": {
+		"message": "Импорт правил",
+		"description": "Заголовок для диалога импорта"
+	},
+	"importRules.replaceQuestion": {
+		"message": "Следует ли добавить импортированные правила к существующим или заменить существующие правила?",
+		"description": "Вопрос, задаваемый в диалоге импорта"
+	},
+	"importRules.addRules": {
+		"message": "Добавить правила",
+		"description": "Кнопка в диалоге импорта для добавления правил к существующим"
+	},
+	"importRules.replaceRules": {
+		"message": "Заменить правила",
+		"description": "Кнопка в диалоге импорта для замены существующих правил"
+	},
+	"addSignersRule.title": {
+		"message": "Добавить правило подписантов"
+	},
+	"addSignersRule.button.add": {
+		"message": "Добавить правило",
+		"description": "Кнопка для подтверждения добавления правила подписи."
+	},
+	"signRules.ruletype.SIGNED": {
+		"message": "Должно быть подписано (1)"
+	},
+	"signRules.ruletype.NEUTRAL": {
+		"message": "Может быть подписано (2)"
+	},
+	"signRules.ruletype.HIDEFAIL": {
+		"message": "Игнорировать недействительную подпись (3)"
+	},
+	"signRules.priorityMode.auto": {
+		"message": "Автоматически выбрать приоритет"
+	},
+	"signRules.priorityMode.manual": {
+		"message": "Установить приоритет на:"
+	},
+	"button.cancel": {
+		"message": "Отмена"
+	},
+	"button.help": {
+		"message": "Справка…"
+	},
+	"signersRuleHelp.title": {
+		"message": "Справка по правилам подписантов"
+	},
+	"domain.description": {
+		"message": "Будет сопоставлено с базовым доменом адреса From. Например, базовый домен для 'email.example.co.uk' — 'example.co.uk'."
+	},
+	"listId.description": {
+		"message": "Будет сопоставлено с list-id, если электронное письмо было получено через список рассылки. Обратите внимание, что только часть между '<' и '>' заголовка List-Id является фактическим list-id. Одновременно сопоставляется только домен или list-id."
+	},
+	"addr.description": {
+		"message": "Будет сопоставлено с адресом From. Используйте '*' для сопоставления нуля или более символов."
+	},
+	"sdid.description": {
+		"message": "Домен, которым должны быть подписаны электронные письма. Если оставить это поле пустым, разрешается любой SDID. Можно указать более одного домена, разделив их пробелом."
+	},
+	"ruletype.description": {
+		"message": "Тип правила."
+	},
+	"ruletype.1.description": {
+		"message": "Электронное письмо должно быть подписано указанным SDID."
+	},
+	"ruletype.2.description": {
+		"message": "Электронное письмо не обязательно должно быть подписано. Если оно подписано, то оно должно быть подписано указанным SDID."
+	},
+	"ruletype.3.description": {
+		"message": "Электронное письмо не обязательно должно быть подписано. Если оно подписано, то оно должно быть подписано указанным SDID. Если у электронного письма недействительная подпись, оно считается неподписанным."
+	},
+	"priority.description": {
+		"message": "Приоритет правила. Если совпадает несколько правил, используется то, у которого самый высокий приоритет."
+	},
+	"enabled.description": {
+		"message": "1, если правило включено, 0, если оно отключено."
+	}
+}

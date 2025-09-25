@@ -4,6 +4,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+### Other
+
+- Added Russian translation.
+
 ## 6.2.0 (2025-09-18)
 
 ### Enhancements

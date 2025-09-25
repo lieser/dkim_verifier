@@ -1,0 +1,3 @@
+Поддержка через https://github.com/lieser/dkim_verifier/issues или по e-mail: lieser+dkim@posteo.net (на английском или немецком языках).
+
+Предпочтительный способ сообщить об ошибке — создать задачу (issue) на https://github.com/lieser/dkim_verifier/issues 
