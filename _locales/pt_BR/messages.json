@@ -276,7 +276,7 @@
 		"message": "Chave DKIM não é assinada por DNSSEC"
 	},
 	"DKIM_POLICYERROR_WRONG_SDID": {
-		"message": "Signatário incorreto (deveria ser $1)"
+		"message": "Assinante incorreto (deveria ser $1)"
 	},
 	"DKIM_POLICYERROR_UNSIGNED_HEADER_ADDED": {
 		"message": "Cabeçalho não assinado '$1' foi adicionado",
@@ -430,10 +430,10 @@
 		"message": "Tratar SDID incorreto como um aviso em vez de um erro"
 	},
 	"options_viewSigners": {
-		"message": "Regras de signatários…"
+		"message": "Regras de assinantes…"
 	},
 	"options_viewSignerDefaults": {
-		"message": "Regras padrão de signatários…"
+		"message": "Regras padrão de assinantes…"
 	},
 	"options_policy.DMARC.shouldBeSigned.enable": {
 		"message": "Usar DMARC para determinar heuristicamente se um e-mail deve ser assinado"
@@ -703,10 +703,10 @@
 		"message": "Excluir chaves selecionadas"
 	},
 	"treeviewSigners.user.title": {
-		"message": "Regras de signatários"
+		"message": "Regras de assinantes"
 	},
 	"treeviewSigners.default.title": {
-		"message": "Regras padrão de signatários"
+		"message": "Regras padrão de assinantes"
 	},
 	"treeviewSigners.treecol.domain": {
 		"message": "Domínio"
@@ -760,7 +760,7 @@
 		"description": "Button in import dialog for replacing existing rules"
 	},
 	"addSignersRule.title": {
-		"message": "Adicionar regra de signatários"
+		"message": "Adicionar regra de assinantes"
 	},
 	"addSignersRule.button.add": {
 		"message": "Adicionar regra",
@@ -788,7 +788,7 @@
 		"message": "Ajuda…"
 	},
 	"signersRuleHelp.title": {
-		"message": "Ajuda das regras de signatários"
+		"message": "Ajuda das regras de assinantes"
 	},
 	"domain.description": {
 		"message": "Será comparado com o domínio base do endereço 'De'. Por exemplo, o domínio base de 'email.example.com.br' é 'example.com.br'."
