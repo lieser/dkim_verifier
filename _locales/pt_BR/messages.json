@@ -700,7 +700,7 @@
 		"message": "DNSSEC"
 	},
 	"treeviewKeys.deleteSelectedRows": {
-		"message": "Excluir chaves selecionadas"
+		"message": "Apagar chaves selecionadas"
 	},
 	"treeviewSigners.user.title": {
 		"message": "Regras de assinantes"
@@ -733,7 +733,7 @@
 		"message": "Adicionar regra…"
 	},
 	"treeviewSigners.deleteSelectedRows": {
-		"message": "Excluir regras selecionadas"
+		"message": "Apagar regras selecionadas"
 	},
 	"treeviewSigners.exportRules": {
 		"message": "Exportar regras…",
