@@ -40,7 +40,7 @@ function setView(){
 </tree>
 
 <hbox>
-	<button 
+	<button
 	        label="&treeviewKeys.deleteSelectedRows.label;"
 	        oncommand="treeView.deleteSelectedRows();"/>
 	<spacer/>
