@@ -10,7 +10,7 @@
 <!ENTITY dns.resolver.value.1.label "JavaScript DNS ライブラリ">
 <!ENTITY dns.resolver.value.2.label "libunbound">
 <!ENTITY dns.getNameserversFromOS.label "OS の設定から DNS サーバを取得">
-<!ENTITY dns.nameserver.label "DNS サーバ （書式 （EBNF）: host[&quot;:&quot;port]{&quot;;&quot;host[&quot;:&quot;port]} ）:">
+<!ENTITY dns.nameserver.label "DNS サーバ （書式 （EBNF）: host[&quot;:&quot;port]{&quot;;&quot;host[&quot;:&quot;port]}）:">
 
 <!ENTITY dns.timeout_connect.label "DNS 接続タイムアウト （秒）:">
 <!ENTITY dns.proxy.enable.label "DNS サーバへの接続にプロキシを利用">

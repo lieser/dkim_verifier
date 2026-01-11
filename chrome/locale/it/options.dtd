@@ -10,7 +10,7 @@
 <!ENTITY dns.resolver.value.1.label "Libreria JavaScript DNS">
 <!ENTITY dns.resolver.value.2.label "libunbound">
 <!ENTITY dns.getNameserversFromOS.label "Ricava i server DNS dalla configurazione del sistema operativo">
-<!ENTITY dns.nameserver.label "Server DNS (sintassi (EBNF): host[&quot;:&quot;porta]{&quot;;&quot;host[&quot;:&quot;porta]} ):">
+<!ENTITY dns.nameserver.label "Server DNS (sintassi (EBNF): host[&quot;:&quot;porta]{&quot;;&quot;host[&quot;:&quot;porta]}):">
 
 <!ENTITY dns.timeout_connect.label "Scadenza connessione DNS (in secondi):">
 <!ENTITY dns.proxy.enable.label "Usa un proxy per connetterti ai server DNS">
