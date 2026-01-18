@@ -10,7 +10,7 @@
 <!ENTITY dns.resolver.value.1.label "JavaScript DNS könyvtár">
 <!ENTITY dns.resolver.value.2.label "libunbound">
 <!ENTITY dns.getNameserversFromOS.label "Szerezzen DNS-kiszolgálókat az operációs rendszer konfigurációjából">
-<!ENTITY dns.nameserver.label "DNS-kiszolgálók (mondattan (EBNF): gép[&quot;:&quot;kikötő]{&quot;;&quot;gép[&quot;:&quot;kikötő]} ):">
+<!ENTITY dns.nameserver.label "DNS-kiszolgálók (mondattan (EBNF): gép[&quot;:&quot;kikötő]{&quot;;&quot;gép[&quot;:&quot;kikötő]}):">
 
 <!ENTITY dns.timeout_connect.label "DNS-csatlakozás időtúllépése (másodperc):">
 <!ENTITY dns.proxy.enable.label "Megbízott segítségével csatlakozzon a DNS-kiszolgálókhoz">

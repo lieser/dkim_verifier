@@ -7,7 +7,7 @@
 <!ENTITY dns.resolver.value.1.label "JavaScript DNS 软件库">
 <!ENTITY dns.resolver.value.2.label "libunbound">
 <!ENTITY dns.getNameserversFromOS.label "从操作系统的配置获取 DNS 名称服务器">
-<!ENTITY dns.nameserver.label "DNS 名称服务器 (语法 (EBNF): host[&quot;:&quot;port]{&quot;;&quot;host[&quot;:&quot;port]} ):">
+<!ENTITY dns.nameserver.label "DNS 名称服务器 (语法 (EBNF): host[&quot;:&quot;port]{&quot;;&quot;host[&quot;:&quot;port]}):">
 <!ENTITY dns.timeout_connect.label "DNS 连接超时 (秒):">
 <!ENTITY dns.proxy.enable.label "使用代理服务器连接 DNS 服务器">
 <!ENTITY dns.proxy.type.label "代理类型:">
