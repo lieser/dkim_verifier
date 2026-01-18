@@ -1262,7 +1262,7 @@ var Verifier = (function() {
 		if (!isValid && prefs.getBoolPref("error.sanitizeSubject")) {
 			log.debug("Trying to sanitize the subject header field");
 			const subjectField = msg.headerFields.get("subject")[0];
-			const sanitizeRegexp = /(Subject:\s)(?:\*|\[).+(?:\*|\])\s(.*)/;
+			const sanitizeRegexp = /(Subject:\s)(?:\*|\[).+(?:\*|\])\s*(.*)/;
 			const sanitizedSubject = subjectField.replace(sanitizeRegexp, "$2").trim();
 			const sanitizedSubjectField = subjectField.replace(sanitizeRegexp, "$1$2");
 
