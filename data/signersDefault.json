@@ -213,6 +213,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
 		}, {
+			"domain": "alwaysdata.com",
+			"addr": "*",
+			"sdid": "alwaysdata.com",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "amazon.co.uk",
 			"addr": "*",
 			"sdid": "amazon.co.uk",
