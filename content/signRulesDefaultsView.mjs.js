@@ -19,6 +19,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 	const data = await SignRulesProxy.getDefaultRules();
 
+	// Fix `_detectBrowser()` logic of Tabulator in case the `navigator.userAgent` preference is set to an empty string.
+	// @ts-expect-error
+	globalThis.opera = "Firefox";
+
 	// eslint-disable-next-line no-new
 	new Tabulator("#rulesTable", {
 		height: "100%",

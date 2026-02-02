@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+### Fixes
+
+- Fix display of DKIM keys and sign rules in case the `navigator.userAgent` preference is set to an empty string.
+
 ### Other
 
 - Added Russian translation.

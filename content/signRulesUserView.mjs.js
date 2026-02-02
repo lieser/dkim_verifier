@@ -44,6 +44,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 	const userRules = await SignRulesProxy.getUserRules();
 
+	// Fix `_detectBrowser()` logic of Tabulator in case the `navigator.userAgent` preference is set to an empty string.
+	// @ts-expect-error
+	globalThis.opera = "Firefox";
+
 	/** @type {import("tabulator-tables").Tabulator} */
 	// @ts-expect-error
 	const table = new Tabulator("#rulesTable", {
