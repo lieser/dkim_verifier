@@ -1,0 +1,823 @@
+{
+	// DKIM_STRING
+	"loading": {
+		"message": "Prebieha overovanie…"
+	},
+	"SUCCESS": {
+		"message": "Platný (Podpísaný spoločnosťou $1)"
+	},
+	"PERMFAIL": {
+		"message": "Neplatný ($1)"
+	},
+	"PERMFAIL_NO_REASON": {
+		"message": "Neplatný"
+	},
+	"TEMPFAIL": {
+		"message": "Dočasná chyba overenia (Pre podpis od $1)"
+	},
+	"NOSIG": {
+		"message": "Žiadny podpis"
+	},
+	"NOT_EMAIL": {
+		"message": "Správa nie je e-mail"
+	},
+	"SUCCESS_TAG": {
+		"message": "DKIM podpísaný spoločnosťou $1",
+		"description": "Značka zobrazená v rozšírení Konverzácie pre platný e-mail. Mala by byť krátka."
+	},
+	"TEMPFAIL_TAG": {
+		"message": "Chyba DKIM",
+		"description": "Značka zobrazená v rozšírení Konverzácie pre dočasnú zlyhanie. Mala by byť krátka."
+	},
+	"PERMFAIL_TAG": {
+		"message": "DKIM neplatný",
+		"description": "Značka zobrazená v rozšírení Konverzácie pre neplatný e-mail. Mala by byť krátka."
+	},
+	// DKIM_INTERNALERROR
+	"DKIM_INTERNALERROR": {
+		"message": "Interná chyba DKIM overovateľa"
+	},
+	"DKIM_INTERNALERROR_NAME": {
+		"message": "Interná chyba"
+	},
+	"DKIM_INTERNALERROR_DEFAULT": {
+		"message": "chyba"
+	},
+	"DKIM_INTERNALERROR_INCORRECT_EMAIL_FORMAT": {
+		"message": "E-mail nie je správne naformátovaný"
+	},
+	"DKIM_INTERNALERROR_INCORRECT_FROM": {
+		"message": "Adresa odosielateľa je nesprávne vytvorená"
+	},
+	"ERROR_IMPORT_RULES": {
+		"message": "Importovanie pravidiel pre podpis zlyhalo.",
+		"description": "Titulok chyby, ak importovanie pravidiel pre podpis zlyhalo."
+	},
+	"ERROR_IMPORT_RULES_UNKNOWN_DATA": {
+		"message": "Formát importovaného súboru je neplatný.",
+		"description": "Chybová správa, ak používateľ skúsi importovať neznáme údaje ako pravidlá pre podpis."
+	},
+	"ERROR_IMPORT_RULES_UNSUPPORTED_FORMAT": {
+		"message": "Formát pravidiel pre podpis má nepodporovanú verziu.",
+		"description": "Chybová správa, ak pravidlá pre podpis, ktoré sa používateľ pokúšal importovať, majú nepodporovaný formát."
+	},
+	// DKIM_INTERNALERROR - DNS
+	"DKIM_DNSERROR_UNKNOWN": {
+		"message": "Chyba v DNS resolveri"
+	},
+	"DKIM_DNSERROR_OFFLINE": {
+		"message": "Nepodarilo sa vykonať požiadavku DNS, pretože Thunderbird je v režime offline.",
+		"description": "Chybová správa, ak doplnok potrebuje vykonať DNS dopožiadavkupyt, ale Thunderbird je v režime offline."
+	},
+	"DKIM_DNSERROR_SERVER_ERROR": {
+		"message": "Chyba pri pripájaní k DNS serveru"
+	},
+	"DKIM_DNSERROR_DNSSEC_BOGUS": {
+		"message": "Výsledok DNS je nesprávny"
+	},
+	// DKIM_SIGERROR
+	"DKIM_SIGERROR": {
+		"message": "Chyba DKIM podpisu"
+	},
+	"DKIM_SIGERROR_DEFAULT": {
+		"message": "chyba"
+	},
+	// DKIM_SIGERROR - DKIM-Signature Header
+	"DKIM_SIGERROR_ILLFORMED": {
+		"message": "Podpis je nesprávne vytvorený"
+	},
+	"DKIM_SIGERROR_UNSUPPORTED": {
+		"message": "Podpis má nepodporovanú verziu"
+	},
+	"DKIM_SIGERROR_ILLFORMED_TAGSPEC": {
+		"message": "Podpis je nesprávne vytvorený"
+	},
+	"DKIM_SIGERROR_DUPLICATE_TAG": {
+		"message": "Podpis je nesprávne vytvorený (duplicitný štítok)"
+	},
+	"DKIM_SIGERROR_VERSION": {
+		"message": "Nepodporovaná verzia"
+	},
+	"DKIM_SIGERROR_MISSING_V": {
+		"message": "Chýba DKIM verzia"
+	},
+	"DKIM_SIGERROR_ILLFORMED_V": {
+		"message": "Štítok verzie je nesprávne vytvorený"
+	},
+	"DKIM_SIGERROR_MISSING_A": {
+		"message": "Chýba algoritmus podpisu"
+	},
+	"DKIM_SIGERROR_UNKNOWN_A": {
+		"message": "Nepodporovaný algoritmus podpisu"
+	},
+	"DKIM_SIGERROR_INSECURE_A": {
+		"message": "Nezabezpečný algoritmus podpisu"
+	},
+	"DKIM_SIGERROR_ILLFORMED_A": {
+		"message": "Štítok algoritmu je nesprávne vytvorený"
+	},
+	"DKIM_SIGERROR_MISSING_B": {
+		"message": "Chýba podpis"
+	},
+	"DKIM_SIGERROR_BADSIG": {
+		"message": "Podpis je nesprávny"
+	},
+	"DKIM_SIGERROR_ILLFORMED_B": {
+		"message": "Štítok údajov podpisu je nesprávne vytvorený"
+	},
+	"DKIM_SIGERROR_MISSING_BH": {
+		"message": "Chýba hash tela"
+	},
+	"DKIM_SIGERROR_CORRUPT_BH": {
+		"message": "E-mail bol upravený"
+	},
+	"DKIM_SIGERROR_ILLFORMED_BH": {
+		"message": "Štítok hashu tela je nesprávne vytvorený"
+	},
+	"DKIM_SIGERROR_UNKNOWN_C_H": {
+		"message": "Nepodporovaný algoritmus kanonizácie pre hlavičku"
+	},
+	"DKIM_SIGERROR_UNKNOWN_C_B": {
+		"message": "Nepodporovaný algoritmus kanonizácie pre telo"
+	},
+	"DKIM_SIGERROR_ILLFORMED_C": {
+		"message": "Štítok kanonizácie je nesprávne vytvorený"
+	},
+	"DKIM_SIGERROR_MISSING_D": {
+		"message": "Chýba identifikátor domény podpisovateľa (SDID)"
+	},
+	"DKIM_SIGERROR_ILLFORMED_D": {
+		"message": "Štítok SDID je nesprávne vytvorený"
+	},
+	"DKIM_SIGERROR_MISSING_H": {
+		"message": "Chýbajú podpísané polia hlavičky"
+	},
+	"DKIM_SIGERROR_MISSING_FROM": {
+		"message": "Hlavička odosielateľa nie je podpísaná"
+	},
+	"DKIM_SIGERROR_ILLFORMED_H": {
+		"message": "Štítok podpísaných polí hlavičky je nesprávne vytvorený"
+	},
+	"DKIM_SIGERROR_SUBDOMAIN_I": {
+		"message": "AUID nie je v subdoméne SDID"
+	},
+	"DKIM_SIGERROR_DOMAIN_I": {
+		"message": "AUID musí byť v rovnakej doméne ako SDID (s-flag nastavený v zázname kľúča)"
+	},
+	"DKIM_SIGERROR_ILLFORMED_I": {
+		"message": "Štítok AUID je nesprávne vytvorený"
+	},
+	"DKIM_SIGERROR_TOOLARGE_L": {
+		"message": "E-mail je kratší, ako je uvedené v DKIM podpise"
+	},
+	"DKIM_SIGERROR_ILLFORMED_L": {
+		"message": "Štítok dĺžky tela je nesprávne vytvorený"
+	},
+	"DKIM_SIGERROR_UNKNOWN_Q": {
+		"message": "Nepodporované metódy dopytu na získanie verejného kľúča"
+	},
+	"DKIM_SIGERROR_ILLFORMED_Q": {
+		"message": "Štítok metódy dopytu je nesprávne vytvorený"
+	},
+	"DKIM_SIGERROR_MISSING_S": {
+		"message": "Chýba štítok selektora"
+	},
+	"DKIM_SIGERROR_ILLFORMED_S": {
+		"message": "Štítok selektora je nesprávne vytvorený"
+	},
+	"DKIM_SIGERROR_ILLFORMED_T": {
+		"message": "Štítok časovej pečiatky podpisu je nesprávne vytvorený"
+	},
+	"DKIM_SIGERROR_TIMESTAMPS": {
+		"message": "Platnosť podpisu skončila pred časovou pečiatkou podpisu"
+	},
+	"DKIM_SIGERROR_ILLFORMED_X": {
+		"message": "Štítok vypršania platnosti podpisu je nesprávne vytvorený"
+	},
+	"DKIM_SIGERROR_ILLFORMED_Z": {
+		"message": "Štítok skopírovaných polí hlavičky je nesprávne vytvorený"
+	},
+	// DKIM_SIGERROR - key query
+	"DKIM_SIGERROR_NOKEY": {
+		"message": "Na DNS serveri sa nenašiel žiadny DKIM kľúč"
+	},
+	// DKIM_SIGERROR - Key record
+	"DKIM_SIGERROR_KEY_ILLFORMED": {
+		"message": "DKIM kľúč je nesprávne vytvorený"
+	},
+	"DKIM_SIGERROR_KEY_INVALID": {
+		"message": "DKIM kľúč je neplatný"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_TAGSPEC": {
+		"message": "DKIM kľúč je nesprávne vytvorený"
+	},
+	"DKIM_SIGERROR_KEY_DUPLICATE_TAG": {
+		"message": "DKIM kľúč je nesprávne vytvorený (duplicitný štítok)"
+	},
+	"DKIM_SIGERROR_KEY_INVALID_V": {
+		"message": "Neplatná verzia záznamu DKIM kľúča"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_V": {
+		"message": "Štítok verzie DKIM kľúča je nesprávne vytvorený"
+	},
+	"DKIM_SIGERROR_KEY_HASHNOTINCLUDED": {
+		"message": "Nesprávny hash algoritmus v zázname DKIM kľúča"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_H": {
+		"message": "Štítok hash algoritmov v DKIM kľúči je nesprávne vytvorený"
+	},
+	"DKIM_SIGERROR_KEY_UNKNOWN_K": {
+		"message": "Nepodporovaný typ DKIM kľúča"
+	},
+	"DKIM_SIGERROR_KEY_MISMATCHED_K": {
+		"message": "Algoritmus podpisu sa nezhoduje s typom DKIM kľúča",
+		"description": "Chybová správa, ak sa algoritmus podpisu v hlavičke DKIM podpisu (a-tag) nezhoduje s typom kľúča DKIM kľúča (k-tag)."
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_K": {
+		"message": "Štítok typu DKIM kľúča je nesprávne vytvorený"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_N": {
+		"message": "Štítok poznámok v DKIM kľúči je nesprávne vytvorený"
+	},
+	"DKIM_SIGERROR_KEY_MISSING_P": {
+		"message": "DKIM kľúč neobsahuje verejný kľúč"
+	},
+	"DKIM_SIGERROR_KEY_REVOKED": {
+		"message": "DKIM kľúč bol odvolaný"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_P": {
+		"message": "Štítok údajov verejného kľúča v DKIM kľúči je nesprávne vytvorený"
+	},
+	"DKIM_SIGERROR_KEY_NOTEMAILKEY": {
+		"message": "DKIM kľúč nie je e-mailovým kľúčom"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_S": {
+		"message": "Štítok typu služby v DKIM kľúči je nesprávne vytvorený"
+	},
+	"DKIM_SIGERROR_KEY_TESTMODE": {
+		"message": "Podpisová doména len testuje DKIM"
+	},
+	"DKIM_SIGERROR_KEY_ILLFORMED_T": {
+		"message": "Štítok príznakov v DKIM kľúči je nesprávne vytvorený"
+	},
+	// DKIM_SIGERROR - key decode
+	"DKIM_SIGERROR_KEYDECODE": {
+		"message": "Verejný kľúč v DKIM kľúči sa nepodarilo dekódovať"
+	},
+	// DKIM_SIGERROR - POLICY
+	"DKIM_POLICYERROR_MISSING_SIG": {
+		"message": "Žiadny podpis, mal by byť podpísaný spoločnosťou $1",
+		"description": "Chyba, ak správa nemá podpis, ale pravidlá pre podpis uvádzajú, že by mala byť podpísaná"
+	},
+	"DKIM_POLICYERROR_KEYMISMATCH": {
+		"message": "Uložený DKIM kľúč sa líši od aktuálneho"
+	},
+	"DKIM_POLICYERROR_KEY_INSECURE": {
+		"message": "DKIM kľúč nie je podpísaný pomocou DNSSEC"
+	},
+	"DKIM_POLICYERROR_WRONG_SDID": {
+		"message": "Nesprávny podpisovateľ (mal by byť $1)"
+	},
+	"DKIM_POLICYERROR_UNSIGNED_HEADER_ADDED": {
+		"message": "Pridaná nepodpísaná hlavička '$1'",
+		"description": "Chyba, ak bola dôležitá hlavička pravdepodobne škodlivo pridaná neskôr"
+	},
+	// DKIM_SIGWARNING
+	"DKIM_SIGWARNING_SMALL_L": {
+		"message": "Nie je podpísaný celý e-mail"
+	},
+	"DKIM_SIGWARNING_EXPIRED": {
+		"message": "Platnosť podpisu vypršala"
+	},
+	"DKIM_SIGWARNING_FUTURE": {
+		"message": "Podpis je z budúcnosti"
+	},
+	"DKIM_SIGWARNING_KEYSMALL": {
+		"message": "Podpis nie je bezpečný (veľkosť kľúča je príliš malá)"
+	},
+	"DKIM_SIGWARNING_KEY_IS_WEAK": {
+		"message": "Podpísané slabým kľúčom"
+	},
+	"DKIM_SIGWARNING_FROM_NOT_IN_SDID": {
+		"message": "Adresa Odosielateľa nie je v podpisovacej doméne"
+	},
+	"DKIM_SIGWARNING_UNSIGNED_HEADER": {
+		"message": "Hlavička '$1' nie je podpísaná",
+		"description": "Upozornenie, ak dôležitá hlavička nie je podpísaná"
+	},
+	// JSDNS
+	"TOO_MANY_HOPS": {
+		"message": "Príliš veľa skokov."
+	},
+	"CONNECTION_REFUSED": {
+		"message": "DNS server $1 odmietol TCP spojenie."
+	},
+	"TIMED_OUT": {
+		"message": "Časový limit pri TCP spojení s DNS serverom $1 vypršal."
+	},
+	"SERVER_ERROR": {
+		"message": "Chyba pri pripájaní k DNS serveru $1."
+	},
+	"INCOMPLETE_RESPONSE": {
+		"message": "Neúplná odpoveď od $1."
+	},
+	// ==================== Options window ====================
+	"options_prefwindow.title": {
+		"message": "Nastavenia DKIM overovateľa"
+	},
+	// -------------------- General options --------------------
+	"options_general": {
+		"message": "Všeobecné"
+	},
+	// ---------- General options tab ----------
+	"options_general.general": {
+		"message": "Všeobecné"
+	},
+	"options_dkim.enable": {
+		"message": "Overovať DKIM podpisy"
+	},
+	"options_key.storing.value.0": {
+		"message": "Neukladať DKIM kľúče"
+	},
+	"options_key.storing.value.1": {
+		"message": "Ukladať DKIM kľúče"
+	},
+	"options_key.storing.value.2": {
+		"message": "Ukladať a porovnávať DKIM kľúče s aktuálnym kľúčom"
+	},
+	"options_key.viewKeys": {
+		"message": "DKIM kľúče…"
+	},
+	"options_saveResult": {
+		"message": "Ukladať výsledok overenia"
+	},
+	// ---------- DNS options tab ----------
+	"options_dns": {
+		"message": "DNS"
+	},
+	"options_dns.resolver": {
+		"message": "Resolver:"
+	},
+	"options_dns.resolver.value.1": {
+		"message": "JavaScript DNS knižnica"
+	},
+	"options_dns.resolver.value.2": {
+		"message": "libunbound"
+	},
+	"options_dns.getNameserversFromOS": {
+		"message": "Získať DNS servery z konfigurácie operačného systému"
+	},
+	"options_dns.nameserver": {
+		"message": "DNS servery (Syntax (EBNF): host[\":\"port]{\";\"host[\":\"port]} ):"
+	},
+	"options_dns.timeout_connect": {
+		"message": "Časový limit spojenia DNS (v sekundách):",
+		"description": "Časový limit pre spojenie s DNS servermi (vytvorenie spojenia a odosielanie/prijímanie údajov)"
+	},
+	"options_dns.proxy.enable": {
+		"message": "Použiť proxy na pripojenie k DNS serverom"
+	},
+	"options_dns.proxy.type": {
+		"message": "Typ proxy:"
+	},
+	"options_dns.proxy.host": {
+		"message": "Proxy server:"
+	},
+	"options_dns.proxy.port": {
+		"message": "Port:"
+	},
+	"options_dns.libunbound.nameserver": {
+		"message": "DNS servery (Syntax (EBNF): IP{\";\"IP} ):"
+	},
+	"options_dns.libunbound.usageWarning": {
+		"message": "Resolver libunbound vyžaduje externe nainštalovanú knižnicu"
+	},
+	"options_dns.libunbound.path": {
+		"message": "Cesta"
+	},
+	"options_dns.libunbound.path.relToProfileDir": {
+		"message": "Relatívna cesta k priečinku profilu"
+	},
+	// ---------- Policy options tab ----------
+	"options_general.policy": {
+		"message": "Pravidlá"
+	},
+	"options_policy.signRules.enable": {
+		"message": "Kontrolovať, či má byť e-mail podpísaný"
+	},
+	"options_policy.signRules.checkDefaultRules": {
+		"message": "Použiť predvolené pravidlá"
+	},
+	"options_policy.signRules.autoAddRule.enable": {
+		"message": "Automaticky pridávať pravidlá na základe zobrazených e-mailov s DKIM podpisom"
+	},
+	"options_policy.signRules.autoAddRule.onlyIfFromAddressInSDID": {
+		"message": "Len ak je adresa odosielateľa v SDID"
+	},
+	"options_policy.signRules.autoAddRule.for.value.0": {
+		"message": "pre adresu odosielateľa"
+	},
+	"options_policy.signRules.autoAddRule.for.value.1": {
+		"message": "pre subdoménu"
+	},
+	"options_policy.signRules.autoAddRule.for.value.2": {
+		"message": "pre základnú doménu"
+	},
+	"options_policy.signRules.sdid.allowSubDomains": {
+		"message": "Povoliť aj subdomény SDID"
+	},
+	"options_policy.signRules.error.wrong_sdid.asWarning": {
+		"message": "Považovať nesprávny SDID za upozornenie namiesto chyby"
+	},
+	"options_viewSigners": {
+		"message": "Pravidlá pre podpisovateľov…"
+	},
+	"options_viewSignerDefaults": {
+		"message": "Predvolené pravidlá pre podpisovateľov…"
+	},
+	"options_policy.DMARC.shouldBeSigned.enable": {
+		"message": "Použiť DMARC na heuristické určenie, či má byť e-mail podpísaný"
+	},
+	"options_policy.dkim.unsignedHeadersWarning.mode": {
+		"message": "Upozorňovať na nepodpísané hlavičky, ktoré sa odporúčajú podpísať:",
+		"description": "Popis pre nastavenie režimu upozornení na nepodpísané hlavičky."
+	},
+	"options_policy.dkim.unsignedHeadersWarning.mode.relaxed": {
+		"message": "voľný režim",
+		"description": "Voľný režim sa pokúsi zabrániť zobrazovaniu upozornení."
+	},
+	"options_policy.dkim.unsignedHeadersWarning.mode.recommended": {
+		"message": "odporúčaný režim",
+		"description": "Režim, ktorý sa snaží presadiť najlepšie postupy bez prílišného zobrazovania upozornení."
+	},
+	"options_policy.dkim.unsignedHeadersWarning.mode.strict": {
+		"message": "prísny režim",
+		"description": "Prísny režim, ktorý môže potenciálne zobrazovať veľa upozornení."
+	},
+	// -------------------- Display options --------------------
+	"options_display": {
+		"message": "Zobrazenie"
+	},
+	"options_showDKIMHeader": {
+		"message": "Zobraziť DKIM hlavičku:"
+	},
+	"options_showDKIMFromTooltip": {
+		"message": "Zobraziť DKIM pomocný text pre hlavičku odosielateľa:"
+	},
+	"options_showDKIM.value.0": {
+		"message": "nikdy"
+	},
+	"options_showDKIM.value.10": {
+		"message": "pri zobrazení e-mailu s platným DKIM podpisom"
+	},
+	"options_showDKIM.value.30": {
+		"message": "pri zobrazení e-mailu s DKIM podpisom"
+	},
+	"options_showDKIM.value.33": {
+		"message": "pri zobrazení e-mailu s DKIM podpisom, výsledkom SPF alebo DMARC"
+	},
+	"options_showDKIM.value.40": {
+		"message": "pri zobrazení e-mailu"
+	},
+	"options_showDKIM.value.50": {
+		"message": "pri zobrazení správy"
+	},
+	"options_colorFrom": {
+		"message": "Povoliť zvýraznenie hlavičky odosielateľa"
+	},
+	"options_color": {
+		"message": "Farba"
+	},
+	"options_color.text": {
+		"message": "Text:"
+	},
+	"options_color.background": {
+		"message": "Pozadie:"
+	},
+	"options_color.preview": {
+		"message": "ukážka",
+		"description": "Text použitý na ukážku farieb pre zvýraznenie hlavičky odosielateľa"
+	},
+	"options_color.success": {
+		"message": "Platný podpis"
+	},
+	"options_color.warning": {
+		"message": "Platný podpis s upozorneniami"
+	},
+	"options_color.permfail": {
+		"message": "Neplatný podpis"
+	},
+	"options_color.tempfail": {
+		"message": "Dočasná chyba"
+	},
+	"options_color.nosig": {
+		"message": "Nepodpísaný e-mail"
+	},
+	"options_display.favicon.show": {
+		"message": "Zobraziť favicon známej podpisovacej domény pred adresou odosielateľa"
+	},
+	// -------------------- Advanced options --------------------
+	"options_advanced": {
+		"message": "Rozšírené"
+	},
+	"options_debug": {
+		"message": "Povoliť ladenie (Výstup chýb a informácií pre ladenie v konzole chýb)"
+	},
+	"options_error.detailedReasons": {
+		"message": "Zobraziť podrobné dôvody chýb"
+	},
+	"options_error.key_testmode.ignore": {
+		"message": "Stále overovať podpis, aj keď doména len testuje DKIM"
+	},
+	"options_error.illformed_i.treatAs": {
+		"message": "Považovať nesprávne vytvorený AUID štítok za:"
+	},
+	"options_error.illformed_s.treatAs": {
+		"message": "Považovať nesprávne vytvorený štítok selektora za:"
+	},
+	"options_error.policy.key_insecure.treatAs": {
+		"message": "Považovať DKIM kľúč nezabezpečený pomocou DNSSEC za:"
+	},
+	"options_error.algorithm.sign.rsa-sha1.treatAs": {
+		"message": "Považovať podpisový algoritmus RSA-SHA1 za:"
+	},
+	"options_error.algorithm.rsa.weakKeyLength.treatAs": {
+		"message": "Považovať slabé RSA kľúče (<2048 bitov) za:"
+	},
+	"options_error.treatAs.value.0": {
+		"message": "chybu"
+	},
+	"options_error.treatAs.value.1": {
+		"message": "upozornenie"
+	},
+	"options_error.treatAs.value.2": {
+		"message": "nič"
+	},
+	"options_display.keySecure": {
+		"message": "Označiť úspešnú DNSSEC overenie zámkom za SDID"
+	},
+	"options_arh.read": {
+		"message": "Čítať hlavičku Authentication-Results"
+	},
+	"options_arh.replaceAddonResult": {
+		"message": "Čítanie hlavičky Authentication-Results nahradí overenie doplnkom"
+	},
+	"options_arh.relaxedParsing": {
+		"message": "Pokúsiť sa prečítať hlavičku Authentication-Results, ktorá nie je kompatibilná s RFC."
+	},
+	// -------------------- Account options --------------------
+	"options_account": {
+		"message": "Účet",
+		"description": "Nadpis pre nastavenia špecifické pre účet"
+	},
+	"options_acc.dkim.enable": {
+		"message": "Overovať DKIM podpisy:"
+	},
+	"options_acc.arh.read": {
+		"message": "Čítať hlavičku Authentication-Results:"
+	},
+	"options_acc.arh.allowedAuthserv": {
+		"message": "Dôveryhodné autentifikačné servery:"
+	},
+	"options_acc.boolean.value.0": {
+		"message": "Použiť predvolenú hodnotu"
+	},
+	"options_acc.boolean.value.1": {
+		"message": "Áno"
+	},
+	"options_acc.boolean.value.2": {
+		"message": "Nie"
+	},
+	// -------------------- About --------------------
+	"about": {
+		"message": "O aplikácii"
+	},
+	"about_name": {
+		"message": "DKIM overovateľ (DKIM Verifier)",
+		"description": "Názov doplnku"
+	},
+	"about_summary": {
+		"message": "Overuje DKIM podpisy e-mailov.",
+		"description": "Krátky popis doplnku"
+	},
+	"about_homepage": {
+		"message": "Domovská stránka"
+	},
+	"about_documentation": {
+		"message": "Dokumentácia",
+		"description": "Text odkazu na stránku dokumentácie na GitHub-e"
+	},
+	"about_contributors": {
+		"message": "Prispievatelia na GitHub-e",
+		"description": "Text odkazu na stránku prispievateľov na GitHub-e"
+	},
+	"about_translators": {
+		"message": "Prekladatelia:",
+		"description": "Nadpis pre zoznam prekladateľov"
+	},
+	"about_dependencies": {
+		"message": "Zahrnuté závislosti:",
+		"description": "Nadpis pre zoznam zahrnutých závislostí"
+	},
+	"about_by": {
+		"message": "od",
+		"description": "<názov závislosti> od <autor>"
+	},
+	// ==================== Actions ====================
+	"dkim_verifier.reverifyDKIMSignature": {
+		"message": "Znova overiť DKIM podpis"
+	},
+	"dkim_verifier.policyAddUserException": {
+		"message": "Pridať výnimku 'musí byť podpísané'"
+	},
+	"dkim_verifier.markKeyAsSecure": {
+		"message": "Označiť DKIM kľúč ako bezpečený"
+	},
+	"dkim_verifier.updateKey": {
+		"message": "Aktualizovať DKIM kľúč"
+	},
+	"button.options": {
+		"message": "Nastavenia",
+		"description": "Tlačidlo na otvorenie stránky nastavení doplnku."
+	},
+	"details.result": {
+		"message": "Výsledok",
+		"description": "Názov riadku v detailnom zobrazení pre celkový výsledok DKIM."
+	},
+	"details.warnings": {
+		"message": "Upozornenia",
+		"description": "Názov riadku v detailnom zobrazení pre upozornenia DKIM podpisu."
+	},
+	"details.SDID": {
+		"message": "SDID",
+		"description": "Názov riadku v detailnom zobrazení pre SDID."
+	},
+	"details.AUID": {
+		"message": "AUID",
+		"description": "Názov riadku v detailnom zobrazení pre AUID."
+	},
+	"details.signDate": {
+		"message": "Dátum podpisu",
+		"description": "Názov riadku v detailnom zobrazení pre dátum (vrátane času) vytvorenia podpisu."
+	},
+	"details.expirationDate": {
+		"message": "Dátum vypršania platnosti",
+		"description": "Názov riadku v detailnom zobrazení pre dátum (vrátane času) vypršania platnosti podpisu."
+	},
+	"details.algorithm": {
+		"message": "Algoritmus",
+		"description": "Názov riadku v detailnom zobrazení pre algoritmus použitý v podpise."
+	},
+	"details.signedHeaders": {
+		"message": "Podpísané hlavičky",
+		"description": "Názov riadku v detailnom zobrazení pre hlavičky správy podpísané DKIM."
+	},
+	"details.noDate": {
+		"message": "Podpis neobsahuje čas",
+		"description": "Hodnota zobrazená pre dátum podpisu a vypršania platnosti, ak nie je v podpise uvedený dátum."
+	},
+	// ==================== Table Views ====================
+	"treeviewKeys.title": {
+		"message": "DKIM kľúče",
+		"description": "Titulok tabuľkového zobrazenia DKIM kľúčov."
+	},
+	"treeviewKeys.treecol.SDID": {
+		"message": "SDID"
+	},
+	"treeviewKeys.treecol.selector": {
+		"message": "Selektor"
+	},
+	"treeviewKeys.treecol.key": {
+		"message": "DKIM kľúč"
+	},
+	"treeviewKeys.treecol.insertedAt": {
+		"message": "Pridané",
+	},
+	"treeviewKeys.treecol.lastUsedAt": {
+		"message": "Naposledy použité",
+	},
+	"treeviewKeys.treecol.secure": {
+		"message": "DNSSEC",
+	},
+	"treeviewKeys.deleteSelectedRows": {
+		"message": "Odstrániť vybrané kľúče"
+	},
+	"treeviewSigners.user.title": {
+		"message": "Pravidlá pre podpisovateľov"
+	},
+	"treeviewSigners.default.title": {
+		"message": "Predvolené pravidlá pre podpisovateľov"
+	},
+	"treeviewSigners.treecol.domain": {
+		"message": "Doména"
+	},
+	"treeviewSigners.treecol.listId": {
+		"message": "List-Id"
+	},
+	"treeviewSigners.treecol.addr": {
+		"message": "Odosielateľ"
+	},
+	"treeviewSigners.treecol.sdid": {
+		"message": "SDID"
+	},
+	"treeviewSigners.treecol.ruletype": {
+		"message": "Typ pravidla"
+	},
+	"treeviewSigners.treecol.priority": {
+		"message": "Priorita"
+	},
+	"treeviewSigners.treecol.enabled": {
+		"message": "Povolené"
+	},
+	"treeviewSigners.addSignersRule": {
+		"message": "Pridať pravidlo…"
+	},
+	"treeviewSigners.deleteSelectedRows": {
+		"message": "Odstrániť vybrané pravidlá"
+	},
+	"treeviewSigners.exportRules": {
+		"message": "Exportovať pravidlá…",
+		"description": "Tlačidlo pre export pravidiel pre podpis"
+	},
+	"treeviewSigners.importRules": {
+		"message": "Importovať pravidlá…",
+		"description": "Tlačidlo pre import pravidiel pre podpis"
+	},
+	"importRules.title": {
+		"message": "Importovať pravidlá",
+		"description": "Titulok pre dialóg importu"
+	},
+	"importRules.replaceQuestion": {
+		"message": "Mali by sa importované pravidlá pridať k existujúcim pravidlám alebo nahradiť existujúce pravidlá?",
+		"description": "Otázka v dialógu importu"
+	},
+	"importRules.addRules": {
+		"message": "Pridať pravidlá",
+		"description": "Tlačidlo v dialógu importu pre pridanie pravidiel k existujúcim"
+	},
+	"importRules.replaceRules": {
+		"message": "Nahradiť pravidlá",
+		"description": "Tlačidlo v dialógu importu pre nahradenie existujúcich pravidiel"
+	},
+	"addSignersRule.title": {
+		"message": "Pridať pravidlo pre podpisovateľov"
+	},
+	"addSignersRule.button.add": {
+		"message": "Pridať pravidlo",
+		"description": "Tlačidlo pre potvrdenie pridania pravidla pre podpis."
+	},
+	"signRules.ruletype.SIGNED": {
+		"message": "Musí byť podpísané (1)"
+	},
+	"signRules.ruletype.NEUTRAL": {
+		"message": "Môže byť podpísané (2)"
+	},
+	"signRules.ruletype.HIDEFAIL": {
+		"message": "Ignorovať neplatný podpis (3)"
+	},
+	"signRules.priorityMode.auto": {
+		"message": "Automaticky vybrať prioritu"
+	},
+	"signRules.priorityMode.manual": {
+		"message": "Nastaviť prioritu na:"
+	},
+	"button.cancel": {
+		"message": "Zrušiť"
+	},
+	"button.help": {
+		"message": "Pomoc…"
+	},
+	"signersRuleHelp.title": {
+		"message": "Pomoc pre pravidlá podpisovateľov"
+	},
+	"domain.description": {
+		"message": "Bude porovnaná so základnou doménou adresy odosielateľa. Napríklad základná doména pre 'email.napriklad.sk' je 'napriklad.sk'."
+	},
+	"listId.description": {
+		"message": "Bude porovnaná s list-id, ak bol e-mail prijatý cez e-mailový zoznam. Poznámka: len časť medzi '<' a '>' v hlavičke List-Id je skutočné list-id. Súčasne sa vyhodnocuje buď doména alebo list-id (identifikátor zoznamu)."
+	},
+	"addr.description": {
+		"message": "Bude porovnaná s adresou odosielateľa. Použite '*' pre zhodu nula alebo viac znakov."
+	},
+	"sdid.description": {
+		"message": "Doména, ktorou by mali byť e-maily podpísané. Ak je toto pole prázdne, je povolený každý SDID. Je možné špecifikovať viac ako jednu doménu oddelením medzerou."
+	},
+	"ruletype.description": {
+		"message": "Typ pravidla."
+	},
+	"ruletype.1.description": {
+		"message": "E-mail musí byť podpísaný určeným SDID."
+	},
+	"ruletype.2.description": {
+		"message": "E-mail nemusí byť podpísaný. Ak je podpísaný, musí byť podpísaný určeným SDID."
+	},
+	"ruletype.3.description": {
+		"message": "E-mail nemusí byť podpísaný. Ak je podpísaný, musí byť podpísaný určeným SDID. Ak má e-mail neplatný podpis, je považovaný za e-mail bez podpisu."
+	},
+	"priority.description": {
+		"message": "Priorita pravidla. Ak sa zhoduje viac ako jedno pravidlo, použije sa to s najvyššou prioritou."
+	},
+	"enabled.description": {
+		"message": "1 - ak je pravidlo povolené, 0 - ak je zakázané."
+	}
+}		

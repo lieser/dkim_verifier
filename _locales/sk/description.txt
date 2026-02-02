@@ -1,0 +1,9 @@
+<a href="https://en.wikipedia.org/wiki/DomainKeys_Identified_Mail">DomainKeys Identified Mail (DKIM)</a> je metóda, ktorá umožňuje doménam podpisovať e-maily. Doplnok overuje tieto podpisy DKIM a výsledok zobrazuje v hlavičke e-mailu. Takto je možné zistiť, ktorá doména sa hlási k zodpovednosti za konkrétny e-mail. Spôsob zobrazenia výsledku je možné zmeniť v nastaveniach.
+
+Je dôležité poznamenať, že e-mail môže byť podpísaný ľubovoľnou doménou. Platný podpis DKIM sám o sebe preto nie je indikátorom dôveryhodnosti e-mailu. Vždy skontrolujte, kto je podpisujúci, aby ste zistili, či je e-mail dôveryhodný!
+
+V niektorých prípadoch môže byť absencia podpisu DKIM užitočná na identifikáciu podvodných e-mailov. Ak je známe, že určitá doména podpisuje všetky svoje e-maily pomocou DKIM, absencia podpisu DKIM je silným indikátorom falošného e-mailu.
+
+Aby sa uľahčilo overovanie, či a kto e-mail podpísal, doplnok podporuje používanie pravidiel podpisovania. Pomocou pravidiel podpisovania je možné určiť, že e-maily od určitého odosielateľa musia byť vždy podpísané konkrétnou doménou (tiež označovanou ako SDID). Viac informácií o pravidlách podpisovania nájdete na stránke https://github.com/lieser/dkim_verifier/wiki/Sign-rules.
+
+Popis všetkých dostupných možností doplnku nájdete na stránke https://github.com/lieser/dkim_verifier/wiki/Options.
