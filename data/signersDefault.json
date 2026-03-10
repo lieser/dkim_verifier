@@ -453,6 +453,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "bayernportal.de",
+			"addr": "*",
+			"sdid": "bayernportal.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "bequiet.com",
 			"addr": "*",
 			"sdid": "bequiet.com",
@@ -3714,6 +3720,12 @@
 			"domain": "seiko.de",
 			"addr": "*",
 			"sdid": "seiko.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
+			"domain": "service-digitale-verwaltung.de",
+			"addr": "*",
+			"sdid": "service-digitale-verwaltung.de",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
