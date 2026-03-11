@@ -3489,6 +3489,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "radiom.fr",
+			"addr": "*",
+			"sdid": "radiom.fr",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		}, {
 			"domain": "rarechromo.org",
 			"addr": "*",
 			"sdid": "rarechromo.org auth.ccsend.com",
