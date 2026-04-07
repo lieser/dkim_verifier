@@ -368,7 +368,7 @@
 		"message": "Obtenir les serveurs DNS à partir de la configuration du système d'exploitation"
 	},
 	"options_dns.nameserver": {
-		"message": "Serveurs DNS (Syntaxe (EBNF) : host[\":\"port]{\";\"host[\":\"port]} ):"
+		"message": "Serveurs DNS ( Syntaxe (EBNF) : host[\":\"port]{\";\"host[\":\"port]} ):"
 	},
 	"options_dns.timeout_connect": {
 		"message": "Délai d'expiration de la connexion DNS (en secondes) :",

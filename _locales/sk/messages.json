@@ -368,7 +368,7 @@
 		"message": "Získať DNS servery z konfigurácie operačného systému"
 	},
 	"options_dns.nameserver": {
-		"message": "DNS servery (Syntax (EBNF): host[\":\"port]{\";\"host[\":\"port]} ):"
+		"message": "DNS servery ( Syntax (EBNF): host[\":\"port]{\";\"host[\":\"port]} ):"
 	},
 	"options_dns.timeout_connect": {
 		"message": "Časový limit spojenia DNS (v sekundách):",

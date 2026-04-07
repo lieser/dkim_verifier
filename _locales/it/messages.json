@@ -368,7 +368,7 @@
 		"message": "Ricava i server DNS dalla configurazione del sistema operativo"
 	},
 	"options_dns.nameserver": {
-		"message": "Server DNS (sintassi (EBNF): host[\":\"porta]{\";\"host[\":\"porta]} ):"
+		"message": "Server DNS ( sintassi (EBNF): host[\":\"porta]{\";\"host[\":\"porta]} ):"
 	},
 	"options_dns.timeout_connect": {
 		"message": "Scadenza connessione DNS (in secondi):",

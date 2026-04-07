@@ -366,7 +366,7 @@
 		"message": "從系統設定取得 DNS 伺服器"
 	},
 	"options_dns.nameserver": {
-		"message": "DNS 伺服器 (語法 (EBNF): host[\":\"port]{\";\"host[\":\"port]} ):"
+		"message": "DNS 伺服器 ( 語法 (EBNF): host[\":\"port]{\";\"host[\":\"port]} ):"
 	},
 	"options_dns.timeout_connect": {
 		"message": "DNS 連線超時 (秒):"

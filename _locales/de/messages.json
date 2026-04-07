@@ -368,7 +368,7 @@
 		"message": "DNS-Server aus den Einstellungen des Betriebssystems laden"
 	},
 	"options_dns.nameserver": {
-		"message": "DNS-Server (EBNF-Syntax: host[\":\"port]{\";\"host[\":\"port]} ):"
+		"message": "DNS-Server ( EBNF-Syntax: host[\":\"port]{\";\"host[\":\"port]} ):"
 	},
 	"options_dns.timeout_connect": {
 		"message": "DNS-Verbindungs-Timeout (in Sekunden):",

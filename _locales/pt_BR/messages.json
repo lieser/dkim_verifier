@@ -368,7 +368,7 @@
 		"message": "Obter servidores DNS da configuração do sistema operacional"
 	},
 	"options_dns.nameserver": {
-		"message": "Servidores DNS (Sintaxe (EBNF): host[\":\"porta]{\";\"host[\":\"porta]} ):"
+		"message": "Servidores DNS ( Sintaxe (EBNF): host[\":\"porta]{\";\"host[\":\"porta]} ):"
 	},
 	"options_dns.timeout_connect": {
 		"message": "Tempo limite de conexão DNS (em segundos):",

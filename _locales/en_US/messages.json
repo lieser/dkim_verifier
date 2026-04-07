@@ -368,7 +368,7 @@
 		"message": "Get DNS servers from OS configuration"
 	},
 	"options_dns.nameserver": {
-		"message": "DNS servers (Syntax (EBNF): host[\":\"port]{\";\"host[\":\"port]} ):"
+		"message": "DNS servers ( Syntax (EBNF): host[\":\"port]{\";\"host[\":\"port]} ):"
 	},
 	"options_dns.timeout_connect": {
 		"message": "DNS connection timeout (in seconds):",

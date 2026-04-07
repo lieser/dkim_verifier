@@ -368,7 +368,7 @@
 		"message": "Отримати DNS-сервери з конфігурації ОС"
 	},
 	"options_dns.nameserver": {
-		"message": "DNS-сервери (Синтаксис (EBNF): host[\":\"port]{\";\"host[\":\"port]} ):"
+		"message": "DNS-сервери ( Синтаксис (EBNF): host[\":\"port]{\";\"host[\":\"port]} ):"
 	},
 	"options_dns.timeout_connect": {
 		"message": "Час очікування підключення DNS (у секундах):",

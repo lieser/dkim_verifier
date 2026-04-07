@@ -368,7 +368,7 @@
 		"message": "Pobierz serwery DNS z konfiguracji systemu operacyjnego"
 	},
 	"options_dns.nameserver": {
-		"message": "Serwer DNS (składnia (EBNF): host[\":\"port]{\";\"host[\":\"port]} ):"
+		"message": "Serwer DNS ( składnia (EBNF): host[\":\"port]{\";\"host[\":\"port]} ):"
 	},
 	"options_dns.timeout_connect": {
 		"message": "Limit czasu połączenia DNS (w sekundach):",
@@ -639,7 +639,7 @@
 	"button.options": {
 		"message": "Opcje",
 		"description": "Button to open the options page of the Add-on."
-	},	
+	},
 	"details.result": {
 		"message": "Wynik",
 		"description": "Detailed view row name for the overall DKIM result."

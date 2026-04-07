@@ -362,7 +362,7 @@
 		"message": "Lấy máy chủ DNS từ cấu hình hệ điều hành"
 	},
 	"options_dns.nameserver": {
-		"message": "Máy chủ DNS (Cú pháp (EBNF): host[\":\"port]{\";\"host[\":\"port]} ):"
+		"message": "Máy chủ DNS ( Cú pháp (EBNF): host[\":\"port]{\";\"host[\":\"port]} ):"
 	},
 	"options_dns.timeout_connect": {
 		"message": "Thời gian chờ kết nối DNS (tính bằng giây):",
