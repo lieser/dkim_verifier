@@ -3686,6 +3686,12 @@
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
+			"domain": "scalable.capital",
+			"addr": "*",
+			"sdid": "scalable.capital",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
+		},  {
 			"domain": "schufa.de",
 			"addr": "*",
 			"sdid": "schufa.de",
