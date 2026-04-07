@@ -14,6 +14,7 @@ All notable changes to this project will be documented in this file.
 
 - Added Russian translation.
 - Added Slovak translation (#562).
+- Updated default rules and favicons (#561, #570, #573, #576).
 
 ## 6.2.0 (2025-09-18)
 
