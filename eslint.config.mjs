@@ -1,4 +1,5 @@
 import { defineConfig, globalIgnores } from "eslint/config";
+import css from "@eslint/css";
 import eslintPluginUnicorn from "eslint-plugin-unicorn";
 import globals from "globals";
 // Currently not compatible with ESlint 10 https://github.com/import-js/eslint-plugin-import/issues/3227
@@ -383,6 +384,16 @@ export default defineConfig([
 		],
 		languageOptions: {
 			allowTrailingCommas: true,
+		},
+	}, {
+		name: "CSS",
+		files: ["**/*.css"],
+		language: "css/css",
+		plugins: { css },
+		extends: ["css/recommended"],
+		rules: {
+			"css/no-invalid-properties": ["error", { allowUnknownVariables: true }],
+			"css/use-baseline": ["error", { allowProperties: ["user-select"] }],
 		},
 	},
 ]);
