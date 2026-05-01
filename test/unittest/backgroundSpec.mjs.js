@@ -9,22 +9,31 @@
 
 // @ts-check
 
-import "../../content/background.mjs.js";
 import { FakeMessageHeader, fakeBrowser } from "../helpers/initWebExtensions.mjs.js";
+import Logging from "../../modules/logging.mjs.js";
 import SignRules from "../../modules/dkim/signRules.mjs.js";
 import expect from "../helpers/chaiUtils.mjs.js";
+import { isNodeJs } from "../helpers/testUtils.mjs.js";
 import prefs from "../../modules/preferences.mjs.js";
 import sinon from "../helpers/sinonUtils.mjs.js";
 
+// Ensure to load the following only after the faked globals are available.
+await import("../../content/background.mjs.js");
+// Disable logging in tests.
+Logging.setLogLevel(Logging.Level.Off);
 
 describe("background [unittest]", function () {
 	before(function () {
-		globalThis.addEventListener = sinon.spy();
+		if (isNodeJs()) {
+			globalThis.addEventListener = sinon.spy();
+		}
 	});
 
 	beforeEach(function () {
-		// @ts-expect-error
-		navigator.onLine = true;
+		if (isNodeJs()) {
+			// @ts-expect-error
+			navigator.onLine = true;
+		}
 	});
 
 	afterEach(async function () {
@@ -59,6 +68,11 @@ describe("background [unittest]", function () {
 		});
 
 		it("An e-mail with DKIM (TEMPFAIL)", async function () {
+			if (!isNodeJs()) {
+				// eslint-disable-next-line no-invalid-this
+				this.skip();
+			}
+
 			const msg = await fakeBrowser.messages.addMsg("rfc6376-A.2.eml");
 			// @ts-expect-error
 			navigator.onLine = false;

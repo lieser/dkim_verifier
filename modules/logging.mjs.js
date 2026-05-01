@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2023;2025 Philippe Lieser
+ * Copyright (c) 2020-2023;2025-2026 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -51,6 +51,7 @@ class Logger {
 export default class Logging {
 	static get Level() {
 		return /** @type {const} */ ({
+			Off: 80,
 			Fatal: 70,
 			Error: 60,
 			Warn: 50,
