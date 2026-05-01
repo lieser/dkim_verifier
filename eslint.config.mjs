@@ -2,6 +2,7 @@ import { defineConfig, globalIgnores } from "eslint/config";
 import css from "@eslint/css";
 import eslintPluginUnicorn from "eslint-plugin-unicorn";
 import globals from "globals";
+import html from "@html-eslint/eslint-plugin";
 // Currently not compatible with ESlint 10 https://github.com/import-js/eslint-plugin-import/issues/3227
 // import importPlugin from "eslint-plugin-import";
 import js from "@eslint/js";
@@ -384,6 +385,36 @@ export default defineConfig([
 		],
 		languageOptions: {
 			allowTrailingCommas: true,
+		},
+	}, {
+		name: "HTML",
+		files: ["**/*.html"],
+		language: "html/html",
+		plugins: { html },
+		extends: ["html/recommended"],
+		rules: {
+			// Best Practice
+			"html/css-no-empty-blocks": "warn",
+			"html/head-order": "warn",
+			"html/no-duplicate-class": "warn",
+			"html/no-duplicate-in-head": "warn",
+			"html/no-invalid-attr-value": "warn",
+			"html/no-invalid-entity": "warn",
+			"html/no-nested-interactive": "warn",
+			"html/no-script-style-type": "warn",
+			"html/no-target-blank": "warn",
+			"html/no-whitespace-only-children": "warn",
+			"html/require-details-summary": "warn",
+			"html/require-explicit-size": "warn",
+			"html/require-meta-charset": "warn",
+			"html/svg-require-viewbox": "warn",
+			// SEO
+			"html/require-lang": "off",
+			"html/require-title": "off",
+			// Accessibility
+			// Style
+			"html/attrs-newline": "off",
+			"html/indent": "off",
 		},
 	}, {
 		name: "CSS",
