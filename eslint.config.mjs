@@ -1,31 +1,21 @@
+import { defineConfig, globalIgnores } from "eslint/config";
 import eslintPluginUnicorn from "eslint-plugin-unicorn";
 import globals from "globals";
-import importPlugin from "eslint-plugin-import";
+// Currently not compatible with ESlint 10 https://github.com/import-js/eslint-plugin-import/issues/3227
+// import importPlugin from "eslint-plugin-import";
 import js from "@eslint/js";
 import jsdoc from "eslint-plugin-jsdoc";
 import json from "@eslint/json";
 import mocha from "eslint-plugin-mocha";
-import mozilla from "eslint-plugin-mozilla";
+// Requires microsoft/eslint-plugin-sdl, which is not compatible with ESLint 10 (https://github.com/microsoft/eslint-plugin-sdl/issues/92).
+// import mozilla from "eslint-plugin-mozilla";
 import stylistic from "@stylistic/eslint-plugin";
 
 
-export default [
+export default defineConfig([
+	globalIgnores(["thirdparty/"]),
 	{
-		ignores: ["thirdparty/"],
-	}, {
-		files: ["**/*.js", "**/*.mjs"],
-		...js.configs.recommended,
-	}, {
-		files: ["**/*.js", "**/*.mjs"],
-		...jsdoc.configs["flat/recommended-typescript-flavor"],
-	}, {
-		files: ["**/*.js", "**/*.mjs"],
-		...eslintPluginUnicorn.configs.recommended,
-	}, {
-		files: ["**/*.js", "**/*.mjs"],
-		ignores: ["eslint.config.mjs"],
-		...importPlugin.flatConfigs.recommended,
-	}, {
+		name: "Stylistic plugin",
 		files: ["**/*.js", "**/*.mjs"],
 		...stylistic.configs.customize({
 			braceStyle: "1tbs",
@@ -33,13 +23,21 @@ export default [
 			semi: true,
 		}),
 	}, {
+		name: "Default JS",
 		files: ["**/*.js", "**/*.mjs"],
 		plugins: {
 			"@stylistic": stylistic,
+			js,
 			jsdoc,
 			mocha,
-			mozilla,
+			// mozilla,
+			"unicorn": eslintPluginUnicorn,
 		},
+		extends: [
+			"js/recommended",
+			"jsdoc/recommended-typescript-flavor",
+			"unicorn/recommended",
+		],
 
 		languageOptions: {
 			ecmaVersion: 2024,
@@ -52,6 +50,10 @@ export default [
 			parserOptions: {
 				ecmaFeatures: {},
 			},
+		},
+
+		linterOptions: {
+			reportUnusedInlineConfigs: "warn",
 		},
 
 		rules: {
@@ -96,7 +98,6 @@ export default [
 			"no-alert": "error",
 			"no-array-constructor": "error",
 			"no-caller": "warn",
-			"no-confusing-arrow": "warn",
 			"no-div-regex": "warn",
 			"no-else-return": "warn",
 			"no-empty-function": "warn",
@@ -105,7 +106,6 @@ export default [
 			"no-extend-native": "warn",
 			"no-extra-bind": "warn",
 			"no-extra-label": "warn",
-			"no-floating-decimal": "warn",
 			"no-implicit-coercion": "warn",
 			"no-implied-eval": "error",
 			"no-invalid-this": "warn",
@@ -123,13 +123,12 @@ export default [
 			"no-nested-ternary": "warn",
 			"no-new": "warn",
 			"no-new-func": "warn",
-			"no-new-object": "warn",
 			"no-new-wrappers": "warn",
+			"no-object-constructor": "warn",
 			"no-octal-escape": "warn",
 			"no-param-reassign": "warn",
 			"no-proto": "warn",
 			"no-return-assign": "warn",
-			"no-return-await": "warn",
 			"no-script-url": "warn",
 			"no-sequences": "warn",
 			"no-shadow": "warn",
@@ -241,6 +240,7 @@ export default [
 			"unicorn/prevent-abbreviations": "off",
 
 			// Mozilla
+			/*
 			"mozilla/avoid-removeChild": "warn",
 			"mozilla/consistent-if-bracing": "warn",
 			"mozilla/no-compare-against-boolean-literals": "warn",
@@ -249,8 +249,10 @@ export default [
 			"mozilla/use-includes-instead-of-indexOf": "warn",
 			"mozilla/use-ownerGlobal": "warn",
 			"mozilla/use-returnValue": "warn",
+			*/
 		},
 	}, {
+		name: "Content JS",
 		files: ["content/**/*.js", "content/**/*.mjs"],
 		languageOptions: {
 			globals: {
@@ -259,19 +261,30 @@ export default [
 			},
 		},
 	}, {
+		name: "Experiments JS",
 		files: ["experiments/**/*.js", "experiments/**/*.mjs"],
 		plugins: {
-			mozilla,
+			// mozilla,
 		},
 		languageOptions: {
 			globals: {
-				...mozilla.environments.privileged.globals,
-				...mozilla.environments.specific.globals,
+				// ...mozilla.environments.privileged.globals,
+				// ...mozilla.environments.specific.globals,
+				Cc: "readonly",
+				ChromeUtils: "readonly",
+				ChromeWorker: "readonly",
+				Ci: "readonly",
+				console: "readonly",
+				Cr: "readonly",
+				dump: "readonly",
+				PathUtils: "readonly",
+				Services: "readonly",
 			},
 		},
 		rules: {
 			"unicorn/prefer-module": "off",
 
+			/*
 			"mozilla/no-define-cc-etc": "warn",
 			"mozilla/no-throw-cr-literal": "warn",
 			"mozilla/no-useless-parameters": "warn",
@@ -286,13 +299,16 @@ export default [
 			"mozilla/use-chromeutils-import": "warn",
 			"mozilla/use-default-preference-values": "warn",
 			"mozilla/use-services": "warn",
+			*/
 		},
 	}, {
+		name: "Experiments JS (script files)",
 		files: ["experiments/**/*.js"],
 		languageOptions: {
 			sourceType: "script",
 		},
 	}, {
+		name: "JS modules",
 		files: ["modules/**/*.js", "modules/**/*.mjs"],
 		languageOptions: {
 			globals: {
@@ -301,6 +317,7 @@ export default [
 			},
 		},
 	}, {
+		name: "Node scripts",
 		files: ["scripts/**/*.js", "scripts/**/*.mjs"],
 		languageOptions: {
 			globals: {
@@ -308,6 +325,7 @@ export default [
 			},
 		},
 	}, {
+		name: "Test helper",
 		files: ["test/helpers/**/*.js", "test/helpers/**/*.mjs"],
 		languageOptions: {
 			globals: {
@@ -316,10 +334,14 @@ export default [
 			},
 		},
 	}, {
+		name: "Unittest",
 		files: ["test/unittest/**/*.js", "test/unittest/**/*.mjs"],
-		...mocha.configs.flat.recommended,
-	}, {
-		files: ["test/unittest/**/*.js", "test/unittest/**/*.mjs"],
+		plugins: {
+			mocha,
+		},
+		extends: [
+			"mocha/recommended",
+		],
 		languageOptions: {
 			globals: {
 				...globals["shared-node-browser"],
@@ -333,6 +355,7 @@ export default [
 			"unicorn/consistent-function-scoping": "off",
 		},
 	}, {
+		name: "ESLint config",
 		files: ["eslint.config.mjs"],
 		languageOptions: {
 			globals: {
@@ -345,6 +368,7 @@ export default [
 		language: "json/json",
 		...json.configs.recommended,
 	}, {
+		name: "JSONC",
 		files: [
 			".vscode/**/*.json",
 			"_locales/**/*.json",
@@ -352,6 +376,7 @@ export default [
 		],
 		language: "json/jsonc",
 	}, {
+		name: "JSON with tailing commas",
 		files: [
 			".vscode/**/*.json",
 			"jsconfig.json",
@@ -360,4 +385,4 @@ export default [
 			allowTrailingCommas: true,
 		},
 	},
-];
+]);

@@ -62,19 +62,19 @@ function unwrap(wrapper) {
  */
 class DKIMWarningsTooltipXUL {
 	/**
+	 * Whether a separator should be added before the warnings.
+	 *
+	 * @protected
+	 */
+	_warningsSeparator = false;
+
+	/**
 	 * Creates an instance of DKIMWarningsTooltipXUL.
 	 *
 	 * @param {Document} document
 	 * @param {XULElement|void} element - optional underlying element, will be created if not given
 	 */
 	constructor(document, element) {
-		/**
-		 * Whether a separator should be added before the warnings.
-		 *
-		 * @protected
-		 */
-		this._warningsSeparator = false;
-
 		if (element) {
 			// @ts-expect-error
 			this.element = element;
@@ -128,19 +128,19 @@ class DKIMWarningsTooltipXUL {
  */
 class DKIMTooltip {
 	/**
+	 * Whether a separator should be added before the warnings.
+	 *
+	 * @protected
+	 */
+	_warningsSeparator = false;
+
+	/**
 	 * Creates an instance of DKIMTooltip.
 	 *
 	 * @param {Document} document
 	 * @param {HTMLElement|void} element - optional underlying element, will be created if not given
 	 */
 	constructor(document, element) {
-		/**
-		 * Whether a separator should be added before the warnings.
-		 *
-		 * @protected
-		 */
-		this._warningsSeparator = false;
-
 		if (element) {
 			// @ts-expect-error
 			this.element = element;
@@ -633,8 +633,7 @@ class DkimHeaderRow {
 	 * @returns {void}
 	 */
 	static add(document) {
-		let headerRowContainer = document.getElementById("expandedHeaders2");
-		headerRowContainer = document.getElementById("extraHeadersArea");
+		const headerRowContainer = document.getElementById("extraHeadersArea");
 		if (!headerRowContainer) {
 			throw new Error("Could not find the expandedHeaders2 element");
 		}

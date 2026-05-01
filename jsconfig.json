@@ -32,7 +32,6 @@
         "isolatedModules": true,
     },
     "exclude": [
-        "eslint.config.mjs",
         "node_modules",
         "thirdparty",
     ],

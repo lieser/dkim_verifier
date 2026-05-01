@@ -555,7 +555,7 @@ class DkimSignatureHeader {
 						break;
 					}
 					default: {
-						throw new Error("invalid error.illformed_i.treatAs");
+						throw new Error("invalid error.illformed_i.treatAs", { cause: error });
 					}
 				}
 			} else {
@@ -625,12 +625,12 @@ class DkimSignatureHeader {
 		// get selector subdividing the namespace for the "d=" (domain) tag (plain-text; REQUIRED)
 		let SelectorTag;
 		try {
-			SelectorTag = RfcParser.parseTagValue(tagMap, "s", `${RfcParser.sub_domain}(?:\\.${RfcParser.sub_domain})*`);
+			SelectorTag = RfcParser.parseTagValue(tagMap, "s", String.raw`${RfcParser.sub_domain}(?:\.${RfcParser.sub_domain})*`);
 		} catch (error) {
 			if (error instanceof DKIM_SigError && error.errorType === "DKIM_SIGERROR_ILLFORMED_S") {
 				// try to parse selector in a more relaxed way
 				const sub_domain_ = "(?:[A-Za-z0-9_](?:[A-Za-z0-9_-]*[A-Za-z0-9_])?)";
-				SelectorTag = RfcParser.parseTagValue(tagMap, "s", `${sub_domain_}(?:\\.${sub_domain_})*`);
+				SelectorTag = RfcParser.parseTagValue(tagMap, "s", String.raw`${sub_domain_}(?:\.${sub_domain_})*`);
 				switch (prefs["error.illformed_s.treatAs"]) {
 					case 0: { // error
 						throw error;
@@ -643,7 +643,7 @@ class DkimSignatureHeader {
 						break;
 					}
 					default: {
-						throw new Error("invalid error.illformed_s.treatAs");
+						throw new Error("invalid error.illformed_s.treatAs", { cause: error });
 					}
 				}
 			} else {
@@ -701,7 +701,7 @@ class DkimSignatureHeader {
 		// get Copied header fields (dkim-quoted-printable, but see description; OPTIONAL, default is null)
 		const hdr_name_FWS = `(?:(?:[!-9<-~]${RfcParser.FWS}?)+)`;
 		const sig_z_tag_copy = `${hdr_name_FWS + RfcParser.FWS}?:${qp_hdr_value}`;
-		const sig_z_tag = `${sig_z_tag_copy}(\\|${RfcParser.FWS}?${sig_z_tag_copy})*`;
+		const sig_z_tag = String.raw`${sig_z_tag_copy}(\|${RfcParser.FWS}?${sig_z_tag_copy})*`;
 		const CopyHeaderFieldsTag = RfcParser.parseTagValue(tagMap, "z", sig_z_tag);
 		if (CopyHeaderFieldsTag === null) {
 			return null;
@@ -891,7 +891,7 @@ class DkimKey {
 	 */
 	static #parseServiceType(tagMap) {
 		// get Service Type (plain-text; OPTIONAL; default is "*")
-		const key_s_tag_type = `(?:email|\\*|${hyphenated_word})`;
+		const key_s_tag_type = String.raw`(?:email|\*|${hyphenated_word})`;
 		const key_s_tag = `${key_s_tag_type}(?:${RfcParser.FWS}?:${RfcParser.FWS}?${key_s_tag_type})*`;
 		const serviceTypeTag = RfcParser.parseTagValue(tagMap, "s", key_s_tag, 2);
 		if (serviceTypeTag === null) {
@@ -1535,7 +1535,6 @@ export default class Verifier {
 	 * @returns {Promise<dkimSigResultV2[]>}
 	 */
 	async #processSignatures(msg) {
-		let iDKIMSignatureIdx = 0;
 		// contains the result of all DKIM-Signatures which have been verified
 		/** @type {dkimSigResultV2[]} */
 		const sigResults = [];
@@ -1554,7 +1553,7 @@ export default class Verifier {
 		// SHOULD NOT be reordered and SHOULD be prepended to the message."
 		//
 		// The first added signature is verified first.
-		for (iDKIMSignatureIdx = dkimSignatureHeaders.length - 1; iDKIMSignatureIdx >= 0; iDKIMSignatureIdx--) {
+		for (let iDKIMSignatureIdx = dkimSignatureHeaders.length - 1; iDKIMSignatureIdx >= 0; iDKIMSignatureIdx--) {
 			let dkimHeader;
 			let sigRes;
 			try {

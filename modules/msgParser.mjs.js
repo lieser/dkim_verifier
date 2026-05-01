@@ -229,7 +229,7 @@ export default class MsgParser {
 		}
 		const headerValue = header.slice(headerStart.length);
 
-		const listId = `${RfcParser.dot_atom_text}\\.${RfcParser.dot_atom_text}`;
+		const listId = String.raw`${RfcParser.dot_atom_text}\.${RfcParser.dot_atom_text}`;
 		// Note: adapted according to Errata ID: 3951
 		const regExpMatch = headerValue.match(new RegExp(`^(?:${RfcParser.phrase}|${RfcParser.CFWS})?<(${listId})>\r\n$`));
 		if (regExpMatch !== null && regExpMatch[1]) {

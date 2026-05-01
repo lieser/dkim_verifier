@@ -140,6 +140,7 @@ export class BasePreferences {
 		if (!Object.hasOwn(BasePreferences.prototype, name)) {
 			throw new Error(`Can not get nonexisting preference "${name}"`);
 		}
+		// eslint-disable-next-line jsdoc/reject-any-type
 		/** @type {any} */
 		// eslint-disable-next-line unicorn/no-this-assignment
 		const that = this;
@@ -568,6 +569,7 @@ export class BasePreferences {
 		if (name === "dkim.enable" || name === "arh.read") {
 			return this.#tryGetNumberValue(`account.${account}.${name}`, 0);
 		}
+		// eslint-disable-next-line jsdoc/reject-any-type
 		/** @type {any} */
 		// eslint-disable-next-line unicorn/no-this-assignment
 		const that = this;
@@ -723,6 +725,7 @@ export class StorageLocalPreferences extends BasePreferences {
 	 * @override
 	 */
 	async clear() {
+		// eslint-disable-next-line jsdoc/reject-any-type
 		/** @type {{scope: string, data: any}[]} */
 		const dataStorages = [];
 		for (const dataStorageScope of StorageLocalPreferences.dataStorageScopes) {

@@ -114,8 +114,10 @@ function readARHs(arHeaders, account) {
  */
 function arhDKIM_to_dkimSigResultV2(arhDKIM) {
 	/** @type {dkimSigResultV2} */
-	const dkimSigResult = {};
-	dkimSigResult.version = "2.0";
+	const dkimSigResult = {
+		version: "2.0",
+		result: "PERMFAIL",
+	};
 	switch (arhDKIM.result) {
 		case "none": {
 			dkimSigResult.result = "none";

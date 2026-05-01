@@ -15,6 +15,7 @@
 // @ts-check
 /* eslint-disable no-magic-numbers */
 /* eslint-disable require-await */
+/* eslint-disable jsdoc/reject-any-type */
 
 import { deepCopy, readTestFile, readTextFile } from "./testUtils.mjs.js";
 import ExtensionUtils from "../../modules/extensionUtils.mjs.js";
@@ -215,10 +216,10 @@ class FakeStorage {
 
 	constructor() {
 		this.local.onChanged.addListener(
-			/** @type {(changes: any) => void} */
+			/** @type {(changes: { [key: string]: browser.storage.StorageChange }) => void} */
 			(changes) => { this.onChanged.addListener.yield(changes, "local"); });
 		this.managed.onChanged.addListener(
-			/** @type {(changes: any) => void} */
+			/** @type {(changes: { [key: string]: browser.storage.StorageChange }) => void} */
 			(changes) => { this.onChanged.addListener.yield(changes, "managed"); });
 	}
 

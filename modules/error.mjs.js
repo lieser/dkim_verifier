@@ -20,7 +20,7 @@ export class DKIM_SigError extends Error {
 	 * DKIM signature error (PERMFAIL).
 	 *
 	 * @param {string} errorType
-	 * @param {any[]} [errorStrParams]
+	 * @param {string[]} [errorStrParams]
 	 */
 	constructor(errorType, errorStrParams = []) {
 		super(errorType);
@@ -42,7 +42,7 @@ export class DKIM_TempError extends Error {
 	 * Temporary DKIM signature error (PERMFAIL).
 	 *
 	 * @param {string} errorType
-	 * @param {any[]} [errorStrParams]
+	 * @param {string[]} [errorStrParams]
 	 */
 	constructor(errorType, errorStrParams = []) {
 		super(errorType);

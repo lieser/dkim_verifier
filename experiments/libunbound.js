@@ -28,7 +28,7 @@
  * The type code asked for.
  * @property {number} qclass
  * Class code (CLASS IN (internet)).
- * @property {any[]} data
+ * @property {string[]} data
  * Array of converted rdata items. Empty for unsupported RR types.
  * Currently supported types: TXT
  * @property {number[][]} data_raw
@@ -69,9 +69,10 @@ class Deferred {
 }
 
 class LibunboundWorker {
+	/** @private */
+	_maxCallId = 0;
+
 	constructor() {
-		/** @private */
-		this._maxCallId = 0;
 		/**
 		 * @private
 		 * @type {Map<number, Deferred<ub_result|void>>}

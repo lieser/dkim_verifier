@@ -129,8 +129,11 @@ export default class ArhParser {
 			new RegExp(`^Authentication-Results:${token.CFWS_op}`, "i"), ""));
 
 		/** @type {ArhHeader} */
-		const res = {};
-		res.resinfo = [];
+		const res = {
+			authserv_id: "",
+			authres_version: 1,
+			resinfo: [],
+		};
 		let reg_match;
 
 		// get authserv-id and authres-version
@@ -147,7 +150,6 @@ export default class ArhParser {
 			if (!relaxedParsing) {
 				throw error;
 			}
-			res.authserv_id = "";
 			authResHeaderRef.value = `;${authResHeaderRef.value}`;
 		}
 
@@ -239,7 +241,7 @@ function parseResInfo(str, relaxedParsing, token) {
 	// https://learn.microsoft.com/en-us/defender-office-365/message-headers-eop-mdo
 	if (relaxedParsing) {
 		const actionspec_p = `action${token.CFWS_op}=${token.CFWS_op}${token.value_cp}`;
-		reg_match = match_o(str, actionspec_p, token);
+		match_o(str, actionspec_p, token);
 	}
 
 	// get propspec (optional)
@@ -265,7 +267,7 @@ function parseProperties(str, relaxedParsing, token) {
 	}
 	const special_smtp_verb_p = "mailfrom|rcptto";
 	const property_p = `${special_smtp_verb_p}|${Token.Keyword}`;
-	const propspec_p = `(${Token.Keyword})${token.CFWS_op}\\.${token.CFWS_op}(${property_p})${token.CFWS_op}=${token.CFWS_op}(?:${pvalue_p})`;
+	const propspec_p = String.raw`(${Token.Keyword})${token.CFWS_op}\.${token.CFWS_op}(${property_p})${token.CFWS_op}=${token.CFWS_op}(?:${pvalue_p})`;
 
 	/** @type {ArhProperties} */
 	const properties = {

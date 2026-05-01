@@ -23,7 +23,6 @@ export class Deferred {
 		this.promise = new Promise((resolve, reject) => {
 			/** @type {(reason: T) => void} */
 			this.resolve = resolve;
-			/** @type {(reason: any) => void} */
 			this.reject = reject;
 		});
 	}

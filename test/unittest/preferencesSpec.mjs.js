@@ -354,7 +354,7 @@ describe("preferences [unittest]", function () {
 			const addListener = fakeBrowser.storage.onChanged.addListener;
 			sinon.replace(fakeBrowser.storage.onChanged, "addListener", sinon.stub());
 
-			/** @type {{[x: string]: any}[]} */
+			/** @type {{[x: string]: browser.storage.StorageChange}[]} */
 			const storageCalls = [];
 			browser.storage.onChanged.addListener(x => storageCalls.push(structuredClone(x)));
 			/**
@@ -404,7 +404,7 @@ describe("preferences [unittest]", function () {
 			).to.be.equal("fooBar");
 		});
 
-		// eslint-disable-next-line mocha/no-skipped-tests
+		// eslint-disable-next-line mocha/no-pending-tests
 		xit("safeGetLocalStorage - single timeout", async function () {
 			// eslint-disable-next-line no-invalid-this
 			this.timeout(5000);
@@ -428,7 +428,7 @@ describe("preferences [unittest]", function () {
 			).to.be.equal("fooBar");
 		});
 
-		// eslint-disable-next-line mocha/no-skipped-tests
+		// eslint-disable-next-line mocha/no-pending-tests
 		xit("safeGetLocalStorage - complete timeout", async function () {
 			// eslint-disable-next-line no-invalid-this
 			this.timeout(20_000);

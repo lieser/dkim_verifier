@@ -69,8 +69,7 @@ this.jsdns = class extends ExtensionCommon.ExtensionAPI {
 					if (res.rcode !== undefined) {
 						resRcode = res.rcode;
 					} else if (res.queryError !== undefined) {
-						let error = "";
-						error = typeof res.queryError === "string"
+						const error = typeof res.queryError === "string"
 							? res.queryError
 							: context.extension.localeData.localizeMessage(res.queryError[0] ?? "DKIM_DNSERROR_UNKNOWN", res.queryError[1]) || (res.queryError[0] ?? "Unknown DNS error");
 						console.warn(`JSDNS failed with: ${error}`);

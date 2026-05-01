@@ -10,6 +10,7 @@
 import { Deferred } from "../modules/utils.mjs.js";
 
 // @ts-check
+/* eslint-disable jsdoc/reject-any-type */
 
 /**
  * @param {string} id

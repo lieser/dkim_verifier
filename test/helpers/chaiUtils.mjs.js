@@ -8,6 +8,7 @@
  */
 
 // @ts-check
+/* eslint-disable jsdoc/reject-any-type */
 
 /** @type {import("chai").expect} */
 // @ts-expect-error
