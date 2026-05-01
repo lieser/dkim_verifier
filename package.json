@@ -37,7 +37,7 @@
 		"@stylistic/eslint-plugin": "^4.2.0",
 		"@types/chai": "^5.0.1",
 		"@types/mocha": "^10.0.10",
-		"@types/node": "^22.10.7",
+		"@types/node": "^25.6.0",
 		"@types/sinon": "^17.0.3",
 		"@types/tabulator-tables": "^6.2.4",
 		"@types/thunderbird-webext-browser": "^127.0.0",
@@ -58,9 +58,9 @@
 		"mocha-multi": "^1.1.7",
 		"simple-git": "^3.27.0",
 		"sinon": "^19.0.2",
-		"ts-essentials": "^10.0.4",
+		"ts-essentials": "^10.2.0",
 		"tsc-silent": "^1.2.2",
-		"typescript": "^5.7.3"
+		"typescript": "^6.0.3"
 	},
 	"overrides": {},
 	"engines": {

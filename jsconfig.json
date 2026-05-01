@@ -8,6 +8,10 @@
             "dom",
             "DOM.Iterable",
         ],
+        "types": [
+            "mocha",
+            "thunderbird-webext-browser",
+        ],
         // Type Checking
         "strict": true,
         "exactOptionalPropertyTypes": true,
@@ -20,7 +24,7 @@
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         // Modules
-        "moduleResolution": "node",
+        "moduleResolution": "bundler",
         // JavaScript Support
         "checkJs": true,
         // Interop Constraints
