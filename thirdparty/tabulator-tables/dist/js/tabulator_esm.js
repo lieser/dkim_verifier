@@ -1,4 +1,4 @@
-/* Tabulator v6.3.1 (c) Oliver Folkerd 2025 */
+/* Tabulator v6.4.0 (c) Oliver Folkerd 2026 */
 class CoreFeature{
 
 	constructor(table){
@@ -447,8 +447,9 @@ let Popup$1 = class Popup extends CoreFeature{
 		return this;
 	}
 	
+	/** @param {KeyboardEvent} e */
 	_escapeCheck(e){
-		if(e.keyCode == 27){
+		if(e.key == 27){
 			this.hide();
 		}
 	}
@@ -3398,15 +3399,12 @@ class Row extends CoreFeature{
 			}
 			
 			newRowData = this.chain("row-data-changing", [this, tempData, updatedData], null, updatedData);
-			
-			//set data
-			for (let attrname in newRowData) {
-				this.data[attrname] = newRowData[attrname];
-			}
-			
-			this.dispatch("row-data-save-after", this);
-			
-			//update affected cells only
+
+			// compute cells to update
+			// This must be done prior to updating the row data otherwise uninitialized cells get
+			// generated directly with the updated data, which prevents the run of callbacks
+			// registered on cells updates (e.g. mutators)
+			const cellsToUpdate = [];
 			for (let attrname in updatedData) {
 				
 				let columns = this.table.columnManager.getColumnsByFieldRoot(attrname);
@@ -3417,15 +3415,27 @@ class Row extends CoreFeature{
 					if(cell){
 						let value = column.getFieldValue(newRowData);
 						if(cell.getValue() !== value){
-							cell.setValueProcessData(value);
-							
-							if(visible){
-								cell.cellRendered();
-							}
+							cellsToUpdate.push([cell, value]);
 						}
 					}
 				});
 			}
+			
+			//set data
+			for (let attrname in newRowData) {
+				this.data[attrname] = newRowData[attrname];
+			}
+			
+			this.dispatch("row-data-save-after", this);
+			
+			//update affected cells only
+			cellsToUpdate.forEach(([cell, value]) => {
+				cell.setValueProcessData(value);
+							
+				if(visible){
+					cell.cellRendered();
+				}
+			});
 			
 			//Partial reinitialization if visible
 			if(visible){
@@ -4470,11 +4480,11 @@ class DataTree extends Module{
 
 		var children = isArray || (!isArray && typeof childArray === "object" && childArray !== null);
 
-		if(!children && row.modules.dataTree && row.modules.dataTree.branchEl){
+		if(!children && row.modules.dataTree && row.modules.dataTree.branchEl && row.modules.dataTree.branchEl.parentNode){
 			row.modules.dataTree.branchEl.parentNode.removeChild(row.modules.dataTree.branchEl);
 		}
 
-		if(!children && row.modules.dataTree && row.modules.dataTree.controlEl){
+		if(!children && row.modules.dataTree && row.modules.dataTree.controlEl && row.modules.dataTree.controlEl.parentNode){
 			row.modules.dataTree.controlEl.parentNode.removeChild(row.modules.dataTree.controlEl);
 		}
 
@@ -5416,7 +5426,7 @@ function maskInput(el, options){
 		var index = el.value.length,
 		char = e.key;
 
-		if(e.keyCode > 46 && !e.ctrlKey && !e.metaKey){
+		if(e.key.length === 1 && !e.ctrlKey && !e.metaKey){
 			if(index >= mask.length){
 				e.preventDefault();
 				e.stopPropagation();
@@ -5456,7 +5466,7 @@ function maskInput(el, options){
 	});
 
 	el.addEventListener("keyup", (e) => {
-		if(e.keyCode > 46){
+		if(e.key.length === 1){
 			if(options.maskAutoFill){
 				fillSymbols(el.value.length);
 			}
@@ -5525,18 +5535,18 @@ function input(cell, onRendered, success, cancel, editorParams){
 
 	//submit new value on enter
 	input.addEventListener("keydown", function(e){
-		switch(e.keyCode){
-			// case 9:
-			case 13:
+		switch(e.key){
+			// case "Tab":
+			case "Enter":
 				onChange();
 				break;
 
-			case 27:
+			case "Escape":
 				cancel();
 				break;
 
-			case 35:
-			case 36:
+			case "End":
+			case "Home":
 				e.stopPropagation();
 				break;
 		}
@@ -5630,19 +5640,19 @@ function textarea$1(cell, onRendered, success, cancel, editorParams){
 
 	input.addEventListener("keydown", function(e){
 
-		switch(e.keyCode){
+		switch(e.key){
 
-			case 13:
+			case "Enter":
 				if(e.shiftKey && editorParams.shiftEnterSubmit){
 					onChange();
 				}
 				break;
 
-			case 27:
+			case "Escape":
 				cancel();
 				break;
 
-			case 38: //up arrow
+			case "ArrowUp":
 				if(vertNav == "editor" || (vertNav == "hybrid" && input.selectionStart)){
 					e.stopImmediatePropagation();
 					e.stopPropagation();
@@ -5650,15 +5660,15 @@ function textarea$1(cell, onRendered, success, cancel, editorParams){
 
 				break;
 
-			case 40: //down arrow
+			case "ArrowDown":
 				if(vertNav == "editor" || (vertNav == "hybrid" && input.selectionStart !== input.value.length)){
 					e.stopImmediatePropagation();
 					e.stopPropagation();
 				}
 				break;
 
-			case 35:
-			case 36:
+			case "End":
+			case "Home":
 				e.stopPropagation();
 				break;
 		}
@@ -5748,26 +5758,26 @@ function number$1(cell, onRendered, success, cancel, editorParams){
 
 	//submit new value on enter
 	input.addEventListener("keydown", function(e){
-		switch(e.keyCode){
-			case 13:
-			// case 9:
+		switch(e.key){
+			case "Enter":
+			// case "Tab":
 				onChange();
 				break;
 
-			case 27:
+			case "Escape":
 				cancel();
 				break;
 
-			case 38: //up arrow
-			case 40: //down arrow
+			case "ArrowUp":
+			case "ArrowDown":
 				if(vertNav == "editor"){
 					e.stopImmediatePropagation();
 					e.stopPropagation();
 				}
 				break;
 
-			case 35:
-			case 36:
+			case "End":
+			case "Home":
 				e.stopPropagation();
 				break;
 		}
@@ -5847,13 +5857,13 @@ function range(cell, onRendered, success, cancel, editorParams){
 	
 	//submit new value on enter
 	input.addEventListener("keydown", function(e){
-		switch(e.keyCode){
-			case 13:
-			// case 9:
+		switch(e.key){
+			case "Enter":
+			// case "Tab":
 				onChange();
 				break;
 			
-			case 27:
+			case "Escape":
 				cancel();
 				break;
 		}
@@ -5973,23 +5983,23 @@ function date$1(cell, onRendered, success, cancel, editorParams){
 	
 	//submit new value on enter
 	input.addEventListener("keydown", function(e){
-		switch(e.keyCode){
-			// case 9:
-			case 13:
+		switch(e.key){
+			// case "Tab":
+			case "Enter":
 				onChange();
 				break;
 			
-			case 27:
+			case "Escape":
 				cancel();
 				break;
 			
-			case 35:
-			case 36:
+			case "End":
+			case "Home":
 				e.stopPropagation();
 				break;
 			
-			case 38: //up arrow
-			case 40: //down arrow
+			case "ArrowUp":
+			case "ArrowDown":
 				if(vertNav == "editor"){
 					e.stopImmediatePropagation();
 					e.stopPropagation();
@@ -6100,23 +6110,23 @@ function time$1(cell, onRendered, success, cancel, editorParams){
 	
 	//submit new value on enter
 	input.addEventListener("keydown", function(e){
-		switch(e.keyCode){
-			// case 9:
-			case 13:
+		switch(e.key){
+			// case "Tab":
+			case "Enter":
 				onChange();
 				break;
 			
-			case 27:
+			case "Escape":
 				cancel();
 				break;
 			
-			case 35:
-			case 36:
+			case "End":
+			case "Home":
 				e.stopPropagation();
 				break;
 
-			case 38: //up arrow
-			case 40: //down arrow
+			case "ArrowUp":
+			case "ArrowDown":
 				if(vertNav == "editor"){
 					e.stopImmediatePropagation();
 					e.stopPropagation();
@@ -6226,23 +6236,23 @@ function datetime$2(cell, onRendered, success, cancel, editorParams){
 	
 	//submit new value on enter
 	input.addEventListener("keydown", function(e){
-		switch(e.keyCode){
-			// case 9:
-			case 13:
+		switch(e.key){
+			// case "Tab":
+			case "Enter":
 				onChange();
 				break;
 			
-			case 27:
+			case "Escape":
 				cancel();
 				break;
 			
-			case 35:
-			case 36:
+			case "End":
+			case "Home":
 				e.stopPropagation();
 				break;
 
-			case 38: //up arrow
-			case 40: //down arrow
+			case "ArrowUp":
+			case "ArrowDown":
 				if(vertNav == "editor"){
 					e.stopImmediatePropagation();
 					e.stopPropagation();
@@ -6532,35 +6542,35 @@ let Edit$1 = class Edit{
 	}
 	
 	_inputKeyDown(e){
-		switch(e.keyCode){
+		switch(e.key){
 			
-			case 38: //up arrow
+			case "ArrowUp":
 				this._keyUp(e);
 				break;
 			
-			case 40: //down arrow
+			case "ArrowDown":
 				this._keyDown(e);
 				break;
 			
-			case 37: //left arrow
-			case 39: //right arrow
+			case "ArrowLeft":
+			case "ArrowRight":
 				this._keySide(e);
 				break;
 			
-			case 13: //enter
+			case "Enter":
 				this._keyEnter();
 				break;
 			
-			case 27: //escape
+			case "Escape":
 				this._keyEsc();
 				break;
 			
-			case 36: //home
-			case 35: //end
+			case "Home":
+			case "End":
 				this._keyHomeEnd(e);
 				break;
 			
-			case 9: //tab
+			case "Tab":
 				this._keyTab(e);
 				break;
 			
@@ -6570,13 +6580,13 @@ let Edit$1 = class Edit{
 	}
 	
 	_inputKeyUp(e){
-		switch(e.keyCode){
-			case 38: //up arrow
-			case 37: //left arrow
-			case 39: //up arrow
-			case 40: //right arrow
-			case 13: //enter
-			case 27: //escape
+		switch(e.key){
+			case "ArrowUp":
+			case "ArrowLeft":
+			case "ArrowRight":
+			case "ArrowDown":
+			case "Enter":
+			case "Escape":
 				break;
 			
 			default:
@@ -6685,8 +6695,8 @@ let Edit$1 = class Edit{
 			e.preventDefault();
 			// }
 			
-			if(e.keyCode >= 38 && e.keyCode <= 90){
-				this._scrollToValue(e.keyCode);
+			if(e.key.length === 1){
+				this._scrollToValue(e.key.toUpperCase().charCodeAt(0));
 			}
 		}
 	}
@@ -7443,20 +7453,20 @@ function star$1(cell, onRendered, success, cancel, editorParams){
 
 	//allow key based navigation
 	element.addEventListener("keydown", function(e){
-		switch(e.keyCode){
-			case 39: //right arrow
+		switch(e.key){
+			case "ArrowRight":
 				changeValue(value + 1);
 				break;
 
-			case 37: //left arrow
+			case "ArrowLeft":
 				changeValue(value - 1);
 				break;
 
-			case 13: //enter
+			case "Enter":
 				success(value);
 				break;
 
-			case 27: //escape
+			case "Escape":
 				cancel();
 				break;
 		}
@@ -7563,23 +7573,23 @@ function progress$1(cell, onRendered, success, cancel, editorParams){
 
 	//allow key based navigation
 	element.addEventListener("keydown", function(e){
-		switch(e.keyCode){
-			case 39: //right arrow
+		switch(e.key){
+			case "ArrowRight":
 				e.preventDefault();
 				bar.style.width = (bar.clientWidth + element.clientWidth/100) + "px";
 				break;
 
-			case 37: //left arrow
+			case "ArrowLeft":
 				e.preventDefault();
 				bar.style.width = (bar.clientWidth - element.clientWidth/100) + "px";
 				break;
 
-			case 9: //tab
-			case 13: //enter
+			case "Tab":
+			case "Enter":
 				updateValue();
 				break;
 
-			case 27: //escape
+			case "Escape":
 				cancel();
 				break;
 
@@ -7678,10 +7688,10 @@ function tickCross$1(cell, onRendered, success, cancel, editorParams){
 	
 	//submit new value on enter
 	input.addEventListener("keydown", function(e){
-		if(e.keyCode == 13){
+		if(e.key == "Enter"){
 			success(setValue());
 		}
-		if(e.keyCode == 27){
+		if(e.key == "Escape"){
 			cancel();
 		}
 	});
@@ -7808,13 +7818,19 @@ class Edit extends Module{
 		this.subscribe("data-refreshing", this.cancelEdit.bind(this));
 		this.subscribe("clipboard-paste", this.pasteBlocker.bind(this));
 		
-		this.subscribe("keybinding-nav-prev", this.navigatePrev.bind(this, undefined));
-		this.subscribe("keybinding-nav-next", this.keybindingNavigateNext.bind(this));
-		
-		// this.subscribe("keybinding-nav-left", this.navigateLeft.bind(this, undefined));
-		// this.subscribe("keybinding-nav-right", this.navigateRight.bind(this, undefined));
-		this.subscribe("keybinding-nav-up", this.navigateUp.bind(this, undefined));
-		this.subscribe("keybinding-nav-down", this.navigateDown.bind(this, undefined));
+		if (!this.confirm("edit-nav-disabled")) {
+			this.subscribe("keybinding-nav-prev", this.navigatePrev.bind(this, undefined));
+			this.subscribe("keybinding-nav-next", this.keybindingNavigateNext.bind(this));
+			
+			// this.subscribe("keybinding-nav-left", this.navigateLeft.bind(this, undefined));
+			// this.subscribe("keybinding-nav-right", this.navigateRight.bind(this, undefined));
+			this.subscribe("keybinding-nav-up", this.navigateUp.bind(this, undefined));
+			this.subscribe("keybinding-nav-down", this.navigateDown.bind(this, undefined));
+		}
+    
+		// Add event handlers for other modules to access editing state and functionality
+		this.subscribe("edit-check-editing", this.checkEditing.bind(this));
+		this.subscribe("edit-cancel-cell", this.cancelEditEvent.bind(this));
 
 		if(Object.keys(this.table.options).includes("editorEmptyValue")){
 			this.convertEmptyValues = true;
@@ -8187,6 +8203,19 @@ class Edit extends Module{
 	getCurrentCell(){
 		return this.currentCell ? this.currentCell.getComponent() : false;
 	}
+	
+	checkEditing(){
+		return !!this.currentCell;
+	}
+	
+	cancelEditEvent(){
+		if(this.currentCell){
+			this.cancelEdit();
+			return true;
+		}
+		return false;
+	}
+	
 	
 	clearEditor(cancel){
 		var cell = this.currentCell,
@@ -11473,7 +11502,9 @@ class FrozenRows extends Module{
 
 		this.topElement.classList.add("tabulator-frozen-rows-holder");
 		
-		fragment.appendChild(document.createElement("br"));
+		// Replaced by adding padding-top to the tabulator-frozen-rows-holder
+		// See https://github.com/olifolkerd/tabulator/pull/4809
+		//fragment.appendChild(document.createElement("br"));
 		fragment.appendChild(this.topElement);
 
 		// this.table.columnManager.element.append(this.topElement);
@@ -14268,6 +14299,33 @@ class Keybindings extends Module{
 		}
 	}
 
+	getKeyCode(e){
+		// Convert modern e.key to legacy numeric key code for compatibility
+		if(e.key.length === 1){
+			return e.key.toUpperCase().charCodeAt(0);
+		}
+		
+		// Handle special keys
+		var specialKeys = {
+			"Enter": 13,
+			"Escape": 27,
+			"Tab": 9,
+			"Backspace": 8,
+			"Delete": 46,
+			"ArrowUp": 38,
+			"ArrowDown": 40,
+			"ArrowLeft": 37,
+			"ArrowRight": 39,
+			"Home": 36,
+			"End": 35,
+			"PageUp": 33,
+			"PageDown": 34,
+			"Insert": 45
+		};
+		
+		return specialKeys[e.key] || e.keyCode || 0;
+	}
+
 	mapBinding(action, symbolsList){
 		var binding = {
 			action: Keybindings.actions[action],
@@ -14310,7 +14368,7 @@ class Keybindings extends Module{
 		var self = this;
 
 		this.keyupBinding = function(e){
-			var code = e.keyCode;
+			var code = self.getKeyCode(e);
 			var bindings = self.watchKeys[code];
 
 			if(bindings){
@@ -14324,7 +14382,7 @@ class Keybindings extends Module{
 		};
 
 		this.keydownBinding = function(e){
-			var code = e.keyCode;
+			var code = self.getKeyCode(e);
 			var bindings = self.watchKeys[code];
 
 			if(bindings){
@@ -17841,7 +17899,7 @@ class ReactiveData extends Module{
 					enumerable: true,
 					configurable:true,
 					writable:true,
-					value: this.origFuncs.key,
+					value: this.origFuncs[key],
 				});
 			}
 		}
@@ -18629,7 +18687,7 @@ class ResizeTable extends Module{
 	
 	initializeVisibilityObserver(){
 		this.visibilityObserver = new IntersectionObserver((entries) => {
-			this.visible = entries[0].isIntersecting;
+			this.visible = entries[entries.length - 1].isIntersecting;
 			
 			if(!this.initialized){
 				this.initialized = true;
@@ -19751,8 +19809,8 @@ class Range extends CoreFeature{
 		this.right = 0;
 		
 		this.table = table;
-		this.start = {row:0, col:0};
-		this.end = {row:0, col:0};
+		this.start = {row:undefined, col:undefined};
+		this.end = {row:undefined, col:undefined};
 
 		if(this.rangeManager.rowHeader){
 			this.left = 1;
@@ -20317,6 +20375,7 @@ class SelectRange extends Module {
 		this.registerTableOption("selectableRangeClearCells", false); //allow clearing of active range
 		this.registerTableOption("selectableRangeClearCellsValue", undefined); //value for cleared active range
 		this.registerTableOption("selectableRangeAutoFocus", true); //focus on a cell after resetRanges
+		this.registerTableOption("selectableRangeBlurEditOnNavigate", undefined); //prevent editing on navigation
 		
 		this.registerTableFunction("getRangesData", this.getRangesData.bind(this));
 		this.registerTableFunction("getRanges", this.getRanges.bind(this));
@@ -20350,6 +20409,10 @@ class SelectRange extends Module {
 				console.warn("Having multiple frozen columns with selectRange option may result in unpredictable behavior.");
 			}
 		}
+		
+		this.subscribe("edit-nav-disabled", () => {
+			return true; // Disable navigation in edit module
+		});
 	}
 	
 	
@@ -20412,8 +20475,8 @@ class SelectRange extends Module {
 		this.subscribe("edit-editor-clear", this.finishEditingCell.bind(this));
 		this.subscribe("edit-blur", this.restoreFocus.bind(this));
 		
-		this.subscribe("keybinding-nav-prev", this.keyNavigate.bind(this, "left"));
-		this.subscribe("keybinding-nav-next", this.keyNavigate.bind(this, "right"));
+		this.subscribe("keybinding-nav-prev", this.keyNavigate.bind(this, "prev"));
+		this.subscribe("keybinding-nav-next", this.keyNavigate.bind(this, "next"));
 		this.subscribe("keybinding-nav-left", this.keyNavigate.bind(this, "left"));
 		this.subscribe("keybinding-nav-right", this.keyNavigate.bind(this, "right"));
 		this.subscribe("keybinding-nav-up", this.keyNavigate.bind(this, "up"));
@@ -20426,8 +20489,6 @@ class SelectRange extends Module {
 		if(this.columnSelection && column.definition.headerSort && this.options("headerSortClickElement") !== "icon"){
 			console.warn("Using column headerSort with selectableRangeColumns option may result in unpredictable behavior. Consider using headerSortClickElement: 'icon'.");
 		}
-		
-		if (column.modules.edit) ;
 	}
 	
 	updateHeaderColumn(){
@@ -20683,13 +20744,34 @@ class SelectRange extends Module {
 	///////////////////////////////////
 	
 	keyNavigate(dir, e){
-		if(this.navigate(false, false, dir));
-		e.preventDefault();
+		if(this.options("selectableRangeBlurEditOnNavigate")){
+			const isEditing = this.chain("edit-check-editing");
+			
+			if(isEditing){
+				if(dir === 'next' || dir === 'prev'){
+					this.dispatch("edit-cancel-cell");
+				}else {
+					// Prevent navigating while editing except for next/prev
+					return false;
+				}
+			}
+		}
+
+		if (dir === 'prev') {
+			dir = 'left';
+		} else if (dir === 'next') {
+			dir = 'right';
+		}
+
+		if(this.navigate(false, false, dir)){
+			e.preventDefault();
+		}
 	}
 	
 	keyNavigateRange(e, dir, jump, expand){
-		if(this.navigate(jump, expand, dir));
-		e.preventDefault();
+		if(this.navigate(jump, expand, dir)){
+			e.preventDefault();
+		}
 	}
 	
 	navigate(jump, expand, dir) {
@@ -20807,9 +20889,8 @@ class SelectRange extends Module {
 			}
 
 			this.layoutElement();
-			
-			return true;
 		}
+		return true;
 	}
 	
 	rangeRemoved(removed){
@@ -20823,7 +20904,7 @@ class SelectRange extends Module {
 			}
 		}
 		
-		this.layoutElement();
+		this.layoutElement(true);
 	}
 	
 	findJumpRow(column, rows, reverse, emptyStart, emptySide){
@@ -20965,11 +21046,11 @@ class SelectRange extends Module {
 		}
 		
 		if (event.shiftKey) {
-			this.activeRange.setBounds(false, element);
+			this.activeRange.setBounds(false, element, true);
 		} else if (event.ctrlKey) {
-			this.addRange().setBounds(element);
+			this.addRange().setBounds(element, undefined, true);
 		} else {
-			this.resetRanges().setBounds(element);
+			this.resetRanges().setBounds(element, undefined, true);
 		}
 	}
 	
@@ -24302,7 +24383,6 @@ class ColumnManager extends CoreFeature {
 		var el = document.createElement("div");
 		
 		el.classList.add("tabulator-header-contents");
-		el.setAttribute("role", "rowgroup");
 		
 		return el;
 	}
@@ -25408,27 +25488,29 @@ class VirtualDomVertical extends Renderer{
 				}
 
 				element.appendChild(rowFragment);
-				
-				// NOTE: The next 3 loops are separate on purpose
-				// This is to batch up the dom writes and reads which drastically improves performance 
+
+				// NOTE: The next 4 loops are separate on purpose
+				// This is to batch up the dom writes and reads which drastically improves performance
 
 				renderedRows.forEach((row) => {
 					row.rendered();
+				});
 
+				const rowsNeedingHeightInit = [];
+				renderedRows.forEach((row) => {
 					if(!row.heightInitialized) {
 						row.calcHeight(true);
+						rowsNeedingHeightInit.push(row);
 					}
 				});
 
-				renderedRows.forEach((row) => {
-					if(!row.heightInitialized) {
-						row.setCellHeight();
-					}
+				rowsNeedingHeightInit.forEach((row) => {
+					row.setCellHeight();
 				});
 
 				renderedRows.forEach((row) => {
 					rowHeight = row.getHeight();
-					
+
 					if(totalRowsRendered < topPad){
 						topPadHeight += rowHeight;
 					}else {
@@ -25789,6 +25871,7 @@ class RowManager extends CoreFeature{
 		
 		el.classList.add("tabulator-table");
 		el.setAttribute("role", "rowgroup");
+		el.setAttribute("id", "tabulator-table-body");
 		
 		return el;
 	}
@@ -26791,10 +26874,14 @@ class RowManager extends CoreFeature{
 			//check if the table has changed size when dealing with variable height tables
 			if(!this.fixedHeight && initialHeight != this.element.clientHeight){
 				resized = true;
-				if(this.subscribed("table-resize")){
-					this.dispatch("table-resize");
-				}else {
-					this.redraw();
+				if(!this.redrawing){ // prevent recursive redraws		
+					this.redrawing = true;
+					if(this.subscribed("table-resize")){
+						this.dispatch("table-resize");
+					}else {
+						this.redraw();
+					}
+					this.redrawing = false;
 				}
 			}
 			
@@ -28865,7 +28952,7 @@ class Tabulator extends ModuleBinder{
 		var style = window.getComputedStyle(this.element);
 		
 		switch(this.options.textDirection){
-			case"auto":
+			case "auto":
 				if(style.direction !== "rtl"){
 					break;
 				}
@@ -28920,6 +29007,7 @@ class Tabulator extends ModuleBinder{
 		
 		element.classList.add("tabulator");
 		element.setAttribute("role", "grid");
+		element.setAttribute("aria-owns", "tabulator-table-body");
 		
 		//empty element
 		while(element.firstChild) element.removeChild(element.firstChild);
@@ -29006,6 +29094,7 @@ class Tabulator extends ModuleBinder{
 		//clear DOM
 		while(element.firstChild) element.removeChild(element.firstChild);
 		element.classList.remove("tabulator");
+		element.removeAttribute("tabulator-layout");
 
 		this.externalEvents.dispatch("tableDestroyed");
 	}
@@ -29542,6 +29631,20 @@ class Tabulator extends ModuleBinder{
 		this.rowManager.initializeRenderer();
 		this.rowManager.redraw(true);
 	}
+
+	setMaxHeight(maxHeight){
+		this.options.maxHeight = isNaN(maxHeight) ? maxHeight : maxHeight + "px";
+		this.element.style.maxHeight = this.options.maxHeight;
+		this.rowManager.initializeRenderer();
+		this.rowManager.redraw(true);
+	}
+
+	setMinHeight(minHeight){
+		this.options.minHeight = isNaN(minHeight) ? minHeight : minHeight + "px";
+		this.element.style.minHeight = this.options.minHeight;
+		this.rowManager.initializeRenderer();
+		this.rowManager.redraw(true);
+	}
 	
 	//////////////////// Event Bus ///////////////////
 	
@@ -29597,27 +29700,23 @@ class Tabulator extends ModuleBinder{
 	}
 }
 
-var Tabulator$1 = Tabulator;
-
 //tabulator with all modules installed
 
-class TabulatorFull extends Tabulator$1 {
+class TabulatorFull extends Tabulator {
 	static extendModule(){
-		Tabulator$1.initializeModuleBinder(allModules);
-		Tabulator$1._extendModule(...arguments);
+		Tabulator.initializeModuleBinder(allModules);
+		Tabulator._extendModule(...arguments);
 	}
 
 	static registerModule(){
-		Tabulator$1.initializeModuleBinder(allModules);
-		Tabulator$1._registerModule(...arguments);
+		Tabulator.initializeModuleBinder(allModules);
+		Tabulator._registerModule(...arguments);
 	}
 
 	constructor(element, options, modules){
 		super(element, options, allModules);
 	}
 }
-
-var TabulatorFull$1 = TabulatorFull;
 
 class PseudoRow {
 
@@ -29667,5 +29766,5 @@ class PseudoRow {
 	rendered(){}
 }
 
-export { Accessor as AccessorModule, Ajax as AjaxModule, CalcComponent, CellComponent, Clipboard as ClipboardModule, ColumnCalcs as ColumnCalcsModule, ColumnComponent, DataTree as DataTreeModule, Download as DownloadModule, Edit as EditModule, Export as ExportModule, Filter as FilterModule, Format as FormatModule, FrozenColumns as FrozenColumnsModule, FrozenRows as FrozenRowsModule, GroupComponent, GroupRows as GroupRowsModule, History as HistoryModule, HtmlTableImport as HtmlTableImportModule, Import as ImportModule, Interaction as InteractionModule, Keybindings as KeybindingsModule, Menu as MenuModule, Module, MoveColumns as MoveColumnsModule, MoveRows as MoveRowsModule, Mutator as MutatorModule, Page as PageModule, Persistence as PersistenceModule, Popup as PopupModule, Print as PrintModule, PseudoRow, RangeComponent, ReactiveData as ReactiveDataModule, Renderer, ResizeColumns as ResizeColumnsModule, ResizeRows as ResizeRowsModule, ResizeTable as ResizeTableModule, ResponsiveLayout as ResponsiveLayoutModule, RowComponent, SelectRange as SelectRangeModule, SelectRow as SelectRowModule, SheetComponent, Sort as SortModule, Spreadsheet as SpreadsheetModule, Tabulator$1 as Tabulator, TabulatorFull$1 as TabulatorFull, Tooltip as TooltipModule, Validate as ValidateModule };
+export { Accessor as AccessorModule, Ajax as AjaxModule, CalcComponent, CellComponent, Clipboard as ClipboardModule, ColumnCalcs as ColumnCalcsModule, ColumnComponent, DataTree as DataTreeModule, Download as DownloadModule, Edit as EditModule, Export as ExportModule, Filter as FilterModule, Format as FormatModule, FrozenColumns as FrozenColumnsModule, FrozenRows as FrozenRowsModule, GroupComponent, GroupRows as GroupRowsModule, History as HistoryModule, HtmlTableImport as HtmlTableImportModule, Import as ImportModule, Interaction as InteractionModule, Keybindings as KeybindingsModule, Menu as MenuModule, Module, MoveColumns as MoveColumnsModule, MoveRows as MoveRowsModule, Mutator as MutatorModule, Page as PageModule, Persistence as PersistenceModule, Popup as PopupModule, Print as PrintModule, PseudoRow, RangeComponent, ReactiveData as ReactiveDataModule, Renderer, ResizeColumns as ResizeColumnsModule, ResizeRows as ResizeRowsModule, ResizeTable as ResizeTableModule, ResponsiveLayout as ResponsiveLayoutModule, RowComponent, SelectRange as SelectRangeModule, SelectRow as SelectRowModule, SheetComponent, Sort as SortModule, Spreadsheet as SpreadsheetModule, Tabulator, TabulatorFull, Tooltip as TooltipModule, Validate as ValidateModule };
 //# sourceMappingURL=tabulator_esm.js.map
