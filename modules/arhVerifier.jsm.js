@@ -250,9 +250,10 @@ function getARHResult(msgHdr, msg) {
  */
 function arhDKIM_to_dkimSigResultV2(arhDKIM) {
 	/** @type {dkimSigResultV2} */
-	let dkimSigResult = {};
-	dkimSigResult.version = "2.1";
-
+	const dkimSigResult = {
+		version: "2.1",
+		result: "PERMFAIL",
+	};
 	switch (arhDKIM.result) {
 		case "none":
 			dkimSigResult.result = "none";

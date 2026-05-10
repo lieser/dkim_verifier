@@ -84,8 +84,11 @@ let arhParser = {
 		let authresHeaderRef = new RefString(authresHeader);
 
 		/** @type {ARHHeader} */
-		let res = {};
-		res.resinfo = [];
+		const res = {
+			authserv_id: "",
+			authres_version: 1,
+			resinfo: [],
+		};
 		let reg_match;
 
 		// get authserv-id and authres-version
@@ -106,7 +109,6 @@ let arhParser = {
 			if (!prefs.getBoolPref("relaxedParsing")) {
 				throw error;
 			}
-			res.authserv_id = "";
 			authresHeaderRef.value = `;${authresHeaderRef.value}`;
 		}
 
@@ -214,7 +216,7 @@ function parseProperties(str) {
 	// https://learn.microsoft.com/en-us/defender-office-365/message-headers-eop-mdo
 	if (prefs.getBoolPref("relaxedParsing")) {
 		const actionspec_p = `action${rfcParser.get("CFWS_op")}=${rfcParser.get("CFWS_op")}${rfcParser.get("value_cp")}`;
-		reg_match = match_o(str, actionspec_p);
+		match_o(str, actionspec_p);
 	}
 
 	// get propspec (optional)
