@@ -1322,7 +1322,6 @@ var Verifier = (function() {
 	 * @returns {Promise<dkimSigResultV2[]>}
 	 */
 	async function processSignatures(msg) {
-		let iDKIMSignatureIdx = 0;
 		let DKIMSignature;
 		// contains the result of all DKIM-Signatures which have been verified
 		let sigResults = [];
@@ -1341,7 +1340,7 @@ var Verifier = (function() {
 		// SHOULD NOT be reordered and SHOULD be prepended to the message."
 		//
 		// The first added signature is verified first.
-		for (iDKIMSignatureIdx = msg.headerFields.get("dkim-signature").length - 1;
+		for (let iDKIMSignatureIdx = msg.headerFields.get("dkim-signature").length - 1;
 		     iDKIMSignatureIdx >=0; iDKIMSignatureIdx--) {
 			let sigRes;
 			try {
@@ -1624,9 +1623,12 @@ var that = {
 				return 0;
 			}
 
-			if (addrIsInDomain2(msg.from, sig1.sdid)) {
+			if (sig1.sdid && addrIsInDomain2(msg.from, sig1.sdid)) {
+				if (sig2.sdid && addrIsInDomain2(msg.from, sig2.sdid)) {
+					return domainIsInDomain(sig1.sdid, sig2.sdid) ? -1 : 1;
+				}
 				return -1;
-			} else if (addrIsInDomain2(msg.from, sig2.sdid)) {
+			} else if (sig2.sdid && addrIsInDomain2(msg.from, sig2.sdid)) {
 				return 1;
 			}
 
