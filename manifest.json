@@ -20,7 +20,8 @@
 		"management",
 		"notifications",
 		"storage",
-		"tabs"
+		"tabs",
+		"https://*/*"
 	],
 	"background": {
 		"page": "content/background.html"

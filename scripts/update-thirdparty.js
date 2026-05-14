@@ -40,6 +40,13 @@ await fs.rm("thirdparty", { recursive: true, force: true });
 await fs.mkdir("thirdparty");
 await fs.writeFile("thirdparty/README.md", readme);
 
+await fs.mkdir("thirdparty/dns-message");
+await fs.copyFile("node_modules/dns-message/LICENSE.md", "thirdparty/dns-message/LICENSE.md");
+await fs.mkdir("thirdparty/dns-message/dist");
+await fs.copyFile("node_modules/dns-message/dist/dns-message.d.ts", "thirdparty/dns-message/dist/dns-message.d.mts");
+await fs.copyFile("node_modules/dns-message/dist/dns-message.mjs", "thirdparty/dns-message/dist/dns-message.mjs");
+await writePackageInfo(packageLock, "dns-message");
+
 await fs.mkdir("thirdparty/tabulator-tables");
 await fs.copyFile("node_modules/tabulator-tables/LICENSE", "thirdparty/tabulator-tables/LICENSE");
 await fs.mkdir("thirdparty/tabulator-tables/dist");

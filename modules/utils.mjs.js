@@ -1,7 +1,7 @@
 /**
  * General utility functions that do not have any dependencies.
  *
- * Copyright (c) 2013-2023;2025 Philippe Lieser
+ * Copyright (c) 2013-2023;2025-2026 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -100,6 +100,25 @@ export function decodeBinaryString(binaryString) {
 export function domainIsInDomain(domain1, domain2) {
 	return stringEqual(domain1, domain2) ||
 		stringEndsWith(domain1, `.${domain2}`);
+}
+
+/**
+ * Base 64 Encoding with URL and Filename Safe Alphabet.
+ *
+ * Defined in <https://datatracker.ietf.org/doc/html/rfc4648#section-5>.
+ *
+ * @param {Uint8Array} data
+ * @param {boolean} omitPadding
+ * @returns {string}
+ */
+export function encodeBase64Url(data, omitPadding) {
+	// Starting with TB 133 this could be replaced with Uint8Array.prototype.toBase64().
+	// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array/toBase64
+	let encoded = btoa(String.fromCodePoint(...data)).replaceAll("+", "-").replaceAll("/", "_");
+	if (omitPadding) {
+		encoded = encoded.replaceAll("=", "");
+	}
+	return encoded;
 }
 
 /**

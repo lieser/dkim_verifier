@@ -364,6 +364,10 @@
 	"options_dns.resolver.value.2": {
 		"message": "libunbound"
 	},
+	"options_dns.resolver.value.3": {
+		"message": "DNS over HTTPS (DoH)",
+		"description": "Resolver using https://en.wikipedia.org/wiki/DNS_over_HTTPS"
+	},
 	"options_dns.getNameserversFromOS": {
 		"message": "Get DNS servers from OS configuration"
 	},
@@ -397,6 +401,9 @@
 	},
 	"options_dns.libunbound.path.relToProfileDir": {
 		"message": "Path relative to profile directory"
+	},
+	"options_dns.doh.server": {
+		"message": "DoH server:"
 	},
 	// ---------- Policy options tab ----------
 	"options_general.policy": {

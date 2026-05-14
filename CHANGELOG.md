@@ -4,6 +4,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+### Enhancements
+
+- Add suppor for DNS Queries over HTTPS (DoH) (#579).
+
 ## 6.2.1 (2026-04-07)
 
 ### Fixes

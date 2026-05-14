@@ -1,7 +1,7 @@
 /**
  * Provides access to the add-ons preferences.
  *
- * Copyright (c) 2020-2023;2025 Philippe Lieser
+ * Copyright (c) 2020-2023;2025-2026 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -309,6 +309,10 @@ export class BasePreferences {
 
 	get "dns.nameserver"() {
 		return this.#tryGetStringValue("dns.nameserver", "8.8.8.8");
+	}
+
+	get "dns.doh.server"() {
+		return this.#tryGetStringValue("dns.doh.server", "https://dns.quad9.net/dns-query");
 	}
 
 	get "dns.timeout_connect"() {

@@ -6,6 +6,13 @@ See [THIRDPARTY_LICENSE.txt](../THIRDPARTY_LICENSE.txt) in the root directory fo
 
 This file contains the information which versions of the third-party libraries are included.
 
+## dns-message
+
+- Name: dns-message
+- Source: npm
+- Version: 1.1.1
+- Download URL: <https://registry.npmjs.org/dns-message/-/dns-message-1.1.1.tgz>
+
 ## tabulator-tables
 
 - Name: tabulator-tables

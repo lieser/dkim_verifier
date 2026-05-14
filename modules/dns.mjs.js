@@ -1,9 +1,10 @@
 /**
- * Wrapper to resolve DNS lookups via the following experiment libraries:
- *  - JSDNS
- *  - libunbound
+ * Wrapper to resolve DNS lookups via the following resolvers:
+ *  - JSDNS (experiment library)
+ *  - libunbound (experiment library)
+ *  - DNS over HTTPS (DoH)
  *
- * Copyright (c) 2020-2023;2025 Philippe Lieser
+ * Copyright (c) 2020-2023;2025-2026 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -17,8 +18,9 @@
 /* global addEventListener */
 
 import { DKIM_TempError } from "./error.mjs.js";
-import Logging from "../modules/logging.mjs.js";
-import prefs from "../modules/preferences.mjs.js";
+import Logging from "./logging.mjs.js";
+import dohTxt from "./doh.mjs";
+import prefs from "./preferences.mjs.js";
 
 const log = Logging.getLogger("dns");
 
@@ -34,6 +36,7 @@ const log = Logging.getLogger("dns");
 
 const RESOLVER_JSDNS = 1;
 const RESOLVER_LIBUNBOUND = 2;
+const RESOLVER_DOH = 3;
 
 /** @type {Promise<void>?} */
 let jsdnsIsConfigured = null;
@@ -175,6 +178,10 @@ export default class DNS {
 				await configureLibunbound();
 				checkOnlineStatus();
 				return browser.libunbound.txt(name);
+			}
+			case RESOLVER_DOH: {
+				checkOnlineStatus();
+				return dohTxt(name);
 			}
 			default: {
 				throw new Error("invalid resolver preference");
