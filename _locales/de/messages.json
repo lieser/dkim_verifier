@@ -683,6 +683,10 @@
 		"message": "Kein Zeitpunkt in der Signatur enthalten",
 		"description": "Value shown for sign and expiration date if no date is given in the signature."
 	},
+	"details.potentiallyOutdatedKeyWarning": {
+		"message": "Speichern der DKIM-Schlüssel ist aktiviert. Der Grund für die invalide Signature ist möglicherweise ein veralteter Schlüssel. Probiere die \"$1\" Aktion um den Schlüssel zu aktualisieren und eine neue Prüfung zu starten.",
+		"description": "Potential info note shown. $1 will be replaced with the text of dkim_verifier.updateKey"
+	},
 	// ==================== Table Views ====================
 	"treeviewKeys.title": {
 		"message": "DKIM-Schlüssel",

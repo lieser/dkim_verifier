@@ -8,7 +8,8 @@ All notable changes to this project will be documented in this file.
 
 ### Enhancements
 
-- Add suppor for DNS Queries over HTTPS (DoH) (#579).
+- Add support for DNS Queries over HTTPS (DoH) (#579).
+- Add info note about updating outdated cached keys potentially fixing an invalid signature error (#569).
 
 ## 6.2.1 (2026-04-07)
 

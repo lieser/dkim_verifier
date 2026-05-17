@@ -683,6 +683,10 @@
 		"message": "No time included in the signature",
 		"description": "Value shown for sign and expiration date if no date is given in the signature."
 	},
+	"details.potentiallyOutdatedKeyWarning": {
+		"message": "Caching of DKIM keys is enabled. The reason for the invalid signature may be an outdated key. Try the \"$1\" action to update the key and start a new verification.",
+		"description": "Potential info note shown. $1 will be replaced with the text of dkim_verifier.updateKey"
+	},
 	// ==================== Table Views ====================
 	"treeviewKeys.title": {
 		"message": "DKIM keys",

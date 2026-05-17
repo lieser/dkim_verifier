@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021-2025 Philippe Lieser
+ * Copyright (c) 2021-2026 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -253,6 +253,70 @@ class DkimResult extends HTMLElement {
 customElements.define("dkim-result-extended", DkimResult);
 
 /**
+ * Element for showing an info admonition.
+ */
+class InfoElement extends HTMLElement {
+	#value;
+
+	constructor() {
+		super();
+
+		const shadow = this.attachShadow({ mode: "open" });
+		const content = document.createElement("div");
+		content.style.margin = "4px";
+		content.style.padding = ".45em 1em";
+		content.style.display = "flex";
+		content.style.flexDirection = "row";
+		content.style.alignItems = "center";
+		content.style.columnGap = "1em";
+		content.style.rowGap = ".45em";
+		content.style.borderLeft = ".25em solid var(--dkim-color-information)";
+		shadow.append(content);
+
+		const infoIcon = document.createElement("p");
+		infoIcon.style.margin = "0px";
+		infoIcon.style.color = "var(--dkim-color-information)";
+		infoIcon.style.fontSize = "2em";
+		infoIcon.textContent = "🛈";
+		content.append(infoIcon);
+
+		this.#value = document.createElement("p");
+		this.#value.style.margin = "0px";
+
+		content.append(this.#value);
+	}
+
+	connectedCallback() {
+		this.#value.textContent = `${this.getAttribute("value")}`;
+	}
+}
+customElements.define("admonition-info", InfoElement);
+
+/**
+ * Add the DKIM results and info messages to the page.
+ *
+ * @param {RuntimeMessage.DisplayAction.queryResultStateResult} resultState
+ */
+function showResults(resultState) {
+	// Show DKIM results.
+	const results = getElementById("results");
+	for (const res of resultState.dkim) {
+		const resElement = new DkimResult();
+		resElement.result = res;
+		results.append(resElement);
+	}
+
+	// Show info messages.
+	if (resultState.updateKey && resultState.dkim.some(res => res.errorType === "DKIM_SIGERROR_BADSIG")) {
+		const info = new InfoElement();
+		info.setAttribute("value", browser.i18n.getMessage("details.potentiallyOutdatedKeyWarning", browser.i18n.getMessage("dkim_verifier.updateKey")));
+
+		const infos = getElementById("infos");
+		infos.append(info);
+	}
+}
+
+/**
  * @returns {Promise<number>}
  */
 async function getCurrentTabId() {
@@ -288,7 +352,11 @@ async function triggerDisplayAction(action) {
 }
 
 /**
- * Query which buttons should be enabled.
+ * Query from the background script the result for the currently displayed message.
+ *
+ * This is used to determined what is shown, e.g.
+ * - Details of the DKIM results.
+ * - Which buttons should be enabled.
  *
  * @returns {Promise<RuntimeMessage.DisplayAction.queryResultStateResult>}
  */
@@ -308,12 +376,7 @@ async function queryResultState() {
 document.addEventListener("DOMContentLoaded", async () => {
 	const resultState = await queryResultState();
 
-	const results = getElementById("results");
-	for (const res of resultState.dkim) {
-		const resElement = new DkimResult();
-		resElement.result = res;
-		results.append(resElement);
-	}
+	showResults(resultState);
 
 	const reverifyDKIMSignature = getElementById("reverifyDKIMSignature");
 	if (!(reverifyDKIMSignature instanceof HTMLButtonElement)) {

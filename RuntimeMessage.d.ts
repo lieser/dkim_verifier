@@ -105,7 +105,7 @@ namespace RuntimeMessage {
             readonly policyAddUserException: boolean;
             readonly markKeyAsSecure: boolean;
             readonly updateKey: boolean;
-            readonly dkim: AuthResultDKIM[];
+            readonly dkim: import("./modules/authVerifier.mjs.js").AuthResultDKIM[];
         }
 
         interface reverifyDKIMSignature extends DisplayActionMessage {

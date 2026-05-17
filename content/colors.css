@@ -1,0 +1,3 @@
+:root {
+  --dkim-color-information: var(--icon-color-information, light-dark(#1373d9, #bce0fd));
+}
