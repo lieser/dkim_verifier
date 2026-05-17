@@ -6,4 +6,5 @@ Bizonyos esetekben a DKIM aláírás hiánya hasznos lehet a becsapott e-mailek 
 
 A megkönnyítés érdekében megvizsgálja, hogy az e-mail aláírt, a kiegészítő támogatja az aláírási szabályok használatát. A aláírási szabályokkal meghatározható, hogy egy bizonyos feladó e-mailéit mindig egy meghatározott tartomány (SDID-nek is nevezzük) aláírja. A jelszabályokról bővebben a https://github.com/lieser/dkim_verifier/wiki/Sign-rules.
 
-A rendelkezésre álló kiegészítő lehetőségek leírása megtalálható a https://github.com/lieser/dkim_verifier/wiki/Options oldalon.
+<strong>The <a href="https://github.com/lieser/dkim_verifier/wiki">add-on home page</a> contains a more detailed overview of the add-ons features.</strong>
+It also has <a href="https://github.com/lieser/dkim_verifier/wiki/Options">a description of all available add-on options</a>.

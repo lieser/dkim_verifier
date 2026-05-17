@@ -6,4 +6,5 @@ En algunos casos, la ausencia de una firma DKIM puede ser útil para identificar
 
 Para facilitar la comprobación de si un correo electrónico está firmado y por quién, el plugin apoya el uso de reglas de signos. Con las reglas de firma, es posible especificar que los correos electrónicos de un remitente particular debe estar siempre firmado por un dominio específico (también conocido como SDID). Más sobre reglas de firmas en https://github.com/lieser/dkim_verifier/wiki/Sign-rules.
 
-Puede encontrar una descripción de todas las opciones complementarias disponibles en https://github.com/lieser/dkim_verifier/wiki/Options.
+<strong>The <a href="https://github.com/lieser/dkim_verifier/wiki">add-on home page</a> contains a more detailed overview of the add-ons features.</strong>
+It also has <a href="https://github.com/lieser/dkim_verifier/wiki/Options">a description of all available add-on options</a>.
