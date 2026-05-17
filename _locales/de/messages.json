@@ -632,20 +632,44 @@
 	},
 	// ==================== Actions ====================
 	"dkim_verifier.reverifyDKIMSignature": {
-		"message": "DKIM-Signatur erneut prüfen"
+		"message": "DKIM-Signatur erneut prüfen",
+		"description": "Text of the button in the DKIM details pop-up."
+	},
+	"dkim_verifier.reverifyDKIMSignature.tooltip": {
+		"message": "Startet eine neue Überprüfung der angezeigten E-Mail. Falls das Speicher des Ergebnisses der Überprüfung aktiviert ist, wird das gespeicherte Ergebnis aktualisiert.",
+		"description": "Tooltip of the button explaining what it does."
 	},
 	"dkim_verifier.policyAddUserException": {
-		"message": "Ausnahme für 'Muss signiert sein' hinzufügen"
+		"message": "Ausnahme für 'Muss signiert sein' hinzufügen",
+		"description": "Text of the button in the DKIM details pop-up."
+	},
+	"dkim_verifier.policyAddUserException.tooltip": {
+		"message": "Fügt eine Signierregel hinzu das E-Mails der Absenderadresse nicht signiert sein müssen. Startet auch eine neue Überprüfung.",
+		"description": "Tooltip of the button explaining what it does."
 	},
 	"dkim_verifier.markKeyAsSecure": {
-		"message": "DKIM-Schlüssel als sicher markieren"
+		"message": "DKIM-Schlüssel als sicher markieren",
+		"description": "Text of the button in the DKIM details pop-up."
+	},
+	"dkim_verifier.markKeyAsSecure.tooltip": {
+		"message": "Markiert den gespeicherten DKIM-Schlüssel des ersten DKIM Ergebnis als durch DNSSEC abgesichert. Startet auch eine neue Überprüfung.",
+		"description": "Tooltip of the button explaining what it does."
 	},
 	"dkim_verifier.updateKey": {
-		"message": "DKIM-Schlüssel aktualisieren"
+		"message": "DKIM-Schlüssel aktualisieren",
+		"description": "Text of the button in the DKIM details pop-up."
+	},
+	"dkim_verifier.updateKey.tooltip": {
+		"message": "Aktualisiert die gespeicherten DKIM-Schlüssel die in dieser E-Mail genutzt werden in dem sie erneut über DNS geladen werden. Startet auch eine neue Überprüfung.",
+		"description": "Tooltip of the button explaining what it does."
 	},
 	"button.options": {
 		"message": "Einstellungen",
-		"description": "Button to open the options page of the Add-on."
+		"description": "Button to open the options page of the add-on."
+	},
+	"button.options.tooltip": {
+		"message": "Öffnet die Einstellungen des Add-on in einem neuen Tab.",
+		"description": "Tooltip for the button to open the options page of the add-on."
 	},
 	"details.result": {
 		"message": "Ergebnis",

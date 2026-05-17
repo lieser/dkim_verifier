@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 
 - Add support for DNS Queries over HTTPS (DoH) (#579).
 - Add info note about updating outdated cached keys potentially fixing an invalid signature error (#569).
+- Add tooltips to the action buttons in the DKIM button pop-up (#569).
 
 ## 6.2.1 (2026-04-07)
 

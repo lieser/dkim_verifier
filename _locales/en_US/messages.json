@@ -632,20 +632,44 @@
 	},
 	// ==================== Actions ====================
 	"dkim_verifier.reverifyDKIMSignature": {
-		"message": "Reverify DKIM Signature"
+		"message": "Reverify DKIM Signature",
+		"description": "Text of the button in the DKIM details pop-up."
+	},
+	"dkim_verifier.reverifyDKIMSignature.tooltip": {
+		"message": "Starts a new verification of the displayed email. In case saving the result of the verification is enabled, the saved result will be updated",
+		"description": "Tooltip of the button explaining what it does."
 	},
 	"dkim_verifier.policyAddUserException": {
-		"message": "Add must be signed exception"
+		"message": "Add must be signed exception",
+		"description": "Text of the button in the DKIM details pop-up."
+	},
+	"dkim_verifier.policyAddUserException.tooltip": {
+		"message": "Add a sign rule that emails from the From address do not have to be signed. Will also start a new verification.",
+		"description": "Tooltip of the button explaining what it does."
 	},
 	"dkim_verifier.markKeyAsSecure": {
-		"message": "Mark DKIM key as secure"
+		"message": "Mark DKIM key as secure",
+		"description": "Text of the button in the DKIM details pop-up."
+	},
+	"dkim_verifier.markKeyAsSecure.tooltip": {
+		"message": "Mark the cached DKIM key of the first DKIM result as having been secured by DNSSEC. Will also start a new verification.",
+		"description": "Tooltip of the button explaining what it does."
 	},
 	"dkim_verifier.updateKey": {
-		"message": "Update DKIM key"
+		"message": "Update DKIM key",
+		"description": "Text of the button in the DKIM details pop-up."
+	},
+	"dkim_verifier.updateKey.tooltip": {
+		"message": "Update the cached DKIM keys used in this email by fetching them from DNS again. Will also start a new verification.",
+		"description": "Tooltip of the button explaining what it does."
 	},
 	"button.options": {
 		"message": "Options",
-		"description": "Button to open the options page of the Add-on."
+		"description": "Button to open the options page of the add-on."
+	},
+	"button.options.tooltip": {
+		"message": "Open the options of the add-on in a new tab.",
+		"description": "Tooltip for the button to open the options page of the add-on."
 	},
 	"details.result": {
 		"message": "Result",
