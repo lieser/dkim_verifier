@@ -637,6 +637,7 @@
     "dkim_verifier.reverifyDKIMSignature.tooltip": {
 		"message": "Lance une nouvelle vérification de l'e-mail affiché. Si l'enregistrement du résultat de la vérification est activé, le résultat enregistré sera mis à jour.",
 		"description": "Tooltip of the button explaining what it does."
+	},
 	"dkim_verifier.policyAddUserException": {
 		"message": "Ajouter doit être une exception signée",
 		"description": "Text of the button in the DKIM details pop-up."
