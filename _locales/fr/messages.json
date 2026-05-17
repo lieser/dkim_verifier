@@ -655,7 +655,7 @@
 		"description": "Tooltip of the button explaining what it does."
 	},
 	"dkim_verifier.updateKey": {
-		"message": "Mettre à jour la clef DKIM"",
+		"message": "Mettre à jour la clef DKIM",
 		"description": "Text of the button in the DKIM details pop-up."
 	},
 	"dkim_verifier.updateKey.tooltip": {
