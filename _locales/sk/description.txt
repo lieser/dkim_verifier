@@ -6,4 +6,5 @@ V niektorých prípadoch môže byť absencia podpisu DKIM užitočná na identi
 
 Aby sa uľahčilo overovanie, či a kto e-mail podpísal, doplnok podporuje používanie pravidiel podpisovania. Pomocou pravidiel podpisovania je možné určiť, že e-maily od určitého odosielateľa musia byť vždy podpísané konkrétnou doménou (tiež označovanou ako SDID). Viac informácií o pravidlách podpisovania nájdete na stránke https://github.com/lieser/dkim_verifier/wiki/Sign-rules.
 
-Popis všetkých dostupných možností doplnku nájdete na stránke https://github.com/lieser/dkim_verifier/wiki/Options.
+strong>Domovská stránka doplnku <a href="https://github.com/lieser/dkim_verifier/wiki"></a> obsahuje podrobnejší prehľad funkcií doplnku.</strong>
+Nájdete tu tiež <a href="https://github.com/lieser/dkim_verifier/wiki/Options">popis všetkých dostupných možností doplnku</a>.

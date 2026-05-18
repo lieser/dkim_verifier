@@ -364,6 +364,10 @@
 	"options_dns.resolver.value.2": {
 		"message": "libunbound"
 	},
+	"options_dns.resolver.value.3": {
+		"message": "DNS cez HTTPS (DoH)",
+		"description": "Resolver používa https://en.wikipedia.org/wiki/DNS_over_HTTPS"
+	},
 	"options_dns.getNameserversFromOS": {
 		"message": "Získať DNS servery z konfigurácie operačného systému"
 	},
@@ -397,6 +401,9 @@
 	},
 	"options_dns.libunbound.path.relToProfileDir": {
 		"message": "Relatívna cesta k priečinku profilu"
+	},
+	"options_dns.doh.server": {
+		"message": "DoH server:"
 	},
 	// ---------- Policy options tab ----------
 	"options_general.policy": {
@@ -625,20 +632,44 @@
 	},
 	// ==================== Actions ====================
 	"dkim_verifier.reverifyDKIMSignature": {
-		"message": "Znova overiť DKIM podpis"
+		"message": "Znova overiť DKIM podpis",
+		"description": "Text of the button in the DKIM details pop-up."
+	},
+	"dkim_verifier.reverifyDKIMSignature.tooltip": {
+		"message": "Spustí nové overenie zobrazeného e-mailu. Ak je povolené ukladanie výsledku overenia, uložený výsledok sa aktualizuje.",
+		"description": "Tooltip of the button explaining what it does."
 	},
 	"dkim_verifier.policyAddUserException": {
-		"message": "Pridať výnimku 'musí byť podpísané'"
+		"message": "Pridať výnimku 'musí byť podpísané'",
+		"description": "Text of the button in the DKIM details pop-up."
+	},
+	"dkim_verifier.policyAddUserException.tooltip": {
+		"message": "Pridať pravidlo, podľa ktorého e-maily z adresy odosielateľa nemusia byť podpísané. Zároveň sa spustí nové overenie.",
+		"description": "Tooltip of the button explaining what it does."
 	},
 	"dkim_verifier.markKeyAsSecure": {
-		"message": "Označiť DKIM kľúč ako bezpečený"
+		"message": "Označiť DKIM kľúč ako bezpečený",
+		"description": "Text of the button in the DKIM details pop-up."
+	},
+	"dkim_verifier.markKeyAsSecure.tooltip": {
+		"message": "Označiť kľúč DKIM uložený v cache z prvého výsledku DKIM ako zabezpečený protokolom DNSSEC. Zároveň sa spustí nové overenie.",
+		"description": "Tooltip of the button explaining what it does."
 	},
 	"dkim_verifier.updateKey": {
-		"message": "Aktualizovať DKIM kľúč"
+		"message": "Aktualizovať DKIM kľúč",
+		"description": "Text of the button in the DKIM details pop-up."
+	},
+	"dkim_verifier.updateKey.tooltip": {
+		"message": "Aktualizovať kľúče DKIM uložené v pamäti, použité v tomto e-maile, ich opätovným načítaním z DNS. Zároveň sa spustí nové overenie.",
+		"description": "Tooltip of the button explaining what it does."
 	},
 	"button.options": {
 		"message": "Nastavenia",
 		"description": "Tlačidlo na otvorenie stránky nastavení doplnku."
+	},
+	"button.options.tooltip": {
+		"message": "Otvoriť nastavenia rozšírenia na novej karte.",
+		"description": "Tooltip for the button to open the options page of the add-on."
 	},
 	"details.result": {
 		"message": "Výsledok",
@@ -675,6 +706,10 @@
 	"details.noDate": {
 		"message": "Podpis neobsahuje čas",
 		"description": "Hodnota zobrazená pre dátum podpisu a vypršania platnosti, ak nie je v podpise uvedený dátum."
+	},
+	"details.potentiallyOutdatedKeyWarning": {
+		"message": "Ukladanie kľúčov DKIM do vyrovnávacej pamäte je povolené. Dôvodom neplatného podpisu môže byť neaktuálny kľúč. Skúste akciu \"$1\", aby ste aktualizovali kľúč a spustili nové overenie.",
+		"description": "Potential info note shown. $1 will be replaced with the text of dkim_verifier.updateKey"
 	},
 	// ==================== Table Views ====================
 	"treeviewKeys.title": {

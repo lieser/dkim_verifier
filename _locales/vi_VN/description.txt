@@ -6,4 +6,5 @@ Trong một số trường hợp, việc thiếu chữ ký DKIM có thể hữu 
 
 Để kiểm tra xem email có được ký hay không và bởi ai một cách dễ dàng, add-on này hỗ trợ sử dụng các quy tắc ký. Với các quy tắc ký, có thể chỉ định rằng email từ một người gửi nhất định phải luôn được ký bởi một miền cụ thể (còn được gọi là SDID). Tìm hiểu thêm về các quy tắc ký tại https://github.com/lieser/dkim_verifier/wiki/Sign-rules.
 
-Mô tả về tất cả các tùy chọn add-on này có sẵn có thể được tìm thấy tại https://github.com/lieser/dkim_verifier/wiki/Options.
+<strong>Trang chính của add-on <a href="https://github.com/lieser/dkim_verifier/wiki"></a> chứa một cái nhìn tổng quan chi tiết hơn về các tính năng của add-on.</strong>
+Các option của add-on cũng được mô tả tại <a href="https://github.com/lieser/dkim_verifier/wiki/Options"></a>.
