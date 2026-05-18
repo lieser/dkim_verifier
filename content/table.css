@@ -1,8 +1,9 @@
-@import  "../thirdparty/tabulator-tables/dist/css/tabulator.css" (prefers-color-scheme: light);
-@import  "../thirdparty/tabulator-tables/dist/css/tabulator_midnight.css" (prefers-color-scheme: dark);
+@import "./colors.css";
+@import "../thirdparty/tabulator-tables/dist/css/tabulator.css" (prefers-color-scheme: light);
+@import "../thirdparty/tabulator-tables/dist/css/tabulator_midnight.css" (prefers-color-scheme: dark);
 
 .tabulator {
-	background-color: var(--in-content-box-background);
+	background-color: var(--dkim-color-table-background);
 }
 
 body {
@@ -17,5 +18,5 @@ body {
 }
 
 .footer {
-	background-color: var(--in-content-table-background);
+	background-color: var(--dkim-color-table-footer);
 }

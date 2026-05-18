@@ -154,12 +154,12 @@ class DKIMTooltip {
 		this.element.style.position = "absolute";
 		this.element.style.zIndex = "99";
 
-		this.element.style.backgroundColor = "var(--arrowpanel-background)";
-		this.element.style.color = "var(--arrowpanel-color)";
+		this.element.style.backgroundColor = "var(--arrowpanel-background, light-dark(rgb(249, 249, 251), rgb(43, 42, 51)))";
+		this.element.style.color = "var(--arrowpanel-color, light-dark(black, white))";
 		this.element.style.borderStyle = "solid";
 		this.element.style.borderWidth = "1px";
-		this.element.style.borderColor = "var(--arrowpanel-border-color)";
-		this.element.style.borderRadius = "var(--arrowpanel-border-radius)";
+		this.element.style.borderColor = "var(--arrowpanel-border-color, light-dark(rgb(103, 103, 108), rgb(249, 249, 251)))";
+		this.element.style.borderRadius = "var(--arrowpanel-border-radius, 4px)";
 		this.element.style.paddingInline = "0.6em";
 		this.element.style.paddingBlock = "0.4em";
 
@@ -835,7 +835,7 @@ class DkimFavicon {
 			hboxWrapper.style.display = "flex";
 			hboxWrapper.style.alignItems = "center";
 
-			favicon.element.style.marginInlineEnd = "var(--message-header-field-offset)";
+			favicon.element.style.marginInlineEnd = "var(--message-header-field-offset, 2px)";
 
 			hboxWrapper.append(favicon.element);
 			wrap(expandedFromBox.recipientsList, hboxWrapper);

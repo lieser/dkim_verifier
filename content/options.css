@@ -5,7 +5,7 @@ body {
 }
 
 nav.nav-main {
-	background-color: var(--in-content-categories-background);
+	background-color: var(--dkim-color-sidebar-background);
 	padding-top: 54px;
 }
 
@@ -24,13 +24,13 @@ nav.nav-main>div[pane] {
 }
 
 nav.nav-main>div[pane][selected] {
-	background-color: var(--in-content-button-background);
-	border-left-color: var(--in-content-accent-color);
+	background-color: var(--dkim-color-button-background);
+	border-left-color: var(--dkim-color-accent-color);
 }
 
 nav.nav-main>div[pane]:hover {
-	background-color: var(--in-content-button-background-hover);
-	color: var(--in-content-button-text-color-hover);
+	background-color: var(--dkim-color-button-hover-background);
+	color: var(--dkim-color-button-hover-text-color);
 }
 
 main {
@@ -84,9 +84,9 @@ fieldset:disabled span {
 	max-width: 40%;
 	margin: 2px 0px;
 	margin-inline-end: 8px;
-	border: 1px solid var(--in-content-box-border-color);
+	border: 1px solid var(--dkim-color-box-border-color);
 	border-radius: 2px;
-	background-color: var(--in-content-box-background);
+	background-color: var(--dkim-color-box-background);
 }
 
 .account-selection-item {
@@ -96,12 +96,12 @@ fieldset:disabled span {
 }
 
 .account-selection-item:hover {
-	background-color: var(--in-content-item-hover);
+	background-color: var(--dkim-color-item-hover);
 }
 
 .account-selection-item[selected] {
-	color: var(--in-content-item-selected-text);
-	background-color: var(--in-content-item-selected)
+	color: var(--dkim-color-item-selected-text);
+	background-color: var(--dkim-color-item-selected)
 }
 
 .usage-warning[data-highlight="true"] {

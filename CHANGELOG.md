@@ -8,9 +8,14 @@ All notable changes to this project will be documented in this file.
 
 ### Enhancements
 
-- Add support for DNS Queries over HTTPS (DoH) (#579).
-- Add info note about updating outdated cached keys potentially fixing an invalid signature error (#569).
-- Add tooltips to the action buttons in the DKIM button pop-up (#569).
+- Added support for DNS Queries over HTTPS (DoH) (#579).
+- Added info note about updating outdated cached keys potentially fixing an invalid signature error (#569).
+- Added tooltips to the action buttons in the DKIM button pop-up (#569).
+
+### Fixes
+
+- Fixed tooltip for favicon in Thunderbird 152.
+- Fixed colors in options in Thunderbird 152.
 
 ## 6.2.1 (2026-04-07)
 
