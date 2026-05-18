@@ -358,6 +358,10 @@
 	"options_dns.resolver.value.2": {
 		"message": "libunbound"
 	},
+	// No localized term for DoH, kept as-is
+	"options_dns.resolver.value.3": {
+		"message": "DNS over HTTPS (DoH)"
+	},
 	"options_dns.getNameserversFromOS": {
 		"message": "Lấy máy chủ DNS từ cấu hình hệ điều hành"
 	},
@@ -391,6 +395,9 @@
 	},
 	"options_dns.libunbound.path.relToProfileDir": {
 		"message": "Đường dẫn tương đối với thư mục hồ sơ"
+	},
+	"options_dns.doh.server": {
+		"message": "Máy chủ DoH:"
 	},
 	// ---------- Policy options tab ----------
 	"options_general.policy": {
@@ -621,18 +628,33 @@
 	"dkim_verifier.reverifyDKIMSignature": {
 		"message": "Xác minh lại chữ ký DKIM"
 	},
+	"dkim_verifier.reverifyDKIMSignature.tooltip": {
+		"message": "Bắt đầu xác minh email này. Kết quả sẽ được cập nhật khi chọn lưu kết quả xác minh"
+	},
 	"dkim_verifier.policyAddUserException": {
 		"message": "Thêm ngoại lệ phải được ký"
+	},
+	"dkim_verifier.policyAddUserException.tooltip": {
+		"message": "Thêm quy tắc ký rằng email từ địa chỉ From không cần phải được ký. Cũng sẽ bắt đầu một xác minh mới."
 	},
 	"dkim_verifier.markKeyAsSecure": {
 		"message": "Đánh dấu khóa DKIM là an toàn"
 	},
+	"dkim_verifier.markKeyAsSecure.tooltip": {
+		"message": "Đánh dấu khóa DKIM đã cache trong kết quả đầu là được bảo vệ bởi DNSSEC. Cũng sẽ bắt đầu một xác minh mới."
+	},
 	"dkim_verifier.updateKey": {
 		"message": "Cập nhật khóa DKIM"
+	},
+	"dkim_verifier.updateKey.tooltip": {
+		"message": "Truy vấn DNS để cập nhật khóa DKIM đã cache được sử dụng trong email này. Cũng sẽ bắt đầu một xác minh mới."
 	},
 	"button.options": {
 		"message": "Tùy chọn",
 		"description": "Button to open the options page of the Add-on."
+	},
+	"button.options.tooltip": {
+		"message": "Mở tùy chọn của add-on trong tab mới"
 	},
 	"details.result": {
 		"message": "Kết quả",
@@ -669,6 +691,9 @@
 	"details.noDate": {
 		"message": "Không có thời gian trong chữ ký",
 		"description": "Value shown for sign and expiration date if no date is given in the signature."
+	},
+	"details.potentiallyOutdatedKeyWarning": {
+		"message": "Đã bật cache cho các key DKIM. Chữ kí không hợp lệ có thể do key đã hết hạn. Thử \"$1\" để cập nhật key và xác minh lại."
 	},
 	// ==================== Table Views ====================
 	"treeviewKeys.title": {
