@@ -364,6 +364,10 @@
 	"options_dns.resolver.value.2": {
 		"message": "libunbound"
 	},
+	"options_dns.resolver.value.3": {
+		"message": "DNS przez HTTPS (DoH)",
+		"description": "Resolver using https://en.wikipedia.org/wiki/DNS_over_HTTPS"
+	},	
 	"options_dns.getNameserversFromOS": {
 		"message": "Pobierz serwery DNS z konfiguracji systemu operacyjnego"
 	},
@@ -397,6 +401,9 @@
 	},
 	"options_dns.libunbound.path.relToProfileDir": {
 		"message": "Ścieżka względna do katalogu profilu"
+	},
+	"options_dns.doh.server": {
+		"message": "Serwer DoH:"
 	},
 	// ---------- Policy options tab ----------
 	"options_general.policy": {
@@ -625,21 +632,45 @@
 	},
 	// ==================== Actions ====================
 	"dkim_verifier.reverifyDKIMSignature": {
-		"message": "ponownie sprawdź podpis DKIM"
+		"message": "ponownie sprawdź podpis DKIM",
+		"description": "Text of the button in the DKIM details pop-up."
 	},
+	"dkim_verifier.reverifyDKIMSignature.tooltip": {
+		"message": "Ponowna weryfikacja wyświetlanej wiadomości. Jeżeli właczony jest zapis wyników weryfikacji to zostanie on zaktualizowany",
+		"description": "Tooltip of the button explaining what it does."
+	},	
 	"dkim_verifier.policyAddUserException": {
-		"message": "Dodaj musi być podpisanym wyjątkiem"
+		"message": "Dodaj musi być podpisanym wyjątkiem",
+		"description": "Text of the button in the DKIM details pop-up."
 	},
+	"dkim_verifier.policyAddUserException.tooltip": {
+		"message": "Dodaje wyjątek, wiadomości OD nie muszą być podpisane. Ponowna weryfikacja.",
+		"description": "Tooltip of the button explaining what it does."
+	},	
 	"dkim_verifier.markKeyAsSecure": {
-		"message": "Oznacz klucz DKIM jako bezpieczny"
+		"message": "Oznacz klucz DKIM jako bezpieczny",
+		"description": "Text of the button in the DKIM details pop-up."
 	},
+	"dkim_verifier.markKeyAsSecure.tooltip": {
+		"message": "Oznacza zapisany klucz DKIM jako zabezpieczony DNSSEC. Ponowna weryfikacja.",
+		"description": "Tooltip of the button explaining what it does."
+	},	
 	"dkim_verifier.updateKey": {
-		"message": "Zaktualizuj klucz DKIM"
+		"message": "Zaktualizuj klucz DKIM",
+		"description": "Text of the button in the DKIM details pop-up."
 	},
+	"dkim_verifier.updateKey.tooltip": {
+		"message": "Zaktualizuje klucze użyte w tym mailu poprzez ponowne ich pobranie z DNS. Ponowna weryfikacja.",
+		"description": "Tooltip of the button explaining what it does."
+	},	
 	"button.options": {
 		"message": "Opcje",
 		"description": "Button to open the options page of the Add-on."
 	},
+	"button.options.tooltip": {
+		"message": "Otwiera zakładkę z opcjami rozszerzenia.",
+		"description": "Tooltip for the button to open the options page of the add-on."
+	},	
 	"details.result": {
 		"message": "Wynik",
 		"description": "Detailed view row name for the overall DKIM result."
@@ -676,6 +707,10 @@
 		"message": "Podpis nie zawiera daty.",
 		"description": "Value shown for sign and expiration date if no date is given in the signature."
 	},
+	"details.potentiallyOutdatedKeyWarning": {
+		"message": "Zapis kluczy DKIM jest właczony co może być przyczyną błędnej weryfiacji przeterminowanego podpisu. Użyj \"$1\", aby zaktualizować klucz i ponownie zweryfikować.",
+		"description": "Potential info note shown. $1 will be replaced with the text of dkim_verifier.updateKey"
+	},	
 	// ==================== Table Views ====================
 	"treeviewKeys.title": {
 		"message": "Klucze DKIM",
