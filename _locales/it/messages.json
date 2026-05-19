@@ -364,6 +364,10 @@
 	"options_dns.resolver.value.2": {
 		"message": "libunbound"
 	},
+	"options_dns.resolver.value.3": {
+		"message": "DNS su HTTPS (DoH)",
+		"description": "Resolver using https://en.wikipedia.org/wiki/DNS_over_HTTPS"
+	},
 	"options_dns.getNameserversFromOS": {
 		"message": "Ricava i server DNS dalla configurazione del sistema operativo"
 	},
@@ -397,6 +401,9 @@
 	},
 	"options_dns.libunbound.path.relToProfileDir": {
 		"message": "Percorso relativo alla cartella del profilo"
+	},
+	"options_dns.doh.server": {
+		"message": "Server DoH:"
 	},
 	// ---------- Policy options tab ----------
 	"options_general.policy": {
@@ -626,19 +633,43 @@
 	// ==================== Actions ====================
 	"dkim_verifier.reverifyDKIMSignature": {
 		"message": "Ri-verifica firma DKIM"
+		"description": "Text of the button in the DKIM details pop-up."
+	},
+	"dkim_verifier.reverifyDKIMSignature.tooltip": {
+		"message": "Avvia una nuova verifica dell’indirizzo email visualizzato. Se è abilitata la funzione di salvataggio del risultato della verifica, il risultato salvato verrà aggiornato",
+		"description": "Tooltip of the button explaining what it does."
 	},
 	"dkim_verifier.policyAddUserException": {
-		"message": "Aggiungi eccezione firma richiesta"
+		"message": "Aggiungi eccezione firma richiesta",
+		"description": "Text of the button in the DKIM details pop-up."
+	},
+	"dkim_verifier.policyAddUserException.tooltip": {
+		"message": "Aggiungi una regola di firma in base alla quale le email provenienti dall’indirizzo del mittente non devono essere firmate. Verrà anche avviata una nuova verifica.",
+		"description": "Tooltip of the button explaining what it does."
 	},
 	"dkim_verifier.markKeyAsSecure": {
-		"message": "Contrassegna chiave DKIM come sicura"
+		"message": "Contrassegna chiave DKIM come sicura",
+		"description": "Text of the button in the DKIM details pop-up."
+	},
+	"dkim_verifier.markKeyAsSecure.tooltip": {
+		"message": "Contrassegna la chiave DKIM memorizzata nella cache del primo risultato DKIM come protetta da DNSSEC. Verrà anche avviata una nuova verifica.",
+		"description": "Tooltip of the button explaining what it does."
 	},
 	"dkim_verifier.updateKey": {
-		"message": "Aggiorna chiave DKIM"
+		"message": "Aggiorna chiave DKIM",
+		"description": "Text of the button in the DKIM details pop-up."
+	},
+	"dkim_verifier.updateKey.tooltip": {
+		"message": "Aggiorna le chiavi DKIM memorizzate nella cache utilizzate in questa email recuperandole nuovamente dal DNS. Verrà anche avviata una nuova verifica.",
+		"description": "Tooltip of the button explaining what it does."
 	},
 	"button.options": {
 		"message": "Opzioni",
-		"description": "Button to open the options page of the Add-on."
+		"description": "Button to open the options page of the add-on."
+	},
+	"button.options.tooltip": {
+		"message": "Apri le opzioni del componente aggiuntivo in una nuova scheda.",
+		"description": "Tooltip for the button to open the options page of the add-on."
 	},
 	"details.result": {
 		"message": "Risultato",
@@ -675,6 +706,10 @@
 	"details.noDate": {
 		"message": "Nessuna data inclusa nella firma",
 		"description": "Value shown for sign and expiration date if no date is given in the signature."
+	},
+	"details.potentiallyOutdatedKeyWarning": {
+		"message": "La memorizzazione nella cache delle chiavi DKIM è abilitata. La firma non valida potrebbe essere dovuta a una chiave non aggiornata. Prova l’azione \"$1\" per aggiornare la chiave e avviare una nuova verifica.",
+		"description": "Potential info note shown. $1 will be replaced with the text of dkim_verifier.updateKey"
 	},
 	// ==================== Table Views ====================
 	"treeviewKeys.title": {
