@@ -632,7 +632,7 @@
 	},
 	// ==================== Actions ====================
 	"dkim_verifier.reverifyDKIMSignature": {
-		"message": "Ri-verifica firma DKIM"
+		"message": "Ri-verifica firma DKIM",
 		"description": "Text of the button in the DKIM details pop-up."
 	},
 	"dkim_verifier.reverifyDKIMSignature.tooltip": {
