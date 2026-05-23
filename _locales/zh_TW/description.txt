@@ -6,5 +6,5 @@
 
 為了省下確認這個郵件是否以及由誰簽章的麻煩，這個擴充套件支援使用簽章規則。您可以透過簽章規則來指定來自某個寄件者的郵件都應該是由某個域名簽章(也就是所謂的 SDID)。您可以在 https://github.com/lieser/dkim_verifier/wiki/Sign-rules 找到更多關於簽章規則的資訊。
 
-關於所有可用的設定的詳細資訊可以在 https://github.com/lieser/dkim_verifier/wiki/Options 找到。
-
+<strong>在<a href="https://github.com/lieser/dkim_verifier/wiki">擴充套件首頁</a> 中有關於這個擴充套件的功能的更進一步的概要。</strong>
+也可以在 <a href="https://github.com/lieser/dkim_verifier/wiki/Options">這個頁面</a> 找到所有可用的設定的詳細資訊。
