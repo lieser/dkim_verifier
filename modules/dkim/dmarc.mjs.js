@@ -4,7 +4,7 @@
  *
  * This module is NOT conform to DMARC.
  *
- * Copyright (c) 2014-2019;2021-2023;2025 Philippe Lieser
+ * Copyright (c) 2014-2019;2021-2023;2025-2026 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -13,7 +13,6 @@
  */
 
 // @ts-check
-///<reference path="../../experiments/mailUtils.d.ts" />
 ///<reference path="../dns.d.ts" />
 /* eslint-disable no-magic-numbers */
 /* eslint-disable no-use-before-define */
@@ -22,6 +21,7 @@ import { DKIM_Error } from "../error.mjs.js";
 import DNS from "../dns.mjs.js";
 import Logging from "../logging.mjs.js";
 import RfcParser from "../rfcParser.mjs.js";
+import getBaseDomainFromAddr from "../publicSuffixList.mjs";
 import { getDomainFromAddr } from "../utils.mjs.js";
 import prefs from "../preferences.mjs.js";
 
@@ -149,7 +149,7 @@ async function getDMARCPolicy(fromAddress, queryDnsTxt) {
 
 	if (!dmarcRecord) {
 		// get the DMARC Record of the base domain
-		baseDomain = await browser.mailUtils.getBaseDomainFromAddr(fromAddress);
+		baseDomain = getBaseDomainFromAddr(fromAddress);
 		if (domain !== baseDomain) {
 			dmarcRecord = await getDMARCRecord(baseDomain, queryDnsTxt);
 

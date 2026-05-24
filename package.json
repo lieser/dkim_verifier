@@ -29,6 +29,7 @@
 	"type": "module",
 	"dependencies": {
 		"dns-message": "^1.1.1",
+		"psl": "^1.15.0",
 		"tabulator-tables": "^6.4.0",
 		"tweetnacl-es6": "1.0.3"
 	},

@@ -4,7 +4,7 @@
  *
  * Note that the mostly unused static create() functions are for type checking.
  *
- * Copyright (c) 2020-2023;2025 Philippe Lieser
+ * Copyright (c) 2020-2023;2025-2026 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -22,7 +22,6 @@ import ExtensionUtils from "../../modules/extensionUtils.mjs.js";
 import MsgParser from "../../modules/msgParser.mjs.js";
 import { queryDnsTxt } from "./dnsStub.mjs.js";
 import sinon from "./sinonUtils.mjs.js";
-import { stringEndsWith } from "../../modules/utils.mjs.js";
 
 /**
  * Parse a JSON file that contains comments in the form of "//…".
@@ -499,35 +498,6 @@ class FakeJsdns {
 	txt = queryDnsTxt;
 }
 
-class FakeMailUtils {
-	/**
-	 * @returns {browser.mailUtils}
-	 */
-	static create() {
-		return new FakeMailUtils();
-	}
-
-	/**
-	 * Returns the base domain for an e-mail address.
-	 *
-	 * @param {string} addr
-	 * @returns {Promise<string>}
-	 */
-	getBaseDomainFromAddr(addr) {
-		const publicSuffixList = [
-			"co.uk",
-		];
-		let numberDomainParts = 2;
-		if (publicSuffixList.some(suffix => stringEndsWith(addr, suffix))) {
-			numberDomainParts = 3;
-		}
-		const fullDomain = addr.slice(addr.lastIndexOf("@") + 1);
-		const domainParts = fullDomain.split(".");
-		const baseDomain = domainParts.slice(-numberDomainParts).join(".");
-		return Promise.resolve(baseDomain);
-	}
-}
-
 class FakeBrowser {
 	i18n = new FakeI18n();
 	runtime = new FakeRuntime();
@@ -540,7 +510,6 @@ class FakeBrowser {
 	// Experiments
 	dkimHeader = new FakeDkimHeader();
 	jsdns = new FakeJsdns();
-	mailUtils = new FakeMailUtils();
 
 	/**
 	 * @param {browser.messages.MessageHeader} msg

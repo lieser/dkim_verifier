@@ -94,20 +94,6 @@
 				"script": "experiments/libunbound.js"
 			}
 		},
-		"mailUtils": {
-			"schema": "experiments/mailUtils-schema.json",
-			"parent": {
-				"scopes": [
-					"addon_parent"
-				],
-				"paths": [
-					[
-						"mailUtils"
-					]
-				],
-				"script": "experiments/mailUtils.js"
-			}
-		},
 		"storageMessage": {
 			"schema": "experiments/storageMessage-schema.json",
 			"parent": {

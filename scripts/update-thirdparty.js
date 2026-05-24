@@ -31,7 +31,7 @@ const readme = `# Third-party libraries
 
 Unchanged third-party libraries included in the add-on.
 
-See [THIRDPARTY_LICENSE.txt](../THIRDPARTY_LICENSE.txt) in the root directory for licensing information.
+See [THIRDPARTY_LICENSE.md](../THIRDPARTY_LICENSE.md) in the root directory for licensing information.
 
 This file contains the information which versions of the third-party libraries are included.
 `;
@@ -46,6 +46,12 @@ await fs.mkdir("thirdparty/dns-message/dist");
 await fs.copyFile("node_modules/dns-message/dist/dns-message.d.ts", "thirdparty/dns-message/dist/dns-message.d.mts");
 await fs.copyFile("node_modules/dns-message/dist/dns-message.mjs", "thirdparty/dns-message/dist/dns-message.mjs");
 await writePackageInfo(packageLock, "dns-message");
+
+await fs.mkdir("thirdparty/psl");
+await fs.copyFile("node_modules/psl/LICENSE", "thirdparty/psl/LICENSE");
+await fs.mkdir("thirdparty/psl/dist");
+await fs.copyFile("node_modules/psl/dist/psl.mjs", "thirdparty/psl/dist/psl.mjs");
+await writePackageInfo(packageLock, "psl");
 
 await fs.mkdir("thirdparty/tabulator-tables");
 await fs.copyFile("node_modules/tabulator-tables/LICENSE", "thirdparty/tabulator-tables/LICENSE");

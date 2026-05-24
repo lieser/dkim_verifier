@@ -51,7 +51,7 @@ async function collectFiles() {
 		"LICENSE.txt",
 		"manifest.json",
 		"README.md",
-		"THIRDPARTY_LICENSE.txt",
+		"THIRDPARTY_LICENSE.md",
 	];
 
 	return files;

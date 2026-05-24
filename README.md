@@ -58,7 +58,7 @@ The following directories and files are included in the packed extension:
 - `LICENSE.txt`: Licensing information for the extension.
 - `manifest.json`: Manifest file containing basic metadata about the extension.
 - `README.md`: This readme.
-- `THIRDPARTY_LICENSE.txt`: Licensing information for included third party
+- `THIRDPARTY_LICENSE.md`: Licensing information for included third party
 software components.
 
 Other directories and files are used only for development. This includes:
@@ -68,9 +68,12 @@ Other directories and files are used only for development. This includes:
   More details in the included [readme](test/Readme.md).
 - `icon-black-64.png`: Icon of the extension used on ATN, generated from `icon-black.svg`.
 
-## Included third-party Libraries
+## Included third-party libraries
 
 - Joshua Tauberer's DNS Library (part of Thunderbird Sender Verification Extension) (<https://github.com/tauberer/thunderbird-spf>)
   - dns.js - DNS Library
+- [dns-message](https://github.com/kitten/dns-message)
+- [psl (Public Suffix List)](https://github.com/lupomontero/psl)
+  - [Punycode.js](https://github.com/mathiasbynens/punycode.js)
 - [Tabulator](https://tabulator.info)
 - ES6 version of the [tweetnacl-js](https://github.com/dchest/tweetnacl-js) `nacl-fast.js` (<https://github.com/hakanols/tweetnacl-es6>)
