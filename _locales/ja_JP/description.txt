@@ -6,4 +6,5 @@
 
 メールが署名されているかどうか、そして誰に署名されているかを簡単にチェックするために、このアドオンは署名ルールの利用をサポートします。署名ルールにより、ある送信者からの全てのメールは特定のドメイン（SDID とも言われる）により署名されると規定することも可能です。署名ルールの詳細は https://github.com/lieser/dkim_verifier/wiki/Sign-rules を参照してください。
 
-アドオンの全てのオプションの説明は https://github.com/lieser/dkim_verifier/wiki/Options を参照してください。
+<strong>アドオンの機能の詳しい説明は、<a href="https://github.com/lieser/dkim_verifier/wiki">アドオンのホームページ</a>をご覧ください。</strong>
+また、<a href="https://github.com/lieser/dkim_verifier/wiki/Options">アドオンで利用できるすべての設定項目</a>についても説明されています。
