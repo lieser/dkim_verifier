@@ -364,6 +364,9 @@
 	"options_dns.resolver.value.2": {
 		"message": "libunbound"
 	},
+	"options_dns.resolver.value.3": {
+		"message": "DNS over HTTPS (DoH)"
+	},
 	"options_dns.getNameserversFromOS": {
 		"message": "OS の設定から DNS サーバを取得"
 	},
@@ -397,6 +400,9 @@
 	},
 	"options_dns.libunbound.path.relToProfileDir": {
 		"message": "プロファイルディレクトリへの相対パス"
+	},
+	"options_dns.doh.server": {
+		"message": "DoH サーバ:"
 	},
 	// ---------- Policy options tab ----------
 	"options_general.policy": {
@@ -627,18 +633,33 @@
 	"dkim_verifier.reverifyDKIMSignature": {
 		"message": "DKIM 署名を再検証"
 	},
+	"dkim_verifier.reverifyDKIMSignature.tooltip": {
+		"message": "表示されているメールの新しい検証を開始します。検証結果の保存が有効になっている場合、保存されている結果が更新されます。"
+	},
 	"dkim_verifier.policyAddUserException": {
 		"message": "署名必須の例外を追加"
+	},
+	"dkim_verifier.policyAddUserException.tooltip": {
+		"message": "From アドレスからのメールが署名されていなくてもよいという署名ルールを追加します。新しい検証も開始されます。"
 	},
 	"dkim_verifier.markKeyAsSecure": {
 		"message": "DKIM キーをセキュアとマーク"
 	},
+	"dkim_verifier.markKeyAsSecure.tooltip": {
+		"message": "キャッシュされた最初の DKIM 結果の DKIM キーを DNSSEC によりセキュアであるとマークします。新しい検証も開始されます。"
+	},
 	"dkim_verifier.updateKey": {
 		"message": "DKIM キーを更新"
+	},
+	"dkim_verifier.updateKey.tooltip": {
+		"message": "このメールで使用されているキャッシュされた DKIM キーを再度 DNS から取得して更新します。新しい検証も開始されます。"
 	},
 	"button.options": {
 		"message": "オプション",
 		"description": "Button to open the options page of the Add-on."
+	},
+	"button.options.tooltip": {
+		"message": "新しいタブでアドオンのオプションを開きます。"
 	},
 	"details.result": {
 		"message": "結果",
@@ -675,6 +696,9 @@
 	"details.noDate": {
 		"message": "署名に時刻が含まれていません",
 		"description": "Value shown for sign and expiration date if no date is given in the signature."
+	},
+	"details.potentiallyOutdatedKeyWarning": {
+		"message": "DKIM キーのキャッシュが有効です。無効な署名の原因は古いキーである可能性があります。\"$1\" アクションを試してキーを更新し、新しい検証を開始してください。"
 	},
 	// ==================== Table Views ====================
 	"treeviewKeys.title": {
