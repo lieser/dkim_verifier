@@ -362,6 +362,9 @@
 	"options_dns.resolver.value.2": {
 		"message": "libunbound"
 	},
+	"options_dns.resolver.value.3": {
+		"message": "DNS over HTTPS (DoH)"
+	},
 	"options_dns.getNameserversFromOS": {
 		"message": "從系統設定取得 DNS 伺服器"
 	},
@@ -394,6 +397,9 @@
 	},
 	"options_dns.libunbound.path.relToProfileDir": {
 		"message": "相對於設定檔的路徑"
+	},
+	"options_dns.doh.server": {
+		"message": "DoH 伺服器："
 	},
 	// ---------- Policy options tab ----------
 	"options_general.policy": {
@@ -623,17 +629,32 @@
 	"dkim_verifier.reverifyDKIMSignature": {
 		"message": "重新驗證 DKIM 簽章"
 	},
+	"dkim_verifier.reverifyDKIMSignature.tooltip": {
+		"message": "對現在這個郵件重新進行驗證。如果有啟用儲存驗證結果的話，將會更新儲存的結果。"
+	},
 	"dkim_verifier.policyAddUserException": {
 		"message": "新增為例外"
+	},
+	"dkim_verifier.policyAddUserException.tooltip": {
+		"message": "新增將這個寄件者設定為例外的簽章規則。並且會重新進行驗證。"
 	},
 	"dkim_verifier.markKeyAsSecure": {
 		"message": "標記為安全"
 	},
+	"dkim_verifier.markKeyAsSecure.tooltip": {
+		"message": "將第一個 DKIM 結果對應的快取中的金鑰標記爲有受 DNSSEC 保護。並且會重新進行驗證。"
+	},
 	"dkim_verifier.updateKey": {
 		"message": "更新 DKIM 金鑰"
 	},
+	"dkim_verifier.updateKey.tooltip": {
+		"message": "透過 DNS 重新取得這個郵件使用的 DKIM 金鑰。並且會重新進行驗證。"
+	},
 	"button.options": {
 		"message": "選項"
+	},
+	"button.options.tooltip": {
+		"message": "在新分頁中開啟這個擴充套件的選項頁面"
 	},
 	"details.result": {
 		"message": "結果"
@@ -661,6 +682,9 @@
 	},
 	"details.noDate": {
 		"message": "簽章內未包含時間"
+	},
+	"details.potentiallyOutdatedKeyWarning": {
+		"message": "DKIM 金鑰快取已啟用。可能是因為快取的金鑰已經過期導致這個簽章無效。試著執行動作「$1」來更新金鑰並重新進行驗證。"
 	},
 	// ==================== Table Views ====================
 	"treeviewKeys.title": {
