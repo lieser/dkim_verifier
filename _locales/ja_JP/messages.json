@@ -368,7 +368,7 @@
 		"message": "OS の設定から DNS サーバを取得"
 	},
 	"options_dns.nameserver": {
-		"message": "DNS サーバ （書式 （EBNF）: host[\":\"port]{\";\"host[\":\"port]} ）:"
+		"message": "DNS サーバ （ 書式 （EBNF）: host[\":\"port]{\";\"host[\":\"port]} ）:"
 	},
 	"options_dns.timeout_connect": {
 		"message": "DNS 接続タイムアウト （秒）:",

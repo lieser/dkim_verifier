@@ -1,0 +1,21 @@
+:root {
+  /* Hard coded fallback colors are from TB 140 (Windows) */
+  --dkim-color-accent-color: var(--in-content-accent-color, AccentColor);
+  --dkim-color-information: var(--icon-color-information, light-dark(#1373d9, #bce0fd));
+
+  --dkim-color-box-background: var(--background-color-box, light-dark(var(--color-white), var(--color-gray-80)));
+  --dkim-color-box-border-color: var(--in-content-box-border-color, var(--border-color, color-mix(in srgb, currentColor 41%, transparent)));
+
+  --dkim-color-button-background: var(--in-content-button-background, var(--button-background-color, light-dark(var(--grey-90-a10), rgba(249, 249, 250, 0.1))));
+  --dkim-color-button-hover-background: var(--in-content-button-background-hover, var(--button-background-color-hover, light-dark(var(--grey-90-a20), rgba(249, 249, 250, 0.15))));
+  --dkim-color-button-hover-text-color: var(--in-content-button-text-color-hover, var(--button-text-color-hover));
+
+  --dkim-color-item-hover: var(--in-content-item-hover, var(--background-color-list-item-hover, color-mix(in srgb, currentColor 12%, transparent)));
+  --dkim-color-item-selected: var(--in-content-item-selected, var(--selected-item-color, color-mix(in srgb, currentColor 20%, transparent)));
+  --dkim-color-item-selected-text: var(--in-content-item-selected-text, var(--selected-item-text-color));
+
+  --dkim-color-sidebar-background: var(--in-content-categories-background, var(--sidebar-background, light-dark(#f4f4f5, #3f3f46)));
+
+  --dkim-color-table-background: var(--dkim-color-box-background);
+  --dkim-color-table-footer: var(--in-content-table-background, var(--table-background-color, #f8f8fa));
+}

@@ -41,7 +41,7 @@ async function collectFiles() {
 		...await globby("modules", {
 			expandDirectories: {
 				files: ["*"],
-				extensions: ["js"],
+				extensions: ["js", "mjs"],
 			},
 		}),
 		...await globby("thirdparty", { expandDirectories: true }),

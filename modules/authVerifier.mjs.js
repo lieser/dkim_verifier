@@ -1,7 +1,7 @@
 /**
  * Authentication Verifier.
  *
- * Copyright (c) 2014-2025 Philippe Lieser
+ * Copyright (c) 2014-2026 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -347,6 +347,9 @@ function sortSignatures(signatures, from, listId) {
 		}
 
 		if (sig1.sdid && addrIsInDomain2(from, sig1.sdid)) {
+			if (sig2.sdid && addrIsInDomain2(from, sig2.sdid)) {
+				return domainIsInDomain(sig1.sdid, sig2.sdid) ? -1 : 1;
+			}
 			return -1;
 		} else if (sig2.sdid && addrIsInDomain2(from, sig2.sdid)) {
 			return 1;

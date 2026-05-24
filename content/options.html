@@ -2,13 +2,14 @@
 <html>
 
 <head>
-  <meta charset='utf-8'>
+  <meta charset="utf-8">
   <title data-i18n="options_prefwindow.title"></title>
 
-  <link rel='stylesheet' type='text/css' href="chrome://global/skin/in-content/common.css">
-  <link rel='stylesheet' type='text/css' href="chrome://messenger/skin/preferences/preferences.css">
+  <link rel="stylesheet" href="chrome://global/skin/in-content/common.css">
+  <link rel="stylesheet" href="chrome://messenger/skin/preferences/preferences.css">
 
-  <link rel='stylesheet' type='text/css' href="./options.css">
+  <link rel="stylesheet" href="./colors.css">
+  <link rel="stylesheet" href="./options.css">
   <script type="module" src="./translation.mjs.js"></script>
   <script type="module" src="./options.mjs.js"></script>
 </head>
@@ -53,14 +54,17 @@
       <select data-pref="dns.resolver">
         <option data-i18n="options_dns.resolver.value.1" value="1"></option>
         <option data-i18n="options_dns.resolver.value.2" value="2"></option>
+        <option data-i18n="options_dns.resolver.value.3" value="3"></option>
       </select>
     </div>
-    <label class="checkbox" data-i18n="options_dns.getNameserversFromOS">
-      <input type="checkbox" data-pref="dns.getNameserversFromOS">
-    </label>
+    <div data-dns-resolver="1,2">
+      <label class="checkbox" data-i18n="options_dns.getNameserversFromOS">
+        <input type="checkbox" data-pref="dns.getNameserversFromOS">
+      </label>
+    </div>
     <label for="dns.nameserver" data-dns-resolver="1" data-i18n="options_dns.nameserver"></label>
     <label for="dns.nameserver" data-dns-resolver="2" data-i18n="options_dns.libunbound.nameserver"></label>
-    <div>
+    <div data-dns-resolver="1,2">
       <input id="dns.nameserver" type="text" data-pref="dns.nameserver">
     </div>
     <!-- jsdns specific options -->
@@ -101,6 +105,12 @@
       <label class="checkbox" data-i18n="options_dns.libunbound.path.relToProfileDir">
         <input type="checkbox" data-pref="dns.libunbound.path.relToProfileDir">
       </label>
+    </fieldset>
+    <!-- DoH specific options -->
+    <fieldset data-dns-resolver="3">
+      <legend data-i18n="options_dns.resolver.value.3"></legend>
+      <label for="dns.doh.server" data-i18n="options_dns.doh.server"></label>
+      <input id="dns.doh.server" type="text" data-pref="dns.doh.server" size="75">
     </fieldset>
   </main>
 
@@ -343,6 +353,8 @@
         <li>ja: SAKURAI Kenichi</li>
         <li>pl: dMbski</li>
         <li>pt-BR: João Paulo</li>
+        <li>ru: Dmytro Kartashov</li>
+        <li>sk: Jozef Gaal</li>
         <li>sv-SE: Phoenix</li>
         <li>uk: lexxai</li>
         <li>vi-VN: vtvinh24</li>
@@ -357,6 +369,7 @@
           <a href="https://github.com/JoshData/thunderbird-spf">DNS Library</a>
           <span data-i18n="about_by"></span> Joshua Tauberer
         </li>
+        <li><a href="https://github.com/kitten/dns-message">dns-message</a></li>
         <li><a href="https://tabulator.info/">Tabulator</a></li>
         <li><a href="https://github.com/hakanols/tweetnacl-es6">tweetnacl-es6</a></li>
       </ul>

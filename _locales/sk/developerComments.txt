@@ -1,0 +1,3 @@
+Podpora je poskytovaná na stránke https://github.com/lieser/dkim_verifier/issues alebo prostredníctvom e-mailu lieser+dkim@posteo.net (v angličtine alebo nemčine).
+
+Najvhodnejším spôsobom hlásenia chýb je vytvorenie nahlásenia na stránke https://github.com/lieser/dkim_verifier/issues.

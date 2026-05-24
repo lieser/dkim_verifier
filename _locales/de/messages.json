@@ -364,11 +364,15 @@
 	"options_dns.resolver.value.2": {
 		"message": "libunbound"
 	},
+	"options_dns.resolver.value.3": {
+		"message": "DNS over HTTPS (DoH)",
+		"description": "Resolver using https://en.wikipedia.org/wiki/DNS_over_HTTPS"
+	},
 	"options_dns.getNameserversFromOS": {
 		"message": "DNS-Server aus den Einstellungen des Betriebssystems laden"
 	},
 	"options_dns.nameserver": {
-		"message": "DNS-Server (EBNF-Syntax: host[\":\"port]{\";\"host[\":\"port]} ):"
+		"message": "DNS-Server ( EBNF-Syntax: host[\":\"port]{\";\"host[\":\"port]} ):"
 	},
 	"options_dns.timeout_connect": {
 		"message": "DNS-Verbindungs-Timeout (in Sekunden):",
@@ -397,6 +401,9 @@
 	},
 	"options_dns.libunbound.path.relToProfileDir": {
 		"message": "Pfad ist relativ zum Profilordner"
+	},
+	"options_dns.doh.server": {
+		"message": "DoH Server:"
 	},
 	// ---------- Policy options tab ----------
 	"options_general.policy": {
@@ -625,20 +632,44 @@
 	},
 	// ==================== Actions ====================
 	"dkim_verifier.reverifyDKIMSignature": {
-		"message": "DKIM-Signatur erneut prüfen"
+		"message": "DKIM-Signatur erneut prüfen",
+		"description": "Text of the button in the DKIM details pop-up."
+	},
+	"dkim_verifier.reverifyDKIMSignature.tooltip": {
+		"message": "Startet eine neue Überprüfung der angezeigten E-Mail. Falls das Speicher des Ergebnisses der Überprüfung aktiviert ist, wird das gespeicherte Ergebnis aktualisiert.",
+		"description": "Tooltip of the button explaining what it does."
 	},
 	"dkim_verifier.policyAddUserException": {
-		"message": "Ausnahme für 'Muss signiert sein' hinzufügen"
+		"message": "Ausnahme für 'Muss signiert sein' hinzufügen",
+		"description": "Text of the button in the DKIM details pop-up."
+	},
+	"dkim_verifier.policyAddUserException.tooltip": {
+		"message": "Fügt eine Signierregel hinzu das E-Mails der Absenderadresse nicht signiert sein müssen. Startet auch eine neue Überprüfung.",
+		"description": "Tooltip of the button explaining what it does."
 	},
 	"dkim_verifier.markKeyAsSecure": {
-		"message": "DKIM-Schlüssel als sicher markieren"
+		"message": "DKIM-Schlüssel als sicher markieren",
+		"description": "Text of the button in the DKIM details pop-up."
+	},
+	"dkim_verifier.markKeyAsSecure.tooltip": {
+		"message": "Markiert den gespeicherten DKIM-Schlüssel des ersten DKIM Ergebnis als durch DNSSEC abgesichert. Startet auch eine neue Überprüfung.",
+		"description": "Tooltip of the button explaining what it does."
 	},
 	"dkim_verifier.updateKey": {
-		"message": "DKIM-Schlüssel aktualisieren"
+		"message": "DKIM-Schlüssel aktualisieren",
+		"description": "Text of the button in the DKIM details pop-up."
+	},
+	"dkim_verifier.updateKey.tooltip": {
+		"message": "Aktualisiert die gespeicherten DKIM-Schlüssel die in dieser E-Mail genutzt werden in dem sie erneut über DNS geladen werden. Startet auch eine neue Überprüfung.",
+		"description": "Tooltip of the button explaining what it does."
 	},
 	"button.options": {
 		"message": "Einstellungen",
-		"description": "Button to open the options page of the Add-on."
+		"description": "Button to open the options page of the add-on."
+	},
+	"button.options.tooltip": {
+		"message": "Öffnet die Einstellungen des Add-on in einem neuen Tab.",
+		"description": "Tooltip for the button to open the options page of the add-on."
 	},
 	"details.result": {
 		"message": "Ergebnis",
@@ -675,6 +706,10 @@
 	"details.noDate": {
 		"message": "Kein Zeitpunkt in der Signatur enthalten",
 		"description": "Value shown for sign and expiration date if no date is given in the signature."
+	},
+	"details.potentiallyOutdatedKeyWarning": {
+		"message": "Speichern der DKIM-Schlüssel ist aktiviert. Der Grund für die invalide Signature ist möglicherweise ein veralteter Schlüssel. Probiere die \"$1\" Aktion um den Schlüssel zu aktualisieren und eine neue Prüfung zu starten.",
+		"description": "Potential info note shown. $1 will be replaced with the text of dkim_verifier.updateKey"
 	},
 	// ==================== Table Views ====================
 	"treeviewKeys.title": {

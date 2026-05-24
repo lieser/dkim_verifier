@@ -6,4 +6,5 @@ Dans certains cas, l'absence de signature DKIM peut être utile pour identifier 
 
 Pour faciliter la vérification de la signature d'un e-mail, le module complémentaire prend en charge l'utilisation de règles de signature. Grâce aux règles de signature, il est possible de spécifier que les e-mails d'un certain expéditeur doivent toujours être signés par un domaine spécifique (également appelé SDID). Pour en savoir plus sur les règles de signature, consultez https://github.com/lieser/dkim_verifier/wiki/Sign-rules.
 
-Une description de toutes les options de cette extension est disponible sur https://github.com/lieser/dkim_verifier/wiki/Options.
+<strong><a href="https://github.com/lieser/dkim_verifier/wiki">La page d'accueil de l'extension</a> contient une présentation plus détaillée des fonctionnalités.</strong>
+Elle contient également <a href="https://github.com/lieser/dkim_verifier/wiki/Options">une description de toutes les options disponibles</a>.

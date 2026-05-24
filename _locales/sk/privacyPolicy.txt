@@ -1,0 +1,4 @@
+Doplnok zasiela požiadavku na DNS server (predvolene Google Public DNS (8.8.8.8) alebo server nakonfigurovaný v operačnom systéme) o TXT záznam špecifikovaný v podpise, ktorý obsahuje verejný kľúč podpisu.
+K tomu dôjde vždy, keď sa zobrazí e-mail s podpisom DKIM.
+
+Ak je povolené používanie DMARC, môžu sa vykonať ďalšie vyhľadávania DNS, aj keď sa nezobrazujú e-maily podpísané DKIM.

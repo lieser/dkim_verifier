@@ -10,6 +10,7 @@
  */
 
 // @ts-check
+/* eslint-disable jsdoc/reject-any-type */
 
 import { dateToString, promiseWithTimeout, sleep } from "./utils.mjs.js";
 import Logging from "./logging.mjs.js";

@@ -22,7 +22,7 @@ const log = Logging.getLogger("Crypto");
  * Characters >255 have their hi-byte silently ignored.
  *
  * @param {string} str - binary string
- * @returns {Uint8Array}
+ * @returns {ArrayBufferView<ArrayBuffer>}
  */
 function strToArrayBuffer(str) {
 	const buffer = new Uint8Array(str.length);
@@ -36,7 +36,7 @@ function strToArrayBuffer(str) {
 /**
  * @protected
  * @param {string} str
- * @returns {Uint8Array}
+ * @returns {ArrayBufferView<ArrayBuffer>}
  */
 function decodeBase64(str) {
 	return strToArrayBuffer(atob(str));

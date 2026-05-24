@@ -247,6 +247,7 @@ function resolve(name, rrtype) {
 						j = rdata[i];
 						i += 1;
 						// read current <character-string>
+						// eslint-disable-next-line unicorn/prefer-code-point
 						str += String.fromCharCode.apply(null, rdata.slice(i, i + j));
 						i += j;
 					}

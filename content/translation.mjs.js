@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2021;2025 Philippe Lieser
+ * Copyright (c) 2020-2021;2025-2026 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -18,6 +18,13 @@ document.addEventListener("DOMContentLoaded", () => {
 		const messageName = element.dataset.i18n;
 		if (messageName) {
 			element.insertAdjacentText("beforeend", browser.i18n.getMessage(messageName));
+		}
+	}
+	const titleElements = /** @type {HTMLElement[]} */([...document.querySelectorAll("[data-i18n-title]")]);
+	for (const element of titleElements) {
+		const messageName = element.dataset.i18nTitle;
+		if (messageName) {
+			element.title = browser.i18n.getMessage(messageName);
 		}
 	}
 }, { once: true });

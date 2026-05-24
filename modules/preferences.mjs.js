@@ -1,7 +1,7 @@
 /**
  * Provides access to the add-ons preferences.
  *
- * Copyright (c) 2020-2023;2025 Philippe Lieser
+ * Copyright (c) 2020-2023;2025-2026 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -140,6 +140,7 @@ export class BasePreferences {
 		if (!Object.hasOwn(BasePreferences.prototype, name)) {
 			throw new Error(`Can not get nonexisting preference "${name}"`);
 		}
+		// eslint-disable-next-line jsdoc/reject-any-type
 		/** @type {any} */
 		// eslint-disable-next-line unicorn/no-this-assignment
 		const that = this;
@@ -308,6 +309,10 @@ export class BasePreferences {
 
 	get "dns.nameserver"() {
 		return this.#tryGetStringValue("dns.nameserver", "8.8.8.8");
+	}
+
+	get "dns.doh.server"() {
+		return this.#tryGetStringValue("dns.doh.server", "https://dns.quad9.net/dns-query");
 	}
 
 	get "dns.timeout_connect"() {
@@ -568,6 +573,7 @@ export class BasePreferences {
 		if (name === "dkim.enable" || name === "arh.read") {
 			return this.#tryGetNumberValue(`account.${account}.${name}`, 0);
 		}
+		// eslint-disable-next-line jsdoc/reject-any-type
 		/** @type {any} */
 		// eslint-disable-next-line unicorn/no-this-assignment
 		const that = this;
@@ -723,6 +729,7 @@ export class StorageLocalPreferences extends BasePreferences {
 	 * @override
 	 */
 	async clear() {
+		// eslint-disable-next-line jsdoc/reject-any-type
 		/** @type {{scope: string, data: any}[]} */
 		const dataStorages = [];
 		for (const dataStorageScope of StorageLocalPreferences.dataStorageScopes) {

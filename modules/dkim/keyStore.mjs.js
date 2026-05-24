@@ -11,6 +11,7 @@
  */
 
 // @ts-check
+/* eslint-disable jsdoc/reject-any-type */
 ///<reference path="../../RuntimeMessage.d.ts" />
 ///<reference path="../dns.d.ts" />
 

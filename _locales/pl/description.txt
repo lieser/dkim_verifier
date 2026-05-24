@@ -7,4 +7,5 @@ W niektórych przypadkach, brak podpisu DKIM, pomaga zidentyfikować oszustwo, s
 
 Dodatek wspiera stosowanie reguł, które pozwalają na określenie parametrów weryfikacji wiadomości. Można w ten sposób wskazać nadawców, których wiadomości muszą być podpisane przez określone domeny (określany jako SDID). Więcej o regułach podpisywania na stronie https://github.com/lieser/dkim_verifier/wiki/Sign-rules.
 
-Opis wszystkich dostępnych opcji rozszerzenia, dostępny jest na stronie https://github.com/lieser/dkim_verifier/wiki/Options.
+<strong><a href="https://github.com/lieser/dkim_verifier/wiki">Strona domowa</a> zawiera bardziej szczegółowy przegląd funkcji Dodatku.</strong>
+Jest tam także<a href="https://github.com/lieser/dkim_verifier/wiki/Options"> opis wszystkich dostępnych opcji rozszerzenia.</a>.

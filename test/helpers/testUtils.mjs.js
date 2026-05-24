@@ -12,7 +12,7 @@
 /**
  * @returns {boolean}
  */
-function isNodeJs() {
+export function isNodeJs() {
 	return globalThis.window === undefined;
 }
 

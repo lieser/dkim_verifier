@@ -324,7 +324,7 @@
 		"message": "从操作系统的配置获取 DNS 名称服务器"
 	},
 	"options_dns.nameserver": {
-		"message": "DNS 名称服务器 (语法 (EBNF): host[\":\"port]{\";\"host[\":\"port]} ):"
+		"message": "DNS 名称服务器 ( 语法 (EBNF): host[\":\"port]{\";\"host[\":\"port]} ):"
 	},
 	"options_dns.timeout_connect": {
 		"message": "DNS 连接超时 (秒):"

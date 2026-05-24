@@ -610,7 +610,7 @@ describe("Message parser [unittest]", function () {
 				"From: <foo@☕.us>\r\n"
 			), true)).to.be.equal("foo@☕.us");
 		});
-		// eslint-disable-next-line mocha/no-skipped-tests
+		// eslint-disable-next-line mocha/no-pending-tests
 		xit("invalid IDNA labels", function () {
 			// Test disabled because currently no check for valid IDNA A-label or U-label is done.
 

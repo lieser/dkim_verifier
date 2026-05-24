@@ -364,11 +364,15 @@
 	"options_dns.resolver.value.2": {
 		"message": "libunbound"
 	},
+	"options_dns.resolver.value.3": {
+		"message": "DNS sur HTTPS (DoH)",
+		"description": "Resolver using https://en.wikipedia.org/wiki/DNS_over_HTTPS"
+	},
 	"options_dns.getNameserversFromOS": {
 		"message": "Obtenir les serveurs DNS à partir de la configuration du système d'exploitation"
 	},
 	"options_dns.nameserver": {
-		"message": "Serveurs DNS (Syntaxe (EBNF) : host[\":\"port]{\";\"host[\":\"port]} ):"
+		"message": "Serveurs DNS ( Syntaxe (EBNF) : host[\":\"port]{\";\"host[\":\"port]} ):"
 	},
 	"options_dns.timeout_connect": {
 		"message": "Délai d'expiration de la connexion DNS (en secondes) :",
@@ -397,6 +401,9 @@
 	},
 	"options_dns.libunbound.path.relToProfileDir": {
 		"message": "Chemin relatif au répertoire de profils"
+	},
+	"options_dns.doh.server": {
+		"message": "Serveur DoH :"
 	},
 	// ---------- Policy options tab ----------
 	"options_general.policy": {
@@ -624,20 +631,44 @@
 	},
 	// ==================== Actions ====================
 	"dkim_verifier.reverifyDKIMSignature": {
-		"message": "Revérifier la signature DKIM"
+		"message": "Revérifier la signature DKIM",
+		"description": "Text of the button in the DKIM details pop-up."
+	},
+    "dkim_verifier.reverifyDKIMSignature.tooltip": {
+		"message": "Lance une nouvelle vérification de l'e-mail affiché. Si l'enregistrement du résultat de la vérification est activé, le résultat enregistré sera mis à jour.",
+		"description": "Tooltip of the button explaining what it does."
 	},
 	"dkim_verifier.policyAddUserException": {
-		"message": "Ajouter doit être une exception signée"
+		"message": "Ajouter doit être une exception signée",
+		"description": "Text of the button in the DKIM details pop-up."
+	},
+	"dkim_verifier.policyAddUserException.tooltip": {
+		"message": "Ajouter une règle de signature pour que les e-mails provenant de cette adresse n'aient pas besoin d'être signés. Cela lancera également une nouvelle vérification.",
+		"description": "Tooltip of the button explaining what it does."
 	},
 	"dkim_verifier.markKeyAsSecure": {
-		"message": "Marquer la clef DKIM comme sécurisée"
+		"message": "Marquer la clef DKIM comme sécurisée",
+		"description": "Text of the button in the DKIM details pop-up."
+	},
+	"dkim_verifier.markKeyAsSecure.tooltip": {
+		"message": "Marquer la clef DKIM mise en cache du premier résultat DKIM comme étant sécurisée par DNSSEC. Lancera également une nouvelle vérification.",
+		"description": "Tooltip of the button explaining what it does."
 	},
 	"dkim_verifier.updateKey": {
-		"message": "Mettre à jour la clef DKIM"
+		"message": "Mettre à jour la clef DKIM",
+		"description": "Text of the button in the DKIM details pop-up."
+	},
+	"dkim_verifier.updateKey.tooltip": {
+		"message": "Mettre à jour les clefs DKIM mises en cache utilisées dans cet e-mail en les récupérant à nouveau depuis le DNS. Une nouvelle vérification sera également lancée.",
+		"description": "Tooltip of the button explaining what it does."
 	},
 	"button.options": {
 		"message": "Préférences",
-		"description": "Button to open the options page of the Add-on."
+		"description": "Button to open the options page of the add-on."
+	},
+	"button.options.tooltip": {
+		"message": "Ouvrir les options du module complémentaire dans un nouvel onglet.",
+		"description": "Tooltip for the button to open the options page of the add-on."
 	},
 	"details.result": {
 		"message": "Résultat",
@@ -674,6 +705,10 @@
 	"details.noDate": {
 		"message": "Aucune date incluse dans la signature",
 		"description": "Value shown for sign and expiration date if no date is given in the signature."
+	},
+	"details.potentiallyOutdatedKeyWarning": {
+		"message": "La mise en cache des clefs DKIM est activée. La signature invalide peut être liée à une clef obsolète. Essayez l'action \"$1\" pour mettre à jour la clef et lancer une nouvelle vérification.",
+		"description": "Potential info note shown. $1 will be replaced with the text of dkim_verifier.updateKey"
 	},
 	// ==================== Table Views ====================
 	"treeviewKeys.title": {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2021;2023;2025 Philippe Lieser
+ * Copyright (c) 2020-2021;2023;2025-2026 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -14,6 +14,7 @@ import {
 	addrIsInDomain2,
 	dateToString,
 	domainIsInDomain,
+	encodeBase64Url,
 	getDomainFromAddr,
 	promiseWithTimeout,
 	stringEndsWith,
@@ -134,6 +135,38 @@ describe("utils [unittest]", function () {
 			expect(
 				domainIsInDomain("bar.com", "sub.bar.com")
 			).to.be.false;
+		});
+	});
+
+	describe("encodeBase64Url", function () {
+		it("With padding", function () {
+			// @ts-expect-error
+			const bytes = Uint8Array.fromHex("666f6f62"); // "foob"
+			const encoded = encodeBase64Url(bytes, false);
+			expect(encoded).to.be.equal("Zm9vYg==");
+		});
+
+		it("Without padding", function () {
+			// @ts-expect-error
+			const bytes = Uint8Array.fromHex("666f6f62"); // "foob"
+			const encoded = encodeBase64Url(bytes, true);
+			expect(encoded).to.be.equal("Zm9vYg");
+		});
+
+		it("Encoding alphabet of base64url", function () {
+			{
+				// Example from https://datatracker.ietf.org/doc/html/rfc8484#section-4.1.1
+				// @ts-expect-error
+				const bytes = Uint8Array.fromHex("00000100000100000000000001613e36326368617261637465726c6162656c2d6d616b65732d62617365363475726c2d64697374696e63742d66726f6d2d7374616e646172642d626173653634076578616d706c6503636f6d0000010001");
+				const encoded = encodeBase64Url(bytes, true);
+				expect(encoded).to.be.equal("AAABAAABAAAAAAAAAWE-NjJjaGFyYWN0ZXJsYWJlbC1tYWtlcy1iYXNlNjR1cmwtZGlzdGluY3QtZnJvbS1zdGFuZGFyZC1iYXNlNjQHZXhhbXBsZQNjb20AAAEAAQ");
+			}
+			{
+				// Example from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array/toBase64#encoding_data_with_url-safe_alphabet
+				const bytes = new Uint8Array([46, 139, 222, 255, 42, 46]);
+				const encoded = encodeBase64Url(bytes, true);
+				expect(encoded).to.be.equal("Love_you");
+			}
 		});
 	});
 

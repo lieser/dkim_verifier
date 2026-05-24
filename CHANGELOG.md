@@ -8,7 +8,34 @@ All notable changes to this project will be documented in this file.
 
 ### Enhancements
 
+- Added support for DNS Queries over HTTPS (DoH) (#579).
+- Added info note about updating outdated cached keys potentially fixing an invalid signature error (#569).
+- Added tooltips to the action buttons in the DKIM button pop-up (#569).
+
+### Fixes
+
+- Fixed tooltip for favicon in Thunderbird 152.
+- Fixed colors in options in Thunderbird 152.
+
+## 6.2.1 (2026-04-07)
+
+### Fixes
+
+- Fix display of DKIM keys and sign rules in case the `navigator.userAgent` preference is set to an empty string (#560).
+
+### Other
+
+- Added Russian translation.
+- Added Slovak translation (#562).
+- Updated default rules and favicons (#561, #570, #573, #576).
+
+## 6.2.0 (2025-09-18)
+
+### Enhancements
+
 - Authentication-Results header: Sort DKIM, SPF and DMARC results from ARH, even when not replacing the add-ons verification (#534).
+- Authentication-Results header: All results are now accepted if reading of non RFC compliant ARHs is enabled (#547).
+  This improves support for invalid headers by Outlook.
 - Detect outgoing messages in Locals Folder (#114).
 - Provide preview of the colors for the From header highlighting (#439).
 
@@ -16,6 +43,10 @@ All notable changes to this project will be documented in this file.
 
 - Libunbound resolver: Make unloading of libraries more robust in case the wrong one got loaded.
 - Fix alignment of warning symbol on MacOS (#531).
+
+### Other
+
+- Updated default rules and favicons.
 
 ## 6.1.0 (2025-06-01)
 

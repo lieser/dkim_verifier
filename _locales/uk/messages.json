@@ -22,16 +22,13 @@
 		"message": "Повідомлення не є електронною поштою"
 	},
 	"SUCCESS_TAG": {
-		"message": "DKIM підписаний $1",
-		"description": "Tag shown in Conversation add-on for valid mail. Should be kept short."
+		"message": "DKIM підписаний $1"
 	},
 	"TEMPFAIL_TAG": {
-		"message": "Помилка DKIM",
-		"description": "Tag shown in Conversation add-on for temporary failure. Should be kept short."
+		"message": "Помилка DKIM"
 	},
 	"PERMFAIL_TAG": {
-		"message": "DKIM недійсний",
-		"description": "Tag shown in Conversation add-on for invalid mail. Should be kept short."
+		"message": "DKIM недійсний"
 	},
 	// DKIM_INTERNALERROR
 	"DKIM_INTERNALERROR": {
@@ -50,24 +47,20 @@
 		"message": "Адреса відправника неправильно сформована"
 	},
 	"ERROR_IMPORT_RULES": {
-		"message": "Не вдалося імпортувати правила для підписів.",
-		"description": "Error title if importing of sign rules failed."
+		"message": "Не вдалося імпортувати правила для підписів."
 	},
 	"ERROR_IMPORT_RULES_UNKNOWN_DATA": {
-		"message": "Формат імпортованого файлу недійсний.",
-		"description": "Error message if the user tries to import some unknown data as sign rules."
+		"message": "Формат імпортованого файлу недійсний."
 	},
 	"ERROR_IMPORT_RULES_UNSUPPORTED_FORMAT": {
-		"message": "Формат правил для підписів має непідтримувану версію.",
-		"description": "Error message if the sign rules the user tried to import have an unsupported format."
+		"message": "Формат правил для підписів має непідтримувану версію."
 	},
 	// DKIM_INTERNALERROR - DNS
 	"DKIM_DNSERROR_UNKNOWN": {
 		"message": "Помилка в DNS-резольвері"
 	},
 	"DKIM_DNSERROR_OFFLINE": {
-		"message": "Не вдалося виконати DNS-запит, оскільки Thunderbird перебуває в автономному режимі.",
-		"description": "Error message if the addon needs to do a DNS query, but Thunderbird is in the offline mode."
+		"message": "Не вдалося виконати DNS-запит, оскільки Thunderbird перебуває в автономному режимі."
 	},
 	"DKIM_DNSERROR_SERVER_ERROR": {
 		"message": "Помилка підключення до DNS-сервера"
@@ -230,8 +223,7 @@
 		"message": "Непідтримуваний тип ключа DKIM"
 	},
 	"DKIM_SIGERROR_KEY_MISMATCHED_K": {
-		"message": "Алгоритм підпису не відповідає типу ключа DKIM",
-		"description": "Error message if the signature algorithm in the DKIM Signature header (a-tag) does not match the key type of the DKIM key (k-tag)."
+		"message": "Алгоритм підпису не відповідає типу ключа DKIM"
 	},
 	"DKIM_SIGERROR_KEY_ILLFORMED_K": {
 		"message": "Тег типу ключа DKIM неправильно сформований"
@@ -266,8 +258,7 @@
 	},
 	// DKIM_SIGERROR - POLICY
 	"DKIM_POLICYERROR_MISSING_SIG": {
-		"message": "Без підпису, повинен бути підписаний $1",
-		"description": "Error if a message has no signature, but the sign rules state that it should be signed"
+		"message": "Без підпису, повинен бути підписаний $1"
 	},
 	"DKIM_POLICYERROR_KEYMISMATCH": {
 		"message": "Збережений ключ DKIM відрізняється від поточного"
@@ -279,8 +270,7 @@
 		"message": "Неправильний підписувач (повинен бути $1)"
 	},
 	"DKIM_POLICYERROR_UNSIGNED_HEADER_ADDED": {
-		"message": "Додано заголовок без підпису '$1'",
-		"description": "Error if an important header was probably maliciously added later"
+		"message": "Додано заголовок без підпису '$1'"
 	},
 	// DKIM_SIGWARNING
 	"DKIM_SIGWARNING_SMALL_L": {
@@ -302,8 +292,7 @@
 		"message": "Поле 'Від' не з домену підпису"
 	},
 	"DKIM_SIGWARNING_UNSIGNED_HEADER": {
-		"message": "Заголовок '$1' не підписаний",
-		"description": "Warning if an important header is not signed"
+		"message": "Заголовок '$1' не підписаний"
 	},
 	// JSDNS
 	"TOO_MANY_HOPS": {
@@ -364,15 +353,17 @@
 	"options_dns.resolver.value.2": {
 		"message": "libunbound"
 	},
+	"options_dns.resolver.value.3": {
+		"message": "DNS через HTTPS (DoH)"
+	},
 	"options_dns.getNameserversFromOS": {
 		"message": "Отримати DNS-сервери з конфігурації ОС"
 	},
 	"options_dns.nameserver": {
-		"message": "DNS-сервери (Синтаксис (EBNF): host[\":\"port]{\";\"host[\":\"port]} ):"
+		"message": "DNS-сервери ( Синтаксис (EBNF): host[\":\"port]{\";\"host[\":\"port]} ):"
 	},
 	"options_dns.timeout_connect": {
-		"message": "Час очікування підключення DNS (у секундах):",
-		"description": "Чекання на з'єднання з DNS-серверами (як на встановлення з'єднання, так і на надсилання/отримання даних)"
+		"message": "Час очікування підключення DNS (у секундах):"
 	},
 	"options_dns.proxy.enable": {
 		"message": "Використовувати проксі для підключення до DNS-серверів"
@@ -397,6 +388,9 @@
 	},
 	"options_dns.libunbound.path.relToProfileDir": {
 		"message": "Шлях щодо теки профілю"
+	},
+	"options_dns.doh.server": {
+		"message": "DoH сервер:"
 	},
 	// ---------- Policy options tab ----------
 	"options_general.policy": {
@@ -439,20 +433,16 @@
 		"message": "Використовуйте DMARC, щоб евристично визначити, чи потрібно підписувати електронний лист"
 	},
 	"options_policy.dkim.unsignedHeadersWarning.mode": {
-		"message": "Попереджати про непідписані заголовки, які рекомендується підписувати:",
-		"description": "Description for the setting of the unsigned headers warning mode."
+		"message": "Попереджати про непідписані заголовки, які рекомендується підписувати:"
 	},
 	"options_policy.dkim.unsignedHeadersWarning.mode.relaxed": {
-		"message": "послаблений режим",
-		"description": "A relaxed mode that will try to avoid showing warnings."
+		"message": "послаблений режим"
 	},
 	"options_policy.dkim.unsignedHeadersWarning.mode.recommended": {
-		"message": "рекомендований режим",
-		"description": "A mode trying to enforce best practice without showing to many warnings."
+		"message": "рекомендований режим"
 	},
 	"options_policy.dkim.unsignedHeadersWarning.mode.strict": {
-		"message": "суворий режим",
-		"description": "A strict mode that will potentially show a lot of warnings."
+		"message": "суворий режим"
 	},
 	// -------------------- Display options --------------------
 	"options_display": {
@@ -566,8 +556,7 @@
 	},
 	// -------------------- Account options --------------------
 	"options_account": {
-		"message": "Обліковий запис",
-		"description": "Назва для параметрів облікового запису"
+		"message": "Обліковий запис"
 	},
 	"options_acc.dkim.enable": {
 		"message": "Перевірити підписи DKIM:"
@@ -592,93 +581,93 @@
 		"message": "Про"
 	},
 	"about_name": {
-		"message": "DKIM Verifier",
-		"description": "Name of the add-on"
+		"message": "DKIM Verifier"
 	},
 	"about_summary": {
-		"message": "Перевіряє DKIM-підписи електронних листів.",
-		"description": "Short description of the add-on"
+		"message": "Перевіряє DKIM-підписи електронних листів."
 	},
 	"about_homepage": {
 		"message": "Домашня сторінка"
 	},
 	"about_documentation": {
-		"message": "Документація",
-		"description": "Link text for GitHub documentation page"
+		"message": "Документація"
 	},
 	"about_contributors": {
-		"message": "GitHub учасники",
-		"description": "Link text for GitHub contributors page"
+		"message": "GitHub учасники"
 	},
 	"about_translators": {
-		"message": "Перекладачі:",
-		"description": "Heading for list of translators"
+		"message": "Перекладачі:"
 	},
 	"about_dependencies": {
-		"message": "Включені залежності:",
-		"description": "Heading for list of included dependencies"
+		"message": "Включені залежності:"
 	},
 	"about_by": {
-		"message": "від",
-		"description": "<dependency name> by <author>"
+		"message": "від"
 	},
 	// ==================== Actions ====================
 	"dkim_verifier.reverifyDKIMSignature": {
 		"message": "Повторно перевірити підпис DKIM"
 	},
+	"dkim_verifier.reverifyDKIMSignature.tooltip": {
+		"message": "Запускає нову перевірку відображеного електронного листа. Якщо увімкнено збереження результатів перевірки, збережений результат буде оновлено"
+	},
 	"dkim_verifier.policyAddUserException": {
 		"message": "Додавання має бути підписаним винятком"
+	},
+	"dkim_verifier.policyAddUserException.tooltip": {
+		"message": "Додайте правило, згідно з яким листи з цієї адреси відправника не потребують підпису. Також буде розпочато нову перевірку."
 	},
 	"dkim_verifier.markKeyAsSecure": {
 		"message": "Позначити ключ DKIM як захищений"
 	},
+	"dkim_verifier.markKeyAsSecure.tooltip": {
+		"message": "Позначити кешований ключ DKIM першого результату перевірки DKIM як захищений за допомогою DNSSEC. Також розпочнеться нова перевірка."
+	},
 	"dkim_verifier.updateKey": {
 		"message": "Оновити ключ DKIM"
 	},
+	"dkim_verifier.updateKey.tooltip": {
+		"message": "Оновити кешовані ключі DKIM, що використовуються в цьому листі, шляхом повторного отримання їх із DNS. Також буде розпочато нову перевірку."
+	},
 	"button.options": {
-		"message": "Налаштування",
-		"description": "Button to open the options page of the Add-on."
+		"message": "Налаштування"
+	},
+	"button.options.tooltip": {
+		"message": "Відкрити налаштування доповнення в новій вкладці."
 	},
     "details.result": {
-		"message": "Результат",
-		"description": "Detailed view row name for the overall DKIM result."
+		"message": "Результат"
 	},
 	"details.warnings": {
-		"message": "Попередження",
-		"description": "Detailed view row name for the warnings of the DKIM signature."
+		"message": "Попередження"
 	},
 	"details.SDID": {
-		"message": "SDID",
-		"description": "Detailed view row name for the SDID."
+		"message": "SDID"
 	},
 	"details.AUID": {
-		"message": "AUID",
-		"description": "Detailed view row name for the AUID."
+		"message": "AUID"
 	},
 	"details.signDate": {
-		"message": "Дата підписання",
-		"description": "Detailed view row name for the date (including time) the signature was created."
+		"message": "Дата підписання"
 	},
 	"details.expirationDate": {
-		"message": "Дата закінчення терміну дії",
-		"description": "Detailed view row name for the date (including time) the signature expires."
+		"message": "Дата закінчення терміну дії"
 	},
 	"details.algorithm": {
-		"message": "Алгоритм",
-		"description": "Detailed view row name for the algorithm used in the signature."
+		"message": "Алгоритм"
 	},
 	"details.signedHeaders": {
-		"message": "Підписані заголовки",
-		"description": "Detailed view row name for the message headers signed by DKIM."
+		"message": "Підписані заголовки"
 	},
 	"details.noDate": {
-		"message": "Час не включено до підпису",
-		"description": "Value shown for sign and expiration date if no date is given in the signature."
+		"message": "Час не включено до підпису"
+	},
+	"details.potentiallyOutdatedKeyWarning": {
+		"message": "Увімкнено кешування ключів DKIM. Причиною недійсного підпису може бути застарілий ключ. Спробуйте виконати дію \"$1\" для оновлення ключа та запуску нової перевірки."
 	},
 	// ==================== Table Views ====================
 	"treeviewKeys.title": {
-		"message": "Ключі DKIM",
-		"description": "Title of the DKIM keys table view."
+		"message": "Ключі DKIM"
 	},
 	"treeviewKeys.treecol.SDID": {
 		"message": "SDID"
@@ -735,35 +724,28 @@
 		"message": "Видалити вибрані правила"
 	},
 	"treeviewSigners.exportRules": {
-		"message": "Правила для експорту…",
-		"description": "Button for exporting sign rules"
+		"message": "Правила для експорту…"
 	},
 	"treeviewSigners.importRules": {
-		"message": "Правила для імпорту…",
-		"description": "Button for importing sign rules"
+		"message": "Правила для імпорту…"
 	},
 	"importRules.title": {
-		"message": "Імпортувати правила",
-		"description": "Title for import dialog"
+		"message": "Імпортувати правила"
 	},
 	"importRules.replaceQuestion": {
-		"message": "Чи слід імпортовані правила додати до тих що існують або замінити правила існують?",
-		"description": "Question asked in import dialog"
+		"message": "Чи слід імпортовані правила додати до тих що існують або замінити правила існують?"
 	},
 	"importRules.addRules": {
-		"message": "Додати правила",
-		"description": "Button in import dialog for adding rules to existing rules"
+		"message": "Додати правила"
 	},
 	"importRules.replaceRules": {
-		"message": "Замінити правила",
-		"description": "Button in import dialog for replacing existing rules"
+		"message": "Замінити правила"
 	},
 	"addSignersRule.title": {
 		"message": "Додати правило підписувачів"
 	},
 	"addSignersRule.button.add": {
-		"message": "Додати правило",
-		"description": "Button for confirming adding of sign rule."
+		"message": "Додати правило"
 	},
 	"signRules.ruletype.SIGNED": {
 		"message": "Повинен бути підписаний (1)"

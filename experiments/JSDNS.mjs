@@ -56,12 +56,13 @@
 /* eslint-disable no-use-before-define */
 /* eslint-disable camelcase */
 /* eslint-disable no-var */
+/* eslint-disable jsdoc/reject-any-type */
 /* eslint-disable unicorn/prefer-code-point */
 /* eslint-disable unicorn/prefer-string-slice */
 /* eslint strict: ["warn", "function"] */
 /* eslint complexity: "off" */
 /* eslint no-magic-numbers: "off" */
-/* eslint mozilla/mark-exported-symbols-as-used: "error" */
+// /* eslint mozilla/mark-exported-symbols-as-used: "error" */
 
 const LOG_NAME = "DKIM_Verifier.JSDNS";
 
@@ -907,7 +908,7 @@ class Socket {
 	/**
 	 * Asynchronously read data from the socket.
 	 *
-	 * @yields
+	 * @yields {string}
 	 * @returns {AsyncGenerator<string, void, void>}
 	 */
 	async* read() {

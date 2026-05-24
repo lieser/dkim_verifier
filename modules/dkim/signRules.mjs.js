@@ -10,6 +10,7 @@
  */
 
 // @ts-check
+/* eslint-disable jsdoc/reject-any-type */
 ///<reference path="../../RuntimeMessage.d.ts" />
 ///<reference path="../../experiments/mailUtils.d.ts" />
 
@@ -269,7 +270,7 @@ async function checkIfShouldBeSigned(fromAddress, listId, dmarc) {
 		})];
 	}
 	/** @type {DkimSignRuleDefault|DkimSignRuleUser|undefined} */
-	const rule = matchedRules.sort((a, b) => b.priority - a.priority)[0];
+	const rule = matchedRules.toSorted((a, b) => b.priority - a.priority)[0];
 	if (!rule) {
 		if (dmarc) {
 			const dmarcRes = await dmarc.shouldBeSigned(fromAddress);

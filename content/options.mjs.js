@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2020-2023;2025 Philippe Lieser
+ * Copyright (c) 2020-2023;2025-2026 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *
@@ -108,7 +108,7 @@ function updateDnsResolver() {
 
 	const dnsResolverElements = /** @type {HTMLElement[]} */([...document.querySelectorAll("[data-dns-resolver]")]);
 	for (const element of dnsResolverElements) {
-		element.hidden = element.dataset.dnsResolver !== dnsResolver.value;
+		element.hidden = !element.dataset.dnsResolver?.split(",").includes(dnsResolver.value);
 	}
 }
 
