@@ -1,9 +1,10 @@
 <a href="https://en.wikipedia.org/wiki/DomainKeys_Identified_Mail">DomainKeys Identified Mail (DKIM)</a> é um método que permite que domínios assinem e-mails. A extensão verifica essas assinaturas DKIM e mostra o resultado no cabeçalho do e-mail. Dessa forma, é possível ver qual domínio está assumindo a responsabilidade por um e-mail específico. A maneira como o resultado é mostrado pode ser alterada nas opções.
 
-É importante notar que um e-mail pode ser assinado por domínios arbitrários. Portanto, uma assinatura DKIM válida por si só não é um indicador de um e-mail confiável. Sempre verifique quem é o assinante para determinar se um e-mail é confiável!
+É importante notar que um e-mail pode ser assinado por qualquer domínio arbitrário. Portanto, uma assinatura DKIM válida por si só não é um indicador de um e-mail confiável. Sempre verifique quem é o assinante para determinar se um e-mail é confiável!
 
 Em alguns casos, a ausência de uma assinatura DKIM pode ser útil para identificar e-mails fraudulentos. Se for sabido que um determinado domínio assina todos os seus e-mails com DKIM, a ausência de uma assinatura DKIM é um forte indicador de um e-mail falsificado.
 
 Para facilitar a verificação de se e por quem um e-mail é assinado, a extensão suporta o uso de regras de assinatura. Com as regras de assinatura, é possível especificar que e-mails de um determinado remetente devem ser sempre assinados por um domínio específico (também conhecido como SDID). Mais informações sobre regras de assinatura em https://github.com/lieser/dkim_verifier/wiki/Sign-rules.
 
-Uma descrição de todas as opções disponíveis na extensão pode ser encontrada em https://github.com/lieser/dkim_verifier/wiki/Options.
+<strong>A <a href="https://github.com/lieser/dkim_verifier/wiki">página inicial da extensão</a> contém uma visão geral mais detalhada dos recursos da extensão.</strong>
+Ela também possui <a href="https://github.com/lieser/dkim_verifier/wiki/Options">uma descrição de todas as opções disponíveis da extensão</a>.
