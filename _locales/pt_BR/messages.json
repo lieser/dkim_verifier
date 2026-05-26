@@ -364,6 +364,10 @@
 	"options_dns.resolver.value.2": {
 		"message": "libunbound"
 	},
+	"options_dns.resolver.value.3": {
+		"message": "DNS over HTTPS (DoH)",
+		"description": "Resolver using https://en.wikipedia.org/wiki/DNS_over_HTTPS"
+	},
 	"options_dns.getNameserversFromOS": {
 		"message": "Obter servidores DNS da configuração do sistema operacional"
 	},
@@ -397,6 +401,9 @@
 	},
 	"options_dns.libunbound.path.relToProfileDir": {
 		"message": "Caminho relativo ao diretório do perfil"
+	},
+	"options_dns.doh.server": {
+		"message": "Servidor DoH:"
 	},
 	// ---------- Policy options tab ----------
 	"options_general.policy": {
@@ -625,20 +632,44 @@
 	},
 	// ==================== Actions ====================
 	"dkim_verifier.reverifyDKIMSignature": {
-		"message": "Reverificar assinatura DKIM"
+		"message": "Reverificar assinatura DKIM",
+		"description": "Text of the button in the DKIM details pop-up."
+	},
+	"dkim_verifier.reverifyDKIMSignature.tooltip": {
+		"message": "Inicia uma nova verificação do e-mail exibido. Se o salvamento do resultado da verificação estiver habilitado, o resultado salvo será atualizado.",
+		"description": "Tooltip of the button explaining what it does."
 	},
 	"dkim_verifier.policyAddUserException": {
-		"message": "Adicionar exceção de deve ser assinado"
+		"message": "Adicionar exceção de deve ser assinado",
+		"description": "Text of the button in the DKIM details pop-up."
+	},
+	"dkim_verifier.policyAddUserException.tooltip": {
+		"message": "Adiciona uma regra de assinatura para que e-mails do endereço 'De' não precisem ser assinados. Também iniciará uma nova verificação.",
+		"description": "Tooltip of the button explaining what it does."
 	},
 	"dkim_verifier.markKeyAsSecure": {
-		"message": "Marcar chave DKIM como segura"
+		"message": "Marcar chave DKIM como segura",
+		"description": "Text of the button in the DKIM details pop-up."
+	},
+	"dkim_verifier.markKeyAsSecure.tooltip": {
+		"message": "Marca a chave DKIM armazenada em cache do primeiro resultado DKIM como protegida pelo DNSSEC. Também iniciará uma nova verificação.",
+		"description": "Tooltip of the button explaining what it does."
 	},
 	"dkim_verifier.updateKey": {
-		"message": "Atualizar chave DKIM"
+		"message": "Atualizar chave DKIM",
+		"description": "Text of the button in the DKIM details pop-up."
+	},
+	"dkim_verifier.updateKey.tooltip": {
+		"message": "Atualiza as chaves DKIM armazenadas em cache usadas neste e-mail buscando-as novamente do DNS. Também iniciará uma nova verificação.",
+		"description": "Tooltip of the button explaining what it does."
 	},
 	"button.options": {
 		"message": "Opções",
-		"description": "Button to open the options page of the Add-on."
+		"description": "Button to open the options page of the add-on."
+	},
+	"button.options.tooltip": {
+		"message": "Abre as opções da extensão em uma nova aba.",
+		"description": "Tooltip for the button to open the options page of the add-on."
 	},
 	"details.result": {
 		"message": "Resultado",
@@ -675,6 +706,10 @@
 	"details.noDate": {
 		"message": "Sem horário incluído na assinatura",
 		"description": "Value shown for sign and expiration date if no date is given in the signature."
+	},
+	"details.potentiallyOutdatedKeyWarning": {
+		"message": "O armazenamento em cache de chaves DKIM está habilitado. O motivo da assinatura inválida pode ser uma chave desatualizada. Tente a ação \"$1\" para atualizar a chave e iniciar uma nova verificação.",
+		"description": "Potential info note shown. $1 will be replaced with the text of dkim_verifier.updateKey"
 	},
 	// ==================== Table Views ====================
 	"treeviewKeys.title": {
