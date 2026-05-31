@@ -6,4 +6,5 @@
 
 Чтобы упростить проверку наличия подписи и домена-подписанта, дополнение поддерживает использование правил подписей. С помощью правил можно указать, что письма от определенного отправителя всегда должны быть подписаны конкретным доменом (также называемым SDID). Подробнее о правилах подписей см. https://github.com/lieser/dkim_verifier/wiki/Sign-rules.
 
-Описание всех доступных параметров дополнения можно найти на https://github.com/lieser/dkim_verifier/wiki/Options.
+<strong>The <a href="https://github.com/lieser/dkim_verifier/wiki">add-on home page</a> contains a more detailed overview of the add-ons features.</strong>
+It also has <a href="https://github.com/lieser/dkim_verifier/wiki/Options">a description of all available add-on options</a>.
