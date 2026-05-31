@@ -1,7 +1,7 @@
 /**
  * Check DKIM signing rules.
  *
- * Copyright (c) 2013-2018;2020-2023;2025 Philippe Lieser
+ * Copyright (c) 2013-2018;2020-2023;2025-2026 Philippe Lieser
  *
  * This software is licensed under the terms of the MIT License.
  *

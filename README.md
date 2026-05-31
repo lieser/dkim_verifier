@@ -48,18 +48,17 @@ The following directories and files are included in the packed extension:
   Also contains some shared modules for working with the DOM.
   Only `.html`, `.css` and `.js` files are included in the packed extension.
 - `data/`: Data of the included signers rules and favicons.
-- `experiments/`: Experiment APIs. Only `.js`, and `.json` files are included in the packed extension.
+- `experiments/`: Experiment APIs. Only `.js`, `mjs` and `.json` files are included in the packed extension.
 - `modules/`: Internal JavaScript modules (ECMAScript Modules (ESM) / ES6 Modules).
   Contains most of the business logic.
-  Only `.js` files are included in the packed extension.
+  Only `.js` and `mjs` files are included in the packed extension.
 - `thirdparty`: Most of the included third-party libraries.
 - `CHANGELOG.md`: Changelog of user visible changes.
 - `icon.svg`: Icon of the extension.
 - `LICENSE.txt`: Licensing information for the extension.
 - `manifest.json`: Manifest file containing basic metadata about the extension.
 - `README.md`: This readme.
-- `THIRDPARTY_LICENSE.md`: Licensing information for included third party
-software components.
+- `THIRDPARTY_LICENSE.md`: Licensing information for included third party software components.
 
 Other directories and files are used only for development. This includes:
 
