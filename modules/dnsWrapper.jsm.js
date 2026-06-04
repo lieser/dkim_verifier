@@ -97,14 +97,15 @@ var DNS = {
 		}
 
 		switch (prefs.getIntPref("resolver")) {
-			case PREF.DNS.RESOLVER.JSDNS:
-				if (doUpdateDNSConfig) {
+			case PREF.DNS.RESOLVER.JSDNS: {
+			if (doUpdateDNSConfig) {
 					JSDNS.updateConfig();
 					doUpdateDNSConfig = false;
 				}
-				let result = asyncJSDNS_QueryDNS(name, rrtype);
-				log.debug("JSDNS result: " + result.toSource());
-				return result;
+				let res = await asyncJSDNS_QueryDNS(name, rrtype);
+				log.debug("JSDNS result: " + res.toSource());
+				return res;
+			}
 			case PREF.DNS.RESOLVER.LIBUNBOUND: {
 				if (doUpdateDNSConfig) {
 					libunbound.updateConfig();

@@ -28,7 +28,7 @@ var gDKIMOptionsGeneralPane = {
 
 		var deckIndex = document.getElementById("dns.resolver.label").value - 1;
 		document.getElementById("resolverDeck").selectedIndex = deckIndex;
-		document.getElementById("dns.generalNoDoH").hidden = (deckIndex === 2)
+		document.getElementById("dns.generalNoDoH").hidden = deckIndex === 2;
 	},
 
 	update_dns_proxy: function () {

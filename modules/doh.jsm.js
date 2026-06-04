@@ -38,8 +38,8 @@ Cu.import("resource://dkim_verifier/logging.jsm.js");
 const PREF_BRANCH = "extensions.dkim_verifier.dns.";
 // @ts-expect-error
 var prefs = Services.prefs.getBranch(PREF_BRANCH);
-
-const log = Logging.getLogger("dns");
+// @ts-expect-error
+var log = Logging.getLogger("doh");
 
 /**
  * The part the DNS header containing the flags and codes (third and fourth byte).
@@ -100,7 +100,8 @@ async function dnsGetQuery(query) {
 	let httpResponse;
 	try {
 		httpResponse = await new Promise(function (resolve, reject) {
-			const XMLHttpRequest  = Components.Constructor("@mozilla.org/xmlextras/xmlhttprequest;1", "nsIXMLHttpRequest");
+			// @ts-expect-error
+			const XMLHttpRequest = Components.Constructor("@mozilla.org/xmlextras/xmlhttprequest;1", "nsIXMLHttpRequest");
 			let xhr = new XMLHttpRequest();
 			xhr.responseType = "arraybuffer";
 			xhr.open("GET", `${server}?${params}`);
@@ -200,5 +201,5 @@ async function txt(name, queryFunction = dnsGetQuery) {
 	};
 }
 
-var DoH = {}
+var DoH = {};
 DoH.resolve = txt;
