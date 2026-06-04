@@ -14,7 +14,7 @@ var gDKIMOptionsGeneralPane = {
 		this.update_dns_proxy();
 		this.update_Policy_signRules_enable();
 	},
-	
+
 	update_key_storing: function () {
 		"use strict";
 
@@ -22,12 +22,13 @@ var gDKIMOptionsGeneralPane = {
 		var disabled = document.getElementById("key.storing").value == 0;
 		document.getElementById("key.viewKeys").disabled = disabled;
 	},
-	
+
 	update_dns_resolver: function () {
 		"use strict";
 
 		var deckIndex = document.getElementById("dns.resolver.label").value - 1;
 		document.getElementById("resolverDeck").selectedIndex = deckIndex;
+		document.getElementById("dns.generalNoDoH").hidden = (deckIndex === 2)
 	},
 
 	update_dns_proxy: function () {
@@ -51,10 +52,10 @@ var gDKIMOptionsGeneralPane = {
 		document.getElementById("viewSigners").disabled = disabled;
 		document.getElementById("viewSignerDefaults").disabled = disabled;
 		document.getElementById("policy.DMARC.shouldBeSigned.enable").disabled = disabled;
-		
+
 		this.update_Policy_autoAddRule_enable();
 	},
-	
+
 	update_Policy_autoAddRule_enable: function () {
 		"use strict";
 

@@ -9,6 +9,7 @@
 <!ENTITY dns.resolver.label "Résolution:">
 <!ENTITY dns.resolver.value.1.label "Bibliothèque DNS en JavaScript">
 <!ENTITY dns.resolver.value.2.label "libunbound">
+<!ENTITY dns.resolver.value.3.label "DNS over HTTPS (DoH)">
 <!ENTITY dns.getNameserversFromOS.label "Récupérer les serveurs de DNS depuis la configuration de l'OS">
 <!ENTITY dns.nameserver.label "Nom de serveur DNS (Syntaxe (EBNF): host[&quot;:&quot;port]{&quot;;&quot;host[&quot;:&quot;port]}):">
 
@@ -20,6 +21,8 @@
 
 <!ENTITY dns.libunbound.path.label "Chemin">
 <!ENTITY dns.libunbound.path.relToProfileDir.label "Chemin relatif vers le dossier de profile">
+
+<!ENTITY dns.doh.server.label "DoH Server:">
 
 <!ENTITY key.storing.value.0.label "Ne pas stocker les clés DKIM">
 <!ENTITY key.storing.value.1.label "Stocker les clés DKIM">

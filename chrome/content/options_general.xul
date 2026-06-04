@@ -57,6 +57,9 @@
 		            name="extensions.dkim_verifier.dns.libunbound.path.relToProfileDir"
 		            type="bool"/>
 
+		<preference id="pref_dns.doh.server"
+		            name="extensions.dkim_verifier.dns.doh.server"
+		            type="string"/>
 
 		<!-- policy tab -->
 		<preference id="pref_policy.signRules.enable"
@@ -128,15 +131,18 @@
 						<menupopup>
 							<menuitem label="&dns.resolver.value.1.label;" value="1"/>
 							<menuitem label="&dns.resolver.value.2.label;" value="2"/>
+							<menuitem label="&dns.resolver.value.3.label;" value="3"/>
 						</menupopup>
 					</menulist>
 				</hbox>
-
-				<checkbox preference="pref_dns.getNameserversFromOS"
+				
+				<vbox id="dns.generalNoDoH">
+					<checkbox preference="pref_dns.getNameserversFromOS"
 				          label="&dns.getNameserversFromOS.label;"/>
-				<label control="dns.nameserver">&dns.nameserver.label;</label>
-				<textbox id="dns.nameserver" preference="pref_dns.nameserver"/>
-
+					<label control="dns.nameserver">&dns.nameserver.label;</label>
+					<textbox id="dns.nameserver" preference="pref_dns.nameserver"/>
+				</vbox>
+				
 				<deck id="resolverDeck">
 					<groupbox>
 						<caption label="&dns.resolver.value.1.label;"/>
@@ -182,6 +188,15 @@
 						</hbox>
 						<checkbox preference="pref_dns.libunbound.path.relToProfileDir"
 						          label="&dns.libunbound.path.relToProfileDir.label;"/>
+					</groupbox>
+
+					<groupbox>
+						<caption label="&dns.resolver.value.3.label;"/>
+
+						<hbox align="center">
+							<label value="&dns.doh.server.label;"/>
+							<textbox preference="pref_dns.doh.server" flex ="1"/>
+						</hbox>
 					</groupbox>
 				</deck>
 			</tabpanel>

@@ -9,6 +9,7 @@
 <!ENTITY dns.resolver.label "リゾルバ:">
 <!ENTITY dns.resolver.value.1.label "JavaScript DNS ライブラリ">
 <!ENTITY dns.resolver.value.2.label "libunbound">
+<!ENTITY dns.resolver.value.3.label "DNS over HTTPS (DoH)">
 <!ENTITY dns.getNameserversFromOS.label "OS の設定から DNS サーバを取得">
 <!ENTITY dns.nameserver.label "DNS サーバ （書式 （EBNF）: host[&quot;:&quot;port]{&quot;;&quot;host[&quot;:&quot;port]}）:">
 
@@ -20,6 +21,8 @@
 
 <!ENTITY dns.libunbound.path.label "パス">
 <!ENTITY dns.libunbound.path.relToProfileDir.label "プロファイルディレクトリへの相対パス">
+
+<!ENTITY dns.doh.server.label "DoH Server:">
 
 <!ENTITY key.storing.value.0.label "DKIM キーを保存しない">
 <!ENTITY key.storing.value.1.label "DKIM キーを保存する">
