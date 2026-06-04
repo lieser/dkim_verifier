@@ -27,6 +27,7 @@ pref("extensions.dkim_verifier.internationalized.enable", false);
 /*
  * 1 JS DNS
  * 2 libunbound
+ * 3 DoH
  */
 pref("extensions.dkim_verifier.dns.resolver", 1);
 pref("extensions.dkim_verifier.dns.getNameserversFromOS", true);
@@ -41,6 +42,7 @@ pref("extensions.dkim_verifier.dns.proxy.port", "");
 pref("extensions.dkim_verifier.dns.jsdns.autoResetServerAlive", false);
 pref("extensions.dkim_verifier.dns.libunbound.path", "extensions/dnssec@nic.cz/plugins/ub_ds_windows-x86.dll");
 pref("extensions.dkim_verifier.dns.libunbound.path.relToProfileDir", true);
+pref("extensions.dkim_verifier.dns.doh.server", "https://dns.quad9.net/dns-query");
 
 
 ////////////////////////////////////////////////////////////////////////////////

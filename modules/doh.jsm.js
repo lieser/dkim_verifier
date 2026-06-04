@@ -13,13 +13,31 @@
 // @ts-check
 /* eslint-disable no-magic-numbers */
 
-/** @import {DnsTxtResult} from "./dns.mjs" */
+// options for ESLint
+/* global Components, Services, URLSearchParams */
+/* global Logging, encodeBase64Url, encode, decode, PacketType, PacketFlag, RecordType, DKIM_TempError */
+/* exported EXPORTED_SYMBOLS, DoH */
 
-import { PacketFlag, PacketType, RecordType, decode, encode } from "../thirdparty/dns-message/dist/dns-message.mjs";
-import { DKIM_TempError } from "./error.mjs.js";
-import Logging from "./logging.mjs.js";
-import { encodeBase64Url } from "./utils.mjs.js";
-import prefs from "./preferences.mjs.js";
+/** @import {DNSResult} from "./dnsWrapper.mjs" */
+
+"use strict";
+var EXPORTED_SYMBOLS = [
+	"DoH"
+];
+
+// @ts-expect-error
+const Cu = Components.utils;
+
+Cu.import("resource://gre/modules/Services.jsm");
+
+Cu.import("resource://dkim_verifier_3p/dns-message/dist/dns-message.jsm.js");
+Cu.import("resource://dkim_verifier/helper.jsm.js");
+Cu.import("resource://dkim_verifier/logging.jsm.js");
+
+// @ts-expect-error
+const PREF_BRANCH = "extensions.dkim_verifier.dns.";
+// @ts-expect-error
+var prefs = Services.prefs.getBranch(PREF_BRANCH);
 
 const log = Logging.getLogger("dns");
 
@@ -78,30 +96,51 @@ async function dnsGetQuery(query) {
 	// named "dns" to the URI Template expansion. Padding characters for
 	// base64url MUST NOT be included.
 	params.append("dns", encodeBase64Url(query, true));
-
-	const server = prefs["dns.doh.server"];
+	const server = prefs.getCharPref("doh.server");
 	let httpResponse;
 	try {
-		httpResponse = await fetch(`${server}?${params}`, {
-			method: "GET",
-			headers: {
-				Accept: "application/dns-message",
-			},
+		httpResponse = await new Promise(function (resolve, reject) {
+			const XMLHttpRequest  = Components.Constructor("@mozilla.org/xmlextras/xmlhttprequest;1", "nsIXMLHttpRequest");
+			let xhr = new XMLHttpRequest();
+			xhr.responseType = "arraybuffer";
+			xhr.open("GET", `${server}?${params}`);
+			xhr.onload = function () {
+				if (this.status >= 200 && this.status < 300) {
+					resolve({
+						status: this.status,
+						contentType: this.getResponseHeader('content-type'),
+						result: this.response
+					});
+				} else {
+					// eslint-disable-next-line prefer-promise-reject-errors
+					reject({
+						status: this.status,
+						statusText: this.statusText
+					});
+				}
+			};
+			xhr.onerror = function () {
+				// eslint-disable-next-line prefer-promise-reject-errors
+				reject({
+					status: this.status,
+					statusText: this.statusText
+				});
+			};
+			xhr.send();
 		});
 	} catch (error) {
 		log.error("Failed to fetch DoH server", error);
 		throw new DKIM_TempError("DKIM_DNSERROR_SERVER_ERROR");
 	}
-	if (!httpResponse.ok) {
-		log.error(`DNS server responded with response status: ${httpResponse.status}`);
+	if (httpResponse.status < 200 || httpResponse.status >= 300) {
+		log.error(`DNS server responded with response status: ${httpResponse.statusText} (${httpResponse.status})`);
 		throw new DKIM_TempError("DKIM_DNSERROR_UNKNOWN");
 	}
-	const contentType = httpResponse.headers.get("content-type");
-	if (!contentType || !contentType.includes("application/dns-message")) {
-		log.error(`DNS server responded with unexpected content type: ${contentType}`);
+	if (!httpResponse.contentType || !httpResponse.contentType.includes("application/dns-message")) {
+		log.error(`DNS server responded with unexpected content type: ${httpResponse.contentType}`);
 		throw new DKIM_TempError("DKIM_DNSERROR_UNKNOWN");
 	}
-	return httpResponse.arrayBuffer();
+	return httpResponse.result;
 }
 
 /**
@@ -113,10 +152,10 @@ async function dnsGetQuery(query) {
  *
  * @param {string} name
  * @param {QueryFunction} queryFunction
- * @returns {Promise<DnsTxtResult>}
+ * @returns {Promise<DNSResult>}
  * @throws {DKIM_TempError} if no DNS response could be retrieved.
  */
-export default async function txt(name, queryFunction = dnsGetQuery) {
+async function txt(name, queryFunction = dnsGetQuery) {
 	const query = encode({
 		// RFC 8484 section 4.1 - DoH clients [...] SHOULD use a DNS ID of 0 in every DNS request.
 		id: 0,
@@ -139,24 +178,27 @@ export default async function txt(name, queryFunction = dnsGetQuery) {
 	if (response.answers) {
 		txtData = [];
 		for (const answer of response.answers) {
-			if (answer?.type === RecordType.CNAME) {
+			if (answer && answer.type === RecordType.CNAME) {
 				// Ignore CNAME records.
 				continue;
 			}
-			if (answer?.type !== RecordType.TXT) {
-				log.error(`DNS answer has unexpected type: ${answer?.type}`);
+			if (answer && answer.type !== RecordType.TXT) {
+				log.error(`DNS answer has unexpected type: ${answer.type}`);
 				throw new DKIM_TempError("DKIM_DNSERROR_UNKNOWN");
 			}
 			txtData.push(answer.data.join(""));
 		}
 	}
 
-	const flags = flagsDecode(response.flags ?? 0);
+	const flags = flagsDecode(response.flags !== undefined ? response.flags : 0);
 
 	return {
 		data: txtData,
-		rcode: response.rtype ?? PacketFlag.SERVFAIL,
+		rcode: response.rtype !== undefined ? response.rtype : PacketFlag.SERVFAIL,
 		secure: flags.AD,
 		bogus: false,
 	};
 }
+
+var DoH = {}
+DoH.resolve = txt;

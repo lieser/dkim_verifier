@@ -4,6 +4,7 @@
  * Wrapper to resolve DNS lookups via the following libraries:
  *  - JSDNS.jsm.js
  *  - libunbound.jsm.js
+ *  - DNS over HTTPS (DoH)
  *
  * Version: 2.3.0 (28 January 2018)
  *
@@ -17,7 +18,7 @@
 
 // options for ESLint
 /* global Components, Services, XPCOMUtils */
-/* global Logging, PREF, JSDNS, libunbound, DKIM_TempError */
+/* global Logging, PREF, JSDNS, libunbound, DoH, DKIM_TempError */
 /* exported EXPORTED_SYMBOLS, DNS */
 
 "use strict";
@@ -41,11 +42,11 @@ XPCOMUtils.defineLazyModuleGetter(this, "JSDNS", // eslint-disable-line no-inval
 	"resource://dkim_verifier_3p/dns/JSDNS.jsm.js");
 XPCOMUtils.defineLazyModuleGetter(this, "libunbound", // eslint-disable-line no-invalid-this
 	"resource://dkim_verifier/libunbound.jsm.js");
-
+XPCOMUtils.defineLazyModuleGetter(this, "DoH", // eslint-disable-line no-invalid-this
+	"resource://dkim_verifier/doh.jsm.js");
 
 // @ts-expect-error
 const PREF_BRANCH = "extensions.dkim_verifier.dns.";
-
 
 // @ts-expect-error
 var prefs = Services.prefs.getBranch(PREF_BRANCH);
@@ -101,7 +102,9 @@ var DNS = {
 					JSDNS.updateConfig();
 					doUpdateDNSConfig = false;
 				}
-				return asyncJSDNS_QueryDNS(name, rrtype);
+				let result = asyncJSDNS_QueryDNS(name, rrtype);
+				log.debug("JSDNS result: " + result.toSource());
+				return result;
 			case PREF.DNS.RESOLVER.LIBUNBOUND: {
 				if (doUpdateDNSConfig) {
 					libunbound.updateConfig();
@@ -129,7 +132,12 @@ var DNS = {
 					result.bogus = false;
 				}
 
-				log.debug("result: "+result.toSource());
+				log.debug("LibUnbound result: " + result.toSource());
+				return result;
+			}
+			case PREF.DNS.RESOLVER.DOH: {
+				let result = await DoH.resolve(name);
+				log.debug("DoH result: " + result.toSource());
 				return result;
 			}
 			default:
