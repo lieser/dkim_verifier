@@ -1,3 +1,17 @@
+var EXPORTED_SYMBOLS = [
+  "OptCode",
+  "PacketFlag",
+  "PacketType",
+  "RecordClass",
+  "RecordType",
+  "compareAnswers",
+  "decode",
+  "encode",
+  "encodingLength",
+  "streamDecode",
+  "streamEncode"
+];
+
 let t = function(t) {
   t[t.QUERY = 0] = "QUERY";
   t[t.RESPONSE = 32768] = "RESPONSE";
@@ -1540,10 +1554,10 @@ const tt = {
     let c = 32767 & (n.flags || 0) | (n.type || t.QUERY) | (n.rtype || 0);
     e.setUint16(r, n.id || 0);
     e.setUint16(r + 2, c);
-    e.setUint16(r + 4, n.questions?.length || 0);
-    e.setUint16(r + 6, n.answers?.length || 0);
-    e.setUint16(r + 8, n.authorities?.length || 0);
-    e.setUint16(r + 10, n.additionals?.length || 0);
+    e.setUint16(r + 4, (n.questions ? n.questions.length : 0));
+    e.setUint16(r + 6, (n.answers ? n.answers.length : 0));
+    e.setUint16(r + 8, (n.authorities ? n.authorities.length : 0));
+    e.setUint16(r + 10, (n.additionals ? n.additionals.length : 0));
     r += 12;
     let f = 0;
     for (f = 0; s && f < s.length; f++) {
@@ -1616,5 +1630,10 @@ function streamEncode(t) {
   return new Uint8Array(e, 0, n);
 }
 
-export { s as OptCode, n as PacketFlag, t as PacketType, r as RecordClass, e as RecordType, compareAnswers, decode, encode, encodingLength, streamDecode, streamEncode };
+// export { s as OptCode, n as PacketFlag, t as PacketType, r as RecordClass, e as RecordType, compareAnswers, decode, encode, encodingLength, streamDecode, streamEncode };
+var OptCode = s;
+var PacketFlag = n;
+var PacketType = t;
+var RecordClass = r;
+var RecordType = e;
 //# sourceMappingURL=dns-message.mjs.map
