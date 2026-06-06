@@ -145,7 +145,7 @@ async function dnsGetQuery(query) {
 }
 
 /**
- * @typedef {(query: Uint8Array<ArrayBufferLike>) => Promise<ArrayBuffer>} QueryFunction
+ * @typedef {(query: Uint8Array) => Promise<ArrayBuffer>} QueryFunction
  */
 
 /**

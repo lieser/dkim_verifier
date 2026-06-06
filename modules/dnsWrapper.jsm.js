@@ -98,7 +98,7 @@ var DNS = {
 
 		switch (prefs.getIntPref("resolver")) {
 			case PREF.DNS.RESOLVER.JSDNS: {
-			if (doUpdateDNSConfig) {
+				if (doUpdateDNSConfig) {
 					JSDNS.updateConfig();
 					doUpdateDNSConfig = false;
 				}
