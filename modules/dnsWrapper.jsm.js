@@ -102,9 +102,7 @@ var DNS = {
 					JSDNS.updateConfig();
 					doUpdateDNSConfig = false;
 				}
-				let res = await asyncJSDNS_QueryDNS(name, rrtype);
-				log.debug("JSDNS result: " + res.toSource());
-				return res;
+				return asyncJSDNS_QueryDNS(name, rrtype);
 			}
 			case PREF.DNS.RESOLVER.LIBUNBOUND: {
 				if (doUpdateDNSConfig) {
@@ -132,14 +130,10 @@ var DNS = {
 					result.secure = false;
 					result.bogus = false;
 				}
-
-				log.debug("LibUnbound result: " + result.toSource());
 				return result;
 			}
 			case PREF.DNS.RESOLVER.DOH: {
-				let result = await DoH.resolve(name);
-				log.debug("DoH result: " + result.toSource());
-				return result;
+				return DoH.resolve(name);
 			}
 			default:
 				throw new Error("invalid resolver preference");
@@ -192,7 +186,6 @@ function asyncJSDNS_QueryDNS(name, rrtype) {
 			result.secure = false;
 			result.bogus = false;
 
-			log.debug("result: "+result.toSource());
 			defer.resolve(result);
 
 			log.trace("dnsCallback end");

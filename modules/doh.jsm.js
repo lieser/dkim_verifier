@@ -193,6 +193,8 @@ async function txt(name, queryFunction = dnsGetQuery) {
 
 	const flags = flagsDecode(response.flags !== undefined ? response.flags : 0);
 
+	log.debug(name + ": Answer: " + txtData);
+
 	return {
 		data: txtData,
 		rcode: response.rtype !== undefined ? response.rtype : PacketFlag.SERVFAIL,
@@ -201,5 +203,6 @@ async function txt(name, queryFunction = dnsGetQuery) {
 	};
 }
 
-var DoH = {};
-DoH.resolve = txt;
+var DoH = {
+	resolve: txt
+};

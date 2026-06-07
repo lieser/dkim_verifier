@@ -1631,9 +1631,14 @@ function streamEncode(t) {
 }
 
 // export { s as OptCode, n as PacketFlag, t as PacketType, r as RecordClass, e as RecordType, compareAnswers, decode, encode, encodingLength, streamDecode, streamEncode };
-var OptCode = s as OptCode;
-var PacketFlag = n as PacketFlag;
-var PacketType = t as PacketType;
-var RecordClass = r as RecordClass;
-var RecordType = e as RecordType;
+/** @type {OptCode} */
+var OptCode = s;
+/** @type {PacketFlag} */
+var PacketFlag = n;
+/** @type {PacketType} */
+var PacketType = t;
+/** @type {RecordClass} */
+var RecordClass = r;
+/** @type {RecordType} */
+var RecordType = e;
 //# sourceMappingURL=dns-message.mjs.map
