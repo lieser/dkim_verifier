@@ -12,9 +12,9 @@
  */
 
 // options for ESLint
-/* global Components, FileUtils, NetUtil, Services */
+/* global Components, FileUtils, NetUtil, Services, btoa */
 /* global Logging */
-/* exported EXPORTED_SYMBOLS, addrIsInDomain, addrIsInDomain2, domainIsInDomain, getBaseDomainFromAddr, getDomainFromAddr, PREF, readStringFrom, stringEndsWith, stringEqual, copy, toType, tryGetString, tryGetFormattedString, writeStringToTmpFile, DKIM_SigError, DKIM_TempError, DKIM_Error */
+/* exported EXPORTED_SYMBOLS, addrIsInDomain, addrIsInDomain2, domainIsInDomain, getBaseDomainFromAddr, getDomainFromAddr, encodeBase64Url, PREF, readStringFrom, stringEndsWith, stringEqual, copy, toType, tryGetString, tryGetFormattedString, writeStringToTmpFile, DKIM_SigError, DKIM_TempError, DKIM_Error */
 
 "use strict";
 
@@ -26,6 +26,7 @@ var EXPORTED_SYMBOLS = [
 	"domainIsInDomain",
 	"getBaseDomainFromAddr",
 	"getDomainFromAddr",
+	"encodeBase64Url",
 	"PREF",
 	"readStringFrom",
 	"stringEndsWith",
@@ -63,6 +64,7 @@ const PREF = {
 		RESOLVER: {
 			JSDNS: 1,
 			LIBUNBOUND: 2,
+			DOH: 3,
 		}
 	},
 	ENABLE: {
@@ -243,6 +245,25 @@ function getBaseDomainFromAddr(addr, aAdditionalParts=0) {
  */
 function getDomainFromAddr(addr) {
 	return addr.substr(addr.lastIndexOf("@")+1);
+}
+
+/**
+ * Base 64 Encoding with URL and Filename Safe Alphabet.
+ *
+ * Defined in <https://datatracker.ietf.org/doc/html/rfc4648#section-5>.
+ *
+ * @param {Uint8Array} data
+ * @param {boolean} omitPadding
+ * @returns {string}
+ */
+function encodeBase64Url(data, omitPadding) {
+	// Starting with TB 133 this could be replaced with Uint8Array.prototype.toBase64().
+	// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array/toBase64
+	let encoded = btoa(String.fromCodePoint(...data)).replace(new RegExp(/\+/, "g"), "-").replace(new RegExp(/\//, "g"), "_");
+	if (omitPadding) {
+		encoded = encoded.replace(new RegExp("=", "g"), "");
+	}
+	return encoded;
 }
 
 /**

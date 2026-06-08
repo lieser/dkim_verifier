@@ -25,6 +25,11 @@ This file contains the information which versions of the third-party libraries a
  - Joshua Tauberer's DNS Libary (part of Thunderbird Sender Verification Extension) (https://github.com/tauberer/thunderbird-spf)
     - dns.js - DNS Library
 
+# dns-message
+
+ - Phil Pluckthun's DoH Library (https://github.com/kitten/dns-message)
+    - dns-message.mjs - DoH Library
+
 ## tweetnacl
 
 - Name: tweetnacl

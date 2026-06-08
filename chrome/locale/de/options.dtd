@@ -9,6 +9,7 @@
 <!ENTITY dns.resolver.label "Resolver:">
 <!ENTITY dns.resolver.value.1.label "JavaScript-DNS-Bibliothek">
 <!ENTITY dns.resolver.value.2.label "libunbound">
+<!ENTITY dns.resolver.value.3.label "DNS over HTTPS (DoH)">
 <!ENTITY dns.getNameserversFromOS.label "Lade DNS-Server aus den Einstellungen des Betriebssystems">
 <!ENTITY dns.nameserver.label "DNS-Server (Syntax (EBNF): host[&quot;:&quot;port]{&quot;;&quot;host[&quot;:&quot;port]}):">
 
@@ -20,6 +21,8 @@
 
 <!ENTITY dns.libunbound.path.label "Pfad:">
 <!ENTITY dns.libunbound.path.relToProfileDir.label "Pfad ist relativ zum Profilordner">
+
+<!ENTITY dns.doh.server.label "DoH-Server:">
 
 <!ENTITY key.storing.value.0.label "Speichere DKIM-Schlüssel nicht">
 <!ENTITY key.storing.value.1.label "Speichere DKIM-Schlüssel">

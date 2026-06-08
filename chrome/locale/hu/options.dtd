@@ -9,6 +9,7 @@
 <!ENTITY dns.resolver.label "Megoldó:">
 <!ENTITY dns.resolver.value.1.label "JavaScript DNS könyvtár">
 <!ENTITY dns.resolver.value.2.label "libunbound">
+<!ENTITY dns.resolver.value.3.label "DNS over HTTPS (DoH)">
 <!ENTITY dns.getNameserversFromOS.label "Szerezzen DNS-kiszolgálókat az operációs rendszer konfigurációjából">
 <!ENTITY dns.nameserver.label "DNS-kiszolgálók (mondattan (EBNF): gép[&quot;:&quot;kikötő]{&quot;;&quot;gép[&quot;:&quot;kikötő]}):">
 
@@ -20,6 +21,8 @@
 
 <!ENTITY dns.libunbound.path.label "Útvonal">
 <!ENTITY dns.libunbound.path.relToProfileDir.label "Útvonal a profilkönyvtárhoz viszonyítva">
+
+<!ENTITY dns.doh.server.label "DoH Server:">
 
 <!ENTITY key.storing.value.0.label "Ne tárolja a DKIM kulcsokat">
 <!ENTITY key.storing.value.1.label "Tárolja a DKIM kulcsokat">

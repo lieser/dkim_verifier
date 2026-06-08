@@ -9,6 +9,7 @@
 <!ENTITY dns.resolver.label "Resolver:">
 <!ENTITY dns.resolver.value.1.label "JavaScript DNS library">
 <!ENTITY dns.resolver.value.2.label "libunbound">
+<!ENTITY dns.resolver.value.3.label "DNS over HTTPS (DoH)">
 <!ENTITY dns.getNameserversFromOS.label "Get DNS servers from OS configuration">
 <!ENTITY dns.nameserver.label "DNS servers (Syntax (EBNF): host[&quot;:&quot;port]{&quot;;&quot;host[&quot;:&quot;port]}):">
 
@@ -20,6 +21,8 @@
 
 <!ENTITY dns.libunbound.path.label "Path">
 <!ENTITY dns.libunbound.path.relToProfileDir.label "Path relative to profile directory">
+
+<!ENTITY dns.doh.server.label "DoH Server:">
 
 <!ENTITY key.storing.value.0.label "Don't store DKIM keys">
 <!ENTITY key.storing.value.1.label "Store DKIM keys">
