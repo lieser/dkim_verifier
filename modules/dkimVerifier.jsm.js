@@ -455,7 +455,7 @@ var Verifier = (function() {
 		// currently only "rsa-sha1" or "rsa-sha256" or "ed25519-sha256"
 		var sig_a_tag_k = "(rsa|ed25519|[A-Za-z](?:[A-Za-z]|[0-9])*)";
 		var sig_a_tag_h = "(sha1|sha256|[A-Za-z](?:[A-Za-z]|[0-9])*)";
-		var sig_a_tag_alg = sig_a_tag_k+"-"+sig_a_tag_h;
+		var sig_a_tag_alg = sig_a_tag_k + "-" + sig_a_tag_h;
 		var algorithmTag = rfcParser.parseTagValue(tagMap, "a", sig_a_tag_alg);
 		if (algorithmTag === null) {
 			throw new DKIM_SigError("DKIM_SIGERROR_MISSING_A");
@@ -630,7 +630,7 @@ var Verifier = (function() {
 			}
 		}
 		if (AUIDTag === null) {
-			DKIMSignature.i = "@"+DKIMSignature.d;
+			DKIMSignature.i = "@" + DKIMSignature.d;
 			DKIMSignature.i_domain = DKIMSignature.d;
 		} else {
 			if (!AUIDTag[1]) {
@@ -981,8 +981,8 @@ var Verifier = (function() {
 			} else if (DKIMSignature.l < bodyCanon.length){
 				// length tag smaller when body size
 				DKIMSignature.warnings.push({name: "DKIM_SIGWARNING_SMALL_L"});
-				log.debug("Warning: DKIM_SIGWARNING_SMALL_L ("+
-					dkimStrings.getString("DKIM_SIGWARNING_SMALL_L")+")");
+				log.debug("Warning: DKIM_SIGWARNING_SMALL_L (" +
+					dkimStrings.getString("DKIM_SIGWARNING_SMALL_L") + ")");
 			}
 
 			// truncated body to the length specified in the "l=" tag
@@ -1054,7 +1054,7 @@ var Verifier = (function() {
 		var pos_bTag = DKIMSignature.original_header.indexOf(DKIMSignature.b_folded);
 		var tempBegin = DKIMSignature.original_header.substr(0, pos_bTag);
 		tempBegin = tempBegin.replace(new RegExp(`${rfcParser.get("FWS")}?$`), "");
-		var tempEnd = DKIMSignature.original_header.substr(pos_bTag+DKIMSignature.b_folded.length);
+		var tempEnd = DKIMSignature.original_header.substr(pos_bTag + DKIMSignature.b_folded.length);
 		tempEnd = tempEnd.replace(new RegExp(`^${rfcParser.get("FWS")}?`), "");
 		var temp = tempBegin + tempEnd;
 		// canonicalized using the header canonicalization algorithm specified in the "c=" tag
@@ -1122,7 +1122,7 @@ var Verifier = (function() {
 		if (receivedHeaders && receivedHeaders[0]) {
 			const recDateTimeStart = receivedHeaders[0].lastIndexOf(";");
 			if (recDateTimeStart === -1) {
-				log.warn("Could not find the date time in the Received header: "+receivedHeaders[0]);
+				log.warn("Could not find the date time in the Received header: " + receivedHeaders[0]);
 			} else {
 				// Trim all surrounding whitespace to avoid parsing problems.
 				const recDateTimeStr = receivedHeaders[0].substring(recDateTimeStart + 1).trim();
@@ -1344,20 +1344,20 @@ var Verifier = (function() {
 		     iDKIMSignatureIdx >=0; iDKIMSignatureIdx--) {
 			let sigRes;
 			try {
-				log.debug("Verifying DKIM-Signature " + (iDKIMSignatureIdx+1) + " ...");
+				log.debug("Verifying DKIM-Signature " + (iDKIMSignatureIdx + 1) + " ...");
 				DKIMSignature = newDKIMSignature(
 					msg.headerFields.get("dkim-signature")[iDKIMSignatureIdx]);
 				parseDKIMSignature(DKIMSignature);
-				log.debug("Parsed DKIM-Signature " + (iDKIMSignatureIdx+1) + ": " +
+				log.debug("Parsed DKIM-Signature " + (iDKIMSignatureIdx + 1) + ": " +
 					DKIMSignature.toSource());
 				sigRes = await verifySignature(msg, DKIMSignature);
-				log.debug("Verified DKIM-Signature " + (iDKIMSignatureIdx+1));
+				log.debug("Verified DKIM-Signature " + (iDKIMSignatureIdx + 1));
 			} catch(e) {
 				sigRes = handleException(e, msg, DKIMSignature);
-				log.debug("Exception on DKIM-Signature " + (iDKIMSignatureIdx+1));
+				log.debug("Exception on DKIM-Signature " + (iDKIMSignatureIdx + 1));
 			}
 
-			log.trace("Adding DKIM-Signature " + (iDKIMSignatureIdx+1) +
+			log.trace("Adding DKIM-Signature " + (iDKIMSignatureIdx + 1) +
 				" result to result list");
 			sigResults.push(sigRes);
 		}
