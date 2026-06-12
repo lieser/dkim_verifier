@@ -204,8 +204,34 @@ var Key = {
 		res.key = tmp.key;
 		res.secure = tmp.secure;
 
-		log.trace("getKey Task begin");
+		log.trace("getKey Task end");
 		return res;
+	},
+
+	/**
+	 * Add an updated DKIM key from DNS to the database.
+	 *
+	 * @param {String} d_val domain of the Signer
+	 * @param {String} s_val selector
+	 *
+	 * @returns {Promise<void>}
+	 */
+	addNewKey: async function Key_addNewKey(d_val, s_val) {
+		"use strict";
+
+		log.trace("updateKey Task begin");
+		if (prefs.getIntPref("storing")) {
+			try {
+				const keyDNS = await getKeyFromDNS(d_val, s_val);
+				const keyDB = await getKeyFromDB(d_val, s_val);
+				if (keyDB && keyDB.key !== keyDNS.key) {
+					setKeyInDB(d_val, s_val, keyDNS.key, keyDNS.secure);
+				}
+			} catch (e) {
+				log.error("Could not get a key from DNS: " + e);
+			}
+		}
+		log.trace("updateKey Task end");
 	},
 
 	/**
