@@ -187,14 +187,20 @@ var Key = {
 				break;
 			case PREF.KEY.STORING.COMPARE: // store DKIM keys and compare with current key
 				var keyDB = await getKeyFromDB(d_val, s_val);
-				tmp = await getKeyFromDNS(d_val, s_val);
-				res.gotFrom = "DNS";
+				try {
+					tmp = await getKeyFromDNS(d_val, s_val);
+					res.gotFrom = "DNS";
+				} catch (e) {
+					if (!keyDB || !prefs.getBoolPref("fallbackToStoredKey")) { throw e; }
+					tmp = keyDB;
+					res.gotFrom = "Storage";
+				}
 				if (keyDB) {
 					if (keyDB.key !== tmp.key) {
 						throw new DKIM_SigError("DKIM_POLICYERROR_KEYMISMATCH");
 					}
 					tmp.secure = tmp.secure || keyDB.secure;
-				} else {
+				} else if (res.gotFrom !== "Storage") {
 					setKeyInDB(d_val, s_val, tmp.key, tmp.secure);
 				}
 				break;
