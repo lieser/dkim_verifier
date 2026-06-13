@@ -19,8 +19,11 @@ var gDKIMOptionsGeneralPane = {
 		"use strict";
 
 		// eslint-disable-next-line eqeqeq
-		var disabled = document.getElementById("key.storing").value == 0;
-		document.getElementById("key.viewKeys").disabled = disabled;
+		var storeDisabled = document.getElementById("key.storing").value == 0;
+		// eslint-disable-next-line eqeqeq
+		var storeCompare = document.getElementById("key.storing").value == 2;
+		document.getElementById("key.viewKeys").disabled = storeDisabled;
+		document.getElementById("key.fallback").disabled = !storeCompare;
 	},
 
 	update_dns_resolver: function () {

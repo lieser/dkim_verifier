@@ -15,13 +15,15 @@
 		<preference id="pref_key.storing"
 		            name="extensions.dkim_verifier.key.storing"
 		            type="int"/>
+		<preference id="pref_key.fallback"
+		            name="extensions.dkim_verifier.key.fallbackToStoredKey"
+		            type="bool"/>
 		<preference id="pref_saveResult"
 		            name="extensions.dkim_verifier.saveResult"
 		            type="bool"/>
 		<preference id="pref_arh.read"
 		            name="extensions.dkim_verifier.arh.read"
 		            type="bool"/>
-
 
 		<!-- DNS tab -->
 		<preference id="pref_dns.resolver"
@@ -117,6 +119,7 @@
 					        oncommand="window.open('chrome://dkim_verifier/content/treeviewKeys.xul', 'dkimKeys', 'chrome,resizable,centerscreen,width=600,height=300');"/>
 					<spacer/>
 				</hbox>
+				<checkbox id="key.fallback" preference="pref_key.fallback" label="&key.fallback.label;"/>
 				<checkbox preference="pref_saveResult" label="&saveResult.label;"/>
 				<checkbox preference="pref_arh.read" label="&arh.read.label;"/>
 			</tabpanel>
@@ -135,14 +138,14 @@
 						</menupopup>
 					</menulist>
 				</hbox>
-				
+
 				<vbox id="dns.generalNoDoH">
 					<checkbox preference="pref_dns.getNameserversFromOS"
 				          label="&dns.getNameserversFromOS.label;"/>
 					<label control="dns.nameserver">&dns.nameserver.label;</label>
 					<textbox id="dns.nameserver" preference="pref_dns.nameserver"/>
 				</vbox>
-				
+
 				<deck id="resolverDeck">
 					<groupbox>
 						<caption label="&dns.resolver.value.1.label;"/>
