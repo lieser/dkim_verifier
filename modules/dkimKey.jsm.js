@@ -199,6 +199,10 @@ var Key = {
 					if (keyDB.key !== tmp.key) {
 						throw new DKIM_SigError("DKIM_POLICYERROR_KEYMISMATCH");
 					}
+					if (tmp.secure && !keyDB.secure) {
+						// Set DNSSEC flag if DNSSEC is used, but wasn't at the time, the key was stored
+						Key.markKeyAsSecure(d_val, s_val);
+					}
 					tmp.secure = tmp.secure || keyDB.secure;
 				} else if (res.gotFrom !== "Storage") {
 					setKeyInDB(d_val, s_val, tmp.key, tmp.secure);
