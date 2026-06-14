@@ -120,7 +120,7 @@ var Policy = {
 		var promise = (async () => {
 			log.trace("initDB Task begin");
 
-			Logging.addAppenderTo("Sqlite.Connection."+DB_POLICY_NAME, "sql.");
+			Logging.addAppenderTo("Sqlite.Connection." + DB_POLICY_NAME, "sql.");
 
 			var conn = await Sqlite.openConnection({path: DB_POLICY_NAME});
 
@@ -155,9 +155,9 @@ var Policy = {
 							log.warn("Version table contains unknown entry: " + element.getResultByName("name"));
 					}
 				});
-				log.trace("versionTableSigners: "+versionTableSigners+
-					", versionTableSignersDefault: "+versionTableSignersDefault+
-					", versionDataSignersDefault: "+versionDataSignersDefault
+				log.trace("versionTableSigners: " + versionTableSigners +
+					", versionTableSignersDefault: " + versionTableSignersDefault +
+					", versionDataSignersDefault: " + versionDataSignersDefault
 				);
 
 				// table signers
@@ -365,8 +365,8 @@ var Policy = {
 				result.hideFail = false;
 			}
 
-			log.debug("shouldBeSigned: "+result.shouldBeSigned+"; sdid: "+result.sdid+
-				"; hideFail: "+result.hideFail+"; foundRule: "+result.foundRule
+			log.debug("shouldBeSigned: " + result.shouldBeSigned + "; sdid: " + result.sdid +
+				"; hideFail: " + result.hideFail + "; foundRule: " + result.foundRule
 			);
 			log.trace("shouldBeSigned Task end");
 			return result;
@@ -595,7 +595,7 @@ var Policy = {
 						fromAddressToAdd = fromAddress;
 						break;
 					case PREF.POLICY.SIGN_RULES.AUTO_ADD_RULE.FOR.SUBDOMAIN:
-						fromAddressToAdd = "*"+fromAddress.substr(fromAddress.lastIndexOf("@"));
+						fromAddressToAdd = "*" + fromAddress.substr(fromAddress.lastIndexOf("@"));
 						break;
 					case PREF.POLICY.SIGN_RULES.AUTO_ADD_RULE.FOR.BASE_DOMAIN:
 						domain = getBaseDomainFromAddr(fromAddress);
@@ -736,8 +736,8 @@ async function addRule(domain, addr, sdid, ruletype, priority) {
 	var conn = await Sqlite.openConnection({path: DB_POLICY_NAME});
 
 	try {
-		log.debug("add rule (domain: "+domain+", addr: "+addr+", sdid: "+sdid+
-			", ruletype: "+ruletype+", priority: "+priority+", enabled: 1)"
+		log.debug("add rule (domain: " + domain + ", addr: " + addr + ", sdid: " + sdid +
+			", ruletype: " + ruletype + ", priority: " + priority + ", enabled: 1)"
 		);
 		await conn.executeCached(
 			"INSERT INTO signers (domain, addr, sdid, ruletype, priority, enabled)\n" +

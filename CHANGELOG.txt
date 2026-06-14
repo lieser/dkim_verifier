@@ -1,3 +1,35 @@
+2.?.? [????-??-??]
+ - Option to disable display of ARH DKIM result (to get just SPF, DMARC and BIMI with the Addons validation) (by dodmi)
+ - Added option to try to sanitize a modified subject if verification fails (#469) (by dodmi)
+ - Prefer ed25519 over rsa signatures (#475) (by dodmi)
+ - Fixed rsa key length calculation (by dodmi)
+ - Use modified date of extension file instead of version entry in json (#442) (by dodmi)
+ - Improve detection of outgoing mail (#350) (by dodmi)
+ - A temporaray failure in any signature will prevent saving the authentication result (#381) (by dodmi)
+
+Backports (by dodmi):
+ - DoH support (#595)
+ - Allow unknown arh results with relaxed mode (#550)
+ - Sorting of DMARC and SPF results (#542)
+ - Outlook ARH compatibility (#526)
+ - Display option for DMARC and SPF (#523)
+ - Optional show key selector in details view (#525)
+ - Changes for ARH handling (#503)
+ - Backport feature detailed results (#449)
+ - Allow up to 3 levels of nested comments in ARH (#479)
+ - Trim whitespace to ensure date parsing will work (#478)
+ - Simple support for BIMI indicators
+ - Support for adding favicon by auid or from address (#376)
+ - JSDNS improvements and offline mode support (#375)
+ - Received header for timestamp (#343)
+ - Revoked keys were treated as ill-formed (#338)
+ - Signed header mode and handling (#332)
+ - Ed25519 signature support (#325)
+ - Check for weak signature algorithm in case ARH header is used for check (#329)
+ - Show proper error message on ill-formed from (#238)
+ - Ignore ill-formed list-id (#262)
+ - Added numerous favicons and rules
+
 2.2.1 [2021-04-08]
 ------------------
  - Added integration with Silvermel and Charamel themes for favicons (#254 by dodmi)

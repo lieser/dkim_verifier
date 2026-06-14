@@ -230,7 +230,7 @@ async function getDMARCPolicy(fromAddress) {
 		domain: domain,
 		source: baseDomain || domain,
 	};
-	log.debug("DMARCPolicy: "+dmarcPolicy.toSource());
+	log.debug("DMARCPolicy: " + dmarcPolicy.toSource());
 
 	log.trace("getDMARCPolicy Task end");
 	return dmarcPolicy;
@@ -253,7 +253,7 @@ async function getDMARCRecord(domain) {
 	let dmarcRecord = null;
 
 	// get the DMARC Record
-	let result = await DNS.resolve("_dmarc."+domain, "TXT");
+	let result = await DNS.resolve("_dmarc." + domain, "TXT");
 
 	DNS.checkForErrors(result);
 

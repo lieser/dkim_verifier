@@ -124,9 +124,9 @@ DKIM_Verifier.Display = (function() {
 			if (status !== "clearHeader") {
 				emailValue.style.borderRadius = "3px";
 				emailValue.style.color = prefs.
-					getCharPref("color."+status+".text");
+					getCharPref("color." + status + ".text");
 				emailValue.style.backgroundColor = prefs.
-					getCharPref("color."+status+".background");
+					getCharPref("color." + status + ".background");
 			} else {
 				emailValue.style.color = "";
 				emailValue.style.backgroundColor = "";
@@ -171,14 +171,14 @@ DKIM_Verifier.Display = (function() {
 					collapsed2LfromBox.style.backgroundSize = '';
 				}
 			} else {
-				expandedFromBox.style.backgroundImage = 'url("'+faviconUrl+'")';
+				expandedFromBox.style.backgroundImage = 'url("' + faviconUrl + '")';
 				expandedFromBox.style.backgroundSize = '16px 16px';
 				if (collapsed1LfromBox) {
-					collapsed1LfromBox.style.backgroundImage = 'url("'+faviconUrl+'")';
+					collapsed1LfromBox.style.backgroundImage = 'url("' + faviconUrl + '")';
 					collapsed1LfromBox.style.backgroundSize = '16px 16px';
 				}
 				if (collapsed2LfromBox) {
-					collapsed2LfromBox.style.backgroundImage = 'url("'+faviconUrl+'")';
+					collapsed2LfromBox.style.backgroundImage = 'url("' + faviconUrl + '")';
 					collapsed2LfromBox.style.backgroundSize = '16px 16px';
 				}
 			}
