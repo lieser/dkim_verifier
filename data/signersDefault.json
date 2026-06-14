@@ -58,7 +58,7 @@
 		}, {
 			"domain": "actalis.com",
 			"addr": "*",
-			"sdid": "aruba.it",
+			"sdid": "actalis.com aruba.it",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL"
 		}, {
@@ -3997,6 +3997,12 @@
 			"sdid": "renater.fr groupes.renater.fr",
 			"ruletype": "ALL",
 			"priority": "DEFAULT_RULE_ALL_2"
+		}, {
+			"domain": "renault-bank-direkt.de",
+			"addr": "*",
+			"sdid": "renault-bank-direkt.de",
+			"ruletype": "ALL",
+			"priority": "DEFAULT_RULE_ALL"
 		}, {
 			"domain": "researchgatemail.net",
 			"addr": "*",
