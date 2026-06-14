@@ -767,7 +767,9 @@ var that = {
 					log.error("Can not delete key, result does not contain an sdid or selector");
 					return;
 				}
-				await DKIM_Verifier.Key.deleteKey(sdid, selector);
+				// await DKIM_Verifier.Key.deleteKey(sdid, selector);
+				// This will add the new key, instead of replacing it:
+				await DKIM_Verifier.Key.addNewKey(sdid, selector);
 			}
 
 			that.reverify();

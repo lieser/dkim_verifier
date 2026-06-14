@@ -187,14 +187,24 @@ var Key = {
 				break;
 			case PREF.KEY.STORING.COMPARE: // store DKIM keys and compare with current key
 				var keyDB = await getKeyFromDB(d_val, s_val);
-				tmp = await getKeyFromDNS(d_val, s_val);
-				res.gotFrom = "DNS";
+				try {
+					tmp = await getKeyFromDNS(d_val, s_val);
+					res.gotFrom = "DNS";
+				} catch (e) {
+					if (!keyDB || !prefs.getBoolPref("fallbackToStoredKey")) { throw e; }
+					tmp = keyDB;
+					res.gotFrom = "Storage";
+				}
 				if (keyDB) {
 					if (keyDB.key !== tmp.key) {
 						throw new DKIM_SigError("DKIM_POLICYERROR_KEYMISMATCH");
 					}
+					if (tmp.secure && !keyDB.secure) {
+						// Set DNSSEC flag if DNSSEC is used, but wasn't at the time, the key was stored
+						Key.markKeyAsSecure(d_val, s_val);
+					}
 					tmp.secure = tmp.secure || keyDB.secure;
-				} else {
+				} else if (res.gotFrom !== "Storage") {
 					setKeyInDB(d_val, s_val, tmp.key, tmp.secure);
 				}
 				break;
@@ -204,8 +214,34 @@ var Key = {
 		res.key = tmp.key;
 		res.secure = tmp.secure;
 
-		log.trace("getKey Task begin");
+		log.trace("getKey Task end");
 		return res;
+	},
+
+	/**
+	 * Add an updated DKIM key from DNS to the database.
+	 *
+	 * @param {String} d_val domain of the Signer
+	 * @param {String} s_val selector
+	 *
+	 * @returns {Promise<void>}
+	 */
+	addNewKey: async function Key_addNewKey(d_val, s_val) {
+		"use strict";
+
+		log.trace("updateKey Task begin");
+		if (prefs.getIntPref("storing")) {
+			try {
+				const keyDNS = await getKeyFromDNS(d_val, s_val);
+				const keyDB = await getKeyFromDB(d_val, s_val);
+				if (keyDB && keyDB.key !== keyDNS.key) {
+					setKeyInDB(d_val, s_val, keyDNS.key, keyDNS.secure);
+				}
+			} catch (e) {
+				log.error("Could not get a key from DNS: " + e);
+			}
+		}
+		log.trace("updateKey Task end");
 	},
 
 	/**

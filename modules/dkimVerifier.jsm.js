@@ -1163,6 +1163,11 @@ var Verifier = (function() {
 
 		log.trace("Receiving DNS key for DKIM-Signature ...");
 		DKIMSignature.keyQueryResult = await Key.getKey(DKIMSignature.d, DKIMSignature.s);
+		if (prefs.getIntPref("key.storing") === PREF.KEY.STORING.COMPARE
+			&& DKIMSignature.keyQueryResult.gotFrom !== "DNS") {
+			DKIMSignature.warnings.push({name: "DKIM_SIGWARNING_FALLBACK_STORED_KEY"});
+			log.debug("Warning: DKIM_SIGWARNING_FALLBACK_STORED_KEY");
+		}
 		log.trace("Received DNS key for DKIM-Signature");
 
 		// if key is not signed by DNSSEC
