@@ -110,7 +110,7 @@ var DNS = {
 					doUpdateDNSConfig = false;
 				}
 				let res = await libunbound.
-					resolve(name, libunbound.Constants["RR_TYPE_"+rrtype]);
+					resolve(name, libunbound.Constants["RR_TYPE_" + rrtype]);
 				/** @type {DNSResult} */
 				// @ts-expect-error
 				let result = {};

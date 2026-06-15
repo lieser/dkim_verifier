@@ -102,7 +102,7 @@ async function dnsGetQuery(query) {
 		httpResponse = await new Promise(function (resolve, reject) {
 			// @ts-expect-error
 			const XMLHttpRequest = Components.Constructor("@mozilla.org/xmlextras/xmlhttprequest;1", "nsIXMLHttpRequest");
-			let xhr = new XMLHttpRequest();
+			const xhr = new XMLHttpRequest();
 			xhr.responseType = "arraybuffer";
 			xhr.open("GET", `${server}?${params}`);
 			xhr.onload = function () {

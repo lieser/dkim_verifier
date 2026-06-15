@@ -155,7 +155,7 @@ var msgReader = {
 				if (!headerFields.has(hName)) {
 					headerFields.set(hName, []);
 				}
-				headerFields.get(hName).push(headerArray[i]+"\r\n");
+				headerFields.get(hName).push(headerArray[i] + "\r\n");
 			} else {
 				throw new DKIM_Error("Could not split header into name and value");
 			}

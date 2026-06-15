@@ -67,7 +67,7 @@ class SQLiteTreeView {
 		this.tableName = tableName.replace(/\W/g, "");
 		this.columns = columns.map(e => e.replace(/\W/g, ""));
 		this.columnClause = this.columns.join(", ");
-		this.insertParamsClause = ":"+this.columns.join(", :");
+		this.insertParamsClause = ":" + this.columns.join(", :");
 
 		// init sort order
 		/** @type {{index: number, orderDesc: boolean}[]} */
@@ -154,9 +154,9 @@ class SQLiteTreeView {
 		var rowIDs = [];
 		for (var i = 0; i < rows.length; i++) {
 			rowIDs.push(this._doSQL(
-				"SELECT rowid, "+this.columnClause+" FROM "+this.tableName+"\n" +
-				"ORDER BY "+this.orderClause+"\n" +
-				"LIMIT 1 OFFSET "+rows[i]+";"
+				"SELECT rowid, " + this.columnClause + " FROM " + this.tableName + "\n" +
+				"ORDER BY " + this.orderClause + "\n" +
+				"LIMIT 1 OFFSET " + rows[i] + ";"
 			)[0][0]);
 		}
 		return rowIDs;
@@ -203,8 +203,8 @@ class SQLiteTreeView {
 	addRow(params) {
 		// add row
 		this._doSQL(
-			"INSERT INTO "+this.tableName+" ("+this.columnClause+")\n" +
-			"VALUES ("+this.insertParamsClause+");",
+			"INSERT INTO " + this.tableName + " (" + this.columnClause + ")\n" +
+			"VALUES (" + this.insertParamsClause + ");",
 			params
 		);
 
@@ -237,7 +237,7 @@ class SQLiteTreeView {
 		// delete rows
 		for (var i = 0; i < selectedRows.length; i++) {
 			this._doSQL(
-				"DELETE FROM "+this.tableName+"\n" +
+				"DELETE FROM " + this.tableName+"\n" +
 				"WHERE rowid = :rowID;",
 				{rowID: rowIDs[i]}
 			);
@@ -251,7 +251,7 @@ class SQLiteTreeView {
 	 */
 
 	get rowCount() {
-		return this._doSQL("SELECT count(*) FROM "+this.tableName)[0][0];
+		return this._doSQL("SELECT count(*) FROM " + this.tableName)[0][0];
 	}
 
 	// cycleCell
@@ -287,9 +287,9 @@ class SQLiteTreeView {
 
 	getCellText(row, column) {
 		var res = this._doSQL(
-			"SELECT "+this.columnClause+" FROM "+this.tableName+"\n" +
-			"ORDER BY "+this.orderClause+"\n" +
-			"LIMIT 1 OFFSET "+row+";"
+			"SELECT " + this.columnClause + " FROM " + this.tableName + "\n" +
+			"ORDER BY " + this.orderClause + "\n" +
+			"LIMIT 1 OFFSET " + row + ";"
 		);
 		return res[0][column.index];
 	}
@@ -327,8 +327,8 @@ class SQLiteTreeView {
 	setCellText(row, col, value) {
 		var rowID = this._getRowIDs([row])[0];
 		this._doSQL(
-			"UPDATE "+this.tableName+"\n" +
-			"SET "+this.columns[col.index]+" = :value\n" +
+			"UPDATE " + this.tableName + "\n" +
+			"SET " + this.columns[col.index] + " = :value\n" +
 			"WHERE rowid = :rowID;",
 			{"value":value, "rowID":rowID}
 		);

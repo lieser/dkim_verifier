@@ -182,11 +182,11 @@ function getARHResult(msgHdr, msg) {
 
 		// Only use the header if the authserv_id is in the allowed servers.
 		if (!allowedAuthserv.some(testAllowedAuthserv, arh)) {
-			log.debug("Ignoring ARH added by "+arh.authserv_id);
+			log.debug("Ignoring ARH added by " + arh.authserv_id);
 			continue;
 		}
 
-		log.debug("Using ARH added by "+arh.authserv_id);
+		log.debug("Using ARH added by " + arh.authserv_id);
 
 		arhDKIM = arhDKIM.concat(arh.resinfo.filter(e => e.method === "dkim"));
 		arhSPF = arhSPF.concat(arh.resinfo.filter(e => e.method === "spf"));
@@ -302,7 +302,7 @@ function arhDKIM_to_dkimSigResultV2(arhDKIM) {
 		// currently only "rsa-sha1" or "rsa-sha256" or "ed25519-sha256"
 		let sig_a_tag_k = "(rsa|ed25519|[A-Za-z](?:[A-Za-z]|[0-9])*)";
 		let sig_a_tag_h = "(sha1|sha256|[A-Za-z](?:[A-Za-z]|[0-9])*)";
-		let sig_a_tag_alg = sig_a_tag_k+"-"+sig_a_tag_h;
+		let sig_a_tag_alg = sig_a_tag_k + "-" + sig_a_tag_h;
 		let sig_hash_alg = arhDKIM.properties.header.a.match(sig_a_tag_alg);
 		if (sig_hash_alg[1] && sig_hash_alg[2]) {
 			dkimSigResult.algorithmSignature = sig_hash_alg[1];
