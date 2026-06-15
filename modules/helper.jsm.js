@@ -55,9 +55,6 @@ Cu.import("resource://dkim_verifier/logging.jsm.js");
 
 // @ts-expect-error
 var log = Logging.getLogger("Helper");
-var eTLDService = Components.classes["@mozilla.org/network/effective-tld-service;1"].
-	getService(Components.interfaces.nsIEffectiveTLDService);
-
 
 const PREF = {
 	DNS: {
@@ -216,8 +213,10 @@ function domainIsInDomain(domain1, domain2) {
  */
 function getBaseDomainFromAddr(addr, aAdditionalParts=0) {
 	// var fullDomain = addr.substr(addr.lastIndexOf("@")+1);
-	var nsiURI = Services.io.newURI("http://"+addr, null, null);
-	var res;
+	const nsiURI = Services.io.newURI("http://" + addr, null, null);
+	const eTLDService = Components.classes["@mozilla.org/network/effective-tld-service;1"].
+							getService(Components.interfaces.nsIEffectiveTLDService);
+	let res;
 	try {
 		res = eTLDService.getBaseDomain(nsiURI, aAdditionalParts);
 	} catch (e) {
@@ -226,8 +225,8 @@ function getBaseDomainFromAddr(addr, aAdditionalParts=0) {
 		// because e-mails may be send from them
 		if (e.result === Cr.NS_ERROR_INSUFFICIENT_DOMAIN_LEVELS && aAdditionalParts === 0) {
 			// add "invalid" subdomain to avoid error
-			let invalidSub = "invalid.";
-			var host = invalidSub + nsiURI.asciiHost;
+			const invalidSub = "invalid.";
+			const host = invalidSub + nsiURI.asciiHost;
 			res = eTLDService.getBaseDomainFromHost(host, 0);
 			// remove "invalid" subdomain from result
 			res = res.substr(invalidSub.length);
@@ -244,7 +243,7 @@ function getBaseDomainFromAddr(addr, aAdditionalParts=0) {
  * @returns {String}
  */
 function getDomainFromAddr(addr) {
-	return addr.substr(addr.lastIndexOf("@")+1);
+	return addr.substr(addr.lastIndexOf("@") + 1);
 }
 
 /**
@@ -280,7 +279,7 @@ function readStringFrom(aSource) {
 	log.trace("readStringFrom begin");
 
 	/** @type {IDeferred<string>} */
-	var defer = new Deferred();
+	const defer = new Deferred();
 
 	NetUtil.asyncFetch({
 		uri: aSource,
@@ -290,13 +289,13 @@ function readStringFrom(aSource) {
 			// Handle error!
 			defer.reject(new Error(`readStringFrom: nsresult: ${status}`));
 			// defer.reject(Object.keys(Components.results).find(o=>o[status] === value));
-			log.trace("readStringFrom nsresult: "+status);
+			log.trace("readStringFrom nsresult: " + status);
 			return;
 		}
 
 		// The source data is contained within inputStream.
 		// You can read it into a string with
-		var data = NetUtil.readInputStreamToString(inputStream, inputStream.available());
+		const data = NetUtil.readInputStreamToString(inputStream, inputStream.available());
 		defer.resolve(data);
 		log.trace("readStringFrom begin");
 	});
@@ -314,7 +313,7 @@ function readStringFrom(aSource) {
  * @returns {Boolean}
  */
 function stringEndsWith(str, x) {
-	var index = str.toLowerCase().lastIndexOf(x.toLowerCase());
+	const index = str.toLowerCase().lastIndexOf(x.toLowerCase());
 	return index >= 0 && index === str.length - x.length;
 }
 
@@ -412,7 +411,7 @@ function tryGetFormattedString(stringbundle, name, params = []) {
  * @returns {void}
  */
 function writeStringToTmpFile(string, fileName) {
-	var file = Components.classes["@mozilla.org/file/directory_service;1"].
+	const file = Components.classes["@mozilla.org/file/directory_service;1"].
 					getService(Components.interfaces.nsIProperties).
 					get("TmpD", Components.interfaces.nsIFile);
 	file.append(fileName);
@@ -421,23 +420,23 @@ function writeStringToTmpFile(string, fileName) {
 
 	// You can also optionally pass a flags parameter here. It defaults to
 	// FileUtils.MODE_WRONLY | FileUtils.MODE_CREATE | FileUtils.MODE_TRUNCATE;
-	var oStream = FileUtils.openSafeFileOutputStream(file);
+	const oStream = FileUtils.openSafeFileOutputStream(file);
 
-	var converter = Components.classes["@mozilla.org/intl/scriptableunicodeconverter"].
-					createInstance(Components.interfaces.nsIScriptableUnicodeConverter);
+	const converter = Components.classes["@mozilla.org/intl/scriptableunicodeconverter"].
+						createInstance(Components.interfaces.nsIScriptableUnicodeConverter);
 	converter.charset = "UTF-8";
-	var iStream = converter.convertToInputStream(string);
+	const iStream = converter.convertToInputStream(string);
 
 	// The last argument (the callback) is optional.
 	NetUtil.asyncCopy(iStream, oStream, function(status) {
 		if (!Components.isSuccessCode(status)) {
 			// Handle error!
-			log.debug("writeStringToTmpFile nsresult: "+status);
+			log.debug("writeStringToTmpFile nsresult: " + status);
 			return;
 		}
 
 		// Data has been written to the file.
-		log.debug("DKIM: wrote file to "+file.path);
+		log.debug("DKIM: wrote file to " + file.path);
 	});
 }
 
@@ -462,7 +461,7 @@ class DKIM_SigError extends Error {
 		this.errorType = errorType;
 		this.errorStrParams = errorStrParams;
 		// @ts-expect-error
-		this.stack = this.stack.substring(this.stack.indexOf('\n')+1);
+		this.stack = this.stack.substring(this.stack.indexOf('\n') + 1);
 	}
 }
 
@@ -486,7 +485,7 @@ class DKIM_TempError extends Error {
 		this.errorType = errorType;
 		this.errorStrParams = errorStrParams;
 		// @ts-expect-error
-		this.stack = this.stack.substring(this.stack.indexOf('\n')+1);
+		this.stack = this.stack.substring(this.stack.indexOf('\n') + 1);
 	}
 }
 
@@ -510,6 +509,6 @@ class DKIM_Error extends Error {
 		super(message);
 		this.name = this.constructor.name;
 		// @ts-expect-error
-		this.stack = this.stack.substring(this.stack.indexOf('\n')+1);
+		this.stack = this.stack.substring(this.stack.indexOf('\n') + 1);
 	}
 }

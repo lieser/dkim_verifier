@@ -70,16 +70,16 @@ var Logging = {
 		var formatter = new SimpleFormatter();
 		var cappender;
 		var dappender;
-		if (prefs.getPrefType(subPrefBranch+"logging.console") === prefs.PREF_STRING) {
+		if (prefs.getPrefType(subPrefBranch + "logging.console") === prefs.PREF_STRING) {
 			// A console appender outputs to the JS Error Console
 			cappender = new SimpleConsoleAppender(formatter);
-			cappender.level = Log.Level[prefs.getCharPref(subPrefBranch+"logging.console")];
+			cappender.level = Log.Level[prefs.getCharPref(subPrefBranch + "logging.console")];
 			logger.addAppender(cappender);
 		}
-		if (prefs.getPrefType(subPrefBranch+"logging.dump") === prefs.PREF_STRING) {
+		if (prefs.getPrefType(subPrefBranch + "logging.dump") === prefs.PREF_STRING) {
 			// A dump appender outputs to standard out
 			dappender = new Log.DumpAppender(formatter);
-			dappender.level = Log.Level[prefs.getCharPref(subPrefBranch+"logging.dump")];
+			dappender.level = Log.Level[prefs.getCharPref(subPrefBranch + "logging.dump")];
 			logger.addAppender(dappender);
 		}
 

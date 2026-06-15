@@ -181,7 +181,7 @@ function resolve(name, rrtype=Constants.RR_TYPE_A) {
 		1 /* CLASS IN (internet) */, _result.address()
 	);
 	if (retval !== 0) {
-		log.debug("resolve error: "+ub_strerror(retval).readString()+"\n");
+		log.debug("resolve error: " + ub_strerror(retval).readString() + "\n");
 		throw new Error(`resolve error: ${ub_strerror(retval).readString()}`);
 	}
 
@@ -217,7 +217,7 @@ function resolve(name, rrtype=Constants.RR_TYPE_A) {
 						j = rdata[i];
 						i += 1;
 						// read current <character-string>
-						str += String.fromCharCode.apply(null, rdata.slice(i, i+j));
+						str += String.fromCharCode.apply(null, rdata.slice(i, i + j));
 						i += j;
 					}
 					data.push(str);
@@ -261,7 +261,7 @@ function resolve(name, rrtype=Constants.RR_TYPE_A) {
 	}
 	result.ttl = _result.contents.ttl;
 
-	log.debug("qname: "+result.qname+", qtype: "+result.qtype+", rcode: "+result.rcode+", secure: "+result.secure+", bogus: "+result.bogus+", why_bogus: "+result.why_bogus);
+	log.debug("qname: " + result.qname + ", qtype: " + result.qtype + ", rcode: " + result.rcode + ", secure: " + result.secure + ", bogus: " + result.bogus + ", why_bogus: " + result.why_bogus);
 
 	ub_resolve_free(_result);
 

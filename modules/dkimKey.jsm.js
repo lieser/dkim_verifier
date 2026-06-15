@@ -74,7 +74,7 @@ var Key = {
 		var promise = (async () => {
 			log.trace("initDB Task begin");
 
-			Logging.addAppenderTo("Sqlite.Connection."+KEY_DB_NAME, "sql.");
+			Logging.addAppenderTo("Sqlite.Connection." + KEY_DB_NAME, "sql.");
 
 			var conn = await Sqlite.openConnection({path: KEY_DB_NAME});
 
@@ -100,7 +100,7 @@ var Key = {
 							log.warn("Version table contains unknown entry: " + element.getResultByName("name"));
 					}
 				});
-				log.trace("versionTableKeys: "+versionTableKeys);
+				log.trace("versionTableKeys: " + versionTableKeys);
 
 				// table keys
 				if (versionTableKeys < TABLE_KEYS_VERSION_CURRENT) {
@@ -268,7 +268,7 @@ var Key = {
 					"WHERE SDID = :SDID AND  selector = :selector;",
 					{SDID:d_val, selector: s_val}
 				);
-				log.debug("deleted key ("+d_val+", "+s_val+")");
+				log.debug("deleted key (" + d_val + ", " + s_val + ")");
 			} finally {
 				await conn.close();
 			}
@@ -307,7 +307,7 @@ var Key = {
 					"WHERE SDID = :SDID AND  selector = :selector;",
 					{SDID:d_val, selector: s_val}
 				);
-				log.debug("updated key ("+d_val+", "+s_val+") to secure");
+				log.debug("updated key (" + d_val + ", " + s_val + ") to secure");
 			} finally {
 				await conn.close();
 			}
@@ -339,7 +339,7 @@ async function getKeyFromDNS(d_val, s_val) {
 	log.trace("getKeyFromDNS Task begin");
 
 	// get the DKIM key
-	var result = await DNS.resolve(s_val+"._domainkey."+d_val, "TXT");
+	var result = await DNS.resolve(s_val + "._domainkey." + d_val, "TXT");
 
 	DNS.checkForErrors(result);
 
