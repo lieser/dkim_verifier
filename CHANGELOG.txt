@@ -1,4 +1,6 @@
 2.?.? [????-??-??]
+ - Compare Mode now validates signatures if the key couldn't be retrieved from DNS anymore, but is locally stored
+ - Don't remove old keys in Store Mode and Compare Mode in case a key is removed or changed in DNS and should be updated by the addon
  - Option to disable display of ARH DKIM result (to get just SPF, DMARC and BIMI with the Addons validation) (by dodmi)
  - Added option to try to sanitize a modified subject if verification fails (#469) (by dodmi)
  - Prefer ed25519 over rsa signatures (#475) (by dodmi)
