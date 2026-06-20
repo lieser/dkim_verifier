@@ -135,7 +135,7 @@ var Key = {
 			return true;
 		})();
 		promise.then(null, function onReject(exception) {
-			// Failure!  We can inspect or report the exception.
+			// Failure! We can inspect or report the exception.
 			log.fatal(exception);
 			dbInitializedDefer.reject(exception);
 		});
@@ -152,7 +152,7 @@ var Key = {
 	 */
 
 	/**
-	 * Get the DKIM key.
+	 * Get the DKIM key, depending on the mode.
 	 *
 	 * @param {String} d_val domain of the Signer
 	 * @param {String} s_val selector
@@ -234,7 +234,7 @@ var Key = {
 			try {
 				const keyDNS = await getKeyFromDNS(d_val, s_val);
 				const keyDB = await getKeyFromDB(d_val, s_val);
-				if (keyDB && keyDB.key !== keyDNS.key) {
+				if (!keyDB || keyDB.key !== keyDNS.key) {
 					setKeyInDB(d_val, s_val, keyDNS.key, keyDNS.secure);
 				}
 			} catch (e) {
@@ -245,7 +245,8 @@ var Key = {
 	},
 
 	/**
-	 * Delete stored DKIM key.
+	 * Delete all stored DKIM keys for a domain with specified selector.
+	 * This function is not used anymore, as keys are never deleted from the db
 	 *
 	 * @param {String} d_val domain of the Signer
 	 * @param {String} s_val selector
@@ -266,9 +267,9 @@ var Key = {
 				await conn.executeCached(
 					"DELETE FROM keys\n" +
 					"WHERE SDID = :SDID AND  selector = :selector;",
-					{SDID:d_val, selector: s_val}
+					{SDID: d_val, selector: s_val}
 				);
-				log.debug("deleted key (" + d_val + ", " + s_val + ")");
+				log.debug("deleted all keys (" + d_val + ", " + s_val + ")");
 			} finally {
 				await conn.close();
 			}
@@ -276,7 +277,7 @@ var Key = {
 			log.trace("deleteKey Task end");
 		})();
 		promise.then(null, function onReject(exception) {
-			// Failure!  We can inspect or report the exception.
+			// Failure! We can inspect or report the exception.
 			log.fatal(exception);
 		});
 
@@ -284,7 +285,7 @@ var Key = {
 	},
 
 	/**
-	 * Mark stored DKIM key as secure.
+	 * Mark the latest stored DKIM key from a domain with specific selector as secure.
 	 *
 	 * @param {String} d_val domain of the Signer
 	 * @param {String} s_val selector
@@ -300,14 +301,21 @@ var Key = {
 			// wait for DB init
 			await Key.initDB();
 			var conn = await Sqlite.openConnection({path: KEY_DB_NAME});
-
 			try {
 				await conn.executeCached(
-					"UPDATE keys SET secure = 1\n" +
-					"WHERE SDID = :SDID AND  selector = :selector;",
-					{SDID:d_val, selector: s_val}
+					"UPDATE keys\n" +
+					"  SET secure = 1\n" +
+					"WHERE key IN (\n" +
+					"  SELECT key\n" +
+					"  FROM keys WHERE\n" +
+					"    SDID = :SDID AND\n" +
+					"    selector = :selector\n" +
+					"  ORDER BY insertedAt DESC\n" +
+					"  LIMIT 1\n" +
+					");",
+					{SDID: d_val, selector: s_val}
 				);
-				log.debug("updated key (" + d_val + ", " + s_val + ") to secure");
+				log.debug("updated latest added key (" + d_val + ", " + s_val + ") to secure");
 			} finally {
 				await conn.close();
 			}
@@ -315,7 +323,7 @@ var Key = {
 			log.trace("markKeyAsSecure Task end");
 		})();
 		promise.then(null, function onReject(exception) {
-			// Failure!  We can inspect or report the exception.
+			// Failure! We can inspect or report the exception.
 			log.fatal(exception);
 		});
 
@@ -352,7 +360,7 @@ async function getKeyFromDNS(d_val, s_val) {
 }
 
 /**
- * Get the DKIM key from DB.
+ * Get the latest DKIM key from DB.
  *
  * @param {String} d_val domain of the Signer
  * @param {String} s_val selector
@@ -378,7 +386,7 @@ async function getKeyFromDB(d_val, s_val) {
 			"  selector = :selector\n" +
 			"ORDER BY insertedAt DESC\n" +
 			"LIMIT 1;",
-			{SDID:d_val, selector: s_val}
+			{SDID: d_val, selector: s_val}
 		);
 
 		if (sqlRes.length > 0) {
@@ -392,7 +400,7 @@ async function getKeyFromDB(d_val, s_val) {
 				"  SDID = :SDID AND\n" +
 				"  selector = :selector\n" +
 				";",
-				{SDID:d_val, selector: s_val}
+				{SDID: d_val, selector: s_val}
 			);
 			log.debug("got key from DB");
 		}
@@ -428,7 +436,7 @@ function setKeyInDB(d_val, s_val, key, secure) {
 			await conn.executeCached(
 				"INSERT INTO keys (SDID, selector, key, insertedAt, lastUsedAt, secure)" +
 				"VALUES (:SDID, :selector, :key, DATE('now'), DATE('now'),:secure);",
-				{SDID:d_val, selector: s_val, key: key, secure: secure}
+				{SDID: d_val, selector: s_val, key: key, secure: secure}
 			);
 			log.debug("inserted key into DB");
 		} finally {
@@ -438,7 +446,7 @@ function setKeyInDB(d_val, s_val, key, secure) {
 		log.trace("setKeyInDB Task end");
 	})();
 	promise.then(null, function onReject(exception) {
-		// Failure!  We can inspect or report the exception.
+		// Failure! We can inspect or report the exception.
 		log.fatal(exception);
 	});
 
