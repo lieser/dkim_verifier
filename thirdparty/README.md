@@ -16,10 +16,15 @@ This file contains the information which versions of the third-party libraries a
 
 ## rsasign
 
- - Kenji Urushima's 'RSA-Sign JavaScript Library' (http://kjur.github.com/jsrsasign) *Version 8.0.12*
+ - Kenji Urushima's 'RSA-Sign JavaScript Library' (https://github.com/kjur/jsrsasign) *Version 10.9.0*
+    - base64x.js - Base64url and supplementary functions for Tom Wu's base64.js library
+    - asn1.js - ASN.1 DER encoder classes
     - asn1hex.js - simple ASN.1 parser to read hexadecimal encoded ASN.1 DER
-    - rsasign-1.2.js - RSAKey class extension for RSA signing and verification, this file was slightly modified by Philippe Lieser (@lieser at GitHub)
-	
+    - asn1x509.js - ASN.1 DER encoder classes for X.509 certificate
+    - rsasign.js - RSAKey class extension for RSA signing and verification, this file was slightly modified by Philippe Lieser (@lieser at GitHub)
+    - x509.js - X509 class to read subject public key from certificate
+
+
 ## dns
 
  - Joshua Tauberer's DNS Libary (part of Thunderbird Sender Verification Extension) (https://github.com/tauberer/thunderbird-spf)
