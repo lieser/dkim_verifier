@@ -18,10 +18,10 @@
  */
 
 // options for ESLint
-/* global Components, Services, atob, btoa */
+/* global Components, Services, atob, btoa, Sqlite */
 /* global Logging, rfcParser, DNS */
-/* global toType, stringEqual */
-/* exported EXPORTED_SYMBOLS, BIMI */
+/* global Deferred, toType, stringEqual, readStringFrom */
+/* exported EXPORTED_SYMBOLS, BIMI, BIMIDB */
 
 /**
  * @typedef {Object} BimiRecord
@@ -40,7 +40,7 @@
 "use strict";
 
 var EXPORTED_SYMBOLS = [
-	"BIMI"
+	"BIMI", "BIMIDB"
 ];
 
 // @ts-expect-error
@@ -51,6 +51,7 @@ const Ci = Components.interfaces;
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/Services.jsm");
+Cu.import("resource://gre/modules/Sqlite.jsm");
 
 Cu.import("resource://dkim_verifier/logging.jsm.js");
 Cu.import("resource://dkim_verifier/arhParser.jsm.js");
@@ -100,13 +101,10 @@ let CERTTOOLS = (function() {
 
 		const hasher = Components.classes["@mozilla.org/security/hash;1"].createInstance(Components.interfaces.nsICryptoHash);
 		hasher.initWithString(hashAlgorithm);
-
 		const data = rstr2byteArray(str);
 		hasher.update(data, data.length);
-
 		// true for base-64, false for binary data output
 		let hash = hasher.finish(false);
-
 		// convert the binary hash data to a hex string.
 		hash = hash.split("").map(e => toHexString(e.charCodeAt(0))).join("");
 		return hash;
@@ -377,18 +375,14 @@ let CERTTOOLS = (function() {
 	 * and the BIMI OID 1.3.6.1.5.5.7.3.31 is unknown to Thunderbird, so it will always fail
 	 *
 	 * @param {String[]} certArray array with Base64 cert strings
-	 * @returns {Boolean} true if the certificate chain is deemed valid and trustet
+	 * @returns {Promise<Boolean>} true if the certificate chain is deemed valid and trusted
 	 */
-	let _testValidity = function(certArray) {
-		// @ToDo implement a way to handle trusted CAs
-		const caCerts = [
-			"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",
-		];
-
+	let _testValidity = async function _testValidity(certArray) {
+		const caCerts = await BIMIDB.getTrustedCAs();
 		const certDB = Cc["@mozilla.org/security/x509certdb;1"].getService(Ci.nsIX509CertDB);
 		const caCertArray = [];
 		const certChainArray = [];
-		const now = new Date().getTime() * 1000;
+		const now = Date.now() * 1000;
 		try {
 			// Load certificate chain into memory
 			for (const cert of certArray) {
@@ -438,6 +432,14 @@ let CERTTOOLS = (function() {
 		if (!isTrusted) {
 			// there was no trusted CA in caCertArray
 			log.debug(`Issuing CA ${topCert.issuerCommonName} / ${topCert.sha256Fingerprint} is NOT TRUSTED!`);
+			// Add topCert to DB?
+			for (const cert of certArray) {
+				if (CERTTOOLS.getFingerprint(cert) === topCert.sha256Fingerprint) {
+					BIMIDB.addCA(cert, false);
+					break;
+				}
+			}
+
 		}
 		return isTrusted;
 	};
@@ -602,8 +604,13 @@ let BIMI = (function() {
 			if (dkimSigResults.length === 0) { return null; }
 			let mainResult = dkimSigResults[0];
 			// Only try to fetch BIMI information if DKIM is valid
-			if (mainResult.result === "SUCCESS") {
+			if (mainResult.result === "SUCCESS" && mainResult.sdid) {
 				log.debug("Try to get BIMI indicator for " + mainResult.sdid);
+				let cachedBimiIndicator = await BIMIDB.getBimiIndicator(mainResult.sdid);
+				if (cachedBimiIndicator) {
+					log.debug("Got BIMI indicator from database");
+					return cachedBimiIndicator;
+				}
 				let parsedBimiRecord;
 				try {
 					let dnsResult = await DNS.resolve(`default._bimi.${mainResult.sdid}`, "TXT");
@@ -620,18 +627,23 @@ let BIMI = (function() {
 					if (pemCertChain) {
 						const b64Certs = CERTTOOLS.convertPEMtoDERArray(pemCertChain);
 						const bimiCert = CERTTOOLS.getEndEntitityCert(b64Certs);
-						// @ts-expect-error
 						if (!bimiCert || !CERTTOOLS.testBIMICert(bimiCert, mainResult.sdid)) { return null; }
-						if (!CERTTOOLS.testValidity(b64Certs)) { return null; }
+						if (!await CERTTOOLS.testValidity(b64Certs)) { return null; }
 						const svgData = CERTTOOLS.getBimiSVGData(bimiCert);
-						if (svgData.length > 0) { return svgData[0]; }
+						if (svgData.length > 0) {
+							BIMIDB.addBimiIndicator(mainResult.sdid, svgData[0]);
+							return svgData[0];
+						}
 						const svgHash = CERTTOOLS.getBimiHashData(bimiCert);
 						if (svgHash.length > 0) {
 							const bimiIndicator = await fetchTextResource(parsedBimiRecord.location);
 							if (bimiIndicator) {
 								for (const entry of svgHash) {
 									const testHash = CERTTOOLS.getHash(bimiIndicator, entry.algo);
-									if (stringEqual(testHash, entry.hash)) { return btoa(bimiIndicator); }
+									if (stringEqual(testHash, entry.hash)) {
+										BIMIDB.addBimiIndicator(mainResult.sdid, btoa(bimiIndicator));
+										return btoa(bimiIndicator);
+									}
 								}
 							}
 						}
@@ -641,5 +653,474 @@ let BIMI = (function() {
 			return null;
 		}
 	};
+	return that;
+}());
+
+let BIMIDB = (function() {
+
+	const log = Logging.getLogger("BIMI.DB");
+	const BIMI_DB_NAME = "dkimBimi.sqlite";
+	let dbInitialized = false;
+	// Deferred<boolean>
+	/** @type {IDeferred<boolean>} */
+	let dbInitializedDefer = new Deferred();
+
+	/**
+	 * init DB
+	 * May be called more then once
+	 *
+	 * @returns {Promise<boolean>} initialized
+	 * @throws {Error}
+	 */
+	let initDB = function() {
+
+		if (dbInitialized) {
+			return dbInitializedDefer.promise;
+		}
+		dbInitialized = true;
+
+		let promise = (async () => {
+
+			Logging.addAppenderTo("Sqlite.Connection." + BIMI_DB_NAME, "sql.");
+
+			const conn = await Sqlite.openConnection({path: BIMI_DB_NAME});
+
+			try {
+				// get version numbers
+				await conn.execute(
+					"CREATE TABLE IF NOT EXISTS version (\n" +
+					"  name TEXT PRIMARY KEY NOT NULL,\n" +
+					"  version INTEGER NOT NULL\n" +
+					");"
+				);
+
+				const sqlRes = await conn.execute(
+					"SELECT * FROM version;"
+				);
+
+				const versionTable = { certs: 0, domains: 0, indicators: 0, caData: 0 };
+				sqlRes.forEach(function(element /*, index, array*/ ) {
+					switch(element.getResultByName("name")) {
+						case "TableCerts":
+							versionTable.certs = element.getResultByName("version");
+							break;
+						case "TableDomains":
+							versionTable.domains = element.getResultByName("version");
+							break;
+						case "TableIndicators":
+							versionTable.indicators = element.getResultByName("version");
+							break;
+						case "DataCA":
+							versionTable.caData = element.getResultByName("version");
+							break;
+						default:
+							log.warn("Version table contains unknown entry: " + element.getResultByName("name"));
+					}
+				});
+
+				// table certs
+				if (versionTable.certs === 0) {
+					// create table
+					await conn.execute(
+						"CREATE TABLE IF NOT EXISTS certs (\n" +
+						"  commonName TEXT NOT NULL,\n" +
+						"  fingerprint TEXT NOT NULL,\n" +
+						"  expiresOn INTEGER NOT NULL,\n" +
+						"  trusted INTEGER NOT NULL,\n" +
+						"  internal INTEGER NOT NULL,\n" +
+						"  data TEXT NOT NULL,\n" +
+						"  PRIMARY KEY (fingerprint)\n" +
+						");"
+					);
+					// add version number
+					await conn.execute(
+						"INSERT INTO version (name, version)" +
+						"VALUES ('TableCerts', 1);"
+					);
+					versionTable.certs = 1;
+				}
+				if (versionTable.certs > 1) {
+					throw new Error("unsupported version for table 'certs'");
+				}
+
+				// table indicators
+				if (versionTable.indicators === 0) {
+					// create table
+					await conn.execute(
+						"CREATE TABLE IF NOT EXISTS indicators (\n" +
+						"  idx INTEGER NOT NULL,\n" +
+						"  insertedAt TEXT NOT NULL,\n" +
+						"  lastUsedAt TEXT NOT NULL,\n" +
+						"  data TEXT NOT NULL,\n" +
+						"  PRIMARY KEY (idx)\n" +
+						");"
+					);
+					// add version number
+					await conn.execute(
+						"INSERT INTO version (name, version)" +
+						"VALUES ('TableIndicators', 1);"
+					);
+					versionTable.indicators = 1;
+				}
+				if (versionTable.Indicators > 1) {
+					throw new Error("unsupported version for table 'indicators'");
+				}
+
+				// table domains
+				if (versionTable.domains === 0) {
+					// create table
+					await conn.execute(
+						"CREATE TABLE IF NOT EXISTS domains (\n" +
+						"  domain TEXT NOT NULL,\n" +
+						"  indicator INTEGER NOT NULL,\n" +
+						"  PRIMARY KEY (domain),\n" +
+						"  FOREIGN KEY (indicator) REFERENCES indicators(idx)\n" +
+						");"
+					);
+					// add version number
+					await conn.execute(
+						"INSERT INTO version (name, version)" +
+						"VALUES ('TableDomains', 1);"
+					);
+					versionTable.domains = 1;
+				}
+				if (versionTable.domains > 1) {
+					throw new Error("unsupported version for table 'domains'");
+				}
+
+				// import extensions BIMI CA certs
+				const certDB = Cc["@mozilla.org/security/x509certdb;1"].getService(Ci.nsIX509CertDB);
+				// read CAs from file
+				const jsonStr = await readStringFrom("resource://dkim_verifier_data/bimiCAs.json");
+				const bimiCAs = JSON.parse(jsonStr);
+				// check data version
+				// get timestamp of extension file
+				let currentDataVersion = (new Date).getTime();
+				const extensionFile = Cc["@mozilla.org/file/directory_service;1"].getService(Ci.nsIProperties).get("ProfD", Components.interfaces.nsIFile);
+				extensionFile.append("extensions");
+				extensionFile.append("dkim_verifier@pl.xpi");
+				if (extensionFile.exists()) {
+					currentDataVersion = extensionFile.lastModifiedTime;
+				}
+				if (versionTable.caData < currentDataVersion) {
+					log.debug("Update BIMI CAs");
+					// delete old internal CAs
+					await conn.execute("DELETE FROM certs WHERE internal = 1;" );
+					// insert new internal CAs
+					await conn.execute(
+						"INSERT INTO certs (commonName, fingerprint, expiresOn, trusted, internal, data)\n" +
+						"VALUES (:cn, :fingerprint, :notAfter, 1, 1, :b64cert);",
+						bimiCAs.CAList.map(
+							function (b64cert) {
+								const cert=certDB.constructX509FromBase64(b64cert);
+								return {
+									"cn" : cert.commonName,
+									"fingerprint" : cert.sha256Fingerprint,
+									"notAfter" : cert.validity.notAfter,
+									"b64cert" : b64cert
+								};
+							}
+						)
+					);
+					// update data version number
+					await conn.execute(
+						"INSERT OR REPLACE INTO version (name, version)\n" +
+						"VALUES ('DataCA', :version);",
+						{"version": currentDataVersion}
+					);
+				}
+			} finally {
+				await conn.close();
+			}
+			dbInitializedDefer.resolve(true);
+			log.debug("DB initialized");
+			return true;
+		})();
+		promise.then(null, function onReject(exception) {
+			// Failure! We can inspect or report the exception.
+			log.fatal(exception);
+			dbInitializedDefer.reject(exception);
+		});
+		return dbInitializedDefer.promise;
+	};
+
+	initDB();
+
+	let that = {
+		/**
+		 * Gets all trusted, not expired from the database
+		 *
+		 * @returns {Promise<String[]>}
+		 */
+		getTrustedCAs: async function getTrustedCAs() {
+			// wait for DB init
+			await initDB();
+			const conn = await Sqlite.openConnection({path: BIMI_DB_NAME});
+
+			let sqlRes = [];
+			try {
+				sqlRes = await conn.execute(
+					"SELECT data FROM certs\n" +
+					"WHERE\n" +
+					"  trusted = 1 AND\n" +
+					"  expiresOn >= :now;",
+					{ "now": Date.now() * 1000 }
+				);
+			} finally {
+				await conn.close();
+			}
+
+			let trustedCAs = [];
+			for(const res of sqlRes) {
+				trustedCAs.push(res.getResultByName("data"));
+				log.debug(`Found ${trustedCAs.length} CAs`);
+			}
+			return trustedCAs;
+		},
+
+		/**
+		 * Adds a certificate to the database
+		 *
+		 * @param {String} certString Base64 encoded certificate string
+		 * @param {Boolean} trust
+		 * @returns {Promise<void>}
+		 */
+		addCA: async function addCA(certString, trust) {
+			// wait for DB init
+			await initDB();
+			const conn = await Sqlite.openConnection({path: BIMI_DB_NAME});
+			const certDB = Cc["@mozilla.org/security/x509certdb;1"].getService(Ci.nsIX509CertDB);
+			const cert = certDB.constructX509FromBase64(certString);
+			try {
+				let sqlRes = await conn.execute(
+					"SELECT data FROM certs\n" +
+					"WHERE\n" +
+					"  data = :certData;",
+					{ "certData": certString }
+				);
+				// test if certificate is already in DB (then do nothing to not change the trust value or internal certs)
+				if (!sqlRes || sqlRes.length === 0) {
+					await conn.execute(
+						"INSERT INTO certs (commonName, fingerprint, expiresOn, trusted, internal, data)\n" +
+						"VALUES (:cn, :fingerprint, :notAfter, :trust, 0, :b64cert);",
+						{
+							"cn": cert.commonName,
+							"fingerprint": cert.sha256Fingerprint,
+							"notAfter": cert.validity.notAfter,
+							"trust": trust ? 1 : 0,
+							"b64cert": certString
+						}
+					);
+					log.debug(`Added CA with fingerprint ${cert.sha256Fingerprint}`);
+				} else {
+					log.debug(`CA was already in database`);
+				}
+			} finally {
+				await conn.close();
+			}
+		},
+
+		/**
+		 * Removes a certificate from the database
+		 *
+		 * @param {String} fingerprint Fingerprint of the certificate
+		 * @returns {Promise<void>}
+		 */
+		removeCA: async function removeCA(fingerprint) {
+			// wait for DB init
+			await initDB();
+			const conn = await Sqlite.openConnection({path: BIMI_DB_NAME});
+
+			try {
+				await conn.execute(
+					"DELETE FROM certs WHERE\n" +
+					"  fingerprint = :fingerprint AND\n" +
+					"  internal = 0;",
+					{ "fingerprint": fingerprint.toUpperCase() }
+				);
+				log.debug(`Removed CA with fingerprint ${fingerprint}`);
+			} finally {
+				await conn.close();
+			}
+		},
+
+		/**
+		 * Sets the certificate trust
+		 *
+		 * @param {String} fingerprint Fingerprint of the certificate
+		 * @param {Boolean} trust
+		 * @returns {Promise<void>}
+		 */
+		setCATrust: async function setCATrust(fingerprint, trust) {
+			// wait for DB init
+			await initDB();
+			const conn = await Sqlite.openConnection({path: BIMI_DB_NAME});
+
+			try {
+				await conn.execute(
+					"UPDATE certs\n" +
+					"  SET trusted = :trust\n" +
+					"WHERE\n" +
+					"  fingerprint = :fingerprint AND\n" +
+					"  internal = 0;",
+					{ "trust": trust ? 1 : 0, "fingerprint": fingerprint.toUpperCase() }
+				);
+				log.debug(`Updated trust for CA with fingerprint ${fingerprint}`);
+			} finally {
+				await conn.close();
+			}
+		},
+
+		/**
+		 * Gets a BIMI indicator from the database
+		 *
+		 * @param {String} domain
+		 * @returns {Promise<String|null>}
+		 */
+		getBimiIndicator: async function getBimiIndicator(domain) {
+			// wait for DB init
+			await initDB();
+			const conn = await Sqlite.openConnection({path: BIMI_DB_NAME});
+
+			let bimiIndicator = null;
+			let sqlRes = [];
+			try {
+				sqlRes = await conn.execute(
+					"SELECT indicators.data, indicators.idx FROM\n" +
+					"domains INNER JOIN indicators ON domains.indicator = indicators.idx\n" +
+					"WHERE\n" +
+					"  domains.domain = :domain;",
+					{ "domain": domain.toLowerCase() }
+				);
+				if (sqlRes.length > 0) {
+					bimiIndicator = sqlRes[0].getResultByName("data");
+					await conn.executeCached(
+						"UPDATE indicators\n" +
+						"  SET lastUsedAt = DATE('now')\n" +
+						"WHERE\n" +
+						"  idx = :index;",
+						{ "index": sqlRes[0].getResultByName("idx") }
+					);
+					log.debug(`Found BIMI indicator for ${domain}`);
+				}
+			} finally {
+				await conn.close();
+			}
+			return bimiIndicator;
+		},
+
+		/**
+		 * Adds a BIMI indicator to the database
+		 *
+		 * @param {String} domain
+		 * @param {String} bimiIndicator
+		 * @returns {Promise<void>}
+		 */
+		addBimiIndicator: async function addBimiIndicator(domain, bimiIndicator) {
+			// wait for DB init
+			await initDB();
+			const conn = await Sqlite.openConnection({path: BIMI_DB_NAME});
+
+			try {
+				let indIdx = -1;
+				let sqlRes = [];
+				// test if image is already in DB
+				sqlRes = await conn.execute(
+					"SELECT idx FROM indicators\n" +
+					"WHERE\n" +
+					"  data = :indicator;",
+					{ "indicator": bimiIndicator }
+				);
+				if (sqlRes.length > 0) {
+					indIdx = sqlRes[0].getResultByName("idx");
+					// update existing BIMI indicator
+					await conn.execute(
+						"UPDATE indicators\n" +
+						"  SET data = :data,\n" +
+						"      insertedAt = DATE('now'),\n" +
+						"      lastUsedAt = DATE('now')\n" +
+						"WHERE\n" +
+						"  idx = :index;",
+						{ "index": indIdx, "data": bimiIndicator }
+					);
+					log.debug("Updated BIMI indicator");
+				} else {
+					// get next index
+					sqlRes = await conn.execute(
+						"SELECT MAX(idx) FROM indicators;"
+					);
+					if (sqlRes.length > 0) {
+						indIdx = sqlRes[0].getResultByName("MAX(idx)") + 1;
+					} else {
+						indIdx = 1;
+					}
+					// inserting new BIMI indicator
+					await conn.execute(
+						"INSERT INTO indicators (idx, insertedAt, lastUsedAt, data)\n" +
+						"VALUES (:index, DATE('now'), DATE('now'), :data);",
+						{ "index": indIdx, "data": bimiIndicator }
+					);
+					log.debug("Added new BIMI indicator");
+				}
+				// update domain info
+				if (indIdx >= 0) {
+					await conn.execute(
+						"INSERT OR REPLACE INTO domains (domain, indicator)\n" +
+						"VALUES (:domain, :index);",
+						{ "domain": domain.toLowerCase(), "index": indIdx }
+					);
+				}
+			} finally {
+				await conn.close();
+			}
+		},
+		/**
+		 * Removes a BIMI indicator from the database
+		 *
+		 * @param {String} domain
+		 * @returns {Promise<void>}
+		 */
+		removeBimiIndicator: async function removeBimiIndicator(domain) {
+			// wait for DB init
+			await initDB();
+			const conn = await Sqlite.openConnection({path: BIMI_DB_NAME});
+
+			try {
+				let indIdx = -1;
+				let sqlRes = [];
+				sqlRes = await conn.execute(
+					"SELECT indicator FROM domains\n" +
+					"WHERE\n" +
+					"  domain = :domain;",
+					{ "domain": domain.toLowerCase() }
+				);
+				if (sqlRes.length > 0) { indIdx = sqlRes[0].getResultByName("indicator"); }
+				await conn.execute(
+					"DELETE FROM domains WHERE\n" +
+					"  domain = :domain;",
+					{ "domain": domain.toLowerCase() }
+				);
+				log.debug(`Removed ${domain} from database`);
+				let otherDomains = await conn.execute(
+					"SELECT domain FROM domains\n" +
+					"WHERE\n" +
+					"  indicator = :index;",
+					{ "index": indIdx }
+				);
+				if (indIdx !== -1 && otherDomains.length === 0) {
+					// there are no other domains using this indicator
+					await conn.execute(
+						"DELETE FROM indicators WHERE\n" +
+						"  idx = :index;",
+						{ "index": indIdx }
+					);
+					log.debug("BIMI indicator is not associated with any domains, removed indicator");
+				}
+			} finally {
+				await conn.close();
+			}
+		}
+	};
+
 	return that;
 }());
