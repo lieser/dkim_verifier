@@ -20,7 +20,7 @@
 // options for ESLint
 /* global Components, Services, atob, btoa, Sqlite */
 /* global Logging, rfcParser, DNS */
-/* global Deferred, toType, stringEqual, readStringFrom */
+/* global Deferred, toType, stringEqual, readStringFrom, PREF */
 /* exported EXPORTED_SYMBOLS, BIMI, BIMIDB */
 
 /**
@@ -58,6 +58,11 @@ Cu.import("resource://dkim_verifier/arhParser.jsm.js");
 Cu.import("resource://dkim_verifier/rfcParser.jsm.js");
 Cu.import("resource://dkim_verifier/dnsWrapper.jsm.js");
 Cu.import("resource://dkim_verifier/helper.jsm.js");
+
+// @ts-expect-error
+const PREF_BRANCH = "extensions.dkim_verifier.bimi.";
+// @ts-expect-error
+var prefs = Services.prefs.getBranch(PREF_BRANCH);
 
 let CERTTOOLS = (function() {
 
@@ -432,14 +437,14 @@ let CERTTOOLS = (function() {
 		if (!isTrusted) {
 			// there was no trusted CA in caCertArray
 			log.debug(`Issuing CA ${topCert.issuerCommonName} / ${topCert.sha256Fingerprint} is NOT TRUSTED!`);
-			// Add topCert to DB?
-			for (const cert of certArray) {
-				if (CERTTOOLS.getFingerprint(cert) === topCert.sha256Fingerprint) {
-					BIMIDB.addCA(cert, false);
-					break;
+			if (prefs.getBoolPref("addUnknownCAs")) {
+				for (const cert of certArray) {
+					if (CERTTOOLS.getFingerprint(cert) === topCert.sha256Fingerprint) {
+						BIMIDB.addCA(cert, false);
+						break;
+					}
 				}
 			}
-
 		}
 		return isTrusted;
 	};
@@ -546,6 +551,17 @@ let BIMI = (function() {
 		return httpResponse.result;
 	};
 
+	/**
+	 * @param {dkimSigResultV2[]} dkimSigResults
+	 * @returns {Boolean}
+	 */
+	let checkBasicRequirementsForOnlineBIMI = function(dkimSigResults) {
+		return prefs.getIntPref("enable") > PREF.BIMI.OFF
+				&& dkimSigResults.length > 0
+				&& dkimSigResults[0].result === "SUCCESS"
+				&& toType(dkimSigResults[0].sdid) !== "Undefined";
+	};
+
 	let that = {
 		/**
 		* Try to get the BIMI Indicator if available.
@@ -564,6 +580,9 @@ let BIMI = (function() {
 			//
 			// Given the above, it should be safe to trust the BIMI indicator from the BIMI-Indicator header
 			// if we have a passing BIMI result there the MTA claims to have checked the Authority Evidence.
+
+			if (prefs.getIntPref("enable") === PREF.BIMI.OFF) { return null; }
+
 			const hasAuthorityPassBIMI = arhBIMI.some(
 				arh => arh.method === "bimi" &&
 					arh.result === "pass" &&
@@ -601,52 +620,73 @@ let BIMI = (function() {
 		* @returns {Promise<String|Null>}
 		*/
 		getBimiIndicatorOnline: async function getBimiIndicatorOnline(dkimSigResults) {
-			if (dkimSigResults.length === 0) { return null; }
-			let mainResult = dkimSigResults[0];
-			// Only try to fetch BIMI information if DKIM is valid
-			if (mainResult.result === "SUCCESS" && mainResult.sdid) {
-				log.debug("Try to get BIMI indicator for " + mainResult.sdid);
-				let cachedBimiIndicator = await BIMIDB.getBimiIndicator(mainResult.sdid);
-				if (cachedBimiIndicator) {
-					log.debug("Got BIMI indicator from database");
-					return cachedBimiIndicator;
+			// Only try to fetch BIMI information if enabled and DKIM is valid
+			if (!checkBasicRequirementsForOnlineBIMI(dkimSigResults)) { return null; }
+
+			// We already check in checkBasicRequirementsForOnlineBIMI, that sdid is defined
+			let domain = String(dkimSigResults[0].sdid);
+			// Lookup BIMI indicator in cache
+			log.debug("Try to get BIMI indicator for " + domain);
+			let cachedBimiIndicator = await BIMIDB.getBimiIndicator(domain);
+			if (cachedBimiIndicator) {
+				log.debug("Got BIMI indicator from database");
+				return cachedBimiIndicator;
+			}
+
+			// Lookup Online
+			if (prefs.getIntPref("enable") < PREF.BIMI.MAIL_ONLINE) { return null; }
+			let parsedBimiRecord;
+			try {
+				let dnsResult = await DNS.resolve(`default._bimi.${domain}`, "TXT");
+				if (dnsResult && dnsResult.data) {
+					let bimiRecord = dnsResult.data[0];
+					parsedBimiRecord = parseBimiRecord(bimiRecord);
 				}
-				let parsedBimiRecord;
-				try {
-					let dnsResult = await DNS.resolve(`default._bimi.${mainResult.sdid}`, "TXT");
-					if (dnsResult && dnsResult.data) {
-						let bimiRecord = dnsResult.data[0];
-						parsedBimiRecord = parseBimiRecord(bimiRecord);
-					}
-				} catch (error) {
-					log.error(`Error resolving default._bimi.${mainResult.sdid}`);
+			} catch (error) {
+				log.error(`Error resolving default._bimi.${domain}`);
+			}
+
+			// Only try to get the indicator if authorization information is present
+			if (!parsedBimiRecord || !parsedBimiRecord.authorization) { return null; }
+
+			let pemCertChain = await fetchTextResource(parsedBimiRecord.authorization);
+
+			// Testing certificates...
+			if (!pemCertChain) { return null; }
+			const b64Certs = CERTTOOLS.convertPEMtoDERArray(pemCertChain);
+			const bimiCert = CERTTOOLS.getEndEntitityCert(b64Certs);
+			if (!bimiCert
+				|| !CERTTOOLS.testBIMICert(bimiCert, domain)
+				|| !await CERTTOOLS.testValidity(b64Certs)
+			) { return null; }
+
+			// Fetching BIMI indicator from certificate
+			const svgData = CERTTOOLS.getBimiSVGData(bimiCert);
+			if (svgData.length > 0) {
+				let result = svgData[0];
+				if (prefs.getBoolPref("cacheIndicators")) {
+					BIMIDB.addBimiIndicator(domain, result);
 				}
-				// Only try to get the indicator if authorization information is present
-				if (parsedBimiRecord && parsedBimiRecord.authorization) {
-					let pemCertChain = await fetchTextResource(parsedBimiRecord.authorization);
-					if (pemCertChain) {
-						const b64Certs = CERTTOOLS.convertPEMtoDERArray(pemCertChain);
-						const bimiCert = CERTTOOLS.getEndEntitityCert(b64Certs);
-						if (!bimiCert || !CERTTOOLS.testBIMICert(bimiCert, mainResult.sdid)) { return null; }
-						if (!await CERTTOOLS.testValidity(b64Certs)) { return null; }
-						const svgData = CERTTOOLS.getBimiSVGData(bimiCert);
-						if (svgData.length > 0) {
-							BIMIDB.addBimiIndicator(mainResult.sdid, svgData[0]);
-							return svgData[0];
+				return result;
+			}
+
+			// Fetching BIMI indicator from internet and compare to hash
+			const svgHash = CERTTOOLS.getBimiHashData(bimiCert);
+			if (svgHash.length > 0) {
+				const bimiIndicator = await fetchTextResource(parsedBimiRecord.location);
+				if (bimiIndicator) {
+					let hashMatch = svgHash.filter(entry =>
+													stringEqual(
+														CERTTOOLS.getHash(bimiIndicator, entry.algo),
+														entry.hash
+													)
+											);
+					if (hashMatch.length > 0) {
+						let result = btoa(bimiIndicator);
+						if (prefs.getBoolPref("cacheIndicators")) {
+							BIMIDB.addBimiIndicator(domain, result);
 						}
-						const svgHash = CERTTOOLS.getBimiHashData(bimiCert);
-						if (svgHash.length > 0) {
-							const bimiIndicator = await fetchTextResource(parsedBimiRecord.location);
-							if (bimiIndicator) {
-								for (const entry of svgHash) {
-									const testHash = CERTTOOLS.getHash(bimiIndicator, entry.algo);
-									if (stringEqual(testHash, entry.hash)) {
-										BIMIDB.addBimiIndicator(mainResult.sdid, btoa(bimiIndicator));
-										return btoa(bimiIndicator);
-									}
-								}
-							}
-						}
+						return result;
 					}
 				}
 			}
@@ -986,7 +1026,7 @@ let BIMIDB = (function() {
 			let sqlRes = [];
 			try {
 				sqlRes = await conn.execute(
-					"SELECT indicators.data, indicators.idx FROM\n" +
+					"SELECT indicators.data, indicators.idx, indicators.insertedAt FROM\n" +
 					"domains INNER JOIN indicators ON domains.indicator = indicators.idx\n" +
 					"WHERE\n" +
 					"  domains.domain = :domain;",
@@ -1002,6 +1042,14 @@ let BIMIDB = (function() {
 						{ "index": sqlRes[0].getResultByName("idx") }
 					);
 					log.debug(`Found BIMI indicator for ${domain}`);
+					if (prefs.getIntPref("updateInterval") > 0) {
+						let inserted = new Date(sqlRes[0].getResultByName("insertedAt"));
+						let today = new Date();
+						if ((today.getFullYear() - inserted.getFullYear()) * 12 + today.getMonth() - inserted.getMonth() > prefs.getIntPref("updateInterval")) {
+							bimiIndicator = null;
+							log.debug("BIMI indicator is outdated, triggering refresh...");
+						}
+					}
 				}
 			} finally {
 				await conn.close();
