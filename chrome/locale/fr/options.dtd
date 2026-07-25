@@ -48,6 +48,10 @@
 
 <!ENTITY display.label "Affichage">
 
+<!ENTITY display.general.label "Général">
+<!ENTITY display.color.label "Couleur">
+<!ENTITY display.icons.label "Icons / BIMI">
+
 <!ENTITY showDKIMHeader.label  "Montrer l'entête DKIM:">
 <!ENTITY showDKIMStatusbarpanel.label  "Montrer la signature DKIM dans la barre de status:">
 <!ENTITY showDKIMFromTooltip.label  "Montrer l'infobulle DKIM dans l'expéditeur de l'entête:">
@@ -71,6 +75,19 @@
 <!ENTITY color.nosig.label "Courriel non signé">
 
 <!ENTITY display.favicon.show.label "Afficher l'icône des signatures de domaine connus avant l'adresse De">
+<!ENTITY display.favicon.box.label "DKIM Verifier - FavIcons">
+
+<!ENTITY display.bimi.box.label "BIMI (Brand Indicators for Message Identification)">
+<!ENTITY display.bimi.enabled.label "Enable BIMI:">
+<!ENTITY display.bimi.enabled.value.0.label "No">
+<!ENTITY display.bimi.enabled.value.1.label "Show BIMI indicators from mail header">
+<!ENTITY display.bimi.enabled.value.2.label "Show BIMI indicators from mail or internet">
+<!ENTITY display.bimi.cacheIndicators.label "Cache BIMI indicators">
+<!ENTITY display.bimi.updateInterval.label "Refresh BIMI indicators after:">
+<!ENTITY display.bimi.updateInterval.value.0.label "never">
+<!ENTITY display.bimi.updateMonths.label "Months">
+<!ENTITY display.bimi.addUnknownCAs.label "Save unknown CAs to database">
+<!ENTITY display.bimi.unknownCAsHint.label "Automatically added CAs are not trusted by default">
 
 
 <!ENTITY advanced.label "Avancés">

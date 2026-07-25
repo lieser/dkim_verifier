@@ -559,7 +559,7 @@ let BIMI = (function() {
 		return prefs.getIntPref("enable") > PREF.BIMI.OFF
 				&& dkimSigResults.length > 0
 				&& dkimSigResults[0].result === "SUCCESS"
-				&& toType(dkimSigResults[0].sdid) !== "Undefined";
+				&& toType(dkimSigResults[0].sdid) === "String";
 	};
 
 	let that = {
