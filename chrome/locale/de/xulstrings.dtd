@@ -39,3 +39,17 @@
 <!ENTITY signRules.priorityMode.manual.label "Setze Priorität auf">
 
 <!ENTITY button.help.label "Hilfe">
+
+<!ENTITY button.addCA.label "CA hinzufügen">
+<!ENTITY button.removeCA.label "CA entfernen">
+<!ENTITY button.trustCA.label "Vertrauen ändern">
+<!ENTITY button.removeIndicator.label "Indikator entfernen">
+
+<!ENTITY treeviewBimiCAs.title "BIMI CAs verwalten">
+<!ENTITY treeviewBimiCAs.treecol.name.label "Name">
+<!ENTITY treeviewBimiCAs.treecol.fingerprint.label "Fingerabdruck">
+<!ENTITY treeviewBimiCAs.treecol.trust.label "Vertrauen">
+<!ENTITY treeviewBimiCAs.treecol.internal.label "Intern">
+
+<!ENTITY treeviewbimiIndicators.title "Gespeicherte BIMI-Indikatoren">
+<!ENTITY treeviewBimiIndicators.treecol.domain.label "Domain">

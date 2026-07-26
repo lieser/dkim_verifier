@@ -72,6 +72,8 @@
 <!ENTITY display.bimi.updateMonths.label "Months">
 <!ENTITY display.bimi.addUnknownCAs.label "Save unknown CAs to database">
 <!ENTITY display.bimi.unknownCAsHint.label "Automatically added CAs are not trusted by default">
+<!ENTITY display.bimi.bimiCABtn.label "Manage BIMI CAs">
+<!ENTITY display.bimi.bimiIndicatorsBtn.label "Cached BIMI indicators">
 <!ENTITY advanced.label "高级">
 <!ENTITY debug.label "启用调试（在错误控制台中输出错误和调试信息）">
 <!ENTITY error.detailedReasons.label "Show detailed error reasons">

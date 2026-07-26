@@ -280,6 +280,15 @@
 					<checkbox preference="pref_display.bimi.addUnknownCAs"
 						  label="&display.bimi.addUnknownCAs.label;"/>
 					<label>&display.bimi.unknownCAsHint.label;</label>
+					<hbox align="center">
+						<button id="display.bimiCAs"
+								label="&display.bimi.bimiCABtn.label;"
+								oncommand="window.open('chrome://dkim_verifier/content/treeviewBimiCAs.xul', 'dkimBimi', 'chrome,resizable,centerscreen,width=900,height=300');"/>
+						<button id="display.bimiIndicators"
+								label="&display.bimi.bimiIndicatorsBtn.label;"
+								oncommand="window.open('chrome://dkim_verifier/content/treeviewBimiIndicators.xul', 'dkimBimi', 'chrome,resizable,centerscreen,width=400,height=300');"/>
+						<spacer flex="1"/>
+					</hbox>
 				</groupbox>
 			</tabpanel>
 		</tabpanels>

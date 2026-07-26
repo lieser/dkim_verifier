@@ -88,6 +88,8 @@
 <!ENTITY display.bimi.updateMonths.label "Months">
 <!ENTITY display.bimi.addUnknownCAs.label "Save unknown CAs to database">
 <!ENTITY display.bimi.unknownCAsHint.label "Automatically added CAs are not trusted by default">
+<!ENTITY display.bimi.bimiCABtn.label "Manage BIMI CAs">
+<!ENTITY display.bimi.bimiIndicatorsBtn.label "Cached BIMI indicators">
 
 
 <!ENTITY advanced.label "Haladó">

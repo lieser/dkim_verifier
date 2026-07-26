@@ -88,6 +88,8 @@
 <!ENTITY display.bimi.updateMonths.label "Monaten">
 <!ENTITY display.bimi.addUnknownCAs.label "Unbekannte CAs in Datenbank speichern">
 <!ENTITY display.bimi.unknownCAsHint.label "Den hinzugefügten CAs wird nicht automatisch vertraut">
+<!ENTITY display.bimi.bimiCABtn.label "BIMI CAs verwalten">
+<!ENTITY display.bimi.bimiIndicatorsBtn.label "Gespeicherte BIMI-Indikatoren">
 
 
 <!ENTITY advanced.label "Erweitert">

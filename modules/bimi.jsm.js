@@ -462,6 +462,7 @@ let CERTTOOLS = (function() {
 
 		testBIMICert: _testBIMICert,
 		testValidity: _testValidity,
+		testPEMformat: _testPEMformat
 	};
 
 	return that;
@@ -930,13 +931,14 @@ let BIMIDB = (function() {
 			await initDB();
 			const conn = await Sqlite.openConnection({path: BIMI_DB_NAME});
 			const certDB = Cc["@mozilla.org/security/x509certdb;1"].getService(Ci.nsIX509CertDB);
-			const cert = certDB.constructX509FromBase64(certString);
+			const derCert = CERTTOOLS.testPEMformat(certString) ? CERTTOOLS.convertPEMtoDER(certString) : certString;
+			const cert = certDB.constructX509FromBase64(derCert);
 			try {
 				let sqlRes = await conn.execute(
 					"SELECT data FROM certs\n" +
 					"WHERE\n" +
 					"  data = :certData;",
-					{ "certData": certString }
+					{ "certData": derCert }
 				);
 				// test if certificate is already in DB (then do nothing to not change the trust value or internal certs)
 				if (!sqlRes || sqlRes.length === 0) {
@@ -948,7 +950,7 @@ let BIMIDB = (function() {
 							"fingerprint": cert.sha256Fingerprint,
 							"notAfter": cert.validity.notAfter,
 							"trust": trust ? 1 : 0,
-							"b64cert": certString
+							"b64cert": derCert
 						}
 					);
 					log.debug(`Added CA with fingerprint ${cert.sha256Fingerprint}`);

@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://dkim_verifier/locale/xulstrings.dtd">
+
+<window
+	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+	id="dkim_verifier-treeviewBimiIndicators"
+	windowtype="dkim_verifier:treeviewBimiIndicators"
+	title="&treeviewbimiIndicators.title;"
+	drawtitle="true"
+	height="300"
+	width="500"
+	persist="width height screenX screenY sizemode"
+	onload="setView();">
+
+<script type="application/javascript" src="chrome://dkim_verifier/content/treeviewBimiIndicators.js"/>
+
+<tree id="my-tree" editable="false" enableColumnDrag="false" flex="1" onselect="changeSelection()">
+	<treecols>
+		<treecol id="domain" editable="false" label="&treeviewBimiIndicators.treecol.domain.label;" flex="1"/>
+	</treecols>
+	<treechildren/>
+</tree>
+
+<hbox>
+	<vbox>
+		<button id="removeIndicator"
+				label="&button.removeIndicator.label;"
+				oncommand="removeBimiIndicator()"
+				disabled="true"/>
+		<spacer flex="1"/>
+	</vbox>
+	<spacer flex="1"/>
+	<image id="my-image" height="50" width="50"/>
+</hbox>
+
+</window>
