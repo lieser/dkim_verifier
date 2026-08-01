@@ -314,7 +314,7 @@ let CERTTOOLS = (function() {
 						imageData = imageData.substring(imageData.indexOf("64,")+3);
 						// simple test, since some images are SVGZ, which can't be displayed
 						if (atob(imageData).toLowerCase().includes("</svg>")) {
-							log.debug("Found indicator image in certificate");
+							log.debug("Found logo in certificate");
 							svgImgs.push(imageData);
 						}
 					}
@@ -351,7 +351,7 @@ let CERTTOOLS = (function() {
 				logoExt.seq[0].tag.obj.tag.tag.toLowerCase() !== "a0") { // direct LogotypeData
 				return [];
 			}
-			// path to the logo information
+			// path to the indicator information
 			const logotypeDataSets = logoExt.seq[0].tag.obj.tag.obj.seq[0]; // image data
 			// loop through all image sets here
 			for (const resourceSet of logotypeDataSets.seq) {
@@ -359,7 +359,7 @@ let CERTTOOLS = (function() {
 					if (resource.seq && resource.seq[0].seq) {
 						let algo = resource.seq[0].seq[0].seq[0].oid;
 						let hash = resource.seq[0].seq[1].octstr.hex;
-						log.debug("Found indicator hash in certificate");
+						log.debug("Found logo hash in certificate");
 						hashObj.push({algo: algo, hash: hash});
 					}
 				}
@@ -627,10 +627,10 @@ let BIMI = (function() {
 			// We already check in checkBasicRequirementsForOnlineBIMI, that sdid is defined
 			let domain = String(dkimSigResults[0].sdid);
 			// Lookup BIMI indicator in cache
-			log.debug("Try to get BIMI indicator for " + domain);
+			log.debug("Try to get BIMI logo for " + domain);
 			let cachedBimiIndicator = await BIMIDB.getBimiIndicator(domain);
 			if (cachedBimiIndicator) {
-				log.debug("Got BIMI indicator from database");
+				log.debug("Got BIMI logo from database");
 				return cachedBimiIndicator;
 			}
 
@@ -784,7 +784,7 @@ let BIMIDB = (function() {
 					throw new Error("unsupported version for table 'certs'");
 				}
 
-				// table indicators
+				// table indicator
 				if (versionTable.indicators === 0) {
 					// create table
 					await conn.execute(
@@ -844,7 +844,7 @@ let BIMIDB = (function() {
 					currentDataVersion = extensionFile.lastModifiedTime;
 				}
 				if (versionTable.caData < currentDataVersion) {
-					log.debug("Update BIMI CAs");
+					log.debug("Update BIMI CAs after update");
 					// delete old internal CAs
 					await conn.execute("DELETE FROM certs WHERE internal = 1;" );
 					// insert new internal CAs
@@ -914,7 +914,7 @@ let BIMIDB = (function() {
 			let trustedCAs = [];
 			for(const res of sqlRes) {
 				trustedCAs.push(res.getResultByName("data"));
-				log.debug(`Found ${trustedCAs.length} CAs`);
+				log.debug(`Found ${trustedCAs.length} BIMI CAs`);
 			}
 			return trustedCAs;
 		},
@@ -1043,13 +1043,13 @@ let BIMIDB = (function() {
 						"  idx = :index;",
 						{ "index": sqlRes[0].getResultByName("idx") }
 					);
-					log.debug(`Found BIMI indicator for ${domain}`);
+					log.debug(`Found BIMI logo for ${domain}`);
 					if (prefs.getIntPref("updateInterval") > 0) {
 						let inserted = new Date(sqlRes[0].getResultByName("insertedAt"));
 						let today = new Date();
 						if ((today.getFullYear() - inserted.getFullYear()) * 12 + today.getMonth() - inserted.getMonth() > prefs.getIntPref("updateInterval")) {
 							bimiIndicator = null;
-							log.debug("BIMI indicator is outdated, triggering refresh...");
+							log.debug("BIMI logo is outdated, triggering refresh...");
 						}
 					}
 				}
@@ -1093,7 +1093,7 @@ let BIMIDB = (function() {
 						"  idx = :index;",
 						{ "index": indIdx, "data": bimiIndicator }
 					);
-					log.debug("Updated BIMI indicator");
+					log.debug("Updated BIMI logo");
 				} else {
 					// get next index
 					sqlRes = await conn.execute(
@@ -1110,7 +1110,7 @@ let BIMIDB = (function() {
 						"VALUES (:index, DATE('now'), DATE('now'), :data);",
 						{ "index": indIdx, "data": bimiIndicator }
 					);
-					log.debug("Added new BIMI indicator");
+					log.debug("Added new BIMI logo to database");
 				}
 				// update domain info
 				if (indIdx >= 0) {
@@ -1150,7 +1150,7 @@ let BIMIDB = (function() {
 					"  domain = :domain;",
 					{ "domain": domain.toLowerCase() }
 				);
-				log.debug(`Removed ${domain} from database`);
+				log.debug(`Removed ${domain}`);
 				let otherDomains = await conn.execute(
 					"SELECT domain FROM domains\n" +
 					"WHERE\n" +
@@ -1164,7 +1164,7 @@ let BIMIDB = (function() {
 						"  idx = :index;",
 						{ "index": indIdx }
 					);
-					log.debug("BIMI indicator is not associated with any domains, removed indicator");
+					log.debug("BIMI logo is not associated with any domains, removed logo");
 				}
 			} finally {
 				await conn.close();

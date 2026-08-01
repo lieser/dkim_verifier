@@ -80,16 +80,16 @@
 <!ENTITY display.bimi.box.label "BIMI (Brand Indicators for Message Identification)">
 <!ENTITY display.bimi.enabled.label "BIMI verwenden:">
 <!ENTITY display.bimi.enabled.value.0.label "Nein">
-<!ENTITY display.bimi.enabled.value.1.label "BIMI-Symbole aus Mail anzeigen">
-<!ENTITY display.bimi.enabled.value.2.label "BIMI-Symbole aus Mail oder Internet anzeigen">
-<!ENTITY display.bimi.cacheIndicators.label "Abgerufene BIMI-Symbole zwischenspeichern">
-<!ENTITY display.bimi.updateInterval.label "BIMI-Symbole erneut abrufen nach:">
+<!ENTITY display.bimi.enabled.value.1.label "BIMI-Logos aus E-Mail anzeigen">
+<!ENTITY display.bimi.enabled.value.2.label "BIMI-Logos aus E-Mail oder Internet anzeigen">
+<!ENTITY display.bimi.cacheIndicators.label "Abgerufene BIMI-Logos zwischenspeichern">
+<!ENTITY display.bimi.updateInterval.label "BIMI-Logos erneut abrufen nach:">
 <!ENTITY display.bimi.updateInterval.value.0.label "nie">
 <!ENTITY display.bimi.updateMonths.label "Monaten">
-<!ENTITY display.bimi.addUnknownCAs.label "Unbekannte CAs in Datenbank speichern">
-<!ENTITY display.bimi.unknownCAsHint.label "Den hinzugefügten CAs wird nicht automatisch vertraut">
-<!ENTITY display.bimi.bimiCABtn.label "BIMI CAs verwalten">
-<!ENTITY display.bimi.bimiIndicatorsBtn.label "Gespeicherte BIMI-Indikatoren">
+<!ENTITY display.bimi.addUnknownCAs.label "Unbekannte Zertifizierungsstellen speichern">
+<!ENTITY display.bimi.unknownCAsHint.label "Hinweis: Den hinzugefügten Zertifizierungsstellen wird nicht automatisch vertraut">
+<!ENTITY display.bimi.bimiCABtn.label "BIMI-Zertifizierungsstellen verwalten">
+<!ENTITY display.bimi.bimiIndicatorsBtn.label "Gespeicherte BIMI-Logos">
 
 
 <!ENTITY advanced.label "Erweitert">
