@@ -279,6 +279,24 @@ let CERTTOOLS = (function() {
 	};
 
 	/**
+	 * Extracts all alternative domains from the certificate
+	 *
+	 * @param {String} bimiCert
+	 * @returns {String[]}
+	 */
+	let _getAlternativeDomainNames = function(bimiCert) {
+		let derCert = !_testPEMformat(bimiCert) ? _convertDERtoPEM(bimiCert) : bimiCert;
+		const certObj = new RSA.X509();
+		certObj.readCertPEM(derCert);
+
+		let san = [];
+		for (const altName of certObj.getExtSubjectAltName().array) {
+			san.push(altName.dns.toLowerCase());
+		}
+		return san;
+	};
+
+	/**
 	 * Extracts embedded SVG images from BIMI certs
 	 *
 	 * For information about the Logotype extension, look at
@@ -455,6 +473,7 @@ let CERTTOOLS = (function() {
 		getEndEntitityCert: _getEndEntitityCert,
 		getBimiHashData: _getBimiHashData,
 		getBimiSVGData: _getBimiSVGData,
+		getAlternativeDomainNames: _getAlternativeDomainNames,
 
 		convertPEMtoDERArray: _convertPEMtoDERArray,
 		convertPEMtoDER: _convertPEMtoDER,
@@ -563,6 +582,21 @@ let BIMI = (function() {
 				&& toType(dkimSigResults[0].sdid) === "String";
 	};
 
+	/**
+	 * Add all non wildcard domains from a bimi cert to the database
+	 *
+	 * @param {String} bimiCert
+	 * @param {String} indicator
+	 * @returns {Promise<void>}
+	 */
+	let addAllSANtoDB = async function(bimiCert, indicator) {
+		for (const name of CERTTOOLS.getAlternativeDomainNames(bimiCert)) {
+			if (name.substring(0,2) !== "*.") {
+				await BIMIDB.addBimiIndicator(name, indicator);
+			}
+		}
+	};
+
 	let that = {
 		/**
 		* Try to get the BIMI Indicator if available.
@@ -625,7 +659,7 @@ let BIMI = (function() {
 			if (!checkBasicRequirementsForOnlineBIMI(dkimSigResults)) { return null; }
 
 			// We already check in checkBasicRequirementsForOnlineBIMI, that sdid is defined
-			let domain = String(dkimSigResults[0].sdid);
+			let domain = String(dkimSigResults[0].sdid).toLowerCase();
 			// Lookup BIMI indicator in cache
 			log.debug("Try to get BIMI logo for " + domain);
 			let cachedBimiIndicator = await BIMIDB.getBimiIndicator(domain);
@@ -666,7 +700,8 @@ let BIMI = (function() {
 			if (svgData.length > 0) {
 				let result = svgData[0];
 				if (prefs.getBoolPref("cacheIndicators")) {
-					BIMIDB.addBimiIndicator(domain, result);
+					await BIMIDB.addBimiIndicator(domain, result); // in case of a wildcard san
+					addAllSANtoDB(bimiCert, result);
 				}
 				return result;
 			}
@@ -685,7 +720,8 @@ let BIMI = (function() {
 					if (hashMatch.length > 0) {
 						let result = btoa(bimiIndicator);
 						if (prefs.getBoolPref("cacheIndicators")) {
-							BIMIDB.addBimiIndicator(domain, result);
+							await BIMIDB.addBimiIndicator(domain, result); // in case of a wildcard san
+							addAllSANtoDB(bimiCert, result);
 						}
 						return result;
 					}
