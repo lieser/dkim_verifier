@@ -27,14 +27,15 @@ function changeSelection() {
 	let internalCol = columns.getNamedColumn("internal");
 	let removeCABtn = document.getElementById("removeCABtn");
 	let setCATrustBtn = document.getElementById("setCATrustBtn");
-	let modifiableSelected = false;
+	let selected = false;
 	for (let i=0; i<treeView.rowCount; i++) {
 		if (treeView.selection.isSelected(i) && treeView.getCellText(i, internalCol) === "0") {
-			modifiableSelected = true;
+			selected = true;
+			break; // in case of a multi selection
 		}
 	}
-	removeCABtn.disabled = !modifiableSelected;
-	setCATrustBtn.disabled = !modifiableSelected;
+	removeCABtn.disabled = !selected;
+	setCATrustBtn.disabled = !selected;
 }
 
 async function addBimiCA() {
@@ -66,7 +67,7 @@ async function addBimiCA() {
 		const certObj = certDB.constructX509FromBase64(base64Str);
 		if (certObj.certType === Ci.nsIX509Cert.CA_CERT) {
 			await BIMIDB.addCA(base64Str, true);
-			treeView.update();
+			treeView.update(1);
 			changeSelection();
 		}
 	}
@@ -76,13 +77,17 @@ async function removeBimiCA() {
 	"use strict";
 	let internalCol = columns.getNamedColumn("internal");
 	let fingerprintCol = columns.getNamedColumn("fingerprint");
+	let toRemove = [];
 	for (let i=0; i<treeView.rowCount; i++) {
 		if (treeView.selection.isSelected(i) && treeView.getCellText(i, internalCol) === "0") {
 			let fingerprint = treeView.getCellText(i, fingerprintCol);
-			await BIMIDB.removeCA(fingerprint);
+			toRemove.push(fingerprint);
 		}
 	}
-	treeView.update();
+	for (const ca of toRemove) {
+		await BIMIDB.removeCA(ca);
+	}
+	treeView.update(-1 * toRemove.length);
 	changeSelection();
 }
 
@@ -98,5 +103,5 @@ async function setBimiCATrust() {
 			await BIMIDB.setCATrust(fingerprint, newTrustValue);
 		}
 	}
-	treeView.update();
+	treeView.update(0);
 }
