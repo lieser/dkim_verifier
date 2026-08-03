@@ -91,7 +91,7 @@ let CERTTOOLS = (function() {
 		 * Converts a string to an array bytes
 		 * characters >255 have their hi-byte silently ignored.
 		 */
-		function rstr2byteArray(str) {
+		function __rstr2byteArray(str) {
 			const res = new Array(str.length);
 			for (let i = 0; i < str.length; i++) {
 				res[i] = str.charCodeAt(i) & 0xFF;
@@ -100,18 +100,18 @@ let CERTTOOLS = (function() {
 		}
 
 		// return the two-digit hexadecimal code for a byte
-		function toHexString(charCode) {
+		function __toHexString(charCode) {
 			return ("0" + charCode.toString(16)).slice(-2);
 		}
 
 		const hasher = Components.classes["@mozilla.org/security/hash;1"].createInstance(Components.interfaces.nsICryptoHash);
 		hasher.initWithString(hashAlgorithm);
-		const data = rstr2byteArray(str);
+		const data = __rstr2byteArray(str);
 		hasher.update(data, data.length);
 		// true for base-64, false for binary data output
 		let hash = hasher.finish(false);
 		// convert the binary hash data to a hex string.
-		hash = hash.split("").map(e => toHexString(e.charCodeAt(0))).join("");
+		hash = hash.split("").map(e => __toHexString(e.charCodeAt(0))).join("");
 		return hash;
 	};
 
@@ -498,7 +498,7 @@ let BIMI = (function() {
 	 * @param {String} bimiRecord BIMI DNS record
 	 * @returns {BimiRecord|null} Parsed BIMI DNS record
 	 */
-	let parseBimiRecord = function(bimiRecord) {
+	let _parseBimiRecord = function(bimiRecord) {
 
 		/** @type {BimiRecord} */
 		const res = {
@@ -530,7 +530,7 @@ let BIMI = (function() {
 	 * @param {String} url location
 	 * @returns {Promise<String|undefined>}
 	 */
-	let fetchTextResource = async function fetchTextResource(url) {
+	let _fetchTextResource = async function _fetchTextResource(url) {
 		let httpResponse;
 		try {
 			httpResponse = await new Promise(function (resolve, reject) {
@@ -575,11 +575,23 @@ let BIMI = (function() {
 	 * @param {dkimSigResultV2[]} dkimSigResults
 	 * @returns {Boolean}
 	 */
-	let checkBasicRequirementsForOnlineBIMI = function(dkimSigResults) {
+	let _checkBasicRequirementsForOnlineBIMI = function(dkimSigResults) {
 		return prefs.getIntPref("enable") > PREF.BIMI.OFF
 				&& dkimSigResults.length > 0
 				&& dkimSigResults[0].result === "SUCCESS"
 				&& toType(dkimSigResults[0].sdid) === "String";
+	};
+
+	/*
+	 * Computes a hash of "text" using the algo from hashElement
+	 * and compares it to the hash in hashElement
+	 *
+	 * @param {String} text cleartext to compare the hash
+	 * @param {Object} hashElement has the properties algo and hash
+	 * @returns {Boolean}
+	 */
+	let _compareHash = function(text, hashElement) {
+		return stringEqual(CERTTOOLS.getHash(text, hashElement.algo), hashElement.hash);
 	};
 
 	/**
@@ -589,7 +601,7 @@ let BIMI = (function() {
 	 * @param {String} indicator
 	 * @returns {Promise<void>}
 	 */
-	let addAllSANtoDB = async function(bimiCert, indicator) {
+	let _addAllSANtoDB = async function _addAllSANtoDB(bimiCert, indicator) {
 		for (const name of CERTTOOLS.getAlternativeDomainNames(bimiCert)) {
 			if (name.substring(0,2) !== "*.") {
 				await BIMIDB.addBimiIndicator(name, indicator);
@@ -656,7 +668,7 @@ let BIMI = (function() {
 		*/
 		getBimiIndicatorOnline: async function getBimiIndicatorOnline(dkimSigResults) {
 			// Only try to fetch BIMI information if enabled and DKIM is valid
-			if (!checkBasicRequirementsForOnlineBIMI(dkimSigResults)) { return null; }
+			if (!_checkBasicRequirementsForOnlineBIMI(dkimSigResults)) { return null; }
 
 			// We already check in checkBasicRequirementsForOnlineBIMI, that sdid is defined
 			let domain = String(dkimSigResults[0].sdid).toLowerCase();
@@ -675,7 +687,7 @@ let BIMI = (function() {
 				let dnsResult = await DNS.resolve(`default._bimi.${domain}`, "TXT");
 				if (dnsResult && dnsResult.data) {
 					let bimiRecord = dnsResult.data[0];
-					parsedBimiRecord = parseBimiRecord(bimiRecord);
+					parsedBimiRecord = _parseBimiRecord(bimiRecord);
 				}
 			} catch (error) {
 				log.error(`Error resolving default._bimi.${domain}`);
@@ -684,7 +696,7 @@ let BIMI = (function() {
 			// Only try to get the indicator if authorization information is present
 			if (!parsedBimiRecord || !parsedBimiRecord.authorization) { return null; }
 
-			let pemCertChain = await fetchTextResource(parsedBimiRecord.authorization);
+			let pemCertChain = await _fetchTextResource(parsedBimiRecord.authorization);
 
 			// Testing certificates...
 			if (!pemCertChain) { return null; }
@@ -701,7 +713,7 @@ let BIMI = (function() {
 				let result = svgData[0];
 				if (prefs.getBoolPref("cacheIndicators")) {
 					await BIMIDB.addBimiIndicator(domain, result); // in case of a wildcard san
-					addAllSANtoDB(bimiCert, result);
+					_addAllSANtoDB(bimiCert, result);
 				}
 				return result;
 			}
@@ -709,19 +721,14 @@ let BIMI = (function() {
 			// Fetching BIMI indicator from internet and compare to hash
 			const svgHash = CERTTOOLS.getBimiHashData(bimiCert);
 			if (svgHash.length > 0) {
-				const bimiIndicator = await fetchTextResource(parsedBimiRecord.location);
+				const bimiIndicator = await _fetchTextResource(parsedBimiRecord.location);
 				if (bimiIndicator) {
-					let hashMatch = svgHash.filter(entry =>
-													stringEqual(
-														CERTTOOLS.getHash(bimiIndicator, entry.algo),
-														entry.hash
-													)
-											);
+					let hashMatch = svgHash.filter(entry => _compareHash(bimiIndicator, entry));
 					if (hashMatch.length > 0) {
 						let result = btoa(bimiIndicator);
 						if (prefs.getBoolPref("cacheIndicators")) {
 							await BIMIDB.addBimiIndicator(domain, result); // in case of a wildcard san
-							addAllSANtoDB(bimiCert, result);
+							_addAllSANtoDB(bimiCert, result);
 						}
 						return result;
 					}
@@ -749,7 +756,7 @@ let BIMIDB = (function() {
 	 * @returns {Promise<boolean>} initialized
 	 * @throws {Error}
 	 */
-	let initDB = function() {
+	let _initDB = function() {
 
 		if (dbInitialized) {
 			return dbInitializedDefer.promise;
@@ -921,7 +928,7 @@ let BIMIDB = (function() {
 		return dbInitializedDefer.promise;
 	};
 
-	initDB();
+	_initDB();
 
 	let that = {
 		/**
@@ -931,7 +938,7 @@ let BIMIDB = (function() {
 		 */
 		getTrustedCAs: async function getTrustedCAs() {
 			// wait for DB init
-			await initDB();
+			await _initDB();
 			const conn = await Sqlite.openConnection({path: BIMI_DB_NAME});
 
 			let sqlRes = [];
@@ -950,8 +957,8 @@ let BIMIDB = (function() {
 			let trustedCAs = [];
 			for(const res of sqlRes) {
 				trustedCAs.push(res.getResultByName("data"));
-				log.debug(`Found ${trustedCAs.length} BIMI CAs`);
 			}
+			log.debug(`Found ${trustedCAs.length} BIMI CAs`);
 			return trustedCAs;
 		},
 
@@ -964,7 +971,7 @@ let BIMIDB = (function() {
 		 */
 		addCA: async function addCA(certString, trust) {
 			// wait for DB init
-			await initDB();
+			await _initDB();
 			const conn = await Sqlite.openConnection({path: BIMI_DB_NAME});
 			const certDB = Cc["@mozilla.org/security/x509certdb;1"].getService(Ci.nsIX509CertDB);
 			const derCert = CERTTOOLS.testPEMformat(certString) ? CERTTOOLS.convertPEMtoDER(certString) : certString;
@@ -1006,7 +1013,7 @@ let BIMIDB = (function() {
 		 */
 		removeCA: async function removeCA(fingerprint) {
 			// wait for DB init
-			await initDB();
+			await _initDB();
 			const conn = await Sqlite.openConnection({path: BIMI_DB_NAME});
 
 			try {
@@ -1031,7 +1038,7 @@ let BIMIDB = (function() {
 		 */
 		setCATrust: async function setCATrust(fingerprint, trust) {
 			// wait for DB init
-			await initDB();
+			await _initDB();
 			const conn = await Sqlite.openConnection({path: BIMI_DB_NAME});
 
 			try {
@@ -1057,7 +1064,7 @@ let BIMIDB = (function() {
 		 */
 		getBimiIndicator: async function getBimiIndicator(domain) {
 			// wait for DB init
-			await initDB();
+			await _initDB();
 			const conn = await Sqlite.openConnection({path: BIMI_DB_NAME});
 
 			let bimiIndicator = null;
@@ -1104,7 +1111,7 @@ let BIMIDB = (function() {
 		 */
 		addBimiIndicator: async function addBimiIndicator(domain, bimiIndicator) {
 			// wait for DB init
-			await initDB();
+			await _initDB();
 			const conn = await Sqlite.openConnection({path: BIMI_DB_NAME});
 
 			try {
@@ -1168,7 +1175,7 @@ let BIMIDB = (function() {
 		 */
 		removeBimiIndicator: async function removeBimiIndicator(domain) {
 			// wait for DB init
-			await initDB();
+			await _initDB();
 			const conn = await Sqlite.openConnection({path: BIMI_DB_NAME});
 
 			try {
