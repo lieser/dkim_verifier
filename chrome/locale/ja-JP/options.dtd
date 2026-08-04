@@ -83,6 +83,7 @@
 <!ENTITY error.policy.key_insecure.treatAs.label "DNSSEC によりセキュアにされていない DKIM キーを:">
 <!ENTITY error.algorithm.sign.rsa-sha1.treatAs.label "rsa-sha1 署名アルゴリズムを:">
 <!ENTITY error.algorithm.rsa.weakKeyLength.treatAs "弱い RSA キー （&lt;2048 ビット） を:">
+<!ENTITY error.bodylength.overflow.treatAs.label "Treat non entirely signed mail body as:">
 
 <!ENTITY error.treatAs.value.0.label "エラーとする">
 <!ENTITY error.treatAs.value.1.label "警告とする">

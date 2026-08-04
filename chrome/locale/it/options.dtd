@@ -83,6 +83,7 @@
 <!ENTITY error.policy.key_insecure.treatAs.label "Considera chiavi DKIM non firmate da DNSSEC come:">
 <!ENTITY error.algorithm.sign.rsa-sha1.treatAs.label "Considera algoritmo di firma rsa-sha1 come:">
 <!ENTITY error.algorithm.rsa.weakKeyLength.treatAs "Considera chiavi RSA deboli (&lt;2048 bit) come:">
+<!ENTITY error.bodylength.overflow.treatAs.label "Treat non entirely signed mail body as:">
 
 <!ENTITY error.treatAs.value.0.label "errore">
 <!ENTITY error.treatAs.value.1.label "avviso">

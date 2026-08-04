@@ -83,6 +83,7 @@
 <!ENTITY error.policy.key_insecure.treatAs.label "Kezelje a DNSSEC által nem biztosított DKIM kulcsot mint:">
 <!ENTITY error.algorithm.sign.rsa-sha1.treatAs.label "Kezelje az RSA-SHA1 jel algoritmust mint:">
 <!ENTITY error.algorithm.rsa.weakKeyLength.treatAs "Kezelje a gyenge RSA kulcsokat (&lt;2048 bites) mint:">
+<!ENTITY error.bodylength.overflow.treatAs.label "Treat non entirely signed mail body as:">
 
 <!ENTITY error.treatAs.value.0.label "hiba">
 <!ENTITY error.treatAs.value.1.label "figyelmeztetés">

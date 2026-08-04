@@ -83,6 +83,7 @@
 <!ENTITY error.policy.key_insecure.treatAs.label "Behandle nicht durch DNSSEC gesicherte DKIM-Schlüssel als:">
 <!ENTITY error.algorithm.sign.rsa-sha1.treatAs.label "Behandle rsa-sha1-Signaturalgorithmus als:">
 <!ENTITY error.algorithm.rsa.weakKeyLength.treatAs "Behandle schwachen RSA-Schlüssel (&lt;2048 bits) als:">
+<!ENTITY error.bodylength.overflow.treatAs.label "Behandle nicht vollständig signierten E-Mail-Inhalt als:">
 
 <!ENTITY error.treatAs.value.0.label "Fehler">
 <!ENTITY error.treatAs.value.1.label "Warnung">

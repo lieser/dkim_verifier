@@ -28,7 +28,7 @@
 /* eslint strict: ["warn", "function"] */
 /* global Components, Services */
 /* global Logging, Key, Policy, msgReader, rfcParser, PREF */
-/* global dkimStrings, addrIsInDomain2, domainIsInDomain, stringEndsWith, stringEqual, writeStringToTmpFile, toType, DKIM_SigError, DKIM_TempError, DKIM_Error, copy */
+/* global addrIsInDomain2, domainIsInDomain, stringEndsWith, stringEqual, writeStringToTmpFile, toType, DKIM_SigError, DKIM_TempError, DKIM_Error, copy */
 /* exported EXPORTED_SYMBOLS, Verifier */
 
 // @ts-expect-error
@@ -980,9 +980,18 @@ var Verifier = (function() {
 				throw new DKIM_SigError("DKIM_SIGERROR_TOOLARGE_L");
 			} else if (DKIMSignature.l < bodyCanon.length){
 				// length tag smaller when body size
-				DKIMSignature.warnings.push({name: "DKIM_SIGWARNING_SMALL_L"});
-				log.debug("Warning: DKIM_SIGWARNING_SMALL_L (" +
-					dkimStrings.getString("DKIM_SIGWARNING_SMALL_L") + ")");
+				switch (prefs.getIntPref("error.bodylength.tooLarge.treatAs")) {
+					case PREF.TREATAS.ERROR:
+						throw new DKIM_SigError("DKIM_SIGWARNING_SMALL_L");
+					case PREF.TREATAS.WARNING:
+						DKIMSignature.warnings.push({name: "DKIM_SIGWARNING_SMALL_L"});
+						log.debug("Warning: DKIM_SIGWARNING_SMALL_L");
+						break;
+					case PREF.TREATAS.NOTHING:
+						break;
+					default:
+						throw new Error("invalid error.bodylength.tooLarge.treatAs");
+				}
 			}
 
 			// truncated body to the length specified in the "l=" tag
