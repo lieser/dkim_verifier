@@ -42,9 +42,9 @@
 		<preference id="pref_error.algorithm.rsa.weakKeyLength.treatAs"
 		            name="extensions.dkim_verifier.error.algorithm.rsa.weakKeyLength.treatAs"
 		            type="int"/>
-		<preference id="pref_error.bodylength.overflow.treatAs"
-		            name="extensions.dkim_verifier.error.bodylength.overflow.treatAs"
-		            type="int"/>
+		<preference id="pref_error.bodylength.overflow.asWarning"
+		            name="extensions.dkim_verifier.error.bodylength.overflow.asWarning"
+		            type="bool"/>
 		<preference id="pref_error.sanitizeSubject"
 		            name="extensions.dkim_verifier.error.sanitizeSubject"
 		            type="bool"/>
@@ -64,17 +64,8 @@
 	          label="&arh.relaxedParsing.label;"/>
 	<checkbox preference="pref_error.sanitizeSubject"
 	          label="&error.sanitizeSubject.label;"/>
-	<hbox align="center">
-		<label>&error.bodylength.overflow.treatAs.label;</label>
-		<menulist preference="pref_error.bodylength.overflow.treatAs">
-			<menupopup>
-				<menuitem label="&error.treatAs.value.0.label;" value="0"/>
-				<menuitem label="&error.treatAs.value.1.label;" value="1"/>
-				<menuitem label="&error.treatAs.value.2.label;" value="2"/>
-			</menupopup>
-		</menulist>
-		<spacer/>
-	</hbox>
+	<checkbox preference="pref_error.bodylength.overflow.asWarning"
+			  label="&error.bodylength.overflow.asWarning.label;"/>
 	<hbox align="center">
 		<label>&error.illformed_i.treatAs.label;</label>
 		<menulist preference="pref_error.illformed_i.treatAs">

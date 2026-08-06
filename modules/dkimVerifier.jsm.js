@@ -980,17 +980,11 @@ var Verifier = (function() {
 				throw new DKIM_SigError("DKIM_SIGERROR_TOOLARGE_L");
 			} else if (DKIMSignature.l < bodyCanon.length){
 				// length tag smaller when body size
-				switch (prefs.getIntPref("error.bodylength.tooLarge.treatAs")) {
-					case PREF.TREATAS.ERROR:
-						throw new DKIM_SigError("DKIM_SIGWARNING_SMALL_L");
-					case PREF.TREATAS.WARNING:
-						DKIMSignature.warnings.push({name: "DKIM_SIGWARNING_SMALL_L"});
-						log.debug("Warning: DKIM_SIGWARNING_SMALL_L");
-						break;
-					case PREF.TREATAS.NOTHING:
-						break;
-					default:
-						throw new Error("invalid error.bodylength.tooLarge.treatAs");
+				if (prefs.getBoolPref("error.bodylength.overflow.asWarning")) {
+					DKIMSignature.warnings.push({name: "DKIM_SIGWARNING_SMALL_L"});
+					log.debug("Warning: DKIM_SIGWARNING_SMALL_L");
+				} else {
+					throw new DKIM_SigError("DKIM_SIGWARNING_SMALL_L");
 				}
 			}
 
