@@ -147,8 +147,8 @@ pref("extensions.dkim_verifier.display.keySecure", true);
 pref("extensions.dkim_verifier.arh.replaceAddonResult", true);
 pref("extensions.dkim_verifier.arh.showDKIMResults", true);
 pref("extensions.dkim_verifier.arh.relaxedParsing", false);
-// 0: error, 1: warning, 2: ignore
 pref("extensions.dkim_verifier.error.bodylength.overflow.asWarning", false);
+// 0: error, 1: warning, 2: ignore
 pref("extensions.dkim_verifier.error.illformed_i.treatAs", 1);
 pref("extensions.dkim_verifier.error.illformed_s.treatAs", 1);
 pref("extensions.dkim_verifier.error.policy.key_insecure.treatAs", 2);
