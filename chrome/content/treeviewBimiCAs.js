@@ -9,8 +9,12 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
+var DKIM_Verifier = {};
+Cu.import("resource://dkim_verifier/logging.jsm.js", DKIM_Verifier);
 Cu.import("resource://dkim_verifier/SQLiteTreeView.jsm.js");
 Cu.import("resource://dkim_verifier/bimi.jsm.js");
+
+var log = DKIM_Verifier.Logging.getLogger("Options");
 
 var treeView;
 var columns;
@@ -48,14 +52,19 @@ async function addBimiCA() {
 	fileDlg.show();
 
 	if (fileDlg.file) {
-		const inputStream = Cc["@mozilla.org/network/file-input-stream;1"].createInstance(Ci.nsIFileInputStream);
-		inputStream.init(fileDlg.file, 1, 0, 0);
-		const binaryStream = Cc["@mozilla.org/binaryinputstream;1"].createInstance(Ci.nsIBinaryInputStream);
-		binaryStream.setInputStream(inputStream);
-
-		let bytes = binaryStream.readByteArray(inputStream.available());
-		binaryStream.close();
-		inputStream.close();
+		let bytes;
+		try {
+			const inputStream = Cc["@mozilla.org/network/file-input-stream;1"].createInstance(Ci.nsIFileInputStream);
+			inputStream.init(fileDlg.file, 1, 0, 0);
+			const binaryStream = Cc["@mozilla.org/binaryinputstream;1"].createInstance(Ci.nsIBinaryInputStream);
+			binaryStream.setInputStream(inputStream);
+			bytes = binaryStream.readByteArray(inputStream.available());
+			binaryStream.close();
+			inputStream.close();
+		} catch (error) {
+			log.error("Error reading certificate from file", error);
+			return;
+		}
 
 		let binaryString = String.fromCharCode.apply(null, bytes);
 		let base64Str = binaryString.match(/-----BEGIN [A-Z0-9 ]+-----/) ? binaryString : btoa(binaryString);
@@ -64,11 +73,15 @@ async function addBimiCA() {
 		base64Str = base64Str.replace(/\s+/g, '');
 
 		const certDB = Cc["@mozilla.org/security/x509certdb;1"].getService(Ci.nsIX509CertDB);
-		const certObj = certDB.constructX509FromBase64(base64Str);
-		if (certObj.certType === Ci.nsIX509Cert.CA_CERT) {
-			await BIMIDB.addCA(base64Str, true);
-			treeView.update(1);
-			changeSelection();
+		try {
+			const certObj = certDB.constructX509FromBase64(base64Str);
+			if (certObj.certType === Ci.nsIX509Cert.CA_CERT) {
+				await BIMIDB.addCA(base64Str, true);
+				treeView.update(1);
+				changeSelection();
+			}
+		} catch (error) {
+			log.error("The certificate file is corrupt", error);
 		}
 	}
 }

@@ -210,7 +210,13 @@ let CERTTOOLS = (function() {
 		for (const cert of certArray) {
 			const certDB = Cc["@mozilla.org/security/x509certdb;1"].getService(Ci.nsIX509CertDB);
 			const derCert = _testPEMformat(cert) ? _convertPEMtoDER(cert) : cert;
-			const certObj = certDB.constructX509FromBase64(derCert);
+			let certObj;
+			try {
+				certObj = certDB.constructX509FromBase64(derCert);
+			} catch (error) {
+				log.error("The certificate data is corrupt", error);
+				return null;
+			}
 			// an end entity is not a CA
 			// @ts-expect-error
 			if (certObj.certType !== Ci.nsIX509Cert.CA_CERT) {
@@ -234,7 +240,12 @@ let CERTTOOLS = (function() {
 		// we need a certificate in DER format
 		let derCert = !_testPEMformat(bimiCert) ? _convertDERtoPEM(bimiCert) : bimiCert;
 		const certObj = new RSA.X509();
-		certObj.readCertPEM(derCert);
+		try {
+			certObj.readCertPEM(derCert);
+		} catch (error) {
+			log.error("The certificate data is corrupt", error);
+			return false;
+		}
 		let isBIMI = false;
 		let isValidForDomain = false;
 		// Check for ExtendedKeyUsage => BIMI
@@ -287,8 +298,12 @@ let CERTTOOLS = (function() {
 	let _getAlternativeDomainNames = function(bimiCert) {
 		let derCert = !_testPEMformat(bimiCert) ? _convertDERtoPEM(bimiCert) : bimiCert;
 		const certObj = new RSA.X509();
-		certObj.readCertPEM(derCert);
-
+		try {
+			certObj.readCertPEM(derCert);
+		} catch (error) {
+			log.error("The certificate data is corrupt", error);
+			return [];
+		}
 		let san = [];
 		for (const altName of certObj.getExtSubjectAltName().array) {
 			san.push(altName.dns.toLowerCase());
@@ -309,7 +324,12 @@ let CERTTOOLS = (function() {
 		const BIMI_LOGOTYPE_OID = "1.3.6.1.5.5.7.1.12";
 		const derCert = !_testPEMformat(bimiCert) ? _convertDERtoPEM(bimiCert) : bimiCert;
 		const certObj = new RSA.X509();
-		certObj.readCertPEM(derCert);
+		try {
+			certObj.readCertPEM(derCert);
+		} catch (error) {
+			log.error("The certificate data is corrupt", error);
+			return [];
+		}
 		let logoExtHex = certObj.getCriticalExtV(BIMI_LOGOTYPE_OID);
 		if (!logoExtHex) { return []; }
 		const logoExt = RSA.ASN1HEX.parse(logoExtHex[0]);
@@ -357,7 +377,12 @@ let CERTTOOLS = (function() {
 		const BIMI_LOGOTYPE_OID = "1.3.6.1.5.5.7.1.12";
 		const derCert = !_testPEMformat(bimiCert) ? _convertDERtoPEM(bimiCert) : bimiCert;
 		const certObj = new RSA.X509();
-		certObj.readCertPEM(derCert);
+		try {
+			certObj.readCertPEM(derCert);
+		} catch (error) {
+			log.error("The certificate data is corrupt", error);
+			return [];
+		}
 		const logoExtHex = certObj.getCriticalExtV(BIMI_LOGOTYPE_OID);
 		if (!logoExtHex) { return []; }
 		const logoExt = RSA.ASN1HEX.parse(logoExtHex[0]);
@@ -432,7 +457,13 @@ let CERTTOOLS = (function() {
 		// endEntity === null should never happen in a PKI scenario, as it means any cert is a CA
 		endEntity = endEntity ? endEntity : certArray[0];
 		endEntity = _testPEMformat(endEntity) ? _convertPEMtoDER(endEntity) : endEntity;
-		const endEntityObj = certDB.constructX509FromBase64(endEntity);
+		let endEntityObj;
+		try {
+			endEntityObj = certDB.constructX509FromBase64(endEntity);
+		} catch (error) {
+			log.error("The certificate data is corrupt", error);
+			return false;
+		}
 		const certChain = endEntityObj.getChain().enumerate();
 		let topCert;
 		// find the root CA
@@ -896,7 +927,13 @@ let BIMIDB = (function() {
 						"VALUES (:cn, :fingerprint, :notAfter, 1, 1, :b64cert);",
 						bimiCAs.CAList.map(
 							function (b64cert) {
-								const cert=certDB.constructX509FromBase64(b64cert);
+								let cert;
+								try {
+									cert = certDB.constructX509FromBase64(b64cert);
+								} catch (error) {
+									log.error("The certificate data is corrupt", error);
+									return {};
+								}
 								return {
 									"cn" : cert.commonName,
 									"fingerprint" : cert.sha256Fingerprint,
@@ -975,7 +1012,13 @@ let BIMIDB = (function() {
 			const conn = await Sqlite.openConnection({path: BIMI_DB_NAME});
 			const certDB = Cc["@mozilla.org/security/x509certdb;1"].getService(Ci.nsIX509CertDB);
 			const derCert = CERTTOOLS.testPEMformat(certString) ? CERTTOOLS.convertPEMtoDER(certString) : certString;
-			const cert = certDB.constructX509FromBase64(derCert);
+			let cert;
+			try {
+				cert = certDB.constructX509FromBase64(derCert);
+			} catch (error) {
+				log.error("The certificate data is corrupt", error);
+				return;
+			}
 			try {
 				let sqlRes = await conn.execute(
 					"SELECT data FROM certs\n" +
