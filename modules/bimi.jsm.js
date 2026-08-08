@@ -919,29 +919,32 @@ let BIMIDB = (function() {
 				}
 				if (versionTable.caData < currentDataVersion) {
 					log.debug("Update BIMI CAs after update");
+					// create new internal CA objects
+					let newInternalCAs = bimiCAs.CAList.map(
+						function (b64cert) {
+							let cert;
+							try {
+								cert = certDB.constructX509FromBase64(b64cert);
+							} catch (error) {
+								log.error("Internal certificate data is corrupt", error);
+								return null;
+							}
+							return {
+								"cn" : cert.commonName,
+								"fingerprint" : cert.sha256Fingerprint,
+								"notAfter" : cert.validity.notAfter,
+								"b64cert" : b64cert
+							};
+						}
+					);
+					newInternalCAs = newInternalCAs.filter(el => el !== null);
 					// delete old internal CAs
-					await conn.execute("DELETE FROM certs WHERE internal = 1;" );
+					await conn.execute("DELETE FROM certs WHERE internal = 1;");
 					// insert new internal CAs
 					await conn.execute(
-						"INSERT INTO certs (commonName, fingerprint, expiresOn, trusted, internal, data)\n" +
+						"INSERT OR REPLACE INTO certs (commonName, fingerprint, expiresOn, trusted, internal, data)\n" +
 						"VALUES (:cn, :fingerprint, :notAfter, 1, 1, :b64cert);",
-						bimiCAs.CAList.map(
-							function (b64cert) {
-								let cert;
-								try {
-									cert = certDB.constructX509FromBase64(b64cert);
-								} catch (error) {
-									log.error("The certificate data is corrupt", error);
-									return {};
-								}
-								return {
-									"cn" : cert.commonName,
-									"fingerprint" : cert.sha256Fingerprint,
-									"notAfter" : cert.validity.notAfter,
-									"b64cert" : b64cert
-								};
-							}
-						)
+						newInternalCAs
 					);
 					// update data version number
 					await conn.execute(
@@ -997,6 +1000,34 @@ let BIMIDB = (function() {
 			}
 			log.debug(`Found ${trustedCAs.length} BIMI CAs`);
 			return trustedCAs;
+		},
+
+		/**
+		 * Gets a specific CA certificate
+		 *
+		 * @param {String} fingerprint
+		 * @returns {Promise<String|null>}
+		 */
+		getCA: async function getCA(fingerprint) {
+			// wait for DB init
+			await _initDB();
+			const conn = await Sqlite.openConnection({path: BIMI_DB_NAME});
+
+			let sqlRes = [];
+			try {
+				sqlRes = await conn.execute(
+					"SELECT data FROM certs\n" +
+					"WHERE\n" +
+					"  fingerprint = :fingerprint;",
+					{ "fingerprint": fingerprint }
+				);
+			} finally {
+				await conn.close();
+			}
+			if (sqlRes.length > 0) {
+				return sqlRes[0].getResultByName("data");
+			}
+			return null;
 		},
 
 		/**

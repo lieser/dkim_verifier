@@ -25,17 +25,15 @@ async function changeSelection() {
 	let removeBtn = document.getElementById("removeIndicator");
 	let domainCol = columns.getNamedColumn("domain");
 	let imageEl = document.getElementById("my-image");
-	let selected = false;
 	imageEl.src = "";
 	for (let i=0; i<treeView.rowCount; i++) {
 		if (treeView.selection.isSelected(i)) {
 			let domain = treeView.getCellText(i, domainCol);
 			imageEl.src = "data:image/svg+xml;base64," + await BIMIDB.getBimiIndicator(domain);
-			selected = true;
 			break; // in case of a multi selection
 		}
 	}
-	removeBtn.disabled = !selected;
+	removeBtn.disabled = treeView.selection.count === 0;
 }
 
 async function removeBimiIndicator() {

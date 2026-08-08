@@ -3,7 +3,7 @@
 /* eslint strict: ["warn", "function"] */
 /* global Components */
 /* global BIMIDB, SQLiteTreeView */
-/* exported setView, changeSelection, addBimiCA, removeBimiCA, setBimiCATrust */
+/* exported setView, changeSelection, addBimiCA, removeBimiCA, setBimiCATrust, viewDetails */
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -31,15 +31,17 @@ function changeSelection() {
 	let internalCol = columns.getNamedColumn("internal");
 	let removeCABtn = document.getElementById("removeCABtn");
 	let setCATrustBtn = document.getElementById("setCATrustBtn");
-	let selected = false;
+	let viewDetailsBtn = document.getElementById("viewDetailsBtn");
+	let customSelected = false;
 	for (let i=0; i<treeView.rowCount; i++) {
 		if (treeView.selection.isSelected(i) && treeView.getCellText(i, internalCol) === "0") {
-			selected = true;
+			customSelected = true;
 			break; // in case of a multi selection
 		}
 	}
-	removeCABtn.disabled = !selected;
-	setCATrustBtn.disabled = !selected;
+	removeCABtn.disabled = !customSelected;
+	setCATrustBtn.disabled = !customSelected;
+	viewDetailsBtn.disabled = treeView.selection.count === 0;
 }
 
 async function addBimiCA() {
@@ -117,4 +119,26 @@ async function setBimiCATrust() {
 		}
 	}
 	treeView.update(0);
+}
+
+async function viewDetails() {
+	"use strict";
+	let fingerprintCol = columns.getNamedColumn("fingerprint");
+	for (let i=0; i<treeView.rowCount; i++) {
+		if (treeView.selection.isSelected(i)) {
+			let fingerprint = treeView.getCellText(i, fingerprintCol);
+			const certData = await BIMIDB.getCA(fingerprint);
+			if (certData) {
+				const certDialogs = Cc["@mozilla.org/nsCertificateDialogs;1"].getService(Ci.nsICertificateDialogs);
+				const certDB = Cc["@mozilla.org/security/x509certdb;1"].getService(Ci.nsIX509CertDB);
+				try {
+					const certObj = certDB.constructX509FromBase64(certData);
+					certDialogs.viewCert(window, certObj);
+				} catch (error) {
+					log.error("The certificate file is corrupt", error);
+				}
+				break;
+			}
+		}
+	}
 }

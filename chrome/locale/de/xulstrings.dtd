@@ -43,6 +43,7 @@
 <!ENTITY button.addCA.label "Hinzufügen">
 <!ENTITY button.removeCA.label "Entfernen">
 <!ENTITY button.trustCA.label "Vertrauen ändern">
+<!ENTITY button.details.label "Details anzeigen">
 <!ENTITY button.removeIndicator.label "Logo entfernen">
 
 <!ENTITY treeviewBimiCAs.title "BIMI-Zertifizierungsstellen verwalten">

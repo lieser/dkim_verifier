@@ -36,6 +36,7 @@
 <!ENTITY button.addCA.label "Add...">
 <!ENTITY button.removeCA.label "Remove">
 <!ENTITY button.trustCA.label "Change trust">
+<!ENTITY button.details.label "View details">
 <!ENTITY button.removeIndicator.label "Remove logo">
 
 <!ENTITY treeviewBimiCAs.title "Manage BIMI CAs">

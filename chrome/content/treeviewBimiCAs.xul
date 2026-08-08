@@ -41,6 +41,10 @@
 			label="&button.trustCA.label;"
 	        oncommand="setBimiCATrust()"
 			disabled="true"/>
+	<button id="viewDetailsBtn"
+			label="&button.details.label;"
+	        oncommand="viewDetails()"
+			disabled="true"/>
 	<spacer/>
 </hbox>
 
