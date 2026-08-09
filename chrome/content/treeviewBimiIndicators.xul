@@ -23,14 +23,11 @@
 	<treechildren/>
 </tree>
 
-<hbox>
-	<vbox>
-		<button id="removeIndicator"
-				label="&button.removeIndicator.label;"
-				oncommand="removeBimiIndicator()"
-				disabled="true"/>
-		<spacer flex="1"/>
-	</vbox>
+<hbox align="center">
+	<button id="removeIndicator"
+			label="&button.removeIndicator.label;"
+			oncommand="removeBimiIndicator()"
+			disabled="true"/>
 	<spacer flex="1"/>
 	<image id="my-image" height="50" width="50"/>
 </hbox>
