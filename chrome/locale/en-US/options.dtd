@@ -116,4 +116,4 @@
 <!ENTITY display.advancedInfo.includeHeaders.label "Show signed headers">
 
 <!ENTITY key.fallback.label "Use stored key, if DNS request for key fails">
-<!ENTITY error.bodylength.overflow.asWarning.label "Treat non entirely signed mail body as warning">
+<!ENTITY error.bodylength.overflow.asWarning.label "Treat non entirely signed mail body as a warning instead of an error">
