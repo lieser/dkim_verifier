@@ -38,7 +38,7 @@
 <!ENTITY display.label "显示">
 <!ENTITY display.general.label "常规">
 <!ENTITY display.color.label "颜色">
-<!ENTITY display.icons.label "Icons / BIMI">
+<!ENTITY display.icons.label "Logos / BIMI">
 <!ENTITY showDKIMHeader.label "显示 DKIM 头:">
 <!ENTITY showDKIMStatusbarpanel.label "显示 DKIM 状态栏:">
 <!ENTITY showDKIMFromTooltip.label "From 头显示 DKIM 工具提示:">
@@ -61,7 +61,6 @@
 <!ENTITY color.nosig.label "未签名邮件">
 <!ENTITY display.favicon.show.label "在发件人地址前显示已知签名域名的网站图标">
 <!ENTITY display.favicon.preferInternalIcon.label "Prefer add-on's favicons over BIMI logos">
-<!ENTITY display.favicon.box.label "DKIM Verifier - FavIcons">
 <!ENTITY display.bimi.box.label "BIMI (Brand Indicators for Message Identification)">
 <!ENTITY display.bimi.enabled.label "Enable BIMI:">
 <!ENTITY display.bimi.enabled.value.0.label "No">

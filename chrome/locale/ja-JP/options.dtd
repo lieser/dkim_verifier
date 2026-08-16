@@ -50,7 +50,7 @@
 
 <!ENTITY display.general.label "一般">
 <!ENTITY display.color.label "色">
-<!ENTITY display.icons.label "Icons / BIMI">
+<!ENTITY display.icons.label "Logos / BIMI">
 
 <!ENTITY showDKIMHeader.label  "DKIM ヘッダを表示:">
 <!ENTITY showDKIMStatusbarpanel.label  "DKIM ステータスバーを表示:">
@@ -76,7 +76,6 @@
 
 <!ENTITY display.favicon.show.label "差出人アドレスの前に既知の署名済みドメインのファビコンを表示">
 <!ENTITY display.favicon.preferInternalIcon.label "Prefer add-on's favicons over BIMI logos">
-<!ENTITY display.favicon.box.label "DKIM Verifier - FavIcons">
 
 <!ENTITY display.bimi.box.label "BIMI (Brand Indicators for Message Identification)">
 <!ENTITY display.bimi.enabled.label "Enable BIMI:">

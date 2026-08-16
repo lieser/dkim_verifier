@@ -249,13 +249,10 @@
 			</tabpanel>
 
 			<tabpanel orient="vertical">
-				<groupbox>
-					<caption label="&display.favicon.box.label;"/>
-					<checkbox preference="pref_display.favicon.show"
-							  label="&display.favicon.show.label;"/>
-					<checkbox preference="pref_display.favicon.preferInternalIcon"
-							  label="&display.favicon.preferInternalIcon.label;"/>
-				</groupbox>
+				<checkbox preference="pref_display.favicon.show"
+						  label="&display.favicon.show.label;"/>
+				<checkbox preference="pref_display.favicon.preferInternalIcon"
+						  label="&display.favicon.preferInternalIcon.label;"/>
 				<groupbox>
 					<caption label="&display.bimi.box.label;"/>
 					<hbox align="center">

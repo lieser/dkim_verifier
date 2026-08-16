@@ -50,7 +50,7 @@
 
 <!ENTITY display.general.label "Generali">
 <!ENTITY display.color.label "Colore">
-<!ENTITY display.icons.label "Icons / BIMI">
+<!ENTITY display.icons.label "Logos / BIMI">
 
 <!ENTITY showDKIMHeader.label  "Mostra intestazione DKIM:">
 <!ENTITY showDKIMStatusbarpanel.label  "Mostra barra di stato DKIM:">
@@ -76,7 +76,6 @@
 
 <!ENTITY display.favicon.show.label "Mostra l’icona dei preferiti per i domini di firma noti prima dell’indirizzo del mittente">
 <!ENTITY display.favicon.preferInternalIcon.label "Prefer add-on's favicons over BIMI logos">
-<!ENTITY display.favicon.box.label "DKIM Verifier - FavIcons">
 
 <!ENTITY display.bimi.box.label "BIMI (Brand Indicators for Message Identification)">
 <!ENTITY display.bimi.enabled.label "Enable BIMI:">
