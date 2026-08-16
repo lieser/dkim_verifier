@@ -482,9 +482,10 @@ async function addFavicons(authResult, from, bimiIndicator) {
 		if (authResult.dkim[i].sdid) {
 			if (bimiIndicator && from && addrIsInDomain(from, authResult.dkim[i].sdid)) {
 				authResult.dkim[i].favicon = `data:image/svg+xml;base64,${bimiIndicator}`;
-			} else {
-			authResult.dkim[i].favicon =
-				await DKIM.Policy.getFavicon(authResult.dkim[i].sdid, authResult.dkim[i].auid, from);
+			}
+			if (prefs.getBoolPref("display.favicon.preferInternalIcon") || !authResult.dkim[i].favicon) {
+				let internalIcon = await DKIM.Policy.getFavicon(authResult.dkim[i].sdid, authResult.dkim[i].auid, from);
+				if (internalIcon) { authResult.dkim[i].favicon = internalIcon; }
 			}
 		}
 	}

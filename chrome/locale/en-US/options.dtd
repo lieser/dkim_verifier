@@ -75,6 +75,7 @@
 <!ENTITY color.nosig.label "Unsigned e-mail">
 
 <!ENTITY display.favicon.show.label "Show the favicon of known signing domains before the From address">
+<!ENTITY display.favicon.preferInternalIcon.label "Prefer add-on's favicons over BIMI logos">
 <!ENTITY display.favicon.box.label "DKIM Verifier - FavIcons">
 
 <!ENTITY display.bimi.box.label "BIMI (Brand Indicators for Message Identification)">

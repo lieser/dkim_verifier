@@ -75,6 +75,7 @@
 <!ENTITY color.nosig.label "未署名のメール">
 
 <!ENTITY display.favicon.show.label "差出人アドレスの前に既知の署名済みドメインのファビコンを表示">
+<!ENTITY display.favicon.preferInternalIcon.label "Prefer add-on's favicons over BIMI logos">
 <!ENTITY display.favicon.box.label "DKIM Verifier - FavIcons">
 
 <!ENTITY display.bimi.box.label "BIMI (Brand Indicators for Message Identification)">

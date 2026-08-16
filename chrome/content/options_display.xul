@@ -78,6 +78,9 @@
 		<preference id="pref_display.favicon.show"
 		            name="extensions.dkim_verifier.display.favicon.show"
 		            type="bool"/>
+		<preference id="pref_display.favicon.preferInternalIcon"
+		            name="extensions.dkim_verifier.display.favicon.preferInternalIcon"
+		            type="bool"/>
 		<preference id="pref_display.bimi.enable"
 		            name="extensions.dkim_verifier.bimi.enable"
 		            type="int"/>
@@ -250,6 +253,8 @@
 					<caption label="&display.favicon.box.label;"/>
 					<checkbox preference="pref_display.favicon.show"
 							  label="&display.favicon.show.label;"/>
+					<checkbox preference="pref_display.favicon.preferInternalIcon"
+							  label="&display.favicon.preferInternalIcon.label;"/>
 				</groupbox>
 				<groupbox>
 					<caption label="&display.bimi.box.label;"/>

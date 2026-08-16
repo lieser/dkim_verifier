@@ -75,6 +75,7 @@
 <!ENTITY color.nosig.label "Aláíratlan e-mail">
 
 <!ENTITY display.favicon.show.label "Mutassa az ismert aláírási tartományok faviconját a feladócím előtt">
+<!ENTITY display.favicon.preferInternalIcon.label "Prefer add-on's favicons over BIMI logos">
 <!ENTITY display.favicon.box.label "DKIM Verifier - FavIcons">
 
 <!ENTITY display.bimi.box.label "BIMI (Brand Indicators for Message Identification)">

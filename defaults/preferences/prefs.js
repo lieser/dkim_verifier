@@ -125,6 +125,7 @@ pref("extensions.dkim_verifier.color.nosig.background", "unset");
 ////////////////////////////////////////////////////////////////////////////////
 
 pref("extensions.dkim_verifier.display.favicon.show", true);
+pref("extensions.dkim_verifier.display.favicon.preferInternalIcon", true);
 
 // 0 off
 // 1 only from mail header

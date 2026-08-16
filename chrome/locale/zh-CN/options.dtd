@@ -60,6 +60,7 @@
 <!ENTITY color.tempfail.label "暂时出错">
 <!ENTITY color.nosig.label "未签名邮件">
 <!ENTITY display.favicon.show.label "在发件人地址前显示已知签名域名的网站图标">
+<!ENTITY display.favicon.preferInternalIcon.label "Prefer add-on's favicons over BIMI logos">
 <!ENTITY display.favicon.box.label "DKIM Verifier - FavIcons">
 <!ENTITY display.bimi.box.label "BIMI (Brand Indicators for Message Identification)">
 <!ENTITY display.bimi.enabled.label "Enable BIMI:">
