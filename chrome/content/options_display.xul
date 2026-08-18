@@ -181,7 +181,7 @@
 				</groupbox>
 			</tabpanel>
 
-			<tabpanel orient="vertical">
+			<tabpanel id="colorPanel" orient="vertical">
 				<checkbox preference="pref_colorFrom" label="&colorFrom.label;"/>
 				<grid>
 					<columns>
@@ -249,15 +249,17 @@
 			</tabpanel>
 
 			<tabpanel orient="vertical">
-				<checkbox preference="pref_display.favicon.show"
-						  label="&display.favicon.show.label;"/>
-				<checkbox preference="pref_display.favicon.preferInternalIcon"
+				<checkbox id="display.icons.showFavIcon" preference="pref_display.favicon.show"
+						  label="&display.favicon.show.label;"
+						  oncommand="gDKIMOptionsDisplayPane.toggleIconsOptionsEnabled();"/>
+				<checkbox id="display.icons.preferFavIcon" preference="pref_display.favicon.preferInternalIcon"
 						  label="&display.favicon.preferInternalIcon.label;"/>
 				<groupbox>
 					<caption label="&display.bimi.box.label;"/>
 					<hbox align="center">
 						<label>&display.bimi.enabled.label;</label>
-						<menulist preference="pref_display.bimi.enable">
+						<menulist id="display.icons.bimiEnable" preference="pref_display.bimi.enable"
+								  oncommand="gDKIMOptionsDisplayPane.toggleIconsOptionsEnabled();">
 							<menupopup>
 								<menuitem label="&display.bimi.enabled.value.0.label;" value="0"/>
 								<menuitem label="&display.bimi.enabled.value.1.label;" value="1"/>
@@ -265,11 +267,12 @@
 							</menupopup>
 						</menulist>
 					</hbox>
-					<checkbox preference="pref_display.bimi.cacheIndicators"
-						  label="&display.bimi.cacheIndicators.label;"/>
+					<checkbox id="display.icons.cacheBimi" preference="pref_display.bimi.cacheIndicators"
+						  label="&display.bimi.cacheIndicators.label;"
+						  oncommand="gDKIMOptionsDisplayPane.toggleIconsOptionsEnabled();"/>
 					<hbox align="center">
 						<label>&display.bimi.updateInterval.label;</label>
-						<menulist preference="pref_display.bimi.updateInterval">
+						<menulist id="display.icons.reloadBimi" preference="pref_display.bimi.updateInterval">
 							<menupopup>
 								<menuitem label="&display.bimi.updateInterval.value.0.label;" value="0"/>
 								<menuitem label="3" value="3"/>
@@ -279,7 +282,7 @@
 						</menulist>
 						<label>&display.bimi.updateMonths.label;</label>
 					</hbox>
-					<checkbox preference="pref_display.bimi.addUnknownCAs"
+					<checkbox id="display.icons.addBimiCa" preference="pref_display.bimi.addUnknownCAs"
 						  label="&display.bimi.addUnknownCAs.label;"/>
 					<label>&display.bimi.unknownCAsHint.label;</label>
 					<hbox align="center">
