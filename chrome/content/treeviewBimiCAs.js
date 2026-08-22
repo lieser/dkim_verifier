@@ -21,7 +21,7 @@ var columns;
 
 function setView() {
 	"use strict";
-	treeView = new SQLiteTreeView("dkimBimi.sqlite", "certs", ["commonName","fingerprint","trusted","internal"], null);
+	treeView = new SQLiteTreeView("dkimBimi.sqlite", "certs", ["commonName","fingerprint","expireson","trusted","internal"], null);
 	document.getElementById('my-tree').view = treeView;
 	columns = document.getElementById('my-tree').columns;
 }

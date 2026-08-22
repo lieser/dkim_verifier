@@ -42,6 +42,7 @@
 <!ENTITY treeviewBimiCAs.title "Manage BIMI CAs">
 <!ENTITY treeviewBimiCAs.treecol.name.label "Name">
 <!ENTITY treeviewBimiCAs.treecol.fingerprint.label "Fingerprint">
+<!ENTITY treeviewBimiCAs.treecol.expire.label "Valid till">
 <!ENTITY treeviewBimiCAs.treecol.trust.label "Trust">
 <!ENTITY treeviewBimiCAs.treecol.internal.label "Internal">
 

@@ -22,6 +22,8 @@
 		<splitter class="tree-splitter" />
 		<treecol id="fingerprint" editable="false" label="&treeviewBimiCAs.treecol.fingerprint.label;" flex="20"/>
 		<splitter class="tree-splitter" />
+		<treecol id="expiresOn" editable="false" label="&treeviewBimiCAs.treecol.expire.label;" flex="2"/>
+		<splitter class="tree-splitter" />
 		<treecol id="trusted" editable="false" label="&treeviewBimiCAs.treecol.trust.label;" flex="1"/>
 		<splitter class="tree-splitter" />
 		<treecol id="internal" editable="false" label="&treeviewBimiCAs.treecol.internal.label;" flex="1"/>
