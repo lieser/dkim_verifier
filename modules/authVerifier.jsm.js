@@ -15,7 +15,7 @@
 
 // options for ESLint
 /* global Components, Services, MailServices */
-/* global Logging */
+/* global Logging, BIMI */
 /* global PREF, dkimStrings, tryGetFormattedString, addrIsInDomain, saveAuthResult, loadAuthResult, getARHResult */
 /* exported EXPORTED_SYMBOLS, authVerifier */
 
@@ -47,6 +47,7 @@ Cu.import("resource://dkim_verifier/arhVerifier.jsm.js");
 let DKIM = {};
 Cu.import("resource://dkim_verifier/dkimPolicy.jsm.js", DKIM);
 Cu.import("resource://dkim_verifier/dkimVerifier.jsm.js", DKIM);
+Cu.import("resource://dkim_verifier/bimi.jsm.js");
 
 // @ts-expect-error
 const PREF_BRANCH = "extensions.dkim_verifier.";
@@ -205,6 +206,13 @@ var authVerifier = {
 					// verify DKIM signatures
 					let dkimResultV2 = await DKIM.Verifier.verify2(msg);
 					savedAuthResult.dkim = dkimResultV2.signatures;
+					if (!savedAuthResult.bimiIndicator) {
+						let bimiIndicator = await BIMI.getBimiIndicatorOnline(dkimResultV2.signatures);
+						if (bimiIndicator) {
+							savedAuthResult.version = "3.1";
+							savedAuthResult.bimiIndicator = bimiIndicator;
+						}
+					}
 				} else {
 					savedAuthResult.dkim = [{version: "2.0", result: "none"}];
 				}
@@ -474,9 +482,10 @@ async function addFavicons(authResult, from, bimiIndicator) {
 		if (authResult.dkim[i].sdid) {
 			if (bimiIndicator && from && addrIsInDomain(from, authResult.dkim[i].sdid)) {
 				authResult.dkim[i].favicon = `data:image/svg+xml;base64,${bimiIndicator}`;
-			} else {
-			authResult.dkim[i].favicon =
-				await DKIM.Policy.getFavicon(authResult.dkim[i].sdid, authResult.dkim[i].auid, from);
+			}
+			if (prefs.getBoolPref("display.favicon.preferInternalIcon") || !authResult.dkim[i].favicon) {
+				let internalIcon = await DKIM.Policy.getFavicon(authResult.dkim[i].sdid, authResult.dkim[i].auid, from);
+				if (internalIcon) { authResult.dkim[i].favicon = internalIcon; }
 			}
 		}
 	}

@@ -113,6 +113,11 @@ const PREF = {
 				ICON: 2,
 			}
 		}
+	},
+	BIMI: {
+		OFF: 0,
+		MAIL: 1,
+		MAIL_ONLINE: 2,
 	}
 };
 

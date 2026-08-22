@@ -9,26 +9,24 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 pref("extensions.dkim_verifier.dkim.enable", true);
-
 // 0: don't store DKIM keys
 // 1: store DKIM keys
 // 2: store DKIM keys and compare with current key
 pref("extensions.dkim_verifier.key.storing", 0);
-
+pref("extensions.dkim_verifier.key.fallbackToStoredKey", true);
 pref("extensions.dkim_verifier.saveResult", false);
 pref("extensions.dkim_verifier.arh.read", false);
 
+// This option is not available in GUI
 pref("extensions.dkim_verifier.internationalized.enable", false);
 
 ////////////////////////////////////////////////////////////////////////////////
 // general preferences - DNS
 ////////////////////////////////////////////////////////////////////////////////
 
-/*
- * 1 JS DNS
- * 2 libunbound
- * 3 DoH
- */
+// 1: JS DNS
+// 2: libunbound
+// 3: DoH
 pref("extensions.dkim_verifier.dns.resolver", 1);
 pref("extensions.dkim_verifier.dns.getNameserversFromOS", true);
 pref("extensions.dkim_verifier.dns.nameserver", "8.8.8.8");
@@ -44,7 +42,6 @@ pref("extensions.dkim_verifier.dns.libunbound.path", "extensions/dnssec@nic.cz/p
 pref("extensions.dkim_verifier.dns.libunbound.path.relToProfileDir", true);
 pref("extensions.dkim_verifier.dns.doh.server", "https://dns.quad9.net/dns-query");
 
-
 ////////////////////////////////////////////////////////////////////////////////
 // general preferences - Policy
 ////////////////////////////////////////////////////////////////////////////////
@@ -59,61 +56,57 @@ pref("extensions.dkim_verifier.policy.signRules.autoAddRule.onlyIfFromAddressInS
 pref("extensions.dkim_verifier.policy.signRules.autoAddRule.for", 0);
 pref("extensions.dkim_verifier.policy.signRules.sdid.allowSubDomains", true);
 pref("extensions.dkim_verifier.error.policy.wrong_sdid.asWarning", false);
-
 pref("extensions.dkim_verifier.policy.DMARC.shouldBeSigned.enable", false);
+// Mode to handle headers, which should be signed, but are not
+// 10 relaxed
+// 20 recommended
+// 30 strict
+pref("extensions.dkim_verifier.policy.dkim.unsignedHeadersWarning.mode", 20);
+
+// This option is not available in GUI
 // "none", "quarantine", "reject"
 pref("extensions.dkim_verifier.policy.DMARC.shouldBeSigned.neededPolicy", "none");
 
-pref("extensions.dkim_verifier.display.favicon.show", true);
-
-/*
- * Mode to handle headers, which should be signed, but are not
- * 10  relaxed
- * 20  recommended
- * 30  strict
- */
-pref("extensions.dkim_verifier.policy.dkim.unsignedHeadersWarning.mode", 20);
-
-
 ////////////////////////////////////////////////////////////////////////////////
-// display preferences
+// display preferences - general
 ////////////////////////////////////////////////////////////////////////////////
 
-/*
- * 0   never
- * 10  when an e-mail with a valid DKIM signature is viewed  (SUCCESS)
- * 20  when an e-mail with a valid DKIM signature is viewed (including TEMPFAIL) (SUCCESS, TEMPFAIL)
- * 30  when an e-mail with a DKIM signature is viewed (SUCCESS, TEMPFAIL, PERMFAIL, loading)
- * 33  when an e-mail with any Authentication result (DKIM, SPF, DMARC) is viewed
- * 40  when an e-mail is viewed
- * 50  when a message is viewed
- */
+// 0  never
+// 10 when an e-mail with a valid DKIM signature is viewed  (SUCCESS)
+// 20 when an e-mail with a valid DKIM signature is viewed (including TEMPFAIL) (SUCCESS, TEMPFAIL)
+// 30 when an e-mail with a DKIM signature is viewed (SUCCESS, TEMPFAIL, PERMFAIL, loading)
+// 33 when an e-mail with any Authentication result (DKIM, SPF, DMARC) is viewed
+// 40 when an e-mail is viewed
+// 50 when a message is viewed
 pref("extensions.dkim_verifier.showDKIMHeader", 30);
-/*
- * 0   never
- * 10  when an e-mail with a valid DKIM signature is viewed  (SUCCESS)
- * 20  when an e-mail with a valid DKIM signature is viewed (including TEMPFAIL) (SUCCESS, TEMPFAIL)
- * 30  when an e-mail with a DKIM signature is viewed (SUCCESS, TEMPFAIL, PERMFAIL, loading)
- * 33  when an e-mail with any Authentication result (DKIM, SPF, DMARC) is viewed
- * 40  when an e-mail is viewed
- * 50  when a message is viewed
- */
+// 0  never
+// 10 when an e-mail with a valid DKIM signature is viewed  (SUCCESS)
+// 20 when an e-mail with a valid DKIM signature is viewed (including TEMPFAIL) (SUCCESS, TEMPFAIL)
+// 30 when an e-mail with a DKIM signature is viewed (SUCCESS, TEMPFAIL, PERMFAIL, loading)
+// 33 when an e-mail with any Authentication result (DKIM, SPF, DMARC) is viewed
+// 40 when an e-mail is viewed
+// 50 when a message is viewed
 pref("extensions.dkim_verifier.showDKIMStatusbarpanel", 0);
-/*
- * 1 text
- * 2 icon
- */
+// 1 text
+// 2 icon
 pref("extensions.dkim_verifier.statusbarpanel.result.style", 1);
-/*
- * 0   never
- * 10  when an e-mail with a valid DKIM signature is viewed  (SUCCESS)
- * 20  when an e-mail with a valid DKIM signature is viewed (including TEMPFAIL) (SUCCESS, TEMPFAIL)
- * 30  when an e-mail with a DKIM signature is viewed (SUCCESS, TEMPFAIL, PERMFAIL, loading)
- * 33  when an e-mail with any Authentication result (DKIM, SPF, DMARC) is viewed
- * 40  when an e-mail is viewed
- * 50  when a message is viewed
- */
+// 0  never
+// 10 when an e-mail with a valid DKIM signature is viewed  (SUCCESS)
+// 20 when an e-mail with a valid DKIM signature is viewed (including TEMPFAIL) (SUCCESS, TEMPFAIL)
+// 30 when an e-mail with a DKIM signature is viewed (SUCCESS, TEMPFAIL, PERMFAIL, loading)
+// 33 when an e-mail with any Authentication result (DKIM, SPF, DMARC) is viewed
+// 40 when an e-mail is viewed
+// 50 when a message is viewed
 pref("extensions.dkim_verifier.showDKIMFromTooltip", 0);
+
+pref("extensions.dkim_verifier.advancedInfo.show", false);
+pref("extensions.dkim_verifier.advancedInfo.allSignatures", false);
+pref("extensions.dkim_verifier.advancedInfo.includeSelector", false);
+pref("extensions.dkim_verifier.advancedInfo.includeHeaders", false);
+
+////////////////////////////////////////////////////////////////////////////////
+// display preferences - colors
+////////////////////////////////////////////////////////////////////////////////
 
 pref("extensions.dkim_verifier.colorFrom", false);
 pref("extensions.dkim_verifier.color.success.text", "windowtext");
@@ -127,41 +120,59 @@ pref("extensions.dkim_verifier.color.tempfail.background", "unset");
 pref("extensions.dkim_verifier.color.nosig.text", "unset");
 pref("extensions.dkim_verifier.color.nosig.background", "unset");
 
-pref("extensions.dkim_verifier.advancedInfo.show", false);
-pref("extensions.dkim_verifier.advancedInfo.allSignatures", false);
-pref("extensions.dkim_verifier.advancedInfo.includeSelector", false);
-pref("extensions.dkim_verifier.advancedInfo.includeHeaders", false);
+////////////////////////////////////////////////////////////////////////////////
+// display preferences - icons
+////////////////////////////////////////////////////////////////////////////////
+
+pref("extensions.dkim_verifier.display.favicon.show", true);
+pref("extensions.dkim_verifier.display.favicon.preferInternalIcon", true);
+
+// 0 off
+// 1 only from mail header
+// 2 mail header and online images
+pref("extensions.dkim_verifier.bimi.enable", 1);
+pref("extensions.dkim_verifier.bimi.cacheIndicators", true);
+pref("extensions.dkim_verifier.bimi.updateInterval", 6);
+pref("extensions.dkim_verifier.bimi.addUnknownCAs", false);
 
 ////////////////////////////////////////////////////////////////////////////////
 // advanced preferences
 ////////////////////////////////////////////////////////////////////////////////
 
 pref("extensions.dkim_verifier.debug", false);
+// This option is not available in GUI
 // "Fatal", "Error", "Warn", "Info", "Config", "Debug", "Trace", "All"
 pref("extensions.dkim_verifier.logging.console", "Debug");
+// This option is not available in GUI
 // "Fatal", "Error", "Warn", "Info", "Config", "Debug", "Trace", "All"
 pref("extensions.dkim_verifier.logging.dump", "Debug");
+// This option is not available in GUI
 pref("extensions.dkim_verifier.debugLevel", 0);
 pref("extensions.dkim_verifier.error.detailedReasons", false);
+pref("extensions.dkim_verifier.error.key_testmode.ignore", false);
 pref("extensions.dkim_verifier.display.keySecure", true);
 pref("extensions.dkim_verifier.arh.replaceAddonResult", true);
 pref("extensions.dkim_verifier.arh.showDKIMResults", true);
 pref("extensions.dkim_verifier.arh.relaxedParsing", false);
-// 0: error, 1: warning, 2: ignore
+pref("extensions.dkim_verifier.error.sanitizeSubject", false);
+// 0: error
+// 1: warning
+// 2: ignore
 pref("extensions.dkim_verifier.error.illformed_i.treatAs", 1);
 pref("extensions.dkim_verifier.error.illformed_s.treatAs", 1);
 pref("extensions.dkim_verifier.error.policy.key_insecure.treatAs", 2);
-pref("extensions.dkim_verifier.error.key_testmode.ignore", false);
-pref("extensions.dkim_verifier.error.contentTypeCharsetAddedQuotes.treatAs", 0);
 pref("extensions.dkim_verifier.error.algorithm.sign.rsa-sha1.treatAs", 1);
 pref("extensions.dkim_verifier.error.algorithm.rsa.weakKeyLength.treatAs", 2);
-pref("extensions.dkim_verifier.error.sanitizeSubject", false);
+// This option is not available in GUI
+pref("extensions.dkim_verifier.error.contentTypeCharsetAddedQuotes.treatAs", 0);
 
 ////////////////////////////////////////////////////////////////////////////////
 // account specific options
 ////////////////////////////////////////////////////////////////////////////////
 
-// 0: default, 1: yes, 2: no
+// 0: default
+// 1: yes
+// 2: no
 pref("mail.server.default.dkim_verifier.dkim.enable", 0);
 pref("mail.server.default.dkim_verifier.arh.read", 0);
 // empty to allow all
