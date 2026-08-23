@@ -15,7 +15,7 @@
 			<mail-headerfield id="expandeddkim-verifierBox" flex="1"/>
 		</row>
 	</rows>
-	
+
 	<menupopup id="otherActionsPopup">
 		<menuseparator/>
 		<menuitem id="dkim_verifier.reverifyDKIMSignature"
@@ -24,9 +24,6 @@
 		<menuitem id="dkim_verifier.policyAddUserException"
 		          label="&dkim_verifier.policyAddUserException.label;"
 		          oncommand="DKIM_Verifier.Display.policyAddUserException();"/>
-		<menuitem id="dkim_verifier.markKeyAsSecure"
-		          label="&dkim_verifier.markKeyAsSecure.label;"
-		          oncommand="DKIM_Verifier.Display.markKeyAsSecure();"/>
 		<menuitem id="dkim_verifier.updateKey"
 		          label="&dkim_verifier.updateKey.label;"
 		          oncommand="DKIM_Verifier.Display.updateKey();"/>
@@ -34,7 +31,7 @@
 		          label="&treeviewSigners.title;"
 		          oncommand="toOpenWindowByType('dkim_verifier:treeviewSigners', 'chrome://dkim_verifier/content/treeviewSigners.xul');"/>
 	</menupopup>
-	
+
 	<hbox id="msgHeaderView">
 		<box id="dkim-verifier-header-tooltips"/>
 	</hbox>

@@ -5,7 +5,6 @@
 
 <!ENTITY dkim_verifier.reverifyDKIMSignature.label "DKIM 署名を再検証">
 <!ENTITY dkim_verifier.policyAddUserException.label "署名必須の例外を追加">
-<!ENTITY dkim_verifier.markKeyAsSecure.label "DKIM キーをセキュアとマーク">
 <!ENTITY dkim_verifier.updateKey.label "DKIM キーを更新">
 
 
