@@ -201,7 +201,7 @@ var Key = {
 					}
 					if (tmp.secure && !keyDB.secure) {
 						// Set DNSSEC flag if DNSSEC is used, but wasn't at the time, the key was stored
-						Key.markKeyAsSecure(d_val, s_val);
+						markKeyAsSecure(d_val, s_val);
 					}
 					tmp.secure = tmp.secure || keyDB.secure;
 				} else if (res.gotFrom !== "Storage") {
@@ -283,53 +283,53 @@ var Key = {
 
 		return promise;
 	},
-
-	/**
-	 * Mark the latest stored DKIM key from a domain with specific selector as secure.
-	 *
-	 * @param {String} d_val domain of the Signer
-	 * @param {String} s_val selector
-	 *
-	 * @returns {Promise<void>}
-	 */
-	markKeyAsSecure: function Key_markKeyAsSecure(d_val, s_val) {
-		"use strict";
-
-		var promise = (async () => {
-			log.trace("markKeyAsSecure Task begin");
-
-			// wait for DB init
-			await Key.initDB();
-			var conn = await Sqlite.openConnection({path: KEY_DB_NAME});
-			try {
-				await conn.executeCached(
-					"UPDATE keys\n" +
-					"  SET secure = 1\n" +
-					"WHERE key IN (\n" +
-					"  SELECT key\n" +
-					"  FROM keys WHERE\n" +
-					"    SDID = :SDID AND\n" +
-					"    selector = :selector\n" +
-					"  ORDER BY insertedAt DESC\n" +
-					"  LIMIT 1\n" +
-					");",
-					{SDID: d_val, selector: s_val}
-				);
-				log.debug("updated latest added key (" + d_val + ", " + s_val + ") to secure");
-			} finally {
-				await conn.close();
-			}
-
-			log.trace("markKeyAsSecure Task end");
-		})();
-		promise.then(null, function onReject(exception) {
-			// Failure! We can inspect or report the exception.
-			log.fatal(exception);
-		});
-
-		return promise;
-	},
 };
+
+/**
+ * Mark the latest stored DKIM key from a domain with specific selector as secure.
+ *
+ * @param {String} d_val domain of the Signer
+ * @param {String} s_val selector
+ *
+ * @returns {Promise<void>}
+ */
+function markKeyAsSecure(d_val, s_val) {
+	"use strict";
+
+	var promise = (async () => {
+		log.trace("markKeyAsSecure Task begin");
+
+		// wait for DB init
+		await Key.initDB();
+		var conn = await Sqlite.openConnection({path: KEY_DB_NAME});
+		try {
+			await conn.executeCached(
+				"UPDATE keys\n" +
+				"  SET secure = 1\n" +
+				"WHERE key IN (\n" +
+				"  SELECT key\n" +
+				"  FROM keys WHERE\n" +
+				"    SDID = :SDID AND\n" +
+				"    selector = :selector\n" +
+				"  ORDER BY insertedAt DESC\n" +
+				"  LIMIT 1\n" +
+				");",
+				{SDID: d_val, selector: s_val}
+			);
+			log.debug("updated latest added key (" + d_val + ", " + s_val + ") to secure");
+		} finally {
+			await conn.close();
+		}
+
+		log.trace("markKeyAsSecure Task end");
+	})();
+	promise.then(null, function onReject(exception) {
+		// Failure! We can inspect or report the exception.
+		log.fatal(exception);
+	});
+
+	return promise;
+}
 
 /**
  * Get the DKIM key from DNS.
