@@ -169,6 +169,7 @@ declare module OS {
 /** JavaScript code module "resource://gre/modules/Services.jsm" */
 declare module Services {
     const appinfo: nsIXULAppInfo;
+    const dirsvc: nsIProperties;
     const io: nsIIOService;
     const prefs: nsIPrefService & nsIPrefBranch;
     const scriptloader: mozIJSSubScriptLoader;
@@ -278,6 +279,7 @@ type nsIObserver = object;
 
 interface nsIIOService {
     newURI(aSpec: string, aOriginCharset: string|null, aBaseURI: nsIURI|null): nsIURI;
+    getProtocolHandler(aProtocol: string): nsIProtocolHandler;
 }
 
 interface nsISupports {
@@ -391,4 +393,26 @@ interface nsIMsgAccountManager {
 
 interface nsIMsgIdentity {
     email: string;
+}
+
+interface nsIProperties {
+    get<T>(prop: string, iid: any): T;
+    set(prop: string, value: any): void;
+    has(prop: string): boolean;
+    getKeys(): string[];
+}
+
+interface nsIProtocolHandler extends nsISupports {
+    defaultPort: number;
+    protocolFlags: number;
+    newURI(aSpec: string, aOriginCharset?: string | null, aBaseURI?: nsIURI | null): nsIURI;
+    newChannel(aURI: nsIURI, aLoadingNode?: any): any;
+    allowPort(aPort: number, aScheme: string): boolean;
+}
+
+interface nsIResProtocolHandler extends nsIProtocolHandler {
+    setSubstitution(aRoot: string, aBaseURI: nsIURI | null): void;
+    getSubstitution(aRoot: string): nsIURI;
+    hasSubstitution(aRoot: string): boolean;
+    resolveURI(aURI: nsIURI): string;
 }
