@@ -1,4 +1,4 @@
-;; This is the default KSK data file, which helps libunbound to get DNSSEC KSK information using RFC5011.
+;; This is the default KSK data file, which helps libunbound to get DNSSEC KSK information using RFC 5011.
 ;; The content will be overwritten, when libunbound retrieves data
 ;; Initially, the data for the current KSK must be included
 
