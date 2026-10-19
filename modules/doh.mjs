@@ -21,7 +21,7 @@ import { DKIM_TempError } from "./error.mjs.js";
 import Logging from "./logging.mjs.js";
 import prefs from "./preferences.mjs.js";
 
-const log = Logging.getLogger("dns");
+const log = Logging.getLogger("doh");
 
 /**
  * The part the DNS header containing the flags and codes (third and fourth byte).

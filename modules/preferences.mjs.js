@@ -298,6 +298,7 @@ export class BasePreferences {
 	/**
 	 * - 1 JS DNS
 	 * - 2 libunbound
+	 * - 3 DoH
 	 */
 	get "dns.resolver"() {
 		return this.#tryGetNumberValue("dns.resolver", 1);

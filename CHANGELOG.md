@@ -4,15 +4,20 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased
+## 6.4.0 (2026-10-20)
 
 ### Enhancements
 
 - DoH resolver: Added retry logic for temporary network problems.
 
+### Fixes
+
+- Libunbound resolver: Added new root trust anchor (key tag 38696) (#613).
+
 ### Other
 
 - Updated default rules and favicons (#597).
+- Updated Swedish translations (#608).
 
 ## 6.3.0 (2026-05-31)
 
