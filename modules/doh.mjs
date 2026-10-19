@@ -16,9 +16,9 @@
 /** @import {DnsTxtResult} from "./dns.mjs" */
 
 import { PacketFlag, PacketType, RecordType, decode, encode } from "../thirdparty/dns-message/dist/dns-message.mjs";
+import { encodeBase64Url, sleep } from "./utils.mjs.js";
 import { DKIM_TempError } from "./error.mjs.js";
 import Logging from "./logging.mjs.js";
-import { encodeBase64Url } from "./utils.mjs.js";
 import prefs from "./preferences.mjs.js";
 
 const log = Logging.getLogger("dns");
@@ -81,16 +81,23 @@ async function dnsGetQuery(query) {
 
 	const server = prefs["dns.doh.server"];
 	let httpResponse;
-	try {
-		httpResponse = await fetch(`${server}?${params}`, {
-			method: "GET",
-			headers: {
-				Accept: "application/dns-message",
-			},
-		});
-	} catch (error) {
-		log.error("Failed to fetch DoH server", error);
-		throw new DKIM_TempError("DKIM_DNSERROR_SERVER_ERROR");
+	let attempt = 1;
+	while (!httpResponse) {
+		try {
+			httpResponse = await fetch(`${server}?${params}`, {
+				method: "GET",
+				headers: {
+					Accept: "application/dns-message",
+				},
+			});
+		} catch (error) {
+			log.error(`Failed to fetch DoH server (attempt ${attempt})`, error);
+			if (attempt > 4) {
+				throw new DKIM_TempError("DKIM_DNSERROR_SERVER_ERROR");
+			}
+			await sleep(250);
+			++attempt;
+		}
 	}
 	if (!httpResponse.ok) {
 		log.error(`DNS server responded with response status: ${httpResponse.status}`);
@@ -117,6 +124,7 @@ async function dnsGetQuery(query) {
  * @throws {DKIM_TempError} if no DNS response could be retrieved.
  */
 export default async function txt(name, queryFunction = dnsGetQuery) {
+	log.debug(`Resolving '${name}'`);
 	const query = encode({
 		// RFC 8484 section 4.1 - DoH clients [...] SHOULD use a DNS ID of 0 in every DNS request.
 		id: 0,

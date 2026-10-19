@@ -4,6 +4,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+### Enhancements
+
+- DoH resolver: Added retry logic for temporary network problems.
+
 ## 6.3.0 (2026-05-31)
 
 ### Enhancements
