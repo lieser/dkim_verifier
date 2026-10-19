@@ -10,6 +10,10 @@ All notable changes to this project will be documented in this file.
 
 - DoH resolver: Added retry logic for temporary network problems.
 
+### Other
+
+- Updated default rules and favicons (#597).
+
 ## 6.3.0 (2026-05-31)
 
 ### Enhancements
