@@ -48,6 +48,10 @@
 
 <!ENTITY display.label "Megjelenítés">
 
+<!ENTITY display.general.label "Általános">
+<!ENTITY display.color.label "Szín">
+<!ENTITY display.icons.label "Logos / BIMI">
+
 <!ENTITY showDKIMHeader.label  "A DKIM fejléc megjelenítése:">
 <!ENTITY showDKIMStatusbarpanel.label  "A DKIM állapotsor megjelenítése:">
 <!ENTITY showDKIMFromTooltip.label  "A DKIM eszköztipp megjelenítése a feladóért fejléchez:">
@@ -71,6 +75,21 @@
 <!ENTITY color.nosig.label "Aláíratlan e-mail">
 
 <!ENTITY display.favicon.show.label "Mutassa az ismert aláírási tartományok faviconját a feladócím előtt">
+<!ENTITY display.favicon.preferInternalIcon.label "Prefer add-on's favicons over BIMI logos">
+
+<!ENTITY display.bimi.box.label "BIMI (Brand Indicators for Message Identification)">
+<!ENTITY display.bimi.enabled.label "Enable BIMI:">
+<!ENTITY display.bimi.enabled.value.0.label "No">
+<!ENTITY display.bimi.enabled.value.1.label "Show BIMI logos from mail header">
+<!ENTITY display.bimi.enabled.value.2.label "Show BIMI logos from mail or internet">
+<!ENTITY display.bimi.cacheIndicators.label "Cache BIMI logos">
+<!ENTITY display.bimi.updateInterval.label "Refresh BIMI logos after:">
+<!ENTITY display.bimi.updateInterval.value.0.label "never">
+<!ENTITY display.bimi.updateMonths.label "Months">
+<!ENTITY display.bimi.addUnknownCAs.label "Add unknown CAs">
+<!ENTITY display.bimi.unknownCAsHint.label "Hint: Automatically added certificate authorities are not trusted by default">
+<!ENTITY display.bimi.bimiCABtn.label "Manage BIMI CAs">
+<!ENTITY display.bimi.bimiIndicatorsBtn.label "Cached BIMI logos">
 
 
 <!ENTITY advanced.label "Haladó">

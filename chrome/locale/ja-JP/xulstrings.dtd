@@ -39,3 +39,19 @@
 <!ENTITY signRules.priorityMode.manual.label "優先度を手動指定">
 
 <!ENTITY button.help.label "ヘルプ">
+
+<!ENTITY button.addCA.label "Add...">
+<!ENTITY button.removeCA.label "Remove">
+<!ENTITY button.trustCA.label "Change trust">
+<!ENTITY button.details.label "View details">
+<!ENTITY button.removeIndicator.label "Remove logo">
+
+<!ENTITY treeviewBimiCAs.title "Manage BIMI CAs">
+<!ENTITY treeviewBimiCAs.treecol.name.label "Name">
+<!ENTITY treeviewBimiCAs.treecol.fingerprint.label "Fingerprint">
+<!ENTITY treeviewBimiCAs.treecol.expire.label "Valid till">
+<!ENTITY treeviewBimiCAs.treecol.trust.label "Trust">
+<!ENTITY treeviewBimiCAs.treecol.internal.label "Internal">
+
+<!ENTITY treeviewbimiIndicators.title "Cached BIMI logos">
+<!ENTITY treeviewBimiIndicators.treecol.domain.label "Domain">

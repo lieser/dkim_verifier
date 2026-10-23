@@ -48,6 +48,10 @@
 
 <!ENTITY display.label "表示">
 
+<!ENTITY display.general.label "一般">
+<!ENTITY display.color.label "色">
+<!ENTITY display.icons.label "Logos / BIMI">
+
 <!ENTITY showDKIMHeader.label  "DKIM ヘッダを表示:">
 <!ENTITY showDKIMStatusbarpanel.label  "DKIM ステータスバーを表示:">
 <!ENTITY showDKIMFromTooltip.label  "差出人ヘッダに DKIM ツールチップを表示:">
@@ -71,6 +75,21 @@
 <!ENTITY color.nosig.label "未署名のメール">
 
 <!ENTITY display.favicon.show.label "差出人アドレスの前に既知の署名済みドメインのファビコンを表示">
+<!ENTITY display.favicon.preferInternalIcon.label "Prefer add-on's favicons over BIMI logos">
+
+<!ENTITY display.bimi.box.label "BIMI (Brand Indicators for Message Identification)">
+<!ENTITY display.bimi.enabled.label "Enable BIMI:">
+<!ENTITY display.bimi.enabled.value.0.label "No">
+<!ENTITY display.bimi.enabled.value.1.label "Show BIMI logos from mail header">
+<!ENTITY display.bimi.enabled.value.2.label "Show BIMI logos from mail or internet">
+<!ENTITY display.bimi.cacheIndicators.label "Cache BIMI logos">
+<!ENTITY display.bimi.updateInterval.label "Refresh BIMI logos after:">
+<!ENTITY display.bimi.updateInterval.value.0.label "never">
+<!ENTITY display.bimi.updateMonths.label "Months">
+<!ENTITY display.bimi.addUnknownCAs.label "Add unknown CAs">
+<!ENTITY display.bimi.unknownCAsHint.label "Hint: Automatically added certificate authorities are not trusted by default">
+<!ENTITY display.bimi.bimiCABtn.label "Manage BIMI CAs">
+<!ENTITY display.bimi.bimiIndicatorsBtn.label "Cached BIMI logos">
 
 
 <!ENTITY advanced.label "詳細">

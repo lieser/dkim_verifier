@@ -2,3 +2,8 @@ checkbox {white-space: pre;}
 #paneDisplay [anonid="gridHeader"] {
 	text-align: end;
 }
+
+#paneDisplay #colorPanel label.header {
+    background-image: none;
+    padding: 0px;
+}

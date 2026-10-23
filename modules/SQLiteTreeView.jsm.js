@@ -283,7 +283,13 @@ class SQLiteTreeView {
 		this._triggerUpdate();
 	}
 
-	getCellProperties(/*row,col,props*/) {} // eslint-disable-line strict, no-empty-function
+	getCellProperties(row, column) {
+		if (this.tableName === "domains" && column.id === "indicator") {
+			var iconId = "bimiidx" + this.getCellText(row, column);
+			return iconId;
+		}
+		return "";
+	}
 
 	getCellText(row, column) {
 		var res = this._doSQL(
@@ -291,7 +297,12 @@ class SQLiteTreeView {
 			"ORDER BY " + this.orderClause + "\n" +
 			"LIMIT 1 OFFSET " + row + ";"
 		);
-		return res[0][column.index];
+		var result = res[0][column.index];
+		if (this.tableName === "certs" && column.id === "expiresOn") {
+			let epoc = parseInt(result, 10)/1000;
+			result = new Date(epoc).toLocaleDateString();
+		}
+		return result;
 	}
 
 	// getCellValue
@@ -349,7 +360,7 @@ class SQLiteTreeView {
 				throw new Error(`Table ${this.tableName} must exist`);
 			}
 
-			if ( treeBox.columns.count !== this.columns.length) {
+			if (treeBox.columns.count !== this.columns.length) {
 				throw new Error("Number of columns to be displayed must be the same as in the tree");
 			}
 
