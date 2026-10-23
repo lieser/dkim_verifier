@@ -12,9 +12,9 @@
  */
 
 // options for ESLint
-/* global Components, FileUtils, NetUtil, Services, btoa */
+/* global Components, FileUtils, NetUtil, Services, btoa, setTimeout */
 /* global Logging */
-/* exported EXPORTED_SYMBOLS, addrIsInDomain, addrIsInDomain2, domainIsInDomain, getBaseDomainFromAddr, getDomainFromAddr, encodeBase64Url, PREF, readStringFrom, stringEndsWith, stringEqual, copy, toType, tryGetString, tryGetFormattedString, writeStringToTmpFile, DKIM_SigError, DKIM_TempError, DKIM_Error */
+/* exported EXPORTED_SYMBOLS, addrIsInDomain, addrIsInDomain2, domainIsInDomain, getBaseDomainFromAddr, getDomainFromAddr, encodeBase64Url, PREF, readStringFrom, stringEndsWith, stringEqual, copy, toType, tryGetString, tryGetFormattedString, writeStringToTmpFile, DKIM_SigError, DKIM_TempError, DKIM_Error, sleep */
 
 "use strict";
 
@@ -38,7 +38,8 @@ var EXPORTED_SYMBOLS = [
 	"writeStringToTmpFile",
 	"DKIM_SigError",
 	"DKIM_TempError",
-	"DKIM_Error"
+	"DKIM_Error",
+	"sleep"
 ];
 
 const Cr = Components.results;
@@ -48,6 +49,7 @@ const Cu = Components.utils;
 Cu.import("resource://gre/modules/FileUtils.jsm");
 Cu.import("resource://gre/modules/NetUtil.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
+Cu.import("resource://gre/modules/Timer.jsm");
 Cu.import("resource://services-common/utils.js");
 
 Cu.import("resource://dkim_verifier/logging.jsm.js");
@@ -438,6 +440,16 @@ function writeStringToTmpFile(string, fileName) {
 		// Data has been written to the file.
 		log.debug("DKIM: wrote file to " + file.path);
 	});
+}
+
+/**
+ * Sleep for <ms> milliseconds.
+ *
+ * @param {number} ms
+ * @returns {Promise<void>}
+ */
+function sleep(ms) {
+	return new Promise(resolve => { setTimeout(resolve, ms); });
 }
 
 /**
