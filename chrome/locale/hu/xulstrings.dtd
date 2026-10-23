@@ -5,7 +5,6 @@
 
 <!ENTITY dkim_verifier.reverifyDKIMSignature.label "DKIM aláírás újraellenőrzése">
 <!ENTITY dkim_verifier.policyAddUserException.label "Alá kell írni kivétel hozzáadása">
-<!ENTITY dkim_verifier.markKeyAsSecure.label "A DKIM kulcs biztonságosként jelölése">
 <!ENTITY dkim_verifier.updateKey.label "DKIM kulcs frissítése">
 
 

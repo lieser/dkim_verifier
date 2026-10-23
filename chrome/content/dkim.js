@@ -55,7 +55,6 @@ DKIM_Verifier.Display = (function() {
 	var collapsed2LfromBox; // for CompactHeader addon
 	var verifierBox;
 	var policyAddUserExceptionButton;
-	var markKeyAsSecureButton;
 	var updateKeyButton;
 	var dkimStrings;
 
@@ -328,14 +327,11 @@ DKIM_Verifier.Display = (function() {
 			policyAddUserExceptionButton.disabled = false;
 		}
 
-		// markKeyAsSecureButton / updateKeyButton
+		// updateKeyButton
 		if (prefs.getIntPref("key.storing") !== DKIM_Verifier.PREF.KEY.STORING.DISABLED &&
 		    result.dkim[0].sdid && result.dkim[0].selector) {
 			if (updateKeyButton) {
 				updateKeyButton.disabled = false;
-			}
-			if (!result.dkim[0].keySecure && markKeyAsSecureButton) {
-				markKeyAsSecureButton.disabled = false;
 			}
 		}
 
@@ -471,7 +467,6 @@ var that = {
 			verifierBox = document.getElementById("expandeddkim-verifierBox");
 			policyAddUserExceptionButton = document.
 				getElementById("dkim_verifier.policyAddUserException");
-			markKeyAsSecureButton = document.getElementById("dkim_verifier.markKeyAsSecure");
 			updateKeyButton = document.getElementById("dkim_verifier.updateKey");
 			dkimStrings = document.getElementById("dkimStrings");
 
@@ -640,9 +635,6 @@ var that = {
 			if (policyAddUserExceptionButton) {
 				policyAddUserExceptionButton.disabled = true;
 			}
-			if (markKeyAsSecureButton) {
-				markKeyAsSecureButton.disabled = true;
-			}
 			if (updateKeyButton) {
 				updateKeyButton.disabled = true;
 			}
@@ -724,28 +716,6 @@ var that = {
 			var from = msgHeaderParser.extractHeaderAddressMailboxes(mime2DecodedAuthor);
 
 			await DKIM_Verifier.Policy.addUserException(from);
-
-			that.reverify();
-		})();
-		promise.then(null, function onReject(exception) {
-			log.fatal(exception);
-		});
-	},
-
-	/*
-	 * mark the stored DKIM key of the shown DKIM signature as secure
-	 */
-	markKeyAsSecure : function Display_markKeyAsSecure() {
-		let promise = (async () => {
-			log.trace("markKeyAsSecure Task");
-			const sdid = header.dkimResults[0].sdid;
-			const selector = header.dkimResults[0].selector;
-			if (sdid === undefined || selector === undefined) {
-				log.error("Can not mark key as secure, result does not contain an sdid or selector");
-				return;
-			}
-			await DKIM_Verifier.Key.markKeyAsSecure(
-				sdid, selector);
 
 			that.reverify();
 		})();
