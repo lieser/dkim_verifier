@@ -28,6 +28,7 @@ namespace Libunbound {
         getNameserversFromOS: boolean,
         nameservers: string[],
         trustAnchors: string[],
+        trustAutoTrackFile: string,
         conf?: string,
         debuglevel?: number | undefined,
     }

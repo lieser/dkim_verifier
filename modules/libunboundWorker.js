@@ -154,6 +154,7 @@ var ub_ctx_config;
 var ub_ctx_set_fwd;
 var ub_ctx_resolvconf;
 var ub_ctx_add_ta;
+var ub_ctx_add_ta_autr;
 var ub_ctx_debuglevel;
 var ub_resolve;
 var ub_resolve_free;
@@ -373,6 +374,10 @@ function load(paths) {
 	ub_ctx_add_ta = lib.declare("ub_ctx_add_ta", ctypes.default_abi, ctypes.int,
 		ub_ctx.ptr, ctypes.char.ptr);
 
+	// int ub_ctx_add_ta(struct ub_ctx* ctx, char* taautrfile);
+	ub_ctx_add_ta_autr = lib.declare("ub_ctx_add_ta_autr", ctypes.default_abi, ctypes.int,
+		ub_ctx.ptr, ctypes.char.ptr);
+
 	// int ub_ctx_debuglevel(struct ub_ctx* ctx, int d);
 	ub_ctx_debuglevel = lib.declare("ub_ctx_debuglevel", ctypes.default_abi, ctypes.int,
 		ub_ctx.ptr, ctypes.int);
@@ -401,9 +406,10 @@ function load(paths) {
  * @param {Boolean} getNameserversFromOS
  * @param {String[]} nameservers
  * @param {String[]} trustAnchors
+ * @param {String} trustAutoTrackFile
  * @returns {void}
  */
-function update_ctx(conf, debuglevel, getNameserversFromOS, nameservers, trustAnchors) {
+function update_ctx(conf, debuglevel, getNameserversFromOS, nameservers, trustAnchors, trustAutoTrackFile) {
 	if (!ub_ctx_create) {
 		throw new Error("libunbound not correctly initialized (ub_ctx_create missing)");
 	}
@@ -457,6 +463,11 @@ function update_ctx(conf, debuglevel, getNameserversFromOS, nameservers, trustAn
 		}
 	});
 
+	// root trust anchor auto track (RFC 5011)
+	if((retval=ub_ctx_add_ta_autr(ctx, trustAutoTrackFile)) !== 0) {
+			throw new Error(`error in ub_ctx_add_ta_autr: ${ub_strerror(retval).readString()}. errno: ${ctypes.errno}`);
+	}
+
 	log.debug("context created");
 }
 
@@ -490,7 +501,7 @@ onmessage = function(msg) {
 					let req = msg.data;
 					update_ctx(req.conf, req.debuglevel,
 						req.getNameserversFromOS, req.nameservers,
-						req.trustAnchors);
+						req.trustAnchors, req.trustAutoTrackFile);
 					break;
 				}
 				default: {
