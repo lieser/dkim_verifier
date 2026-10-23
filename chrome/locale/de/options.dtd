@@ -116,3 +116,4 @@
 <!ENTITY display.advancedInfo.includeHeaders.label "Information über signierte Kopfzeilen anzeigen">
 
 <!ENTITY key.fallback.label "Gespeicherten Schlüssel verwenden, falls Schlüssel nicht aus DNS abgerufen werden kann">
+<!ENTITY error.bodylength.overflow.asWarning.label "Behandle nicht vollständig signierten E-Mail-Inhalt als Warnung statt als Fehler">
