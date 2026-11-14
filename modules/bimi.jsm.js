@@ -59,6 +59,9 @@ Cu.import("resource://dkim_verifier/rfcParser.jsm.js");
 Cu.import("resource://dkim_verifier/dnsWrapper.jsm.js");
 Cu.import("resource://dkim_verifier/helper.jsm.js");
 
+const gzip = {};
+Services.scriptloader.loadSubScript("resource://dkim_verifier_3p/pako/pako_inflate.es5.js", gzip, "UTF-8");
+
 // @ts-expect-error
 const PREF_BRANCH = "extensions.dkim_verifier.bimi.";
 // @ts-expect-error
@@ -67,7 +70,7 @@ var prefs = Services.prefs.getBranch(PREF_BRANCH);
 let CERTTOOLS = (function() {
 
 	const log = Logging.getLogger("BIMI.CERT");
-	const RSA ={};
+	const RSA = {};
 	RSA.navigator = {};
 	RSA.navigator.appName = "Netscape";
 	Services.scriptloader.loadSubScript("resource://dkim_verifier_3p/jsbn/jsbn.js", RSA, "UTF-8");
@@ -351,15 +354,30 @@ let CERTTOOLS = (function() {
 						// remove data:image/svg+xml;base64,
 						imageData = imageData.substring(imageData.indexOf("64,")+3);
 						// simple test, since some images are SVGZ, which can't be displayed
-						if (atob(imageData).toLowerCase().includes("</svg>")) {
-							log.debug("Found logo in certificate");
-							svgImgs.push(imageData);
+						const binaryString = atob(imageData);
+						const bytes = new Uint8Array(binaryString.length);
+						for (let i = 0; i < binaryString.length; i++) {
+							bytes[i] = binaryString.charCodeAt(i);
+						}
+						let svgText;
+						if (bytes.length >= 2 && bytes[0] === 0x1f && bytes[1] === 0x8b) {
+							svgText = gzip.pako.inflate(bytes, { to: 'string' });
+							if (svgText && svgText.toLowerCase().includes("</svg>")) {
+								log.debug("Found compressed image in cert");
+								svgImgs.push(btoa(svgText));
+							}
+						} else {
+							svgText = binaryString;
+							if (svgText && svgText.toLowerCase().includes("</svg>")) {
+								log.debug("Found raw image in cert");
+								svgImgs.push(imageData);
+							}
 						}
 					}
 				}
 			}
 		} catch (error) {
-				log.debug("Logotype structure of certificate is not supported");
+			log.debug("Logotype structure of certificate is not supported");
 		}
 		return svgImgs;
 	};

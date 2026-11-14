@@ -48,3 +48,9 @@ This file contains the information which versions of the third-party libraries a
 - Source: GitHub
 - Version: 0.15
 - Download URL: <https://github.com/dchest/tweetnacl-util-js/archive/refs/tags/v0.15.0.zip>
+
+## pako
+- Name: pako
+- Source GitHub
+- Version: 2.2.0
+- Download URL: <https://github.com/nodeca/pako/releases/tag/2.2.0>
