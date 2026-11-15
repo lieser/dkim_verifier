@@ -207,7 +207,7 @@ var authVerifier = {
 					let dkimResultV2 = await DKIM.Verifier.verify2(msg);
 					savedAuthResult.dkim = dkimResultV2.signatures;
 					if (!savedAuthResult.bimiIndicator) {
-						let bimiIndicator = await BIMI.getBimiIndicatorOnline(dkimResultV2.signatures);
+						let bimiIndicator = await BIMI.getBimiIndicatorOnline(dkimResultV2.signatures, msg.headerFields);
 						if (bimiIndicator) {
 							savedAuthResult.version = "3.1";
 							savedAuthResult.bimiIndicator = bimiIndicator;

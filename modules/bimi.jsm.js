@@ -574,6 +574,56 @@ let BIMI = (function() {
 	};
 
 	/**
+	  * Get BIMI selector header and return the selector or "default"
+	  * https://bimigroup.org/how-and-why-to-implement-bimi-selectors/
+	  *
+	  * @param {Map<string, string[]>} headers
+	  * @param {dkimSigResultV2} dkimSigResult (containing signed headers)
+	  * @returns {String} bimiSelector
+	  */
+	let _getBimiSelector = function(headers, dkimSigResult) {
+		const headerName = "bimi-selector";
+		let bimiSelector = "default";
+
+		const bimiSelectorHeaders = headers.get(headerName) || [];
+		if (bimiSelectorHeaders.length === 0) {
+			log.debug("Message contains no BIMI-Selector header, using default selector");
+			return bimiSelector;
+		}
+		if (bimiSelectorHeaders.length > 1) {
+			// This seems to be no risk, as we require and check the certificate of the BIMI record
+			log.warn("Message contains more than one BIMI-Selector header, using first selector");
+		}
+		if (!dkimSigResult.signedHeaders || !dkimSigResult.signedHeaders.includes(headerName)) {
+			// This seems to be no risk, as we require and check the certificate of the BIMI record
+			log.warn("The BIMI-Selector header is not signed by DKIM");
+		}
+		let bimiSelectorHdr = bimiSelectorHeaders[0];
+		bimiSelectorHdr = bimiSelectorHdr.replace(new RegExp(`^${headerName}[ \t]*:`,"i"), "");
+		bimiSelectorHdr = bimiSelectorHdr.trim();
+
+		try {
+			const parsedObj = rfcParser.parseTagValueList(bimiSelectorHdr);
+			if (!(toType(parsedObj) === "Map")) {
+				log.error(`unexpected return value from parseTagValueList: ${parsedObj}`);
+			}
+
+			/** @type {Map} */
+			// @ts-expect-error
+			const parsedMap = parsedObj;
+			if (parsedMap.has("v") &&
+				parsedMap.get("v") === "BIMI1"
+				&& parsedMap.has("s")) {
+				log.debug("Special BIMI selector: " + parsedMap.get("s"));
+				bimiSelector = parsedMap.get("s");
+			}
+		} catch (error) {
+			log.debug("Error getting special BIMI selector: " + error);
+		}
+		return bimiSelector;
+	};
+
+	/**
 	 * Fetches text data from a given url
 	 *
 	 * @param {String} url location
@@ -713,12 +763,12 @@ let BIMI = (function() {
 		* Try to get the BIMI Indicator if available.
 		*
 		* @param {dkimSigResultV2[]} dkimSigResults - result of the dkim verification
+		* @param {Map<string, string[]>} headers
 		* @returns {Promise<String|Null>}
 		*/
-		getBimiIndicatorOnline: async function getBimiIndicatorOnline(dkimSigResults) {
+		getBimiIndicatorOnline: async function getBimiIndicatorOnline(dkimSigResults, headers) {
 			// Only try to fetch BIMI information if enabled and DKIM is valid
 			if (!_checkBasicRequirementsForOnlineBIMI(dkimSigResults)) { return null; }
-
 			// We already check in checkBasicRequirementsForOnlineBIMI, that sdid is defined
 			let domain = String(dkimSigResults[0].sdid).toLowerCase();
 			// Lookup BIMI indicator in cache
@@ -732,14 +782,15 @@ let BIMI = (function() {
 			// Lookup Online
 			if (prefs.getIntPref("enable") < PREF.BIMI.MAIL_ONLINE) { return null; }
 			let parsedBimiRecord;
+			let bimiSelector = _getBimiSelector(headers, dkimSigResults[0]);
 			try {
-				let dnsResult = await DNS.resolve(`default._bimi.${domain}`, "TXT");
+				let dnsResult = await DNS.resolve(`${bimiSelector}._bimi.${domain}`, "TXT");
 				if (dnsResult && dnsResult.data) {
 					let bimiRecord = dnsResult.data[0];
 					parsedBimiRecord = _parseBimiRecord(bimiRecord);
 				}
 			} catch (error) {
-				log.error(`Error resolving default._bimi.${domain}`);
+				log.error(`Error resolving ${bimiSelector}._bimi.${domain}`);
 			}
 
 			// Only try to get the indicator if authorization information is present
