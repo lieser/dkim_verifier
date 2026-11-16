@@ -233,7 +233,7 @@ function getARHResult(msgHdr, msg) {
 		dkim: dkimSigResults,
 		spf: arhSPF,
 		dmarc: arhDMARC,
-		bimiIndicator: BIMI.getBimiIndicator(msg.headerFields, arhBIMI) || undefined,
+		bimiIndicator: BIMI.getBimiIndicatorFromHeader(msg.headerFields, arhBIMI) || undefined,
 	};
 	sortResultKeyword(savedAuthResult.spf);
 	sortResultKeyword(savedAuthResult.dmarc);
