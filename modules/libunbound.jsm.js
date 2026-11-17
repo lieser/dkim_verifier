@@ -29,6 +29,10 @@ var EXPORTED_SYMBOLS = [
 ];
 
 // @ts-expect-error
+const Cc = Components.classes;
+// @ts-expect-error
+const Ci = Components.interfaces;
+// @ts-expect-error
 const Cu = Components.utils;
 
 Cu.import("resource://gre/modules/osfile.jsm");
@@ -157,6 +161,9 @@ var maxCallId = 0;
 /** @type {Map<number, IDeferred<ub_result>>} */
 var openCalls = new Map();
 
+var trustAutoTrackFile = Services.dirsvc.get("ProfD", Components.interfaces.nsIFile);
+trustAutoTrackFile.append("dkimLibUnbound.autoKSK");
+
 let libunbound = {
 	get version() {return module_version; },
 
@@ -189,6 +196,16 @@ let libunbound = {
  * @returns {void}
  */
 function init() {
+	if (!trustAutoTrackFile.exists()) {
+		let resourceKSKDataURI = Services.io.newURI("resource://dkim_verifier_data/dkimLibUnbound.autoKSK", null, null);
+		// eslint-disable-next-line no-extra-parens
+		let resHandler = /** @type {nsIResProtocolHandler} */ (Services.io.getProtocolHandler("resource").QueryInterface(Ci.nsIResProtocolHandler));
+		let sourceURI = Services.io.newURI(resHandler.resolveURI(resourceKSKDataURI), null, null);
+		let browser = Cc["@mozilla.org/embedding/browser/nsWebBrowserPersist;1"].createInstance(Ci.nsIWebBrowserPersist);
+		browser.saveURI(sourceURI, null, null, null, null, null, trustAutoTrackFile, null);
+		log.debug("KSK auto update information initialized...");
+	}
+
 	load();
 	update_ctx();
 
@@ -263,6 +280,7 @@ function update_ctx() {
 		getNameserversFromOS: getNameserversFromOS,
 		nameservers: nameservers,
 		trustAnchors: trustAnchors,
+		trustAutoTrackFile: trustAutoTrackFile.path,
 	});
 }
 
