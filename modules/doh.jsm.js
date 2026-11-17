@@ -15,7 +15,7 @@
 
 // options for ESLint
 /* global Components, Services, URLSearchParams */
-/* global Logging, encodeBase64Url, encode, decode, PacketType, PacketFlag, RecordType, DKIM_TempError */
+/* global Logging, encodeBase64Url, encode, decode, PacketType, PacketFlag, RecordType, DKIM_TempError, sleep */
 /* exported EXPORTED_SYMBOLS, DoH */
 
 /** @import {DNSResult} from "./dnsWrapper.mjs" */
@@ -98,40 +98,47 @@ async function dnsGetQuery(query) {
 	params.append("dns", encodeBase64Url(query, true));
 	const server = prefs.getCharPref("doh.server");
 	let httpResponse;
-	try {
-		httpResponse = await new Promise(function (resolve, reject) {
-			// @ts-expect-error
-			const XMLHttpRequest = Components.Constructor("@mozilla.org/xmlextras/xmlhttprequest;1", "nsIXMLHttpRequest");
-			const xhr = new XMLHttpRequest();
-			xhr.responseType = "arraybuffer";
-			xhr.open("GET", `${server}?${params}`);
-			xhr.onload = function () {
-				if (this.status >= 200 && this.status < 300) {
-					resolve({
-						status: this.status,
-						contentType: this.getResponseHeader('content-type'),
-						result: this.response
-					});
-				} else {
+	let attempt = 1;
+	while (!httpResponse || httpResponse.status < 200 || httpResponse.status >= 300) {
+		try {
+			httpResponse = await new Promise(function (resolve, reject) {
+				// @ts-expect-error
+				const XMLHttpRequest = Components.Constructor("@mozilla.org/xmlextras/xmlhttprequest;1", "nsIXMLHttpRequest");
+				const xhr = new XMLHttpRequest();
+				xhr.responseType = "arraybuffer";
+				xhr.open("GET", `${server}?${params}`);
+				xhr.onload = function () {
+					if (this.status >= 200 && this.status < 300) {
+						resolve({
+							status: this.status,
+							contentType: this.getResponseHeader('content-type'),
+							result: this.response
+						});
+					} else {
+						// eslint-disable-next-line prefer-promise-reject-errors
+						reject({
+							status: this.status,
+							statusText: this.statusText
+						});
+					}
+				};
+				xhr.onerror = function () {
 					// eslint-disable-next-line prefer-promise-reject-errors
 					reject({
 						status: this.status,
 						statusText: this.statusText
 					});
-				}
-			};
-			xhr.onerror = function () {
-				// eslint-disable-next-line prefer-promise-reject-errors
-				reject({
-					status: this.status,
-					statusText: this.statusText
-				});
-			};
-			xhr.send();
-		});
-	} catch (error) {
-		log.error("Failed to fetch DoH server", error);
-		throw new DKIM_TempError("DKIM_DNSERROR_SERVER_ERROR");
+				};
+				xhr.send();
+			});
+		} catch (error) {
+			log.error(`Failed to fetch DoH server (attempt ${attempt})`, error);
+			if (attempt > 4) {
+				throw new DKIM_TempError("DKIM_DNSERROR_SERVER_ERROR");
+			}
+			await sleep(250);
+			attempt++;
+		}
 	}
 	if (httpResponse.status < 200 || httpResponse.status >= 300) {
 		log.error(`DNS server responded with response status: ${httpResponse.statusText} (${httpResponse.status})`);
