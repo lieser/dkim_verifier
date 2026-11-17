@@ -42,6 +42,9 @@
 		<preference id="pref_error.algorithm.rsa.weakKeyLength.treatAs"
 		            name="extensions.dkim_verifier.error.algorithm.rsa.weakKeyLength.treatAs"
 		            type="int"/>
+		<preference id="pref_error.bodylength.overflow.asWarning"
+		            name="extensions.dkim_verifier.error.bodylength.overflow.asWarning"
+		            type="bool"/>
 		<preference id="pref_error.sanitizeSubject"
 		            name="extensions.dkim_verifier.error.sanitizeSubject"
 		            type="bool"/>
@@ -61,6 +64,8 @@
 	          label="&arh.relaxedParsing.label;"/>
 	<checkbox preference="pref_error.sanitizeSubject"
 	          label="&error.sanitizeSubject.label;"/>
+	<checkbox preference="pref_error.bodylength.overflow.asWarning"
+			  label="&error.bodylength.overflow.asWarning.label;"/>
 	<hbox align="center">
 		<label>&error.illformed_i.treatAs.label;</label>
 		<menulist preference="pref_error.illformed_i.treatAs">
