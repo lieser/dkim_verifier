@@ -14,6 +14,7 @@ pref("extensions.dkim_verifier.dkim.enable", true);
 // 1: store DKIM keys
 // 2: store DKIM keys and compare with current key
 pref("extensions.dkim_verifier.key.storing", 0);
+pref("extensions.dkim_verifier.key.fallbackToStoredKey", true);
 
 pref("extensions.dkim_verifier.saveResult", false);
 pref("extensions.dkim_verifier.arh.read", false);
