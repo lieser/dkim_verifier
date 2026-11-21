@@ -161,7 +161,7 @@ var authVerifier = {
 			}
 
 			// read Authentication-Results header
-			let arhResult = getARHResult(msgHdr, msg);
+			let arhResult = await getARHResult(msgHdr, msg);
 
 			if (arhResult) {
 				// sort signatures
@@ -207,7 +207,7 @@ var authVerifier = {
 					let dkimResultV2 = await DKIM.Verifier.verify2(msg);
 					savedAuthResult.dkim = dkimResultV2.signatures;
 					if (!savedAuthResult.bimiIndicator) {
-						let bimiIndicator = await BIMI.getBimiIndicatorOnline(dkimResultV2.signatures, msg.headerFields);
+						let bimiIndicator = await BIMI.checkBasicRequirementsForBIMI(dkimResultV2.signatures, msg.from) ? await BIMI.getBimiIndicatorOnline(dkimResultV2.signatures, msg.headerFields) : undefined;
 						if (bimiIndicator) {
 							savedAuthResult.version = "3.1";
 							savedAuthResult.bimiIndicator = bimiIndicator;
@@ -482,10 +482,8 @@ async function addFavicons(authResult, from, bimiIndicator) {
 		if (authResult.dkim[i].sdid) {
 			if (bimiIndicator && from && addrIsInDomain(from, authResult.dkim[i].sdid)) {
 				authResult.dkim[i].favicon = `data:image/svg+xml;base64,${bimiIndicator}`;
-			}
-			if (prefs.getBoolPref("display.favicon.preferInternalIcon") || !authResult.dkim[i].favicon) {
-				let internalIcon = await DKIM.Policy.getFavicon(authResult.dkim[i].sdid, authResult.dkim[i].auid, from);
-				if (internalIcon) { authResult.dkim[i].favicon = internalIcon; }
+			} else {
+				authResult.dkim[i].favicon = await DKIM.Policy.getFavicon(authResult.dkim[i].sdid, authResult.dkim[i].auid, from);
 			}
 		}
 	}

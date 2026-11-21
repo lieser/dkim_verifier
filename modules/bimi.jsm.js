@@ -3,9 +3,9 @@
  * https://datatracker.ietf.org/doc/draft-brand-indicators-for-message-identification/04/
  *
  * BIMI implementation for a Mail User Agent (MUA).
- * - Gets the BIMI Indicator based on the information the receiving
+ * - Gets the BIMI logo based on the information the receiving
  * Mail Transfer Agent (MTA) writes into the headers of the message.
- * - Gets the BIMI Indicator from DNS if it's protected with a trusted certificate
+ * - Gets the BIMI logo from DNS if it's protected with a trusted certificate
  *
  * This is not a complete implementation of BIMI.
  *
@@ -59,8 +59,12 @@ Cu.import("resource://dkim_verifier/rfcParser.jsm.js");
 Cu.import("resource://dkim_verifier/dnsWrapper.jsm.js");
 Cu.import("resource://dkim_verifier/helper.jsm.js");
 
-const gzip = {};
-Services.scriptloader.loadSubScript("resource://dkim_verifier_3p/pako/pako_inflate.es5.js", gzip, "UTF-8");
+// @ts-expect-error
+let DKIM = {};
+Cu.import("resource://dkim_verifier/dkimPolicy.jsm.js", DKIM);
+
+const GZIP = {};
+Services.scriptloader.loadSubScript("resource://dkim_verifier_3p/pako/pako_inflate.es5.js", GZIP, "UTF-8");
 
 // @ts-expect-error
 const PREF_BRANCH = "extensions.dkim_verifier.bimi.";
@@ -258,7 +262,7 @@ let CERTTOOLS = (function() {
 				break;
 			}
 		}
-		// Get Common Name and BIMI Logo Type
+		// Get Common Name and BIMI logo Type
 		let cn = certObj.getSubject().array.filter(el => stringEqual(el[0].type, "CN"));
 		if (cn) { cn = cn[0][0].value; }
 		let type = certObj.getSubject().array.filter(el => stringEqual(el[0].type, BIMI_TYPE_OID));
@@ -361,7 +365,7 @@ let CERTTOOLS = (function() {
 						}
 						let svgText;
 						if (bytes.length >= 2 && bytes[0] === 0x1f && bytes[1] === 0x8b) {
-							svgText = gzip.pako.inflate(bytes, { to: 'string' });
+							svgText = GZIP.pako.inflate(bytes, { to: 'string' });
 							if (svgText && svgText.toLowerCase().includes("</svg>")) {
 								log.debug("Found compressed image in cert");
 								svgImgs.push(btoa(svgText));
@@ -670,17 +674,6 @@ let BIMI = (function() {
 		return httpResponse.result;
 	};
 
-	/**
-	 * @param {dkimSigResultV2[]} dkimSigResults
-	 * @returns {Boolean}
-	 */
-	let _checkBasicRequirementsForOnlineBIMI = function(dkimSigResults) {
-		return prefs.getIntPref("enable") > PREF.BIMI.OFF
-				&& dkimSigResults.length > 0
-				&& dkimSigResults[0].result === "SUCCESS"
-				&& toType(dkimSigResults[0].sdid) === "String";
-	};
-
 	/*
 	 * Computes a hash of "text" using the algo from hashElement
 	 * and compares it to the hash in hashElement
@@ -710,11 +703,31 @@ let BIMI = (function() {
 
 	let that = {
 		/**
-		* Try to get the BIMI Indicator if available.
+		 * Decides, if dkimVerifier should try to show a BIMI icon
+		 *
+		 * @param {dkimSigResultV2[]} dkimSigResults
+		 * @param {String} from
+		 * @returns {Promise<Boolean>}
+		 */
+		checkBasicRequirementsForBIMI: async function (dkimSigResults, from) {
+			// BIMI enabled, there's a valid dkim signature
+			// There's no favicon or BIMI logo should replace internal favicon
+			return prefs.getIntPref("enable") > PREF.BIMI.OFF
+					&& dkimSigResults.length > 0
+					&& dkimSigResults[0].result === "SUCCESS"
+					&& toType(dkimSigResults[0].sdid) === "String"
+					&& (!Services.prefs.getBoolPref("extensions.dkim_verifier.display.favicon.preferInternalIcon")
+						// @ts-expect-error
+						|| await DKIM.Policy.getFavicon(dkimSigResults[0].sdid, dkimSigResults[0].auid, from) === undefined
+						);
+		},
+
+		/**
+		* Try to get the BIMI logo if available.
 		*
 		* @param {Map<string, string[]>} headers
 		* @param {ARHResinfo[]} arhBIMI - Trusted ARHs containing a BIMI result.
-		* @returns {string|null}
+		* @returns {string|undefined}
 		*/
 		getBimiIndicatorFromHeader: function (headers, arhBIMI) {
 			// Assuming:
@@ -724,10 +737,8 @@ let BIMI = (function() {
 			// 3. If the receiving MTA supports BIMI,
 			//    it will make sure we only see his BIMI-Indicator headers (as required by the RFC).
 			//
-			// Given the above, it should be safe to trust the BIMI indicator from the BIMI-Indicator header
+			// Given the above, it should be safe to trust the BIMI logo from the BIMI-Indicator header
 			// if we have a passing BIMI result there the MTA claims to have checked the Authority Evidence.
-
-			if (prefs.getIntPref("enable") === PREF.BIMI.OFF) { return null; }
 
 			const hasAuthorityPassBIMI = arhBIMI.some(
 				arh => arh.method === "bimi" &&
@@ -735,18 +746,18 @@ let BIMI = (function() {
 					arh.properties.policy.authority === "pass"
 			);
 			if (!hasAuthorityPassBIMI) {
-				return null;
+				return undefined;
 			}
 
 			const bimiIndicators = headers.get("bimi-indicator") || [];
 			if (bimiIndicators.length > 1) {
 				log.warn("Message contains more than one BIMI-Indicator header");
-				return null;
+				return undefined;
 			}
 			let bimiIndicator = bimiIndicators[0];
 			if (!bimiIndicator) {
 				log.warn("Message contains an ARH with passing BIMI but does not have a BIMI-Indicator header");
-				return null;
+				return undefined;
 			}
 
 			// TODO: If in the future we support ARC we might want to check the policy.indicator-hash
@@ -760,18 +771,16 @@ let BIMI = (function() {
 		},
 
 		/**
-		* Try to get the BIMI Indicator if available.
+		* Try to get the BIMI logo if available.
 		*
 		* @param {dkimSigResultV2[]} dkimSigResults - result of the dkim verification
 		* @param {Map<string, string[]>} headers
 		* @returns {Promise<String|Null>}
 		*/
 		getBimiIndicatorOnline: async function getBimiIndicatorOnline(dkimSigResults, headers) {
-			// Only try to fetch BIMI information if enabled and DKIM is valid
-			if (!_checkBasicRequirementsForOnlineBIMI(dkimSigResults)) { return null; }
-			// We already check in checkBasicRequirementsForOnlineBIMI, that sdid is defined
+			// We already check in checkBasicRequirementsForBIMI, that sdid is defined
 			let domain = String(dkimSigResults[0].sdid).toLowerCase();
-			// Lookup BIMI indicator in cache
+			// Lookup BIMI logo in cache
 			log.debug("Try to get BIMI logo for " + domain);
 			let cachedBimiIndicator = await BIMIDB.getBimiIndicator(domain);
 			if (cachedBimiIndicator) {
@@ -807,7 +816,7 @@ let BIMI = (function() {
 				|| !await CERTTOOLS.testValidity(b64Certs)
 			) { return null; }
 
-			// Fetching BIMI indicator from certificate
+			// Fetching BIMI logo from certificate
 			const svgData = CERTTOOLS.getBimiSVGData(bimiCert);
 			if (svgData.length > 0) {
 				let result = svgData[0];
@@ -818,7 +827,7 @@ let BIMI = (function() {
 				return result;
 			}
 
-			// Fetching BIMI indicator from internet and compare to hash
+			// Fetching BIMI logo from internet and compare to hash
 			const svgHash = CERTTOOLS.getBimiHashData(bimiCert);
 			if (svgHash.length > 0) {
 				const bimiIndicator = await _fetchTextResource(parsedBimiRecord.location);
@@ -1200,7 +1209,7 @@ let BIMIDB = (function() {
 		},
 
 		/**
-		 * Gets a BIMI indicator from the database
+		 * Gets a BIMI logo from the database
 		 *
 		 * @param {String} domain
 		 * @returns {Promise<String|null>}
@@ -1246,7 +1255,7 @@ let BIMIDB = (function() {
 		},
 
 		/**
-		 * Adds a BIMI indicator to the database
+		 * Adds a BIMI logo to the database
 		 *
 		 * @param {String} domain
 		 * @param {String} bimiIndicator
@@ -1269,7 +1278,7 @@ let BIMIDB = (function() {
 				);
 				if (sqlRes.length > 0) {
 					indIdx = sqlRes[0].getResultByName("idx");
-					// update existing BIMI indicator
+					// update existing BIMI logo
 					await conn.execute(
 						"UPDATE indicators\n" +
 						"  SET data = :data,\n" +
@@ -1290,7 +1299,7 @@ let BIMIDB = (function() {
 					} else {
 						indIdx = 1;
 					}
-					// inserting new BIMI indicator
+					// inserting new BIMI logo
 					await conn.execute(
 						"INSERT INTO indicators (idx, insertedAt, lastUsedAt, data)\n" +
 						"VALUES (:index, DATE('now'), DATE('now'), :data);",
@@ -1311,7 +1320,7 @@ let BIMIDB = (function() {
 			}
 		},
 		/**
-		 * Removes a BIMI indicator from the database
+		 * Removes a BIMI logo from the database
 		 *
 		 * @param {String} domain
 		 * @returns {Promise<void>}

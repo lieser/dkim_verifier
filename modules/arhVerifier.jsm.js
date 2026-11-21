@@ -110,11 +110,11 @@ function sortResultKeyword(arhResInfo) {
  *
  * @param {nsIMsgDBHdr} msgHdr
  * @param {Object} msg
- * @returns {SavedAuthResult|Null}
+ * @returns {Promise<SavedAuthResult|Null>}
  * @throws Error
  */
 // eslint-disable-next-line complexity
-function getARHResult(msgHdr, msg) {
+async function getARHResult(msgHdr, msg) {
 	function testAllowedAuthserv(e) {
 		// eslint-disable-next-line no-invalid-this
 		if (this.authserv_id === e) {
@@ -233,7 +233,7 @@ function getARHResult(msgHdr, msg) {
 		dkim: dkimSigResults,
 		spf: arhSPF,
 		dmarc: arhDMARC,
-		bimiIndicator: BIMI.getBimiIndicatorFromHeader(msg.headerFields, arhBIMI) || undefined,
+		bimiIndicator: await BIMI.checkBasicRequirementsForBIMI(dkimSigResults, msg.from) ? BIMI.getBimiIndicatorFromHeader(msg.headerFields, arhBIMI) : undefined,
 	};
 	sortResultKeyword(savedAuthResult.spf);
 	sortResultKeyword(savedAuthResult.dmarc);
