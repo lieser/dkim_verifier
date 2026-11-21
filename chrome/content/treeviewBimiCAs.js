@@ -49,7 +49,7 @@ async function addBimiCA() {
 
 	const fileDlg = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
 	fileDlg.init(window, "", Ci.nsIFilePicker.modeOpen);
-	fileDlg.appendFilter("Certificates", "*.crt;*.cer");
+	fileDlg.appendFilter("Certificates", "*.crt;*.cer;*.pem");
 	fileDlg.appendFilters(Ci.nsIFilePicker.filterAll);
 	fileDlg.show();
 
@@ -69,10 +69,18 @@ async function addBimiCA() {
 		}
 
 		let binaryString = String.fromCharCode.apply(null, bytes);
-		let base64Str = binaryString.match(/-----BEGIN [A-Z0-9 ]+-----/) ? binaryString : btoa(binaryString);
-		base64Str = base64Str.replace(/-----BEGIN [A-Z0-9 ]+-----/g, '');
-		base64Str = base64Str.replace(/-----END [A-Z0-9 ]+-----/g, '');
-		base64Str = base64Str.replace(/\s+/g, '');
+		let testPEM = binaryString.match(/-----BEGIN [A-Z0-9 ]+-----/);
+		let base64Str = testPEM ? binaryString : btoa(binaryString);
+		if (testPEM) {
+			// Do some checks, sanitize input to bare certificate data
+			if (testPEM.length > 1) {
+				log.error("The certificate file contains more than one certificate blocks");
+			}
+			base64Str = base64Str.substring(testPEM.index);
+			base64Str = base64Str.replace(/-----BEGIN [A-Z0-9 ]+-----/g, '');
+			base64Str = base64Str.replace(/-----END [A-Z0-9 ]+-----/g, '');
+			base64Str = base64Str.replace(/\s+/g, '');
+		}
 
 		const certDB = Cc["@mozilla.org/security/x509certdb;1"].getService(Ci.nsIX509CertDB);
 		try {
@@ -83,7 +91,7 @@ async function addBimiCA() {
 				changeSelection();
 			}
 		} catch (error) {
-			log.error("The certificate file is corrupt", error);
+			log.error("The certificate file is corrupt or file format is not supported", error);
 		}
 	}
 }
@@ -135,7 +143,7 @@ async function viewDetails() {
 					const certObj = certDB.constructX509FromBase64(certData);
 					certDialogs.viewCert(window, certObj);
 				} catch (error) {
-					log.error("The certificate file is corrupt", error);
+					log.error("The certificate data is corrupt", error);
 				}
 				break;
 			}
