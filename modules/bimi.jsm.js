@@ -129,8 +129,8 @@ let CERTTOOLS = (function() {
 	 * @returns {String}
 	 */
 	let _getFingerprint = function(certString) {
-		const derCert = _testPEMformat(certString) ? _convertPEMtoDER(certString) : certString;
-		let rawFP = _getHash(atob(derCert), "sha256");
+		const b64Cert = _testPEMformat(certString) ? _convertPEMtoB64Cert(certString) : certString;
+		let rawFP = _getHash(atob(b64Cert), "sha256");
 		rawFP = rawFP.toUpperCase();
 		let fingerprint = "";
 		for (let i=0; i < rawFP.length; i++) {
@@ -141,26 +141,29 @@ let CERTTOOLS = (function() {
 	};
 
 	/**
-	 * Takes a Base64 encoded cert, returns true, if it's in PEM format, else false
+	 * Takes a cert string, returns true, if it PEM certificate headers and footers, else false
 	 *
 	 * @param {String} certString
 	 * @returns {Boolean}
 	 */
 	let _testPEMformat = function(certString) {
-		return certString.match(/-----BEGIN [A-Z0-9 ]+-----/) !== null;
+		return certString.match(/-----BEGIN [A-Z0-9 ]+-----/) !== null
+				&& certString.match(/-----END [A-Z0-9 ]+-----/) !== null;
 	};
 
 	/**
-	 * Takes a PEM cert (also chain) string and returns an array of DER strings (one for each certificate)
+	 * Takes a PEM cert (also chain) string and returns an array of cleaned Base64 certificate strings (one for each certificate)
 	 * PEM: Base64 encoded certificate(s) with
 	 * -----BEGIN CERTIFICATE----- / -----END CERTIFICATE----- marker
-	 * DER: Base64 encoded certificate without markers
 	 *
 	 * @param {String} certString PEM cert(s) string
 	 * @returns {String[]} Array of Base64 encoded certificate strings
 	 */
-	let _convertPEMtoDERArray = function(certString) {
+	let _convertPEMtoB64CertArray = function(certString) {
 		if (!certString) { return []; }
+		let dataStart = certString.match(/-----BEGIN [A-Z0-9 ]+-----/);
+		if (dataStart === null || dataStart.index === undefined) { return []; }
+		certString = certString.substring(dataStart.index);
 		certString = certString.replace(/-----BEGIN [A-Z0-9 ]+-----/g, '----');
 		certString = certString.replace(/-----END [A-Z0-9 ]+-----/g, '----');
 		certString = certString.replace(/\s+/g, '');
@@ -174,28 +177,26 @@ let CERTTOOLS = (function() {
 	};
 
 	/**
-	 * Takes a PEM cert string and returns a DER string
+	 * Takes a PEM cert string and returns a stripped Base64 string
 	 * PEM: Base64 encoded certificate(s) with
 	 * -----BEGIN CERTIFICATE----- / -----END CERTIFICATE----- marker
-	 * DER: Base64 encoded certificate without markers
 	 *
 	 * @param {String} certString PEM cert(s) string
 	 * @returns {String} Base64 encoded certificate string
 	 */
-	let _convertPEMtoDER = function(certString) {
-		return _convertPEMtoDERArray(certString)[0];
+	let _convertPEMtoB64Cert = function(certString) {
+		return _convertPEMtoB64CertArray(certString)[0];
 	};
 
 	/**
-	 * Takes a DER cert string and returns PEM string
+	 * Takes a Bas64 cert string and returns PEM string
 	 * PEM: Base64 encoded certificate with
 	 * -----BEGIN CERTIFICATE----- / -----END CERTIFICATE----- marker
-	 * DER: Base64 encoded certificate without markers
 	 *
-	 * @param {String} certString DER cert String
+	 * @param {String} certString Base64 cert String
 	 * @returns {String} PEM cert String
 	 */
-	let _convertDERtoPEM = function(certString) {
+	let _convertB64CerttoPEM = function(certString) {
 		if (_testPEMformat(certString)) { return certString; }
 		let wrappedString = "-----BEGIN CERTIFICATE-----\n";
 		while (certString.length >= 64) {
@@ -216,10 +217,10 @@ let CERTTOOLS = (function() {
 	let _getEndEntitityCert = function(certArray) {
 		for (const cert of certArray) {
 			const certDB = Cc["@mozilla.org/security/x509certdb;1"].getService(Ci.nsIX509CertDB);
-			const derCert = _testPEMformat(cert) ? _convertPEMtoDER(cert) : cert;
+			const b64Cert = _testPEMformat(cert) ? _convertPEMtoB64Cert(cert) : cert;
 			let certObj;
 			try {
-				certObj = certDB.constructX509FromBase64(derCert);
+				certObj = certDB.constructX509FromBase64(b64Cert);
 			} catch (error) {
 				log.error("The certificate data is corrupt", error);
 				return null;
@@ -244,11 +245,11 @@ let CERTTOOLS = (function() {
 		const BIMI_KEY_USAGE_OID = "1.3.6.1.5.5.7.3.31";
 		const BIMI_LOGOTYPE_OID = "1.3.6.1.5.5.7.1.12";
 		const BIMI_TYPE_OID = "1.3.6.1.4.1.53087.1.13";
-		// we need a certificate in DER format
-		let derCert = !_testPEMformat(bimiCert) ? _convertDERtoPEM(bimiCert) : bimiCert;
+		// we need a certificate as stripped PEM (Base64 cert string)
+		let b64Cert = !_testPEMformat(bimiCert) ? _convertB64CerttoPEM(bimiCert) : bimiCert;
 		const certObj = new RSA.X509();
 		try {
-			certObj.readCertPEM(derCert);
+			certObj.readCertPEM(b64Cert);
 		} catch (error) {
 			log.error("The certificate data is corrupt", error);
 			return false;
@@ -303,10 +304,10 @@ let CERTTOOLS = (function() {
 	 * @returns {String[]}
 	 */
 	let _getAlternativeDomainNames = function(bimiCert) {
-		let derCert = !_testPEMformat(bimiCert) ? _convertDERtoPEM(bimiCert) : bimiCert;
+		let b64Cert = !_testPEMformat(bimiCert) ? _convertB64CerttoPEM(bimiCert) : bimiCert;
 		const certObj = new RSA.X509();
 		try {
-			certObj.readCertPEM(derCert);
+			certObj.readCertPEM(b64Cert);
 		} catch (error) {
 			log.error("The certificate data is corrupt", error);
 			return [];
@@ -329,10 +330,10 @@ let CERTTOOLS = (function() {
 	 */
 	let _getBimiSVGData = function(bimiCert) {
 		const BIMI_LOGOTYPE_OID = "1.3.6.1.5.5.7.1.12";
-		const derCert = !_testPEMformat(bimiCert) ? _convertDERtoPEM(bimiCert) : bimiCert;
+		const b64Cert = !_testPEMformat(bimiCert) ? _convertB64CerttoPEM(bimiCert) : bimiCert;
 		const certObj = new RSA.X509();
 		try {
-			certObj.readCertPEM(derCert);
+			certObj.readCertPEM(b64Cert);
 		} catch (error) {
 			log.error("The certificate data is corrupt", error);
 			return [];
@@ -397,10 +398,10 @@ let CERTTOOLS = (function() {
 	 */
 	let _getBimiHashData = function(bimiCert) {
 		const BIMI_LOGOTYPE_OID = "1.3.6.1.5.5.7.1.12";
-		const derCert = !_testPEMformat(bimiCert) ? _convertDERtoPEM(bimiCert) : bimiCert;
+		const b64Cert = !_testPEMformat(bimiCert) ? _convertB64CerttoPEM(bimiCert) : bimiCert;
 		const certObj = new RSA.X509();
 		try {
-			certObj.readCertPEM(derCert);
+			certObj.readCertPEM(b64Cert);
 		} catch (error) {
 			log.error("The certificate data is corrupt", error);
 			return [];
@@ -456,8 +457,8 @@ let CERTTOOLS = (function() {
 		try {
 			// Load certificate chain into memory
 			for (const cert of certArray) {
-				const derCert = _testPEMformat(cert) ? _convertPEMtoDER(cert) : cert;
-				const certObj = certDB.constructX509FromBase64(derCert);
+				const b64Cert = _testPEMformat(cert) ? _convertPEMtoB64Cert(cert) : cert;
+				const certObj = certDB.constructX509FromBase64(b64Cert);
 				// is any certificate expired => fail
 				if (certObj.validity.notAfter < now || certObj.validity.notBefore > now) {
 					log.debug(`${certObj.commonName} is expired: ${certObj.validity.notBeforeLocalTime} - ${certObj.validity.notAfterLocalTime}`);
@@ -478,7 +479,7 @@ let CERTTOOLS = (function() {
 		let endEntity = _getEndEntitityCert(certArray);
 		// endEntity === null should never happen in a PKI scenario, as it means any cert is a CA
 		endEntity = endEntity ? endEntity : certArray[0];
-		endEntity = _testPEMformat(endEntity) ? _convertPEMtoDER(endEntity) : endEntity;
+		endEntity = _testPEMformat(endEntity) ? _convertPEMtoB64Cert(endEntity) : endEntity;
 		let endEntityObj;
 		try {
 			endEntityObj = certDB.constructX509FromBase64(endEntity);
@@ -528,9 +529,9 @@ let CERTTOOLS = (function() {
 		getBimiSVGData: _getBimiSVGData,
 		getAlternativeDomainNames: _getAlternativeDomainNames,
 
-		convertPEMtoDERArray: _convertPEMtoDERArray,
-		convertPEMtoDER: _convertPEMtoDER,
-		convertDERtoPEM: _convertDERtoPEM,
+		convertPEMtoB64CertArray: _convertPEMtoB64CertArray,
+		convertPEMtoB64Cert: _convertPEMtoB64Cert,
+		convertB64CerttoPEM: _convertB64CerttoPEM,
 
 		testBIMICert: _testBIMICert,
 		testValidity: _testValidity,
@@ -809,7 +810,7 @@ let BIMI = (function() {
 
 			// Testing certificates...
 			if (!pemCertChain) { return null; }
-			const b64Certs = CERTTOOLS.convertPEMtoDERArray(pemCertChain);
+			const b64Certs = CERTTOOLS.convertPEMtoB64CertArray(pemCertChain);
 			const bimiCert = CERTTOOLS.getEndEntitityCert(b64Certs);
 			if (!bimiCert
 				|| !CERTTOOLS.testBIMICert(bimiCert, domain)
@@ -1120,10 +1121,10 @@ let BIMIDB = (function() {
 			await _initDB();
 			const conn = await Sqlite.openConnection({path: BIMI_DB_NAME});
 			const certDB = Cc["@mozilla.org/security/x509certdb;1"].getService(Ci.nsIX509CertDB);
-			const derCert = CERTTOOLS.testPEMformat(certString) ? CERTTOOLS.convertPEMtoDER(certString) : certString;
+			const b64Cert = CERTTOOLS.testPEMformat(certString) ? CERTTOOLS.convertPEMtoB64Cert(certString) : certString;
 			let cert;
 			try {
-				cert = certDB.constructX509FromBase64(derCert);
+				cert = certDB.constructX509FromBase64(b64Cert);
 			} catch (error) {
 				log.error("The certificate data is corrupt", error);
 				return;
@@ -1133,7 +1134,7 @@ let BIMIDB = (function() {
 					"SELECT data FROM certs\n" +
 					"WHERE\n" +
 					"  data = :certData;",
-					{ "certData": derCert }
+					{ "certData": b64Cert }
 				);
 				// test if certificate is already in DB (then do nothing to not change the trust value or internal certs)
 				if (!sqlRes || sqlRes.length === 0) {
@@ -1145,7 +1146,7 @@ let BIMIDB = (function() {
 							"fingerprint": cert.sha256Fingerprint,
 							"notAfter": cert.validity.notAfter,
 							"trust": trust ? 1 : 0,
-							"b64cert": derCert
+							"b64cert": b64Cert
 						}
 					);
 					log.debug(`Added CA with fingerprint ${cert.sha256Fingerprint}`);

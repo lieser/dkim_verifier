@@ -86,14 +86,15 @@ async function addBimiCA() {
 		}
 
 		let binaryString = String.fromCharCode.apply(null, bytes);
-		let testPEM = binaryString.match(/-----BEGIN [A-Z0-9 ]+-----/);
+		let testPEM = binaryString.match(/-----BEGIN [A-Z0-9 ]+-----/g);
 		let base64Str = testPEM ? binaryString : btoa(binaryString);
 		if (testPEM) {
 			// Do some checks, sanitize input to bare certificate data
 			if (testPEM.length > 1) {
 				log.error("The certificate file contains more than one certificate blocks");
 			}
-			base64Str = base64Str.substring(testPEM.index);
+			let dataStart = binaryString.match(/-----BEGIN [A-Z0-9 ]+-----/);
+			base64Str = base64Str.substring(dataStart.index);
 			base64Str = base64Str.replace(/-----BEGIN [A-Z0-9 ]+-----/g, '');
 			base64Str = base64Str.replace(/-----END [A-Z0-9 ]+-----/g, '');
 			base64Str = base64Str.replace(/\s+/g, '');
