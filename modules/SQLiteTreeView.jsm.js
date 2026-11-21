@@ -283,13 +283,7 @@ class SQLiteTreeView {
 		this._triggerUpdate();
 	}
 
-	getCellProperties(row, column) {
-		if (this.tableName === "domains" && column.id === "indicator") {
-			var iconId = "bimiidx" + this.getCellText(row, column);
-			return iconId;
-		}
-		return "";
-	}
+	getCellProperties(/*row,col,props*/) {} // eslint-disable-line strict, no-empty-function
 
 	getCellText(row, column) {
 		var res = this._doSQL(
@@ -297,12 +291,7 @@ class SQLiteTreeView {
 			"ORDER BY " + this.orderClause + "\n" +
 			"LIMIT 1 OFFSET " + row + ";"
 		);
-		var result = res[0][column.index];
-		if (this.tableName === "certs" && column.id === "expiresOn") {
-			let epoc = parseInt(result, 10)/1000;
-			result = new Date(epoc).toLocaleDateString();
-		}
-		return result;
+		return res[0][column.index];
 	}
 
 	// getCellValue

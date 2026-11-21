@@ -14,6 +14,23 @@ Cu.import("resource://dkim_verifier/logging.jsm.js", DKIM_Verifier);
 Cu.import("resource://dkim_verifier/SQLiteTreeView.jsm.js");
 Cu.import("resource://dkim_verifier/bimi.jsm.js");
 
+class CATreeView extends SQLiteTreeView {
+	// extends the SQLiteTreeView class to display pretty certificate expiration date
+	getCellText(row, column) {
+		var res = this._doSQL(
+			"SELECT " + this.columnClause + " FROM " + this.tableName + "\n" +
+			"ORDER BY " + this.orderClause + "\n" +
+			"LIMIT 1 OFFSET " + row + ";"
+		);
+		var result = res[0][column.index];
+		if (column.id === "expiresOn") {
+			let epoc = parseInt(result, 10)/1000;
+			result = new Date(epoc).toLocaleDateString();
+		}
+		return result;
+	}
+}
+
 var log = DKIM_Verifier.Logging.getLogger("Options");
 
 var treeView;
@@ -21,7 +38,7 @@ var columns;
 
 function setView() {
 	"use strict";
-	treeView = new SQLiteTreeView("dkimBimi.sqlite", "certs", ["commonName","fingerprint","expireson","trusted","internal"], null);
+	treeView = new CATreeView("dkimBimi.sqlite", "certs", ["commonName","fingerprint","expireson","trusted","internal"], null);
 	document.getElementById('my-tree').view = treeView;
 	columns = document.getElementById('my-tree').columns;
 }

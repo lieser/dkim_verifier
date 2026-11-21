@@ -10,6 +10,17 @@ const Cu = Components.utils;
 Cu.import("resource://dkim_verifier/SQLiteTreeView.jsm.js");
 Cu.import("resource://dkim_verifier/bimi.jsm.js");
 
+class BimiTreeView extends SQLiteTreeView {
+	// extends the SQLiteTreeView class to display logos inside of the treeview
+	getCellProperties(row, column) {
+		if (column.id === "indicator") {
+			var iconId = "bimiidx" + this.getCellText(row, column);
+			return iconId;
+		}
+		return "";
+	}
+}
+
 var treeView;
 var columns;
 var cssRules;
@@ -42,7 +53,7 @@ function setView() {
 	let cssHideRule = "#hidden-indicator-tree { display:none }";
 	cssRules.insertRule(cssHideRule, cssRules.cssRules.length);
 
-	treeView = new SQLiteTreeView("dkimBimi.sqlite", "domains", ["domain","indicator"], null);
+	treeView = new BimiTreeView("dkimBimi.sqlite", "domains", ["domain","indicator"], null);
 	document.getElementById('my-tree').view = treeView;
 	columns = document.getElementById('my-tree').columns;
 }
