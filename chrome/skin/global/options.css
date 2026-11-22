@@ -2,3 +2,7 @@ checkbox {white-space: pre;}
 #paneDisplay [anonid="gridHeader"] {
 	text-align: end;
 }
+
+.colorpicker-button-menupopup, .colorpicker-button-menupopup * {
+	-moz-user-select: none !important;
+}
