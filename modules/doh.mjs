@@ -151,6 +151,10 @@ export default async function txt(name, queryFunction = dnsGetQuery) {
 				// Ignore CNAME records.
 				continue;
 			}
+			if (answer?.type === RecordType.DNAME) {
+				// Ignore DNAME records.
+				continue;
+			}
 			if (answer?.type !== RecordType.TXT) {
 				log.error(`DNS answer has unexpected type: ${answer?.type}`);
 				throw new DKIM_TempError("DKIM_DNSERROR_UNKNOWN");

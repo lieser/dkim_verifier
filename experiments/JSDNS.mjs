@@ -659,6 +659,10 @@ function DNS_readRec(ctx) {
 		rec.type = "CNAME";
 		// no complete support of CNAME (data is not read)
 		rec.rddata = "";
+	} else if (rec.type === 39) {
+		rec.type = "DNAME";
+		// no complete support of DNAME (data is not read)
+		rec.rddata = "";
 	} else {
 		rec.recognized = 0;
 	}

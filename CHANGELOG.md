@@ -4,6 +4,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+### Fixes
+
+- DoH resolver: support DNS responses that also contain a DNAME record.
+- JSDNS resolver: support DNS responses that also contain a DNAME record.
+
 ## 6.4.0 (2026-10-20)
 
 ### Enhancements

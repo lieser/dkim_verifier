@@ -135,6 +135,37 @@ describe("DNS over HTTPS", function () {
 		expect(res.bogus).to.be.equal(false);
 	});
 
+	it("Answer contains a DNAME record", async function () {
+		const queryFunction = CreateQueryFunction(
+			"0000012000010000000000001073747261746f2d646b696d2d303030320a5f646f6d61696e6b657908353136373133333203737768" +
+			"0e73747261746f2d686f7374696e670265750000100001",
+			"0000818000010003000000001073747261746f2d646b696d2d303030320a5f646f6d61696e6b657908353136373133333203737768" +
+			"0e73747261746f2d686f7374696e670265750000100001c00c000500010000003400271073747261746f2d646b696d2d303030320a" +
+			"5f646f6d61696e6b65790673747261746f02646500c01d002700010000003400160a5f646f6d61696e6b65790673747261746f0264" +
+			"6500c058001000010000095a019cea763d444b494d313b206b3d7273613b20703d4d494942496a414e42676b71686b694739773042" +
+			"4151454641414f43415138414d49494243674b4341514541743361316e6268516444304d7462505431723844475a65666f516c6a33" +
+			"665367745764494e735873526c35354f6d4f416632514e523842305377433539645771412b697375482f62516e553066304f6d4f35" +
+			"4137702b637966543945656b6257736c503537354e416e41597073554a6c42762f304f38714136542f634c6f447a364c7355597630" +
+			"3030674652715353556531425a6e4a2f736a673066393655436b6f6d543161515270535553b044774e59437170514b512f66576739" +
+			"495332664c2b64326b523172636b71776f4b64676245746a7234692b49436e3253556f6449314b6b477573496976754275654d5966" +
+			"4468385247594b7646763430555a6c42536675583731476b7a45507651506e515466584c714d39463871316b57712f6d6457597935" +
+			"52304b72577074416e75416d435a71756a6b67576d63717a4c6f544d6c6e30346f4f784746702f7a6b6638694137356c7749444151" +
+			"4142"
+		);
+		const res = await txt("strato-dkim-0002._domainkey.51671332.swh.strato-hosting.eu", queryFunction);
+		expect(res.rcode).to.be.equal(DNS.RCODE.NoError);
+		expect(res.data?.length).to.be.equal(1);
+		expect((res.data ?? [])[0]).to.be.equal(
+			"v=DKIM1; k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAt3a1nbhQdD0MtbPT1r8DGZefoQlj3fSgtWdINsXs" +
+			"Rl55OmOAf2QNR8B0SwC59dWqA+isuH/bQnU0f0OmO5A7p+cyfT9EekbWslP575NAnAYpsUJlBv/0O8qA6T/cLoDz6LsUYv000gFRqS" +
+			"SUe1BZnJ/sjg0f96UCkomT1aQRpSUS" +
+			"DwNYCqpQKQ/fWg9IS2fL+d2kR1rckqwoKdgbEtjr4i+ICn2SUodI1KkGusIivuBueMYfDh8RGYKvFv40UZlBSfuX71GkzEPvQPnQTf" +
+			"XLqM9F8q1kWq/mdWYy5R0KrWptAnuAmCZqujkgWmcqzLoTMln04oOxGFp/zkf8iA75lwIDAQAB"
+		);
+		expect(res.secure).to.be.equal(false);
+		expect(res.bogus).to.be.equal(false);
+	});
+
 	// eslint-disable-next-line mocha/no-pending-tests
 	xdescribe("Online tests", function () {
 		beforeEach(function () {
@@ -187,6 +218,21 @@ describe("DNS over HTTPS", function () {
 				"+PWcd4r0f2k8rBFbgLytLULQRW7YT16dsEAbjoneSSFbFT5C163" +
 				"HV/nSM0jDIG06z4gZ/fyzZnBy7+gJK8s4dDJx1mDn4/oVuQ+eA/QLtEe99gx9ewrvHbLvI06jx90MI9dsyGo8GlvOQDwr6rCXH3F5P" +
 				"Skxt4/+UlqavKBsug2g4IfQHPXLM1N5a8lBVs2cS3ZOqv2wIDAQAB"
+			);
+			expect(res.secure).to.be.equal(false);
+			expect(res.bogus).to.be.equal(false);
+		});
+
+		it("Answer contains a DNAME record", async function () {
+			const res = await txt("strato-dkim-0002._domainkey.51671332.swh.strato-hosting.eu");
+			expect(res.rcode).to.be.equal(DNS.RCODE.NoError);
+			expect(res.data?.length).to.be.equal(1);
+			expect((res.data ?? [])[0]).to.be.equal(
+				"v=DKIM1; k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAt3a1nbhQdD0MtbPT1r8DGZefoQlj3fSgtWdINsXs" +
+				"Rl55OmOAf2QNR8B0SwC59dWqA+isuH/bQnU0f0OmO5A7p+cyfT9EekbWslP575NAnAYpsUJlBv/0O8qA6T/cLoDz6LsUYv000gFRqS" +
+				"SUe1BZnJ/sjg0f96UCkomT1aQRpSUS" +
+				"DwNYCqpQKQ/fWg9IS2fL+d2kR1rckqwoKdgbEtjr4i+ICn2SUodI1KkGusIivuBueMYfDh8RGYKvFv40UZlBSfuX71GkzEPvQPnQTf" +
+				"XLqM9F8q1kWq/mdWYy5R0KrWptAnuAmCZqujkgWmcqzLoTMln04oOxGFp/zkf8iA75lwIDAQAB"
 			);
 			expect(res.secure).to.be.equal(false);
 			expect(res.bogus).to.be.equal(false);
