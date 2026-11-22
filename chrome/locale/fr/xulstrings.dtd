@@ -5,7 +5,6 @@
 
 <!ENTITY dkim_verifier.reverifyDKIMSignature.label "Revérifier la signature DKIM">
 <!ENTITY dkim_verifier.policyAddUserException.label "Ajouter une exception doit être signé">
-<!ENTITY dkim_verifier.markKeyAsSecure.label "Marquer la clé DKIM comme sécurisée">
 <!ENTITY dkim_verifier.updateKey.label "Mise à jour de la clé DKIM">
 
 
