@@ -18,9 +18,9 @@
  */
 
 // options for ESLint
-/* global Components, Services, atob, btoa, Sqlite */
+/* global Components, Services, atob, Sqlite */
 /* global Logging, rfcParser, DNS */
-/* global Deferred, toType, stringEqual, readStringFrom, PREF */
+/* global Deferred, toType, stringEqual, readStringFrom, PREF, getDomainFromAddr, getBaseDomainFromAddr, getLocalPartFromAddr, encodeSVGtoBase64 */
 /* exported EXPORTED_SYMBOLS, BIMI, BIMIDB */
 
 /**
@@ -29,6 +29,7 @@
  * @property {String} bimiVersion the v tag of the BIMI DNS record
  * @property {String} location the l tag of the BIMI DNS record
  * @property {String} [authorization]  the a tag of the BIMI DNS record
+ * @property {String[]} localPartSelectors a list of BIMI selectors to compare to the localpart of the from address
  */
 
 /**
@@ -62,9 +63,6 @@ Cu.import("resource://dkim_verifier/helper.jsm.js");
 // @ts-expect-error
 let DKIM = {};
 Cu.import("resource://dkim_verifier/dkimPolicy.jsm.js", DKIM);
-
-const GZIP = {};
-Services.scriptloader.loadSubScript("resource://dkim_verifier_3p/pako/pako_inflate.es5.js", GZIP, "UTF-8");
 
 // @ts-expect-error
 const PREF_BRANCH = "extensions.dkim_verifier.bimi.";
@@ -358,26 +356,8 @@ let CERTTOOLS = (function() {
 						let imageData = resource.seq[0].ia5str.str;
 						// remove data:image/svg+xml;base64,
 						imageData = imageData.substring(imageData.indexOf("64,")+3);
-						// simple test, since some images are SVGZ, which can't be displayed
-						const binaryString = atob(imageData);
-						const bytes = new Uint8Array(binaryString.length);
-						for (let i = 0; i < binaryString.length; i++) {
-							bytes[i] = binaryString.charCodeAt(i);
-						}
-						let svgText;
-						if (bytes.length >= 2 && bytes[0] === 0x1f && bytes[1] === 0x8b) {
-							svgText = GZIP.pako.inflate(bytes, { to: 'string' });
-							if (svgText && svgText.toLowerCase().includes("</svg>")) {
-								log.debug("Found compressed image in cert");
-								svgImgs.push(btoa(svgText));
-							}
-						} else {
-							svgText = binaryString;
-							if (svgText && svgText.toLowerCase().includes("</svg>")) {
-								log.debug("Found raw image in cert");
-								svgImgs.push(imageData);
-							}
-						}
+						let b64SVG = encodeSVGtoBase64(imageData);
+						if (b64SVG) { svgImgs.push(b64SVG); }
 					}
 				}
 			}
@@ -558,7 +538,8 @@ let BIMI = (function() {
 		const res = {
 			version: "1.0",
 			bimiVersion: "",
-			location: ""
+			location: "",
+			localPartSelectors: []
 		};
 
 		const parsedObj = rfcParser.parseTagValueList(bimiRecord);
@@ -570,11 +551,15 @@ let BIMI = (function() {
 		/** @type {Map} */
 		// @ts-expect-error
 		const parsedMap = parsedObj;
-		if (parsedMap.has("v"))	{ res.bimiVersion = parsedMap.get("v"); } else { return null; }
-		if (parsedMap.has("l"))	{ res.location = parsedMap.get("l"); } else { return null; }
-		if (parsedMap.has("a"))	{ res.authorization = parsedMap.get("a"); }
+		if (parsedMap.has("v"))		{ res.bimiVersion = parsedMap.get("v"); } else { return null; }
+		if (parsedMap.has("l"))		{ res.location = parsedMap.get("l"); } else { return null; }
+		if (parsedMap.has("a"))		{ res.authorization = parsedMap.get("a"); }
+		if (parsedMap.has("lps"))	{
+										let lps = parsedMap.get("lps").toLowerCase().split(',');
+										lps = lps.map(e => e.trim());
+										res.localPartSelectors = lps;
+									}
 		log.debug(res.toSource());
-
 		return res;
 	};
 
@@ -600,8 +585,8 @@ let BIMI = (function() {
 			log.warn("Message contains more than one BIMI-Selector header, using first selector");
 		}
 		if (!dkimSigResult.signedHeaders || !dkimSigResult.signedHeaders.includes(headerName)) {
-			// This seems to be no risk, as we require and check the certificate of the BIMI record
 			log.warn("The BIMI-Selector header is not signed by DKIM");
+			return bimiSelector;
 		}
 		let bimiSelectorHdr = bimiSelectorHeaders[0];
 		bimiSelectorHdr = bimiSelectorHdr.replace(new RegExp(`^${headerName}[ \t]*:`,"i"), "");
@@ -673,6 +658,25 @@ let BIMI = (function() {
 			log.error(`DNS server responded with response status: ${httpResponse.statusText} (${httpResponse.status})`);
 		}
 		return httpResponse.result;
+	};
+
+	/*
+	 * Tries to fetch a BIMI record from DNS
+	 * @param {string} selector
+	 * @param {string} domain
+	 * @return {Promise<BimiRecord|undefined>}
+	 */
+	let _fetchBimiRecord = async function(selector, domain) {
+		try {
+			let dnsResult = await DNS.resolve(`${selector}._bimi.${domain}`, "TXT");
+			if (dnsResult && dnsResult.data) {
+				let bimiRecord = dnsResult.data[0];
+				return _parseBimiRecord(bimiRecord);
+			}
+		} catch (error) {
+			log.error(`Error resolving ${selector}._bimi.${domain}`);
+		}
+		return undefined;
 	};
 
 	/*
@@ -775,12 +779,12 @@ let BIMI = (function() {
 		* Try to get the BIMI logo if available.
 		*
 		* @param {dkimSigResultV2[]} dkimSigResults - result of the dkim verification
-		* @param {Map<string, string[]>} headers
+		* @param {Object} msg
 		* @returns {Promise<String|Null>}
 		*/
-		getBimiIndicatorOnline: async function getBimiIndicatorOnline(dkimSigResults, headers) {
+		getBimiIndicatorOnline: async function getBimiIndicatorOnline(dkimSigResults, msg) {
 			// We already check in checkBasicRequirementsForBIMI, that sdid is defined
-			let domain = String(dkimSigResults[0].sdid).toLowerCase();
+			let domain = getDomainFromAddr(msg.from).toLowerCase();
 			// Lookup BIMI logo in cache
 			log.debug("Try to get BIMI logo for " + domain);
 			let cachedBimiIndicator = await BIMIDB.getBimiIndicator(domain);
@@ -791,16 +795,23 @@ let BIMI = (function() {
 
 			// Lookup Online
 			if (prefs.getIntPref("enable") < PREF.BIMI.MAIL_ONLINE) { return null; }
-			let parsedBimiRecord;
-			let bimiSelector = _getBimiSelector(headers, dkimSigResults[0]);
-			try {
-				let dnsResult = await DNS.resolve(`${bimiSelector}._bimi.${domain}`, "TXT");
-				if (dnsResult && dnsResult.data) {
-					let bimiRecord = dnsResult.data[0];
-					parsedBimiRecord = _parseBimiRecord(bimiRecord);
+			let fromAddrLocal = getLocalPartFromAddr(msg.from).toLowerCase();
+			let bimiSelector = _getBimiSelector(msg.headerFields, dkimSigResults[0]);
+			let parsedBimiRecord = await _fetchBimiRecord(bimiSelector, domain);
+			// Check for local part selectors and use them
+			if (parsedBimiRecord && parsedBimiRecord.localPartSelectors.includes(fromAddrLocal)) {
+				bimiSelector = fromAddrLocal;
+				parsedBimiRecord = await _fetchBimiRecord(bimiSelector, domain);
+			}
+			// Check organizational domain if no other BIMI record is found
+			if (!parsedBimiRecord) {
+				let orgdomain = getBaseDomainFromAddr(msg.from).toLowerCase();
+				parsedBimiRecord = await _fetchBimiRecord(bimiSelector, orgdomain);
+				// Check for local part selectors in organizational domain
+				if (parsedBimiRecord && parsedBimiRecord.localPartSelectors.includes(fromAddrLocal)) {
+					bimiSelector = fromAddrLocal;
+					parsedBimiRecord = await _fetchBimiRecord(bimiSelector, orgdomain);
 				}
-			} catch (error) {
-				log.error(`Error resolving ${bimiSelector}._bimi.${domain}`);
 			}
 
 			// Only try to get the indicator if authorization information is present
@@ -835,8 +846,8 @@ let BIMI = (function() {
 				if (bimiIndicator) {
 					let hashMatch = svgHash.filter(entry => _compareHash(bimiIndicator, entry));
 					if (hashMatch.length > 0) {
-						let result = btoa(bimiIndicator);
-						if (prefs.getBoolPref("cacheIndicators")) {
+						let result = encodeSVGtoBase64(bimiIndicator);
+						if (result && prefs.getBoolPref("cacheIndicators")) {
 							await BIMIDB.addBimiIndicator(domain, result); // in case of a wildcard san
 							_addAllSANtoDB(bimiCert, result);
 						}

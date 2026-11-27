@@ -12,9 +12,9 @@
  */
 
 // options for ESLint
-/* global Components, FileUtils, NetUtil, Services, btoa */
+/* global Components, FileUtils, NetUtil, Services, btoa, atob */
 /* global Logging */
-/* exported EXPORTED_SYMBOLS, addrIsInDomain, addrIsInDomain2, domainIsInDomain, getBaseDomainFromAddr, getDomainFromAddr, encodeBase64Url, PREF, readStringFrom, stringEndsWith, stringEqual, copy, toType, tryGetString, tryGetFormattedString, writeStringToTmpFile, DKIM_SigError, DKIM_TempError, DKIM_Error */
+/* exported EXPORTED_SYMBOLS, addrIsInDomain, addrIsInDomain2, domainIsInDomain, getBaseDomainFromAddr, getDomainFromAddr, getLocalPartFromAddr, encodeBase64Url, encodeSVGtoBase64, PREF, readStringFrom, stringEndsWith, stringEqual, copy, toType, tryGetString, tryGetFormattedString, writeStringToTmpFile, DKIM_SigError, DKIM_TempError, DKIM_Error */
 
 "use strict";
 
@@ -26,7 +26,9 @@ var EXPORTED_SYMBOLS = [
 	"domainIsInDomain",
 	"getBaseDomainFromAddr",
 	"getDomainFromAddr",
+	"getLocalPartFromAddr",
 	"encodeBase64Url",
+	"encodeSVGtoBase64",
 	"PREF",
 	"readStringFrom",
 	"stringEndsWith",
@@ -252,6 +254,17 @@ function getDomainFromAddr(addr) {
 }
 
 /**
+ * Returns the local part for an e-mail address
+ *
+ * @param {String} addr
+ *
+ * @returns {String}
+ */
+function getLocalPartFromAddr(addr) {
+	return addr.slice(0, addr.indexOf("@"));
+}
+
+/**
  * Base 64 Encoding with URL and Filename Safe Alphabet.
  *
  * Defined in <https://datatracker.ietf.org/doc/html/rfc4648#section-5>.
@@ -268,6 +281,40 @@ function encodeBase64Url(data, omitPadding) {
 		encoded = encoded.replace(new RegExp("=", "g"), "");
 	}
 	return encoded;
+}
+
+/**
+ * Returns a Base64 encoded SVG image or null if the input can't be converted
+ * Supports RAW SVG text and SVGZ
+ *
+ * @param {string} input
+ * @returns {string|null}
+ */
+function encodeSVGtoBase64(input) {
+	let binaryString = input;
+	// if input is base64, convert to binaryString
+	if (input.match(/^[A-Za-z0-9+/]*={0,2}$/) && input.length % 4 === 0) {
+		binaryString = atob(binaryString);
+	}
+	// simple test, since some images are SVGZ, which can't be displayed
+	const bytes = new Uint8Array(binaryString.length);
+	for (let i = 0; i < binaryString.length; i++) {
+		bytes[i] = binaryString.charCodeAt(i);
+	}
+	if (bytes.length >= 2 && bytes[0] === 0x1f && bytes[1] === 0x8b) {
+		const GZIP = {};
+		Services.scriptloader.loadSubScript("resource://dkim_verifier_3p/pako/pako_inflate.es5.js", GZIP, "UTF-8");
+		let svgText = GZIP.pako.inflate(bytes, { to: 'string' });
+		if (svgText && svgText.toLowerCase().includes("</svg>")) {
+			return btoa(svgText);
+		}
+	} else {
+		// assuming raw SVG image
+		if (binaryString && binaryString.toLowerCase().includes("</svg>")) {
+			return btoa(binaryString);
+		}
+	}
+	return null;
 }
 
 /**
