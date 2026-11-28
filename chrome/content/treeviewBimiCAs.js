@@ -17,12 +17,7 @@ Cu.import("resource://dkim_verifier/bimi.jsm.js");
 class CATreeView extends SQLiteTreeView {
 	// extends the SQLiteTreeView class to display pretty certificate expiration date
 	getCellText(row, column) {
-		var res = this._doSQL(
-			"SELECT " + this.columnClause + " FROM " + this.tableName + "\n" +
-			"ORDER BY " + this.orderClause + "\n" +
-			"LIMIT 1 OFFSET " + row + ";"
-		);
-		var result = res[0][column.index];
+		var result = super.getCellText(row, column);
 		if (column.id === "expiresOn") {
 			let epoc = parseInt(result, 10)/1000;
 			result = new Date(epoc).toLocaleDateString();
